@@ -61,3 +61,15 @@
 - [ ] Promoções/Cupons
 - [ ] Clientes
 - [ ] Relatórios
+
+
+## Atualização de UI/Estilo (Apenas Visual)
+- [x] Atualizar tema global (cores, tipografia, variáveis CSS)
+- [x] Redesenhar componentes compartilhados (cards, badges, botões)
+- [x] Modernizar Sidebar com visual mais limpo
+- [x] Atualizar Topbar com hierarquia visual melhor
+- [x] Aplicar novo estilo ao Dashboard
+- [x] Aplicar novo estilo ao Catálogo
+- [x] Aplicar novo estilo aos Pedidos
+- [x] Aplicar novo estilo às Configurações
+- [x] Aplicar novo estilo ao ProductForm

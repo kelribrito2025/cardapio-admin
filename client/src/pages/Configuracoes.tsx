@@ -162,12 +162,12 @@ export default function Configuracoes() {
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="estabelecimento" className="flex items-center gap-2">
+        <TabsList className="mb-8 bg-muted/50 p-1.5 rounded-xl">
+          <TabsTrigger value="estabelecimento" className="flex items-center gap-2 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
             <Store className="h-4 w-4" />
             Estabelecimento
           </TabsTrigger>
-          <TabsTrigger value="atendimento" className="flex items-center gap-2">
+          <TabsTrigger value="atendimento" className="flex items-center gap-2 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
             <Settings2 className="h-4 w-4" />
             Atendimento
           </TabsTrigger>
@@ -179,35 +179,37 @@ export default function Configuracoes() {
           <SectionCard title="Nome e imagens">
             <div className="space-y-6">
               <div>
-                <Label htmlFor="name">Nome do Restaurante *</Label>
+                <Label htmlFor="name" className="text-sm font-semibold">Nome do Restaurante *</Label>
                 <Input
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ex: Restaurante Sabor Caseiro"
-                  className="max-w-md"
+                  className="max-w-md mt-2 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Logo */}
                 <div>
-                  <Label>Logotipo</Label>
+                  <Label className="text-sm font-semibold">Logotipo</Label>
                   <div
                     onClick={() => handleImageUpload("logo")}
                     className={cn(
-                      "mt-2 aspect-square max-w-[200px] rounded-xl border-2 border-dashed cursor-pointer",
-                      "flex flex-col items-center justify-center gap-2 overflow-hidden",
-                      "hover:border-primary hover:bg-primary/5 transition-colors",
-                      logo ? "border-solid border-border" : "border-muted-foreground/30"
+                      "mt-2 aspect-square max-w-[200px] rounded-2xl border-2 border-dashed cursor-pointer",
+                      "flex flex-col items-center justify-center gap-3 overflow-hidden",
+                      "hover:border-primary hover:bg-primary/5 transition-all duration-200",
+                      logo ? "border-solid border-border/50 shadow-soft" : "border-muted-foreground/20"
                     )}
                   >
                     {logo ? (
                       <img src={logo} alt="Logo" className="w-full h-full object-cover" />
                     ) : (
                       <>
-                        <ImagePlus className="h-8 w-8 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Logotipo</span>
+                        <div className="p-3 bg-muted/50 rounded-xl">
+                          <ImagePlus className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                        <span className="text-sm text-muted-foreground font-medium">Logotipo</span>
                       </>
                     )}
                   </div>
@@ -215,29 +217,31 @@ export default function Configuracoes() {
 
                 {/* Cover Image */}
                 <div>
-                  <Label>Imagem de capa</Label>
+                  <Label className="text-sm font-semibold">Imagem de capa</Label>
                   <div
                     onClick={() => handleImageUpload("cover")}
                     className={cn(
-                      "mt-2 aspect-video max-w-[300px] rounded-xl border-2 border-dashed cursor-pointer",
-                      "flex flex-col items-center justify-center gap-2 overflow-hidden",
-                      "hover:border-primary hover:bg-primary/5 transition-colors",
-                      coverImage ? "border-solid border-border" : "border-muted-foreground/30"
+                      "mt-2 aspect-video max-w-[300px] rounded-2xl border-2 border-dashed cursor-pointer",
+                      "flex flex-col items-center justify-center gap-3 overflow-hidden",
+                      "hover:border-primary hover:bg-primary/5 transition-all duration-200",
+                      coverImage ? "border-solid border-border/50 shadow-soft" : "border-muted-foreground/20"
                     )}
                   >
                     {coverImage ? (
                       <img src={coverImage} alt="Capa" className="w-full h-full object-cover" />
                     ) : (
                       <>
-                        <ImagePlus className="h-8 w-8 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Imagem de capa</span>
+                        <div className="p-3 bg-muted/50 rounded-xl">
+                          <ImagePlus className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                        <span className="text-sm text-muted-foreground font-medium">Imagem de capa</span>
                       </>
                     )}
                   </div>
                 </div>
               </div>
 
-              <Button onClick={handleSaveEstablishment} disabled={isPending}>
+              <Button onClick={handleSaveEstablishment} disabled={isPending} className="rounded-xl shadow-sm">
                 <Save className="h-4 w-4 mr-2" />
                 {isPending ? "Salvando..." : "Salvar"}
               </Button>
@@ -249,80 +253,87 @@ export default function Configuracoes() {
             title="Endereço do Estabelecimento"
             description="Usado como endereço de retirada"
           >
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2">
-                  <Label htmlFor="street">Rua</Label>
+                  <Label htmlFor="street" className="text-sm font-semibold">Rua</Label>
                   <Input
                     id="street"
                     value={street}
                     onChange={(e) => setStreet(e.target.value)}
                     placeholder="Nome da rua"
+                    className="mt-2 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="number">Número</Label>
+                  <Label htmlFor="number" className="text-sm font-semibold">Número</Label>
                   <Input
                     id="number"
                     value={number}
                     onChange={(e) => setNumber(e.target.value)}
                     placeholder="123"
+                    className="mt-2 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="complement">Complemento</Label>
+                  <Label htmlFor="complement" className="text-sm font-semibold">Complemento</Label>
                   <Input
                     id="complement"
                     value={complement}
                     onChange={(e) => setComplement(e.target.value)}
                     placeholder="Sala, Bloco, etc."
+                    className="mt-2 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="neighborhood">Bairro</Label>
+                  <Label htmlFor="neighborhood" className="text-sm font-semibold">Bairro</Label>
                   <Input
                     id="neighborhood"
                     value={neighborhood}
                     onChange={(e) => setNeighborhood(e.target.value)}
                     placeholder="Nome do bairro"
+                    className="mt-2 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="city">Cidade</Label>
+                  <Label htmlFor="city" className="text-sm font-semibold">Cidade</Label>
                   <Input
                     id="city"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="Nome da cidade"
+                    className="mt-2 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="state">Estado</Label>
+                  <Label htmlFor="state" className="text-sm font-semibold">Estado</Label>
                   <Input
                     id="state"
                     value={state}
                     onChange={(e) => setState(e.target.value)}
                     placeholder="UF"
+                    className="mt-2 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="zipCode">CEP</Label>
+                  <Label htmlFor="zipCode" className="text-sm font-semibold">CEP</Label>
                   <Input
                     id="zipCode"
                     value={zipCode}
                     onChange={(e) => setZipCode(e.target.value)}
                     placeholder="00000-000"
+                    className="mt-2 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
               </div>
 
-              <Button onClick={handleSaveEstablishment} disabled={isPending}>
+              <Button onClick={handleSaveEstablishment} disabled={isPending} className="rounded-xl shadow-sm">
                 <Save className="h-4 w-4 mr-2" />
                 {isPending ? "Salvando..." : "Salvar"}
               </Button>
@@ -334,11 +345,11 @@ export default function Configuracoes() {
         <TabsContent value="atendimento" className="space-y-6">
           {/* Configurações básicas */}
           <SectionCard title="Configurações básicas de atendimento">
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
-                <Label htmlFor="menuSlug">Link do cardápio</Label>
-                <div className="flex gap-2 mt-1">
-                  <div className="flex items-center px-3 bg-muted rounded-l-md border border-r-0 text-sm text-muted-foreground">
+                <Label htmlFor="menuSlug" className="text-sm font-semibold">Link do cardápio</Label>
+                <div className="flex gap-2 mt-2">
+                  <div className="flex items-center px-4 bg-muted/50 rounded-l-xl border border-r-0 border-border/50 text-sm text-muted-foreground font-medium">
                     menu.example.com/
                   </div>
                   <Input
@@ -346,32 +357,34 @@ export default function Configuracoes() {
                     value={menuSlug}
                     onChange={(e) => setMenuSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
                     placeholder="seu-restaurante"
-                    className="rounded-l-none flex-1"
+                    className="rounded-l-none flex-1 h-11 rounded-r-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
-                  <Button variant="outline" size="icon" onClick={copyMenuLink} title="Copiar link">
+                  <Button variant="outline" size="icon" onClick={copyMenuLink} title="Copiar link" className="h-11 w-11 rounded-xl border-border/50 hover:bg-accent">
                     <Copy className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon" title="Testar link">
+                  <Button variant="outline" size="icon" title="Testar link" className="h-11 w-11 rounded-xl border-border/50 hover:bg-accent">
                     <ExternalLink className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="whatsapp">WhatsApp para receber pedido</Label>
-                <div className="flex items-center gap-2 mt-1">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
+                <Label htmlFor="whatsapp" className="text-sm font-semibold">WhatsApp para receber pedido</Label>
+                <div className="flex items-center gap-3 mt-2">
+                  <div className="p-2.5 bg-emerald-50 rounded-xl">
+                    <Phone className="h-5 w-5 text-emerald-600" />
+                  </div>
                   <Input
                     id="whatsapp"
                     value={whatsapp}
                     onChange={(e) => setWhatsapp(e.target.value)}
                     placeholder="+55 (00) 00000-0000"
-                    className="max-w-xs"
+                    className="max-w-xs h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
               </div>
 
-              <Button onClick={handleSaveServiceSettings} disabled={isPending}>
+              <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
                 <Save className="h-4 w-4 mr-2" />
                 {isPending ? "Salvando..." : "Salvar"}
               </Button>
@@ -382,37 +395,41 @@ export default function Configuracoes() {
           <SectionCard title="Formas de pagamento">
             <div className="space-y-4">
               <div className="space-y-3">
-                <label className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 cursor-pointer">
-                  <span className="font-medium">Dinheiro</span>
+                <label className="flex items-center justify-between p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
+                  <span className="font-semibold">Dinheiro</span>
                   <Checkbox
                     checked={acceptsCash}
                     onCheckedChange={(checked) => setAcceptsCash(checked as boolean)}
+                    className="h-5 w-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
                 </label>
-                <label className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 cursor-pointer">
-                  <span className="font-medium">Cartão</span>
+                <label className="flex items-center justify-between p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
+                  <span className="font-semibold">Cartão</span>
                   <Checkbox
                     checked={acceptsCard}
                     onCheckedChange={(checked) => setAcceptsCard(checked as boolean)}
+                    className="h-5 w-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
                 </label>
-                <label className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 cursor-pointer">
-                  <span className="font-medium">Pix</span>
+                <label className="flex items-center justify-between p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
+                  <span className="font-semibold">Pix</span>
                   <Checkbox
                     checked={acceptsPix}
                     onCheckedChange={(checked) => setAcceptsPix(checked as boolean)}
+                    className="h-5 w-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
                 </label>
-                <label className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 cursor-pointer">
-                  <span className="font-medium">Boleto</span>
+                <label className="flex items-center justify-between p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
+                  <span className="font-semibold">Boleto</span>
                   <Checkbox
                     checked={acceptsBoleto}
                     onCheckedChange={(checked) => setAcceptsBoleto(checked as boolean)}
+                    className="h-5 w-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
                 </label>
               </div>
 
-              <Button onClick={handleSaveServiceSettings} disabled={isPending}>
+              <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
                 <Save className="h-4 w-4 mr-2" />
                 {isPending ? "Salvando..." : "Salvar"}
               </Button>
@@ -421,18 +438,23 @@ export default function Configuracoes() {
 
           {/* Tipo de entrega */}
           <SectionCard title="Tipo de entrega">
-            <div className="space-y-4">
-              <div className="flex gap-4 flex-wrap">
+            <div className="space-y-5">
+              <div className="flex gap-5 flex-wrap">
                 <label
                   className={cn(
-                    "flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-colors min-w-[120px]",
+                    "relative flex flex-col items-center gap-3 p-6 border-2 rounded-2xl cursor-pointer transition-all duration-200 min-w-[140px]",
                     allowsDelivery
-                      ? "border-primary bg-primary/5"
-                      : "border-muted hover:border-muted-foreground/30"
+                      ? "border-primary bg-primary/5 shadow-soft"
+                      : "border-border/50 hover:border-muted-foreground/30 hover:bg-muted/30"
                   )}
                 >
-                  <Truck className={cn("h-8 w-8", allowsDelivery ? "text-primary" : "text-muted-foreground")} />
-                  <span className={cn("font-medium", allowsDelivery ? "text-primary" : "text-muted-foreground")}>
+                  <div className={cn(
+                    "p-3 rounded-xl",
+                    allowsDelivery ? "bg-primary/10" : "bg-muted/50"
+                  )}>
+                    <Truck className={cn("h-7 w-7", allowsDelivery ? "text-primary" : "text-muted-foreground")} />
+                  </div>
+                  <span className={cn("font-semibold", allowsDelivery ? "text-primary" : "text-muted-foreground")}>
                     Entrega
                   </span>
                   <Checkbox
@@ -441,20 +463,25 @@ export default function Configuracoes() {
                     className="sr-only"
                   />
                   {allowsDelivery && (
-                    <span className="absolute top-2 right-2 h-2 w-2 bg-primary rounded-full" />
+                    <span className="absolute top-3 right-3 h-3 w-3 bg-primary rounded-full ring-2 ring-white" />
                   )}
                 </label>
 
                 <label
                   className={cn(
-                    "flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-colors min-w-[120px]",
+                    "relative flex flex-col items-center gap-3 p-6 border-2 rounded-2xl cursor-pointer transition-all duration-200 min-w-[140px]",
                     allowsPickup
-                      ? "border-primary bg-primary/5"
-                      : "border-muted hover:border-muted-foreground/30"
+                      ? "border-primary bg-primary/5 shadow-soft"
+                      : "border-border/50 hover:border-muted-foreground/30 hover:bg-muted/30"
                   )}
                 >
-                  <Store className={cn("h-8 w-8", allowsPickup ? "text-primary" : "text-muted-foreground")} />
-                  <span className={cn("font-medium", allowsPickup ? "text-primary" : "text-muted-foreground")}>
+                  <div className={cn(
+                    "p-3 rounded-xl",
+                    allowsPickup ? "bg-primary/10" : "bg-muted/50"
+                  )}>
+                    <Store className={cn("h-7 w-7", allowsPickup ? "text-primary" : "text-muted-foreground")} />
+                  </div>
+                  <span className={cn("font-semibold", allowsPickup ? "text-primary" : "text-muted-foreground")}>
                     Retirada
                   </span>
                   <Checkbox
@@ -462,10 +489,13 @@ export default function Configuracoes() {
                     onCheckedChange={(checked) => setAllowsPickup(checked as boolean)}
                     className="sr-only"
                   />
+                  {allowsPickup && (
+                    <span className="absolute top-3 right-3 h-3 w-3 bg-primary rounded-full ring-2 ring-white" />
+                  )}
                 </label>
               </div>
 
-              <Button onClick={handleSaveServiceSettings} disabled={isPending}>
+              <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
                 <Save className="h-4 w-4 mr-2" />
                 {isPending ? "Salvando..." : "Salvar"}
               </Button>

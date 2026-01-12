@@ -168,15 +168,16 @@ export default function Catalogo() {
         title="Catálogo"
         description="Gerencie seus produtos e categorias"
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Button
               variant="outline"
               onClick={() => setCategoryDialogOpen(true)}
+              className="rounded-xl border-border/50 hover:bg-accent"
             >
               <FolderPlus className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Categoria</span>
             </Button>
-            <Button onClick={() => navigate("/catalogo/novo")}>
+            <Button onClick={() => navigate("/catalogo/novo")} className="rounded-xl shadow-sm">
               <Plus className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Novo Produto</span>
             </Button>
@@ -185,26 +186,26 @@ export default function Catalogo() {
       />
 
       {/* Filters */}
-      <div className="bg-card rounded-xl border p-4 mb-6">
-        <div className="flex flex-col sm:flex-row gap-3">
+      <div className="bg-card rounded-2xl border border-border/50 p-5 mb-8 shadow-soft">
+        <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Buscar produtos..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
+              className="pl-11 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
             />
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-3 flex-wrap">
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-[140px] h-11 rounded-xl border-border/50">
                 <SelectValue placeholder="Categoria" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas</SelectItem>
+              <SelectContent className="rounded-xl border-border/50 shadow-elevated">
+                <SelectItem value="all" className="rounded-lg">Todas</SelectItem>
                 {categories?.map((cat) => (
-                  <SelectItem key={cat.id} value={String(cat.id)}>
+                  <SelectItem key={cat.id} value={String(cat.id)} className="rounded-lg">
                     {cat.name}
                   </SelectItem>
                 ))}
@@ -212,38 +213,38 @@ export default function Catalogo() {
             </Select>
 
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[120px]">
+              <SelectTrigger className="w-[120px] h-11 rounded-xl border-border/50">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="active">Ativo</SelectItem>
-                <SelectItem value="paused">Pausado</SelectItem>
-                <SelectItem value="archived">Arquivado</SelectItem>
+              <SelectContent className="rounded-xl border-border/50 shadow-elevated">
+                <SelectItem value="all" className="rounded-lg">Todos</SelectItem>
+                <SelectItem value="active" className="rounded-lg">Ativo</SelectItem>
+                <SelectItem value="paused" className="rounded-lg">Pausado</SelectItem>
+                <SelectItem value="archived" className="rounded-lg">Arquivado</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={stockFilter} onValueChange={setStockFilter}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-[140px] h-11 rounded-xl border-border/50">
                 <SelectValue placeholder="Estoque" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="inStock">Em estoque</SelectItem>
-                <SelectItem value="outOfStock">Sem estoque</SelectItem>
+              <SelectContent className="rounded-xl border-border/50 shadow-elevated">
+                <SelectItem value="all" className="rounded-lg">Todos</SelectItem>
+                <SelectItem value="inStock" className="rounded-lg">Em estoque</SelectItem>
+                <SelectItem value="outOfStock" className="rounded-lg">Sem estoque</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={orderBy} onValueChange={setOrderBy}>
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="w-[150px] h-11 rounded-xl border-border/50">
                 <ArrowUpDown className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="Ordenar" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sortOrder">Padrão</SelectItem>
-                <SelectItem value="name">Nome</SelectItem>
-                <SelectItem value="price">Preço</SelectItem>
-                <SelectItem value="salesCount">Mais vendidos</SelectItem>
+              <SelectContent className="rounded-xl border-border/50 shadow-elevated">
+                <SelectItem value="sortOrder" className="rounded-lg">Padrão</SelectItem>
+                <SelectItem value="name" className="rounded-lg">Nome</SelectItem>
+                <SelectItem value="price" className="rounded-lg">Preço</SelectItem>
+                <SelectItem value="salesCount" className="rounded-lg">Mais vendidos</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -252,17 +253,17 @@ export default function Catalogo() {
 
       {/* Products List */}
       {isLoading ? (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-card rounded-xl border p-4">
-              <div className="skeleton h-6 w-32 rounded mb-4" />
-              <div className="space-y-3">
+            <div key={i} className="bg-card rounded-2xl border border-border/50 p-5 shadow-soft">
+              <div className="skeleton h-6 w-36 rounded-lg mb-5" />
+              <div className="space-y-4">
                 {[1, 2].map((j) => (
-                  <div key={j} className="flex items-center gap-4 p-3 bg-muted/30 rounded-lg">
-                    <div className="skeleton h-12 w-12 rounded" />
+                  <div key={j} className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl">
+                    <div className="skeleton h-14 w-14 rounded-xl" />
                     <div className="flex-1 space-y-2">
-                      <div className="skeleton h-4 w-48 rounded" />
-                      <div className="skeleton h-3 w-24 rounded" />
+                      <div className="skeleton h-5 w-52 rounded-lg" />
+                      <div className="skeleton h-4 w-28 rounded-lg" />
                     </div>
                   </div>
                 ))}
@@ -326,21 +327,22 @@ export default function Catalogo() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
+        <DialogContent className="rounded-2xl">
           <DialogHeader>
             <DialogTitle>Excluir produto</DialogTitle>
             <DialogDescription>
               Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+          <DialogFooter className="gap-3">
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} className="rounded-xl">
               Cancelar
             </Button>
             <Button 
               variant="destructive" 
               onClick={handleDelete}
               disabled={deleteMutation.isPending}
+              className="rounded-xl"
             >
               {deleteMutation.isPending ? "Excluindo..." : "Excluir"}
             </Button>
@@ -350,7 +352,7 @@ export default function Catalogo() {
 
       {/* Create Category Dialog */}
       <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
-        <DialogContent>
+        <DialogContent className="rounded-2xl">
           <DialogHeader>
             <DialogTitle>Nova Categoria</DialogTitle>
             <DialogDescription>
@@ -363,15 +365,17 @@ export default function Catalogo() {
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleCreateCategory()}
+              className="h-11 rounded-xl border-border/50"
             />
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCategoryDialogOpen(false)}>
+          <DialogFooter className="gap-3">
+            <Button variant="outline" onClick={() => setCategoryDialogOpen(false)} className="rounded-xl">
               Cancelar
             </Button>
             <Button 
               onClick={handleCreateCategory}
               disabled={!newCategoryName.trim() || createCategoryMutation.isPending}
+              className="rounded-xl"
             >
               {createCategoryMutation.isPending ? "Criando..." : "Criar"}
             </Button>
@@ -403,23 +407,23 @@ function ProductCategorySection({
   const [, navigate] = useLocation();
 
   return (
-    <div className="bg-card rounded-xl border overflow-hidden">
-      <div className="px-5 py-4 border-b bg-muted/30">
-        <h3 className="font-semibold">{title}</h3>
+    <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-soft">
+      <div className="px-6 py-4 border-b border-border/50 bg-muted/30">
+        <h3 className="font-semibold text-base">{title}</h3>
       </div>
-      <div className="divide-y">
+      <div className="divide-y divide-border/50">
         {products.map((product) => (
           <div
             key={product.id}
-            className="flex items-center gap-4 p-4 hover:bg-muted/30 transition-colors"
+            className="flex items-center gap-4 p-5 hover:bg-muted/20 transition-colors"
           >
             {/* Drag handle */}
-            <button className="p-1 text-muted-foreground hover:text-foreground cursor-grab">
+            <button className="p-1.5 text-muted-foreground/50 hover:text-muted-foreground cursor-grab rounded-lg hover:bg-muted/50 transition-colors">
               <GripVertical className="h-4 w-4" />
             </button>
 
             {/* Product image */}
-            <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+            <div className="h-14 w-14 rounded-xl bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-border/30">
               {product.images && product.images.length > 0 ? (
                 <img
                   src={product.images[0]}
@@ -427,15 +431,15 @@ function ProductCategorySection({
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                <ImageIcon className="h-5 w-5 text-muted-foreground/50" />
               )}
             </div>
 
             {/* Product info */}
             <div className="flex-1 min-w-0">
-              <p className="font-medium truncate">{product.name}</p>
+              <p className="font-semibold truncate">{product.name}</p>
               {product.description && (
-                <p className="text-sm text-muted-foreground truncate">
+                <p className="text-sm text-muted-foreground truncate mt-0.5">
                   {product.description}
                 </p>
               )}
@@ -443,7 +447,7 @@ function ProductCategorySection({
 
             {/* Price */}
             <div className="hidden sm:block text-right">
-              <p className="font-medium">{formatCurrency(product.price)}</p>
+              <p className="font-semibold text-base">{formatCurrency(product.price)}</p>
             </div>
 
             {/* Status badges */}
@@ -462,7 +466,7 @@ function ProductCategorySection({
             <Switch
               checked={product.status === "active"}
               onCheckedChange={() => onToggleStatus(product.id, product.status)}
-              className="data-[state=checked]:bg-primary"
+              className="data-[state=checked]:bg-emerald-500"
             />
 
             {/* Actions */}

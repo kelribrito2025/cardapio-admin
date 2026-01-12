@@ -17,35 +17,46 @@ interface StatCardProps {
 export function StatCard({ title, value, icon: Icon, trend, loading, className }: StatCardProps) {
   if (loading) {
     return (
-      <div className={cn("bg-card rounded-xl p-5 border shadow-sm", className)}>
+      <div className={cn(
+        "bg-card rounded-2xl p-6 border border-border/50 shadow-soft",
+        className
+      )}>
         <div className="flex items-start justify-between">
           <div className="space-y-3 flex-1">
-            <div className="skeleton h-4 w-24 rounded" />
-            <div className="skeleton h-8 w-32 rounded" />
+            <div className="skeleton h-4 w-28 rounded-lg" />
+            <div className="skeleton h-9 w-36 rounded-lg" />
           </div>
-          <div className="skeleton h-10 w-10 rounded-lg" />
+          <div className="skeleton h-12 w-12 rounded-xl" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className={cn("bg-card rounded-xl p-5 border shadow-sm", className)}>
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground font-medium">{title}</p>
-          <p className="text-2xl font-bold mt-1">{value}</p>
+    <div className={cn(
+      "bg-card rounded-2xl p-6 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5",
+      className
+    )}>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm text-muted-foreground font-medium tracking-wide uppercase">
+            {title}
+          </p>
+          <p className="text-3xl font-bold mt-2 tracking-tight">{value}</p>
           {trend && (
-            <p className={cn(
-              "text-xs mt-1 font-medium",
-              trend.isPositive ? "text-green-600" : "text-red-600"
+            <div className={cn(
+              "inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full text-xs font-semibold",
+              trend.isPositive 
+                ? "bg-emerald-50 text-emerald-600" 
+                : "bg-red-50 text-red-600"
             )}>
-              {trend.isPositive ? "+" : ""}{trend.value}% vs ontem
-            </p>
+              <span>{trend.isPositive ? "↑" : "↓"}</span>
+              <span>{Math.abs(trend.value)}% vs ontem</span>
+            </div>
           )}
         </div>
-        <div className="p-2.5 bg-primary/10 rounded-lg">
-          <Icon className="h-5 w-5 text-primary" />
+        <div className="p-3 bg-primary/10 rounded-xl shrink-0">
+          <Icon className="h-6 w-6 text-primary" />
         </div>
       </div>
     </div>
@@ -62,17 +73,17 @@ interface StatusBadgeProps {
 }
 
 const badgeVariants: Record<BadgeVariant, string> = {
-  success: "bg-green-100 text-green-700 border-green-200",
-  warning: "bg-amber-100 text-amber-700 border-amber-200",
-  error: "bg-red-100 text-red-700 border-red-200",
-  info: "bg-blue-100 text-blue-700 border-blue-200",
-  default: "bg-gray-100 text-gray-700 border-gray-200",
+  success: "bg-emerald-50 text-emerald-700 border-emerald-200/50",
+  warning: "bg-amber-50 text-amber-700 border-amber-200/50",
+  error: "bg-red-50 text-red-700 border-red-200/50",
+  info: "bg-blue-50 text-blue-700 border-blue-200/50",
+  default: "bg-gray-50 text-gray-700 border-gray-200/50",
 };
 
 export function StatusBadge({ variant = "default", children, className }: StatusBadgeProps) {
   return (
     <span className={cn(
-      "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border",
+      "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border tracking-wide",
       badgeVariants[variant],
       className
     )}>
@@ -96,20 +107,20 @@ interface EmptyStateProps {
 export function EmptyState({ icon: Icon, title, description, action, className }: EmptyStateProps) {
   return (
     <div className={cn(
-      "flex flex-col items-center justify-center py-12 px-4 text-center",
+      "flex flex-col items-center justify-center py-16 px-6 text-center",
       className
     )}>
-      <div className="p-4 bg-muted rounded-full mb-4">
-        <Icon className="h-8 w-8 text-muted-foreground" />
+      <div className="p-4 bg-muted/50 rounded-2xl mb-5">
+        <Icon className="h-10 w-10 text-muted-foreground/70" />
       </div>
-      <h3 className="text-lg font-semibold mb-1">{title}</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
       {description && (
-        <p className="text-sm text-muted-foreground max-w-sm mb-4">{description}</p>
+        <p className="text-sm text-muted-foreground max-w-sm mb-6 leading-relaxed">{description}</p>
       )}
       {action && (
         <button
           onClick={action.onClick}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+          className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
         >
           {action.label}
         </button>
@@ -128,15 +139,15 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, description, actions, className }: PageHeaderProps) {
   return (
-    <div className={cn("flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6", className)}>
+    <div className={cn("flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8", className)}>
       <div>
-        <h1 className="text-2xl font-bold">{title}</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
         {description && (
-          <p className="text-muted-foreground mt-1">{description}</p>
+          <p className="text-muted-foreground mt-1.5 text-sm">{description}</p>
         )}
       </div>
       {actions && (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {actions}
         </div>
       )}
@@ -152,15 +163,15 @@ interface TableSkeletonProps {
 
 export function TableSkeleton({ rows = 5, columns = 5 }: TableSkeletonProps) {
   return (
-    <div className="bg-card rounded-xl border overflow-hidden">
-      <div className="p-4 border-b">
-        <div className="skeleton h-6 w-48 rounded" />
+    <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-soft">
+      <div className="p-5 border-b border-border/50">
+        <div className="skeleton h-6 w-52 rounded-lg" />
       </div>
-      <div className="divide-y">
+      <div className="divide-y divide-border/50">
         {Array.from({ length: rows }).map((_, i) => (
-          <div key={i} className="flex items-center gap-4 p-4">
+          <div key={i} className="flex items-center gap-4 p-5">
             {Array.from({ length: columns }).map((_, j) => (
-              <div key={j} className="skeleton h-4 flex-1 rounded" />
+              <div key={j} className="skeleton h-4 flex-1 rounded-lg" />
             ))}
           </div>
         ))}
@@ -181,17 +192,17 @@ interface SectionCardProps {
 
 export function SectionCard({ title, description, children, actions, className, noPadding }: SectionCardProps) {
   return (
-    <div className={cn("bg-card rounded-xl border shadow-sm", className)}>
+    <div className={cn("bg-card rounded-2xl border border-border/50 shadow-soft", className)}>
       {(title || actions) && (
-        <div className="flex items-center justify-between px-5 py-4 border-b">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-border/50">
           <div>
-            {title && <h3 className="font-semibold">{title}</h3>}
-            {description && <p className="text-sm text-muted-foreground mt-0.5">{description}</p>}
+            {title && <h3 className="font-semibold text-base">{title}</h3>}
+            {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
           </div>
           {actions}
         </div>
       )}
-      <div className={noPadding ? "" : "p-5"}>
+      <div className={noPadding ? "" : "p-6"}>
         {children}
       </div>
     </div>
@@ -225,22 +236,22 @@ export function ActionMenu({ items }: ActionMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-muted">
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-elevated border-border/50">
         {items.map((item, index) => (
           <div key={index}>
-            {item.separator && index > 0 && <DropdownMenuSeparator />}
+            {item.separator && index > 0 && <DropdownMenuSeparator className="bg-border/50" />}
             <DropdownMenuItem
               onClick={item.onClick}
               className={cn(
-                "cursor-pointer",
-                item.variant === "destructive" && "text-destructive"
+                "cursor-pointer rounded-lg mx-1 my-0.5",
+                item.variant === "destructive" && "text-destructive focus:text-destructive"
               )}
             >
-              {item.icon && <item.icon className="h-4 w-4 mr-2" />}
+              {item.icon && <item.icon className="h-4 w-4 mr-2.5" />}
               {item.label}
             </DropdownMenuItem>
           </div>

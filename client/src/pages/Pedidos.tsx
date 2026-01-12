@@ -37,12 +37,13 @@ const statusConfig: Record<OrderStatus, {
   variant: "success" | "warning" | "error" | "info" | "default";
   icon: typeof Clock;
   color: string;
+  bgColor: string;
 }> = {
-  new: { label: "Novo", variant: "info", icon: Clock, color: "text-blue-600 bg-blue-100" },
-  preparing: { label: "Preparando", variant: "warning", icon: ChefHat, color: "text-amber-600 bg-amber-100" },
-  ready: { label: "Pronto", variant: "success", icon: Package, color: "text-green-600 bg-green-100" },
-  completed: { label: "Finalizado", variant: "default", icon: CheckCircle, color: "text-gray-600 bg-gray-100" },
-  cancelled: { label: "Cancelado", variant: "error", icon: XCircle, color: "text-red-600 bg-red-100" },
+  new: { label: "Novo", variant: "info", icon: Clock, color: "text-blue-600", bgColor: "bg-blue-50" },
+  preparing: { label: "Preparando", variant: "warning", icon: ChefHat, color: "text-amber-600", bgColor: "bg-amber-50" },
+  ready: { label: "Pronto", variant: "success", icon: Package, color: "text-emerald-600", bgColor: "bg-emerald-50" },
+  completed: { label: "Finalizado", variant: "default", icon: CheckCircle, color: "text-gray-600", bgColor: "bg-gray-50" },
+  cancelled: { label: "Cancelado", variant: "error", icon: XCircle, color: "text-red-600", bgColor: "bg-red-50" },
 };
 
 const paymentMethodLabels: Record<string, { label: string; icon: typeof CreditCard }> = {
@@ -146,7 +147,7 @@ export default function Pedidos() {
         title="Pedidos"
         description="Gerencie os pedidos do seu estabelecimento"
         actions={
-          <Button variant="outline" onClick={() => refetch()}>
+          <Button variant="outline" onClick={() => refetch()} className="rounded-xl border-border/50 hover:bg-accent">
             <RefreshCw className={cn("h-4 w-4 mr-2", isLoading && "animate-spin")} />
             Atualizar
           </Button>
@@ -154,49 +155,49 @@ export default function Pedidos() {
       />
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as OrderStatus | "all")}>
-        <TabsList className="mb-6 flex-wrap h-auto gap-1">
-          <TabsTrigger value="new" className="relative">
+        <TabsList className="mb-8 flex-wrap h-auto gap-2 bg-muted/50 p-1.5 rounded-xl">
+          <TabsTrigger value="new" className="relative rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
             Novos
             {orderCounts.new > 0 && (
-              <span className="ml-2 px-1.5 py-0.5 text-xs bg-blue-600 text-white rounded-full">
+              <span className="ml-2 px-2 py-0.5 text-xs bg-blue-600 text-white rounded-full font-semibold">
                 {orderCounts.new}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="preparing">
+          <TabsTrigger value="preparing" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
             Em preparo
             {orderCounts.preparing > 0 && (
-              <span className="ml-2 px-1.5 py-0.5 text-xs bg-amber-600 text-white rounded-full">
+              <span className="ml-2 px-2 py-0.5 text-xs bg-amber-500 text-white rounded-full font-semibold">
                 {orderCounts.preparing}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="ready">
+          <TabsTrigger value="ready" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
             Prontos
             {orderCounts.ready > 0 && (
-              <span className="ml-2 px-1.5 py-0.5 text-xs bg-green-600 text-white rounded-full">
+              <span className="ml-2 px-2 py-0.5 text-xs bg-emerald-500 text-white rounded-full font-semibold">
                 {orderCounts.ready}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="completed">Finalizados</TabsTrigger>
-          <TabsTrigger value="cancelled">Cancelados</TabsTrigger>
+          <TabsTrigger value="completed" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">Finalizados</TabsTrigger>
+          <TabsTrigger value="cancelled" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">Cancelados</TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-0">
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-card rounded-xl border p-4">
-                  <div className="skeleton h-6 w-24 rounded mb-3" />
-                  <div className="skeleton h-4 w-full rounded mb-2" />
-                  <div className="skeleton h-4 w-2/3 rounded mb-4" />
-                  <div className="skeleton h-10 w-full rounded" />
+                <div key={i} className="bg-card rounded-2xl border border-border/50 p-5 shadow-soft">
+                  <div className="skeleton h-6 w-28 rounded-lg mb-4" />
+                  <div className="skeleton h-5 w-full rounded-lg mb-3" />
+                  <div className="skeleton h-4 w-2/3 rounded-lg mb-5" />
+                  <div className="skeleton h-11 w-full rounded-xl" />
                 </div>
               ))}
             </div>
           ) : orders && orders.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {orders.map((order) => {
                 const config = statusConfig[order.status as OrderStatus];
                 const nextAction = getNextAction(order.status as OrderStatus);
@@ -205,16 +206,18 @@ export default function Pedidos() {
                 return (
                   <div
                     key={order.id}
-                    className="bg-card rounded-xl border overflow-hidden hover:shadow-md transition-shadow"
+                    className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-200"
                   >
                     {/* Header */}
-                    <div className={cn("px-4 py-3 flex items-center justify-between", config.color)}>
-                      <div className="flex items-center gap-2">
-                        <config.icon className="h-4 w-4" />
-                        <span className="font-semibold">#{order.orderNumber}</span>
+                    <div className={cn("px-5 py-4 flex items-center justify-between", config.bgColor)}>
+                      <div className="flex items-center gap-2.5">
+                        <div className={cn("p-2 rounded-xl bg-white/80", config.color)}>
+                          <config.icon className="h-4 w-4" />
+                        </div>
+                        <span className={cn("font-bold text-lg", config.color)}>#{order.orderNumber}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-sm">
-                        <Clock className="h-3 w-3" />
+                      <div className={cn("flex items-center gap-1.5 text-sm font-medium", config.color)}>
+                        <Clock className="h-3.5 w-3.5" />
                         {formatDistanceToNow(new Date(order.createdAt), {
                           addSuffix: false,
                           locale: ptBR,
@@ -223,36 +226,36 @@ export default function Pedidos() {
                     </div>
 
                     {/* Content */}
-                    <div className="p-4">
+                    <div className="p-5">
                       {/* Customer info */}
                       {order.customerName && (
-                        <p className="font-medium mb-1">{order.customerName}</p>
+                        <p className="font-semibold text-base mb-2">{order.customerName}</p>
                       )}
                       
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-                        <span className="flex items-center gap-1">
-                          <PaymentIcon className="h-3 w-3" />
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                        <span className="flex items-center gap-1.5">
+                          <PaymentIcon className="h-4 w-4" />
                           {paymentMethodLabels[order.paymentMethod]?.label}
                         </span>
-                        <span className="capitalize">
+                        <span className="px-2 py-0.5 bg-muted/50 rounded-md text-xs font-medium capitalize">
                           {order.deliveryType === "delivery" ? "Entrega" : "Retirada"}
                         </span>
                       </div>
 
                       {/* Total */}
-                      <div className="flex items-center justify-between py-2 border-t">
-                        <span className="text-sm text-muted-foreground">Total</span>
-                        <span className="text-lg font-bold text-primary">
+                      <div className="flex items-center justify-between py-3 border-t border-border/50">
+                        <span className="text-sm text-muted-foreground font-medium">Total</span>
+                        <span className="text-xl font-bold text-primary">
                           {formatCurrency(order.total)}
                         </span>
                       </div>
 
                       {/* Actions */}
-                      <div className="flex gap-2 mt-3">
+                      <div className="flex gap-3 mt-4">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="flex-1"
+                          className="flex-1 h-10 rounded-xl border-border/50 hover:bg-accent"
                           onClick={() => setSelectedOrder(order.id)}
                         >
                           Ver detalhes
@@ -260,7 +263,7 @@ export default function Pedidos() {
                         {nextAction && (
                           <Button
                             size="sm"
-                            className="flex-1"
+                            className="flex-1 h-10 rounded-xl shadow-sm"
                             onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
                             disabled={updateStatusMutation.isPending}
                           >
@@ -270,14 +273,14 @@ export default function Pedidos() {
                         {order.status !== "completed" && order.status !== "cancelled" && (
                           <Button
                             variant="ghost"
-                            size="sm"
-                            className="text-destructive hover:text-destructive"
+                            size="icon"
+                            className="h-10 w-10 rounded-xl text-destructive hover:text-destructive hover:bg-destructive/10"
                             onClick={() => {
                               setOrderToCancel(order.id);
                               setCancelDialogOpen(true);
                             }}
                           >
-                            <XCircle className="h-4 w-4" />
+                            <XCircle className="h-5 w-5" />
                           </Button>
                         )}
                       </div>
@@ -304,9 +307,9 @@ export default function Pedidos() {
 
       {/* Order Details Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Pedido #{orderDetails?.orderNumber}</DialogTitle>
+            <DialogTitle className="text-xl">Pedido #{orderDetails?.orderNumber}</DialogTitle>
             <DialogDescription>
               {orderDetails && (
                 <StatusBadge variant={statusConfig[orderDetails.status as OrderStatus]?.variant}>
@@ -317,23 +320,23 @@ export default function Pedidos() {
           </DialogHeader>
 
           {orderDetails && (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {/* Customer */}
               {(orderDetails.customerName || orderDetails.customerPhone) && (
-                <div className="space-y-2">
-                  <h4 className="font-medium text-sm text-muted-foreground">Cliente</h4>
+                <div className="space-y-2 p-4 bg-muted/30 rounded-xl">
+                  <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Cliente</h4>
                   {orderDetails.customerName && (
-                    <p className="font-medium">{orderDetails.customerName}</p>
+                    <p className="font-semibold text-base">{orderDetails.customerName}</p>
                   )}
                   {orderDetails.customerPhone && (
-                    <p className="text-sm flex items-center gap-1">
-                      <Phone className="h-3 w-3" />
+                    <p className="text-sm flex items-center gap-2 text-muted-foreground">
+                      <Phone className="h-4 w-4" />
                       {orderDetails.customerPhone}
                     </p>
                   )}
                   {orderDetails.customerAddress && (
-                    <p className="text-sm flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
+                    <p className="text-sm flex items-center gap-2 text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
                       {orderDetails.customerAddress}
                     </p>
                   )}
@@ -342,14 +345,14 @@ export default function Pedidos() {
 
               {/* Items */}
               <div>
-                <h4 className="font-medium text-sm text-muted-foreground mb-2">Itens</h4>
-                <div className="space-y-2">
+                <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-3">Itens</h4>
+                <div className="space-y-3">
                   {orderDetails.items?.map((item, index) => (
-                    <div key={index} className="flex justify-between text-sm">
-                      <span>
+                    <div key={index} className="flex justify-between text-sm p-3 bg-muted/30 rounded-xl">
+                      <span className="font-medium">
                         {item.quantity}x {item.productName}
                       </span>
-                      <span className="font-medium">
+                      <span className="font-semibold">
                         {formatCurrency(item.totalPrice)}
                       </span>
                     </div>
@@ -358,35 +361,35 @@ export default function Pedidos() {
               </div>
 
               {/* Totals */}
-              <div className="border-t pt-3 space-y-1">
+              <div className="border-t border-border/50 pt-4 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Subtotal</span>
-                  <span>{formatCurrency(orderDetails.subtotal)}</span>
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="font-medium">{formatCurrency(orderDetails.subtotal)}</span>
                 </div>
                 {Number(orderDetails.deliveryFee) > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span>Taxa de entrega</span>
-                    <span>{formatCurrency(orderDetails.deliveryFee)}</span>
+                    <span className="text-muted-foreground">Taxa de entrega</span>
+                    <span className="font-medium">{formatCurrency(orderDetails.deliveryFee)}</span>
                   </div>
                 )}
-                <div className="flex justify-between font-bold">
-                  <span>Total</span>
-                  <span className="text-primary">{formatCurrency(orderDetails.total)}</span>
+                <div className="flex justify-between pt-2 border-t border-border/50">
+                  <span className="font-semibold">Total</span>
+                  <span className="text-xl font-bold text-primary">{formatCurrency(orderDetails.total)}</span>
                 </div>
               </div>
 
               {/* Notes */}
               {orderDetails.notes && (
                 <div>
-                  <h4 className="font-medium text-sm text-muted-foreground mb-1">Observações</h4>
-                  <p className="text-sm bg-muted p-2 rounded">{orderDetails.notes}</p>
+                  <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-2">Observações</h4>
+                  <p className="text-sm bg-amber-50 text-amber-800 p-4 rounded-xl border border-amber-200/50">{orderDetails.notes}</p>
                 </div>
               )}
             </div>
           )}
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setSelectedOrder(null)}>
+            <Button variant="outline" onClick={() => setSelectedOrder(null)} className="rounded-xl">
               Fechar
             </Button>
           </DialogFooter>
@@ -395,21 +398,22 @@ export default function Pedidos() {
 
       {/* Cancel Confirmation Dialog */}
       <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-        <DialogContent>
+        <DialogContent className="rounded-2xl">
           <DialogHeader>
             <DialogTitle>Cancelar pedido</DialogTitle>
             <DialogDescription>
               Tem certeza que deseja cancelar este pedido? Esta ação não pode ser desfeita.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCancelDialogOpen(false)}>
+          <DialogFooter className="gap-3">
+            <Button variant="outline" onClick={() => setCancelDialogOpen(false)} className="rounded-xl">
               Voltar
             </Button>
             <Button
               variant="destructive"
               onClick={handleCancelOrder}
               disabled={updateStatusMutation.isPending}
+              className="rounded-xl"
             >
               {updateStatusMutation.isPending ? "Cancelando..." : "Cancelar Pedido"}
             </Button>
