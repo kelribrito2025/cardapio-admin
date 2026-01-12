@@ -1,0 +1,63 @@
+# Cardápio Admin - TODO
+
+## Layout e Navegação
+- [x] Sidebar fixa com navegação (Dashboard, Catálogo, Pedidos, Estoque, Promoções/Cupons, Clientes, Relatórios, Configurações)
+- [x] Topbar com busca global, toggle loja aberta/fechada, notificações e perfil
+- [x] Layout responsivo (desktop, tablet, mobile)
+
+## Dashboard
+- [x] Cards KPI (pedidos hoje, faturamento, ticket médio, itens em falta)
+- [x] Gráfico de pedidos/faturamento últimos 7 dias
+- [x] Lista de pedidos recentes com status e tempo
+- [x] Skeleton loading nos cards
+
+## Catálogo de Produtos
+- [x] Lista de produtos em tabela estilo iFood
+- [x] Filtros (busca por nome, categoria, status, disponibilidade)
+- [x] Ordenação (mais vendidos, nome, preço)
+- [x] Ações (editar, duplicar, pausar, arquivar, excluir)
+- [x] Toggle ativo/inativo direto na linha
+- [x] Badges de status e estoque
+- [x] Estados vazios com CTA
+- [ ] Paginação
+
+## Criar/Editar Produto
+- [x] Formulário com nome, descrição, categoria, preço
+- [x] Upload de fotos (via URL)
+- [x] Disponibilidade (ativo/pausado)
+- [x] Controle de estoque
+- [x] Complementos/Adicionais com limites (mínimo/máximo)
+- [x] Tempo de preparo
+- [x] Preview do card do produto
+- [x] Validação por campo
+- [x] Botão Salvar sticky
+
+## Categorias
+- [x] Adicionar categoria
+- [ ] Reordenar categorias (drag and drop)
+- [ ] Editar/Excluir categoria
+
+## Gestão de Pedidos
+- [x] Tabs por status (Novos, Em preparo, Prontos, Finalizados, Cancelados)
+- [x] Cards de pedido com tempo, status, itens, valor
+- [x] Ações (Aceitar, Iniciar preparo, Concluir, Cancelar)
+- [x] Modal de detalhes do pedido
+- [ ] Atualização em tempo real (WebSocket)
+
+## Configurações do Estabelecimento
+- [x] Nome do restaurante
+- [x] Upload de logotipo (via URL)
+- [x] Upload de imagem de capa (via URL)
+- [x] Endereço completo (rua, número, complemento, bairro, cidade, estado)
+
+## Configurações de Atendimento
+- [x] Link do cardápio personalizado
+- [x] WhatsApp para receber pedidos
+- [x] Formas de pagamento (Dinheiro, Cartão, Pix, Boleto)
+- [x] Tipos de entrega (Entrega, Retirada)
+
+## Funcionalidades Futuras (Placeholder)
+- [ ] Estoque (página dedicada)
+- [ ] Promoções/Cupons
+- [ ] Clientes
+- [ ] Relatórios
