@@ -613,7 +613,7 @@ export default function Catalogo() {
               className="rounded-xl border-border/50 hover:bg-accent"
             >
               <Layers className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Reordenar Categorias</span>
+              <span className="hidden sm:inline">Reordenar</span>
             </Button>
             <Button
               variant="outline"
