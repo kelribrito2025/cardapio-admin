@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import Catalogo from "./pages/Catalogo";
 import ProductForm from "./pages/ProductForm";
 import Pedidos from "./pages/Pedidos";
+import Estoque from "./pages/Estoque";
 import Configuracoes from "./pages/Configuracoes";
 
 function Router() {
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/catalogo/novo" component={ProductForm} />
       <Route path="/catalogo/editar/:id" component={ProductForm} />
       <Route path="/pedidos" component={Pedidos} />
+      <Route path="/estoque" component={Estoque} />
       <Route path="/configuracoes" component={Configuracoes} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

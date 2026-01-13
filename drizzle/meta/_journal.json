@@ -15,6 +15,13 @@
       "when": 1768257965420,
       "tag": "0001_natural_catseye",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1768345719171,
+      "tag": "0002_modern_captain_cross",
+      "breakpoints": true
     }
   ]
 }

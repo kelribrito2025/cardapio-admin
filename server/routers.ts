@@ -416,6 +416,154 @@ export const appRouter = router({
       }),
   }),
 
+  // ============ STOCK ============
+  stock: router({
+    // Stock Categories
+    listCategories: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getStockCategoriesByEstablishment(input.establishmentId);
+      }),
+    
+    createCategory: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        name: z.string().min(1),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createStockCategory(input);
+        return { id };
+      }),
+    
+    updateCategory: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().min(1).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await db.updateStockCategory(id, data);
+        return { success: true };
+      }),
+    
+    deleteCategory: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteStockCategory(input.id);
+        return { success: true };
+      }),
+    
+    // Stock Items
+    listItems: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        search: z.string().optional(),
+        categoryId: z.number().optional(),
+        status: z.enum(["ok", "low", "critical", "out_of_stock"]).optional(),
+      }))
+      .query(async ({ input }) => {
+        const { establishmentId, ...filters } = input;
+        return db.getStockItemsByEstablishment(establishmentId, filters);
+      }),
+    
+    getItem: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return db.getStockItemById(input.id);
+      }),
+    
+    createItem: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        categoryId: z.number().nullable().optional(),
+        name: z.string().min(1),
+        currentQuantity: z.string().default("0"),
+        minQuantity: z.string().default("0"),
+        maxQuantity: z.string().nullable().optional(),
+        unit: z.enum(["kg", "g", "L", "ml", "unidade", "pacote", "caixa", "dúzia"]).default("unidade"),
+        costPerUnit: z.string().nullable().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createStockItem(input);
+        return { id };
+      }),
+    
+    updateItem: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        categoryId: z.number().nullable().optional(),
+        name: z.string().min(1).optional(),
+        currentQuantity: z.string().optional(),
+        minQuantity: z.string().optional(),
+        maxQuantity: z.string().nullable().optional(),
+        unit: z.enum(["kg", "g", "L", "ml", "unidade", "pacote", "caixa", "dúzia"]).optional(),
+        costPerUnit: z.string().nullable().optional(),
+        isActive: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await db.updateStockItem(id, data);
+        return { success: true };
+      }),
+    
+    deleteItem: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteStockItem(input.id);
+        return { success: true };
+      }),
+    
+    markOutOfStock: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.updateStockItem(input.id, { currentQuantity: "0", status: "out_of_stock" });
+        return { success: true };
+      }),
+    
+    // Stock Movements
+    addMovement: protectedProcedure
+      .input(z.object({
+        stockItemId: z.number(),
+        type: z.enum(["entry", "exit", "adjustment", "loss"]),
+        quantity: z.string(),
+        reason: z.string().optional(),
+        orderId: z.number().nullable().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.addStockMovement({
+          ...input,
+          userId: ctx.user.id,
+          previousQuantity: "0", // Will be calculated in db function
+          newQuantity: "0", // Will be calculated in db function
+        });
+        return { id };
+      }),
+    
+    listMovements: protectedProcedure
+      .input(z.object({
+        stockItemId: z.number(),
+        limit: z.number().optional().default(50),
+      }))
+      .query(async ({ input }) => {
+        return db.getStockMovementsByItem(input.stockItemId, input.limit);
+      }),
+    
+    recentMovements: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        limit: z.number().optional().default(20),
+      }))
+      .query(async ({ input }) => {
+        return db.getRecentStockMovements(input.establishmentId, input.limit);
+      }),
+    
+    summary: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getStockSummary(input.establishmentId);
+      }),
+  }),
+
   // ============ UPLOAD ============
   upload: router({
     image: protectedProcedure

@@ -150,3 +150,17 @@
 - [x] Tornar área do item (nome, imagem, descrição, preço) clicável para ir à página de edição
 - [x] Remover botão de editar (ícone de lápis) da lista de produtos
 - [x] Manter botões de toggle, duplicar e excluir
+
+## Página de Controle de Estoque
+- [x] Criar tabelas no banco: stockCategories, stockItems e stockMovements
+- [x] Criar endpoints tRPC: list, create, update, delete para itens de estoque
+- [x] Criar endpoints tRPC: addMovement, listMovements para histórico
+- [x] Criar página de Estoque com listagem em cards/tabela
+- [x] Implementar status visual (verde/amarelo/vermelho) com barras de progressão
+- [x] Adicionar filtros por categoria, status e busca por nome
+- [x] Criar modal para adicionar novo item
+- [x] Criar modal para editar quantidade/adicionar estoque
+- [x] Criar modal para ver histórico de movimentações
+- [x] Implementar ação "Marcar como em falta"
+- [x] Garantir responsividade (mobile/tablet/desktop)
+- [x] Adicionar feedback visual após atualizações

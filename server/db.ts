@@ -8,7 +8,10 @@ import {
   complementGroups, InsertComplementGroup,
   complementItems, InsertComplementItem,
   orders, InsertOrder, Order,
-  orderItems, InsertOrderItem
+  orderItems, InsertOrderItem,
+  stockCategories, InsertStockCategory, StockCategory,
+  stockItems, InsertStockItem, StockItem,
+  stockMovements, InsertStockMovement, StockMovement
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -589,4 +592,222 @@ export async function getWeeklyRevenue(establishmentId: number) {
   const lastWeekTotal = lastWeek.reduce((sum, val) => sum + val, 0);
   
   return { thisWeek, lastWeek, thisWeekTotal, lastWeekTotal };
+}
+
+
+// ============ STOCK CATEGORY FUNCTIONS ============
+export async function getStockCategoriesByEstablishment(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(stockCategories)
+    .where(eq(stockCategories.establishmentId, establishmentId))
+    .orderBy(asc(stockCategories.sortOrder));
+}
+
+export async function createStockCategory(data: InsertStockCategory) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(stockCategories).values(data);
+  return result[0].insertId;
+}
+
+export async function updateStockCategory(id: number, data: Partial<InsertStockCategory>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(stockCategories).set(data).where(eq(stockCategories.id, id));
+}
+
+export async function deleteStockCategory(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(stockCategories).where(eq(stockCategories.id, id));
+}
+
+// ============ STOCK ITEM FUNCTIONS ============
+export async function getStockItemsByEstablishment(
+  establishmentId: number,
+  filters?: {
+    search?: string;
+    categoryId?: number;
+    status?: "ok" | "low" | "critical" | "out_of_stock";
+  }
+) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const conditions = [eq(stockItems.establishmentId, establishmentId)];
+  
+  if (filters?.search) {
+    conditions.push(like(stockItems.name, `%${filters.search}%`));
+  }
+  if (filters?.categoryId) {
+    conditions.push(eq(stockItems.categoryId, filters.categoryId));
+  }
+  if (filters?.status) {
+    conditions.push(eq(stockItems.status, filters.status));
+  }
+  
+  return db.select().from(stockItems)
+    .where(and(...conditions))
+    .orderBy(asc(stockItems.name));
+}
+
+export async function getStockItemById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(stockItems).where(eq(stockItems.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createStockItem(data: InsertStockItem) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Calculate initial status based on quantity
+  const status = calculateStockStatus(
+    Number(data.currentQuantity || 0),
+    Number(data.minQuantity || 0),
+    data.maxQuantity ? Number(data.maxQuantity) : undefined
+  );
+  
+  const result = await db.insert(stockItems).values({ ...data, status });
+  return result[0].insertId;
+}
+
+export async function updateStockItem(id: number, data: Partial<InsertStockItem>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // If quantity is being updated, recalculate status
+  if (data.currentQuantity !== undefined || data.minQuantity !== undefined) {
+    const existing = await getStockItemById(id);
+    if (existing) {
+      const currentQty = data.currentQuantity !== undefined ? Number(data.currentQuantity) : Number(existing.currentQuantity);
+      const minQty = data.minQuantity !== undefined ? Number(data.minQuantity) : Number(existing.minQuantity);
+      const maxQty = data.maxQuantity !== undefined ? Number(data.maxQuantity) : (existing.maxQuantity ? Number(existing.maxQuantity) : undefined);
+      data.status = calculateStockStatus(currentQty, minQty, maxQty);
+    }
+  }
+  
+  await db.update(stockItems).set(data).where(eq(stockItems.id, id));
+}
+
+export async function deleteStockItem(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Also delete all movements for this item
+  await db.delete(stockMovements).where(eq(stockMovements.stockItemId, id));
+  await db.delete(stockItems).where(eq(stockItems.id, id));
+}
+
+function calculateStockStatus(
+  currentQty: number,
+  minQty: number,
+  maxQty?: number
+): "ok" | "low" | "critical" | "out_of_stock" {
+  if (currentQty <= 0) return "out_of_stock";
+  if (currentQty <= minQty * 0.5) return "critical";
+  if (currentQty <= minQty) return "low";
+  return "ok";
+}
+
+// ============ STOCK MOVEMENT FUNCTIONS ============
+export async function addStockMovement(data: InsertStockMovement) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Get current item
+  const item = await getStockItemById(data.stockItemId);
+  if (!item) throw new Error("Stock item not found");
+  
+  const previousQty = Number(item.currentQuantity);
+  let newQty: number;
+  const movementQty = Number(data.quantity);
+  
+  if (data.type === "entry") {
+    newQty = previousQty + movementQty;
+  } else if (data.type === "exit" || data.type === "loss") {
+    newQty = Math.max(0, previousQty - movementQty);
+  } else {
+    // adjustment - quantity is the new absolute value
+    newQty = movementQty;
+  }
+  
+  // Insert movement record
+  const result = await db.insert(stockMovements).values({
+    ...data,
+    previousQuantity: previousQty.toString(),
+    newQuantity: newQty.toString(),
+  });
+  
+  // Update item quantity and status
+  const status = calculateStockStatus(newQty, Number(item.minQuantity), item.maxQuantity ? Number(item.maxQuantity) : undefined);
+  await db.update(stockItems)
+    .set({ currentQuantity: newQty.toString(), status })
+    .where(eq(stockItems.id, data.stockItemId));
+  
+  return result[0].insertId;
+}
+
+export async function getStockMovementsByItem(stockItemId: number, limit: number = 50) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(stockMovements)
+    .where(eq(stockMovements.stockItemId, stockItemId))
+    .orderBy(desc(stockMovements.createdAt))
+    .limit(limit);
+}
+
+export async function getRecentStockMovements(establishmentId: number, limit: number = 20) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Join with stockItems to filter by establishment
+  const items = await db.select({ id: stockItems.id })
+    .from(stockItems)
+    .where(eq(stockItems.establishmentId, establishmentId));
+  
+  if (items.length === 0) return [];
+  
+  const itemIds = items.map(i => i.id);
+  
+  // Get movements for these items
+  const movements = await db.select({
+    movement: stockMovements,
+    itemName: stockItems.name,
+    itemUnit: stockItems.unit
+  })
+    .from(stockMovements)
+    .innerJoin(stockItems, eq(stockMovements.stockItemId, stockItems.id))
+    .where(sql`${stockMovements.stockItemId} IN (${sql.join(itemIds.map(id => sql`${id}`), sql`, `)})`)
+    .orderBy(desc(stockMovements.createdAt))
+    .limit(limit);
+  
+  return movements;
+}
+
+export async function getStockSummary(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return { total: 0, ok: 0, low: 0, critical: 0, outOfStock: 0 };
+  
+  const items = await db.select().from(stockItems)
+    .where(and(
+      eq(stockItems.establishmentId, establishmentId),
+      eq(stockItems.isActive, true)
+    ));
+  
+  return {
+    total: items.length,
+    ok: items.filter(i => i.status === "ok").length,
+    low: items.filter(i => i.status === "low").length,
+    critical: items.filter(i => i.status === "critical").length,
+    outOfStock: items.filter(i => i.status === "out_of_stock").length,
+  };
 }

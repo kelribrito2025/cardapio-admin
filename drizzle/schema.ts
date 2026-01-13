@@ -153,3 +153,54 @@ export const orderItems = mysqlTable("orderItems", {
 
 export type OrderItem = typeof orderItems.$inferSelect;
 export type InsertOrderItem = typeof orderItems.$inferInsert;
+
+
+// Stock item categories
+export const stockCategories = mysqlTable("stockCategories", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  sortOrder: int("sortOrder").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type StockCategory = typeof stockCategories.$inferSelect;
+export type InsertStockCategory = typeof stockCategories.$inferInsert;
+
+// Stock items (ingredients and supplies)
+export const stockItems = mysqlTable("stockItems", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  categoryId: int("categoryId"),
+  name: varchar("name", { length: 255 }).notNull(),
+  currentQuantity: decimal("currentQuantity", { precision: 10, scale: 2 }).default("0").notNull(),
+  minQuantity: decimal("minQuantity", { precision: 10, scale: 2 }).default("0").notNull(),
+  maxQuantity: decimal("maxQuantity", { precision: 10, scale: 2 }),
+  unit: mysqlEnum("unit", ["kg", "g", "L", "ml", "unidade", "pacote", "caixa", "dúzia"]).default("unidade").notNull(),
+  costPerUnit: decimal("costPerUnit", { precision: 10, scale: 2 }),
+  status: mysqlEnum("status", ["ok", "low", "critical", "out_of_stock"]).default("ok").notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type StockItem = typeof stockItems.$inferSelect;
+export type InsertStockItem = typeof stockItems.$inferInsert;
+
+// Stock movements (history of entries and exits)
+export const stockMovements = mysqlTable("stockMovements", {
+  id: int("id").autoincrement().primaryKey(),
+  stockItemId: int("stockItemId").notNull(),
+  type: mysqlEnum("type", ["entry", "exit", "adjustment", "loss"]).notNull(),
+  quantity: decimal("quantity", { precision: 10, scale: 2 }).notNull(),
+  previousQuantity: decimal("previousQuantity", { precision: 10, scale: 2 }).notNull(),
+  newQuantity: decimal("newQuantity", { precision: 10, scale: 2 }).notNull(),
+  reason: varchar("reason", { length: 255 }),
+  orderId: int("orderId"),
+  userId: int("userId"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type StockMovement = typeof stockMovements.$inferSelect;
+export type InsertStockMovement = typeof stockMovements.$inferInsert;
