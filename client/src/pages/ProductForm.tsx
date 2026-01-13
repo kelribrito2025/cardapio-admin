@@ -509,12 +509,12 @@ export default function ProductForm() {
                     </p>
                   </div>
                   <Switch
-                    checked={!hasStock}
-                    onCheckedChange={(checked) => setHasStock(!checked)}
+                    checked={hasStock}
+                    onCheckedChange={(checked) => setHasStock(checked)}
                   />
                 </div>
 
-                {!hasStock && (
+                {hasStock && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <div>
                       <Label htmlFor="stockQuantity" className="text-sm font-semibold">Quantidade em estoque</Label>

@@ -80,3 +80,4 @@
 - [x] Renomear "Catálogo" para "Cardápio" no menu lateral
 - [x] Corrigir erro 404 ao clicar em editar produto
 - [x] Implementar upload de imagens real (selecionar arquivos do computador em vez de URL)
+- [x] Corrigir badge "Sem estoque" mostrando incorretamente quando produto tem estoque

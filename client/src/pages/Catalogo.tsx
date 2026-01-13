@@ -343,7 +343,7 @@ export default function Catalogo() {
                               {product.status === "paused" ? "Pausado" : "Arquivado"}
                             </StatusBadge>
                           )}
-                          {!product.hasStock && (
+                          {product.hasStock && product.stockQuantity !== null && product.stockQuantity <= 0 && (
                             <StatusBadge variant="error">Sem estoque</StatusBadge>
                           )}
                         </div>
