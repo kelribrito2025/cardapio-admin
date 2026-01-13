@@ -801,7 +801,7 @@ export default function Catalogo() {
                     </div>
                   )}
                   <span className="text-sm text-muted-foreground font-medium">
-                    {categoryProducts.length} {categoryProducts.length === 1 ? "produto" : "produtos"}
+                    {categoryProducts.length} {categoryProducts.length === 1 ? "ítem" : "ítens"}
                   </span>
                 </div>
                 <DndContext
