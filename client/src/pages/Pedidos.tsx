@@ -54,7 +54,7 @@ const paymentMethodLabels: Record<string, { label: string; icon: typeof CreditCa
 };
 
 export default function Pedidos() {
-  const { data: establishment } = trpc.establishment.get.useQuery();
+  const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<OrderStatus | "all">("new");
   const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
@@ -67,7 +67,7 @@ export default function Pedidos() {
     }
   }, [establishment]);
 
-  // Fetch orders
+  // All hooks MUST be called before any early return
   const { data: orders, refetch, isLoading } = trpc.order.list.useQuery(
     { 
       establishmentId: establishmentId!,
@@ -75,17 +75,15 @@ export default function Pedidos() {
     },
     { 
       enabled: !!establishmentId,
-      refetchInterval: 30000, // Refresh every 30 seconds
+      refetchInterval: 30000,
     }
   );
 
-  // Fetch order details
   const { data: orderDetails } = trpc.order.get.useQuery(
     { id: selectedOrder! },
     { enabled: !!selectedOrder }
   );
 
-  // Update status mutation
   const updateStatusMutation = trpc.order.updateStatus.useMutation({
     onSuccess: () => {
       refetch();
@@ -93,6 +91,26 @@ export default function Pedidos() {
     },
     onError: () => toast.error("Erro ao atualizar status"),
   });
+
+  // Se não há estabelecimento, mostrar tela de criação
+  if (!establishmentLoading && !establishment) {
+    return (
+      <AdminLayout>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+          <div className="p-6 bg-muted/30 rounded-3xl mb-6">
+            <ClipboardList className="h-16 w-16 text-muted-foreground" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">Configure seu estabelecimento</h2>
+          <p className="text-muted-foreground mb-6 max-w-md">
+            Antes de gerenciar pedidos, você precisa configurar as informações do seu estabelecimento.
+          </p>
+          <Button onClick={() => window.location.href = "/configuracoes"} className="rounded-xl">
+            Ir para Configurações
+          </Button>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   const formatCurrency = (value: string | number) => {
     return new Intl.NumberFormat("pt-BR", {

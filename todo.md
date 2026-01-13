@@ -73,3 +73,7 @@
 - [x] Aplicar novo estilo aos Pedidos
 - [x] Aplicar novo estilo às Configurações
 - [x] Aplicar novo estilo ao ProductForm
+
+
+## Bugs
+- [x] Corrigir erro "establishment.get data is undefined" na página /catalogo

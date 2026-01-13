@@ -23,7 +23,7 @@ import { ptBR } from "date-fns/locale";
 import { useEffect, useState } from "react";
 
 export default function Dashboard() {
-  const { data: establishment } = trpc.establishment.get.useQuery();
+  const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -32,6 +32,7 @@ export default function Dashboard() {
     }
   }, [establishment]);
 
+  // All hooks MUST be called before any early return
   const { data: stats, isLoading: statsLoading } = trpc.dashboard.stats.useQuery(
     { establishmentId: establishmentId! },
     { enabled: !!establishmentId }
@@ -51,6 +52,26 @@ export default function Dashboard() {
     { establishmentId: establishmentId! },
     { enabled: !!establishmentId }
   );
+
+  // Se não há estabelecimento, redirecionar para configurações
+  if (!establishmentLoading && !establishment) {
+    return (
+      <AdminLayout>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+          <div className="p-6 bg-muted/30 rounded-3xl mb-6">
+            <ShoppingBag className="h-16 w-16 text-muted-foreground" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">Bem-vindo ao Cardápio Admin!</h2>
+          <p className="text-muted-foreground mb-6 max-w-md">
+            Para começar, configure as informações do seu estabelecimento.
+          </p>
+          <a href="/configuracoes" className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90">
+            Configurar Estabelecimento
+          </a>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   // Format currency
   const formatCurrency = (value: number) => {
@@ -128,41 +149,37 @@ export default function Dashboard() {
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <defs>
-                    <linearGradient id="colorFaturamento" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#ea1d2c" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#ea1d2c" stopOpacity={0} />
+                    <linearGradient id="colorPedidos" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
                   <XAxis 
                     dataKey="date" 
-                    tick={{ fontSize: 12, fill: '#64748b' }}
-                    tickLine={false}
-                    axisLine={false}
+                    className="text-xs text-muted-foreground"
+                    tick={{ fill: 'currentColor' }}
                   />
                   <YAxis 
-                    tick={{ fontSize: 12, fill: '#64748b' }}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(value) => `R$ ${value}`}
+                    className="text-xs text-muted-foreground"
+                    tick={{ fill: 'currentColor' }}
                   />
                   <Tooltip 
-                    formatter={(value: number) => [formatCurrency(value), "Faturamento"]}
-                    contentStyle={{
-                      borderRadius: "12px",
-                      border: "none",
-                      boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
-                      padding: "12px 16px",
+                    contentStyle={{ 
+                      backgroundColor: 'var(--card)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '12px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
                     }}
-                    labelStyle={{ fontWeight: 600, marginBottom: 4 }}
                   />
                   <Area
                     type="monotone"
-                    dataKey="faturamento"
-                    stroke="#ea1d2c"
-                    strokeWidth={2.5}
+                    dataKey="pedidos"
+                    stroke="var(--primary)"
+                    strokeWidth={2}
                     fillOpacity={1}
-                    fill="url(#colorFaturamento)"
+                    fill="url(#colorPedidos)"
+                    name="Pedidos"
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -175,78 +192,58 @@ export default function Dashboard() {
         </SectionCard>
 
         {/* Recent Orders */}
-        <SectionCard title="Pedidos Recentes" noPadding>
+        <SectionCard title="Pedidos Recentes">
           {ordersLoading ? (
-            <div className="divide-y divide-border/50">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="p-5">
-                  <div className="skeleton h-5 w-28 rounded-lg mb-3" />
-                  <div className="skeleton h-4 w-20 rounded-lg" />
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center gap-4 p-3 bg-muted/30 rounded-xl">
+                  <div className="skeleton h-10 w-10 rounded-lg" />
+                  <div className="flex-1 space-y-2">
+                    <div className="skeleton h-4 w-24 rounded-lg" />
+                    <div className="skeleton h-3 w-16 rounded-lg" />
+                  </div>
                 </div>
               ))}
             </div>
           ) : recentOrders && recentOrders.length > 0 ? (
-            <div className="divide-y divide-border/50">
+            <div className="space-y-3">
               {recentOrders.map((order) => (
-                <div key={order.id} className="p-5 hover:bg-muted/30 transition-colors">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold text-base">#{order.orderNumber}</span>
-                    <StatusBadge variant={statusMap[order.status]?.variant}>
-                      {statusMap[order.status]?.label}
-                    </StatusBadge>
+                <div
+                  key={order.id}
+                  className="flex items-center gap-4 p-3 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors"
+                >
+                  <div className="p-2.5 bg-card rounded-lg border border-border/50 shadow-sm">
+                    <Package className="h-5 w-5 text-primary" />
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground flex items-center gap-1.5">
-                      <Clock className="h-3.5 w-3.5" />
-                      {formatDistanceToNow(new Date(order.createdAt), { 
-                        addSuffix: true, 
-                        locale: ptBR 
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-sm">#{order.id}</span>
+                      <StatusBadge variant={statusMap[order.status]?.variant || "default"}>
+                        {statusMap[order.status]?.label || order.status}
+                      </StatusBadge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {formatDistanceToNow(new Date(order.createdAt), {
+                        addSuffix: true,
+                        locale: ptBR,
                       })}
-                    </span>
-                    <span className="font-semibold text-primary">
-                      {formatCurrency(Number(order.total))}
-                    </span>
+                    </p>
                   </div>
+                  <span className="font-bold text-sm text-primary">
+                    {formatCurrency(Number(order.total))}
+                  </span>
                 </div>
               ))}
             </div>
           ) : (
             <EmptyState
-              icon={ShoppingBag}
+              icon={Package}
               title="Nenhum pedido"
               description="Os pedidos aparecerão aqui"
             />
           )}
         </SectionCard>
       </div>
-
-      {/* Low Stock Alert */}
-      {lowStock && lowStock.length > 0 && (
-        <SectionCard 
-          title="Produtos em Falta" 
-          className="mt-8"
-          description="Produtos que precisam de reposição"
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {lowStock.slice(0, 6).map((product) => (
-              <div 
-                key={product.id} 
-                className="flex items-center gap-4 p-4 bg-amber-50/70 border border-amber-200/50 rounded-xl transition-all hover:shadow-soft"
-              >
-                <div className="p-2.5 bg-amber-100 rounded-xl">
-                  <Package className="h-5 w-5 text-amber-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold truncate">{product.name}</p>
-                  <p className="text-sm text-amber-600 font-medium">
-                    {product.stockQuantity ?? 0} em estoque
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-      )}
     </AdminLayout>
   );
 }

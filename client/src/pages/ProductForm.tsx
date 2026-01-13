@@ -47,7 +47,7 @@ export default function ProductForm() {
   const params = useParams<{ id: string }>();
   const isEditing = !!params.id;
 
-  const { data: establishment } = trpc.establishment.get.useQuery();
+  const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
 
   // Form state
@@ -71,40 +71,22 @@ export default function ProductForm() {
     }
   }, [establishment]);
 
-  // Fetch categories
+  // All hooks MUST be called before any early return
   const { data: categories } = trpc.category.list.useQuery(
     { establishmentId: establishmentId! },
     { enabled: !!establishmentId }
   );
 
-  // Fetch product if editing
   const { data: product, isLoading: productLoading } = trpc.product.get.useQuery(
     { id: Number(params.id) },
     { enabled: isEditing && !!params.id }
   );
 
-  // Fetch complement groups if editing
   const { data: existingGroups } = trpc.complement.listGroups.useQuery(
     { productId: Number(params.id) },
     { enabled: isEditing && !!params.id }
   );
 
-  // Load product data when editing
-  useEffect(() => {
-    if (product) {
-      setName(product.name);
-      setDescription(product.description || "");
-      setCategoryId(product.categoryId ? String(product.categoryId) : "");
-      setPrice(String(product.price));
-      setImages(product.images || []);
-      setStatus(product.status === "archived" ? "paused" : product.status);
-      setHasStock(product.hasStock);
-      setStockQuantity(product.stockQuantity ? String(product.stockQuantity) : "");
-      setPrepTime(product.prepTime ? String(product.prepTime) : "");
-    }
-  }, [product]);
-
-  // Mutations
   const createMutation = trpc.product.create.useMutation({
     onSuccess: () => {
       toast.success("Produto criado com sucesso");
@@ -126,6 +108,41 @@ export default function ProductForm() {
       console.error(error);
     },
   });
+
+  // Load product data when editing
+  useEffect(() => {
+    if (product) {
+      setName(product.name);
+      setDescription(product.description || "");
+      setCategoryId(product.categoryId ? String(product.categoryId) : "");
+      setPrice(String(product.price));
+      setImages(product.images || []);
+      setStatus(product.status === "archived" ? "paused" : product.status);
+      setHasStock(product.hasStock);
+      setStockQuantity(product.stockQuantity ? String(product.stockQuantity) : "");
+      setPrepTime(product.prepTime ? String(product.prepTime) : "");
+    }
+  }, [product]);
+
+  // Se não há estabelecimento, redirecionar para configurações
+  if (!establishmentLoading && !establishment) {
+    return (
+      <AdminLayout>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+          <div className="p-6 bg-muted/30 rounded-3xl mb-6">
+            <ImagePlus className="h-16 w-16 text-muted-foreground" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">Configure seu estabelecimento</h2>
+          <p className="text-muted-foreground mb-6 max-w-md">
+            Antes de adicionar produtos, você precisa configurar as informações do seu estabelecimento.
+          </p>
+          <Button onClick={() => navigate("/configuracoes")} className="rounded-xl">
+            Ir para Configurações
+          </Button>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   const validate = () => {
     const newErrors: Record<string, string> = {};

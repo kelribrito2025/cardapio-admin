@@ -41,7 +41,7 @@ import { cn } from "@/lib/utils";
 
 export default function Catalogo() {
   const [, navigate] = useLocation();
-  const { data: establishment } = trpc.establishment.get.useQuery();
+  const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
 
   // Filters
@@ -64,7 +64,7 @@ export default function Catalogo() {
     }
   }, [establishment]);
 
-  // Queries
+  // Queries - MUST be called before any early return
   const { data: categories, refetch: refetchCategories } = trpc.category.list.useQuery(
     { establishmentId: establishmentId! },
     { enabled: !!establishmentId }
@@ -82,7 +82,7 @@ export default function Catalogo() {
     { enabled: !!establishmentId }
   );
 
-  // Mutations
+  // Mutations - MUST be called before any early return
   const toggleStatusMutation = trpc.product.toggleStatus.useMutation({
     onSuccess: () => {
       refetchProducts();
@@ -118,6 +118,26 @@ export default function Catalogo() {
     },
     onError: () => toast.error("Erro ao criar categoria"),
   });
+
+  // Se não há estabelecimento, mostrar tela de criação
+  if (!establishmentLoading && !establishment) {
+    return (
+      <AdminLayout>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+          <div className="p-6 bg-muted/30 rounded-3xl mb-6">
+            <UtensilsCrossed className="h-16 w-16 text-muted-foreground" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">Configure seu estabelecimento</h2>
+          <p className="text-muted-foreground mb-6 max-w-md">
+            Antes de adicionar produtos, você precisa configurar as informações do seu estabelecimento.
+          </p>
+          <Button onClick={() => navigate("/configuracoes")} className="rounded-xl">
+            Ir para Configurações
+          </Button>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   const formatCurrency = (value: string | number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -276,56 +296,109 @@ export default function Catalogo() {
           <EmptyState
             icon={UtensilsCrossed}
             title="Nenhum produto encontrado"
-            description={search || categoryFilter !== "all" || statusFilter !== "all" 
-              ? "Tente ajustar os filtros de busca" 
-              : "Comece adicionando seu primeiro produto ao catálogo"}
+            description="Comece adicionando seu primeiro produto ao catálogo"
             action={{
               label: "Criar Produto",
-              onClick: () => navigate("/catalogo/novo"),
+              onClick: () => navigate("/catalogo/novo")
             }}
           />
         </SectionCard>
       ) : (
         <div className="space-y-6">
-          {/* Uncategorized products */}
-          {productsByCategory[0] && productsByCategory[0].length > 0 && (
-            <ProductCategorySection
-              title="Sem categoria"
-              products={productsByCategory[0]}
-              onToggleStatus={handleToggleStatus}
-              onDuplicate={handleDuplicate}
-              onDelete={(id) => {
-                setProductToDelete(id);
-                setDeleteDialogOpen(true);
-              }}
-              formatCurrency={formatCurrency}
-            />
-          )}
-
-          {/* Categorized products */}
-          {categories?.map((category) => {
-            const categoryProducts = productsByCategory[category.id];
-            if (!categoryProducts || categoryProducts.length === 0) return null;
-
+          {Object.entries(productsByCategory).map(([catId, categoryProducts]) => {
+            const category = categories?.find((c) => c.id === Number(catId));
             return (
-              <ProductCategorySection
-                key={category.id}
-                title={category.name}
-                products={categoryProducts}
-                onToggleStatus={handleToggleStatus}
-                onDuplicate={handleDuplicate}
-                onDelete={(id) => {
-                  setProductToDelete(id);
-                  setDeleteDialogOpen(true);
-                }}
-                formatCurrency={formatCurrency}
-              />
+              <div key={catId} className="bg-card rounded-2xl border border-border/50 shadow-soft overflow-hidden">
+                <div className="flex items-center justify-between p-5 border-b border-border/50 bg-muted/20">
+                  <h3 className="font-bold text-lg">{category?.name || "Sem categoria"}</h3>
+                  <span className="text-sm text-muted-foreground font-medium">
+                    {categoryProducts.length} {categoryProducts.length === 1 ? "produto" : "produtos"}
+                  </span>
+                </div>
+                <div className="divide-y divide-border/50">
+                  {categoryProducts.map((product) => (
+                    <div
+                      key={product.id}
+                      className="flex items-center gap-4 p-4 hover:bg-muted/30 transition-colors"
+                    >
+                      {reorderMode && (
+                        <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" />
+                      )}
+                      <div className="h-14 w-14 rounded-xl bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-border/30">
+                        {product.images && product.images.length > 0 ? (
+                          <img
+                            src={product.images[0]}
+                            alt={product.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <ImageIcon className="h-6 w-6 text-muted-foreground/50" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold truncate">{product.name}</h4>
+                          {product.status !== "active" && (
+                            <StatusBadge variant={product.status === "paused" ? "warning" : "default"}>
+                              {product.status === "paused" ? "Pausado" : "Arquivado"}
+                            </StatusBadge>
+                          )}
+                          {!product.hasStock && (
+                            <StatusBadge variant="error">Sem estoque</StatusBadge>
+                          )}
+                        </div>
+                        {product.description && (
+                          <p className="text-sm text-muted-foreground truncate mt-0.5">
+                            {product.description}
+                          </p>
+                        )}
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="font-bold text-primary">{formatCurrency(product.price)}</p>
+                      </div>
+                      <div className="flex items-center gap-3 flex-shrink-0">
+                        <Switch
+                          checked={product.status === "active"}
+                          onCheckedChange={() => handleToggleStatus(product.id, product.status)}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => navigate(`/catalogo/${product.id}`)}
+                          className="h-9 w-9 rounded-lg hover:bg-accent"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDuplicate(product.id)}
+                          className="h-9 w-9 rounded-lg hover:bg-accent"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setProductToDelete(product.id);
+                            setDeleteDialogOpen(true);
+                          }}
+                          className="h-9 w-9 rounded-lg hover:bg-destructive/10 text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             );
           })}
         </div>
       )}
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="rounded-2xl">
           <DialogHeader>
@@ -334,12 +407,12 @@ export default function Catalogo() {
               Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="gap-3">
+          <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} className="rounded-xl">
               Cancelar
             </Button>
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               onClick={handleDelete}
               disabled={deleteMutation.isPending}
               className="rounded-xl"
@@ -350,11 +423,11 @@ export default function Catalogo() {
         </DialogContent>
       </Dialog>
 
-      {/* Create Category Dialog */}
+      {/* Category Dialog */}
       <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
         <DialogContent className="rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Nova Categoria</DialogTitle>
+            <DialogTitle>Nova categoria</DialogTitle>
             <DialogDescription>
               Crie uma nova categoria para organizar seus produtos.
             </DialogDescription>
@@ -364,15 +437,14 @@ export default function Catalogo() {
               placeholder="Nome da categoria"
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleCreateCategory()}
-              className="h-11 rounded-xl border-border/50"
+              className="h-11 rounded-xl"
             />
           </div>
-          <DialogFooter className="gap-3">
+          <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setCategoryDialogOpen(false)} className="rounded-xl">
               Cancelar
             </Button>
-            <Button 
+            <Button
               onClick={handleCreateCategory}
               disabled={!newCategoryName.trim() || createCategoryMutation.isPending}
               className="rounded-xl"
@@ -383,122 +455,5 @@ export default function Catalogo() {
         </DialogContent>
       </Dialog>
     </AdminLayout>
-  );
-}
-
-// Product Category Section Component
-interface ProductCategorySectionProps {
-  title: string;
-  products: any[];
-  onToggleStatus: (id: number, status: string) => void;
-  onDuplicate: (id: number) => void;
-  onDelete: (id: number) => void;
-  formatCurrency: (value: string | number) => string;
-}
-
-function ProductCategorySection({
-  title,
-  products,
-  onToggleStatus,
-  onDuplicate,
-  onDelete,
-  formatCurrency,
-}: ProductCategorySectionProps) {
-  const [, navigate] = useLocation();
-
-  return (
-    <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-soft">
-      <div className="px-6 py-4 border-b border-border/50 bg-muted/30">
-        <h3 className="font-semibold text-base">{title}</h3>
-      </div>
-      <div className="divide-y divide-border/50">
-        {products.map((product) => (
-          <div
-            key={product.id}
-            className="flex items-center gap-4 p-5 hover:bg-muted/20 transition-colors"
-          >
-            {/* Drag handle */}
-            <button className="p-1.5 text-muted-foreground/50 hover:text-muted-foreground cursor-grab rounded-lg hover:bg-muted/50 transition-colors">
-              <GripVertical className="h-4 w-4" />
-            </button>
-
-            {/* Product image */}
-            <div className="h-14 w-14 rounded-xl bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-border/30">
-              {product.images && product.images.length > 0 ? (
-                <img
-                  src={product.images[0]}
-                  alt={product.name}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <ImageIcon className="h-5 w-5 text-muted-foreground/50" />
-              )}
-            </div>
-
-            {/* Product info */}
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold truncate">{product.name}</p>
-              {product.description && (
-                <p className="text-sm text-muted-foreground truncate mt-0.5">
-                  {product.description}
-                </p>
-              )}
-            </div>
-
-            {/* Price */}
-            <div className="hidden sm:block text-right">
-              <p className="font-semibold text-base">{formatCurrency(product.price)}</p>
-            </div>
-
-            {/* Status badges */}
-            <div className="hidden md:flex items-center gap-2">
-              <StatusBadge
-                variant={product.status === "active" ? "success" : product.status === "paused" ? "warning" : "default"}
-              >
-                {product.status === "active" ? "Ativo" : product.status === "paused" ? "Pausado" : "Arquivado"}
-              </StatusBadge>
-              {!product.hasStock && (
-                <StatusBadge variant="error">Sem estoque</StatusBadge>
-              )}
-            </div>
-
-            {/* Toggle */}
-            <Switch
-              checked={product.status === "active"}
-              onCheckedChange={() => onToggleStatus(product.id, product.status)}
-              className="data-[state=checked]:bg-emerald-500"
-            />
-
-            {/* Actions */}
-            <ActionMenu
-              items={[
-                {
-                  label: "Editar",
-                  icon: Edit,
-                  onClick: () => navigate(`/catalogo/editar/${product.id}`),
-                },
-                {
-                  label: "Duplicar",
-                  icon: Copy,
-                  onClick: () => onDuplicate(product.id),
-                },
-                {
-                  label: product.status === "active" ? "Pausar" : "Ativar",
-                  icon: Pause,
-                  onClick: () => onToggleStatus(product.id, product.status),
-                },
-                {
-                  label: "Excluir",
-                  icon: Trash2,
-                  onClick: () => onDelete(product.id),
-                  variant: "destructive",
-                  separator: true,
-                },
-              ]}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }
