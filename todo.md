@@ -145,3 +145,8 @@
 
 ## Layout do Formulário de Produto
 - [x] Colocar nome, categoria e preço na mesma linha no desktop
+
+## Item da Lista Clicável para Edição
+- [x] Tornar área do item (nome, imagem, descrição, preço) clicável para ir à página de edição
+- [x] Remover botão de editar (ícone de lápis) da lista de produtos
+- [x] Manter botões de toggle, duplicar e excluir

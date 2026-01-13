@@ -120,51 +120,50 @@ function SortableProductItem({
           <TooltipContent>Arraste para reordenar</TooltipContent>
         </Tooltip>
       )}
-      <div className="h-14 w-14 rounded-xl bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-border/30">
-        {product.images && product.images.length > 0 ? (
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <ImageIcon className="h-6 w-6 text-muted-foreground/50" />
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <h4 className="font-semibold truncate">{product.name}</h4>
-          {product.status !== "active" && (
-            <StatusBadge variant={product.status === "paused" ? "warning" : "default"}>
-              {product.status === "paused" ? "Pausado" : "Arquivado"}
-            </StatusBadge>
-          )}
-          {product.hasStock && product.stockQuantity !== null && product.stockQuantity <= 0 && (
-            <StatusBadge variant="error">Sem estoque</StatusBadge>
+      {/* Área clicável para edição */}
+      <div 
+        className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
+        onClick={() => onEdit(product.id)}
+      >
+        <div className="h-14 w-14 rounded-xl bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-border/30">
+          {product.images && product.images.length > 0 ? (
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <ImageIcon className="h-6 w-6 text-muted-foreground/50" />
           )}
         </div>
-        {product.description && (
-          <p className="text-sm text-muted-foreground truncate mt-0.5">
-            {product.description}
-          </p>
-        )}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <h4 className="font-semibold truncate">{product.name}</h4>
+            {product.status !== "active" && (
+              <StatusBadge variant={product.status === "paused" ? "warning" : "default"}>
+                {product.status === "paused" ? "Pausado" : "Arquivado"}
+              </StatusBadge>
+            )}
+            {product.hasStock && product.stockQuantity !== null && product.stockQuantity <= 0 && (
+              <StatusBadge variant="error">Sem estoque</StatusBadge>
+            )}
+          </div>
+          {product.description && (
+            <p className="text-sm text-muted-foreground truncate mt-0.5">
+              {product.description}
+            </p>
+          )}
+        </div>
+        <div className="text-right flex-shrink-0">
+          <p className="font-bold text-primary">{formatCurrency(product.price)}</p>
+        </div>
       </div>
-      <div className="text-right flex-shrink-0">
-        <p className="font-bold text-primary">{formatCurrency(product.price)}</p>
-      </div>
+      {/* Botões de ação (toggle, duplicar, excluir) */}
       <div className="flex items-center gap-3 flex-shrink-0">
         <Switch
           checked={product.status === "active"}
           onCheckedChange={() => onToggleStatus(product.id, product.status)}
         />
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onEdit(product.id)}
-          className="h-9 w-9 rounded-lg hover:bg-accent"
-        >
-          <Edit className="h-4 w-4" />
-        </Button>
         <Button
           variant="ghost"
           size="icon"
