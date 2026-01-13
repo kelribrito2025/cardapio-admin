@@ -290,47 +290,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           })}
         </nav>
 
-        {/* Free Trial Card - Expanded */}
-        {!sidebarCollapsed && (
-          <div className="mx-4 mb-4 p-4 rounded-xl border border-gray-200/50 relative overflow-hidden"
-            style={{
-              background: "linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 60%, rgba(16,185,129,0.15) 100%)"
-            }}
-          >
-            <h4 className="text-emerald-600 font-semibold text-sm mb-1">
-              Avaliação gratuita
-            </h4>
-            <p className="text-gray-600 text-xs leading-relaxed mb-3">
-              Você tem 15 dias de acesso gratuito antes da expiração.
-            </p>
-            <button className="w-full py-2.5 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-              Atualizar agora
-            </button>
-          </div>
-        )}
-
-        {/* Free Trial Card - Collapsed */}
-        {sidebarCollapsed && (
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <div className="mx-2 mb-2 p-3 rounded-xl border border-gray-200/50 flex justify-center cursor-pointer hover:bg-gray-50 transition-colors"
-                style={{
-                  background: "linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(16,185,129,0.15) 100%)"
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="font-medium">
-              <p className="text-emerald-600 font-semibold">Avaliação gratuita</p>
-              <p className="text-xs text-gray-500">15 dias restantes</p>
-            </TooltipContent>
-          </Tooltip>
-        )}
-
-        {/* Store info at bottom */}
+        {/* Store info */}
         {establishment && !sidebarCollapsed && (
           <div className="p-4 mx-4 mb-4 bg-gray-100/80 rounded-xl border border-gray-200/50">
             <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">
@@ -346,12 +306,52 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         {establishment && sidebarCollapsed && (
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <div className="mx-2 mb-4 p-3 bg-gray-100/80 rounded-xl border border-gray-200/50 flex justify-center">
+              <div className="mx-2 mb-2 p-3 bg-gray-100/80 rounded-xl border border-gray-200/50 flex justify-center">
                 <Store className="h-5 w-5 text-gray-600" />
               </div>
             </TooltipTrigger>
             <TooltipContent side="right" className="font-medium">
               {establishment.name || "Meu Restaurante"}
+            </TooltipContent>
+          </Tooltip>
+        )}
+
+        {/* Free Trial Card - Expanded (at the very bottom) */}
+        {!sidebarCollapsed && (
+          <div className="mx-4 mb-4 p-4 rounded-xl border border-gray-200/50 relative overflow-hidden"
+            style={{
+              background: "linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 60%, rgba(239,68,68,0.15) 100%)"
+            }}
+          >
+            <h4 className="text-red-500 font-semibold text-sm mb-1">
+              Avaliação gratuita
+            </h4>
+            <p className="text-gray-600 text-xs leading-relaxed mb-3">
+              Você tem 15 dias de acesso gratuito antes da expiração.
+            </p>
+            <button className="w-full py-2.5 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+              Atualizar agora
+            </button>
+          </div>
+        )}
+
+        {/* Free Trial Card - Collapsed (at the very bottom) */}
+        {sidebarCollapsed && (
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <div className="mx-2 mb-4 p-3 rounded-xl border border-gray-200/50 flex justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(239,68,68,0.15) 100%)"
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="font-medium">
+              <p className="text-red-500 font-semibold">Avaliação gratuita</p>
+              <p className="text-xs text-gray-500">15 dias restantes</p>
             </TooltipContent>
           </Tooltip>
         )}
