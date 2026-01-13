@@ -82,3 +82,4 @@
 - [x] Implementar upload de imagens real (selecionar arquivos do computador em vez de URL)
 - [x] Corrigir badge "Sem estoque" mostrando incorretamente quando produto tem estoque
 - [x] Alterar sidebar para cor escura com estilo degradê
+- [x] Ajustar sidebar para tom mais claro puxado para vermelho com degradê

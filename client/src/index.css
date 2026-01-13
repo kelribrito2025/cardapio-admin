@@ -98,12 +98,12 @@
   --input: oklch(0.92 0.005 250);
   --ring: oklch(0.55 0.22 25);
   
-  /* Sidebar escura com degradê */
-  --sidebar: oklch(0.18 0.015 250);
-  --sidebar-foreground: oklch(0.92 0.005 250);
-  --sidebar-accent: oklch(0.25 0.015 250);
+  /* Sidebar vermelho claro com degradê */
+  --sidebar: oklch(0.35 0.12 25);
+  --sidebar-foreground: oklch(0.98 0.01 25);
+  --sidebar-accent: oklch(0.42 0.14 25);
   --sidebar-accent-foreground: oklch(0.99 0 0);
-  --sidebar-border: oklch(0.25 0.01 250);
+  --sidebar-border: oklch(0.40 0.10 25);
   --sidebar-ring: oklch(0.55 0.22 25);
   
   /* Status colors */
