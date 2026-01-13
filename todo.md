@@ -85,3 +85,4 @@
 - [x] Ajustar sidebar para tom mais claro puxado para vermelho com degradê
 - [x] Ajustar sidebar para vermelho mais vibrante e adicionar efeito de sombra
 - [x] Ajustar sidebar para tom cinza claro com degradê
+- [x] Redesenhar sidebar com visual elegante e cinza muito claro (quase branco)

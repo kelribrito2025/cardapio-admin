@@ -127,8 +127,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
         style={{
-          background: "linear-gradient(180deg, oklch(0.42 0.01 250) 0%, oklch(0.30 0.01 250) 100%)",
-          boxShadow: "4px 0 20px rgba(0, 0, 0, 0.12), 2px 0 8px rgba(0, 0, 0, 0.08)"
+          background: "linear-gradient(180deg, oklch(0.99 0.002 250) 0%, oklch(0.96 0.005 250) 100%)",
+          boxShadow: "4px 0 25px rgba(0, 0, 0, 0.06), 1px 0 10px rgba(0, 0, 0, 0.04)"
         }}
       >
         {/* Logo */}
@@ -137,13 +137,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <div className="p-2 bg-primary rounded-xl">
               <Store className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="font-bold text-xl text-sidebar-foreground">Cardápio</span>
+            <span className="font-bold text-xl text-gray-800">Cardápio</span>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-2 hover:bg-sidebar-accent rounded-xl transition-colors"
+            className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors"
           >
-            <X className="h-5 w-5 text-sidebar-foreground" />
+            <X className="h-5 w-5 text-gray-600" />
           </button>
         </div>
 
@@ -160,7 +160,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   onClick={() => handleNavClick(item)}
                   className={cn(
                     "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
-                    "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                    "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                   )}
                 >
                   <item.icon className="h-5 w-5" />
@@ -177,8 +177,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                    ? "bg-primary text-white shadow-md shadow-primary/20"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                 )}
               >
                 <item.icon className="h-5 w-5" />
@@ -190,11 +190,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Store info at bottom */}
         {establishment && (
-          <div className="p-4 mx-4 mb-4 bg-sidebar-accent rounded-xl">
-            <p className="text-xs text-sidebar-foreground/50 font-medium uppercase tracking-wider mb-1">
+          <div className="p-4 mx-4 mb-4 bg-gray-100/80 rounded-xl border border-gray-200/50">
+            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">
               Estabelecimento
             </p>
-            <p className="font-semibold text-sidebar-foreground truncate">
+            <p className="font-semibold text-gray-800 truncate">
               {establishment.name || "Meu Restaurante"}
             </p>
           </div>
