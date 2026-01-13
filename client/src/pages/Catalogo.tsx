@@ -623,7 +623,7 @@ export default function Catalogo() {
               <FolderPlus className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Categoria</span>
             </Button>
-            <Button onClick={() => navigate("/catalogo/novo")} className="rounded-xl shadow-sm">
+            <Button onClick={() => navigate("/catalogo/novo")} className="rounded-xl shadow-sm" style={{borderRadius: '9px'}}>
               <Plus className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Novo Produto</span>
             </Button>

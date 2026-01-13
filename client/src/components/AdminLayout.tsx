@@ -286,7 +286,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 key={item.href}
                 href={item.href}
                 onClick={() => handleNavClick(item)}
-                className={navClassName}
+                className={navClassName} style={{borderRadius: '9px'}}
               >
                 {navContent}
               </Link>
