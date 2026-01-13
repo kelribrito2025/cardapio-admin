@@ -408,6 +408,12 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.getLowStockProducts(input.establishmentId);
       }),
+    
+    weeklyRevenue: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getWeeklyRevenue(input.establishmentId);
+      }),
   }),
 
   // ============ UPLOAD ============

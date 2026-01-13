@@ -1,5 +1,6 @@
 import { AdminLayout } from "@/components/AdminLayout";
 import { StatCard, PageHeader, SectionCard, StatusBadge, EmptyState } from "@/components/shared";
+import { WeeklyRevenueCard } from "@/components/WeeklyRevenueCard";
 import { trpc } from "@/lib/trpc";
 import { 
   ShoppingBag, 
@@ -49,6 +50,11 @@ export default function Dashboard() {
   );
 
   const { data: lowStock } = trpc.dashboard.lowStock.useQuery(
+    { establishmentId: establishmentId! },
+    { enabled: !!establishmentId }
+  );
+
+  const { data: weeklyRevenue, isLoading: weeklyRevenueLoading } = trpc.dashboard.weeklyRevenue.useQuery(
     { establishmentId: establishmentId! },
     { enabled: !!establishmentId }
   );
@@ -105,7 +111,7 @@ export default function Dashboard() {
       />
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
         <StatCard
           title="Pedidos Hoje"
           value={stats?.ordersToday ?? 0}
@@ -130,6 +136,17 @@ export default function Dashboard() {
           icon={AlertTriangle}
           loading={statsLoading}
           className={stats?.lowStockCount && stats.lowStockCount > 0 ? "border-amber-200/50 bg-amber-50/50" : ""}
+        />
+      </div>
+
+      {/* Weekly Revenue Card */}
+      <div className="mb-6">
+        <WeeklyRevenueCard
+          thisWeek={weeklyRevenue?.thisWeek ?? []}
+          lastWeek={weeklyRevenue?.lastWeek ?? []}
+          thisWeekTotal={weeklyRevenue?.thisWeekTotal ?? 0}
+          lastWeekTotal={weeklyRevenue?.lastWeekTotal ?? 0}
+          loading={weeklyRevenueLoading}
         />
       </div>
 

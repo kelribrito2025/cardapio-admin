@@ -509,3 +509,84 @@ export async function getRecentOrders(establishmentId: number, limit: number = 5
     .orderBy(desc(orders.createdAt))
     .limit(limit);
 }
+
+export async function getWeeklyRevenue(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return { thisWeek: [], lastWeek: [], thisWeekTotal: 0, lastWeekTotal: 0 };
+  
+  // Get current date and calculate week boundaries
+  const now = new Date();
+  const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  
+  // Calculate start of current week (Monday)
+  const thisWeekStart = new Date(now);
+  const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+  thisWeekStart.setDate(now.getDate() - daysFromMonday);
+  thisWeekStart.setHours(0, 0, 0, 0);
+  
+  // Calculate start of last week (Monday of previous week)
+  const lastWeekStart = new Date(thisWeekStart);
+  lastWeekStart.setDate(thisWeekStart.getDate() - 7);
+  
+  // Calculate end of last week (Sunday of previous week)
+  const lastWeekEnd = new Date(thisWeekStart);
+  lastWeekEnd.setMilliseconds(-1);
+  
+  // Query for this week's data
+  const thisWeekResult = await db.select({
+    dayOfWeek: sql<number>`DAYOFWEEK(createdAt)`,
+    revenue: sql<number>`COALESCE(SUM(total), 0)`
+  })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      gte(orders.createdAt, thisWeekStart),
+      eq(orders.status, "completed")
+    ))
+    .groupBy(sql`DAYOFWEEK(createdAt)`);
+  
+  // Query for last week's data
+  const lastWeekResult = await db.select({
+    dayOfWeek: sql<number>`DAYOFWEEK(createdAt)`,
+    revenue: sql<number>`COALESCE(SUM(total), 0)`
+  })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      gte(orders.createdAt, lastWeekStart),
+      lte(orders.createdAt, lastWeekEnd),
+      eq(orders.status, "completed")
+    ))
+    .groupBy(sql`DAYOFWEEK(createdAt)`);
+  
+  // Map MySQL DAYOFWEEK (1=Sunday, 2=Monday, ..., 7=Saturday) to our format (0=Mon, 1=Tue, ..., 6=Sun)
+  const mapDayOfWeek = (mysqlDay: number) => {
+    // MySQL: 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri, 7=Sat
+    // Our format: 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun
+    return mysqlDay === 1 ? 6 : mysqlDay - 2;
+  };
+  
+  // Initialize arrays with zeros for each day (Mon-Sun)
+  const thisWeek = [0, 0, 0, 0, 0, 0, 0];
+  const lastWeek = [0, 0, 0, 0, 0, 0, 0];
+  
+  // Fill in the data
+  for (const row of thisWeekResult) {
+    const dayIndex = mapDayOfWeek(row.dayOfWeek);
+    if (dayIndex >= 0 && dayIndex < 7) {
+      thisWeek[dayIndex] = Number(row.revenue);
+    }
+  }
+  
+  for (const row of lastWeekResult) {
+    const dayIndex = mapDayOfWeek(row.dayOfWeek);
+    if (dayIndex >= 0 && dayIndex < 7) {
+      lastWeek[dayIndex] = Number(row.revenue);
+    }
+  }
+  
+  const thisWeekTotal = thisWeek.reduce((sum, val) => sum + val, 0);
+  const lastWeekTotal = lastWeek.reduce((sum, val) => sum + val, 0);
+  
+  return { thisWeek, lastWeek, thisWeekTotal, lastWeekTotal };
+}

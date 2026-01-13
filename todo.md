@@ -112,3 +112,13 @@
 - [x] Mover container "Avaliação gratuita" para o final da sidebar (após Estabelecimento)
 - [x] Alterar gradiente do container de verde para vermelho
 - [x] Fixar container "Avaliação gratuita" no fundo absoluto da sidebar (mt-auto)
+
+## Card Acumulado da Semana na Dashboard
+- [x] Criar endpoint para buscar faturamento semanal agrupado por dia
+- [x] Criar componente WeeklyRevenueCard com gráfico de barras
+- [x] Adicionar toggle "Esta semana / Semana passada"
+- [x] Implementar tooltip ao passar o mouse nas barras
+- [x] Calcular variação % vs semana anterior
+- [x] Adicionar skeleton loading
+- [x] Garantir responsividade no mobile
+- [x] Integrar o card na Dashboard
