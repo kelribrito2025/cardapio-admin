@@ -18,6 +18,8 @@ import {
   LogOut,
   ChevronDown,
   Store,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
@@ -31,8 +33,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
+
+const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
@@ -54,6 +63,20 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [location] = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  
+  // Sidebar collapsed state with localStorage persistence
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(SIDEBAR_COLLAPSED_KEY);
+      return saved === "true";
+    }
+    return false;
+  });
+
+  // Persist collapsed state to localStorage
+  useEffect(() => {
+    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(sidebarCollapsed));
+  }, [sidebarCollapsed]);
 
   // Get establishment data
   const { data: establishment, refetch: refetchEstablishment } = trpc.establishment.get.useQuery(
@@ -79,6 +102,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         isOpen: !establishment.isOpen,
       });
     }
+  };
+
+  const toggleSidebarCollapsed = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
   };
 
   // Redirect to login if not authenticated
@@ -110,6 +137,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     setSidebarOpen(false);
   };
 
+  // Sidebar width based on collapsed state
+  const sidebarWidth = sidebarCollapsed ? "w-20" : "w-72";
+  const mainPadding = sidebarCollapsed ? "lg:pl-20" : "lg:pl-72";
+
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile sidebar overlay */}
@@ -123,8 +154,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-72 border-r border-sidebar-border transition-transform duration-300 lg:translate-x-0",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border transition-all duration-300 ease-in-out lg:translate-x-0",
+          sidebarWidth,
+          sidebarOpen ? "translate-x-0" : "-translate-x-full",
+          "lg:translate-x-0"
         )}
         style={{
           background: "linear-gradient(180deg, oklch(0.99 0.002 250) 0%, oklch(0.96 0.005 250) 100%)",
@@ -132,39 +165,116 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         }}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between h-[72px] px-6 border-b border-sidebar-border">
+        <div className={cn(
+          "flex items-center h-[72px] border-b border-sidebar-border transition-all duration-300",
+          sidebarCollapsed ? "justify-center px-2" : "justify-between px-6"
+        )}>
           <Link href="/" className="flex items-center gap-3">
-            <div className="p-2 bg-primary rounded-xl">
+            <div className="p-2 bg-primary rounded-xl flex-shrink-0">
               <Store className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="font-bold text-xl text-gray-800">Cardápio</span>
+            {!sidebarCollapsed && (
+              <span className="font-bold text-xl text-gray-800 whitespace-nowrap">Cardápio</span>
+            )}
           </Link>
+          {!sidebarCollapsed && (
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors"
+            >
+              <X className="h-5 w-5 text-gray-600" />
+            </button>
+          )}
+        </div>
+
+        {/* Toggle button - Desktop only */}
+        <div className="hidden lg:flex justify-end px-2 py-3">
           <button
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors"
+            onClick={toggleSidebarCollapsed}
+            className="p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500 hover:text-gray-700"
+            title={sidebarCollapsed ? "Expandir menu" : "Minimizar menu"}
           >
-            <X className="h-5 w-5 text-gray-600" />
+            {sidebarCollapsed ? (
+              <ChevronRight className="h-5 w-5" />
+            ) : (
+              <ChevronLeft className="h-5 w-5" />
+            )}
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+        <nav className={cn(
+          "flex-1 py-2 space-y-1.5 overflow-y-auto",
+          sidebarCollapsed ? "px-2" : "px-4"
+        )}>
           {navItems.map((item) => {
             const isActive = location === item.href || 
               (item.href !== "/" && location.startsWith(item.href));
             
+            const navContent = (
+              <>
+                <item.icon className={cn("h-5 w-5 flex-shrink-0", sidebarCollapsed && "mx-auto")} />
+                {!sidebarCollapsed && <span>{item.label}</span>}
+              </>
+            );
+
+            const navClassName = cn(
+              "flex items-center gap-3 py-3 rounded-xl text-sm font-medium transition-all duration-200",
+              sidebarCollapsed ? "px-0 justify-center" : "px-4",
+              isActive
+                ? "bg-primary text-white shadow-md shadow-primary/20"
+                : item.placeholder
+                  ? "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            );
+
+            if (sidebarCollapsed) {
+              // With tooltip when collapsed
+              if (item.placeholder) {
+                return (
+                  <Tooltip key={item.href} delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => handleNavClick(item)}
+                        className={cn(navClassName, "w-full")}
+                      >
+                        {navContent}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="font-medium">
+                      {item.label}
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              }
+
+              return (
+                <Tooltip key={item.href} delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={item.href}
+                      onClick={() => handleNavClick(item)}
+                      className={navClassName}
+                    >
+                      {navContent}
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" className="font-medium">
+                    {item.label}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            }
+
+            // Without tooltip when expanded
             if (item.placeholder) {
               return (
                 <button
                   key={item.href}
                   onClick={() => handleNavClick(item)}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
-                    "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                  )}
+                  className={cn(navClassName, "w-full")}
                 >
-                  <item.icon className="h-5 w-5" />
-                  {item.label}
+                  {navContent}
                 </button>
               );
             }
@@ -174,22 +284,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 key={item.href}
                 href={item.href}
                 onClick={() => handleNavClick(item)}
-                className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
-                  isActive
-                    ? "bg-primary text-white shadow-md shadow-primary/20"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                )}
+                className={navClassName}
               >
-                <item.icon className="h-5 w-5" />
-                {item.label}
+                {navContent}
               </Link>
             );
           })}
         </nav>
 
         {/* Store info at bottom */}
-        {establishment && (
+        {establishment && !sidebarCollapsed && (
           <div className="p-4 mx-4 mb-4 bg-gray-100/80 rounded-xl border border-gray-200/50">
             <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">
               Estabelecimento
@@ -199,10 +303,24 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </p>
           </div>
         )}
+
+        {/* Collapsed store indicator */}
+        {establishment && sidebarCollapsed && (
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <div className="mx-2 mb-4 p-3 bg-gray-100/80 rounded-xl border border-gray-200/50 flex justify-center">
+                <Store className="h-5 w-5 text-gray-600" />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="font-medium">
+              {establishment.name || "Meu Restaurante"}
+            </TooltipContent>
+          </Tooltip>
+        )}
       </aside>
 
       {/* Main content */}
-      <div className="lg:pl-72">
+      <div className={cn("transition-all duration-300 ease-in-out", mainPadding)}>
         {/* Topbar */}
         <header className="sticky top-0 z-30 h-[72px] bg-card/80 backdrop-blur-md border-b border-border/50">
           <div className="flex items-center justify-between h-full px-4 lg:px-8">

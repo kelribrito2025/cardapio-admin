@@ -86,3 +86,8 @@
 - [x] Ajustar sidebar para vermelho mais vibrante e adicionar efeito de sombra
 - [x] Ajustar sidebar para tom cinza claro com degradê
 - [x] Redesenhar sidebar com visual elegante e cinza muito claro (quase branco)
+- [x] Adicionar botão toggle minimizar/maximizar na sidebar
+- [x] Implementar estado minimizado (apenas ícones, sem textos)
+- [x] Adicionar tooltips nos itens quando sidebar minimizada
+- [x] Persistir estado no localStorage
+- [x] Manter comportamento responsivo (drawer no mobile)
