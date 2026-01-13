@@ -1,0 +1,64 @@
+{
+  "query": "\nSELECT \n  CASE \n    WHEN createdAt >= '2026-01-13' THEN 'Esta semana'\n    ELSE 'Semana passada'\n  END as periodo,\n  DAYNAME(createdAt) as dia,\n  COUNT(*) as qtd_pedidos,\n  SUM(total) as faturamento\nFROM orders \nWHERE status = 'completed'\nGROUP BY periodo, DAYNAME(createdAt), DAYOFWEEK(createdAt)\nORDER BY periodo DESC, DAYOFWEEK(createdAt);\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute \nSELECT \n  CASE \n    WHEN createdAt >= '2026-01-13' THEN 'Esta semana'\n    ELSE 'Semana passada'\n  END as periodo,\n  DAYNAME(createdAt) as dia,\n  COUNT(*) as qtd_pedidos,\n  SUM(total) as faturamento\nFROM orders \nWHERE status = 'completed'\nGROUP BY periodo, DAYNAME(createdAt), DAYOFWEEK(createdAt)\nORDER BY periodo DESC, DAYOFWEEK(createdAt);\n",
+  "rows": [
+    {
+      "periodo": "Semana passada",
+      "dia": "Sunday",
+      "qtd_pedidos": "4",
+      "faturamento": "539.50"
+    },
+    {
+      "periodo": "Semana passada",
+      "dia": "Monday",
+      "qtd_pedidos": "3",
+      "faturamento": "321.40"
+    },
+    {
+      "periodo": "Semana passada",
+      "dia": "Tuesday",
+      "qtd_pedidos": "2",
+      "faturamento": "98.90"
+    },
+    {
+      "periodo": "Semana passada",
+      "dia": "Wednesday",
+      "qtd_pedidos": "3",
+      "faturamento": "225.80"
+    },
+    {
+      "periodo": "Semana passada",
+      "dia": "Thursday",
+      "qtd_pedidos": "3",
+      "faturamento": "236.40"
+    },
+    {
+      "periodo": "Semana passada",
+      "dia": "Friday",
+      "qtd_pedidos": "2",
+      "faturamento": "233.50"
+    },
+    {
+      "periodo": "Semana passada",
+      "dia": "Saturday",
+      "qtd_pedidos": "4",
+      "faturamento": "409.70"
+    },
+    {
+      "periodo": "Esta semana",
+      "dia": "Tuesday",
+      "qtd_pedidos": "3",
+      "faturamento": "156.20"
+    },
+    {
+      "periodo": "Esta semana",
+      "dia": "Wednesday",
+      "qtd_pedidos": "4",
+      "faturamento": "464.70"
+    }
+  ],
+  "messages": [],
+  "stdout": "periodo\tdia\tqtd_pedidos\tfaturamento\nSemana passada\tSunday\t4\t539.50\nSemana passada\tMonday\t3\t321.40\nSemana passada\tTuesday\t2\t98.90\nSemana passada\tWednesday\t3\t225.80\nSemana passada\tThursday\t3\t236.40\nSemana passada\tFriday\t2\t233.50\nSemana passada\tSaturday\t4\t409.70\nEsta semana\tTuesday\t3\t156.20\nEsta semana\tWednesday\t4\t464.70\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

@@ -122,3 +122,6 @@
 - [x] Adicionar skeleton loading
 - [x] Garantir responsividade no mobile
 - [x] Integrar o card na Dashboard
+
+## Dados de Teste para Gráfico Semanal
+- [x] Criar e executar script SQL para inserir pedidos de teste nas últimas duas semanas
