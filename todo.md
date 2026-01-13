@@ -125,3 +125,9 @@
 
 ## Dados de Teste para Gráfico Semanal
 - [x] Criar e executar script SQL para inserir pedidos de teste nas últimas duas semanas
+
+## Edição Inline de Categorias
+- [x] Adicionar cursor pointer ao nome da categoria
+- [x] Implementar campo editável ao clicar no nome
+- [x] Adicionar botões de confirmar (✅) e cancelar (❌)
+- [x] Salvar alteração ao confirmar e rollback ao cancelar

@@ -260,6 +260,10 @@ export default function Catalogo() {
   const [reorderCategoriesMode, setReorderCategoriesMode] = useState(false);
   const [localCategories, setLocalCategories] = useState<any[]>([]);
   const [localProductsByCategory, setLocalProductsByCategory] = useState<Record<number, any[]>>({});
+  
+  // Inline editing state
+  const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
+  const [editingCategoryName, setEditingCategoryName] = useState("");
 
   // Check if filters are active (disable drag when filters are active)
   const hasActiveFilters: boolean = !!(search || categoryFilter !== "all" || statusFilter !== "all" || stockFilter !== "all" || orderBy !== "sortOrder");
@@ -385,6 +389,16 @@ export default function Catalogo() {
       toast.error("Erro ao reordenar produtos");
       refetchProducts();
     },
+  });
+
+  const updateCategoryMutation = trpc.category.update.useMutation({
+    onSuccess: () => {
+      refetchCategories();
+      setEditingCategoryId(null);
+      setEditingCategoryName("");
+      toast.success("Categoria atualizada");
+    },
+    onError: () => toast.error("Erro ao atualizar categoria"),
   });
 
   // Se não há estabelecimento, mostrar tela de criação
@@ -730,7 +744,58 @@ export default function Catalogo() {
             return (
               <div key={category.id} className="bg-card rounded-2xl border border-border/50 shadow-soft overflow-hidden">
                 <div className="flex items-center justify-between p-5 border-b border-border/50 bg-muted/20">
-                  <h3 className="font-bold text-lg">{category.name}</h3>
+                  {editingCategoryId === category.id ? (
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={editingCategoryName}
+                        onChange={(e) => setEditingCategoryName(e.target.value)}
+                        className="h-9 w-48 font-bold text-lg"
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && editingCategoryName.trim()) {
+                            updateCategoryMutation.mutate({ id: category.id, name: editingCategoryName.trim() });
+                          } else if (e.key === "Escape") {
+                            setEditingCategoryId(null);
+                            setEditingCategoryName("");
+                          }
+                        }}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100"
+                        onClick={() => {
+                          if (editingCategoryName.trim()) {
+                            updateCategoryMutation.mutate({ id: category.id, name: editingCategoryName.trim() });
+                          }
+                        }}
+                        disabled={!editingCategoryName.trim() || updateCategoryMutation.isPending}
+                      >
+                        <Check className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-100"
+                        onClick={() => {
+                          setEditingCategoryId(null);
+                          setEditingCategoryName("");
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <h3
+                      className="font-bold text-lg cursor-pointer hover:text-primary transition-colors"
+                      onClick={() => {
+                        setEditingCategoryId(category.id);
+                        setEditingCategoryName(category.name);
+                      }}
+                    >
+                      {category.name}
+                    </h3>
+                  )}
                   <span className="text-sm text-muted-foreground font-medium">
                     {categoryProducts.length} {categoryProducts.length === 1 ? "produto" : "produtos"}
                   </span>
