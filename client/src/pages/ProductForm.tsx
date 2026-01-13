@@ -22,7 +22,7 @@ import {
   Trash2,
   GripVertical,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useParams } from "wouter";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -64,6 +64,10 @@ export default function ProductForm() {
 
   // Validation
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Image upload
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (establishment) {
@@ -184,11 +188,61 @@ export default function ProductForm() {
     }
   };
 
+  // Upload mutation
+  const uploadMutation = trpc.upload.image.useMutation({
+    onSuccess: (data) => {
+      setImages([...images, data.url]);
+      toast.success("Imagem enviada com sucesso");
+    },
+    onError: (error) => {
+      toast.error("Erro ao enviar imagem");
+      console.error(error);
+    },
+    onSettled: () => {
+      setUploading(false);
+    },
+  });
+
   const handleImageAdd = () => {
-    const url = prompt("Digite a URL da imagem:");
-    if (url && url.trim()) {
-      setImages([...images, url.trim()]);
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Por favor, selecione uma imagem válida");
+      return;
     }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 5MB");
+      return;
+    }
+
+    setUploading(true);
+
+    // Convert to base64
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(",")[1];
+      uploadMutation.mutate({
+        base64,
+        mimeType: file.type,
+        folder: "products",
+      });
+    };
+    reader.onerror = () => {
+      toast.error("Erro ao ler arquivo");
+      setUploading(false);
+    };
+    reader.readAsDataURL(file);
+
+    // Reset input
+    e.target.value = "";
   };
 
   const handleImageRemove = (index: number) => {
@@ -388,15 +442,34 @@ export default function ProductForm() {
                       </button>
                     </div>
                   ))}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
                   <button
                     type="button"
                     onClick={handleImageAdd}
-                    className="aspect-square rounded-2xl border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center gap-3 hover:border-primary hover:bg-primary/5 transition-all duration-200"
+                    disabled={uploading}
+                    className="aspect-square rounded-2xl border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center gap-3 hover:border-primary hover:bg-primary/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <div className="p-3 bg-muted/50 rounded-xl">
-                      <ImagePlus className="h-6 w-6 text-muted-foreground" />
-                    </div>
-                    <span className="text-xs text-muted-foreground font-medium">Adicionar</span>
+                    {uploading ? (
+                      <>
+                        <div className="p-3 bg-muted/50 rounded-xl">
+                          <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                        </div>
+                        <span className="text-xs text-muted-foreground font-medium">Enviando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="p-3 bg-muted/50 rounded-xl">
+                          <ImagePlus className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                        <span className="text-xs text-muted-foreground font-medium">Adicionar</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

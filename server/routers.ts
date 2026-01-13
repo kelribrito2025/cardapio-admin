@@ -4,6 +4,8 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
+import { storagePut } from "./storage";
+import { nanoid } from "nanoid";
 
 export const appRouter = router({
   system: systemRouter,
@@ -395,6 +397,31 @@ export const appRouter = router({
       .input(z.object({ establishmentId: z.number() }))
       .query(async ({ input }) => {
         return db.getLowStockProducts(input.establishmentId);
+      }),
+  }),
+
+  // ============ UPLOAD ============
+  upload: router({
+    image: protectedProcedure
+      .input(z.object({
+        base64: z.string(),
+        mimeType: z.string(),
+        folder: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { base64, mimeType, folder = "products" } = input;
+        
+        // Extract extension from mime type
+        const ext = mimeType.split("/")[1] || "jpg";
+        const fileName = `${folder}/${nanoid()}.${ext}`;
+        
+        // Convert base64 to buffer
+        const buffer = Buffer.from(base64, "base64");
+        
+        // Upload to S3
+        const { url } = await storagePut(fileName, buffer, mimeType);
+        
+        return { url };
       }),
   }),
 });

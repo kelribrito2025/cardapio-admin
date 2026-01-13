@@ -79,3 +79,4 @@
 - [x] Corrigir erro "establishment.get data is undefined" na página /catalogo
 - [x] Renomear "Catálogo" para "Cardápio" no menu lateral
 - [x] Corrigir erro 404 ao clicar em editar produto
+- [x] Implementar upload de imagens real (selecionar arquivos do computador em vez de URL)
