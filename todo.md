@@ -142,3 +142,6 @@
 
 ## Remoção do Container de Filtros
 - [x] Remover container de filtros (busca, categoria, status, estoque, ordenação) do Catálogo
+
+## Layout do Formulário de Produto
+- [x] Colocar nome, categoria e preço na mesma linha no desktop

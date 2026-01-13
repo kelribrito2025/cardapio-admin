@@ -350,41 +350,30 @@ export default function ProductForm() {
             {/* Basic Info */}
             <SectionCard title="Informações Básicas">
               <div className="space-y-5">
-                <div>
-                  <Label htmlFor="name" className="text-sm font-semibold">Nome do produto *</Label>
-                  <Input
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Ex: X-Burger Especial"
-                    className={cn(
-                      "mt-2 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
-                      errors.name && "border-destructive focus:ring-destructive/20"
+                {/* Nome, Categoria e Preço na mesma linha no desktop */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                  <div className="lg:col-span-6">
+                    <Label htmlFor="name" className="text-sm font-semibold">Nome do produto *</Label>
+                    <Input
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Ex: X-Burger Especial"
+                      className={cn(
+                        "mt-2 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                        errors.name && "border-destructive focus:ring-destructive/20"
+                      )}
+                    />
+                    {errors.name && (
+                      <p className="text-sm text-destructive mt-2">{errors.name}</p>
                     )}
-                  />
-                  {errors.name && (
-                    <p className="text-sm text-destructive mt-2">{errors.name}</p>
-                  )}
-                </div>
+                  </div>
 
-                <div>
-                  <Label htmlFor="description" className="text-sm font-semibold">Descrição</Label>
-                  <Textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Descreva os ingredientes e características do produto"
-                    rows={3}
-                    className="mt-2 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 resize-none"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
+                  <div className="lg:col-span-3">
                     <Label htmlFor="category" className="text-sm font-semibold">Categoria</Label>
                     <Select value={categoryId} onValueChange={setCategoryId}>
                       <SelectTrigger className="mt-2 h-11 rounded-xl border-border/50">
-                        <SelectValue placeholder="Selecione uma categoria" />
+                        <SelectValue placeholder="Selecione" />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl">
                         {categories?.map((cat) => (
@@ -396,7 +385,7 @@ export default function ProductForm() {
                     </Select>
                   </div>
 
-                  <div>
+                  <div className="lg:col-span-3">
                     <Label htmlFor="price" className="text-sm font-semibold">Preço *</Label>
                     <Input
                       id="price"
@@ -415,6 +404,18 @@ export default function ProductForm() {
                       <p className="text-sm text-destructive mt-2">{errors.price}</p>
                     )}
                   </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="description" className="text-sm font-semibold">Descrição</Label>
+                  <Textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Descreva os ingredientes e características do produto"
+                    rows={3}
+                    className="mt-2 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 resize-none"
+                  />
                 </div>
               </div>
             </SectionCard>
