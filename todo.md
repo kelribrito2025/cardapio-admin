@@ -111,3 +111,4 @@
 - [x] Adicionar container "Avaliação gratuita" no final da sidebar conforme design do Figma
 - [x] Mover container "Avaliação gratuita" para o final da sidebar (após Estabelecimento)
 - [x] Alterar gradiente do container de verde para vermelho
+- [x] Fixar container "Avaliação gratuita" no fundo absoluto da sidebar (mt-auto)

@@ -154,7 +154,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border transition-all duration-300 ease-in-out lg:translate-x-0",
+          "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border transition-all duration-300 ease-in-out lg:translate-x-0 flex flex-col",
           sidebarWidth,
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
           "lg:translate-x-0"
@@ -318,7 +318,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Free Trial Card - Expanded (at the very bottom) */}
         {!sidebarCollapsed && (
-          <div className="mx-4 mb-4 p-4 rounded-xl border border-gray-200/50 relative overflow-hidden"
+          <div className="mt-auto mx-4 mb-4 p-4 rounded-xl border border-gray-200/50 relative overflow-hidden"
             style={{
               background: "linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 60%, rgba(239,68,68,0.15) 100%)"
             }}
@@ -337,23 +337,25 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Free Trial Card - Collapsed (at the very bottom) */}
         {sidebarCollapsed && (
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <div className="mx-2 mb-4 p-3 rounded-xl border border-gray-200/50 flex justify-center cursor-pointer hover:bg-gray-50 transition-colors"
-                style={{
-                  background: "linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(239,68,68,0.15) 100%)"
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="font-medium">
-              <p className="text-red-500 font-semibold">Avaliação gratuita</p>
-              <p className="text-xs text-gray-500">15 dias restantes</p>
-            </TooltipContent>
-          </Tooltip>
+          <div className="mt-auto">
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <div className="mx-2 mb-4 p-3 rounded-xl border border-gray-200/50 flex justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(239,68,68,0.15) 100%)"
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="font-medium">
+                <p className="text-red-500 font-semibold">Avaliação gratuita</p>
+                <p className="text-xs text-gray-500">15 dias restantes</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         )}
       </aside>
 
