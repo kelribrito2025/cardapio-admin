@@ -164,7 +164,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           boxShadow: "4px 0 25px rgba(0, 0, 0, 0.06), 1px 0 10px rgba(0, 0, 0, 0.04)"
         }}
       >
-        {/* Logo */}
+        {/* Logo + Toggle button na mesma linha */}
         <div className={cn(
           "flex items-center h-[72px] border-b border-sidebar-border transition-all duration-300",
           sidebarCollapsed ? "justify-center px-2" : "justify-between px-6"
@@ -177,30 +177,28 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <span className="font-bold text-xl text-gray-800 whitespace-nowrap">Cardápio</span>
             )}
           </Link>
-          {!sidebarCollapsed && (
+          <div className="flex items-center gap-1">
+            {/* Toggle button - Desktop only */}
             <button
-              onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors"
+              onClick={toggleSidebarCollapsed}
+              className="hidden lg:flex p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500 hover:text-gray-700"
+              title={sidebarCollapsed ? "Expandir menu" : "Minimizar menu"}
             >
-              <X className="h-5 w-5 text-gray-600" />
+              <Menu className="h-5 w-5" />
             </button>
-          )}
+            {/* Close button - Mobile only */}
+            {!sidebarCollapsed && (
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-600" />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Toggle button - Desktop only */}
-        <div className="hidden lg:flex justify-end px-2 py-3">
-          <button
-            onClick={toggleSidebarCollapsed}
-            className="p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500 hover:text-gray-700"
-            title={sidebarCollapsed ? "Expandir menu" : "Minimizar menu"}
-          >
-            {sidebarCollapsed ? (
-              <ChevronRight className="h-5 w-5" />
-            ) : (
-              <ChevronLeft className="h-5 w-5" />
-            )}
-          </button>
-        </div>
+
 
         {/* Navigation */}
         <nav className={cn(

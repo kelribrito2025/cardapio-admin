@@ -91,3 +91,5 @@
 - [x] Adicionar tooltips nos itens quando sidebar minimizada
 - [x] Persistir estado no localStorage
 - [x] Manter comportamento responsivo (drawer no mobile)
+- [x] Mover botão minimizar/maximizar para a mesma linha do título Cardápio
+- [x] Trocar ícone do botão toggle para algo mais adequado
