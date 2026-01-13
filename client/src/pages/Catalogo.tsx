@@ -364,7 +364,7 @@ export default function Catalogo() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => navigate(`/catalogo/${product.id}`)}
+                          onClick={() => navigate(`/catalogo/editar/${product.id}`)}
                           className="h-9 w-9 rounded-lg hover:bg-accent"
                         >
                           <Edit className="h-4 w-4" />
