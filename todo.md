@@ -83,3 +83,5 @@
 - [x] Corrigir badge "Sem estoque" mostrando incorretamente quando produto tem estoque
 - [x] Alterar sidebar para cor escura com estilo degradê
 - [x] Ajustar sidebar para tom mais claro puxado para vermelho com degradê
+- [x] Ajustar sidebar para vermelho mais vibrante e adicionar efeito de sombra
+- [x] Ajustar sidebar para tom cinza claro com degradê

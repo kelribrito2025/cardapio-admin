@@ -127,7 +127,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
         style={{
-          background: "linear-gradient(180deg, oklch(0.42 0.14 25) 0%, oklch(0.32 0.12 25) 100%)"
+          background: "linear-gradient(180deg, oklch(0.42 0.01 250) 0%, oklch(0.30 0.01 250) 100%)",
+          boxShadow: "4px 0 20px rgba(0, 0, 0, 0.12), 2px 0 8px rgba(0, 0, 0, 0.08)"
         }}
       >
         {/* Logo */}
