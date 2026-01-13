@@ -139,3 +139,20 @@
 
 ## Ícone de Minimizar/Maximizar Sidebar
 - [x] Alterar ícone para painel lateral (PanelLeft/PanelLeftClose)
+
+## Container Inline para Criar Categoria
+- [ ] Remover botão "Categoria" do header
+- [ ] Criar container inline com campo de texto e botão "Adicionar"
+- [ ] Validar nome vazio e mostrar mensagem
+- [ ] Validar nome duplicado e mostrar mensagem
+- [ ] Limpar campo após criar categoria
+- [ ] Atualizar lista imediatamente sem recarregar página
+
+## Container Nova Categoria no Topo da Lista
+- [x] Remover botão "Categoria" do header
+- [x] Criar container "Nova categoria" no topo da lista de categorias (mesmo estilo visual)
+- [x] Campo editável ao clicar no título "Nova categoria"
+- [x] Validar nome vazio e mostrar mensagem
+- [x] Validar nome duplicado e mostrar mensagem
+- [x] Após criar, manter container para criar outra categoria
+- [x] Atualizar lista imediatamente sem recarregar página
