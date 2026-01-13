@@ -36,7 +36,7 @@ import { toast } from "sonner";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
-  { icon: UtensilsCrossed, label: "Catálogo", href: "/catalogo" },
+  { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo" },
   { icon: ClipboardList, label: "Pedidos", href: "/pedidos" },
   { icon: Package, label: "Estoque", href: "/estoque", placeholder: true },
   { icon: Tag, label: "Promoções", href: "/promocoes", placeholder: true },
