@@ -254,9 +254,8 @@ export default function Catalogo() {
   // Dialogs
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<number | null>(null);
-  // Inline new category creation
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
-  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   
   // Reorder mode
   const [reorderCategoriesMode, setReorderCategoriesMode] = useState(false);
@@ -369,16 +368,11 @@ export default function Catalogo() {
   const createCategoryMutation = trpc.category.create.useMutation({
     onSuccess: () => {
       refetchCategories();
+      setCategoryDialogOpen(false);
       setNewCategoryName("");
       toast.success("Categoria criada");
     },
-    onError: (error) => {
-      if (error.message.includes("duplicate") || error.message.includes("já existe")) {
-        toast.error("Já existe uma categoria com esse nome");
-      } else {
-        toast.error("Erro ao criar categoria");
-      }
-    },
+    onError: () => toast.error("Erro ao criar categoria"),
   });
 
   const reorderCategoriesMutation = trpc.category.reorder.useMutation({
@@ -451,26 +445,12 @@ export default function Catalogo() {
   };
 
   const handleCreateCategory = () => {
-    const trimmedName = newCategoryName.trim();
-    if (!trimmedName) {
-      toast.error("Digite o nome da categoria");
-      return;
+    if (newCategoryName.trim() && establishmentId) {
+      createCategoryMutation.mutate({
+        establishmentId,
+        name: newCategoryName.trim(),
+      });
     }
-    if (!establishmentId) return;
-    
-    // Check for duplicate name
-    const isDuplicate = categories?.some(
-      (cat) => cat.name.toLowerCase() === trimmedName.toLowerCase()
-    );
-    if (isDuplicate) {
-      toast.error("Já existe uma categoria com esse nome");
-      return;
-    }
-    
-    createCategoryMutation.mutate({
-      establishmentId,
-      name: trimmedName,
-    });
   };
 
   // Handle product drag end
@@ -607,9 +587,10 @@ export default function Catalogo() {
               title="Nenhuma categoria encontrada"
               description="Crie categorias para organizar seus produtos"
               action={{
-                label: "Sair do modo reordenação",
+                label: "Criar Categoria",
                 onClick: () => {
                   setReorderCategoriesMode(false);
+                  setCategoryDialogOpen(true);
                 }
               }}
             />
@@ -634,7 +615,14 @@ export default function Catalogo() {
               <Layers className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Reordenar Categorias</span>
             </Button>
-
+            <Button
+              variant="outline"
+              onClick={() => setCategoryDialogOpen(true)}
+              className="rounded-xl border-border/50 hover:bg-accent"
+            >
+              <FolderPlus className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Categoria</span>
+            </Button>
             <Button onClick={() => navigate("/catalogo/novo")} className="rounded-xl shadow-sm">
               <Plus className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Novo Produto</span>
@@ -750,64 +738,6 @@ export default function Catalogo() {
         </SectionCard>
       ) : (
         <div className="space-y-6">
-          {/* New Category Container */}
-          <div className="bg-card rounded-2xl border border-border/50 border-dashed shadow-soft overflow-hidden">
-            <div className="flex items-center justify-between p-5 bg-muted/10">
-              {isCreatingCategory ? (
-                <div className="flex items-center gap-2">
-                  <Input
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    placeholder="Digite o nome..."
-                    className="h-9 w-48 font-bold text-lg"
-                    autoFocus
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && newCategoryName.trim()) {
-                        handleCreateCategory();
-                      } else if (e.key === "Escape") {
-                        setNewCategoryName("");
-                        setIsCreatingCategory(false);
-                      }
-                    }}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100"
-                    onClick={handleCreateCategory}
-                    disabled={!newCategoryName.trim() || createCategoryMutation.isPending}
-                  >
-                    <Check className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-100"
-                    onClick={() => {
-                      setNewCategoryName("");
-                      setIsCreatingCategory(false);
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ) : (
-                <div
-                  className="group flex items-center gap-2 px-3 py-1.5 -mx-3 -my-1.5 rounded-lg cursor-pointer hover:bg-muted/50 transition-all duration-200"
-                  onClick={() => setIsCreatingCategory(true)}
-                >
-                  <Plus className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                  <h3 className="font-bold text-lg text-muted-foreground group-hover:text-primary transition-colors">
-                    Nova categoria
-                  </h3>
-                </div>
-              )}
-              <span className="text-sm text-muted-foreground font-medium">
-                Clique para criar
-              </span>
-            </div>
-          </div>
-
           {localCategories.map((category) => {
             const categoryProducts = localProductsByCategory[category.id] || [];
             if (categoryProducts.length === 0) return null;
@@ -973,7 +903,37 @@ export default function Catalogo() {
         </DialogContent>
       </Dialog>
 
-
+      {/* Category Dialog */}
+      <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
+        <DialogContent className="rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Nova categoria</DialogTitle>
+            <DialogDescription>
+              Crie uma nova categoria para organizar seus produtos.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              placeholder="Nome da categoria"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              className="h-11 rounded-xl"
+            />
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setCategoryDialogOpen(false)} className="rounded-xl">
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleCreateCategory}
+              disabled={!newCategoryName.trim() || createCategoryMutation.isPending}
+              className="rounded-xl"
+            >
+              {createCategoryMutation.isPending ? "Criando..." : "Criar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
