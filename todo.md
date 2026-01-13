@@ -34,7 +34,7 @@
 
 ## Categorias
 - [x] Adicionar categoria
-- [ ] Reordenar categorias (drag and drop)
+- [x] Reordenar categorias (drag and drop)
 - [ ] Editar/Excluir categoria
 
 ## Gestão de Pedidos
@@ -93,3 +93,15 @@
 - [x] Manter comportamento responsivo (drawer no mobile)
 - [x] Mover botão minimizar/maximizar para a mesma linha do título Cardápio
 - [x] Trocar ícone do botão toggle para algo mais adequado
+## Drag & Drop no Cardápio
+
+- [x] Adicionar campo sortOrder no schema de produtos e categorias
+- [x] Criar endpoints de reordenação no backend
+- [x] Implementar drag & drop para itens dentro de categorias
+- [x] Adicionar drag handle (ícone grip) nos itens
+- [x] Persistir ordem no banco com atualização otimista
+- [x] Implementar modo "Reordenar Categorias" separado
+- [x] Mostrar apenas categorias no modo de reordenação (sem produtos)
+- [x] Botões Concluir/Cancelar no modo de reordenação
+- [x] Desabilitar drag quando filtros ativos
+- [x] Suporte para desktop e mobile (touch)

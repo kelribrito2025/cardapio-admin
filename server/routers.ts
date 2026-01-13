@@ -222,6 +222,16 @@ export const appRouter = router({
         const newId = await db.duplicateProduct(input.id);
         return { id: newId };
       }),
+    
+    reorder: protectedProcedure
+      .input(z.array(z.object({
+        id: z.number(),
+        sortOrder: z.number(),
+      })))
+      .mutation(async ({ input }) => {
+        await db.reorderProducts(input);
+        return { success: true };
+      }),
   }),
 
   // ============ COMPLEMENTS ============

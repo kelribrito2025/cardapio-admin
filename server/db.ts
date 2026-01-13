@@ -169,6 +169,15 @@ export async function reorderCategories(categoryOrders: { id: number; sortOrder:
   }
 }
 
+export async function reorderProducts(productOrders: { id: number; sortOrder: number }[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  for (const { id, sortOrder } of productOrders) {
+    await db.update(products).set({ sortOrder }).where(eq(products.id, id));
+  }
+}
+
 // ============ PRODUCT FUNCTIONS ============
 export async function getProductsByEstablishment(
   establishmentId: number,
