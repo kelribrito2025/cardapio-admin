@@ -81,3 +81,4 @@
 - [x] Corrigir erro 404 ao clicar em editar produto
 - [x] Implementar upload de imagens real (selecionar arquivos do computador em vez de URL)
 - [x] Corrigir badge "Sem estoque" mostrando incorretamente quando produto tem estoque
+- [x] Alterar sidebar para cor escura com estilo degradê

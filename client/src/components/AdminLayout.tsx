@@ -123,9 +123,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-72 bg-sidebar border-r border-sidebar-border transition-transform duration-300 lg:translate-x-0",
+          "fixed top-0 left-0 z-50 h-full w-72 border-r border-sidebar-border transition-transform duration-300 lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
+        style={{
+          background: "linear-gradient(180deg, oklch(0.22 0.02 250) 0%, oklch(0.15 0.015 250) 100%)"
+        }}
       >
         {/* Logo */}
         <div className="flex items-center justify-between h-[72px] px-6 border-b border-sidebar-border">

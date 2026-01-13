@@ -98,12 +98,12 @@
   --input: oklch(0.92 0.005 250);
   --ring: oklch(0.55 0.22 25);
   
-  /* Sidebar moderna - cinza escuro elegante */
-  --sidebar: oklch(0.98 0.002 250);
-  --sidebar-foreground: oklch(0.25 0.01 250);
-  --sidebar-accent: oklch(0.94 0.005 250);
-  --sidebar-accent-foreground: oklch(0.15 0.01 250);
-  --sidebar-border: oklch(0.92 0.005 250);
+  /* Sidebar escura com degradê */
+  --sidebar: oklch(0.18 0.015 250);
+  --sidebar-foreground: oklch(0.92 0.005 250);
+  --sidebar-accent: oklch(0.25 0.015 250);
+  --sidebar-accent-foreground: oklch(0.99 0 0);
+  --sidebar-border: oklch(0.25 0.01 250);
   --sidebar-ring: oklch(0.55 0.22 25);
   
   /* Status colors */
