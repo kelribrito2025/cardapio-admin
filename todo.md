@@ -136,3 +136,6 @@
 - [x] Adicionar mudança sutil de cor de fundo ao hover no título da categoria
 - [x] Adicionar ícone de lápis que aparece ao passar o mouse
 - [x] Transição suave para reforçar possibilidade de edição
+
+## Ícone de Minimizar/Maximizar Sidebar
+- [x] Alterar ícone para painel lateral (PanelLeft/PanelLeftClose)

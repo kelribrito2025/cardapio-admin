@@ -18,8 +18,8 @@ import {
   LogOut,
   ChevronDown,
   Store,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeft,
+  PanelLeftClose,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
@@ -184,7 +184,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               className="hidden lg:flex p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500 hover:text-gray-700"
               title={sidebarCollapsed ? "Expandir menu" : "Minimizar menu"}
             >
-              <Menu className="h-5 w-5" />
+              {sidebarCollapsed ? (
+                <PanelLeft className="h-5 w-5" />
+              ) : (
+                <PanelLeftClose className="h-5 w-5" />
+              )}
             </button>
             {/* Close button - Mobile only */}
             {!sidebarCollapsed && (
