@@ -131,3 +131,8 @@
 - [x] Implementar campo editável ao clicar no nome
 - [x] Adicionar botões de confirmar (✅) e cancelar (❌)
 - [x] Salvar alteração ao confirmar e rollback ao cancelar
+
+## Micro-efeito Visual na Edição de Categoria
+- [x] Adicionar mudança sutil de cor de fundo ao hover no título da categoria
+- [x] Adicionar ícone de lápis que aparece ao passar o mouse
+- [x] Transição suave para reforçar possibilidade de edição

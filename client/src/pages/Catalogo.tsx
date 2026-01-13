@@ -38,6 +38,7 @@ import {
   Layers,
   Check,
   X,
+  Pencil,
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
@@ -786,15 +787,18 @@ export default function Catalogo() {
                       </Button>
                     </div>
                   ) : (
-                    <h3
-                      className="font-bold text-lg cursor-pointer hover:text-primary transition-colors"
+                    <div
+                      className="group flex items-center gap-2 px-3 py-1.5 -mx-3 -my-1.5 rounded-lg cursor-pointer hover:bg-muted/50 transition-all duration-200"
                       onClick={() => {
                         setEditingCategoryId(category.id);
                         setEditingCategoryName(category.name);
                       }}
                     >
-                      {category.name}
-                    </h3>
+                      <h3 className="font-bold text-lg group-hover:text-primary transition-colors">
+                        {category.name}
+                      </h3>
+                      <Pencil className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    </div>
                   )}
                   <span className="text-sm text-muted-foreground font-medium">
                     {categoryProducts.length} {categoryProducts.length === 1 ? "produto" : "produtos"}
