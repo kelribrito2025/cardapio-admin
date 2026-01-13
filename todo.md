@@ -164,3 +164,6 @@
 - [x] Implementar ação "Marcar como em falta"
 - [x] Garantir responsividade (mobile/tablet/desktop)
 - [x] Adicionar feedback visual após atualizações
+
+## Bugs
+- [x] Corrigir link do menu Estoque na sidebar que não carrega a página

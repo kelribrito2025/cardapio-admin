@@ -47,7 +47,7 @@ const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo" },
   { icon: ClipboardList, label: "Pedidos", href: "/pedidos" },
-  { icon: Package, label: "Estoque", href: "/estoque", placeholder: true },
+  { icon: Package, label: "Estoque", href: "/estoque" },
   { icon: Tag, label: "Promoções", href: "/promocoes", placeholder: true },
   { icon: Users, label: "Clientes", href: "/clientes", placeholder: true },
   { icon: BarChart3, label: "Relatórios", href: "/relatorios", placeholder: true },
