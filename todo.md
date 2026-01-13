@@ -139,3 +139,6 @@
 
 ## Ícone de Minimizar/Maximizar Sidebar
 - [x] Alterar ícone para painel lateral (PanelLeft/PanelLeftClose)
+
+## Remoção do Container de Filtros
+- [x] Remover container de filtros (busca, categoria, status, estoque, ordenação) do Catálogo

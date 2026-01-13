@@ -631,78 +631,7 @@ export default function Catalogo() {
         }
       />
 
-      {/* Filters */}
-      <div className="bg-card rounded-2xl border border-border/50 p-5 mb-8 shadow-soft">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar produtos..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-11 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
-            />
-          </div>
-          <div className="flex gap-3 flex-wrap">
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-[140px] h-11 rounded-xl border-border/50">
-                <SelectValue placeholder="Categoria" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl border-border/50 shadow-elevated">
-                <SelectItem value="all" className="rounded-lg">Todas</SelectItem>
-                {categories?.map((cat) => (
-                  <SelectItem key={cat.id} value={String(cat.id)} className="rounded-lg">
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
 
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[120px] h-11 rounded-xl border-border/50">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl border-border/50 shadow-elevated">
-                <SelectItem value="all" className="rounded-lg">Todos</SelectItem>
-                <SelectItem value="active" className="rounded-lg">Ativo</SelectItem>
-                <SelectItem value="paused" className="rounded-lg">Pausado</SelectItem>
-                <SelectItem value="archived" className="rounded-lg">Arquivado</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={stockFilter} onValueChange={setStockFilter}>
-              <SelectTrigger className="w-[140px] h-11 rounded-xl border-border/50">
-                <SelectValue placeholder="Estoque" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl border-border/50 shadow-elevated">
-                <SelectItem value="all" className="rounded-lg">Todos</SelectItem>
-                <SelectItem value="inStock" className="rounded-lg">Em estoque</SelectItem>
-                <SelectItem value="outOfStock" className="rounded-lg">Sem estoque</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={orderBy} onValueChange={setOrderBy}>
-              <SelectTrigger className="w-[150px] h-11 rounded-xl border-border/50">
-                <ArrowUpDown className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Ordenar" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl border-border/50 shadow-elevated">
-                <SelectItem value="sortOrder" className="rounded-lg">Padrão</SelectItem>
-                <SelectItem value="name" className="rounded-lg">Nome</SelectItem>
-                <SelectItem value="price" className="rounded-lg">Preço</SelectItem>
-                <SelectItem value="salesCount" className="rounded-lg">Mais vendidos</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        
-        {/* Warning when filters are active */}
-        {hasActiveFilters && (
-          <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl text-sm text-amber-700 dark:text-amber-300">
-            <strong>Dica:</strong> Desative os filtros para reordenar os produtos arrastando.
-          </div>
-        )}
-      </div>
 
       {/* Products List */}
       {isLoading ? (
