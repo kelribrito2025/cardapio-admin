@@ -105,3 +105,7 @@
 - [x] Botões Concluir/Cancelar no modo de reordenação
 - [x] Desabilitar drag quando filtros ativos
 - [x] Suporte para desktop e mobile (touch)
+
+
+## Container Avaliação Gratuita na Sidebar
+- [x] Adicionar container "Avaliação gratuita" no final da sidebar conforme design do Figma
