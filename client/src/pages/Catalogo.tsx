@@ -100,7 +100,7 @@ function SortableProductItem({
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{height: '65px'}}
       className={cn(
         "flex items-center gap-4 p-4 hover:bg-muted/30 transition-colors bg-card",
         isDragging && "shadow-lg rounded-xl"
