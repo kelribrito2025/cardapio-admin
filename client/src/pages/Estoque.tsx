@@ -337,61 +337,66 @@ export default function Estoque() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2">
+          {/* Total */}
+          <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Total</p>
+                <p className="text-2xl font-bold mt-1 tracking-tight">{stockSummary?.total ?? 0}</p>
+              </div>
+              <div className="p-2.5 bg-muted/50 rounded-xl shrink-0">
                 <Package className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-2xl font-bold">{stockSummary?.total ?? 0}</p>
-                  <p className="text-xs text-muted-foreground">Total</p>
-                </div>
               </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-green-500" />
-                <div>
-                  <p className="text-2xl font-bold text-green-600">{stockSummary?.ok ?? 0}</p>
-                  <p className="text-xs text-muted-foreground">OK</p>
-                </div>
+            </div>
+          </div>
+          {/* OK */}
+          <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">OK</p>
+                <p className="text-2xl font-bold mt-1 tracking-tight text-green-600">{stockSummary?.ok ?? 0}</p>
               </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                <div>
-                  <p className="text-2xl font-bold text-yellow-600">{stockSummary?.low ?? 0}</p>
-                  <p className="text-xs text-muted-foreground">Baixo</p>
-                </div>
+              <div className="p-2.5 bg-green-100 rounded-xl shrink-0">
+                <CheckCircle className="h-5 w-5 text-green-600" />
               </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-orange-500" />
-                <div>
-                  <p className="text-2xl font-bold text-orange-600">{stockSummary?.critical ?? 0}</p>
-                  <p className="text-xs text-muted-foreground">Crítico</p>
-                </div>
+            </div>
+          </div>
+          {/* Baixo */}
+          <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Baixo</p>
+                <p className="text-2xl font-bold mt-1 tracking-tight text-yellow-600">{stockSummary?.low ?? 0}</p>
               </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2">
-                <XCircle className="h-5 w-5 text-red-500" />
-                <div>
-                  <p className="text-2xl font-bold text-red-600">{stockSummary?.outOfStock ?? 0}</p>
-                  <p className="text-xs text-muted-foreground">Em falta</p>
-                </div>
+              <div className="p-2.5 bg-yellow-100 rounded-xl shrink-0">
+                <AlertTriangle className="h-5 w-5 text-yellow-600" />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+          {/* Crítico */}
+          <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Crítico</p>
+                <p className="text-2xl font-bold mt-1 tracking-tight text-orange-600">{stockSummary?.critical ?? 0}</p>
+              </div>
+              <div className="p-2.5 bg-orange-100 rounded-xl shrink-0">
+                <AlertCircle className="h-5 w-5 text-orange-600" />
+              </div>
+            </div>
+          </div>
+          {/* Em falta */}
+          <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 border-red-200/50 bg-red-50/30">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Em falta</p>
+                <p className="text-2xl font-bold mt-1 tracking-tight text-red-600">{stockSummary?.outOfStock ?? 0}</p>
+              </div>
+              <div className="p-2.5 bg-red-100 rounded-xl shrink-0">
+                <XCircle className="h-5 w-5 text-red-600" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Filters */}
