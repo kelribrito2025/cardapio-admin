@@ -4,6 +4,15 @@ import { AdminLayout } from "@/components/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -49,11 +58,11 @@ import {
 
 type StockStatus = "ok" | "low" | "critical" | "out_of_stock";
 
-const statusConfig: Record<StockStatus, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
-  ok: { label: "OK", color: "text-green-600", bgColor: "bg-green-100", icon: <CheckCircle className="h-4 w-4" /> },
-  low: { label: "Baixo", color: "text-yellow-600", bgColor: "bg-yellow-100", icon: <AlertTriangle className="h-4 w-4" /> },
-  critical: { label: "Crítico", color: "text-orange-600", bgColor: "bg-orange-100", icon: <AlertCircle className="h-4 w-4" /> },
-  out_of_stock: { label: "Em falta", color: "text-red-600", bgColor: "bg-red-100", icon: <XCircle className="h-4 w-4" /> },
+const statusConfig: Record<StockStatus, { label: string; color: string; bgColor: string; borderColor: string; icon: React.ReactNode }> = {
+  ok: { label: "OK", color: "text-green-700", bgColor: "bg-green-50", borderColor: "border-green-200", icon: <CheckCircle className="h-4 w-4" /> },
+  low: { label: "Baixo", color: "text-yellow-700", bgColor: "bg-yellow-50", borderColor: "border-yellow-200", icon: <AlertTriangle className="h-4 w-4" /> },
+  critical: { label: "Crítico", color: "text-orange-700", bgColor: "bg-orange-50", borderColor: "border-orange-200", icon: <AlertCircle className="h-4 w-4" /> },
+  out_of_stock: { label: "Sem estoque", color: "text-red-700", bgColor: "bg-red-50", borderColor: "border-red-200", icon: <XCircle className="h-4 w-4" /> },
 };
 
 const unitLabels: Record<string, string> = {
@@ -399,100 +408,123 @@ export default function Estoque() {
           </div>
         </div>
 
-        {/* Stock Items List */}
-        <div className="space-y-3">
+        {/* Stock Items Table */}
+        <Card className="overflow-hidden">
           {isLoadingItems ? (
-            Array.from({ length: 5 }).map((_, i) => (
-              <Card key={i}>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-4">
-                    <Skeleton className="h-12 w-12 rounded-lg" />
-                    <div className="flex-1 space-y-2">
-                      <Skeleton className="h-4 w-1/3" />
-                      <Skeleton className="h-3 w-1/4" />
-                    </div>
-                    <Skeleton className="h-8 w-24" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))
+            <div className="p-6 space-y-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4">
+                  <Skeleton className="h-5 w-5 rounded" />
+                  <Skeleton className="h-5 w-40" />
+                  <Skeleton className="h-5 w-24" />
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                  <Skeleton className="h-5 w-20" />
+                  <Skeleton className="h-5 w-20" />
+                  <Skeleton className="h-5 w-24" />
+                </div>
+              ))}
+            </div>
           ) : stockItems && stockItems.length > 0 ? (
-            stockItems.map((item) => {
-              const status = item.status as StockStatus;
-              const config = statusConfig[status];
-              const currentQty = Number(item.currentQuantity);
-              const minQty = Number(item.minQuantity);
-              const maxQty = item.maxQuantity ? Number(item.maxQuantity) : undefined;
-              const progress = getProgressPercentage(currentQty, minQty, maxQty);
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/30 hover:bg-muted/30">
+                  <TableHead className="w-12">
+                    <Checkbox />
+                  </TableHead>
+                  <TableHead className="font-semibold text-foreground">Item</TableHead>
+                  <TableHead className="font-semibold text-foreground">Estoque atual</TableHead>
+                  <TableHead className="font-semibold text-foreground">Status</TableHead>
+                  <TableHead className="font-semibold text-foreground">Custo unitário</TableHead>
+                  <TableHead className="font-semibold text-foreground">Valor total</TableHead>
+                  <TableHead className="font-semibold text-foreground">Última atualização</TableHead>
+                  <TableHead className="w-12"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {stockItems.map((item) => {
+                  const status = item.status as StockStatus;
+                  const config = statusConfig[status];
+                  const currentQty = Number(item.currentQuantity);
+                  const minQty = Number(item.minQuantity);
+                  const maxQty = item.maxQuantity ? Number(item.maxQuantity) : undefined;
+                  const costPerUnit = item.costPerUnit ? Number(item.costPerUnit) : 0;
+                  const totalValue = costPerUnit * currentQty;
+                  const unitLabel = unitLabels[item.unit] || item.unit;
+                  
+                  // Format relative time
+                  const updatedAt = new Date(item.updatedAt);
+                  const now = new Date();
+                  const diffMs = now.getTime() - updatedAt.getTime();
+                  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                  const diffWeeks = Math.floor(diffDays / 7);
+                  
+                  let timeAgo = "";
+                  if (diffHours < 1) {
+                    timeAgo = "Agora";
+                  } else if (diffHours < 24) {
+                    timeAgo = `${diffHours} hora${diffHours > 1 ? "s" : ""} atrás`;
+                  } else if (diffDays < 7) {
+                    timeAgo = `${diffDays} dia${diffDays > 1 ? "s" : ""} atrás`;
+                  } else {
+                    timeAgo = `${diffWeeks} semana${diffWeeks > 1 ? "s" : ""} atrás`;
+                  }
 
-              return (
-                <Card key={item.id} className="hover:shadow-md transition-shadow" style={{paddingTop: '0px', height: '80px'}}>
-                  <CardContent className="p-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                      {/* Item Info */}
-                      <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className={`p-3 rounded-lg ${config.bgColor}`}>
-                          <Package className={`h-6 w-6 ${config.color}`} />
+                  return (
+                    <TableRow key={item.id} className="hover:bg-muted/20">
+                      <TableCell>
+                        <Checkbox />
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium text-foreground">{item.name}</p>
+                          <p className="text-sm text-muted-foreground">{getCategoryName(item.categoryId)}</p>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="font-semibold truncate">{item.name}</h3>
-                            <Badge variant="outline" className="text-xs">
-                              {getCategoryName(item.categoryId)}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-sm font-medium ${config.color}`}>
-                              {currentQty} {unitLabels[item.unit] || item.unit}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              (mín: {minQty})
-                            </span>
-                          </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium text-foreground">{currentQty} {unitLabel}</p>
+                          <p className="text-sm text-muted-foreground">Min: {minQty} / Max: {maxQty || "-"}</p>
                         </div>
-                      </div>
-
-                      {/* Progress Bar */}
-                      <div className="w-full sm:w-32 flex-shrink-0">
-                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full ${getProgressColor(status)} transition-all duration-300`}
-                            style={{ width: `${progress}%` }}
-                          />
-                        </div>
-                        <div className="flex items-center justify-between mt-1">
-                          <Badge className={`${config.bgColor} ${config.color} border-0 text-xs`}>
-                            {config.icon}
-                            <span className="ml-1">{config.label}</span>
-                          </Badge>
-                        </div>
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => openMovementDialog(item, "entry")}
-                          className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant="outline" 
+                          className={`${config.bgColor} ${config.color} ${config.borderColor} font-medium px-3 py-1`}
                         >
-                          <PackagePlus className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => openMovementDialog(item, "exit")}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <PackageMinus className="h-4 w-4" />
-                        </Button>
+                          {config.label}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-foreground">
+                          R$ {costPerUnit.toFixed(2)}/{unitLabel}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-semibold text-foreground">
+                          R$ {totalValue.toFixed(2)}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-muted-foreground">{timeAgo}</span>
+                      </TableCell>
+                      <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                               <MoreVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => openMovementDialog(item, "entry")}>
+                              <PackagePlus className="h-4 w-4 mr-2 text-green-600" />
+                              Entrada
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => openMovementDialog(item, "exit")}>
+                              <PackageMinus className="h-4 w-4 mr-2 text-red-600" />
+                              Saída
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => openEditDialog(item)}>
                               <Edit className="h-4 w-4 mr-2" />
                               Editar
@@ -522,31 +554,29 @@ export default function Estoque() {
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           ) : (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Nenhum item no estoque</h3>
-                <p className="text-muted-foreground mb-4">
-                  Adicione itens para começar a controlar seu estoque
-                </p>
-                <Button onClick={() => {
-                  resetNewItemForm();
-                  setIsNewItemDialogOpen(true);
-                }}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Adicionar primeiro item
-                </Button>
-              </CardContent>
-            </Card>
+            <CardContent className="py-12 text-center">
+              <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">Nenhum item no estoque</h3>
+              <p className="text-muted-foreground mb-4">
+                Adicione itens para começar a controlar seu estoque
+              </p>
+              <Button onClick={() => {
+                resetNewItemForm();
+                setIsNewItemDialogOpen(true);
+              }}>
+                <Plus className="h-4 w-4 mr-2" />
+                Adicionar primeiro item
+              </Button>
+            </CardContent>
           )}
-        </div>
+        </Card>
       </div>
 
       {/* New Item Dialog */}

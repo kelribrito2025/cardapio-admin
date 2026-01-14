@@ -182,3 +182,6 @@
 
 ## Card de Pedidos Recentes
 - [x] Atualizar card de Pedidos Recentes na Dashboard com novo modelo (StatusBadge, layout compacto, ícone de relógio)
+
+## Lista de Itens do Estoque
+- [x] Implementar tabela com colunas: Item (nome+categoria), Estoque atual (qtd+min/max), Status, Custo unitário, Valor total, Última atualização, Ações
