@@ -172,35 +172,101 @@ export default function Pedidos() {
         }
       />
 
+      {/* Status Summary Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        {/* Novos */}
+        <div 
+          className={cn(
+            "bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
+            activeTab === "new" && "ring-2 ring-blue-500"
+          )}
+          onClick={() => setActiveTab("new")}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Novos</p>
+              <p className="text-2xl font-bold mt-1 tracking-tight text-blue-600">{orderCounts.new}</p>
+            </div>
+            <div className="p-2.5 bg-blue-100 rounded-xl shrink-0">
+              <Clock className="h-5 w-5 text-blue-600" />
+            </div>
+          </div>
+        </div>
+        {/* Em Preparo */}
+        <div 
+          className={cn(
+            "bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
+            activeTab === "preparing" && "ring-2 ring-amber-500"
+          )}
+          onClick={() => setActiveTab("preparing")}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Em Preparo</p>
+              <p className="text-2xl font-bold mt-1 tracking-tight text-amber-600">{orderCounts.preparing}</p>
+            </div>
+            <div className="p-2.5 bg-amber-100 rounded-xl shrink-0">
+              <ChefHat className="h-5 w-5 text-amber-600" />
+            </div>
+          </div>
+        </div>
+        {/* Prontos */}
+        <div 
+          className={cn(
+            "bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
+            activeTab === "ready" && "ring-2 ring-emerald-500"
+          )}
+          onClick={() => setActiveTab("ready")}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Prontos</p>
+              <p className="text-2xl font-bold mt-1 tracking-tight text-emerald-600">{orderCounts.ready}</p>
+            </div>
+            <div className="p-2.5 bg-emerald-100 rounded-xl shrink-0">
+              <Package className="h-5 w-5 text-emerald-600" />
+            </div>
+          </div>
+        </div>
+        {/* Finalizados */}
+        <div 
+          className={cn(
+            "bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
+            activeTab === "completed" && "ring-2 ring-gray-500"
+          )}
+          onClick={() => setActiveTab("completed")}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Finalizados</p>
+              <p className="text-2xl font-bold mt-1 tracking-tight text-gray-600">{orderCounts.completed}</p>
+            </div>
+            <div className="p-2.5 bg-gray-100 rounded-xl shrink-0">
+              <CheckCircle className="h-5 w-5 text-gray-600" />
+            </div>
+          </div>
+        </div>
+        {/* Cancelados */}
+        <div 
+          className={cn(
+            "bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer border-red-200/50 bg-red-50/30",
+            activeTab === "cancelled" && "ring-2 ring-red-500"
+          )}
+          onClick={() => setActiveTab("cancelled")}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Cancelados</p>
+              <p className="text-2xl font-bold mt-1 tracking-tight text-red-600">{orderCounts.cancelled}</p>
+            </div>
+            <div className="p-2.5 bg-red-100 rounded-xl shrink-0">
+              <XCircle className="h-5 w-5 text-red-600" />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as OrderStatus | "all")}>
-        <TabsList className="mb-8 flex-wrap h-auto gap-2 bg-muted/50 p-1.5 rounded-xl">
-          <TabsTrigger value="new" className="relative rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
-            Novos
-            {orderCounts.new > 0 && (
-              <span className="ml-2 px-2 py-0.5 text-xs bg-blue-600 text-white rounded-full font-semibold">
-                {orderCounts.new}
-              </span>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="preparing" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
-            Em preparo
-            {orderCounts.preparing > 0 && (
-              <span className="ml-2 px-2 py-0.5 text-xs bg-amber-500 text-white rounded-full font-semibold">
-                {orderCounts.preparing}
-              </span>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="ready" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
-            Prontos
-            {orderCounts.ready > 0 && (
-              <span className="ml-2 px-2 py-0.5 text-xs bg-emerald-500 text-white rounded-full font-semibold">
-                {orderCounts.ready}
-              </span>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="completed" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">Finalizados</TabsTrigger>
-          <TabsTrigger value="cancelled" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">Cancelados</TabsTrigger>
-        </TabsList>
 
         <TabsContent value={activeTab} className="mt-0">
           {isLoading ? (

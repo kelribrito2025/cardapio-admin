@@ -173,3 +173,6 @@
 
 ## Remoção do Container de Filtros do Estoque
 - [x] Remover container de filtros (busca, categorias, status) da página de Estoque
+
+## Cards de Status na Página de Pedidos
+- [x] Ajustar cards de status (Novos, Em Preparo, Pronto, Finalizado, Cancelado) para seguir estilo dos cards da página de Estoque
