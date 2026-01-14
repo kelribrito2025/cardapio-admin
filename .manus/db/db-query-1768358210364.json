@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO orders (establishmentId, orderNumber, customerName, customerPhone, customerAddress, status, deliveryType, paymentMethod, subtotal, deliveryFee, total, notes, createdAt) VALUES \n(1, '1004', 'Pedro Oliveira', '11966554433', 'Rua das Palmeiras, 321 - Bela Vista', 'preparing', 'delivery', 'card', 55.00, 6.00, 61.00, 'Caprichar no molho', NOW() - INTERVAL 15 MINUTE),\n(1, '1005', 'Carla Mendes', '11955443322', 'Av. Paulista, 1000 - Centro', 'preparing', 'pickup', 'pix', 42.80, 0.00, 42.80, NULL, NOW() - INTERVAL 12 MINUTE);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute INSERT INTO orders (establishmentId, orderNumber, customerName, customerPhone, customerAddress, status, deliveryType, paymentMethod, subtotal, deliveryFee, total, notes, createdAt) VALUES \n(1, '1004', 'Pedro Oliveira', '11966554433', 'Rua das Palmeiras, 321 - Bela Vista', 'preparing', 'delivery', 'card', 55.00, 6.00, 61.00, 'Caprichar no molho', NOW() - INTERVAL 15 MINUTE),\n(1, '1005', 'Carla Mendes', '11955443322', 'Av. Paulista, 1000 - Centro', 'preparing', 'pickup', 'pix', 42.80, 0.00, 42.80, NULL, NOW() - INTERVAL 12 MINUTE);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 61
+}

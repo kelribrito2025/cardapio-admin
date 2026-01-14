@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO orders (establishmentId, orderNumber, customerName, customerPhone, customerAddress, status, deliveryType, paymentMethod, subtotal, deliveryFee, total, notes, createdAt) VALUES \n(1, '1001', 'Maria Silva', '11999887766', 'Rua das Flores, 123 - Centro', 'new', 'delivery', 'pix', 45.90, 5.00, 50.90, 'Sem cebola', NOW() - INTERVAL 5 MINUTE),\n(1, '1002', 'João Santos', '11988776655', 'Av. Brasil, 456 - Jardim', 'new', 'pickup', 'card', 32.50, 0.00, 32.50, NULL, NOW() - INTERVAL 3 MINUTE),\n(1, '1003', 'Ana Costa', '11977665544', 'Rua do Comércio, 789 - Vila Nova', 'new', 'delivery', 'cash', 78.00, 8.00, 86.00, 'Troco para 100', NOW() - INTERVAL 1 MINUTE);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute INSERT INTO orders (establishmentId, orderNumber, customerName, customerPhone, customerAddress, status, deliveryType, paymentMethod, subtotal, deliveryFee, total, notes, createdAt) VALUES \n(1, '1001', 'Maria Silva', '11999887766', 'Rua das Flores, 123 - Centro', 'new', 'delivery', 'pix', 45.90, 5.00, 50.90, 'Sem cebola', NOW() - INTERVAL 5 MINUTE),\n(1, '1002', 'João Santos', '11988776655', 'Av. Brasil, 456 - Jardim', 'new', 'pickup', 'card', 32.50, 0.00, 32.50, NULL, NOW() - INTERVAL 3 MINUTE),\n(1, '1003', 'Ana Costa', '11977665544', 'Rua do Comércio, 789 - Vila Nova', 'new', 'delivery', 'cash', 78.00, 8.00, 86.00, 'Troco para 100', NOW() - INTERVAL 1 MINUTE);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 73
+}

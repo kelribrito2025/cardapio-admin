@@ -1,0 +1,30 @@
+{
+  "query": "SELECT status, COUNT(*) as count FROM orders GROUP BY status ORDER BY FIELD(status, 'new', 'preparing', 'ready', 'completed', 'cancelled');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT status, COUNT(*) as count FROM orders GROUP BY status ORDER BY FIELD(status, 'new', 'preparing', 'ready', 'completed', 'cancelled');",
+  "rows": [
+    {
+      "status": "new",
+      "count": "3"
+    },
+    {
+      "status": "preparing",
+      "count": "2"
+    },
+    {
+      "status": "ready",
+      "count": "2"
+    },
+    {
+      "status": "completed",
+      "count": "31"
+    },
+    {
+      "status": "cancelled",
+      "count": "2"
+    }
+  ],
+  "messages": [],
+  "stdout": "status\tcount\nnew\t3\npreparing\t2\nready\t2\ncompleted\t31\ncancelled\t2\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

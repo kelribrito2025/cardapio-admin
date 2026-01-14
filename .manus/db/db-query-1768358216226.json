@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO orders (establishmentId, orderNumber, customerName, customerPhone, customerAddress, status, deliveryType, paymentMethod, subtotal, deliveryFee, total, notes, createdAt) VALUES \n(1, '1006', 'Lucas Ferreira', '11944332211', 'Rua Augusta, 555 - Consolação', 'ready', 'delivery', 'cash', 89.90, 7.00, 96.90, 'Ligar ao chegar', NOW() - INTERVAL 25 MINUTE),\n(1, '1007', 'Fernanda Lima', '11933221100', 'Av. Rebouças, 888 - Pinheiros', 'ready', 'pickup', 'card', 35.50, 0.00, 35.50, NULL, NOW() - INTERVAL 22 MINUTE);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute INSERT INTO orders (establishmentId, orderNumber, customerName, customerPhone, customerAddress, status, deliveryType, paymentMethod, subtotal, deliveryFee, total, notes, createdAt) VALUES \n(1, '1006', 'Lucas Ferreira', '11944332211', 'Rua Augusta, 555 - Consolação', 'ready', 'delivery', 'cash', 89.90, 7.00, 96.90, 'Ligar ao chegar', NOW() - INTERVAL 25 MINUTE),\n(1, '1007', 'Fernanda Lima', '11933221100', 'Av. Rebouças, 888 - Pinheiros', 'ready', 'pickup', 'card', 35.50, 0.00, 35.50, NULL, NOW() - INTERVAL 22 MINUTE);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 69
+}

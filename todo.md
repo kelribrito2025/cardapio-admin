@@ -176,3 +176,6 @@
 
 ## Cards de Status na Página de Pedidos
 - [x] Ajustar cards de status (Novos, Em Preparo, Pronto, Finalizado, Cancelado) para seguir estilo dos cards da página de Estoque
+
+## Dados Mockados de Pedidos
+- [x] Adicionar pedidos de teste para cada status (Novos, Em Preparo, Prontos, Finalizados, Cancelados)

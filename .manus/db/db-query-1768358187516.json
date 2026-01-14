@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, orderNumber, status, customerName FROM orders ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, status, customerName FROM orders ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "28",
+      "orderNumber": "PED-W1-021",
+      "status": "completed",
+      "customerName": "Leonardo Barbosa"
+    },
+    {
+      "id": "27",
+      "orderNumber": "PED-W1-020",
+      "status": "completed",
+      "customerName": "Mariana Castro"
+    },
+    {
+      "id": "26",
+      "orderNumber": "PED-W1-019",
+      "status": "completed",
+      "customerName": "Eduardo Silva"
+    },
+    {
+      "id": "25",
+      "orderNumber": "PED-W1-018",
+      "status": "completed",
+      "customerName": "Natalia Freitas"
+    },
+    {
+      "id": "24",
+      "orderNumber": "PED-W1-017",
+      "status": "completed",
+      "customerName": "Ricardo Gomes"
+    },
+    {
+      "id": "23",
+      "orderNumber": "PED-W1-016",
+      "status": "completed",
+      "customerName": "Vanessa Dias"
+    },
+    {
+      "id": "22",
+      "orderNumber": "PED-W1-015",
+      "status": "completed",
+      "customerName": "Felipe Cardoso"
+    },
+    {
+      "id": "21",
+      "orderNumber": "PED-W1-014",
+      "status": "completed",
+      "customerName": "Isabela Nunes"
+    },
+    {
+      "id": "20",
+      "orderNumber": "PED-W1-013",
+      "status": "completed",
+      "customerName": "Gustavo Ribeiro"
+    },
+    {
+      "id": "19",
+      "orderNumber": "PED-W1-012",
+      "status": "completed",
+      "customerName": "Larissa Pereira"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tstatus\tcustomerName\n28\tPED-W1-021\tcompleted\tLeonardo Barbosa\n27\tPED-W1-020\tcompleted\tMariana Castro\n26\tPED-W1-019\tcompleted\tEduardo Silva\n25\tPED-W1-018\tcompleted\tNatalia Freitas\n24\tPED-W1-017\tcompleted\tRicardo Gomes\n23\tPED-W1-016\tcompleted\tVanessa Dias\n22\tPED-W1-015\tcompleted\tFelipe Cardoso\n21\tPED-W1-014\tcompleted\tIsabela Nunes\n20\tPED-W1-013\tcompleted\tGustavo Ribeiro\n19\tPED-W1-012\tcompleted\tLarissa Pereira\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

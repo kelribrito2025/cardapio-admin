@@ -68,6 +68,18 @@ export default function Pedidos() {
   }, [establishment]);
 
   // All hooks MUST be called before any early return
+  // Query para buscar todos os pedidos (para contagem)
+  const { data: allOrders } = trpc.order.list.useQuery(
+    { 
+      establishmentId: establishmentId!,
+    },
+    { 
+      enabled: !!establishmentId,
+      refetchInterval: 30000,
+    }
+  );
+
+  // Query para buscar pedidos filtrados por status
   const { data: orders, refetch, isLoading } = trpc.order.list.useQuery(
     { 
       establishmentId: establishmentId!,
@@ -151,12 +163,13 @@ export default function Pedidos() {
   };
 
   // Count orders by status
+  // Calcular contagem usando todos os pedidos
   const orderCounts = {
-    new: orders?.filter(o => o.status === "new").length ?? 0,
-    preparing: orders?.filter(o => o.status === "preparing").length ?? 0,
-    ready: orders?.filter(o => o.status === "ready").length ?? 0,
-    completed: orders?.filter(o => o.status === "completed").length ?? 0,
-    cancelled: orders?.filter(o => o.status === "cancelled").length ?? 0,
+    new: allOrders?.filter(o => o.status === "new").length ?? 0,
+    preparing: allOrders?.filter(o => o.status === "preparing").length ?? 0,
+    ready: allOrders?.filter(o => o.status === "ready").length ?? 0,
+    completed: allOrders?.filter(o => o.status === "completed").length ?? 0,
+    cancelled: allOrders?.filter(o => o.status === "cancelled").length ?? 0,
   };
 
   return (
