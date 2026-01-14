@@ -426,7 +426,7 @@ export default function Estoque() {
               const progress = getProgressPercentage(currentQty, minQty, maxQty);
 
               return (
-                <Card key={item.id} className="hover:shadow-md transition-shadow">
+                <Card key={item.id} className="hover:shadow-md transition-shadow" style={{paddingTop: '0px', height: '80px'}}>
                   <CardContent className="p-4">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                       {/* Item Info */}
