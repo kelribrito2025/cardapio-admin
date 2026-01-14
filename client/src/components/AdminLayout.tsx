@@ -7,9 +7,6 @@ import {
   UtensilsCrossed,
   ClipboardList,
   Package,
-  Tag,
-  Users,
-  BarChart3,
   Settings,
   Search,
   Bell,
@@ -48,9 +45,6 @@ const navItems = [
   { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo" },
   { icon: ClipboardList, label: "Pedidos", href: "/pedidos" },
   { icon: Package, label: "Estoque", href: "/estoque" },
-  { icon: Tag, label: "Promoções", href: "/promocoes", placeholder: true },
-  { icon: Users, label: "Clientes", href: "/clientes", placeholder: true },
-  { icon: BarChart3, label: "Relatórios", href: "/relatorios", placeholder: true },
   { icon: Settings, label: "Configurações", href: "/configuracoes" },
 ];
 
@@ -130,10 +124,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     return null;
   }
 
-  const handleNavClick = (item: typeof navItems[0]) => {
-    if (item.placeholder) {
-      toast.info("Funcionalidade em breve");
-    }
+  const handleNavClick = () => {
     setSidebarOpen(false);
   };
 
@@ -225,37 +216,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               sidebarCollapsed ? "px-0 justify-center" : "px-4",
               isActive
                 ? "bg-primary text-white shadow-md shadow-primary/20"
-                : item.placeholder
-                  ? "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
             );
 
             if (sidebarCollapsed) {
-              // With tooltip when collapsed
-              if (item.placeholder) {
-                return (
-                  <Tooltip key={item.href} delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => handleNavClick(item)}
-                        className={cn(navClassName, "w-full")}
-                      >
-                        {navContent}
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className="font-medium">
-                      {item.label}
-                    </TooltipContent>
-                  </Tooltip>
-                );
-              }
-
               return (
                 <Tooltip key={item.href} delayDuration={0}>
                   <TooltipTrigger asChild>
                     <Link
                       href={item.href}
-                      onClick={() => handleNavClick(item)}
+                      onClick={handleNavClick}
                       className={navClassName}
                     >
                       {navContent}
@@ -268,24 +238,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               );
             }
 
-            // Without tooltip when expanded
-            if (item.placeholder) {
-              return (
-                <button
-                  key={item.href}
-                  onClick={() => handleNavClick(item)}
-                  className={cn(navClassName, "w-full")}
-                >
-                  {navContent}
-                </button>
-              );
-            }
-
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => handleNavClick(item)}
+                onClick={handleNavClick}
                 className={navClassName} style={{borderRadius: '9px'}}
               >
                 {navContent}

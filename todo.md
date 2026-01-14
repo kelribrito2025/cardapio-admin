@@ -185,3 +185,6 @@
 
 ## Lista de Itens do Estoque
 - [x] Implementar tabela com colunas: Item (nome+categoria), Estoque atual (qtd+min/max), Status, Custo unitário, Valor total, Última atualização, Ações
+
+## Remoção de Páginas
+- [x] Remover páginas e menus de Promoções, Clientes e Relatórios
