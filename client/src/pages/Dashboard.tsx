@@ -209,48 +209,61 @@ export default function Dashboard() {
         </SectionCard>
 
         {/* Recent Orders */}
-        <SectionCard title="Pedidos Recentes">
+        <SectionCard title="Pedidos Recentes" description="Últimas atualizações">
           {ordersLoading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-4 p-3 bg-muted/30 rounded-xl">
-                  <div className="skeleton h-10 w-10 rounded-lg" />
-                  <div className="flex-1 space-y-2">
-                    <div className="skeleton h-4 w-24 rounded-lg" />
-                    <div className="skeleton h-3 w-16 rounded-lg" />
+                <div key={i} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1 space-y-2">
+                      <div className="skeleton h-4 w-20 rounded" />
+                      <div className="skeleton h-3 w-32 rounded" />
+                      <div className="skeleton h-4 w-16 rounded" />
+                    </div>
                   </div>
+                  <div className="skeleton h-3 w-16 rounded" />
                 </div>
               ))}
             </div>
           ) : recentOrders && recentOrders.length > 0 ? (
-            <div className="space-y-3">
-              {recentOrders.map((order) => (
-                <div
-                  key={order.id}
-                  className="flex items-center gap-4 p-3 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors"
-                >
-                  <div className="p-2.5 bg-card rounded-lg border border-border/50 shadow-sm">
-                    <Package className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">#{order.id}</span>
-                      <StatusBadge variant={statusMap[order.status]?.variant || "default"}>
-                        {statusMap[order.status]?.label || order.status}
-                      </StatusBadge>
+            <div className="space-y-4">
+              {recentOrders.map((order) => {
+                // Extrair nomes dos itens do pedido
+                const itemNames = order.items?.map((item: any) => item.name || item.productName).join(", ") || "Itens do pedido";
+                
+                return (
+                  <div
+                    key={order.id}
+                    className="border-b border-gray-100 pb-4 last:border-0 last:pb-0"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-medium text-sm text-foreground">
+                            #{order.id}
+                          </span>
+                          <StatusBadge variant={statusMap[order.status]?.variant || "default"}>
+                            {statusMap[order.status]?.label || order.status}
+                          </StatusBadge>
+                        </div>
+                        <p className="text-xs text-muted-foreground mb-1 line-clamp-1">
+                          {itemNames}
+                        </p>
+                        <p className="text-sm font-semibold text-foreground">
+                          {formatCurrency(Number(order.total))}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3" />
                       {formatDistanceToNow(new Date(order.createdAt), {
                         addSuffix: true,
                         locale: ptBR,
                       })}
-                    </p>
+                    </div>
                   </div>
-                  <span className="font-bold text-sm text-primary">
-                    {formatCurrency(Number(order.total))}
-                  </span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <EmptyState

@@ -507,10 +507,21 @@ export async function getRecentOrders(establishmentId: number, limit: number = 5
   const db = await getDb();
   if (!db) return [];
   
-  return db.select().from(orders)
+  const recentOrders = await db.select().from(orders)
     .where(eq(orders.establishmentId, establishmentId))
     .orderBy(desc(orders.createdAt))
     .limit(limit);
+  
+  // Buscar itens de cada pedido
+  const ordersWithItems = await Promise.all(
+    recentOrders.map(async (order) => {
+      const items = await db.select().from(orderItems)
+        .where(eq(orderItems.orderId, order.id));
+      return { ...order, items };
+    })
+  );
+  
+  return ordersWithItems;
 }
 
 export async function getWeeklyRevenue(establishmentId: number) {

@@ -179,3 +179,6 @@
 
 ## Dados Mockados de Pedidos
 - [x] Adicionar pedidos de teste para cada status (Novos, Em Preparo, Prontos, Finalizados, Cancelados)
+
+## Card de Pedidos Recentes
+- [x] Atualizar card de Pedidos Recentes na Dashboard com novo modelo (StatusBadge, layout compacto, ícone de relógio)
