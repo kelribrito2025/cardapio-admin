@@ -672,7 +672,7 @@ export default function Catalogo() {
             
             return (
               <div key={category.id} className="bg-card rounded-2xl border border-border/50 shadow-soft overflow-hidden">
-                <div className="flex items-center justify-between p-5 border-b border-border/50 bg-muted/20">
+                <div className="flex items-center justify-between p-5 border-b border-border/50 bg-muted/20" style={{height: '50px'}}>
                   {editingCategoryId === category.id ? (
                     <div className="flex items-center gap-2">
                       <Input
