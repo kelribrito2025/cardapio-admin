@@ -179,3 +179,6 @@
 
 ## Dados Mockados de Pedidos
 - [x] Adicionar pedidos de teste para cada status (Novos, Em Preparo, Prontos, Finalizados, Cancelados)
+
+## Tabela de Estoque
+- [x] Implementar tabela completa com colunas: Nome, Categoria, Quantidade Atual, Mínimo, Máximo, Unidade, Custo, Status e Ações
