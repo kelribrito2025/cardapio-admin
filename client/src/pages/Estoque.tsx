@@ -4,14 +4,6 @@ import { AdminLayout } from "@/components/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -407,157 +399,138 @@ export default function Estoque() {
           </div>
         </div>
 
-        {/* Stock Items Table */}
-        <Card>
-          <CardContent className="p-0">
-            {isLoadingItems ? (
-              <div className="p-6 space-y-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <Skeleton className="h-10 w-10 rounded-lg" />
+        {/* Stock Items List */}
+        <div className="space-y-3">
+          {isLoadingItems ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <Card key={i}>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-12 w-12 rounded-lg" />
                     <div className="flex-1 space-y-2">
                       <Skeleton className="h-4 w-1/3" />
                       <Skeleton className="h-3 w-1/4" />
                     </div>
                     <Skeleton className="h-8 w-24" />
                   </div>
-                ))}
-              </div>
-            ) : stockItems && stockItems.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/50">
-                    <TableHead className="w-[250px]">Nome</TableHead>
-                    <TableHead>Categoria</TableHead>
-                    <TableHead className="text-right">Qtd. Atual</TableHead>
-                    <TableHead className="text-right">Mínimo</TableHead>
-                    <TableHead className="text-right">Máximo</TableHead>
-                    <TableHead>Unidade</TableHead>
-                    <TableHead className="text-right">Custo Unit.</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {stockItems.map((item) => {
-                    const status = item.status as StockStatus;
-                    const config = statusConfig[status];
-                    const currentQty = Number(item.currentQuantity);
-                    const minQty = Number(item.minQuantity);
-                    const maxQty = item.maxQuantity ? Number(item.maxQuantity) : null;
-                    const costPerUnit = item.costPerUnit ? Number(item.costPerUnit) : null;
+                </CardContent>
+              </Card>
+            ))
+          ) : stockItems && stockItems.length > 0 ? (
+            stockItems.map((item) => {
+              const status = item.status as StockStatus;
+              const config = statusConfig[status];
+              const currentQty = Number(item.currentQuantity);
+              const minQty = Number(item.minQuantity);
+              const maxQty = item.maxQuantity ? Number(item.maxQuantity) : undefined;
+              const progress = getProgressPercentage(currentQty, minQty, maxQty);
 
-                    return (
-                      <TableRow key={item.id} className="hover:bg-muted/30">
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${config.bgColor}`}>
-                              <Package className={`h-4 w-4 ${config.color}`} />
-                            </div>
-                            <span className="font-medium">{item.name}</span>
+              return (
+                <Card key={item.id} className="hover:shadow-md transition-shadow" style={{paddingTop: '0px', height: '80px'}}>
+                  <CardContent className="p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                      {/* Item Info */}
+                      <div className="flex items-center gap-4 flex-1 min-w-0">
+                        <div className={`p-3 rounded-lg ${config.bgColor}`}>
+                          <Package className={`h-6 w-6 ${config.color}`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="font-semibold truncate">{item.name}</h3>
+                            <Badge variant="outline" className="text-xs">
+                              {getCategoryName(item.categoryId)}
+                            </Badge>
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="text-xs">
-                            {getCategoryName(item.categoryId)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <span className={`font-semibold ${config.color}`}>
-                            {currentQty}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right text-muted-foreground">
-                          {minQty}
-                        </TableCell>
-                        <TableCell className="text-right text-muted-foreground">
-                          {maxQty ?? "-"}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="text-xs">
-                            {unitLabels[item.unit] || item.unit}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {costPerUnit ? (
-                            <span className="text-muted-foreground">
-                              R$ {costPerUnit.toFixed(2)}
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className={`text-sm font-medium ${config.color}`}>
+                              {currentQty} {unitLabels[item.unit] || item.unit}
                             </span>
-                          ) : (
-                            <span className="text-muted-foreground/50">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
+                            <span className="text-xs text-muted-foreground">
+                              (mín: {minQty})
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Progress Bar */}
+                      <div className="w-full sm:w-32 flex-shrink-0">
+                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full ${getProgressColor(status)} transition-all duration-300`}
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between mt-1">
                           <Badge className={`${config.bgColor} ${config.color} border-0 text-xs`}>
                             {config.icon}
                             <span className="ml-1">{config.label}</span>
                           </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => openMovementDialog(item, "entry")}
-                              className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
-                              title="Entrada"
-                            >
-                              <PackagePlus className="h-4 w-4" />
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openMovementDialog(item, "entry")}
+                          className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                        >
+                          <PackagePlus className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openMovementDialog(item, "exit")}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <PackageMinus className="h-4 w-4" />
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreVertical className="h-4 w-4" />
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => openMovementDialog(item, "exit")}
-                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                              title="Saída"
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => openEditDialog(item)}>
+                              <Edit className="h-4 w-4 mr-2" />
+                              Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => openHistoryDialog(item)}>
+                              <History className="h-4 w-4 mr-2" />
+                              Histórico
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => markOutOfStockMutation.mutate({ id: item.id })}
+                              className="text-orange-600"
                             >
-                              <PackageMinus className="h-4 w-4" />
-                            </Button>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                  <MoreVertical className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => openEditDialog(item)}>
-                                  <Edit className="h-4 w-4 mr-2" />
-                                  Editar
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => openHistoryDialog(item)}>
-                                  <History className="h-4 w-4 mr-2" />
-                                  Histórico
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  onClick={() => markOutOfStockMutation.mutate({ id: item.id })}
-                                  className="text-orange-600"
-                                >
-                                  <XCircle className="h-4 w-4 mr-2" />
-                                  Marcar em falta
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    if (confirm("Tem certeza que deseja excluir este item?")) {
-                                      deleteItemMutation.mutate({ id: item.id });
-                                    }
-                                  }}
-                                  className="text-red-600"
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Excluir
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            ) : (
-              <div className="py-12 text-center">
+                              <XCircle className="h-4 w-4 mr-2" />
+                              Marcar em falta
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                if (confirm("Tem certeza que deseja excluir este item?")) {
+                                  deleteItemMutation.mutate({ id: item.id });
+                                }
+                              }}
+                              className="text-red-600"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Excluir
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })
+          ) : (
+            <Card>
+              <CardContent className="py-12 text-center">
                 <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                 <h3 className="text-lg font-medium mb-2">Nenhum item no estoque</h3>
                 <p className="text-muted-foreground mb-4">
@@ -570,10 +543,10 @@ export default function Estoque() {
                   <Plus className="h-4 w-4 mr-2" />
                   Adicionar primeiro item
                 </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
 
       {/* New Item Dialog */}
