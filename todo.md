@@ -247,3 +247,6 @@
 - [x] Aumentar tamanhos na página Pedidos em 15%
 - [x] Aumentar tamanhos na página Estoque em 15%
 - [x] Aumentar tamanhos na página Configurações em 15%
+
+## Ajuste Adicional da Sidebar
+- [x] Aumentar tamanho da barra lateral em mais 5%
