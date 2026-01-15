@@ -1,4 +1,4 @@
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
@@ -13,9 +13,20 @@ import Pedidos from "./pages/Pedidos";
 import Estoque from "./pages/Estoque";
 import Configuracoes from "./pages/Configuracoes";
 
+// Auth Pages
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+
 function Router() {
   return (
     <Switch>
+      {/* Auth routes */}
+      <Route path="/login" component={Login} />
+      <Route path="/criar-conta" component={Register} />
+      <Route path="/esqueci-senha" component={ForgotPassword} />
+      
+      {/* App routes */}
       <Route path="/" component={Dashboard} />
       <Route path="/catalogo" component={Catalogo} />
       <Route path="/catalogo/novo" component={ProductForm} />

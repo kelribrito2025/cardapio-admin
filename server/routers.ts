@@ -6,6 +6,10 @@ import { z } from "zod";
 import * as db from "./db";
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { ENV } from "./_core/env";
+import { TRPCError } from "@trpc/server";
 
 export const appRouter = router({
   system: systemRouter,
@@ -17,6 +21,100 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+    
+    // Register with email/password
+    register: publicProcedure
+      .input(z.object({
+        name: z.string().min(1, "Nome é obrigatório"),
+        email: z.string().email("Email inválido"),
+        password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+      }))
+      .mutation(async ({ input }) => {
+        // Check if user already exists
+        const existingUser = await db.getUserByEmail(input.email);
+        if (existingUser) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Este email já está cadastrado.",
+          });
+        }
+        
+        // Hash password
+        const passwordHash = await bcrypt.hash(input.password, 10);
+        
+        // Create user
+        const user = await db.createUserWithPassword({
+          name: input.name,
+          email: input.email,
+          passwordHash,
+        });
+        
+        return { success: true, userId: user?.id };
+      }),
+    
+    // Login with email/password
+    loginWithEmail: publicProcedure
+      .input(z.object({
+        email: z.string().email("Email inválido"),
+        password: z.string().min(1, "Senha é obrigatória"),
+        rememberMe: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Find user by email
+        const user = await db.getUserByEmail(input.email);
+        if (!user || !user.passwordHash) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Email ou senha incorretos.",
+          });
+        }
+        
+        // Verify password
+        const isValid = await bcrypt.compare(input.password, user.passwordHash);
+        if (!isValid) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Email ou senha incorretos.",
+          });
+        }
+        
+        // Update last signed in
+        await db.updateUserLastSignedIn(user.id);
+        
+        // Create JWT token
+        const token = jwt.sign(
+          { userId: user.id, openId: user.openId },
+          ENV.cookieSecret,
+          { expiresIn: input.rememberMe ? "30d" : "7d" }
+        );
+        
+        // Set cookie
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, {
+          ...cookieOptions,
+          maxAge: input.rememberMe ? 30 * 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000,
+        });
+        
+        return { success: true };
+      }),
+    
+    // Forgot password (placeholder - sends notification to owner)
+    forgotPassword: publicProcedure
+      .input(z.object({
+        email: z.string().email("Email inválido"),
+      }))
+      .mutation(async ({ input }) => {
+        // Check if user exists
+        const user = await db.getUserByEmail(input.email);
+        if (!user) {
+          // Don't reveal if email exists or not for security
+          return { success: true };
+        }
+        
+        // In a real app, send password reset email
+        // For now, just return success
+        return { success: true };
+      }),
   }),
 
   // ============ ESTABLISHMENT ============

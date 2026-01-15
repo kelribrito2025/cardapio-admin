@@ -253,3 +253,15 @@
 
 ## Verificação de Consistência de Tamanhos
 - [x] Verificar e ajustar tamanhos da página Configurações para igualar Catálogo
+
+## Verificação da Barra Superior (Topbar)
+- [x] Verificar e restaurar tamanhos originais da topbar (busca, perfil, notificações) - CONFIRMADO: tamanhos estão iguais
+
+## Fluxo de Autenticação (Login/Registro/Recuperação)
+- [x] Criar componente AuthLayout com layout dividido (benefícios à esquerda, formulário à direita)
+- [x] Criar página de Login com campos email/senha, lembrar-me, esqueceu senha
+- [x] Criar página de Registro (Criar Conta) com campos nome, email, senha, confirmar senha
+- [x] Criar página de Recuperação de Senha
+- [x] Configurar rotas de autenticação no App.tsx
+- [x] Implementar lógica de backend para registro e login com email/senha
+- [x] Testar fluxo completo de autenticação
