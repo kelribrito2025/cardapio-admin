@@ -50,20 +50,20 @@ export function WeeklyRevenueCard({
 
   if (loading) {
     return (
-      <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <div className="skeleton h-5 w-40 rounded-lg" />
-          <div className="skeleton h-8 w-32 rounded-lg" />
+      <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm">
+        <div className="flex items-center justify-between mb-3">
+          <div className="skeleton h-4 w-32 rounded-md" />
+          <div className="skeleton h-6 w-28 rounded-md" />
         </div>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="skeleton h-10 w-32 rounded-lg" />
-          <div className="skeleton h-6 w-16 rounded-full" />
+        <div className="flex items-center gap-2 mb-5">
+          <div className="skeleton h-8 w-28 rounded-md" />
+          <div className="skeleton h-5 w-14 rounded-full" />
         </div>
-        <div className="flex items-end justify-between gap-2 h-40">
+        <div className="flex items-end justify-between gap-1.5 h-32">
           {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-            <div key={i} className="flex-1 flex flex-col items-center gap-2">
-              <div className="skeleton w-full rounded-lg" style={{ height: `${30 + Math.random() * 70}%` }} />
-              <div className="skeleton h-4 w-8 rounded" />
+            <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
+              <div className="skeleton w-full rounded-md" style={{ height: `${30 + Math.random() * 70}%` }} />
+              <div className="skeleton h-3 w-6 rounded" />
             </div>
           ))}
         </div>
@@ -72,13 +72,13 @@ export function WeeklyRevenueCard({
   }
 
   return (
-    <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
+    <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-base font-semibold text-foreground">Acumulado da semana</h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-semibold text-foreground">Acumulado da semana</h3>
         
         {/* Toggle */}
-        <div className="flex items-center gap-3 text-sm">
+        <div className="flex items-center gap-2 text-xs">
           <button
             onClick={() => setShowLastWeek(false)}
             className={cn(
@@ -109,23 +109,23 @@ export function WeeklyRevenueCard({
       </div>
 
       {/* Total and Delta */}
-      <div className="flex items-center gap-3 mb-6">
-        <span className="text-3xl font-bold text-foreground">
+      <div className="flex items-center gap-2 mb-5">
+        <span className="text-2xl font-bold text-foreground">
           {formatCurrency(showLastWeek ? lastWeekTotal : thisWeekTotal)}
         </span>
         {!showLastWeek && (
           <span
             className={cn(
-              "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium",
+              "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium",
               percentChange >= 0
                 ? "bg-emerald-100 text-emerald-700"
                 : "bg-red-100 text-red-700"
             )}
           >
             {percentChange >= 0 ? (
-              <TrendingUp className="w-3.5 h-3.5" />
+              <TrendingUp className="w-3 h-3" />
             ) : (
-              <TrendingDown className="w-3.5 h-3.5" />
+              <TrendingDown className="w-3 h-3" />
             )}
             {percentChange >= 0 ? "+" : ""}
             {percentChange.toFixed(0)}%
@@ -135,7 +135,7 @@ export function WeeklyRevenueCard({
 
       {/* Bar Chart */}
       <div className="relative">
-        <div className="flex items-end justify-between gap-2 sm:gap-3 h-40">
+        <div className="flex items-end justify-between gap-1.5 sm:gap-2 h-32">
           {DAYS.map((day, index) => {
             const thisWeekValue = thisWeek[index] || 0;
             const lastWeekValue = lastWeek[index] || 0;
@@ -151,12 +151,12 @@ export function WeeklyRevenueCard({
             return (
               <div
                 key={day}
-                className="flex-1 flex flex-col items-center gap-2 relative group"
+                className="flex-1 flex flex-col items-center gap-1.5 relative group"
                 onMouseEnter={() => setHoveredDay(index)}
                 onMouseLeave={() => setHoveredDay(null)}
               >
                 {/* Bars container */}
-                <div className="relative w-full h-32 flex items-end justify-center">
+                <div className="relative w-full h-24 flex items-end justify-center">
                   {/* Ghost bar (comparison) */}
                   <div
                     className={cn(
@@ -184,7 +184,7 @@ export function WeeklyRevenueCard({
                 {/* Day label */}
                 <span
                   className={cn(
-                    "text-xs font-medium transition-colors",
+                    "text-[10px] font-medium transition-colors",
                     isToday ? "text-emerald-600" : "text-muted-foreground"
                   )}
                 >
@@ -193,19 +193,19 @@ export function WeeklyRevenueCard({
 
                 {/* Tooltip */}
                 {hoveredDay === index && (
-                  <div className="absolute -top-20 left-1/2 -translate-x-1/2 z-10 bg-gray-900 text-white px-3 py-2 rounded-lg shadow-lg text-sm whitespace-nowrap">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <div className="absolute -top-16 left-1/2 -translate-x-1/2 z-10 bg-gray-900 text-white px-2 py-1.5 rounded-md shadow-lg text-xs whitespace-nowrap">
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                       <span>{showLastWeek ? "Semana passada" : "Esta semana"}:</span>
                       <span className="font-semibold">{formatCurrency(currentValue)}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-gray-400" />
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
                       <span>{showLastWeek ? "Esta semana" : "Semana passada"}:</span>
                       <span className="font-semibold">{formatCurrency(comparisonValue)}</span>
                     </div>
                     {/* Arrow */}
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-gray-900 rotate-45" />
                   </div>
                 )}
               </div>

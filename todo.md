@@ -192,3 +192,6 @@
 ## Redução de Tamanho do Layout
 - [x] Reduzir tamanho da barra de menu lateral em 20%
 - [x] Reduzir espaçamentos das páginas (Dashboard, Cardápio, Pedidos, Estoque, Configurações) em 20%
+
+## Redução de Tamanho da Dashboard
+- [x] Reduzir tamanho dos cards de métricas, gráficos, fontes e espaçamentos em 20%

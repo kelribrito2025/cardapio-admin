@@ -18,15 +18,15 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className }
   if (loading) {
     return (
       <div className={cn(
-        "bg-card rounded-2xl p-6 border border-border/50 shadow-soft",
+        "bg-card rounded-xl p-4 border border-border/50 shadow-soft",
         className
       )}>
         <div className="flex items-start justify-between">
-          <div className="space-y-3 flex-1">
-            <div className="skeleton h-4 w-28 rounded-lg" />
-            <div className="skeleton h-9 w-36 rounded-lg" />
+          <div className="space-y-2 flex-1">
+            <div className="skeleton h-3 w-24 rounded-md" />
+            <div className="skeleton h-7 w-28 rounded-md" />
           </div>
-          <div className="skeleton h-12 w-12 rounded-xl" />
+          <div className="skeleton h-10 w-10 rounded-lg" />
         </div>
       </div>
     );
@@ -34,18 +34,18 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className }
 
   return (
     <div className={cn(
-      "bg-card rounded-2xl p-6 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5",
+      "bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5",
       className
     )}>
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-muted-foreground font-medium tracking-wide uppercase">
+          <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
             {title}
           </p>
-          <p className="text-3xl font-bold mt-2 tracking-tight">{value}</p>
+          <p className="text-2xl font-bold mt-1.5 tracking-tight">{value}</p>
           {trend && (
             <div className={cn(
-              "inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full text-xs font-semibold",
+              "inline-flex items-center gap-1 mt-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold",
               trend.isPositive 
                 ? "bg-emerald-50 text-emerald-600" 
                 : "bg-red-50 text-red-600"
@@ -55,8 +55,8 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className }
             </div>
           )}
         </div>
-        <div className="p-3 bg-primary/10 rounded-xl shrink-0">
-          <Icon className="h-6 w-6 text-primary" />
+        <div className="p-2.5 bg-primary/10 rounded-lg shrink-0">
+          <Icon className="h-5 w-5 text-primary" />
         </div>
       </div>
     </div>
@@ -139,15 +139,15 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, description, actions, className }: PageHeaderProps) {
   return (
-    <div className={cn("flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8", className)}>
+    <div className={cn("flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6", className)}>
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+        <h1 className="text-xl font-bold tracking-tight">{title}</h1>
         {description && (
-          <p className="text-muted-foreground mt-1.5 text-sm">{description}</p>
+          <p className="text-muted-foreground mt-1 text-xs">{description}</p>
         )}
       </div>
       {actions && (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {actions}
         </div>
       )}
@@ -192,17 +192,17 @@ interface SectionCardProps {
 
 export function SectionCard({ title, description, children, actions, className, noPadding }: SectionCardProps) {
   return (
-    <div className={cn("bg-card rounded-2xl border border-border/50 shadow-soft", className)}>
+    <div className={cn("bg-card rounded-xl border border-border/50 shadow-soft", className)}>
       {(title || actions) && (
-        <div className="flex items-center justify-between px-6 py-5 border-b border-border/50">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border/50">
           <div>
-            {title && <h3 className="font-semibold text-base">{title}</h3>}
-            {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
+            {title && <h3 className="font-semibold text-sm">{title}</h3>}
+            {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
           </div>
           {actions}
         </div>
       )}
-      <div className={noPadding ? "" : "p-6"}>
+      <div className={noPadding ? "" : "p-5"}>
         {children}
       </div>
     </div>
