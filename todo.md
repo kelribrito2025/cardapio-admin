@@ -250,3 +250,6 @@
 
 ## Ajuste Adicional da Sidebar
 - [x] Aumentar tamanho da barra lateral em mais 5%
+
+## Verificação de Consistência de Tamanhos
+- [x] Verificar e ajustar tamanhos da página Configurações para igualar Catálogo
