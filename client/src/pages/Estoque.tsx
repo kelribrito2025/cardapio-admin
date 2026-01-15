@@ -472,8 +472,8 @@ export default function Estoque() {
                   }
 
                   return (
-                    <TableRow key={item.id} className="hover:bg-muted/20">
-                      <TableCell className="py-1">
+                    <TableRow key={item.id} className="hover:bg-muted/20 cursor-pointer" onClick={() => openEditDialog(item)}>
+                      <TableCell className="py-1" onClick={(e) => e.stopPropagation()}>
                         <Checkbox />
                       </TableCell>
                       <TableCell className="py-1">
@@ -505,7 +505,7 @@ export default function Estoque() {
                       </TableCell>
                       <TableCell className="py-1">
                         <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
+                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                             <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
                               <MoreVertical className="h-3.5 w-3.5" />
                             </Button>
@@ -519,11 +519,7 @@ export default function Estoque() {
                               <PackageMinus className="h-3.5 w-3.5 mr-1.5 text-red-600" />
                               Saída
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => openEditDialog(item)} className="text-xs">
-                              <Edit className="h-3.5 w-3.5 mr-1.5" />
-                              Editar
-                            </DropdownMenuItem>
+                            
                             <DropdownMenuItem onClick={() => openHistoryDialog(item)} className="text-xs">
                               <History className="h-3.5 w-3.5 mr-1.5" />
                               Histórico

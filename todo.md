@@ -232,3 +232,7 @@
 
 ## Dados de Estoque
 - [x] Adicionar 17 novos itens de estoque com diferentes categorias e quantidades
+
+## Interação na Lista de Estoque
+- [x] Fazer com que ao clicar em qualquer item da lista abra o modal de edição
+- [x] Remover botão "Editar" do menu de ações
