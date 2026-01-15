@@ -306,15 +306,15 @@ export default function Pedidos() {
                     className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-200"
                   >
                     {/* Header */}
-                    <div className={cn("px-3 py-2 flex items-center justify-between", config.bgColor)}>
-                      <div className="flex items-center gap-1.5">
-                        <div className={cn("p-1 rounded-md bg-white/80", config.color)}>
-                          <config.icon className="h-3 w-3" />
+                    <div className={cn("px-4 py-3 flex items-center justify-between", config.bgColor)}>
+                      <div className="flex items-center gap-2">
+                        <div className={cn("p-1.5 rounded-lg bg-white/80", config.color)}>
+                          <config.icon className="h-3.5 w-3.5" />
                         </div>
-                        <span className={cn("font-bold text-xs", config.color)}>#{order.orderNumber}</span>
+                        <span className={cn("font-bold text-sm", config.color)}>#{order.orderNumber}</span>
                       </div>
-                      <div className={cn("flex items-center gap-0.5 text-[10px] font-medium", config.color)}>
-                        <Clock className="h-2.5 w-2.5" />
+                      <div className={cn("flex items-center gap-1 text-xs font-medium", config.color)}>
+                        <Clock className="h-3 w-3" />
                         {formatDistanceToNow(new Date(order.createdAt), {
                           addSuffix: false,
                           locale: ptBR,
@@ -323,36 +323,36 @@ export default function Pedidos() {
                     </div>
 
                     {/* Content */}
-                    <div className="p-3">
+                    <div className="p-4">
                       {/* Customer info */}
                       {order.customerName && (
-                        <p className="font-semibold text-xs mb-1">{order.customerName}</p>
+                        <p className="font-semibold text-sm mb-1.5">{order.customerName}</p>
                       )}
                       
-                      <div className="flex items-center gap-2 text-[10px] text-muted-foreground mb-2">
-                        <span className="flex items-center gap-0.5">
-                          <PaymentIcon className="h-3 w-3" />
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                        <span className="flex items-center gap-1">
+                          <PaymentIcon className="h-3.5 w-3.5" />
                           {paymentMethodLabels[order.paymentMethod]?.label}
                         </span>
-                        <span className="px-1 py-0.5 bg-muted/50 rounded text-[9px] font-medium capitalize">
+                        <span className="px-1.5 py-0.5 bg-muted/50 rounded text-[10px] font-medium capitalize">
                           {order.deliveryType === "delivery" ? "Entrega" : "Retirada"}
                         </span>
                       </div>
 
                       {/* Total */}
-                      <div className="flex items-center justify-between py-2 border-t border-border/50">
-                        <span className="text-[10px] text-muted-foreground font-medium">Total</span>
-                        <span className="text-base font-bold text-primary">
+                      <div className="flex items-center justify-between py-2.5 border-t border-border/50">
+                        <span className="text-xs text-muted-foreground font-medium">Total</span>
+                        <span className="text-lg font-bold text-primary">
                           {formatCurrency(order.total)}
                         </span>
                       </div>
 
                       {/* Actions */}
-                      <div className="flex gap-1.5 mt-2">
+                      <div className="flex gap-2 mt-3">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="flex-1 h-7 rounded-md border-border/50 hover:bg-accent text-[10px]"
+                          className="flex-1 h-8 rounded-lg border-border/50 hover:bg-accent text-xs"
                           onClick={() => setSelectedOrder(order.id)}
                         >
                           Ver detalhes
@@ -360,7 +360,7 @@ export default function Pedidos() {
                         {nextAction && (
                           <Button
                             size="sm"
-                            className="flex-1 h-7 rounded-md shadow-sm text-[10px]"
+                            className="flex-1 h-8 rounded-lg shadow-sm text-xs"
                             onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
                             disabled={updateStatusMutation.isPending}
                           >
@@ -371,13 +371,13 @@ export default function Pedidos() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 rounded-md text-destructive hover:text-destructive hover:bg-destructive/10"
+                            className="h-8 w-8 rounded-lg text-destructive hover:text-destructive hover:bg-destructive/10"
                             onClick={() => {
                               setOrderToCancel(order.id);
                               setCancelDialogOpen(true);
                             }}
                           >
-                            <XCircle className="h-3.5 w-3.5" />
+                            <XCircle className="h-4 w-4" />
                           </Button>
                         )}
                       </div>

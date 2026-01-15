@@ -216,6 +216,3 @@
 
 ## Remoção do Menu Configurações
 - [x] Remover item "Configurações" da barra lateral de navegação
-
-## Redução dos Cards de Pedidos
-- [x] Reduzir tamanho dos cards de pedidos em 20% (fontes, espaçamentos, botões, ícones)
