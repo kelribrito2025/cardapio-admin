@@ -129,8 +129,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   // Sidebar width based on collapsed state
-  const sidebarWidth = sidebarCollapsed ? "w-20" : "w-72";
-  const mainPadding = sidebarCollapsed ? "lg:pl-20" : "lg:pl-72";
+  const sidebarWidth = sidebarCollapsed ? "w-16" : "w-56";
+  const mainPadding = sidebarCollapsed ? "lg:pl-16" : "lg:pl-56";
 
   return (
     <div className="min-h-screen bg-background">
@@ -157,15 +157,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       >
         {/* Logo + Toggle button na mesma linha */}
         <div className={cn(
-          "flex items-center h-[72px] border-b border-sidebar-border transition-all duration-300",
-          sidebarCollapsed ? "justify-center px-2" : "justify-between px-6"
+          "flex items-center h-[58px] border-b border-sidebar-border transition-all duration-300",
+          sidebarCollapsed ? "justify-center px-2" : "justify-between px-4"
         )}>
           <Link href="/" className="flex items-center gap-3">
-            <div className="p-2 bg-primary rounded-xl flex-shrink-0">
-              <Store className="h-5 w-5 text-primary-foreground" />
+            <div className="p-1.5 bg-primary rounded-lg flex-shrink-0">
+              <Store className="h-4 w-4 text-primary-foreground" />
             </div>
             {!sidebarCollapsed && (
-              <span className="font-bold text-xl text-gray-800 whitespace-nowrap">Cardápio</span>
+              <span className="font-semibold text-base text-gray-800 whitespace-nowrap">Cardápio</span>
             )}
           </Link>
           <div className="flex items-center gap-1">
@@ -197,8 +197,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Navigation */}
         <nav className={cn(
-          "flex-1 py-2 space-y-1.5 overflow-y-auto",
-          sidebarCollapsed ? "px-2" : "px-4"
+          "flex-1 py-1.5 space-y-1 overflow-y-auto",
+          sidebarCollapsed ? "px-1.5" : "px-3"
         )}>
           {navItems.map((item) => {
             const isActive = location === item.href || 
@@ -206,14 +206,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             
             const navContent = (
               <>
-                <item.icon className={cn("h-5 w-5 flex-shrink-0", sidebarCollapsed && "mx-auto")} />
-                {!sidebarCollapsed && <span>{item.label}</span>}
+                <item.icon className={cn("h-4 w-4 flex-shrink-0", sidebarCollapsed && "mx-auto")} />
+                {!sidebarCollapsed && <span className="text-sm">{item.label}</span>}
               </>
             );
 
             const navClassName = cn(
-              "flex items-center gap-3 py-3 rounded-xl text-sm font-medium transition-all duration-200",
-              sidebarCollapsed ? "px-0 justify-center" : "px-4",
+              "flex items-center gap-2.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+              sidebarCollapsed ? "px-0 justify-center" : "px-3",
               isActive
                 ? "bg-primary text-white shadow-md shadow-primary/20"
                 : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
@@ -253,11 +253,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Store info */}
         {establishment && !sidebarCollapsed && (
-          <div className="p-4 mx-4 mb-4 bg-gray-100/80 rounded-xl border border-gray-200/50">
-            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">
+          <div className="p-3 mx-3 mb-3 bg-gray-100/80 rounded-lg border border-gray-200/50">
+            <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5">
               Estabelecimento
             </p>
-            <p className="font-semibold text-gray-800 truncate">
+            <p className="font-semibold text-sm text-gray-800 truncate">
               {establishment.name || "Meu Restaurante"}
             </p>
           </div>
@@ -279,18 +279,18 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Free Trial Card - Expanded (at the very bottom) */}
         {!sidebarCollapsed && (
-          <div className="mt-auto mx-4 mb-4 p-4 rounded-xl border border-gray-200/50 relative overflow-hidden"
+          <div className="mt-auto mx-3 mb-3 p-3 rounded-lg border border-gray-200/50 relative overflow-hidden"
             style={{
               background: "linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 60%, rgba(239,68,68,0.15) 100%)"
             }}
           >
-            <h4 className="text-red-500 font-semibold text-sm mb-1">
+            <h4 className="text-red-500 font-semibold text-xs mb-0.5">
               Avaliação gratuita
             </h4>
-            <p className="text-gray-600 text-xs leading-relaxed mb-3">
+            <p className="text-gray-600 text-[10px] leading-relaxed mb-2">
               Você tem 15 dias de acesso gratuito antes da expiração.
             </p>
-            <button className="w-full py-2.5 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+            <button className="w-full py-2 px-3 border border-gray-300 rounded-md text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">
               Atualizar agora
             </button>
           </div>
@@ -323,42 +323,42 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Main content */}
       <div className={cn("transition-all duration-300 ease-in-out", mainPadding)}>
         {/* Topbar */}
-        <header className="sticky top-0 z-30 h-[72px] bg-card/80 backdrop-blur-md border-b border-border/50">
-          <div className="flex items-center justify-between h-full px-4 lg:px-8">
+        <header className="sticky top-0 z-30 h-[58px] bg-card/80 backdrop-blur-md border-b border-border/50">
+          <div className="flex items-center justify-between h-full px-3 lg:px-6">
             {/* Left side */}
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2.5 hover:bg-accent rounded-xl transition-colors"
+                className="lg:hidden p-2 hover:bg-accent rounded-lg transition-colors"
               >
-                <Menu className="h-5 w-5" />
+                <Menu className="h-4 w-4" />
               </button>
 
               {/* Search */}
               <div className="hidden sm:flex relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Buscar produtos, pedidos..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-72 pl-11 h-11 bg-background border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20"
+                  className="w-56 pl-9 h-9 text-sm bg-background border-border/50 rounded-lg focus:ring-2 focus:ring-primary/20"
                 />
               </div>
             </div>
 
             {/* Right side */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {/* Store toggle */}
               {establishment && (
-                <div className="hidden sm:flex items-center gap-3 px-4 py-2.5 bg-background rounded-xl border border-border/50">
-                  <div className="flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-background rounded-lg border border-border/50">
+                  <div className="flex items-center gap-1.5">
                     <span className={cn(
-                      "h-2 w-2 rounded-full",
+                      "h-1.5 w-1.5 rounded-full",
                       establishment.isOpen ? "bg-emerald-500 pulse-dot" : "bg-gray-400"
                     )} />
                     <span className={cn(
-                      "text-sm font-medium",
+                      "text-xs font-medium",
                       establishment.isOpen ? "text-emerald-600" : "text-muted-foreground"
                     )}>
                       {establishment.isOpen ? "Aberto" : "Fechado"}
@@ -368,33 +368,33 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     checked={establishment.isOpen}
                     onCheckedChange={handleToggleOpen}
                     disabled={toggleOpenMutation.isPending}
-                    className="data-[state=checked]:bg-emerald-500"
+                    className="data-[state=checked]:bg-emerald-500 scale-90"
                   />
                 </div>
               )}
 
               {/* Notifications */}
-              <Button variant="ghost" size="icon" className="relative h-11 w-11 rounded-xl hover:bg-accent">
-                <Bell className="h-5 w-5" />
-                <span className="absolute top-2.5 right-2.5 h-2.5 w-2.5 bg-primary rounded-full ring-2 ring-card" />
+              <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-lg hover:bg-accent">
+                <Bell className="h-4 w-4" />
+                <span className="absolute top-2 right-2 h-2 w-2 bg-primary rounded-full ring-2 ring-card" />
               </Button>
 
               {/* User menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-3 px-3 h-11 rounded-xl hover:bg-accent">
-                    <Avatar className="h-9 w-9 ring-2 ring-border/50">
-                      <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
+                  <Button variant="ghost" className="flex items-center gap-2 px-2 h-9 rounded-lg hover:bg-accent">
+                    <Avatar className="h-7 w-7 ring-2 ring-border/50">
+                      <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
                         {user.name?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="hidden md:flex flex-col items-start">
-                      <span className="text-sm font-semibold max-w-[120px] truncate">
+                      <span className="text-xs font-semibold max-w-[100px] truncate">
                         {user.name || "Usuário"}
                       </span>
-                      <span className="text-xs text-muted-foreground">Admin</span>
+                      <span className="text-[10px] text-muted-foreground">Admin</span>
                     </div>
-                    <ChevronDown className="h-4 w-4 text-muted-foreground hidden md:block" />
+                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground hidden md:block" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-52 rounded-xl shadow-elevated border-border/50">
@@ -427,7 +427,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </header>
 
         {/* Page content */}
-        <main className="p-4 lg:p-8">
+        <main className="p-3 lg:p-6">
           {children}
         </main>
       </div>

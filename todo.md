@@ -188,3 +188,7 @@
 
 ## Remoção de Páginas
 - [x] Remover páginas e menus de Promoções, Clientes e Relatórios
+
+## Redução de Tamanho do Layout
+- [x] Reduzir tamanho da barra de menu lateral em 20%
+- [x] Reduzir espaçamentos das páginas (Dashboard, Cardápio, Pedidos, Estoque, Configurações) em 20%
