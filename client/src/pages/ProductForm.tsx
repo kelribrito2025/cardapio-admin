@@ -417,6 +417,19 @@ export default function ProductForm() {
                     className="mt-1.5 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20 resize-none"
                   />
                 </div>
+
+                <div>
+                  <Label htmlFor="prepTime" className="text-xs font-semibold">Tempo de preparo (minutos)</Label>
+                  <Input
+                    id="prepTime"
+                    type="number"
+                    min="0"
+                    value={prepTime}
+                    onChange={(e) => setPrepTime(e.target.value)}
+                    placeholder="Ex: 30"
+                    className="mt-1.5 max-w-[160px] h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
               </div>
             </SectionCard>
 
@@ -532,19 +545,7 @@ export default function ProductForm() {
                   </div>
                 )}
 
-                <div>
-                  <Label htmlFor="prepTime" className="text-xs font-semibold">Tempo de preparo (minutos)</Label>
-                  <Input
-                    id="prepTime"
-                    type="number"
-                    min="0"
-                    value={prepTime}
-                    onChange={(e) => setPrepTime(e.target.value)}
-                    placeholder="Ex: 30"
-                    className="mt-1.5 max-w-[160px] h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
-                  />
                 </div>
-              </div>
             </SectionCard>
 
             {/* Complements */}

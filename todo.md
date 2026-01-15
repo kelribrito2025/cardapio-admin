@@ -210,3 +210,6 @@
 - [x] Aplicar capitalização em campos de nome de item/produto
 - [x] Aplicar capitalização em campos de descrição
 - [x] Aplicar capitalização em campos de nome de item de estoque
+
+## Reorganização do Formulário de Produto
+- [x] Mover campo "Tempo de preparo (minutos)" para o container de "Informações Básicas"
