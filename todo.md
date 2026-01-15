@@ -213,3 +213,6 @@
 
 ## Reorganização do Formulário de Produto
 - [x] Mover campo "Tempo de preparo (minutos)" para o container de "Informações Básicas"
+
+## Remoção do Menu Configurações
+- [x] Remover item "Configurações" da barra lateral de navegação
