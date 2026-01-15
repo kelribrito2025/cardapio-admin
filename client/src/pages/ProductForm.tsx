@@ -329,55 +329,55 @@ export default function ProductForm() {
               variant="ghost"
               size="icon"
               onClick={() => navigate("/catalogo")}
-              className="rounded-xl hover:bg-accent"
+              className="rounded-lg hover:bg-accent h-8 w-8"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">
+              <h1 className="text-xl font-bold tracking-tight">
                 {isEditing ? "Editar Produto" : "Novo Produto"}
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {isEditing ? "Atualize as informações do produto" : "Preencha as informações do produto"}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Main Form */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-5">
             {/* Basic Info */}
             <SectionCard title="Informações Básicas">
-              <div className="space-y-5">
+              <div className="space-y-4">
                 {/* Nome, Categoria e Preço na mesma linha no desktop */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
                   <div className="lg:col-span-6">
-                    <Label htmlFor="name" className="text-sm font-semibold">Nome do produto *</Label>
+                    <Label htmlFor="name" className="text-xs font-semibold">Nome do produto *</Label>
                     <Input
                       id="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Ex: X-Burger Especial"
                       className={cn(
-                        "mt-2 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                        "mt-1.5 h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20",
                         errors.name && "border-destructive focus:ring-destructive/20"
                       )}
                     />
                     {errors.name && (
-                      <p className="text-sm text-destructive mt-2">{errors.name}</p>
+                      <p className="text-xs text-destructive mt-1.5">{errors.name}</p>
                     )}
                   </div>
 
                   <div className="lg:col-span-3">
-                    <Label htmlFor="category" className="text-sm font-semibold">Categoria</Label>
+                    <Label htmlFor="category" className="text-xs font-semibold">Categoria</Label>
                     <Select value={categoryId} onValueChange={setCategoryId}>
-                      <SelectTrigger className="mt-2 h-11 rounded-xl border-border/50">
+                      <SelectTrigger className="mt-1.5 h-9 text-sm rounded-lg border-border/50">
                         <SelectValue placeholder="Selecione" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-xl">
+                      <SelectContent className="rounded-lg">
                         {categories?.map((cat) => (
-                          <SelectItem key={cat.id} value={String(cat.id)} className="rounded-lg">
+                          <SelectItem key={cat.id} value={String(cat.id)} className="rounded text-sm">
                             {cat.name}
                           </SelectItem>
                         ))}
@@ -386,7 +386,7 @@ export default function ProductForm() {
                   </div>
 
                   <div className="lg:col-span-3">
-                    <Label htmlFor="price" className="text-sm font-semibold">Preço *</Label>
+                    <Label htmlFor="price" className="text-xs font-semibold">Preço *</Label>
                     <Input
                       id="price"
                       type="number"
@@ -396,25 +396,25 @@ export default function ProductForm() {
                       onChange={(e) => setPrice(e.target.value)}
                       placeholder="0,00"
                       className={cn(
-                        "mt-2 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                        "mt-1.5 h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20",
                         errors.price && "border-destructive focus:ring-destructive/20"
                       )}
                     />
                     {errors.price && (
-                      <p className="text-sm text-destructive mt-2">{errors.price}</p>
+                      <p className="text-xs text-destructive mt-1.5">{errors.price}</p>
                     )}
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="description" className="text-sm font-semibold">Descrição</Label>
+                  <Label htmlFor="description" className="text-xs font-semibold">Descrição</Label>
                   <Textarea
                     id="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Descreva os ingredientes e características do produto"
-                    rows={3}
-                    className="mt-2 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 resize-none"
+                    rows={2}
+                    className="mt-1.5 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20 resize-none"
                   />
                 </div>
               </div>
@@ -422,12 +422,12 @@ export default function ProductForm() {
 
             {/* Images */}
             <SectionCard title="Imagens">
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {images.map((img, index) => (
                     <div
                       key={index}
-                      className="relative aspect-square rounded-2xl overflow-hidden border border-border/50 bg-muted group shadow-soft"
+                      className="relative aspect-square rounded-xl overflow-hidden border border-border/50 bg-muted group shadow-soft"
                     >
                       <img
                         src={img}
@@ -437,9 +437,9 @@ export default function ProductForm() {
                       <button
                         type="button"
                         onClick={() => handleImageRemove(index)}
-                        className="absolute top-2 right-2 p-1.5 bg-destructive text-destructive-foreground rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                        className="absolute top-1.5 right-1.5 p-1 bg-destructive text-destructive-foreground rounded-md opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
                       >
-                        <X className="h-3.5 w-3.5" />
+                        <X className="h-3 w-3" />
                       </button>
                     </div>
                   ))}
@@ -454,21 +454,21 @@ export default function ProductForm() {
                     type="button"
                     onClick={handleImageAdd}
                     disabled={uploading}
-                    className="aspect-square rounded-2xl border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center gap-3 hover:border-primary hover:bg-primary/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="aspect-square rounded-xl border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center gap-2 hover:border-primary hover:bg-primary/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {uploading ? (
                       <>
-                        <div className="p-3 bg-muted/50 rounded-xl">
-                          <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                        <div className="p-2 bg-muted/50 rounded-lg">
+                          <div className="h-5 w-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                         </div>
-                        <span className="text-xs text-muted-foreground font-medium">Enviando...</span>
+                        <span className="text-[10px] text-muted-foreground font-medium">Enviando...</span>
                       </>
                     ) : (
                       <>
-                        <div className="p-3 bg-muted/50 rounded-xl">
-                          <ImagePlus className="h-6 w-6 text-muted-foreground" />
+                        <div className="p-2 bg-muted/50 rounded-lg">
+                          <ImagePlus className="h-5 w-5 text-muted-foreground" />
                         </div>
-                        <span className="text-xs text-muted-foreground font-medium">Adicionar</span>
+                        <span className="text-[10px] text-muted-foreground font-medium">Adicionar</span>
                       </>
                     )}
                   </button>
@@ -478,17 +478,17 @@ export default function ProductForm() {
 
             {/* Stock & Availability */}
             <SectionCard title="Disponibilidade">
-              <div className="space-y-5">
-                <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                   <div>
-                    <Label className="text-sm font-semibold">Status do produto</Label>
-                    <p className="text-sm text-muted-foreground mt-0.5">
+                    <Label className="text-xs font-semibold">Status do produto</Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
                       Produtos pausados não aparecem no cardápio
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <span className={cn(
-                      "text-sm font-semibold px-3 py-1 rounded-lg",
+                      "text-xs font-semibold px-2 py-0.5 rounded-md",
                       status === "active" 
                         ? "text-emerald-700 bg-emerald-50" 
                         : "text-amber-700 bg-amber-50"
@@ -502,10 +502,10 @@ export default function ProductForm() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl">
+                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                   <div>
-                    <Label className="text-sm font-semibold">Controle de estoque</Label>
-                    <p className="text-sm text-muted-foreground mt-0.5">
+                    <Label className="text-xs font-semibold">Controle de estoque</Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
                       Ative para controlar a quantidade disponível
                     </p>
                   </div>
@@ -516,9 +516,9 @@ export default function ProductForm() {
                 </div>
 
                 {hasStock && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                     <div>
-                      <Label htmlFor="stockQuantity" className="text-sm font-semibold">Quantidade em estoque</Label>
+                      <Label htmlFor="stockQuantity" className="text-xs font-semibold">Quantidade em estoque</Label>
                       <Input
                         id="stockQuantity"
                         type="number"
@@ -526,14 +526,14 @@ export default function ProductForm() {
                         value={stockQuantity}
                         onChange={(e) => setStockQuantity(e.target.value)}
                         placeholder="0"
-                        className="mt-2 h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
+                        className="mt-1.5 h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
                       />
                     </div>
                   </div>
                 )}
 
                 <div>
-                  <Label htmlFor="prepTime" className="text-sm font-semibold">Tempo de preparo (minutos)</Label>
+                  <Label htmlFor="prepTime" className="text-xs font-semibold">Tempo de preparo (minutos)</Label>
                   <Input
                     id="prepTime"
                     type="number"
@@ -541,7 +541,7 @@ export default function ProductForm() {
                     value={prepTime}
                     onChange={(e) => setPrepTime(e.target.value)}
                     placeholder="Ex: 30"
-                    className="mt-2 max-w-[200px] h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
+                    className="mt-1.5 max-w-[160px] h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
               </div>
@@ -552,38 +552,38 @@ export default function ProductForm() {
               title="Complementos / Adicionais"
               description="Configure opções extras para o produto"
               actions={
-                <Button type="button" variant="outline" size="sm" onClick={addComplementGroup} className="rounded-xl border-border/50 hover:bg-accent">
-                  <Plus className="h-4 w-4 mr-1" />
+                <Button type="button" variant="outline" size="sm" onClick={addComplementGroup} className="rounded-lg border-border/50 hover:bg-accent text-xs h-8">
+                  <Plus className="h-3.5 w-3.5 mr-1" />
                   Grupo
                 </Button>
               }
             >
               {complementGroups.length === 0 ? (
-                <div className="text-center py-8">
-                  <div className="p-4 bg-muted/30 rounded-2xl inline-block mb-3">
-                    <Plus className="h-8 w-8 text-muted-foreground" />
+                <div className="text-center py-6">
+                  <div className="p-3 bg-muted/30 rounded-xl inline-block mb-2">
+                    <Plus className="h-6 w-6 text-muted-foreground" />
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     Nenhum grupo de complementos adicionado
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {complementGroups.map((group, groupIndex) => (
-                    <div key={groupIndex} className="border border-border/50 rounded-2xl p-5 bg-muted/20">
-                      <div className="flex items-start justify-between gap-4 mb-5">
-                        <div className="flex-1 space-y-4">
+                    <div key={groupIndex} className="border border-border/50 rounded-xl p-4 bg-muted/20">
+                      <div className="flex items-start justify-between gap-3 mb-4">
+                        <div className="flex-1 space-y-3">
                           <Input
                             value={group.name}
                             onChange={(e) =>
                               updateComplementGroup(groupIndex, { name: e.target.value })
                             }
                             placeholder="Nome do grupo (ex: Adicionais)"
-                            className="h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
+                            className="h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
                           />
-                          <div className="flex items-center gap-5 flex-wrap">
-                            <div className="flex items-center gap-2">
-                              <Label className="text-xs font-semibold text-muted-foreground">Mín:</Label>
+                          <div className="flex items-center gap-4 flex-wrap">
+                            <div className="flex items-center gap-1.5">
+                              <Label className="text-[10px] font-semibold text-muted-foreground">Mín:</Label>
                               <Input
                                 type="number"
                                 min="0"
@@ -593,11 +593,11 @@ export default function ProductForm() {
                                     minQuantity: Number(e.target.value),
                                   })
                                 }
-                                className="w-16 h-9 rounded-lg border-border/50"
+                                className="w-14 h-8 text-sm rounded-md border-border/50"
                               />
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Label className="text-xs font-semibold text-muted-foreground">Máx:</Label>
+                            <div className="flex items-center gap-1.5">
+                              <Label className="text-[10px] font-semibold text-muted-foreground">Máx:</Label>
                               <Input
                                 type="number"
                                 min="1"
@@ -607,10 +607,10 @@ export default function ProductForm() {
                                     maxQuantity: Number(e.target.value),
                                   })
                                 }
-                                className="w-16 h-9 rounded-lg border-border/50"
+                                className="w-14 h-8 text-sm rounded-md border-border/50"
                               />
                             </div>
-                            <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                            <label className="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
                               <input
                                 type="checkbox"
                                 checked={group.isRequired}
@@ -619,7 +619,7 @@ export default function ProductForm() {
                                     isRequired: e.target.checked,
                                   })
                                 }
-                                className="rounded-md h-4 w-4 border-border/50"
+                                className="rounded h-3.5 w-3.5 border-border/50"
                               />
                               Obrigatório
                             </label>
@@ -630,17 +630,17 @@ export default function ProductForm() {
                           variant="ghost"
                           size="icon"
                           onClick={() => removeComplementGroup(groupIndex)}
-                          className="rounded-xl hover:bg-destructive/10"
+                          className="rounded-lg h-8 w-8 hover:bg-destructive/10"
                         >
-                          <Trash2 className="h-4 w-4 text-destructive" />
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
                         </Button>
                       </div>
 
                       {/* Items */}
-                      <div className="space-y-3">
+                      <div className="space-y-2">
                         {group.items.map((item, itemIndex) => (
-                          <div key={itemIndex} className="flex items-center gap-3 p-3 bg-card rounded-xl border border-border/50">
-                            <GripVertical className="h-4 w-4 text-muted-foreground/50" />
+                          <div key={itemIndex} className="flex items-center gap-2 p-2 bg-card rounded-lg border border-border/50">
+                            <GripVertical className="h-3.5 w-3.5 text-muted-foreground/50" />
                             <Input
                               value={item.name}
                               onChange={(e) =>
@@ -649,7 +649,7 @@ export default function ProductForm() {
                                 })
                               }
                               placeholder="Nome do item"
-                              className="flex-1 h-10 rounded-lg border-border/50"
+                              className="flex-1 h-8 text-sm rounded-md border-border/50"
                             />
                             <Input
                               type="number"
@@ -662,16 +662,16 @@ export default function ProductForm() {
                                 })
                               }
                               placeholder="Preço"
-                              className="w-28 h-10 rounded-lg border-border/50"
+                              className="w-24 h-8 text-sm rounded-md border-border/50"
                             />
                             <Button
                               type="button"
                               variant="ghost"
                               size="icon"
                               onClick={() => removeComplementItem(groupIndex, itemIndex)}
-                              className="h-10 w-10 rounded-lg hover:bg-destructive/10"
+                              className="h-8 w-8 rounded-md hover:bg-destructive/10"
                             >
-                              <X className="h-4 w-4 text-muted-foreground" />
+                              <X className="h-3.5 w-3.5 text-muted-foreground" />
                             </Button>
                           </div>
                         ))}
@@ -680,9 +680,9 @@ export default function ProductForm() {
                           variant="ghost"
                           size="sm"
                           onClick={() => addComplementItem(groupIndex)}
-                          className="w-full h-10 rounded-xl border border-dashed border-border/50 hover:border-primary hover:bg-primary/5"
+                          className="w-full h-8 text-xs rounded-lg border border-dashed border-border/50 hover:border-primary hover:bg-primary/5"
                         >
-                          <Plus className="h-4 w-4 mr-2" />
+                          <Plus className="h-3.5 w-3.5 mr-1.5" />
                           Adicionar item
                         </Button>
                       </div>
@@ -695,9 +695,9 @@ export default function ProductForm() {
 
           {/* Preview */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24">
+            <div className="sticky top-20">
               <SectionCard title="Preview">
-                <div className="border border-border/50 rounded-2xl overflow-hidden shadow-soft">
+                <div className="border border-border/50 rounded-xl overflow-hidden shadow-soft">
                   {/* Product Image */}
                   <div className="aspect-video bg-muted/50 flex items-center justify-center">
                     {images.length > 0 ? (
@@ -707,16 +707,16 @@ export default function ProductForm() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="p-4 bg-muted/50 rounded-2xl">
-                        <ImagePlus className="h-10 w-10 text-muted-foreground/50" />
+                      <div className="p-3 bg-muted/50 rounded-xl">
+                        <ImagePlus className="h-8 w-8 text-muted-foreground/50" />
                       </div>
                     )}
                   </div>
 
                   {/* Product Info */}
-                  <div className="p-5">
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                      <h4 className="font-bold text-lg">
+                  <div className="p-4">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h4 className="font-bold text-base">
                         {name || "Nome do produto"}
                       </h4>
                       <StatusBadge variant={status === "active" ? "success" : "warning"}>
@@ -724,16 +724,16 @@ export default function ProductForm() {
                       </StatusBadge>
                     </div>
                     {description && (
-                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                      <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
                         {description}
                       </p>
                     )}
-                    <p className="text-xl font-bold text-primary">
+                    <p className="text-lg font-bold text-primary">
                       {formatCurrency(price)}
                     </p>
                     {prepTime && (
-                      <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
-                        <span className="inline-block w-1.5 h-1.5 bg-muted-foreground/50 rounded-full"></span>
+                      <p className="text-[10px] text-muted-foreground mt-1.5 flex items-center gap-1">
+                        <span className="inline-block w-1 h-1 bg-muted-foreground/50 rounded-full"></span>
                         Tempo de preparo: {prepTime} min
                       </p>
                     )}
@@ -742,14 +742,14 @@ export default function ProductForm() {
               </SectionCard>
 
               {/* Save Button */}
-              <div className="mt-5">
+              <div className="mt-4">
                 <Button
                   type="submit"
-                  className="w-full h-12 rounded-xl shadow-sm text-base font-semibold"
-                  size="lg"
+                  className="w-full h-10 rounded-lg shadow-sm text-sm font-semibold"
+                  size="default"
                   disabled={isPending}
                 >
-                  <Save className="h-5 w-5 mr-2" />
+                  <Save className="h-4 w-4 mr-1.5" />
                   {isPending ? "Salvando..." : isEditing ? "Salvar Alterações" : "Criar Produto"}
                 </Button>
               </div>

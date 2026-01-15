@@ -200,3 +200,6 @@
 - [x] Reduzir tamanhos na página de Cardápio em 20%
 - [x] Reduzir tamanhos na página de Pedidos em 20%
 - [x] Reduzir tamanhos na página de Estoque em 20%
+
+## Redução de Tamanho da Página de Novo Produto
+- [x] Reduzir tamanhos de fontes, espaçamentos, campos e botões em 20% na página /catalogo/novo
