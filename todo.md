@@ -236,3 +236,6 @@
 ## Interação na Lista de Estoque
 - [x] Fazer com que ao clicar em qualquer item da lista abra o modal de edição
 - [x] Remover botão "Editar" do menu de ações
+
+## Ajuste de Tamanho da Sidebar
+- [x] Aumentar tamanho da barra de menu lateral em 15%
