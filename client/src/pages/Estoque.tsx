@@ -322,105 +322,105 @@ export default function Estoque() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-5">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold">Estoque</h1>
-            <p className="text-muted-foreground">Gerencie o estoque de ingredientes e produtos</p>
+            <h1 className="text-xl font-bold">Estoque</h1>
+            <p className="text-sm text-muted-foreground">Gerencie o estoque de ingredientes e produtos</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setIsNewCategoryDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
+            <Button variant="outline" onClick={() => setIsNewCategoryDialogOpen(true)} className="h-8 px-3 text-xs rounded-lg">
+              <Plus className="h-3.5 w-3.5 mr-1.5" />
               <span className="hidden sm:inline">Categoria</span>
             </Button>
             <Button onClick={() => {
               resetNewItemForm();
               setIsNewItemDialogOpen(true);
-            }} style={{ borderRadius: '9px' }}>
-              <Plus className="h-4 w-4 mr-2" />
+            }} className="h-8 px-3 text-xs rounded-lg">
+              <Plus className="h-3.5 w-3.5 mr-1.5" />
               <span className="hidden sm:inline">Novo Item</span>
             </Button>
           </div>
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {/* Total */}
-          <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
-            <div className="flex items-start justify-between gap-3">
+          <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+            <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Total</p>
-                <p className="text-2xl font-bold mt-1 tracking-tight">{stockSummary?.total ?? 0}</p>
+                <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">Total</p>
+                <p className="text-xl font-bold mt-0.5 tracking-tight">{stockSummary?.total ?? 0}</p>
               </div>
-              <div className="p-2.5 bg-muted/50 rounded-xl shrink-0">
-                <Package className="h-5 w-5 text-muted-foreground" />
+              <div className="p-2 bg-muted/50 rounded-lg shrink-0">
+                <Package className="h-4 w-4 text-muted-foreground" />
               </div>
             </div>
           </div>
           {/* OK */}
-          <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
-            <div className="flex items-start justify-between gap-3">
+          <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+            <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">OK</p>
-                <p className="text-2xl font-bold mt-1 tracking-tight text-green-600">{stockSummary?.ok ?? 0}</p>
+                <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">OK</p>
+                <p className="text-xl font-bold mt-0.5 tracking-tight text-green-600">{stockSummary?.ok ?? 0}</p>
               </div>
-              <div className="p-2.5 bg-green-100 rounded-xl shrink-0">
-                <CheckCircle className="h-5 w-5 text-green-600" />
+              <div className="p-2 bg-green-100 rounded-lg shrink-0">
+                <CheckCircle className="h-4 w-4 text-green-600" />
               </div>
             </div>
           </div>
           {/* Baixo */}
-          <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
-            <div className="flex items-start justify-between gap-3">
+          <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+            <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Baixo</p>
-                <p className="text-2xl font-bold mt-1 tracking-tight text-yellow-600">{stockSummary?.low ?? 0}</p>
+                <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">Baixo</p>
+                <p className="text-xl font-bold mt-0.5 tracking-tight text-yellow-600">{stockSummary?.low ?? 0}</p>
               </div>
-              <div className="p-2.5 bg-yellow-100 rounded-xl shrink-0">
-                <AlertTriangle className="h-5 w-5 text-yellow-600" />
+              <div className="p-2 bg-yellow-100 rounded-lg shrink-0">
+                <AlertTriangle className="h-4 w-4 text-yellow-600" />
               </div>
             </div>
           </div>
           {/* Crítico */}
-          <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
-            <div className="flex items-start justify-between gap-3">
+          <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+            <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Crítico</p>
-                <p className="text-2xl font-bold mt-1 tracking-tight text-orange-600">{stockSummary?.critical ?? 0}</p>
+                <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">Crítico</p>
+                <p className="text-xl font-bold mt-0.5 tracking-tight text-orange-600">{stockSummary?.critical ?? 0}</p>
               </div>
-              <div className="p-2.5 bg-orange-100 rounded-xl shrink-0">
-                <AlertCircle className="h-5 w-5 text-orange-600" />
+              <div className="p-2 bg-orange-100 rounded-lg shrink-0">
+                <AlertCircle className="h-4 w-4 text-orange-600" />
               </div>
             </div>
           </div>
           {/* Em falta */}
-          <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 border-red-200/50 bg-red-50/30">
-            <div className="flex items-start justify-between gap-3">
+          <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 border-red-200/50 bg-red-50/30">
+            <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Em falta</p>
-                <p className="text-2xl font-bold mt-1 tracking-tight text-red-600">{stockSummary?.outOfStock ?? 0}</p>
+                <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">Em falta</p>
+                <p className="text-xl font-bold mt-0.5 tracking-tight text-red-600">{stockSummary?.outOfStock ?? 0}</p>
               </div>
-              <div className="p-2.5 bg-red-100 rounded-xl shrink-0">
-                <XCircle className="h-5 w-5 text-red-600" />
+              <div className="p-2 bg-red-100 rounded-lg shrink-0">
+                <XCircle className="h-4 w-4 text-red-600" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Stock Items Table */}
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden rounded-xl">
           {isLoadingItems ? (
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <Skeleton className="h-5 w-5 rounded" />
-                  <Skeleton className="h-5 w-40" />
-                  <Skeleton className="h-5 w-24" />
-                  <Skeleton className="h-6 w-16 rounded-full" />
-                  <Skeleton className="h-5 w-20" />
-                  <Skeleton className="h-5 w-20" />
-                  <Skeleton className="h-5 w-24" />
+                <div key={i} className="flex items-center gap-3">
+                  <Skeleton className="h-4 w-4 rounded" />
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-5 w-14 rounded-full" />
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-20" />
                 </div>
               ))}
             </div>
@@ -428,16 +428,16 @@ export default function Estoque() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/30 hover:bg-muted/30">
-                  <TableHead className="w-12">
+                  <TableHead className="w-10">
                     <Checkbox />
                   </TableHead>
-                  <TableHead className="font-semibold text-foreground">Item</TableHead>
-                  <TableHead className="font-semibold text-foreground">Estoque atual</TableHead>
-                  <TableHead className="font-semibold text-foreground">Status</TableHead>
-                  <TableHead className="font-semibold text-foreground">Custo unitário</TableHead>
-                  <TableHead className="font-semibold text-foreground">Valor total</TableHead>
-                  <TableHead className="font-semibold text-foreground">Última atualização</TableHead>
-                  <TableHead className="w-12"></TableHead>
+                  <TableHead className="font-semibold text-foreground text-xs">Item</TableHead>
+                  <TableHead className="font-semibold text-foreground text-xs">Estoque atual</TableHead>
+                  <TableHead className="font-semibold text-foreground text-xs">Status</TableHead>
+                  <TableHead className="font-semibold text-foreground text-xs">Custo unitário</TableHead>
+                  <TableHead className="font-semibold text-foreground text-xs">Valor total</TableHead>
+                  <TableHead className="font-semibold text-foreground text-xs">Última atualização</TableHead>
+                  <TableHead className="w-10"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -472,73 +472,73 @@ export default function Estoque() {
 
                   return (
                     <TableRow key={item.id} className="hover:bg-muted/20">
-                      <TableCell>
+                      <TableCell className="py-2">
                         <Checkbox />
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="py-2">
                         <div>
-                          <p className="font-medium text-foreground">{item.name}</p>
-                          <p className="text-sm text-muted-foreground">{getCategoryName(item.categoryId)}</p>
+                          <p className="font-medium text-sm text-foreground">{item.name}</p>
+                          <p className="text-xs text-muted-foreground">{getCategoryName(item.categoryId)}</p>
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="py-2">
                         <div>
-                          <p className="font-medium text-foreground">{currentQty} {unitLabel}</p>
-                          <p className="text-sm text-muted-foreground">Min: {minQty} / Max: {maxQty || "-"}</p>
+                          <p className="font-medium text-sm text-foreground">{currentQty} {unitLabel}</p>
+                          <p className="text-xs text-muted-foreground">Min: {minQty} / Max: {maxQty || "-"}</p>
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="py-2">
                         <Badge 
                           variant="outline" 
-                          className={`${config.bgColor} ${config.color} ${config.borderColor} font-medium px-3 py-1`}
+                          className={`${config.bgColor} ${config.color} ${config.borderColor} font-medium px-2 py-0.5 text-xs`}
                         >
                           {config.label}
                         </Badge>
                       </TableCell>
-                      <TableCell>
-                        <span className="text-foreground">
+                      <TableCell className="py-2">
+                        <span className="text-sm text-foreground">
                           R$ {costPerUnit.toFixed(2)}/{unitLabel}
                         </span>
                       </TableCell>
-                      <TableCell>
-                        <span className="font-semibold text-foreground">
+                      <TableCell className="py-2">
+                        <span className="font-semibold text-sm text-foreground">
                           R$ {totalValue.toFixed(2)}
                         </span>
                       </TableCell>
-                      <TableCell>
-                        <span className="text-muted-foreground">{timeAgo}</span>
+                      <TableCell className="py-2">
+                        <span className="text-xs text-muted-foreground">{timeAgo}</span>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="py-2">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                              <MoreVertical className="h-4 w-4" />
+                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                              <MoreVertical className="h-3.5 w-3.5" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => openMovementDialog(item, "entry")}>
-                              <PackagePlus className="h-4 w-4 mr-2 text-green-600" />
+                            <DropdownMenuItem onClick={() => openMovementDialog(item, "entry")} className="text-xs">
+                              <PackagePlus className="h-3.5 w-3.5 mr-1.5 text-green-600" />
                               Entrada
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => openMovementDialog(item, "exit")}>
-                              <PackageMinus className="h-4 w-4 mr-2 text-red-600" />
+                            <DropdownMenuItem onClick={() => openMovementDialog(item, "exit")} className="text-xs">
+                              <PackageMinus className="h-3.5 w-3.5 mr-1.5 text-red-600" />
                               Saída
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => openEditDialog(item)}>
-                              <Edit className="h-4 w-4 mr-2" />
+                            <DropdownMenuItem onClick={() => openEditDialog(item)} className="text-xs">
+                              <Edit className="h-3.5 w-3.5 mr-1.5" />
                               Editar
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => openHistoryDialog(item)}>
-                              <History className="h-4 w-4 mr-2" />
+                            <DropdownMenuItem onClick={() => openHistoryDialog(item)} className="text-xs">
+                              <History className="h-3.5 w-3.5 mr-1.5" />
                               Histórico
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               onClick={() => markOutOfStockMutation.mutate({ id: item.id })}
-                              className="text-orange-600"
+                              className="text-orange-600 text-xs"
                             >
-                              <XCircle className="h-4 w-4 mr-2" />
+                              <XCircle className="h-3.5 w-3.5 mr-1.5" />
                               Marcar em falta
                             </DropdownMenuItem>
                             <DropdownMenuItem
@@ -547,9 +547,9 @@ export default function Estoque() {
                                   deleteItemMutation.mutate({ id: item.id });
                                 }
                               }}
-                              className="text-red-600"
+                              className="text-red-600 text-xs"
                             >
-                              <Trash2 className="h-4 w-4 mr-2" />
+                              <Trash2 className="h-3.5 w-3.5 mr-1.5" />
                               Excluir
                             </DropdownMenuItem>
                           </DropdownMenuContent>

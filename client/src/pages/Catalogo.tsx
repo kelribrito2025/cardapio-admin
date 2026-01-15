@@ -100,10 +100,10 @@ function SortableProductItem({
   return (
     <div
       ref={setNodeRef}
-      style={{height: '65px'}}
+      style={{height: '52px'}}
       className={cn(
-        "flex items-center gap-4 p-4 hover:bg-muted/30 transition-colors bg-card",
-        isDragging && "shadow-lg rounded-xl"
+        "flex items-center gap-3 p-3 hover:bg-muted/30 transition-colors bg-card",
+        isDragging && "shadow-lg rounded-lg"
       )}
     >
       {!isDragDisabled && (
@@ -112,9 +112,9 @@ function SortableProductItem({
             <button
               {...attributes}
               {...listeners}
-              className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded-md touch-none"
+              className="cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded-md touch-none"
             >
-              <GripVertical className="h-5 w-5 text-muted-foreground" />
+              <GripVertical className="h-4 w-4 text-muted-foreground" />
             </button>
           </TooltipTrigger>
           <TooltipContent>Arraste para reordenar</TooltipContent>
@@ -122,10 +122,10 @@ function SortableProductItem({
       )}
       {/* Área clicável para edição */}
       <div 
-        className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
+        className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
         onClick={() => onEdit(product.id)}
       >
-        <div className="h-14 w-14 rounded-xl bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-border/30" style={{width: '50px', height: '50px'}}>
+        <div className="h-10 w-10 rounded-lg bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-border/30">
           {product.images && product.images.length > 0 ? (
             <img
               src={product.images[0]}
@@ -133,12 +133,12 @@ function SortableProductItem({
               className="h-full w-full object-cover"
             />
           ) : (
-            <ImageIcon className="h-6 w-6 text-muted-foreground/50" />
+            <ImageIcon className="h-4 w-4 text-muted-foreground/50" />
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h4 className="font-semibold truncate">{product.name}</h4>
+          <div className="flex items-center gap-1.5">
+            <h4 className="font-semibold text-sm truncate">{product.name}</h4>
             {product.status !== "active" && (
               <StatusBadge variant={product.status === "paused" ? "warning" : "default"}>
                 {product.status === "paused" ? "Pausado" : "Arquivado"}
@@ -149,36 +149,37 @@ function SortableProductItem({
             )}
           </div>
           {product.description && (
-            <p className="text-sm text-muted-foreground truncate mt-0.5">
+            <p className="text-xs text-muted-foreground truncate mt-0.5">
               {product.description}
             </p>
           )}
         </div>
         <div className="text-right flex-shrink-0">
-          <p className="font-bold text-primary">{formatCurrency(product.price)}</p>
+          <p className="font-semibold text-sm text-primary">{formatCurrency(product.price)}</p>
         </div>
       </div>
       {/* Botões de ação (toggle, duplicar, excluir) */}
-      <div className="flex items-center gap-3 flex-shrink-0">
+      <div className="flex items-center gap-2 flex-shrink-0">
         <Switch
           checked={product.status === "active"}
           onCheckedChange={() => onToggleStatus(product.id, product.status)}
+          className="scale-90"
         />
         <Button
           variant="ghost"
           size="icon"
           onClick={() => onDuplicate(product.id)}
-          className="h-9 w-9 rounded-lg hover:bg-accent"
+          className="h-7 w-7 rounded-md hover:bg-accent"
         >
-          <Copy className="h-4 w-4" />
+          <Copy className="h-3.5 w-3.5" />
         </Button>
         <Button
           variant="ghost"
           size="icon"
           onClick={() => onDelete(product.id)}
-          className="h-9 w-9 rounded-lg hover:bg-destructive/10 text-destructive"
+          className="h-7 w-7 rounded-md hover:bg-destructive/10 text-destructive"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-3.5 w-3.5" />
         </Button>
       </div>
     </div>
@@ -605,25 +606,25 @@ export default function Catalogo() {
         title="Cardápio"
         description="Gerencie seus produtos e categorias"
         actions={
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               onClick={() => setReorderCategoriesMode(true)}
-              className="rounded-xl border-border/50 hover:bg-accent"
+              className="rounded-lg border-border/50 hover:bg-accent h-8 px-3 text-xs"
             >
-              <Layers className="h-4 w-4 mr-2" />
+              <Layers className="h-3.5 w-3.5 mr-1.5" />
               <span className="hidden sm:inline">Reordenar</span>
             </Button>
             <Button
               variant="outline"
               onClick={() => setCategoryDialogOpen(true)}
-              className="rounded-xl border-border/50 hover:bg-accent"
+              className="rounded-lg border-border/50 hover:bg-accent h-8 px-3 text-xs"
             >
-              <FolderPlus className="h-4 w-4 mr-2" />
+              <FolderPlus className="h-3.5 w-3.5 mr-1.5" />
               <span className="hidden sm:inline">Categoria</span>
             </Button>
-            <Button onClick={() => navigate("/catalogo/novo")} className="rounded-xl shadow-sm" style={{borderRadius: '9px'}}>
-              <Plus className="h-4 w-4 mr-2" />
+            <Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-8 px-3 text-xs">
+              <Plus className="h-3.5 w-3.5 mr-1.5" />
               <span className="hidden sm:inline">Novo íten</span>
             </Button>
           </div>
@@ -634,17 +635,17 @@ export default function Catalogo() {
 
       {/* Products List */}
       {isLoading ? (
-        <div className="space-y-6">
+        <div className="space-y-5">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-card rounded-2xl border border-border/50 p-5 shadow-soft">
-              <div className="skeleton h-6 w-36 rounded-lg mb-5" />
-              <div className="space-y-4">
+            <div key={i} className="bg-card rounded-xl border border-border/50 p-4 shadow-soft">
+              <div className="skeleton h-5 w-28 rounded-md mb-4" />
+              <div className="space-y-3">
                 {[1, 2].map((j) => (
-                  <div key={j} className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl">
-                    <div className="skeleton h-14 w-14 rounded-xl" />
-                    <div className="flex-1 space-y-2">
-                      <div className="skeleton h-5 w-52 rounded-lg" />
-                      <div className="skeleton h-4 w-28 rounded-lg" />
+                  <div key={j} className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+                    <div className="skeleton h-10 w-10 rounded-lg" />
+                    <div className="flex-1 space-y-1.5">
+                      <div className="skeleton h-4 w-40 rounded-md" />
+                      <div className="skeleton h-3 w-24 rounded-md" />
                     </div>
                   </div>
                 ))}
@@ -665,20 +666,20 @@ export default function Catalogo() {
           />
         </SectionCard>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-5">
           {localCategories.map((category) => {
             const categoryProducts = localProductsByCategory[category.id] || [];
             if (categoryProducts.length === 0) return null;
             
             return (
-              <div key={category.id} className="bg-card rounded-2xl border border-border/50 shadow-soft overflow-hidden">
-                <div className="flex items-center justify-between p-5 border-b border-border/50 bg-muted/20" style={{height: '50px'}}>
+              <div key={category.id} className="bg-card rounded-xl border border-border/50 shadow-soft overflow-hidden">
+                <div className="flex items-center justify-between p-4 border-b border-border/50 bg-muted/20" style={{height: '40px'}}>
                   {editingCategoryId === category.id ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <Input
                         value={editingCategoryName}
                         onChange={(e) => setEditingCategoryName(e.target.value)}
-                        className="h-9 w-48 font-bold text-lg"
+                        className="h-7 w-40 font-bold text-sm"
                         autoFocus
                         onKeyDown={(e) => {
                           if (e.key === "Enter" && editingCategoryName.trim()) {
@@ -692,7 +693,7 @@ export default function Catalogo() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100"
+                        className="h-6 w-6 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100"
                         onClick={() => {
                           if (editingCategoryName.trim()) {
                             updateCategoryMutation.mutate({ id: category.id, name: editingCategoryName.trim() });
@@ -700,35 +701,35 @@ export default function Catalogo() {
                         }}
                         disabled={!editingCategoryName.trim() || updateCategoryMutation.isPending}
                       >
-                        <Check className="h-4 w-4" />
+                        <Check className="h-3.5 w-3.5" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-100"
+                        className="h-6 w-6 text-red-600 hover:text-red-700 hover:bg-red-100"
                         onClick={() => {
                           setEditingCategoryId(null);
                           setEditingCategoryName("");
                         }}
                       >
-                        <X className="h-4 w-4" />
+                        <X className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   ) : (
                     <div
-                      className="group flex items-center gap-2 px-3 py-1.5 -mx-3 -my-1.5 rounded-lg cursor-pointer hover:bg-muted/50 transition-all duration-200"
+                      className="group flex items-center gap-1.5 px-2 py-1 -mx-2 -my-1 rounded-md cursor-pointer hover:bg-muted/50 transition-all duration-200"
                       onClick={() => {
                         setEditingCategoryId(category.id);
                         setEditingCategoryName(category.name);
                       }}
                     >
-                      <h3 className="font-bold text-lg group-hover:text-primary transition-colors">
+                      <h3 className="font-bold text-sm group-hover:text-primary transition-colors">
                         {category.name}
                       </h3>
-                      <Pencil className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                      <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                     </div>
                   )}
-                  <span className="text-sm text-muted-foreground font-medium">
+                  <span className="text-xs text-muted-foreground font-medium">
                     {categoryProducts.length} {categoryProducts.length === 1 ? "ítem" : "ítens"}
                   </span>
                 </div>

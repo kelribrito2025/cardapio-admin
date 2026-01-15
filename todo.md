@@ -195,3 +195,8 @@
 
 ## Redução de Tamanho da Dashboard
 - [x] Reduzir tamanho dos cards de métricas, gráficos, fontes e espaçamentos em 20%
+
+## Redução de Tamanho das Páginas (Cardápio, Pedidos, Estoque)
+- [x] Reduzir tamanhos na página de Cardápio em 20%
+- [x] Reduzir tamanhos na página de Pedidos em 20%
+- [x] Reduzir tamanhos na página de Estoque em 20%
