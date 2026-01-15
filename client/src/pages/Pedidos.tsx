@@ -4,6 +4,14 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+} from "@/components/ui/sheet";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -410,9 +418,9 @@ export default function Pedidos() {
         </TabsContent>
       </Tabs>
 
-      {/* Order Details Dialog */}
-      <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-        <DialogContent className="max-w-4xl rounded-2xl p-0 max-h-[90vh] overflow-hidden">
+      {/* Order Details Sidebar */}
+      <Sheet open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-xl md:max-w-2xl p-0 overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
             <div className="flex items-center gap-3">
@@ -654,8 +662,8 @@ export default function Pedidos() {
               Mensagem no WhatsApp
             </Button>
           </div>
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
 
       {/* Cancel Confirmation Dialog */}
       <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>

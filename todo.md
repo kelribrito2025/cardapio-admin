@@ -220,3 +220,6 @@
 ## Redesenho do Modal de Detalhes do Pedido
 - [x] Implementar novo layout com seções: Customer Info, Payment Details, Delivery Info, Order Items, Shipping Info
 - [x] Adicionar botões de Imprimir Pedido e Mensagem no WhatsApp
+
+## Sidebar de Detalhes do Pedido
+- [x] Substituir Dialog por Sheet (sidebar) com animação de slide da direita para a esquerda
