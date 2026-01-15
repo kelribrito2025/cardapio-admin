@@ -100,9 +100,9 @@ function SortableProductItem({
   return (
     <div
       ref={setNodeRef}
-      style={{height: '52px'}}
+      style={{height: '60px'}}
       className={cn(
-        "flex items-center gap-3 p-3 hover:bg-muted/30 transition-colors bg-card",
+        "flex items-center gap-3.5 p-3.5 hover:bg-muted/30 transition-colors bg-card",
         isDragging && "shadow-lg rounded-lg"
       )}
     >
@@ -114,7 +114,7 @@ function SortableProductItem({
               {...listeners}
               className="cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded-md touch-none"
             >
-              <GripVertical className="h-4 w-4 text-muted-foreground" />
+              <GripVertical className="h-5 w-5 text-muted-foreground" />
             </button>
           </TooltipTrigger>
           <TooltipContent>Arraste para reordenar</TooltipContent>
@@ -125,7 +125,7 @@ function SortableProductItem({
         className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
         onClick={() => onEdit(product.id)}
       >
-        <div className="h-10 w-10 rounded-lg bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-border/30">
+        <div className="h-12 w-12 rounded-lg bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-border/30">
           {product.images && product.images.length > 0 ? (
             <img
               src={product.images[0]}
@@ -133,12 +133,12 @@ function SortableProductItem({
               className="h-full w-full object-cover"
             />
           ) : (
-            <ImageIcon className="h-4 w-4 text-muted-foreground/50" />
+            <ImageIcon className="h-5 w-5 text-muted-foreground/50" />
           )}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <h4 className="font-semibold text-sm truncate">{product.name}</h4>
+            <h4 className="font-semibold text-base truncate">{product.name}</h4>
             {product.status !== "active" && (
               <StatusBadge variant={product.status === "paused" ? "warning" : "default"}>
                 {product.status === "paused" ? "Pausado" : "Arquivado"}
@@ -149,13 +149,13 @@ function SortableProductItem({
             )}
           </div>
           {product.description && (
-            <p className="text-xs text-muted-foreground truncate mt-0.5">
+            <p className="text-sm text-muted-foreground truncate mt-1">
               {product.description}
             </p>
           )}
         </div>
         <div className="text-right flex-shrink-0">
-          <p className="font-semibold text-sm text-primary">{formatCurrency(product.price)}</p>
+          <p className="font-semibold text-base text-primary">{formatCurrency(product.price)}</p>
         </div>
       </div>
       {/* Botões de ação (toggle, duplicar, excluir) */}
@@ -165,21 +165,21 @@ function SortableProductItem({
           onCheckedChange={() => onToggleStatus(product.id, product.status)}
           className="scale-90"
         />
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onDuplicate(product.id)}
-          className="h-7 w-7 rounded-md hover:bg-accent"
-        >
-          <Copy className="h-3.5 w-3.5" />
+<Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => onDuplicate(product.id)}
+                          className="h-8 w-8 rounded-md hover:bg-accent"
+                        >
+                          <Copy className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onDelete(product.id)}
-          className="h-7 w-7 rounded-md hover:bg-destructive/10 text-destructive"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
+<Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => onDelete(product.id)}
+                          className="h-8 w-8 rounded-md hover:bg-destructive/10 text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
         </Button>
       </div>
     </div>
@@ -610,21 +610,21 @@ export default function Catalogo() {
             <Button
               variant="outline"
               onClick={() => setReorderCategoriesMode(true)}
-              className="rounded-lg border-border/50 hover:bg-accent h-8 px-3 text-xs"
+              className="rounded-lg border-border/50 hover:bg-accent h-9 px-3.5 text-sm"
             >
-              <Layers className="h-3.5 w-3.5 mr-1.5" />
+              <Layers className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Reordenar</span>
             </Button>
             <Button
               variant="outline"
               onClick={() => setCategoryDialogOpen(true)}
-              className="rounded-lg border-border/50 hover:bg-accent h-8 px-3 text-xs"
+              className="rounded-lg border-border/50 hover:bg-accent h-9 px-3.5 text-sm"
             >
-              <FolderPlus className="h-3.5 w-3.5 mr-1.5" />
+              <FolderPlus className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Categoria</span>
             </Button>
-            <Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-8 px-3 text-xs">
-              <Plus className="h-3.5 w-3.5 mr-1.5" />
+            <Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-9 px-3.5 text-sm">
+              <Plus className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Novo íten</span>
             </Button>
           </div>
@@ -673,13 +673,13 @@ export default function Catalogo() {
             
             return (
               <div key={category.id} className="bg-card rounded-xl border border-border/50 shadow-soft overflow-hidden">
-                <div className="flex items-center justify-between p-4 border-b border-border/50 bg-muted/20" style={{height: '40px'}}>
+                <div className="flex items-center justify-between p-4 border-b border-border/50 bg-muted/20" style={{height: '46px'}}>
                   {editingCategoryId === category.id ? (
                     <div className="flex items-center gap-1.5">
                       <Input
                         value={editingCategoryName}
                         onChange={(e) => setEditingCategoryName(capitalizeFirst(e.target.value))}
-                        className="h-7 w-40 font-bold text-sm"
+                        className="h-8 w-48 font-bold text-base"
                         autoFocus
                         onKeyDown={(e) => {
                           if (e.key === "Enter" && editingCategoryName.trim()) {
@@ -723,7 +723,7 @@ export default function Catalogo() {
                         setEditingCategoryName(category.name);
                       }}
                     >
-                      <h3 className="font-bold text-sm group-hover:text-primary transition-colors">
+                      <h3 className="font-bold text-base group-hover:text-primary transition-colors">
                         {category.name}
                       </h3>
                       <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200" />

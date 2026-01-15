@@ -323,87 +323,87 @@ export default function Estoque() {
 
   return (
     <AdminLayout>
-      <div className="space-y-5">
+      <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold">Estoque</h1>
-            <p className="text-sm text-muted-foreground">Gerencie o estoque de ingredientes e produtos</p>
+            <h1 className="text-2xl font-bold">Estoque</h1>
+            <p className="text-base text-muted-foreground">Gerencie o estoque de ingredientes e produtos</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setIsNewCategoryDialogOpen(true)} className="h-8 px-3 text-xs rounded-lg">
-              <Plus className="h-3.5 w-3.5 mr-1.5" />
+            <Button variant="outline" onClick={() => setIsNewCategoryDialogOpen(true)} className="h-9 px-3.5 text-sm rounded-lg">
+              <Plus className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Categoria</span>
             </Button>
             <Button onClick={() => {
               resetNewItemForm();
               setIsNewItemDialogOpen(true);
-            }} className="h-8 px-3 text-xs rounded-lg">
-              <Plus className="h-3.5 w-3.5 mr-1.5" />
+            }} className="h-9 px-3.5 text-sm rounded-lg">
+              <Plus className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Novo Item</span>
             </Button>
           </div>
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {/* Total */}
-          <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">Total</p>
-                <p className="text-xl font-bold mt-0.5 tracking-tight">{stockSummary?.total ?? 0}</p>
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Total</p>
+                <p className="text-2xl font-bold mt-1 tracking-tight">{stockSummary?.total ?? 0}</p>
               </div>
-              <div className="p-2 bg-muted/50 rounded-lg shrink-0">
-                <Package className="h-4 w-4 text-muted-foreground" />
+              <div className="p-2.5 bg-muted/50 rounded-lg shrink-0">
+                <Package className="h-5 w-5 text-muted-foreground" />
               </div>
             </div>
           </div>
           {/* OK */}
-          <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">OK</p>
-                <p className="text-xl font-bold mt-0.5 tracking-tight text-green-600">{stockSummary?.ok ?? 0}</p>
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">OK</p>
+                <p className="text-2xl font-bold mt-1 tracking-tight text-green-600">{stockSummary?.ok ?? 0}</p>
               </div>
-              <div className="p-2 bg-green-100 rounded-lg shrink-0">
-                <CheckCircle className="h-4 w-4 text-green-600" />
+              <div className="p-2.5 bg-green-100 rounded-lg shrink-0">
+                <CheckCircle className="h-5 w-5 text-green-600" />
               </div>
             </div>
           </div>
           {/* Baixo */}
-          <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">Baixo</p>
-                <p className="text-xl font-bold mt-0.5 tracking-tight text-yellow-600">{stockSummary?.low ?? 0}</p>
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Baixo</p>
+                <p className="text-2xl font-bold mt-1 tracking-tight text-yellow-600">{stockSummary?.low ?? 0}</p>
               </div>
-              <div className="p-2 bg-yellow-100 rounded-lg shrink-0">
-                <AlertTriangle className="h-4 w-4 text-yellow-600" />
+              <div className="p-2.5 bg-yellow-100 rounded-lg shrink-0">
+                <AlertTriangle className="h-5 w-5 text-yellow-600" />
               </div>
             </div>
           </div>
           {/* Crítico */}
-          <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">Crítico</p>
-                <p className="text-xl font-bold mt-0.5 tracking-tight text-orange-600">{stockSummary?.critical ?? 0}</p>
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Crítico</p>
+                <p className="text-2xl font-bold mt-1 tracking-tight text-orange-600">{stockSummary?.critical ?? 0}</p>
               </div>
-              <div className="p-2 bg-orange-100 rounded-lg shrink-0">
-                <AlertCircle className="h-4 w-4 text-orange-600" />
+              <div className="p-2.5 bg-orange-100 rounded-lg shrink-0">
+                <AlertCircle className="h-5 w-5 text-orange-600" />
               </div>
             </div>
           </div>
           {/* Em falta */}
-          <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 border-red-200/50 bg-red-50/30">
+          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 border-red-200/50 bg-red-50/30">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">Em falta</p>
-                <p className="text-xl font-bold mt-0.5 tracking-tight text-red-600">{stockSummary?.outOfStock ?? 0}</p>
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Em falta</p>
+                <p className="text-2xl font-bold mt-1 tracking-tight text-red-600">{stockSummary?.outOfStock ?? 0}</p>
               </div>
-              <div className="p-2 bg-red-100 rounded-lg shrink-0">
-                <XCircle className="h-4 w-4 text-red-600" />
+              <div className="p-2.5 bg-red-100 rounded-lg shrink-0">
+                <XCircle className="h-5 w-5 text-red-600" />
               </div>
             </div>
           </div>
@@ -432,12 +432,12 @@ export default function Estoque() {
                   <TableHead className="w-10">
                     <Checkbox />
                   </TableHead>
-                  <TableHead className="font-semibold text-foreground text-xs">Item</TableHead>
-                  <TableHead className="font-semibold text-foreground text-xs">Estoque atual</TableHead>
-                  <TableHead className="font-semibold text-foreground text-xs">Status</TableHead>
-                  <TableHead className="font-semibold text-foreground text-xs">Custo unitário</TableHead>
-                  <TableHead className="font-semibold text-foreground text-xs">Valor total</TableHead>
-                  <TableHead className="font-semibold text-foreground text-xs">Última atualização</TableHead>
+                  <TableHead className="font-semibold text-foreground text-sm">Item</TableHead>
+                  <TableHead className="font-semibold text-foreground text-sm">Estoque atual</TableHead>
+                  <TableHead className="font-semibold text-foreground text-sm">Status</TableHead>
+                  <TableHead className="font-semibold text-foreground text-sm">Custo unitário</TableHead>
+                  <TableHead className="font-semibold text-foreground text-sm">Valor total</TableHead>
+                  <TableHead className="font-semibold text-foreground text-sm">Última atualização</TableHead>
                   <TableHead className="w-10"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -477,10 +477,10 @@ export default function Estoque() {
                         <Checkbox />
                       </TableCell>
                       <TableCell className="py-1">
-                        <span className="font-medium text-sm text-foreground">{item.name}</span>
+                        <span className="font-medium text-base text-foreground">{item.name}</span>
                       </TableCell>
                       <TableCell className="py-1">
-                        <span className="font-medium text-sm text-foreground">{currentQty} {unitLabel}</span>
+                        <span className="font-medium text-base text-foreground">{currentQty} {unitLabel}</span>
                       </TableCell>
                       <TableCell className="py-1">
                         <Badge 
@@ -491,12 +491,12 @@ export default function Estoque() {
                         </Badge>
                       </TableCell>
                       <TableCell className="py-1">
-                        <span className="text-sm text-foreground">
+                        <span className="text-base text-foreground">
                           R$ {costPerUnit.toFixed(2)}/{unitLabel}
                         </span>
                       </TableCell>
                       <TableCell className="py-1">
-                        <span className="font-semibold text-sm text-foreground">
+                        <span className="font-semibold text-base text-foreground">
                           R$ {totalValue.toFixed(2)}
                         </span>
                       </TableCell>

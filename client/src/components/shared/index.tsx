@@ -18,15 +18,15 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className }
   if (loading) {
     return (
       <div className={cn(
-        "bg-card rounded-xl p-4 border border-border/50 shadow-soft",
+        "bg-card rounded-xl p-5 border border-border/50 shadow-soft",
         className
       )}>
         <div className="flex items-start justify-between">
-          <div className="space-y-2 flex-1">
-            <div className="skeleton h-3 w-24 rounded-md" />
-            <div className="skeleton h-7 w-28 rounded-md" />
+          <div className="space-y-2.5 flex-1">
+            <div className="skeleton h-3.5 w-28 rounded-md" />
+            <div className="skeleton h-8 w-32 rounded-md" />
           </div>
-          <div className="skeleton h-10 w-10 rounded-lg" />
+          <div className="skeleton h-12 w-12 rounded-lg" />
         </div>
       </div>
     );
@@ -34,18 +34,18 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className }
 
   return (
     <div className={cn(
-      "bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5",
+      "bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5",
       className
     )}>
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-3.5">
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
+          <p className="text-sm text-muted-foreground font-medium tracking-wide uppercase">
             {title}
           </p>
-          <p className="text-2xl font-bold mt-1.5 tracking-tight">{value}</p>
+          <p className="text-3xl font-bold mt-2 tracking-tight">{value}</p>
           {trend && (
             <div className={cn(
-              "inline-flex items-center gap-1 mt-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold",
+              "inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded-full text-xs font-semibold",
               trend.isPositive 
                 ? "bg-emerald-50 text-emerald-600" 
                 : "bg-red-50 text-red-600"
@@ -55,8 +55,8 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className }
             </div>
           )}
         </div>
-        <div className="p-2.5 bg-primary/10 rounded-lg shrink-0">
-          <Icon className="h-5 w-5 text-primary" />
+        <div className="p-3 bg-primary/10 rounded-lg shrink-0">
+          <Icon className="h-6 w-6 text-primary" />
         </div>
       </div>
     </div>
@@ -83,7 +83,7 @@ const badgeVariants: Record<BadgeVariant, string> = {
 export function StatusBadge({ variant = "default", children, className }: StatusBadgeProps) {
   return (
     <span className={cn(
-      "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border tracking-wide",
+      "inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold border tracking-wide",
       badgeVariants[variant],
       className
     )}>
@@ -107,20 +107,20 @@ interface EmptyStateProps {
 export function EmptyState({ icon: Icon, title, description, action, className }: EmptyStateProps) {
   return (
     <div className={cn(
-      "flex flex-col items-center justify-center py-16 px-6 text-center",
+      "flex flex-col items-center justify-center py-20 px-7 text-center",
       className
     )}>
-      <div className="p-4 bg-muted/50 rounded-2xl mb-5">
-        <Icon className="h-10 w-10 text-muted-foreground/70" />
+      <div className="p-5 bg-muted/50 rounded-2xl mb-6">
+        <Icon className="h-12 w-12 text-muted-foreground/70" />
       </div>
-      <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
+      <h3 className="text-xl font-semibold text-foreground mb-2.5">{title}</h3>
       {description && (
-        <p className="text-sm text-muted-foreground max-w-sm mb-6 leading-relaxed">{description}</p>
+        <p className="text-base text-muted-foreground max-w-sm mb-7 leading-relaxed">{description}</p>
       )}
       {action && (
         <button
           onClick={action.onClick}
-          className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
+          className="px-6 py-3 bg-primary text-primary-foreground rounded-xl text-base font-semibold hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
         >
           {action.label}
         </button>
@@ -139,15 +139,15 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, description, actions, className }: PageHeaderProps) {
   return (
-    <div className={cn("flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6", className)}>
+    <div className={cn("flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-7", className)}>
       <div>
-        <h1 className="text-xl font-bold tracking-tight">{title}</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
         {description && (
-          <p className="text-muted-foreground mt-1 text-xs">{description}</p>
+          <p className="text-muted-foreground mt-1.5 text-sm">{description}</p>
         )}
       </div>
       {actions && (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           {actions}
         </div>
       )}
@@ -164,14 +164,14 @@ interface TableSkeletonProps {
 export function TableSkeleton({ rows = 5, columns = 5 }: TableSkeletonProps) {
   return (
     <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-soft">
-      <div className="p-5 border-b border-border/50">
-        <div className="skeleton h-6 w-52 rounded-lg" />
+      <div className="p-6 border-b border-border/50">
+        <div className="skeleton h-7 w-60 rounded-lg" />
       </div>
       <div className="divide-y divide-border/50">
         {Array.from({ length: rows }).map((_, i) => (
-          <div key={i} className="flex items-center gap-4 p-5">
+          <div key={i} className="flex items-center gap-5 p-6">
             {Array.from({ length: columns }).map((_, j) => (
-              <div key={j} className="skeleton h-4 flex-1 rounded-lg" />
+              <div key={j} className="skeleton h-5 flex-1 rounded-lg" />
             ))}
           </div>
         ))}
@@ -194,15 +194,15 @@ export function SectionCard({ title, description, children, actions, className, 
   return (
     <div className={cn("bg-card rounded-xl border border-border/50 shadow-soft", className)}>
       {(title || actions) && (
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border/50">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-border/50">
           <div>
-            {title && <h3 className="font-semibold text-sm">{title}</h3>}
-            {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
+            {title && <h3 className="font-semibold text-base">{title}</h3>}
+            {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
           </div>
           {actions}
         </div>
       )}
-      <div className={noPadding ? "" : "p-5"}>
+      <div className={noPadding ? "" : "p-6"}>
         {children}
       </div>
     </div>
@@ -236,22 +236,22 @@ export function ActionMenu({ items }: ActionMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-muted">
-          <MoreHorizontal className="h-4 w-4" />
+        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-muted">
+          <MoreHorizontal className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-elevated border-border/50">
+      <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-elevated border-border/50">
         {items.map((item, index) => (
           <div key={index}>
             {item.separator && index > 0 && <DropdownMenuSeparator className="bg-border/50" />}
             <DropdownMenuItem
               onClick={item.onClick}
               className={cn(
-                "cursor-pointer rounded-lg mx-1 my-0.5",
+                "cursor-pointer rounded-lg mx-1.5 my-1",
                 item.variant === "destructive" && "text-destructive focus:text-destructive"
               )}
             >
-              {item.icon && <item.icon className="h-4 w-4 mr-2.5" />}
+              {item.icon && <item.icon className="h-5 w-5 mr-3" />}
               {item.label}
             </DropdownMenuItem>
           </div>

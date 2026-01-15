@@ -194,84 +194,84 @@ export default function Pedidos() {
         title="Pedidos"
         description="Gerencie os pedidos do seu estabelecimento"
         actions={
-          <Button variant="outline" onClick={() => refetch()} className="rounded-lg border-border/50 hover:bg-accent h-8 px-3 text-xs">
-            <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5", isLoading && "animate-spin")} />
+          <Button variant="outline" onClick={() => refetch()} className="rounded-lg border-border/50 hover:bg-accent h-9 px-3.5 text-sm">
+            <RefreshCw className={cn("h-4 w-4 mr-2", isLoading && "animate-spin")} />
             Atualizar
           </Button>
         }
       />
 
       {/* Status Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         {/* Novos */}
         <div 
           className={cn(
-            "bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
+            "bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
             activeTab === "new" && "ring-2 ring-blue-500"
           )}
           onClick={() => setActiveTab("new")}
         >
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">Novos</p>
-              <p className="text-xl font-bold mt-0.5 tracking-tight text-blue-600">{orderCounts.new}</p>
+              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Novos</p>
+              <p className="text-2xl font-bold mt-1 tracking-tight text-blue-600">{orderCounts.new}</p>
             </div>
-            <div className="p-2 bg-blue-100 rounded-lg shrink-0">
-              <Clock className="h-4 w-4 text-blue-600" />
+            <div className="p-2.5 bg-blue-100 rounded-lg shrink-0">
+              <Clock className="h-5 w-5 text-blue-600" />
             </div>
           </div>
         </div>
         {/* Em Preparo */}
         <div 
           className={cn(
-            "bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
+            "bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
             activeTab === "preparing" && "ring-2 ring-amber-500"
           )}
           onClick={() => setActiveTab("preparing")}
         >
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">Em Preparo</p>
-              <p className="text-xl font-bold mt-0.5 tracking-tight text-amber-600">{orderCounts.preparing}</p>
+              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Em Preparo</p>
+              <p className="text-2xl font-bold mt-1 tracking-tight text-amber-600">{orderCounts.preparing}</p>
             </div>
-            <div className="p-2 bg-amber-100 rounded-lg shrink-0">
-              <ChefHat className="h-4 w-4 text-amber-600" />
+            <div className="p-2.5 bg-amber-100 rounded-lg shrink-0">
+              <ChefHat className="h-5 w-5 text-amber-600" />
             </div>
           </div>
         </div>
         {/* Prontos */}
         <div 
           className={cn(
-            "bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
+            "bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
             activeTab === "ready" && "ring-2 ring-emerald-500"
           )}
           onClick={() => setActiveTab("ready")}
         >
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">Prontos</p>
-              <p className="text-xl font-bold mt-0.5 tracking-tight text-emerald-600">{orderCounts.ready}</p>
+              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Prontos</p>
+              <p className="text-2xl font-bold mt-1 tracking-tight text-emerald-600">{orderCounts.ready}</p>
             </div>
-            <div className="p-2 bg-emerald-100 rounded-lg shrink-0">
-              <Package className="h-4 w-4 text-emerald-600" />
+            <div className="p-2.5 bg-emerald-100 rounded-lg shrink-0">
+              <Package className="h-5 w-5 text-emerald-600" />
             </div>
           </div>
         </div>
         {/* Finalizados */}
         <div 
           className={cn(
-            "bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
+            "bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
             activeTab === "completed" && "ring-2 ring-gray-500"
           )}
           onClick={() => setActiveTab("completed")}
         >
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">Finalizados</p>
-              <p className="text-xl font-bold mt-0.5 tracking-tight text-gray-600">{orderCounts.completed}</p>
+              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Finalizados</p>
+              <p className="text-2xl font-bold mt-1 tracking-tight text-gray-600">{orderCounts.completed}</p>
             </div>
-            <div className="p-2 bg-gray-100 rounded-lg shrink-0">
-              <CheckCircle className="h-4 w-4 text-gray-600" />
+            <div className="p-2.5 bg-gray-100 rounded-lg shrink-0">
+              <CheckCircle className="h-5 w-5 text-gray-600" />
             </div>
           </div>
         </div>
@@ -285,11 +285,11 @@ export default function Pedidos() {
         >
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">Cancelados</p>
-              <p className="text-xl font-bold mt-0.5 tracking-tight text-red-600">{orderCounts.cancelled}</p>
+              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Cancelados</p>
+              <p className="text-2xl font-bold mt-1 tracking-tight text-red-600">{orderCounts.cancelled}</p>
             </div>
-            <div className="p-2 bg-red-100 rounded-lg shrink-0">
-              <XCircle className="h-4 w-4 text-red-600" />
+            <div className="p-2.5 bg-red-100 rounded-lg shrink-0">
+              <XCircle className="h-5 w-5 text-red-600" />
             </div>
           </div>
         </div>
@@ -299,7 +299,7 @@ export default function Pedidos() {
 
         <TabsContent value={activeTab} className="mt-0">
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="bg-card rounded-xl border border-border/50 p-4 shadow-soft">
                   <div className="skeleton h-5 w-24 rounded-md mb-3" />
@@ -310,7 +310,7 @@ export default function Pedidos() {
               ))}
             </div>
           ) : orders && orders.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {orders.map((order) => {
                 const config = statusConfig[order.status as OrderStatus];
                 const nextAction = getNextAction(order.status as OrderStatus);
@@ -368,7 +368,7 @@ export default function Pedidos() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="flex-1 h-8 rounded-lg border-border/50 hover:bg-accent text-xs"
+                          className="flex-1 h-9 rounded-lg border-border/50 hover:bg-accent text-sm"
                           onClick={() => setSelectedOrder(order.id)}
                         >
                           Ver detalhes
@@ -376,7 +376,7 @@ export default function Pedidos() {
                         {nextAction && (
                           <Button
                             size="sm"
-                            className="flex-1 h-8 rounded-lg shadow-sm text-xs"
+                            className="flex-1 h-9 rounded-lg shadow-sm text-sm"
                             onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
                             disabled={updateStatusMutation.isPending}
                           >
@@ -387,7 +387,7 @@ export default function Pedidos() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 rounded-lg text-destructive hover:text-destructive hover:bg-destructive/10"
+                            className="h-9 w-9 rounded-lg text-destructive hover:text-destructive hover:bg-destructive/10"
                             onClick={() => {
                               setOrderToCancel(order.id);
                               setCancelDialogOpen(true);

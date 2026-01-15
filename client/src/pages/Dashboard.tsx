@@ -111,7 +111,7 @@ export default function Dashboard() {
       />
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
         <StatCard
           title="Pedidos Hoje"
           value={stats?.ordersToday ?? 0}
@@ -140,7 +140,7 @@ export default function Dashboard() {
       </div>
 
       {/* Weekly Revenue Card */}
-      <div className="mb-5">
+      <div className="mb-6">
         <WeeklyRevenueCard
           thisWeek={weeklyRevenue?.thisWeek ?? []}
           lastWeek={weeklyRevenue?.lastWeek ?? []}
@@ -151,18 +151,18 @@ export default function Dashboard() {
       </div>
 
       {/* Charts and Recent Orders */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Chart */}
         <SectionCard 
           title="Últimos 7 dias" 
           className="lg:col-span-2"
         >
           {weeklyLoading ? (
-            <div className="h-56 flex items-center justify-center">
+            <div className="h-64 flex items-center justify-center">
               <div className="skeleton h-full w-full rounded-lg" />
             </div>
           ) : chartData.length > 0 ? (
-            <div className="h-56">
+            <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <defs>
@@ -202,7 +202,7 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="h-56 flex items-center justify-center text-muted-foreground text-sm">
+            <div className="h-64 flex items-center justify-center text-muted-foreground text-base">
               Nenhum dado disponível
             </div>
           )}
@@ -211,9 +211,9 @@ export default function Dashboard() {
         {/* Recent Orders */}
         <SectionCard title="Pedidos Recentes" description="Últimas atualizações">
           {ordersLoading ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                <div key={i} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
                   <div className="flex items-start justify-between mb-1.5">
                     <div className="flex-1 space-y-1.5">
                       <div className="skeleton h-3 w-16 rounded" />
@@ -226,7 +226,7 @@ export default function Dashboard() {
               ))}
             </div>
           ) : recentOrders && recentOrders.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {recentOrders.map((order) => {
                 // Extrair nomes dos itens do pedido
                 const itemNames = order.items?.map((item: any) => item.name || item.productName).join(", ") || "Itens do pedido";
@@ -234,28 +234,28 @@ export default function Dashboard() {
                 return (
                   <div
                     key={order.id}
-                    className="border-b border-gray-100 pb-3 last:border-0 last:pb-0"
+                    className="border-b border-gray-100 pb-4 last:border-0 last:pb-0"
                   >
                     <div className="flex items-start justify-between mb-1.5">
                       <div className="flex-1">
                         <div className="flex items-center gap-1.5 mb-0.5">
-                          <span className="font-medium text-xs text-foreground">
+                          <span className="font-medium text-sm text-foreground">
                             #{order.id}
                           </span>
                           <StatusBadge variant={statusMap[order.status]?.variant || "default"}>
                             {statusMap[order.status]?.label || order.status}
                           </StatusBadge>
                         </div>
-                        <p className="text-[10px] text-muted-foreground mb-0.5 line-clamp-1">
+                        <p className="text-xs text-muted-foreground mb-1 line-clamp-1">
                           {itemNames}
                         </p>
-                        <p className="text-xs font-semibold text-foreground">
+                        <p className="text-sm font-semibold text-foreground">
                           {formatCurrency(Number(order.total))}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                      <Clock className="h-2.5 w-2.5" />
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3" />
                       {formatDistanceToNow(new Date(order.createdAt), {
                         addSuffix: true,
                         locale: ptBR,

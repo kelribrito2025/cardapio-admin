@@ -239,3 +239,11 @@
 
 ## Ajuste de Tamanho da Sidebar
 - [x] Aumentar tamanho da barra de menu lateral em 15%
+
+## Aumento de 15% nos Tamanhos das Páginas
+- [x] Aumentar tamanhos na página Dashboard em 15%
+- [x] Aumentar tamanhos na página Catálogo em 15%
+- [x] Aumentar tamanhos na página Novo/Editar Produto em 15%
+- [x] Aumentar tamanhos na página Pedidos em 15%
+- [x] Aumentar tamanhos na página Estoque em 15%
+- [x] Aumentar tamanhos na página Configurações em 15%

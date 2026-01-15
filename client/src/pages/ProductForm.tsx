@@ -322,38 +322,38 @@ export default function ProductForm() {
     <AdminLayout>
       <form onSubmit={handleSubmit}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-9">
           <div className="flex items-center gap-4">
             <Button
               type="button"
               variant="ghost"
               size="icon"
               onClick={() => navigate("/catalogo")}
-              className="rounded-lg hover:bg-accent h-8 w-8"
+              className="rounded-lg hover:bg-accent h-9 w-9"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-xl font-bold tracking-tight">
+              <h1 className="text-2xl font-bold tracking-tight">
                 {isEditing ? "Editar Produto" : "Novo Produto"}
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-base text-muted-foreground">
                 {isEditing ? "Atualize as informações do produto" : "Preencha as informações do produto"}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Form */}
-          <div className="lg:col-span-2 space-y-5">
+          <div className="lg:col-span-2 space-y-6">
             {/* Basic Info */}
             <SectionCard title="Informações Básicas">
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {/* Nome, Categoria e Preço na mesma linha no desktop */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
                   <div className="lg:col-span-6">
-                    <Label htmlFor="name" className="text-xs font-semibold">Nome do produto *</Label>
+                    <Label htmlFor="name" className="text-sm font-semibold">Nome do produto *</Label>
                     <Input
                       id="name"
                       value={name}
@@ -370,14 +370,14 @@ export default function ProductForm() {
                   </div>
 
                   <div className="lg:col-span-3">
-                    <Label htmlFor="category" className="text-xs font-semibold">Categoria</Label>
+                    <Label htmlFor="category" className="text-sm font-semibold">Categoria</Label>
                     <Select value={categoryId} onValueChange={setCategoryId}>
-                      <SelectTrigger className="mt-1.5 h-9 text-sm rounded-lg border-border/50">
+                      <SelectTrigger className="mt-2 h-10 text-base rounded-lg border-border/50">
                         <SelectValue placeholder="Selecione" />
                       </SelectTrigger>
                       <SelectContent className="rounded-lg">
                         {categories?.map((cat) => (
-                          <SelectItem key={cat.id} value={String(cat.id)} className="rounded text-sm">
+                          <SelectItem key={cat.id} value={String(cat.id)} className="rounded text-base">
                             {cat.name}
                           </SelectItem>
                         ))}
@@ -386,7 +386,7 @@ export default function ProductForm() {
                   </div>
 
                   <div className="lg:col-span-3">
-                    <Label htmlFor="price" className="text-xs font-semibold">Preço *</Label>
+                    <Label htmlFor="price" className="text-sm font-semibold">Preço *</Label>
                     <Input
                       id="price"
                       type="number"
@@ -407,19 +407,19 @@ export default function ProductForm() {
                 </div>
 
                 <div>
-                  <Label htmlFor="description" className="text-xs font-semibold">Descrição</Label>
+                  <Label htmlFor="description" className="text-sm font-semibold">Descrição</Label>
                   <Textarea
                     id="description"
                     value={description}
                     onChange={(e) => setDescription(capitalizeFirst(e.target.value))}
                     placeholder="Descreva os ingredientes e características do produto"
                     rows={2}
-                    className="mt-1.5 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20 resize-none"
+                    className="mt-2 text-base rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20 resize-none"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="prepTime" className="text-xs font-semibold">Tempo de preparo (minutos)</Label>
+                  <Label htmlFor="prepTime" className="text-sm font-semibold">Tempo de preparo (minutos)</Label>
                   <Input
                     id="prepTime"
                     type="number"
@@ -427,7 +427,7 @@ export default function ProductForm() {
                     value={prepTime}
                     onChange={(e) => setPrepTime(e.target.value)}
                     placeholder="Ex: 30"
-                    className="mt-1.5 max-w-[160px] h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
+                    className="mt-2 max-w-[180px] h-10 text-base rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
               </div>
@@ -491,7 +491,7 @@ export default function ProductForm() {
 
             {/* Stock & Availability */}
             <SectionCard title="Disponibilidade">
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                   <div>
                     <Label className="text-xs font-semibold">Status do produto</Label>
@@ -539,7 +539,7 @@ export default function ProductForm() {
                         value={stockQuantity}
                         onChange={(e) => setStockQuantity(e.target.value)}
                         placeholder="0"
-                        className="mt-1.5 h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
+                        className="mt-2 h-10 text-base rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
                       />
                     </div>
                   </div>
