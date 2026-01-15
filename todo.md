@@ -223,3 +223,9 @@
 
 ## Sidebar de Detalhes do Pedido
 - [x] Substituir Dialog por Sheet (sidebar) com animação de slide da direita para a esquerda
+
+## Listagem de Estoque Compacta
+- [x] Reduzir altura das linhas da tabela
+- [x] Remover categoria abaixo do nome do item
+- [x] Remover Min/Max da coluna de estoque atual
+- [x] Aproximar nome e unidade na mesma linha

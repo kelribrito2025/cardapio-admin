@@ -473,22 +473,16 @@ export default function Estoque() {
 
                   return (
                     <TableRow key={item.id} className="hover:bg-muted/20">
-                      <TableCell className="py-2">
+                      <TableCell className="py-1">
                         <Checkbox />
                       </TableCell>
-                      <TableCell className="py-2">
-                        <div>
-                          <p className="font-medium text-sm text-foreground">{item.name}</p>
-                          <p className="text-xs text-muted-foreground">{getCategoryName(item.categoryId)}</p>
-                        </div>
+                      <TableCell className="py-1">
+                        <span className="font-medium text-sm text-foreground">{item.name}</span>
                       </TableCell>
-                      <TableCell className="py-2">
-                        <div>
-                          <p className="font-medium text-sm text-foreground">{currentQty} {unitLabel}</p>
-                          <p className="text-xs text-muted-foreground">Min: {minQty} / Max: {maxQty || "-"}</p>
-                        </div>
+                      <TableCell className="py-1">
+                        <span className="font-medium text-sm text-foreground">{currentQty} {unitLabel}</span>
                       </TableCell>
-                      <TableCell className="py-2">
+                      <TableCell className="py-1">
                         <Badge 
                           variant="outline" 
                           className={`${config.bgColor} ${config.color} ${config.borderColor} font-medium px-2 py-0.5 text-xs`}
@@ -496,20 +490,20 @@ export default function Estoque() {
                           {config.label}
                         </Badge>
                       </TableCell>
-                      <TableCell className="py-2">
+                      <TableCell className="py-1">
                         <span className="text-sm text-foreground">
                           R$ {costPerUnit.toFixed(2)}/{unitLabel}
                         </span>
                       </TableCell>
-                      <TableCell className="py-2">
+                      <TableCell className="py-1">
                         <span className="font-semibold text-sm text-foreground">
                           R$ {totalValue.toFixed(2)}
                         </span>
                       </TableCell>
-                      <TableCell className="py-2">
+                      <TableCell className="py-1">
                         <span className="text-xs text-muted-foreground">{timeAgo}</span>
                       </TableCell>
-                      <TableCell className="py-2">
+                      <TableCell className="py-1">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
