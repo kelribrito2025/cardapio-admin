@@ -55,6 +55,7 @@ import {
   PackageMinus,
   Filter,
 } from "lucide-react";
+import { capitalizeFirst } from "@/lib/utils";
 
 type StockStatus = "ok" | "low" | "critical" | "out_of_stock";
 
@@ -594,7 +595,7 @@ export default function Estoque() {
               <Input
                 id="name"
                 value={newItemName}
-                onChange={(e) => setNewItemName(e.target.value)}
+                onChange={(e) => setNewItemName(capitalizeFirst(e.target.value))}
                 placeholder="Ex: Carne bovina"
               />
             </div>
@@ -693,7 +694,7 @@ export default function Estoque() {
               <Input
                 id="edit-name"
                 value={newItemName}
-                onChange={(e) => setNewItemName(e.target.value)}
+                onChange={(e) => setNewItemName(capitalizeFirst(e.target.value))}
               />
             </div>
             <div className="grid gap-2">
@@ -882,7 +883,7 @@ export default function Estoque() {
               <Input
                 id="category-name"
                 value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
+                onChange={(e) => setNewCategoryName(capitalizeFirst(e.target.value))}
                 placeholder="Ex: Carnes, Bebidas, Temperos..."
               />
             </div>

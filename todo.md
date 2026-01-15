@@ -203,3 +203,10 @@
 
 ## Redução de Tamanho da Página de Novo Produto
 - [x] Reduzir tamanhos de fontes, espaçamentos, campos e botões em 20% na página /catalogo/novo
+
+## Capitalização Automática
+- [x] Criar função utilitária para capitalizar primeira letra
+- [x] Aplicar capitalização em campos de nome de categoria
+- [x] Aplicar capitalização em campos de nome de item/produto
+- [x] Aplicar capitalização em campos de descrição
+- [x] Aplicar capitalização em campos de nome de item de estoque

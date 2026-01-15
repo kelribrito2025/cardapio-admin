@@ -61,7 +61,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { cn } from "@/lib/utils";
+import { cn, capitalizeFirst } from "@/lib/utils";
 
 // Sortable Product Item Component
 function SortableProductItem({
@@ -678,7 +678,7 @@ export default function Catalogo() {
                     <div className="flex items-center gap-1.5">
                       <Input
                         value={editingCategoryName}
-                        onChange={(e) => setEditingCategoryName(e.target.value)}
+                        onChange={(e) => setEditingCategoryName(capitalizeFirst(e.target.value))}
                         className="h-7 w-40 font-bold text-sm"
                         autoFocus
                         onKeyDown={(e) => {
@@ -845,7 +845,7 @@ export default function Catalogo() {
             <Input
               placeholder="Nome da categoria"
               value={newCategoryName}
-              onChange={(e) => setNewCategoryName(e.target.value)}
+              onChange={(e) => setNewCategoryName(capitalizeFirst(e.target.value))}
               className="h-11 rounded-xl"
             />
           </div>

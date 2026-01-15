@@ -25,7 +25,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useParams } from "wouter";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn, capitalizeFirst } from "@/lib/utils";
 
 interface ComplementGroup {
   id?: number;
@@ -357,7 +357,7 @@ export default function ProductForm() {
                     <Input
                       id="name"
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => setName(capitalizeFirst(e.target.value))}
                       placeholder="Ex: X-Burger Especial"
                       className={cn(
                         "mt-1.5 h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20",
@@ -411,7 +411,7 @@ export default function ProductForm() {
                   <Textarea
                     id="description"
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={(e) => setDescription(capitalizeFirst(e.target.value))}
                     placeholder="Descreva os ingredientes e características do produto"
                     rows={2}
                     className="mt-1.5 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20 resize-none"
@@ -576,7 +576,7 @@ export default function ProductForm() {
                           <Input
                             value={group.name}
                             onChange={(e) =>
-                              updateComplementGroup(groupIndex, { name: e.target.value })
+                              updateComplementGroup(groupIndex, { name: capitalizeFirst(e.target.value) })
                             }
                             placeholder="Nome do grupo (ex: Adicionais)"
                             className="h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
@@ -645,7 +645,7 @@ export default function ProductForm() {
                               value={item.name}
                               onChange={(e) =>
                                 updateComplementItem(groupIndex, itemIndex, {
-                                  name: e.target.value,
+                                  name: capitalizeFirst(e.target.value),
                                 })
                               }
                               placeholder="Nome do item"
