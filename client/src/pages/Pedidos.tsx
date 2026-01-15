@@ -23,9 +23,17 @@ import {
   CreditCard,
   Banknote,
   RefreshCw,
+  Printer,
+  MessageCircle,
+  Mail,
+  Calendar,
+  User,
+  Trash2,
+  Edit,
+  ArrowLeft,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -404,92 +412,248 @@ export default function Pedidos() {
 
       {/* Order Details Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-        <DialogContent className="max-w-lg rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl">Pedido #{orderDetails?.orderNumber}</DialogTitle>
-            <DialogDescription>
-              {orderDetails && (
-                <StatusBadge variant={statusConfig[orderDetails.status as OrderStatus]?.variant}>
-                  {statusConfig[orderDetails.status as OrderStatus]?.label}
-                </StatusBadge>
-              )}
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="max-w-4xl rounded-2xl p-0 max-h-[90vh] overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon" onClick={() => setSelectedOrder(null)} className="h-8 w-8">
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <span className="font-semibold text-lg">Detalhes do Pedido</span>
+            </div>
+          </div>
 
           {orderDetails && (
-            <div className="space-y-5">
-              {/* Customer */}
-              {(orderDetails.customerName || orderDetails.customerPhone) && (
-                <div className="space-y-2 p-4 bg-muted/30 rounded-xl">
-                  <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Cliente</h4>
-                  {orderDetails.customerName && (
-                    <p className="font-semibold text-base">{orderDetails.customerName}</p>
-                  )}
-                  {orderDetails.customerPhone && (
-                    <p className="text-sm flex items-center gap-2 text-muted-foreground">
-                      <Phone className="h-4 w-4" />
-                      {orderDetails.customerPhone}
-                    </p>
-                  )}
-                  {orderDetails.customerAddress && (
-                    <p className="text-sm flex items-center gap-2 text-muted-foreground">
-                      <MapPin className="h-4 w-4" />
-                      {orderDetails.customerAddress}
-                    </p>
-                  )}
+            <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
+              {/* Order ID and Actions */}
+              <div className="px-6 py-4 bg-muted/20 flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold">Pedido #{orderDetails.orderNumber}</h2>
+                  <p className="text-sm text-muted-foreground">
+                    {format(new Date(orderDetails.createdAt), "dd 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })}
+                  </p>
                 </div>
-              )}
-
-              {/* Items */}
-              <div>
-                <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-3">Itens</h4>
-                <div className="space-y-3">
-                  {orderDetails.items?.map((item, index) => (
-                    <div key={index} className="flex justify-between text-sm p-3 bg-muted/30 rounded-xl">
-                      <span className="font-medium">
-                        {item.quantity}x {item.productName}
-                      </span>
-                      <span className="font-semibold">
-                        {formatCurrency(item.totalPrice)}
-                      </span>
-                    </div>
-                  ))}
+                <div className="flex items-center gap-2">
+                  <StatusBadge variant={statusConfig[orderDetails.status as OrderStatus]?.variant}>
+                    {statusConfig[orderDetails.status as OrderStatus]?.label}
+                  </StatusBadge>
                 </div>
               </div>
 
-              {/* Totals */}
-              <div className="border-t border-border/50 pt-4 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Subtotal</span>
-                  <span className="font-medium">{formatCurrency(orderDetails.subtotal)}</span>
-                </div>
-                {Number(orderDetails.deliveryFee) > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Taxa de entrega</span>
-                    <span className="font-medium">{formatCurrency(orderDetails.deliveryFee)}</span>
+              {/* Info Cards Grid */}
+              <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Customer Info */}
+                <div className="border border-border/50 rounded-xl p-4">
+                  <h4 className="font-semibold text-base mb-4">Informações do Cliente</h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Nome:</span>
+                      <span className="font-medium flex items-center gap-2">
+                        <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
+                          {orderDetails.customerName?.charAt(0) || "C"}
+                        </span>
+                        {orderDetails.customerName || "Cliente"}
+                      </span>
+                    </div>
+                    {orderDetails.customerPhone && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Telefone:</span>
+                        <span className="font-medium">{orderDetails.customerPhone}</span>
+                      </div>
+                    )}
                   </div>
-                )}
-                <div className="flex justify-between pt-2 border-t border-border/50">
-                  <span className="font-semibold">Total</span>
-                  <span className="text-xl font-bold text-primary">{formatCurrency(orderDetails.total)}</span>
+                  {orderDetails.customerPhone && (
+                    <div className="flex gap-2 mt-4">
+                      <Button variant="outline" size="sm" className="flex-1 h-8 text-xs" onClick={() => window.open(`tel:${orderDetails.customerPhone}`)}>
+                        Ligar
+                      </Button>
+                      <Button variant="outline" size="sm" className="flex-1 h-8 text-xs" onClick={() => window.open(`https://wa.me/${orderDetails.customerPhone?.replace(/\D/g, '')}`, '_blank')}>
+                        Mensagem
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Payment Details */}
+                <div className="border border-border/50 rounded-xl p-4">
+                  <h4 className="font-semibold text-base mb-4">Detalhes do Pagamento</h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Data:</span>
+                      <span className="font-medium">{format(new Date(orderDetails.createdAt), "dd/MM/yyyy", { locale: ptBR })}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Método:</span>
+                      <span className="font-medium">{paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Delivery Info */}
+                <div className="border border-border/50 rounded-xl p-4">
+                  <h4 className="font-semibold text-base mb-4">Informações de Entrega</h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Tipo:</span>
+                      <span className="font-medium">{orderDetails.deliveryType === "delivery" ? "Entrega" : "Retirada"}</span>
+                    </div>
+                    {orderDetails.customerAddress && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Endereço:</span>
+                        <span className="font-medium text-right max-w-[150px]">{orderDetails.customerAddress}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Items and Status */}
+              <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Order Items */}
+                <div className="border border-border/50 rounded-xl p-4">
+                  <h4 className="font-semibold text-base mb-4">Itens do Pedido</h4>
+                  <div className="space-y-3">
+                    {orderDetails.items?.map((item, index) => (
+                      <div key={index} className="border-b border-border/30 pb-3 last:border-0 last:pb-0">
+                        <div className="flex justify-between">
+                          <span className="font-medium text-sm">{item.productName}</span>
+                          <span className="font-semibold text-sm">{formatCurrency(item.totalPrice)}</span>
+                        </div>
+                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                          <span>{item.notes || ""}</span>
+                          <span>{formatCurrency(item.unitPrice)} x {item.quantity}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Price Details */}
+                  <div className="mt-4 pt-4 border-t border-border/50 space-y-2">
+                    <h5 className="font-medium text-sm mb-2">Detalhes do Preço</h5>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Subtotal:</span>
+                      <span className="font-medium">{formatCurrency(orderDetails.subtotal)}</span>
+                    </div>
+                    {Number(orderDetails.deliveryFee) > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Taxa de Entrega:</span>
+                        <span className="font-medium">{formatCurrency(orderDetails.deliveryFee)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Taxa da Plataforma:</span>
+                      <span className="font-medium">Grátis</span>
+                    </div>
+                    <div className="flex justify-between pt-2 border-t border-border/50">
+                      <span className="font-bold text-primary">Total:</span>
+                      <span className="font-bold text-primary">{formatCurrency(orderDetails.total)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status Timeline */}
+                <div className="border border-border/50 rounded-xl p-4">
+                  <h4 className="font-semibold text-base mb-4">Status do Pedido</h4>
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3">
+                      <div className="flex flex-col items-center">
+                        <div className={cn(
+                          "h-8 w-8 rounded-full flex items-center justify-center",
+                          orderDetails.status !== "cancelled" ? "bg-emerald-100 text-emerald-600" : "bg-muted text-muted-foreground"
+                        )}>
+                          <CheckCircle className="h-4 w-4" />
+                        </div>
+                        <div className="w-0.5 h-8 bg-border/50" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">Pedido Recebido</p>
+                        <p className="text-xs text-muted-foreground">Pedido criado no sistema</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <div className="flex flex-col items-center">
+                        <div className={cn(
+                          "h-8 w-8 rounded-full flex items-center justify-center",
+                          ["preparing", "ready", "completed"].includes(orderDetails.status) ? "bg-emerald-100 text-emerald-600" : "bg-muted text-muted-foreground"
+                        )}>
+                          <ChefHat className="h-4 w-4" />
+                        </div>
+                        <div className="w-0.5 h-8 bg-border/50" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">Em Preparo</p>
+                        <p className="text-xs text-muted-foreground">Pedido sendo preparado</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <div className="flex flex-col items-center">
+                        <div className={cn(
+                          "h-8 w-8 rounded-full flex items-center justify-center",
+                          ["ready", "completed"].includes(orderDetails.status) ? "bg-emerald-100 text-emerald-600" : "bg-muted text-muted-foreground"
+                        )}>
+                          <Package className="h-4 w-4" />
+                        </div>
+                        <div className="w-0.5 h-8 bg-border/50" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">Pronto</p>
+                        <p className="text-xs text-muted-foreground">Pedido pronto para entrega/retirada</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <div className="flex flex-col items-center">
+                        <div className={cn(
+                          "h-8 w-8 rounded-full flex items-center justify-center",
+                          orderDetails.status === "completed" ? "bg-emerald-100 text-emerald-600" : "bg-muted text-muted-foreground"
+                        )}>
+                          <CheckCircle className="h-4 w-4" />
+                        </div>
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">Finalizado</p>
+                        <p className="text-xs text-muted-foreground">Pedido entregue ao cliente</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* Notes */}
               {orderDetails.notes && (
-                <div>
-                  <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-2">Observações</h4>
-                  <p className="text-sm bg-amber-50 text-amber-800 p-4 rounded-xl border border-amber-200/50">{orderDetails.notes}</p>
+                <div className="px-6 py-4">
+                  <div className="bg-amber-50 border border-amber-200/50 rounded-xl p-4">
+                    <h4 className="font-semibold text-sm text-amber-800 mb-2">Observações</h4>
+                    <p className="text-sm text-amber-700">{orderDetails.notes}</p>
+                  </div>
                 </div>
               )}
             </div>
           )}
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setSelectedOrder(null)} className="rounded-xl">
-              Fechar
+          {/* Footer */}
+          <div className="px-6 py-4 border-t border-border/50 flex items-center justify-between">
+            <Button variant="outline" onClick={() => window.print()} className="gap-2">
+              <Printer className="h-4 w-4" />
+              Imprimir Pedido
             </Button>
-          </DialogFooter>
+            <Button 
+              className="gap-2 bg-emerald-600 hover:bg-emerald-700"
+              onClick={() => {
+                const phone = orderDetails?.customerPhone?.replace(/\D/g, '');
+                if (phone) {
+                  window.open(`https://wa.me/${phone}?text=Olá! Sobre seu pedido %23${orderDetails?.orderNumber}...`, '_blank');
+                } else {
+                  toast.error("Cliente não possui telefone cadastrado");
+                }
+              }}
+            >
+              <MessageCircle className="h-4 w-4" />
+              Mensagem no WhatsApp
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 

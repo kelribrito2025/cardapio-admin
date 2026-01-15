@@ -216,3 +216,7 @@
 
 ## Remoção do Menu Configurações
 - [x] Remover item "Configurações" da barra lateral de navegação
+
+## Redesenho do Modal de Detalhes do Pedido
+- [x] Implementar novo layout com seções: Customer Info, Payment Details, Delivery Info, Order Items, Shipping Info
+- [x] Adicionar botões de Imprimir Pedido e Mensagem no WhatsApp
