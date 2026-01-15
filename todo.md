@@ -229,3 +229,6 @@
 - [x] Remover categoria abaixo do nome do item
 - [x] Remover Min/Max da coluna de estoque atual
 - [x] Aproximar nome e unidade na mesma linha
+
+## Dados de Estoque
+- [x] Adicionar 17 novos itens de estoque com diferentes categorias e quantidades
