@@ -307,3 +307,7 @@
 - [x] Verificar establishment do usuário 180577
 - [x] Criar 9 categorias de hamburgueria
 - [x] Adicionar 4 produtos em cada categoria (36 produtos total)
+
+## Adicionar Fotos aos Produtos do Usuário 180577
+- [x] Buscar imagens para todos os 36 produtos
+- [x] Atualizar produtos com URLs das imagens no banco de dados

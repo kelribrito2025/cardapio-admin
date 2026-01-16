@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE products SET images = '[\"/products/coca-cola-350.jpg\"]' WHERE name = 'Coca-Cola 350ml' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/coca-cola-600.jpg\"]' WHERE name = 'Coca-Cola 600ml' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/suco-natural.jpg\"]' WHERE name = 'Suco Natural' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/milkshake.jpg\"]' WHERE name = 'Milkshake' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute UPDATE products SET images = '[\"/products/coca-cola-350.jpg\"]' WHERE name = 'Coca-Cola 350ml' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/coca-cola-600.jpg\"]' WHERE name = 'Coca-Cola 600ml' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/suco-natural.jpg\"]' WHERE name = 'Suco Natural' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/milkshake.jpg\"]' WHERE name = 'Milkshake' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 194
+}

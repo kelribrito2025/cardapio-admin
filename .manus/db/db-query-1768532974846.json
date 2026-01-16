@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE products SET images = '[\"/products/x-burguer.jpg\"]' WHERE name = 'X-Burguer' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/x-bacon.jpg\"]' WHERE name = 'X-Bacon' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/x-egg.jpg\"]' WHERE name = 'X-Egg' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/x-tudo.jpg\"]' WHERE name = 'X-Tudo' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute UPDATE products SET images = '[\"/products/x-burguer.jpg\"]' WHERE name = 'X-Burguer' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/x-bacon.jpg\"]' WHERE name = 'X-Bacon' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/x-egg.jpg\"]' WHERE name = 'X-Egg' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/x-tudo.jpg\"]' WHERE name = 'X-Tudo' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 85
+}

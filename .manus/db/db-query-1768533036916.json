@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE products SET images = '[\"/products/veggie-burger.jpg\"]' WHERE name = 'Veggie Burger' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/portobello.jpg\"]' WHERE name = 'Portobello Burger' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/beyond-burger.jpg\"]' WHERE name = 'Beyond Burger' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/falafel-wrap.jpg\"]' WHERE name = 'Falafel Wrap' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute UPDATE products SET images = '[\"/products/veggie-burger.jpg\"]' WHERE name = 'Veggie Burger' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/portobello.jpg\"]' WHERE name = 'Portobello Burger' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/beyond-burger.jpg\"]' WHERE name = 'Beyond Burger' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);\nUPDATE products SET images = '[\"/products/falafel-wrap.jpg\"]' WHERE name = 'Falafel Wrap' AND establishmentId IN (SELECT id FROM establishments WHERE userId = 180577);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 89
+}

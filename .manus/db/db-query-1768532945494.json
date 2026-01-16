@@ -1,0 +1,150 @@
+{
+  "query": "SELECT p.id, p.name FROM products p JOIN categories c ON p.categoryId = c.id JOIN establishments e ON c.establishmentId = e.id WHERE e.userId = 180577 ORDER BY p.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name FROM products p JOIN categories c ON p.categoryId = c.id JOIN establishments e ON c.establishmentId = e.id WHERE e.userId = 180577 ORDER BY p.id;",
+  "rows": [
+    {
+      "id": "60081",
+      "name": "X-Egg"
+    },
+    {
+      "id": "60082",
+      "name": "X-Burguer"
+    },
+    {
+      "id": "60083",
+      "name": "X-Tudo"
+    },
+    {
+      "id": "60085",
+      "name": "Trufado"
+    },
+    {
+      "id": "60086",
+      "name": "Angus Premium"
+    },
+    {
+      "id": "60087",
+      "name": "Blue Cheese Burger"
+    },
+    {
+      "id": "60088",
+      "name": "BBQ Pulled Pork"
+    },
+    {
+      "id": "60089",
+      "name": "Da Casa"
+    },
+    {
+      "id": "60090",
+      "name": "Picanha Burger"
+    },
+    {
+      "id": "60091",
+      "name": "Costela Desfiada"
+    },
+    {
+      "id": "60092",
+      "name": "Smash Duplo"
+    },
+    {
+      "id": "60093",
+      "name": "Combo Clássico"
+    },
+    {
+      "id": "60094",
+      "name": "Combo Família"
+    },
+    {
+      "id": "60095",
+      "name": "Combo Premium"
+    },
+    {
+      "id": "60096",
+      "name": "Combo Kids"
+    },
+    {
+      "id": "60097",
+      "name": "Onion Rings"
+    },
+    {
+      "id": "60098",
+      "name": "Nachos Supreme"
+    },
+    {
+      "id": "60099",
+      "name": "Chicken Fingers"
+    },
+    {
+      "id": "60100",
+      "name": "Batata Frita"
+    },
+    {
+      "id": "60101",
+      "name": "Coca-Cola 600ml"
+    },
+    {
+      "id": "60102",
+      "name": "Suco Natural"
+    },
+    {
+      "id": "60103",
+      "name": "Coca-Cola 350ml"
+    },
+    {
+      "id": "60104",
+      "name": "Milkshake"
+    },
+    {
+      "id": "60105",
+      "name": "Cheesecake"
+    },
+    {
+      "id": "60106",
+      "name": "Brownie com Sorvete"
+    },
+    {
+      "id": "60107",
+      "name": "Petit Gateau"
+    },
+    {
+      "id": "60108",
+      "name": "Sorvete Artesanal"
+    },
+    {
+      "id": "60109",
+      "name": "Mini Burguer"
+    },
+    {
+      "id": "60110",
+      "name": "Mini Pizza"
+    },
+    {
+      "id": "60111",
+      "name": "Hot Dog Kids"
+    },
+    {
+      "id": "60112",
+      "name": "Nuggets"
+    },
+    {
+      "id": "60113",
+      "name": "Portobello Burger"
+    },
+    {
+      "id": "60114",
+      "name": "Beyond Burger"
+    },
+    {
+      "id": "60115",
+      "name": "Veggie Burger"
+    },
+    {
+      "id": "60116",
+      "name": "Falafel Wrap"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\n60081\tX-Egg\n60082\tX-Burguer\n60083\tX-Tudo\n60085\tTrufado\n60086\tAngus Premium\n60087\tBlue Cheese Burger\n60088\tBBQ Pulled Pork\n60089\tDa Casa\n60090\tPicanha Burger\n60091\tCostela Desfiada\n60092\tSmash Duplo\n60093\tCombo Clássico\n60094\tCombo Família\n60095\tCombo Premium\n60096\tCombo Kids\n60097\tOnion Rings\n60098\tNachos Supreme\n60099\tChicken Fingers\n60100\tBatata Frita\n60101\tCoca-Cola 600ml\n60102\tSuco Natural\n60103\tCoca-Cola 350ml\n60104\tMilkshake\n60105\tCheesecake\n60106\tBrownie com Sorvete\n60107\tPetit Gateau\n60108\tSorvete Artesanal\n60109\tMini Burguer\n60110\tMini Pizza\n60111\tHot Dog Kids\n60112\tNuggets\n60113\tPortobello Burger\n60114\tBeyond Burger\n60115\tVeggie Burger\n60116\tFalafel Wrap\n",
+  "stderr": "",
+  "execution_time_ms": 69
+}

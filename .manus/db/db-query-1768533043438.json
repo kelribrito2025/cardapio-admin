@@ -1,0 +1,50 @@
+{
+  "query": "SELECT p.name, p.images FROM products p WHERE p.establishmentId IN (SELECT id FROM establishments WHERE userId = 180577) LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.name, p.images FROM products p WHERE p.establishmentId IN (SELECT id FROM establishments WHERE userId = 180577) LIMIT 10;",
+  "rows": [
+    {
+      "name": "X-Egg",
+      "images": "[\"/products/x-egg.jpg\"]"
+    },
+    {
+      "name": "X-Burguer",
+      "images": "[\"/products/x-burguer.jpg\"]"
+    },
+    {
+      "name": "X-Tudo",
+      "images": "[\"/products/x-tudo.jpg\"]"
+    },
+    {
+      "name": "X-Bacon",
+      "images": "[\"/products/x-bacon.jpg\"]"
+    },
+    {
+      "name": "Trufado",
+      "images": "NULL"
+    },
+    {
+      "name": "Angus Premium",
+      "images": "[\"/products/angus-premium.jpg\"]"
+    },
+    {
+      "name": "Blue Cheese Burger",
+      "images": "[\"/products/blue-cheese.jpg\"]"
+    },
+    {
+      "name": "BBQ Pulled Pork",
+      "images": "[\"/products/bbq-pulled-pork.jpg\"]"
+    },
+    {
+      "name": "Da Casa",
+      "images": "NULL"
+    },
+    {
+      "name": "Picanha Burger",
+      "images": "[\"/products/picanha-burger.jpg\"]"
+    }
+  ],
+  "messages": [],
+  "stdout": "name\timages\nX-Egg\t[\"/products/x-egg.jpg\"]\nX-Burguer\t[\"/products/x-burguer.jpg\"]\nX-Tudo\t[\"/products/x-tudo.jpg\"]\nX-Bacon\t[\"/products/x-bacon.jpg\"]\nTrufado\tNULL\nAngus Premium\t[\"/products/angus-premium.jpg\"]\nBlue Cheese Burger\t[\"/products/blue-cheese.jpg\"]\nBBQ Pulled Pork\t[\"/products/bbq-pulled-pork.jpg\"]\nDa Casa\tNULL\nPicanha Burger\t[\"/products/picanha-burger.jpg\"]\n",
+  "stderr": "",
+  "execution_time_ms": 66
+}
