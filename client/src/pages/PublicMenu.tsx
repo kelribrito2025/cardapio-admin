@@ -519,7 +519,7 @@ export default function PublicMenu() {
           {/* Modal Content */}
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
             {/* Header */}
-            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-2xl">
+            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '46px'}}>
               <h2 className="text-lg font-bold text-gray-900">Informações</h2>
               <button 
                 onClick={() => setShowInfoModal(false)}
