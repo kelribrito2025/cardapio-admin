@@ -388,3 +388,6 @@
 - [x] Diminuir espaço entre título da categoria e primeiro card (mb-4 para mb-2)
 - [x] Ajustar margens verticais entre cards (gap-4 para gap-2, mb-8 para mb-5)
 - [x] Simplificar visual (removido shadow, apenas border com hover)
+
+## Lazy Loading Imagens do Cardápio
+- [x] Adicionar loading="lazy" e decoding="async" nas imagens do ProductCard

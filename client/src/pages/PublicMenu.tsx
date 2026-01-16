@@ -697,6 +697,8 @@ function ProductCard({
             <img
               src={mainImage}
               alt={product.name}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover rounded-r-lg"
             />
           </div>
