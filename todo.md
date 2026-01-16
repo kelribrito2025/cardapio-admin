@@ -372,3 +372,7 @@
 
 ## Botão Compartilhar no Menu Público
 - [x] Adicionar ícone de compartilhar ao lado do WhatsApp
+
+## Mover Ícones para Canto Superior Direito
+- [x] Remover botão "Calcular taxa de entrega"
+- [x] Mover ícones de compartilhar, WhatsApp e Instagram para o canto superior direito do card
