@@ -344,3 +344,6 @@
 - [x] Exibir horários de funcionamento de segunda a domingo
 - [x] Destacar o dia atual (ex: Sexta-feira 18:00 às 23:00)
 - [x] Exibir formas de pagamento aceitas pelo estabelecimento
+
+## Ajuste Layout Formas de Pagamento
+- [x] Colocar as 3 formas de pagamento na mesma linha (flex)

@@ -548,7 +548,7 @@ export default function PublicMenu() {
                   <CreditCard className="h-5 w-5 text-red-500" />
                   <h3 className="font-semibold text-gray-900">Formas de Pagamento</h3>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-wrap gap-3">
                   {establishment.acceptsCash && (
                     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                       <Banknote className="h-5 w-5 text-green-600" />
