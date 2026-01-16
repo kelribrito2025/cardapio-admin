@@ -1,0 +1,46 @@
+{
+  "query": "SELECT id, name FROM categories WHERE establishmentId = 1 ORDER BY id DESC LIMIT 9;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name FROM categories WHERE establishmentId = 1 ORDER BY id DESC LIMIT 9;",
+  "rows": [
+    {
+      "id": "30009",
+      "name": "Vegetarianos"
+    },
+    {
+      "id": "30008",
+      "name": "Kids"
+    },
+    {
+      "id": "30007",
+      "name": "Sobremesas"
+    },
+    {
+      "id": "30006",
+      "name": "Bebidas"
+    },
+    {
+      "id": "30005",
+      "name": "Porções"
+    },
+    {
+      "id": "30004",
+      "name": "Combos"
+    },
+    {
+      "id": "30003",
+      "name": "Hambúrgueres Artesanais"
+    },
+    {
+      "id": "30002",
+      "name": "Hambúrgueres Gourmet"
+    },
+    {
+      "id": "30001",
+      "name": "Hambúrgueres Clássicos"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\n30009\tVegetarianos\n30008\tKids\n30007\tSobremesas\n30006\tBebidas\n30005\tPorções\n30004\tCombos\n30003\tHambúrgueres Artesanais\n30002\tHambúrgueres Gourmet\n30001\tHambúrgueres Clássicos\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

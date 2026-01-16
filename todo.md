@@ -287,3 +287,7 @@
 - [x] Atualizar página de configurações para editar slug
 - [x] Validar unicidade do slug ao salvar
 - [x] Testar fluxo completo
+
+## Popular Catálogo com Dados de Hamburgueria
+- [x] Criar 9 categorias de hamburgueria
+- [x] Adicionar 4 produtos em cada categoria (36 produtos total)

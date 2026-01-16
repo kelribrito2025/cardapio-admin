@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO products (establishmentId, categoryId, name, description, price, status, hasStock, sortOrder) \nSELECT 1, c.id, p.name, p.description, p.price, 'active', true, p.sortOrder\nFROM categories c\nCROSS JOIN (\n  SELECT 'Combo Clássico' as name, 'X-Burguer + Batata média + Refrigerante 350ml' as description, 35.90 as price, 1 as sortOrder\n  UNION ALL SELECT 'Combo Premium', 'Angus Premium + Batata grande + Refrigerante 500ml', 52.90, 2\n  UNION ALL SELECT 'Combo Família', '2 X-Tudo + Batata família + 2 Refrigerantes 500ml', 79.90, 3\n  UNION ALL SELECT 'Combo Kids', 'Mini Burguer + Batata pequena + Suco de caixinha', 28.90, 4\n) p\nWHERE c.name = 'Combos' AND c.establishmentId = 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute INSERT INTO products (establishmentId, categoryId, name, description, price, status, hasStock, sortOrder) \nSELECT 1, c.id, p.name, p.description, p.price, 'active', true, p.sortOrder\nFROM categories c\nCROSS JOIN (\n  SELECT 'Combo Clássico' as name, 'X-Burguer + Batata média + Refrigerante 350ml' as description, 35.90 as price, 1 as sortOrder\n  UNION ALL SELECT 'Combo Premium', 'Angus Premium + Batata grande + Refrigerante 500ml', 52.90, 2\n  UNION ALL SELECT 'Combo Família', '2 X-Tudo + Batata família + 2 Refrigerantes 500ml', 79.90, 3\n  UNION ALL SELECT 'Combo Kids', 'Mini Burguer + Batata pequena + Suco de caixinha', 28.90, 4\n) p\nWHERE c.name = 'Combos' AND c.establishmentId = 1;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 56
+}
