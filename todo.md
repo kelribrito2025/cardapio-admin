@@ -338,3 +338,9 @@
 - [x] Exibição de Subtotal, Taxa de entrega e Total
 - [x] Seção "Tem um cupom?" com ícone e seta
 - [x] Botão "Sacola vazia" (ou "Finalizar pedido" quando tiver itens)
+
+## Modal Mais Informações no Menu Público
+- [x] Criar modal ao clicar em "Mais informações"
+- [x] Exibir horários de funcionamento de segunda a domingo
+- [x] Destacar o dia atual (ex: Sexta-feira 18:00 às 23:00)
+- [x] Exibir formas de pagamento aceitas pelo estabelecimento

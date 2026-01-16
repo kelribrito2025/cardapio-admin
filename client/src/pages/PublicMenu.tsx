@@ -1,7 +1,7 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, Store, Utensils, Menu, Star, ShoppingBag, Ticket } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, Store, Utensils, Menu, Star, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PublicMenu() {
@@ -9,6 +9,7 @@ export default function PublicMenu() {
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isScrolling, setIsScrolling] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
   const categoryRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const categoryButtonRefs = useRef<{ [key: number]: HTMLButtonElement | null }>({});
@@ -276,7 +277,10 @@ export default function PublicMenu() {
                       <span className="text-gray-400">•</span>
                     </>
                   )}
-                  <button className="text-gray-600 hover:text-red-500 font-medium transition-colors">
+                  <button 
+                    onClick={() => setShowInfoModal(true)}
+                    className="text-gray-600 hover:text-red-500 font-medium transition-colors"
+                  >
                     Mais informações
                   </button>
                 </div>
@@ -493,6 +497,112 @@ export default function PublicMenu() {
 
       {/* Bottom padding for mobile nav */}
       <div className="md:hidden h-16" />
+
+      {/* Modal Mais Informações */}
+      {showInfoModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowInfoModal(false)}
+          />
+          
+          {/* Modal Content */}
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-2xl">
+              <h2 className="text-lg font-bold text-gray-900">Informações</h2>
+              <button 
+                onClick={() => setShowInfoModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-6">
+              {/* Horários de Funcionamento */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <Clock className="h-5 w-5 text-red-500" />
+                  <h3 className="font-semibold text-gray-900">Horários de Funcionamento</h3>
+                </div>
+                <div className="space-y-2">
+                  <ScheduleRow day="Segunda-feira" hours="18:00 às 23:00" dayIndex={1} />
+                  <ScheduleRow day="Terça-feira" hours="18:00 às 23:00" dayIndex={2} />
+                  <ScheduleRow day="Quarta-feira" hours="18:00 às 23:00" dayIndex={3} />
+                  <ScheduleRow day="Quinta-feira" hours="18:00 às 23:00" dayIndex={4} />
+                  <ScheduleRow day="Sexta-feira" hours="18:00 às 23:00" dayIndex={5} />
+                  <ScheduleRow day="Sábado" hours="12:00 às 23:00" dayIndex={6} />
+                  <ScheduleRow day="Domingo" hours="12:00 às 22:00" dayIndex={0} />
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-gray-100" />
+
+              {/* Formas de Pagamento */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <CreditCard className="h-5 w-5 text-red-500" />
+                  <h3 className="font-semibold text-gray-900">Formas de Pagamento</h3>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {establishment.acceptsCash && (
+                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                      <Banknote className="h-5 w-5 text-green-600" />
+                      <span className="text-sm text-gray-700">Dinheiro</span>
+                    </div>
+                  )}
+                  {establishment.acceptsCard && (
+                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                      <CreditCard className="h-5 w-5 text-blue-600" />
+                      <span className="text-sm text-gray-700">Cartão</span>
+                    </div>
+                  )}
+                  {establishment.acceptsPix && (
+                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                      <QrCode className="h-5 w-5 text-teal-600" />
+                      <span className="text-sm text-gray-700">Pix</span>
+                    </div>
+                  )}
+                  {establishment.acceptsBoleto && (
+                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                      <FileText className="h-5 w-5 text-orange-600" />
+                      <span className="text-sm text-gray-700">Boleto</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Componente para linha de horário com destaque para o dia atual
+function ScheduleRow({ day, hours, dayIndex }: { day: string; hours: string; dayIndex: number }) {
+  const today = new Date().getDay();
+  const isToday = today === dayIndex;
+
+  return (
+    <div 
+      className={`flex justify-between items-center py-2.5 px-3 rounded-lg transition-colors ${
+        isToday 
+          ? "bg-red-50 border border-red-200" 
+          : "hover:bg-gray-50"
+      }`}
+    >
+      <span className={`font-medium ${isToday ? "text-red-600" : "text-gray-700"}`}>
+        {day}
+        {isToday && <span className="ml-2 text-xs bg-red-500 text-white px-2 py-0.5 rounded-full">Hoje</span>}
+      </span>
+      <span className={`text-sm ${isToday ? "text-red-600 font-semibold" : "text-gray-500"}`}>
+        {hours}
+      </span>
     </div>
   );
 }
