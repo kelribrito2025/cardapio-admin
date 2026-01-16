@@ -281,7 +281,7 @@ export default function PublicMenu() {
                     onClick={() => setShowInfoModal(true)}
                     className="flex items-center gap-1 text-gray-600 hover:text-red-500 font-medium transition-colors"
                   >
-                    <Info className="h-4 w-4" />
+                    <Info className="h-4 w-4" style={{width: '14px', height: '14px'}} />
                     Informações
                   </button>
                 </div>
