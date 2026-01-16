@@ -291,3 +291,6 @@
 ## Popular Catálogo com Dados de Hamburgueria
 - [x] Criar 9 categorias de hamburgueria
 - [x] Adicionar 4 produtos em cada categoria (36 produtos total)
+
+## Popular Catálogo da conta admin@admin.com
+- [x] Criar 9 categorias e 36 produtos para a conta admin@admin.com

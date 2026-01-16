@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO categories (establishmentId, name, description, sortOrder, isActive) VALUES\n(2, 'Hambúrgueres Clássicos', 'Os tradicionais que todo mundo ama', 1, true),\n(2, 'Hambúrgueres Gourmet', 'Combinações especiais com ingredientes premium', 2, true),\n(2, 'Hambúrgueres Artesanais', 'Receitas exclusivas da casa', 3, true),\n(2, 'Combos', 'Hambúrguer + Batata + Bebida', 4, true),\n(2, 'Porções', 'Para compartilhar ou acompanhar', 5, true),\n(2, 'Bebidas', 'Refrigerantes, sucos e mais', 6, true),\n(2, 'Sobremesas', 'Para finalizar com chave de ouro', 7, true),\n(2, 'Kids', 'Menu especial para crianças', 8, true),\n(2, 'Vegetarianos', 'Opções sem carne', 9, true);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute INSERT INTO categories (establishmentId, name, description, sortOrder, isActive) VALUES\n(2, 'Hambúrgueres Clássicos', 'Os tradicionais que todo mundo ama', 1, true),\n(2, 'Hambúrgueres Gourmet', 'Combinações especiais com ingredientes premium', 2, true),\n(2, 'Hambúrgueres Artesanais', 'Receitas exclusivas da casa', 3, true),\n(2, 'Combos', 'Hambúrguer + Batata + Bebida', 4, true),\n(2, 'Porções', 'Para compartilhar ou acompanhar', 5, true),\n(2, 'Bebidas', 'Refrigerantes, sucos e mais', 6, true),\n(2, 'Sobremesas', 'Para finalizar com chave de ouro', 7, true),\n(2, 'Kids', 'Menu especial para crianças', 8, true),\n(2, 'Vegetarianos', 'Opções sem carne', 9, true);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 60
+}

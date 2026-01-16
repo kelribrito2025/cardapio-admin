@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO products (establishmentId, categoryId, name, description, price, status, hasStock, sortOrder) \nSELECT 2, c.id, p.name, p.description, p.price, 'active', true, p.sortOrder\nFROM categories c\nCROSS JOIN (\n  SELECT 'Veggie Burger' as name, 'Pão integral, hambúrguer de grão de bico, queijo, alface, tomate e maionese vegana' as description, 28.90 as price, 1 as sortOrder\n  UNION ALL SELECT 'Portobello Burger', 'Pão brioche, cogumelo portobello grelhado, queijo brie, rúcula e pesto', 32.90, 2\n  UNION ALL SELECT 'Beyond Burger', 'Pão australiano, hambúrguer plant-based, queijo vegano, cebola caramelizada e molho especial', 38.90, 3\n  UNION ALL SELECT 'Falafel Wrap', 'Wrap de falafel com homus, tabule, alface e molho tahine', 26.90, 4\n) p\nWHERE c.name = 'Vegetarianos' AND c.establishmentId = 2;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute INSERT INTO products (establishmentId, categoryId, name, description, price, status, hasStock, sortOrder) \nSELECT 2, c.id, p.name, p.description, p.price, 'active', true, p.sortOrder\nFROM categories c\nCROSS JOIN (\n  SELECT 'Veggie Burger' as name, 'Pão integral, hambúrguer de grão de bico, queijo, alface, tomate e maionese vegana' as description, 28.90 as price, 1 as sortOrder\n  UNION ALL SELECT 'Portobello Burger', 'Pão brioche, cogumelo portobello grelhado, queijo brie, rúcula e pesto', 32.90, 2\n  UNION ALL SELECT 'Beyond Burger', 'Pão australiano, hambúrguer plant-based, queijo vegano, cebola caramelizada e molho especial', 38.90, 3\n  UNION ALL SELECT 'Falafel Wrap', 'Wrap de falafel com homus, tabule, alface e molho tahine', 26.90, 4\n) p\nWHERE c.name = 'Vegetarianos' AND c.establishmentId = 2;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 67
+}
