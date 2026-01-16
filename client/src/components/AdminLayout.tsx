@@ -1,5 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
+
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
 import {
@@ -104,7 +104,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
-      window.location.href = getLoginUrl();
+      window.location.href = "/login";
     }
   }, [authLoading, user]);
 

@@ -268,3 +268,8 @@
 
 ## Ajustes na Página de Criar Conta
 - [x] Remover campo "Nome completo" da página de registro
+
+## Correção do Fluxo de Login
+- [x] Remover redirecionamento para autenticação Manus após login
+- [x] Garantir que login redirecione diretamente para o dashboard
+- [x] Testar fluxo completo: criar conta → login → dashboard
