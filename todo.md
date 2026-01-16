@@ -351,3 +351,7 @@
 ## Ícone Pulsante Status Aberto/Fechado
 - [x] Adicionar ícone pulsante verde ao lado de "Aberto agora"
 - [x] Adicionar ícone pulsante vermelho ao lado de "Fechado"
+
+## Ajuste Botão Informações
+- [x] Alterar "Mais informações" para "Informações"
+- [x] Adicionar ícone (i) ao lado do texto

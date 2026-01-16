@@ -1,7 +1,7 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, Store, Utensils, Menu, Star, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, Store, Utensils, Menu, Star, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PublicMenu() {
@@ -279,9 +279,10 @@ export default function PublicMenu() {
                   )}
                   <button 
                     onClick={() => setShowInfoModal(true)}
-                    className="text-gray-600 hover:text-red-500 font-medium transition-colors"
+                    className="flex items-center gap-1 text-gray-600 hover:text-red-500 font-medium transition-colors"
                   >
-                    Mais informações
+                    <Info className="h-4 w-4" />
+                    Informações
                   </button>
                 </div>
 
