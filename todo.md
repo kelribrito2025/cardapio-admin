@@ -311,3 +311,9 @@
 ## Adicionar Fotos aos Produtos do Usuário 180577
 - [x] Buscar imagens para todos os 36 produtos
 - [x] Atualizar produtos com URLs das imagens no banco de dados
+
+## Ajustes na Seleção de Categorias do Cardápio Público
+- [x] Categoria selecionada deve ficar em vermelho
+- [x] Seleção dinâmica conforme o scroll (sincronização automática)
+- [x] Scroll suave ao clicar na categoria
+- [x] Scroll automático da barra de categorias para acompanhar categoria ativa

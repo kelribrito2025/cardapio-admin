@@ -1,6 +1,6 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Search, Home, ClipboardList, User, MapPin, ChevronRight, Store, Utensils, Menu } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -8,8 +8,10 @@ export default function PublicMenu() {
   const { slug } = useParams<{ slug: string }>();
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const categoriesRef = useRef<HTMLDivElement>(null);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const categoriesNavRef = useRef<HTMLDivElement>(null);
   const categoryRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const categoryButtonRefs = useRef<{ [key: number]: HTMLButtonElement | null }>({});
 
   const { data, isLoading, error } = trpc.publicMenu.getBySlug.useQuery(
     { slug: slug || "" },
@@ -23,12 +25,74 @@ export default function PublicMenu() {
     }
   }, [data?.categories, activeCategory]);
 
+  // Scroll the category nav to show the active category button
+  const scrollCategoryNavToActive = useCallback((categoryId: number) => {
+    const button = categoryButtonRefs.current[categoryId];
+    const nav = categoriesNavRef.current;
+    if (button && nav) {
+      const buttonRect = button.getBoundingClientRect();
+      const navRect = nav.getBoundingClientRect();
+      
+      // Check if button is outside visible area
+      if (buttonRect.left < navRect.left || buttonRect.right > navRect.right) {
+        button.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      }
+    }
+  }, []);
+
+  // Handle scroll to detect which category is in view
+  useEffect(() => {
+    if (!data?.categories || data.categories.length === 0) return;
+
+    const handleScroll = () => {
+      if (isScrolling) return; // Don't update during programmatic scroll
+
+      const headerOffset = 140; // Height of sticky header + category nav
+      
+      let currentCategory: number | null = null;
+      
+      for (const category of data.categories) {
+        const element = categoryRefs.current[category.id];
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          // Check if the top of the category section is above the middle of the viewport
+          if (rect.top <= headerOffset + 100) {
+            currentCategory = category.id;
+          }
+        }
+      }
+
+      if (currentCategory && currentCategory !== activeCategory) {
+        setActiveCategory(currentCategory);
+        scrollCategoryNavToActive(currentCategory);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [data?.categories, activeCategory, isScrolling, scrollCategoryNavToActive]);
+
   const scrollToCategory = (categoryId: number) => {
+    setIsScrolling(true);
     setActiveCategory(categoryId);
+    scrollCategoryNavToActive(categoryId);
+    
     const element = categoryRefs.current[categoryId];
     if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      const headerOffset = 130; // Height of sticky header + category nav
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
     }
+
+    // Reset scrolling flag after animation completes
+    setTimeout(() => {
+      setIsScrolling(false);
+    }, 800);
   };
 
   const formatPrice = (price: string | number) => {
@@ -102,7 +166,7 @@ export default function PublicMenu() {
                 className="h-10 w-10 rounded-lg object-cover flex-shrink-0"
               />
             ) : (
-              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center flex-shrink-0">
+              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center flex-shrink-0">
                 <Utensils className="h-5 w-5 text-white" />
               </div>
             )}
@@ -116,14 +180,14 @@ export default function PublicMenu() {
                   placeholder="Buscar no cardápio"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-gray-100 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white transition-colors"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-100 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white transition-colors"
                 />
               </div>
             </div>
 
             {/* Navigation Menu */}
             <nav className="hidden md:flex items-center gap-6">
-              <button className="flex items-center gap-1.5 text-primary font-medium text-sm hover:text-primary/80 transition-colors">
+              <button className="flex items-center gap-1.5 text-red-500 font-medium text-sm hover:text-red-600 transition-colors">
                 <Home className="h-4 w-4" />
                 <span>Início</span>
               </button>
@@ -155,8 +219,8 @@ export default function PublicMenu() {
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-              <Utensils className="h-16 w-16 text-primary/30" />
+            <div className="w-full h-full bg-gradient-to-br from-red-500/20 to-red-500/5 flex items-center justify-center">
+              <Utensils className="h-16 w-16 text-red-500/30" />
             </div>
           )}
         </div>
@@ -174,7 +238,7 @@ export default function PublicMenu() {
                 className="h-28 w-28 md:h-36 md:w-36 rounded-full object-cover border-4 border-white shadow-lg bg-white"
               />
             ) : (
-              <div className="h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center border-4 border-white shadow-lg">
+              <div className="h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center border-4 border-white shadow-lg">
                 <Utensils className="h-12 w-12 md:h-16 md:w-16 text-white" />
               </div>
             )}
@@ -200,7 +264,7 @@ export default function PublicMenu() {
                       <span className="text-gray-400">•</span>
                     </>
                   )}
-                  <button className="text-gray-600 hover:text-primary font-medium transition-colors">
+                  <button className="text-gray-600 hover:text-red-500 font-medium transition-colors">
                     Mais informações
                   </button>
                 </div>
@@ -252,17 +316,18 @@ export default function PublicMenu() {
 
               {/* Categories */}
               <div
-                ref={categoriesRef}
+                ref={categoriesNavRef}
                 className="flex gap-1 overflow-x-auto scrollbar-hide py-3"
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               >
                 {categories.map((category) => (
                   <button
                     key={category.id}
+                    ref={(el) => { categoryButtonRefs.current[category.id] = el; }}
                     onClick={() => scrollToCategory(category.id)}
-                    className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors rounded-lg ${
+                    className={`px-4 py-2 text-sm font-semibold whitespace-nowrap transition-all duration-200 rounded-lg ${
                       activeCategory === category.id
-                        ? "text-gray-900 bg-gray-100"
+                        ? "text-red-500 bg-red-50 border-b-2 border-red-500"
                         : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
                     }`}
                   >
@@ -336,7 +401,7 @@ export default function PublicMenu() {
         <div className="max-w-6xl mx-auto px-4 text-center">
           <p className="text-sm text-gray-500">
             Cardápio digital por{" "}
-            <span className="font-semibold text-primary">Mindi</span>
+            <span className="font-semibold text-red-500">Mindi</span>
           </p>
         </div>
       </footer>
@@ -344,7 +409,7 @@ export default function PublicMenu() {
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50">
         <div className="flex items-center justify-around py-2">
-          <button className="flex flex-col items-center gap-0.5 px-4 py-2 text-primary">
+          <button className="flex flex-col items-center gap-0.5 px-4 py-2 text-red-500">
             <Home className="h-5 w-5" />
             <span className="text-xs font-medium">Início</span>
           </button>
@@ -392,7 +457,7 @@ function ProductCard({
             </p>
           )}
           <div className="flex items-center gap-2">
-            <span className="text-primary font-bold">{formatPrice(product.price)}</span>
+            <span className="text-red-500 font-bold">{formatPrice(product.price)}</span>
             {!product.hasStock && (
               <span className="text-xs text-red-500 font-medium bg-red-50 px-2 py-0.5 rounded">
                 Indisponível
@@ -423,7 +488,7 @@ function MenuSkeleton() {
           <div className="flex items-center gap-4">
             <Skeleton className="h-10 w-10 rounded-lg" />
             <Skeleton className="h-10 flex-1 max-w-xl rounded-lg" />
-            <div className="hidden md:flex items-center gap-6">
+            <div className="hidden md:flex gap-6">
               <Skeleton className="h-6 w-16" />
               <Skeleton className="h-6 w-16" />
               <Skeleton className="h-6 w-16" />
@@ -437,14 +502,14 @@ function MenuSkeleton() {
         <Skeleton className="h-48 md:h-64 lg:h-72 rounded-2xl" />
       </div>
 
-      {/* Info Block Skeleton */}
+      {/* Info Skeleton */}
       <div className="max-w-6xl mx-auto px-4">
         <div className="relative -mt-16 md:-mt-20 flex flex-col md:flex-row md:items-end gap-4 pb-4">
           <Skeleton className="h-28 w-28 md:h-36 md:w-36 rounded-full ml-4 md:ml-6" />
           <div className="flex-1 bg-white rounded-xl p-4 md:p-5 shadow-sm md:ml-4">
-            <Skeleton className="h-7 w-48 mb-2" />
-            <Skeleton className="h-4 w-64 mb-3" />
-            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-8 w-48 mb-2" />
+            <Skeleton className="h-4 w-64 mb-2" />
+            <Skeleton className="h-4 w-32" />
           </div>
         </div>
       </div>
@@ -452,7 +517,7 @@ function MenuSkeleton() {
       {/* Categories Skeleton */}
       <div className="bg-white border-y">
         <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="flex gap-4">
+          <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((i) => (
               <Skeleton key={i} className="h-8 w-24 rounded-lg" />
             ))}
@@ -467,21 +532,20 @@ function MenuSkeleton() {
             <Skeleton className="h-6 w-32 mb-4" />
             <div className="grid gap-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white rounded-xl shadow-sm border p-4">
-                  <div className="flex gap-4">
-                    <div className="flex-1">
-                      <Skeleton className="h-5 w-40 mb-2" />
-                      <Skeleton className="h-4 w-full mb-2" />
-                      <Skeleton className="h-5 w-20" />
-                    </div>
-                    <Skeleton className="h-28 w-28 rounded-lg" />
+                <div key={i} className="bg-white rounded-xl shadow-sm border p-4 flex gap-4">
+                  <div className="flex-1">
+                    <Skeleton className="h-5 w-32 mb-2" />
+                    <Skeleton className="h-4 w-full mb-1" />
+                    <Skeleton className="h-4 w-3/4 mb-2" />
+                    <Skeleton className="h-5 w-20" />
                   </div>
+                  <Skeleton className="w-28 h-28 rounded-lg" />
                 </div>
               ))}
             </div>
           </div>
           <div className="hidden lg:block w-80">
-            <Skeleton className="h-64 rounded-xl" />
+            <Skeleton className="h-48 rounded-xl" />
           </div>
         </div>
       </main>
