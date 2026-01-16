@@ -317,3 +317,9 @@
 - [x] Seleção dinâmica conforme o scroll (sincronização automática)
 - [x] Scroll suave ao clicar na categoria
 - [x] Scroll automático da barra de categorias para acompanhar categoria ativa
+
+## Redesign da Página de Configurações - Preview do Perfil Público
+- [x] Criar preview visual do perfil público na página de Configurações
+- [x] Adicionar funcionalidade de upload de logo do restaurante
+- [x] Adicionar funcionalidade de upload de capa do restaurante
+- [x] Mostrar preview em tempo real das alterações

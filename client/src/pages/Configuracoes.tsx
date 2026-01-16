@@ -18,8 +18,12 @@ import {
   Save,
   Copy,
   ExternalLink,
+  UtensilsCrossed,
+  Info,
+  Camera,
+  Pencil,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +53,10 @@ export default function Configuracoes() {
   const [allowsDelivery, setAllowsDelivery] = useState(true);
   const [allowsPickup, setAllowsPickup] = useState(true);
 
+  // File input refs
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
   // Load establishment data
   useEffect(() => {
     if (establishment) {
@@ -72,6 +80,9 @@ export default function Configuracoes() {
       setAllowsPickup(establishment.allowsPickup);
     }
   }, [establishment]);
+
+  // Upload mutation
+  const uploadMutation = trpc.upload.image.useMutation();
 
   // Mutations
   const createMutation = trpc.establishment.create.useMutation({
@@ -141,14 +152,48 @@ export default function Configuracoes() {
     });
   };
 
-  const handleImageUpload = (type: "logo" | "cover") => {
-    const url = prompt("Digite a URL da imagem:");
-    if (url && url.trim()) {
-      if (type === "logo") {
-        setLogo(url.trim());
-      } else {
-        setCoverImage(url.trim());
-      }
+  const handleFileUpload = async (file: File, type: "logo" | "cover") => {
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Por favor, selecione uma imagem válida");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 5MB");
+      return;
+    }
+
+    try {
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64 = (reader.result as string).split(",")[1];
+        
+        toast.loading("Enviando imagem...", { id: "upload" });
+        
+        const result = await uploadMutation.mutateAsync({
+          base64,
+          mimeType: file.type,
+          folder: "establishments",
+        });
+
+        toast.dismiss("upload");
+        toast.success("Imagem enviada com sucesso!");
+
+        if (type === "logo") {
+          setLogo(result.url);
+        } else {
+          setCoverImage(result.url);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      toast.dismiss("upload");
+      toast.error("Erro ao enviar imagem");
     }
   };
 
@@ -167,6 +212,14 @@ export default function Configuracoes() {
   };
 
   const isPending = createMutation.isPending || updateMutation.isPending;
+
+  // Get full address
+  const fullAddress = [street, number].filter(Boolean).join(", ");
+
+  // Get delivery types
+  const deliveryTypes = [];
+  if (allowsDelivery) deliveryTypes.push("Entrega");
+  if (allowsPickup) deliveryTypes.push("Retirada");
 
   return (
     <AdminLayout>
@@ -189,8 +242,119 @@ export default function Configuracoes() {
 
         {/* Estabelecimento Tab */}
         <TabsContent value="estabelecimento" className="space-y-5">
-          {/* Nome e Imagens */}
-          <SectionCard title="Nome e imagens">
+          {/* Preview do Perfil Público */}
+          <SectionCard title="Preview do Perfil Público" description="Veja como seu restaurante aparecerá para os clientes">
+            <div className="bg-white rounded-2xl overflow-hidden border border-border/30 shadow-sm">
+              {/* Cover Image */}
+              <div className="relative h-48 bg-gradient-to-br from-red-100 to-red-50">
+                {coverImage ? (
+                  <img 
+                    src={coverImage} 
+                    alt="Capa" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <UtensilsCrossed className="h-16 w-16 text-red-200" />
+                  </div>
+                )}
+                
+                {/* Edit Cover Button */}
+                <button
+                  onClick={() => coverInputRef.current?.click()}
+                  className="absolute top-3 right-3 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors"
+                  title="Alterar capa"
+                >
+                  <Camera className="h-4 w-4" />
+                </button>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileUpload(file, "cover");
+                  }}
+                />
+              </div>
+
+              {/* Profile Info Section */}
+              <div className="relative px-6 pb-6">
+                {/* Logo - positioned to overlap cover */}
+                <div className="absolute -top-16 left-6">
+                  <div className="relative">
+                    <div className={cn(
+                      "w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden",
+                      "bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center"
+                    )}>
+                      {logo ? (
+                        <img src={logo} alt="Logo" className="w-full h-full object-cover" />
+                      ) : (
+                        <UtensilsCrossed className="h-12 w-12 text-white" />
+                      )}
+                    </div>
+                    
+                    {/* Edit Logo Button */}
+                    <button
+                      onClick={() => logoInputRef.current?.click()}
+                      className="absolute bottom-1 right-1 p-2 bg-white hover:bg-gray-100 rounded-full shadow-md transition-colors"
+                      title="Alterar logo"
+                    >
+                      <Pencil className="h-3.5 w-3.5 text-gray-600" />
+                    </button>
+                    <input
+                      ref={logoInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleFileUpload(file, "logo");
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Restaurant Info */}
+                <div className="pt-20 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-gray-900">
+                      {name || "Nome do Restaurante"}
+                    </h2>
+                    <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+                      <span>{fullAddress || "Endereço não configurado"}</span>
+                      <span className="text-gray-300">•</span>
+                      <button className="text-gray-500 hover:text-gray-700 flex items-center gap-1">
+                        <Info className="h-3.5 w-3.5" />
+                        Mais informações
+                      </button>
+                    </div>
+                    
+                    {/* Status and Delivery Types */}
+                    <div className="flex items-center gap-3 mt-2">
+                      <span className="text-green-600 font-medium text-sm">Aberto agora</span>
+                      {deliveryTypes.length > 0 && (
+                        <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-full border border-gray-200">
+                          {deliveryTypes.join(" e ")}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Calcular taxa button (visual only) */}
+                  <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl border border-gray-200 text-sm text-gray-600">
+                    <MapPin className="h-4 w-4" />
+                    <span>Calcular taxa de entrega</span>
+                    <span className="text-gray-400">›</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </SectionCard>
+
+          {/* Nome do Restaurante */}
+          <SectionCard title="Informações Básicas">
             <div className="space-y-5">
               <div>
                 <Label htmlFor="name" className="text-sm font-semibold">Nome do Restaurante *</Label>
@@ -201,58 +365,6 @@ export default function Configuracoes() {
                   placeholder="Ex: Restaurante Sabor Caseiro"
                   className="max-w-md mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                 />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {/* Logo */}
-                <div>
-                  <Label className="text-sm font-semibold">Logotipo</Label>
-                  <div
-                    onClick={() => handleImageUpload("logo")}
-                    className={cn(
-                      "mt-2 aspect-square max-w-[180px] rounded-2xl border-2 border-dashed cursor-pointer",
-                      "flex flex-col items-center justify-center gap-3 overflow-hidden",
-                      "hover:border-primary hover:bg-primary/5 transition-all duration-200",
-                      logo ? "border-solid border-border/50 shadow-soft" : "border-muted-foreground/20"
-                    )}
-                  >
-                    {logo ? (
-                      <img src={logo} alt="Logo" className="w-full h-full object-cover" />
-                    ) : (
-                      <>
-                        <div className="p-3 bg-muted/50 rounded-xl">
-                          <ImagePlus className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                        <span className="text-sm text-muted-foreground font-medium">Logotipo</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                {/* Cover Image */}
-                <div>
-                  <Label className="text-sm font-semibold">Imagem de capa</Label>
-                  <div
-                    onClick={() => handleImageUpload("cover")}
-                    className={cn(
-                      "mt-2 aspect-video max-w-[280px] rounded-2xl border-2 border-dashed cursor-pointer",
-                      "flex flex-col items-center justify-center gap-3 overflow-hidden",
-                      "hover:border-primary hover:bg-primary/5 transition-all duration-200",
-                      coverImage ? "border-solid border-border/50 shadow-soft" : "border-muted-foreground/20"
-                    )}
-                  >
-                    {coverImage ? (
-                      <img src={coverImage} alt="Capa" className="w-full h-full object-cover" />
-                    ) : (
-                      <>
-                        <div className="p-3 bg-muted/50 rounded-xl">
-                          <ImagePlus className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                        <span className="text-sm text-muted-foreground font-medium">Imagem de capa</span>
-                      </>
-                    )}
-                  </div>
-                </div>
               </div>
 
               <Button onClick={handleSaveEstablishment} disabled={isPending} className="rounded-xl shadow-sm">
