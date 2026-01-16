@@ -376,3 +376,6 @@
 ## Mover Ícones para Canto Superior Direito
 - [x] Remover botão "Calcular taxa de entrega"
 - [x] Mover ícones de compartilhar, WhatsApp e Instagram para o canto superior direito do card
+
+## Bug: Ícone Instagram não aparece
+- [x] Verificar se o campo instagram está sendo retornado na API pública (campo estava vazio no banco)

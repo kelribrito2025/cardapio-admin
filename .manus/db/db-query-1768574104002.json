@@ -1,0 +1,25 @@
+{
+  "query": "SELECT id, name, instagram FROM establishments;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, instagram FROM establishments;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "oi",
+      "instagram": "@sushiharuno"
+    },
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "instagram": "NULL"
+    },
+    {
+      "id": "30002",
+      "name": "Burger House Admin",
+      "instagram": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tinstagram\n1\toi\t@sushiharuno\n30001\tSushi Haruno\tNULL\n30002\tBurger House Admin\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}
