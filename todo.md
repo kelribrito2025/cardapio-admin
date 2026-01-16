@@ -362,3 +362,7 @@
 ## Ícones WhatsApp e Instagram no Menu Público
 - [x] Adicionar ícone de WhatsApp na linha do status
 - [x] Adicionar ícone de Instagram na linha do status
+
+## Ajuste Posição Ícones Redes Sociais
+- [x] Posicionar ícones WhatsApp e Instagram mais à direita no card (ml-auto)
+- [x] Adicionar Instagram de teste no banco de dados
