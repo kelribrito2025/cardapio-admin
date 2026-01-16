@@ -327,3 +327,7 @@
 ## Sistema de Avaliações na Página Pública
 - [x] Adicionar campos de avaliação no schema do banco (rating, reviewCount)
 - [x] Exibir estrela amarela, nota (0-5) e quantidade de avaliações ao lado do nome
+
+## Bug: Efeito Fantasma no Drag and Drop de Itens
+- [x] Verificar efeito de drag and drop nas categorias
+- [x] Aplicar o mesmo efeito fantasma nos itens/produtos do catálogo

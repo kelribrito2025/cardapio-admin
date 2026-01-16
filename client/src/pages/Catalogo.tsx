@@ -100,10 +100,13 @@ function SortableProductItem({
   return (
     <div
       ref={setNodeRef}
-      style={{height: '60px'}}
+      style={{
+        ...style,
+        height: '60px',
+      }}
       className={cn(
         "flex items-center gap-3.5 p-3.5 hover:bg-muted/30 transition-colors bg-card",
-        isDragging && "shadow-lg rounded-lg"
+        isDragging && "shadow-lg rounded-lg border border-border/50"
       )}
     >
       {!isDragDisabled && (
