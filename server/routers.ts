@@ -160,6 +160,7 @@ export const appRouter = router({
         zipCode: z.string().nullable().optional(),
         menuSlug: z.string().nullable().optional(),
         whatsapp: z.string().nullable().optional(),
+        instagram: z.string().nullable().optional(),
         acceptsCash: z.boolean().optional(),
         acceptsCard: z.boolean().optional(),
         acceptsPix: z.boolean().optional(),

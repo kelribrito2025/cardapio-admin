@@ -366,3 +366,9 @@
 ## Ajuste Posição Ícones Redes Sociais
 - [x] Posicionar ícones WhatsApp e Instagram mais à direita no card (ml-auto)
 - [x] Adicionar Instagram de teste no banco de dados
+
+## Campo Instagram nas Configurações
+- [x] Adicionar campo para cadastrar @ do Instagram no painel de configurações
+
+## Botão Compartilhar no Menu Público
+- [x] Adicionar ícone de compartilhar ao lado do WhatsApp

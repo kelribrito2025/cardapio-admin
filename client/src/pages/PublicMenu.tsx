@@ -1,7 +1,7 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, Store, Utensils, Menu, Star, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, Store, Utensils, Menu, Star, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PublicMenu() {
@@ -317,6 +317,25 @@ export default function PublicMenu() {
 
                   {/* Social Media Icons - posicionados à direita */}
                   <div className="flex items-center gap-1 ml-auto">
+                    {/* Botão Compartilhar */}
+                    <button 
+                      onClick={() => {
+                        if (navigator.share) {
+                          navigator.share({
+                            title: establishment.name,
+                            text: `Confira o cardápio de ${establishment.name}`,
+                            url: window.location.href,
+                          });
+                        } else {
+                          navigator.clipboard.writeText(window.location.href);
+                          alert('Link copiado!');
+                        }
+                      }}
+                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                      title="Compartilhar"
+                    >
+                      <Share2 className="h-5 w-5 text-gray-500" />
+                    </button>
                     {establishment.whatsapp && (
                       <a 
                         href={`https://wa.me/${establishment.whatsapp.replace(/\D/g, '')}`}
