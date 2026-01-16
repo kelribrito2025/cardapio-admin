@@ -1,0 +1,20 @@
+{
+  "query": "SELECT DISTINCT p.establishmentId, e.id as est_id, e.menuSlug \nFROM products p \nLEFT JOIN establishments e ON p.establishmentId = e.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT DISTINCT p.establishmentId, e.id as est_id, e.menuSlug \nFROM products p \nLEFT JOIN establishments e ON p.establishmentId = e.id;",
+  "rows": [
+    {
+      "establishmentId": "2",
+      "est_id": "NULL",
+      "menuSlug": "NULL"
+    },
+    {
+      "establishmentId": "1",
+      "est_id": "1",
+      "menuSlug": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "establishmentId\test_id\tmenuSlug\n2\tNULL\tNULL\n1\t1\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

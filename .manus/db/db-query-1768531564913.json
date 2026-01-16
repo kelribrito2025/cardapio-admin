@@ -1,0 +1,28 @@
+{
+  "query": "SELECT id, name, menuSlug, userId FROM establishments;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, menuSlug, userId FROM establishments;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "oi",
+      "menuSlug": "NULL",
+      "userId": "1"
+    },
+    {
+      "id": "30001",
+      "name": "kelri",
+      "menuSlug": "kelri",
+      "userId": "180577"
+    },
+    {
+      "id": "30002",
+      "name": "Burger House Admin",
+      "menuSlug": "burger-house-admin",
+      "userId": "2"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tmenuSlug\tuserId\n1\toi\tNULL\t1\n30001\tkelri\tkelri\t180577\n30002\tBurger House Admin\tburger-house-admin\t2\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

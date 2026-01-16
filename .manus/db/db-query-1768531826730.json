@@ -1,0 +1,16 @@
+{
+  "query": "SELECT \n  (SELECT COUNT(*) FROM establishments WHERE id = 1) as est_1_exists,\n  (SELECT COUNT(*) FROM establishments WHERE id = 2) as est_2_exists,\n  (SELECT COUNT(*) FROM products WHERE establishmentId = 1) as prods_est_1,\n  (SELECT COUNT(*) FROM products WHERE establishmentId = 2) as prods_est_2;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT \n  (SELECT COUNT(*) FROM establishments WHERE id = 1) as est_1_exists,\n  (SELECT COUNT(*) FROM establishments WHERE id = 2) as est_2_exists,\n  (SELECT COUNT(*) FROM products WHERE establishmentId = 1) as prods_est_1,\n  (SELECT COUNT(*) FROM products WHERE establishmentId = 2) as prods_est_2;",
+  "rows": [
+    {
+      "est_1_exists": "1",
+      "est_2_exists": "0",
+      "prods_est_1": "47",
+      "prods_est_2": "36"
+    }
+  ],
+  "messages": [],
+  "stdout": "est_1_exists\test_2_exists\tprods_est_1\tprods_est_2\n1\t0\t47\t36\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

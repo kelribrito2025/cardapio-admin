@@ -1,0 +1,18 @@
+{
+  "query": "SELECT p.establishmentId, COUNT(*) as cnt FROM products p GROUP BY p.establishmentId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.establishmentId, COUNT(*) as cnt FROM products p GROUP BY p.establishmentId;",
+  "rows": [
+    {
+      "establishmentId": "2",
+      "cnt": "36"
+    },
+    {
+      "establishmentId": "1",
+      "cnt": "47"
+    }
+  ],
+  "messages": [],
+  "stdout": "establishmentId\tcnt\n2\t36\n1\t47\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}

@@ -1,0 +1,31 @@
+{
+  "query": "SELECT e.id, e.name, e.menuSlug,\n       (SELECT COUNT(*) FROM categories WHERE establishmentId = e.id) as cats,\n       (SELECT COUNT(*) FROM products WHERE establishmentId = e.id) as prods\nFROM establishments e;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT e.id, e.name, e.menuSlug,\n       (SELECT COUNT(*) FROM categories WHERE establishmentId = e.id) as cats,\n       (SELECT COUNT(*) FROM products WHERE establishmentId = e.id) as prods\nFROM establishments e;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "oi",
+      "menuSlug": "NULL",
+      "cats": "15",
+      "prods": "47"
+    },
+    {
+      "id": "30001",
+      "name": "kelri",
+      "menuSlug": "kelri",
+      "cats": "0",
+      "prods": "0"
+    },
+    {
+      "id": "30002",
+      "name": "Burger House Admin",
+      "menuSlug": "burger-house-admin",
+      "cats": "0",
+      "prods": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tmenuSlug\tcats\tprods\n1\toi\tNULL\t15\t47\n30001\tkelri\tkelri\t0\t0\n30002\tBurger House Admin\tburger-house-admin\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

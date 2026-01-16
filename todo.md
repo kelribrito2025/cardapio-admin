@@ -294,3 +294,11 @@
 
 ## Popular Catálogo da conta admin@admin.com
 - [x] Criar 9 categorias e 36 produtos para a conta admin@admin.com
+
+## Redesign da Página Pública do Cardápio
+- [x] Header com logo + busca + menu (Início/Pedidos/Perfil)
+- [x] Foto de capa full width arredondada
+- [x] Bloco de informações com foto de perfil circular sobreposta
+- [x] Status aberto/fechado com horário
+- [x] Barra de categorias horizontal deslizante
+- [x] Lista de produtos por categoria com cards

@@ -1,0 +1,28 @@
+{
+  "query": "SELECT e.id, e.menuSlug, p.establishmentId as prod_est_id, COUNT(p.id) as prod_count\nFROM establishments e\nLEFT JOIN products p ON p.establishmentId = e.id\nGROUP BY e.id, e.menuSlug, p.establishmentId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT e.id, e.menuSlug, p.establishmentId as prod_est_id, COUNT(p.id) as prod_count\nFROM establishments e\nLEFT JOIN products p ON p.establishmentId = e.id\nGROUP BY e.id, e.menuSlug, p.establishmentId;",
+  "rows": [
+    {
+      "id": "1",
+      "menuSlug": "NULL",
+      "prod_est_id": "1",
+      "prod_count": "47"
+    },
+    {
+      "id": "30002",
+      "menuSlug": "burger-house-admin",
+      "prod_est_id": "NULL",
+      "prod_count": "0"
+    },
+    {
+      "id": "30001",
+      "menuSlug": "kelri",
+      "prod_est_id": "NULL",
+      "prod_count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tmenuSlug\tprod_est_id\tprod_count\n1\tNULL\t1\t47\n30002\tburger-house-admin\tNULL\t0\n30001\tkelri\tNULL\t0\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}
