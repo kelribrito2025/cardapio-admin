@@ -167,6 +167,61 @@ export async function toggleEstablishmentOpen(id: number, isOpen: boolean) {
   await db.update(establishments).set({ isOpen }).where(eq(establishments.id, id));
 }
 
+export async function getEstablishmentBySlug(slug: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(establishments).where(eq(establishments.menuSlug, slug)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function isSlugAvailable(slug: string, excludeEstablishmentId?: number) {
+  const db = await getDb();
+  if (!db) return false;
+  
+  const conditions = [eq(establishments.menuSlug, slug)];
+  if (excludeEstablishmentId) {
+    conditions.push(sql`${establishments.id} != ${excludeEstablishmentId}`);
+  }
+  
+  const result = await db.select({ count: sql<number>`count(*)` })
+    .from(establishments)
+    .where(and(...conditions));
+  
+  return (result[0]?.count ?? 0) === 0;
+}
+
+export async function getPublicMenuData(slug: string) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  // Get establishment by slug
+  const establishment = await getEstablishmentBySlug(slug);
+  if (!establishment) return null;
+  
+  // Get categories
+  const menuCategories = await db.select().from(categories)
+    .where(and(
+      eq(categories.establishmentId, establishment.id),
+      eq(categories.isActive, true)
+    ))
+    .orderBy(asc(categories.sortOrder));
+  
+  // Get active products
+  const menuProducts = await db.select().from(products)
+    .where(and(
+      eq(products.establishmentId, establishment.id),
+      eq(products.status, 'active')
+    ))
+    .orderBy(asc(products.sortOrder));
+  
+  return {
+    establishment,
+    categories: menuCategories,
+    products: menuProducts,
+  };
+}
+
 // ============ CATEGORY FUNCTIONS ============
 export async function getCategoriesByEstablishment(establishmentId: number) {
   const db = await getDb();

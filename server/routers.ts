@@ -169,8 +169,30 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
+        
+        // Validate slug uniqueness if provided
+        if (data.menuSlug) {
+          const isAvailable = await db.isSlugAvailable(data.menuSlug, id);
+          if (!isAvailable) {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "Este link já está em uso por outro restaurante.",
+            });
+          }
+        }
+        
         await db.updateEstablishment(id, data);
         return { success: true };
+      }),
+    
+    checkSlugAvailability: publicProcedure
+      .input(z.object({
+        slug: z.string().min(1),
+        excludeId: z.number().optional(),
+      }))
+      .query(async ({ input }) => {
+        const isAvailable = await db.isSlugAvailable(input.slug, input.excludeId);
+        return { available: isAvailable };
       }),
     
     toggleOpen: protectedProcedure
@@ -658,6 +680,15 @@ export const appRouter = router({
       .input(z.object({ establishmentId: z.number() }))
       .query(async ({ input }) => {
         return db.getStockSummary(input.establishmentId);
+      }),
+  }),
+
+  // ============ PUBLIC MENU ============
+  publicMenu: router({
+    getBySlug: publicProcedure
+      .input(z.object({ slug: z.string().min(1) }))
+      .query(async ({ input }) => {
+        return db.getPublicMenuData(input.slug);
       }),
   }),
 

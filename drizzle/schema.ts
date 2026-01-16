@@ -32,7 +32,7 @@ export const establishments = mysqlTable("establishments", {
   state: varchar("state", { length: 100 }),
   zipCode: varchar("zipCode", { length: 20 }),
   isOpen: boolean("isOpen").default(false).notNull(),
-  menuSlug: varchar("menuSlug", { length: 100 }),
+  menuSlug: varchar("menuSlug", { length: 100 }).unique(),
   whatsapp: varchar("whatsapp", { length: 30 }),
   acceptsCash: boolean("acceptsCash").default(true).notNull(),
   acceptsCard: boolean("acceptsCard").default(true).notNull(),

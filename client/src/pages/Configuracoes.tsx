@@ -87,7 +87,13 @@ export default function Configuracoes() {
       refetch();
       toast.success("Configurações salvas com sucesso");
     },
-    onError: () => toast.error("Erro ao salvar configurações"),
+    onError: (error) => {
+      if (error.message.includes("link já está em uso")) {
+        toast.error("Este link já está em uso por outro restaurante. Escolha outro.");
+      } else {
+        toast.error("Erro ao salvar configurações");
+      }
+    },
   });
 
   const handleSaveEstablishment = () => {
@@ -147,9 +153,17 @@ export default function Configuracoes() {
   };
 
   const copyMenuLink = () => {
-    const link = `menu.example.com/${menuSlug}`;
+    const link = `${window.location.origin}/menu/${menuSlug}`;
     navigator.clipboard.writeText(link);
     toast.success("Link copiado!");
+  };
+
+  const openMenuPreview = () => {
+    if (menuSlug) {
+      window.open(`/menu/${menuSlug}`, "_blank");
+    } else {
+      toast.error("Configure o link do cardápio primeiro");
+    }
   };
 
   const isPending = createMutation.isPending || updateMutation.isPending;
@@ -350,7 +364,7 @@ export default function Configuracoes() {
                 <Label htmlFor="menuSlug" className="text-sm font-semibold">Link do cardápio</Label>
                 <div className="flex gap-2 mt-2">
                   <div className="flex items-center px-4 bg-muted/50 rounded-l-xl border border-r-0 border-border/50 text-sm text-muted-foreground font-medium">
-                    menu.example.com/
+                    {window.location.host}/menu/
                   </div>
                   <Input
                     id="menuSlug"
@@ -359,13 +373,16 @@ export default function Configuracoes() {
                     placeholder="seu-restaurante"
                     className="rounded-l-none flex-1 h-10 rounded-r-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
-                  <Button variant="outline" size="icon" onClick={copyMenuLink} title="Copiar link" className="h-10 w-10 rounded-xl border-border/50 hover:bg-accent">
+                  <Button variant="outline" size="icon" onClick={copyMenuLink} title="Copiar link" className="h-10 w-10 rounded-xl border-border/50 hover:bg-accent" disabled={!menuSlug}>
                     <Copy className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon" title="Testar link" className="h-10 w-10 rounded-xl border-border/50 hover:bg-accent">
+                  <Button variant="outline" size="icon" onClick={openMenuPreview} title="Visualizar cardápio" className="h-10 w-10 rounded-xl border-border/50 hover:bg-accent" disabled={!menuSlug}>
                     <ExternalLink className="h-4 w-4" />
                   </Button>
                 </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Este será o link público do seu cardápio. Use apenas letras minúsculas, números e hífens.
+                </p>
               </div>
 
               <div>

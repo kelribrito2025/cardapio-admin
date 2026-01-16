@@ -277,3 +277,13 @@
 ## Bug: Redirecionamento após Login
 - [x] Investigar por que após login o usuário é redirecionado de volta para /login
 - [x] Corrigir problema de autenticação/sessão
+
+## Sistema de Cardápio Público
+- [x] Analisar site de referência (mandinhoburgernh.saipos.com)
+- [x] Adicionar campo slug ao schema de establishments com unicidade
+- [x] Criar rotas públicas para buscar dados do cardápio por slug
+- [x] Criar página pública do cardápio (/menu/{slug}) com categorias e produtos
+- [x] Adicionar botão "Ver menu" no painel do restaurante
+- [x] Atualizar página de configurações para editar slug
+- [x] Validar unicidade do slug ao salvar
+- [x] Testar fluxo completo
