@@ -34,6 +34,7 @@ export const establishments = mysqlTable("establishments", {
   isOpen: boolean("isOpen").default(false).notNull(),
   menuSlug: varchar("menuSlug", { length: 100 }).unique(),
   whatsapp: varchar("whatsapp", { length: 30 }),
+  instagram: varchar("instagram", { length: 100 }),
   acceptsCash: boolean("acceptsCash").default(true).notNull(),
   acceptsCard: boolean("acceptsCard").default(true).notNull(),
   acceptsPix: boolean("acceptsPix").default(false).notNull(),

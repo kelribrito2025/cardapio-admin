@@ -358,3 +358,7 @@
 
 ## Ícone de Alfinete no Endereço
 - [x] Adicionar ícone MapPin ao lado do endereço do restaurante
+
+## Ícones WhatsApp e Instagram no Menu Público
+- [x] Adicionar ícone de WhatsApp na linha do status
+- [x] Adicionar ícone de Instagram na linha do status
