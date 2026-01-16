@@ -355,3 +355,6 @@
 ## Ajuste Botão Informações
 - [x] Alterar "Mais informações" para "Informações"
 - [x] Adicionar ícone (i) ao lado do texto
+
+## Ícone de Alfinete no Endereço
+- [x] Adicionar ícone MapPin ao lado do endereço do restaurante

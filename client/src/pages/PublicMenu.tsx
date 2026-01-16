@@ -270,7 +270,8 @@ export default function PublicMenu() {
                 <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
                   {establishment.street && (
                     <>
-                      <span>
+                      <span className="flex items-center gap-1">
+                        <MapPin className="h-3.5 w-3.5 text-gray-500" />
                         {establishment.street}
                         {establishment.number && `, ${establishment.number}`}
                       </span>
