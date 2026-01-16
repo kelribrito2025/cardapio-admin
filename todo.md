@@ -379,3 +379,12 @@
 
 ## Bug: Ícone Instagram não aparece
 - [x] Verificar se o campo instagram está sendo retornado na API pública (campo estava vazio no banco)
+
+## Otimização Cards do Cardápio Público
+- [x] Reduzir padding interno dos cards (p-4 para p-3)
+- [x] Reduzir espaço vertical entre título, descrição e preço (mt-0.5 e mt-1.5)
+- [x] Diminuir altura máxima da imagem (w-20 h-20 / w-24 h-24)
+- [x] Compactar textos (text-sm, text-xs, leading-tight)
+- [x] Diminuir espaço entre título da categoria e primeiro card (mb-4 para mb-2)
+- [x] Ajustar margens verticais entre cards (gap-4 para gap-2, mb-8 para mb-5)
+- [x] Simplificar visual (removido shadow, apenas border com hover)

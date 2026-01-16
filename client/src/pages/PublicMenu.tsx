@@ -407,7 +407,7 @@ export default function PublicMenu() {
       )}
 
       {/* Products */}
-      <main className="max-w-6xl mx-auto px-4 py-6">
+      <main className="max-w-6xl mx-auto px-4 py-4">
         <div className="flex gap-6">
           {/* Products List */}
           <div className="flex-1">
@@ -425,13 +425,13 @@ export default function PublicMenu() {
                   <div
                     key={category.id}
                     ref={(el) => { categoryRefs.current[category.id] = el; }}
-                    className="mb-8 scroll-mt-32"
+                    className="mb-5 scroll-mt-32"
                   >
-                    <h2 className="text-lg font-bold text-gray-900 mb-4 uppercase tracking-wide">
+                    <h2 className="text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">
                       {category.name}
                     </h2>
 
-                    <div className="grid gap-4">
+                    <div className="grid gap-2">
                       {categoryProducts.map((product) => (
                         <ProductCard key={product.id} product={product} formatPrice={formatPrice} />
                       ))}
@@ -674,30 +674,30 @@ function ProductCard({
   const mainImage = product.images?.[0];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+    <div className="bg-white rounded-lg border border-gray-100 overflow-hidden hover:border-gray-200 transition-colors cursor-pointer">
       <div className="flex">
-        <div className="flex-1 p-4">
-          <h3 className="font-semibold text-gray-900 mb-1">{product.name}</h3>
+        <div className="flex-1 p-3">
+          <h3 className="font-medium text-gray-900 text-sm leading-tight">{product.name}</h3>
           {product.description && (
-            <p className="text-sm text-gray-500 line-clamp-2 mb-2">
+            <p className="text-xs text-gray-500 line-clamp-2 mt-0.5 leading-relaxed">
               {product.description}
             </p>
           )}
-          <div className="flex items-center gap-2">
-            <span className="text-red-500 font-bold">{formatPrice(product.price)}</span>
+          <div className="flex items-center gap-2 mt-1.5">
+            <span className="text-red-500 font-semibold text-sm">{formatPrice(product.price)}</span>
             {!product.hasStock && (
-              <span className="text-xs text-red-500 font-medium bg-red-50 px-2 py-0.5 rounded">
+              <span className="text-[10px] text-red-500 font-medium bg-red-50 px-1.5 py-0.5 rounded">
                 Indisponível
               </span>
             )}
           </div>
         </div>
         {mainImage && (
-          <div className="w-28 h-28 md:w-32 md:h-32 flex-shrink-0">
+          <div className="w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
             <img
               src={mainImage}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover rounded-r-lg"
             />
           </div>
         )}
@@ -753,7 +753,7 @@ function MenuSkeleton() {
       </div>
 
       {/* Products Skeleton */}
-      <main className="max-w-6xl mx-auto px-4 py-6">
+      <main className="max-w-6xl mx-auto px-4 py-4">
         <div className="flex gap-6">
           <div className="flex-1">
             <Skeleton className="h-6 w-32 mb-4" />
