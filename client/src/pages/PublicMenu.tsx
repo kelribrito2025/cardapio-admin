@@ -1,7 +1,7 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, Store, Utensils, Menu, Star } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, Store, Utensils, Menu, Star, ShoppingBag, Ticket } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PublicMenu() {
@@ -395,13 +395,68 @@ export default function PublicMenu() {
             )}
           </div>
 
-          {/* Cart Sidebar (placeholder) */}
+          {/* Cart Sidebar */}
           <div className="hidden lg:block w-80 flex-shrink-0">
-            <div className="sticky top-[120px] bg-white rounded-xl shadow-sm border p-4">
-              <h3 className="font-bold text-gray-900 mb-4">Sua sacola</h3>
-              <div className="text-center py-8 text-gray-400">
-                <ClipboardList className="h-10 w-10 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Sua sacola está vazia</p>
+            <div className="sticky top-[120px]">
+              {/* Calcular taxa de entrega */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-3">
+                <button className="w-full flex items-center justify-between text-left hover:bg-gray-50 -m-4 p-4 rounded-xl transition-colors">
+                  <div className="flex items-center gap-3">
+                    <MapPin className="h-5 w-5 text-gray-400" />
+                    <span className="font-medium text-gray-800">Calcular taxa de entrega</span>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-gray-400" />
+                </button>
+              </div>
+
+              {/* Sua sacola */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                <h3 className="font-bold text-gray-900 mb-4">Sua sacola</h3>
+                
+                {/* Empty cart state */}
+                <div className="text-center py-8">
+                  <ShoppingBag className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                  <p className="text-gray-400 font-medium">Sacola vazia</p>
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-dashed border-gray-200 my-4" />
+
+                {/* Totals */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Subtotal</span>
+                    <span className="text-gray-600">R$ 0,00</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Taxa de entrega</span>
+                    <span className="text-gray-400">R$ 0,00</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-base pt-2">
+                    <span className="text-gray-900">Total</span>
+                    <span className="text-gray-900">R$ 0,00</span>
+                  </div>
+                </div>
+
+                {/* Cupom */}
+                <button className="w-full flex items-center justify-between mt-4 py-3 border-t border-gray-100 hover:bg-gray-50 -mx-4 px-4 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <Ticket className="h-5 w-5 text-gray-500" />
+                    <div className="text-left">
+                      <p className="font-medium text-gray-800 text-sm">Tem um cupom?</p>
+                      <p className="text-xs text-gray-400">Clique e insira o código</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-gray-400" />
+                </button>
+
+                {/* Button */}
+                <button 
+                  disabled
+                  className="w-full mt-4 py-3.5 bg-red-400/80 text-white font-semibold rounded-xl cursor-not-allowed"
+                >
+                  Sacola vazia
+                </button>
               </div>
             </div>
           </div>

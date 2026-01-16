@@ -331,3 +331,10 @@
 ## Bug: Efeito Fantasma no Drag and Drop de Itens
 - [x] Verificar efeito de drag and drop nas categorias
 - [x] Aplicar o mesmo efeito fantasma nos itens/produtos do catálogo
+
+## Sacola no Menu Público
+- [x] Seção "Calcular taxa de entrega" com ícone de localização e seta
+- [x] Título "Sua sacola" com ícone de sacola vazia
+- [x] Exibição de Subtotal, Taxa de entrega e Total
+- [x] Seção "Tem um cupom?" com ícone e seta
+- [x] Botão "Sacola vazia" (ou "Finalizar pedido" quando tiver itens)
