@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2, User } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import { AuthLayout } from "@/components/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,6 @@ import { toast } from "sonner";
 
 export default function Register() {
   const [, setLocation] = useLocation();
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -32,7 +31,7 @@ export default function Register() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!name || !email || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword) {
       toast.error("Por favor, preencha todos os campos.");
       return;
     }
@@ -52,6 +51,8 @@ export default function Register() {
       return;
     }
 
+    // Usar o email como nome (parte antes do @)
+    const name = email.split("@")[0];
     registerMutation.mutate({ name, email, password });
   };
 
@@ -66,22 +67,6 @@ export default function Register() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name */}
-          <div className="space-y-2">
-            <Label htmlFor="name" className="flex items-center gap-2 text-sm font-medium text-gray-700">
-              <User className="h-4 w-4 text-gray-500" />
-              Nome completo
-            </Label>
-            <Input
-              id="name"
-              type="text"
-              placeholder="Seu nome"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="h-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20"
-            />
-          </div>
-
           {/* Email */}
           <div className="space-y-2">
             <Label htmlFor="email" className="flex items-center gap-2 text-sm font-medium text-gray-700">

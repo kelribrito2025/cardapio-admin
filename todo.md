@@ -265,3 +265,6 @@
 - [x] Configurar rotas de autenticação no App.tsx
 - [x] Implementar lógica de backend para registro e login com email/senha
 - [x] Testar fluxo completo de autenticação
+
+## Ajustes na Página de Criar Conta
+- [x] Remover campo "Nome completo" da página de registro
