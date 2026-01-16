@@ -347,3 +347,7 @@
 
 ## Ajuste Layout Formas de Pagamento
 - [x] Colocar as 3 formas de pagamento na mesma linha (flex)
+
+## Ícone Pulsante Status Aberto/Fechado
+- [x] Adicionar ícone pulsante verde ao lado de "Aberto agora"
+- [x] Adicionar ícone pulsante vermelho ao lado de "Fechado"
