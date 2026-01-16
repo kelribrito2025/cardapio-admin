@@ -40,6 +40,8 @@ export const establishments = mysqlTable("establishments", {
   acceptsBoleto: boolean("acceptsBoleto").default(false).notNull(),
   allowsDelivery: boolean("allowsDelivery").default(true).notNull(),
   allowsPickup: boolean("allowsPickup").default(true).notNull(),
+  rating: decimal("rating", { precision: 2, scale: 1 }).default("0"),
+  reviewCount: int("reviewCount").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

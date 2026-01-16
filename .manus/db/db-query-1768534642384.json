@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, userId, name, menuSlug, rating, reviewCount FROM establishments WHERE userId = 180577;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, userId, name, menuSlug, rating, reviewCount FROM establishments WHERE userId = 180577;",
+  "rows": [
+    {
+      "id": "30001",
+      "userId": "180577",
+      "name": "Sushi Haruno",
+      "menuSlug": "kelri",
+      "rating": "4.9",
+      "reviewCount": "34"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\tname\tmenuSlug\trating\treviewCount\n30001\t180577\tSushi Haruno\tkelri\t4.9\t34\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

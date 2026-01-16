@@ -1,0 +1,34 @@
+{
+  "query": "SELECT id, userId, name, menuSlug, rating, reviewCount FROM establishments;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, userId, name, menuSlug, rating, reviewCount FROM establishments;",
+  "rows": [
+    {
+      "id": "1",
+      "userId": "1",
+      "name": "oi",
+      "menuSlug": "teste-burguer",
+      "rating": "0.0",
+      "reviewCount": "0"
+    },
+    {
+      "id": "30001",
+      "userId": "180577",
+      "name": "Sushi Haruno",
+      "menuSlug": "kelri",
+      "rating": "4.9",
+      "reviewCount": "34"
+    },
+    {
+      "id": "30002",
+      "userId": "2",
+      "name": "Burger House Admin",
+      "menuSlug": "burger-house-admin",
+      "rating": "0.0",
+      "reviewCount": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\tname\tmenuSlug\trating\treviewCount\n1\t1\toi\tteste-burguer\t0.0\t0\n30001\t180577\tSushi Haruno\tkelri\t4.9\t34\n30002\t2\tBurger House Admin\tburger-house-admin\t0.0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

@@ -1,7 +1,7 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, Store, Utensils, Menu } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, Store, Utensils, Menu, Star } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PublicMenu() {
@@ -248,10 +248,22 @@ export default function PublicMenu() {
           <div className="flex-1 bg-white rounded-xl p-4 md:p-5 shadow-sm md:ml-4">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
               <div className="flex-1">
-                {/* Restaurant Name */}
-                <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-                  {establishment.name}
-                </h1>
+                {/* Restaurant Name and Rating */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+                    {establishment.name}
+                  </h1>
+                  {/* Rating */}
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                    <span className="text-sm font-semibold text-gray-800">
+                      {establishment.rating ? Number(establishment.rating).toFixed(1).replace('.', ',') : '0,0'}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      ({establishment.reviewCount || 0} avaliações)
+                    </span>
+                  </div>
+                </div>
 
                 {/* Address and More Info */}
                 <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">

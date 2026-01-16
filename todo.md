@@ -323,3 +323,7 @@
 - [x] Adicionar funcionalidade de upload de logo do restaurante
 - [x] Adicionar funcionalidade de upload de capa do restaurante
 - [x] Mostrar preview em tempo real das alterações
+
+## Sistema de Avaliações na Página Pública
+- [x] Adicionar campos de avaliação no schema do banco (rating, reviewCount)
+- [x] Exibir estrela amarela, nota (0-5) e quantidade de avaliações ao lado do nome
