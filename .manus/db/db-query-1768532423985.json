@@ -1,0 +1,14 @@
+{
+  "query": "SELECT \n  (SELECT COUNT(*) FROM categories WHERE establishmentId IN (SELECT id FROM establishments WHERE userId = 180577)) as cat_count,\n  (SELECT COUNT(*) FROM products WHERE establishmentId IN (SELECT id FROM establishments WHERE userId = 180577)) as prod_count;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT \n  (SELECT COUNT(*) FROM categories WHERE establishmentId IN (SELECT id FROM establishments WHERE userId = 180577)) as cat_count,\n  (SELECT COUNT(*) FROM products WHERE establishmentId IN (SELECT id FROM establishments WHERE userId = 180577)) as prod_count;",
+  "rows": [
+    {
+      "cat_count": "0",
+      "prod_count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "cat_count\tprod_count\n0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}

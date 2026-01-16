@@ -1,0 +1,46 @@
+{
+  "query": "SELECT c.id, c.name\nFROM categories c \nJOIN establishments e ON c.establishmentId = e.id \nWHERE e.userId = 180577\nORDER BY c.sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT c.id, c.name\nFROM categories c \nJOIN establishments e ON c.establishmentId = e.id \nWHERE e.userId = 180577\nORDER BY c.sortOrder;",
+  "rows": [
+    {
+      "id": "30024",
+      "name": "Hambúrgueres Clássicos"
+    },
+    {
+      "id": "30027",
+      "name": "Hambúrgueres Gourmet"
+    },
+    {
+      "id": "30023",
+      "name": "Hambúrgueres Artesanais"
+    },
+    {
+      "id": "30020",
+      "name": "Combos"
+    },
+    {
+      "id": "30026",
+      "name": "Porções"
+    },
+    {
+      "id": "30019",
+      "name": "Bebidas"
+    },
+    {
+      "id": "30021",
+      "name": "Sobremesas"
+    },
+    {
+      "id": "30025",
+      "name": "Kids"
+    },
+    {
+      "id": "30022",
+      "name": "Vegetarianos"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\n30024\tHambúrgueres Clássicos\n30027\tHambúrgueres Gourmet\n30023\tHambúrgueres Artesanais\n30020\tCombos\n30026\tPorções\n30019\tBebidas\n30021\tSobremesas\n30025\tKids\n30022\tVegetarianos\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

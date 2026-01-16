@@ -1,0 +1,55 @@
+{
+  "query": "SELECT e.id as estId, c.id as catId, c.name as catName\nFROM establishments e\nJOIN categories c ON c.establishmentId = e.id\nWHERE e.userId = 180577\nORDER BY c.sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT e.id as estId, c.id as catId, c.name as catName\nFROM establishments e\nJOIN categories c ON c.establishmentId = e.id\nWHERE e.userId = 180577\nORDER BY c.sortOrder;",
+  "rows": [
+    {
+      "estId": "30001",
+      "catId": "30024",
+      "catName": "Hambúrgueres Clássicos"
+    },
+    {
+      "estId": "30001",
+      "catId": "30027",
+      "catName": "Hambúrgueres Gourmet"
+    },
+    {
+      "estId": "30001",
+      "catId": "30023",
+      "catName": "Hambúrgueres Artesanais"
+    },
+    {
+      "estId": "30001",
+      "catId": "30020",
+      "catName": "Combos"
+    },
+    {
+      "estId": "30001",
+      "catId": "30026",
+      "catName": "Porções"
+    },
+    {
+      "estId": "30001",
+      "catId": "30019",
+      "catName": "Bebidas"
+    },
+    {
+      "estId": "30001",
+      "catId": "30021",
+      "catName": "Sobremesas"
+    },
+    {
+      "estId": "30001",
+      "catId": "30025",
+      "catName": "Kids"
+    },
+    {
+      "estId": "30001",
+      "catId": "30022",
+      "catName": "Vegetarianos"
+    }
+  ],
+  "messages": [],
+  "stdout": "estId\tcatId\tcatName\n30001\t30024\tHambúrgueres Clássicos\n30001\t30027\tHambúrgueres Gourmet\n30001\t30023\tHambúrgueres Artesanais\n30001\t30020\tCombos\n30001\t30026\tPorções\n30001\t30019\tBebidas\n30001\t30021\tSobremesas\n30001\t30025\tKids\n30001\t30022\tVegetarianos\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

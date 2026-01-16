@@ -302,3 +302,8 @@
 - [x] Status aberto/fechado com horário
 - [x] Barra de categorias horizontal deslizante
 - [x] Lista de produtos por categoria com cards
+
+## Correção: Categorias e Produtos para usuário 180577
+- [x] Verificar establishment do usuário 180577
+- [x] Criar 9 categorias de hamburgueria
+- [x] Adicionar 4 produtos em cada categoria (36 produtos total)

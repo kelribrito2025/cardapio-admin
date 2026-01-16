@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO products (establishmentId, categoryId, name, description, price, status, sortOrder, createdAt, updatedAt)\nSELECT e.id, c.id, p.name, p.description, p.price, 'active', p.sortOrder, NOW(), NOW()\nFROM establishments e\nJOIN categories c ON c.establishmentId = e.id AND c.name = 'Kids'\nCROSS JOIN (\n  SELECT 'Mini Burguer' as name, 'Mini hambúrguer com queijo em pão macio, ideal para crianças' as description, 16.90 as price, 1 as sortOrder UNION ALL\n  SELECT 'Nuggets', '6 unidades de nuggets de frango com molho barbecue', 18.90, 2 UNION ALL\n  SELECT 'Hot Dog Kids', 'Mini hot dog com salsicha, purê de batata e ketchup', 14.90, 3 UNION ALL\n  SELECT 'Mini Pizza', 'Mini pizza de mussarela ou calabresa', 19.90, 4\n) p\nWHERE e.userId = 180577;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute INSERT INTO products (establishmentId, categoryId, name, description, price, status, sortOrder, createdAt, updatedAt)\nSELECT e.id, c.id, p.name, p.description, p.price, 'active', p.sortOrder, NOW(), NOW()\nFROM establishments e\nJOIN categories c ON c.establishmentId = e.id AND c.name = 'Kids'\nCROSS JOIN (\n  SELECT 'Mini Burguer' as name, 'Mini hambúrguer com queijo em pão macio, ideal para crianças' as description, 16.90 as price, 1 as sortOrder UNION ALL\n  SELECT 'Nuggets', '6 unidades de nuggets de frango com molho barbecue', 18.90, 2 UNION ALL\n  SELECT 'Hot Dog Kids', 'Mini hot dog com salsicha, purê de batata e ketchup', 14.90, 3 UNION ALL\n  SELECT 'Mini Pizza', 'Mini pizza de mussarela ou calabresa', 19.90, 4\n) p\nWHERE e.userId = 180577;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 57
+}

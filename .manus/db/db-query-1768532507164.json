@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO products (establishmentId, categoryId, name, description, price, status, sortOrder, createdAt, updatedAt)\nSELECT e.id, c.id, p.name, p.description, p.price, 'active', p.sortOrder, NOW(), NOW()\nFROM establishments e\nJOIN categories c ON c.establishmentId = e.id AND c.name = 'Porções'\nCROSS JOIN (\n  SELECT 'Batata Frita' as name, 'Porção de batata frita crocante com sal (300g)' as description, 18.90 as price, 1 as sortOrder UNION ALL\n  SELECT 'Onion Rings', 'Anéis de cebola empanados e fritos (250g)', 22.90, 2 UNION ALL\n  SELECT 'Chicken Fingers', 'Tirinhas de frango empanadas (300g) com molho honey mustard', 28.90, 3 UNION ALL\n  SELECT 'Nachos Supreme', 'Nachos com cheddar, carne moída, jalapeño, guacamole e sour cream', 32.90, 4\n) p\nWHERE e.userId = 180577;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute INSERT INTO products (establishmentId, categoryId, name, description, price, status, sortOrder, createdAt, updatedAt)\nSELECT e.id, c.id, p.name, p.description, p.price, 'active', p.sortOrder, NOW(), NOW()\nFROM establishments e\nJOIN categories c ON c.establishmentId = e.id AND c.name = 'Porções'\nCROSS JOIN (\n  SELECT 'Batata Frita' as name, 'Porção de batata frita crocante com sal (300g)' as description, 18.90 as price, 1 as sortOrder UNION ALL\n  SELECT 'Onion Rings', 'Anéis de cebola empanados e fritos (250g)', 22.90, 2 UNION ALL\n  SELECT 'Chicken Fingers', 'Tirinhas de frango empanadas (300g) com molho honey mustard', 28.90, 3 UNION ALL\n  SELECT 'Nachos Supreme', 'Nachos com cheddar, carne moída, jalapeño, guacamole e sour cream', 32.90, 4\n) p\nWHERE e.userId = 180577;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 107
+}
