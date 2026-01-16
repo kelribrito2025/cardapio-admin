@@ -273,3 +273,7 @@
 - [x] Remover redirecionamento para autenticação Manus após login
 - [x] Garantir que login redirecione diretamente para o dashboard
 - [x] Testar fluxo completo: criar conta → login → dashboard
+
+## Bug: Redirecionamento após Login
+- [x] Investigar por que após login o usuário é redirecionado de volta para /login
+- [x] Corrigir problema de autenticação/sessão

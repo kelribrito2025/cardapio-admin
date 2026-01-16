@@ -7,8 +7,8 @@ import * as db from "./db";
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { ENV } from "./_core/env";
+import { sdk } from "./_core/sdk";
 import { TRPCError } from "@trpc/server";
 
 export const appRouter = router({
@@ -81,12 +81,11 @@ export const appRouter = router({
         // Update last signed in
         await db.updateUserLastSignedIn(user.id);
         
-        // Create JWT token
-        const token = jwt.sign(
-          { userId: user.id, openId: user.openId },
-          ENV.cookieSecret,
-          { expiresIn: input.rememberMe ? "30d" : "7d" }
-        );
+        // Create JWT token using SDK to match expected format
+        const token = await sdk.createSessionToken(user.openId, {
+          name: user.name || user.email?.split('@')[0] || 'User',
+          expiresInMs: input.rememberMe ? 30 * 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000,
+        });
         
         // Set cookie
         const cookieOptions = getSessionCookieOptions(ctx.req);
