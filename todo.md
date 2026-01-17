@@ -405,3 +405,6 @@
 - [x] Adicionar ícone de editar ao lado do nome do restaurante no Preview do Perfil Público
 - [x] Tornar o nome editável diretamente no Preview
 - [x] Adicionar botão "Salvar Alterações" no Preview
+
+## Bug: Ícone de Editar Distante do Nome
+- [x] Ajustar posicionamento do ícone de editar para ficar próximo ao nome do restaurante (gap-1, inline-flex)

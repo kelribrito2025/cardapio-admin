@@ -324,16 +324,16 @@ export default function Configuracoes() {
                   <div className="flex-1">
                     {/* Restaurant Name and Rating */}
                     <div className="flex items-center gap-2 flex-wrap">
-                      <div className="flex items-center gap-1.5 group">
+                      <div className="inline-flex items-center gap-1 group">
                         <input
                           type="text"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder="Nome do Restaurante"
-                          className="text-xl font-bold text-gray-900 bg-transparent border-none outline-none focus:ring-0 p-0 w-auto min-w-[200px]"
-                          style={{ width: `${Math.max(200, (name?.length || 18) * 12)}px` }}
+                          className="text-xl font-bold text-gray-900 bg-transparent border-none outline-none focus:ring-0 p-0"
+                          style={{ width: `${Math.max(100, (name?.length || 18) * 11)}px` }}
                         />
-                        <Pencil className="h-4 w-4 text-gray-400 group-hover:text-primary cursor-pointer transition-colors" />
+                        <Pencil className="h-4 w-4 text-gray-400 group-hover:text-primary cursor-pointer transition-colors flex-shrink-0" />
                       </div>
                       {/* Rating */}
                       <div className="flex items-center gap-1">
