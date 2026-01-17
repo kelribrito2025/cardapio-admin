@@ -194,7 +194,7 @@ export function SectionCard({ title, description, children, actions, className, 
   return (
     <div className={cn("bg-card rounded-xl border border-border/50 shadow-soft", className)}>
       {(title || actions) && (
-        <div className="flex items-center justify-between px-6 py-5 border-b border-border/50">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-border/50" style={{height: '46px'}}>
           <div>
             {title && <h3 className="font-semibold text-base">{title}</h3>}
             {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
