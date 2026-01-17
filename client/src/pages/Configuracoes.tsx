@@ -324,9 +324,17 @@ export default function Configuracoes() {
                   <div className="flex-1">
                     {/* Restaurant Name and Rating */}
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h2 className="text-xl font-bold text-gray-900">
-                        {name || "Nome do Restaurante"}
-                      </h2>
+                      <div className="flex items-center gap-1.5 group">
+                        <input
+                          type="text"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="Nome do Restaurante"
+                          className="text-xl font-bold text-gray-900 bg-transparent border-none outline-none focus:ring-0 p-0 w-auto min-w-[200px]"
+                          style={{ width: `${Math.max(200, (name?.length || 18) * 12)}px` }}
+                        />
+                        <Pencil className="h-4 w-4 text-gray-400 group-hover:text-primary cursor-pointer transition-colors" />
+                      </div>
                       {/* Rating */}
                       <div className="flex items-center gap-1">
                         <svg className="h-4 w-4 text-yellow-400 fill-yellow-400" viewBox="0 0 24 24">
@@ -415,30 +423,19 @@ export default function Configuracoes() {
                     )}
                   </div>
                 </div>
+                
+                {/* Botão Salvar */}
+                <div className="mt-4 flex justify-end">
+                  <Button onClick={handleSaveEstablishment} disabled={isPending} className="rounded-xl shadow-sm">
+                    <Save className="h-4 w-4 mr-2" />
+                    {isPending ? "Salvando..." : "Salvar Alterações"}
+                  </Button>
+                </div>
               </div>
             </div>
           </SectionCard>
 
-          {/* Nome do Restaurante */}
-          <SectionCard title="Informações Básicas">
-            <div className="space-y-5">
-              <div>
-                <Label htmlFor="name" className="text-sm font-semibold">Nome do Restaurante *</Label>
-                <Input
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ex: Restaurante Sabor Caseiro"
-                  className="max-w-md mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
 
-              <Button onClick={handleSaveEstablishment} disabled={isPending} className="rounded-xl shadow-sm">
-                <Save className="h-4 w-4 mr-2" />
-                {isPending ? "Salvando..." : "Salvar"}
-              </Button>
-            </div>
-          </SectionCard>
 
           {/* Endereço */}
           <SectionCard 

@@ -399,3 +399,9 @@
 ## Mover Botão Ver Menu
 - [x] Remover botão "Ver menu" da sidebar lateral
 - [x] Adicionar botão "Ver menu" na topbar ao lado do botão Aberto
+
+## Ajustes em /configuracoes
+- [x] Remover container "Informações Básicas"
+- [x] Adicionar ícone de editar ao lado do nome do restaurante no Preview do Perfil Público
+- [x] Tornar o nome editável diretamente no Preview
+- [x] Adicionar botão "Salvar Alterações" no Preview
