@@ -391,3 +391,7 @@
 
 ## Lazy Loading Imagens do Cardápio
 - [x] Adicionar loading="lazy" e decoding="async" nas imagens do ProductCard
+
+## Correção Preview Perfil Público em Configurações
+- [x] Comparar preview em /configuracoes com a página /menu/:slug original
+- [x] Corrigir diferenças visuais: estrela amarela, avaliações, ícone pulsante, ícones sociais, ícone alfinete
