@@ -395,3 +395,7 @@
 ## Correção Preview Perfil Público em Configurações
 - [x] Comparar preview em /configuracoes com a página /menu/:slug original
 - [x] Corrigir diferenças visuais: estrela amarela, avaliações, ícone pulsante, ícones sociais, ícone alfinete
+
+## Mover Botão Ver Menu
+- [x] Remover botão "Ver menu" da sidebar lateral
+- [x] Adicionar botão "Ver menu" na topbar ao lado do botão Aberto

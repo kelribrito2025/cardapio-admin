@@ -251,39 +251,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           })}
         </nav>
 
-        {/* Ver Menu Button */}
-        {establishment?.menuSlug && !sidebarCollapsed && (
-          <div className="px-3 mb-2">
-            <a
-              href={`/menu/${establishment.menuSlug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-2.5 px-3 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-sm font-medium transition-colors"
-            >
-              <ExternalLink className="h-4 w-4" />
-              Ver menu
-            </a>
-          </div>
-        )}
 
-        {/* Ver Menu Button - Collapsed */}
-        {establishment?.menuSlug && sidebarCollapsed && (
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <a
-                href={`/menu/${establishment.menuSlug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mx-2 mb-2 p-3 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl flex justify-center transition-colors"
-              >
-                <ExternalLink className="h-5 w-5" />
-              </a>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="font-medium">
-              Ver menu
-            </TooltipContent>
-          </Tooltip>
-        )}
 
         {/* Store info */}
         {establishment && !sidebarCollapsed && (
@@ -405,6 +373,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     className="data-[state=checked]:bg-emerald-500 scale-90"
                   />
                 </div>
+              )}
+
+              {/* Ver Menu Button */}
+              {establishment?.menuSlug && (
+                <a
+                  href={`/menu/${establishment.menuSlug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:flex items-center gap-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-xs font-medium transition-colors"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Ver menu
+                </a>
               )}
 
               {/* Notifications */}
