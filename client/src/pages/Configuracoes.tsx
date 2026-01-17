@@ -57,6 +57,7 @@ export default function Configuracoes() {
   // File input refs
   const logoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   // Load establishment data
   useEffect(() => {
@@ -324,13 +325,14 @@ export default function Configuracoes() {
                   <div className="flex-1">
                     {/* Restaurant Name and Rating */}
                     <div className="flex items-center gap-2 flex-wrap">
-                      <div className="inline-flex items-center gap-1 group">
+                      <div className="inline-flex items-center gap-1 group cursor-pointer" onClick={() => nameInputRef.current?.focus()}>
                         <input
+                          ref={nameInputRef}
                           type="text"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder="Nome do Restaurante"
-                          className="text-xl font-bold text-gray-900 bg-transparent border-none outline-none focus:ring-0 p-0"
+                          className="text-xl font-bold text-gray-900 bg-transparent border-none outline-none focus:ring-0 p-0 group-hover:text-primary transition-colors cursor-pointer"
                           style={{ width: `${Math.max(100, (name?.length || 18) * 11)}px` }}
                         />
                         <Pencil className="h-4 w-4 text-gray-400 group-hover:text-primary cursor-pointer transition-colors flex-shrink-0" />

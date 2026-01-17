@@ -408,3 +408,7 @@
 
 ## Bug: Ícone de Editar Distante do Nome
 - [x] Ajustar posicionamento do ícone de editar para ficar próximo ao nome do restaurante (gap-1, inline-flex)
+
+## Correção Ícone Editar Nome do Restaurante
+- [x] Fazer o ícone de editar dar foco no input ao clicar (ref + onClick)
+- [x] Adicionar hover vermelho no nome do restaurante (group-hover:text-primary)
