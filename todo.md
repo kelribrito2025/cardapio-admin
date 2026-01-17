@@ -417,3 +417,6 @@
 - [x] Implementar hover igual às categorias do catálogo (group-hover:text-primary, hover:bg-muted/50)
 - [x] Ao editar, mostrar botões check (confirmar) e X (cancelar)
 - [x] Input com borda ao editar igual ao catálogo
+
+## Ícone Editar Sempre Visível
+- [x] Remover opacity-0 do ícone de editar para ficar sempre visível

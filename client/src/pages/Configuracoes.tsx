@@ -385,7 +385,7 @@ export default function Configuracoes() {
                           <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
                             {name || "Nome do Restaurante"}
                           </h3>
-                          <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                          <Pencil className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors duration-200" />
                         </div>
                       )}
                       {/* Rating */}
