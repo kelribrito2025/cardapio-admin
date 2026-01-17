@@ -22,6 +22,8 @@ import {
   Info,
   Camera,
   Pencil,
+  Check,
+  X,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -58,6 +60,10 @@ export default function Configuracoes() {
   const logoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
+
+  // Inline editing state
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [originalName, setOriginalName] = useState("");
 
   // Load establishment data
   useEffect(() => {
@@ -325,18 +331,63 @@ export default function Configuracoes() {
                   <div className="flex-1">
                     {/* Restaurant Name and Rating */}
                     <div className="flex items-center gap-2 flex-wrap">
-                      <div className="inline-flex items-center gap-1 group cursor-pointer" onClick={() => nameInputRef.current?.focus()}>
-                        <input
-                          ref={nameInputRef}
-                          type="text"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="Nome do Restaurante"
-                          className="text-xl font-bold text-gray-900 bg-transparent border-none outline-none focus:ring-0 p-0 group-hover:text-primary transition-colors cursor-pointer"
-                          style={{ width: `${Math.max(100, (name?.length || 18) * 11)}px` }}
-                        />
-                        <Pencil className="h-4 w-4 text-gray-400 group-hover:text-primary cursor-pointer transition-colors flex-shrink-0" />
-                      </div>
+                      {isEditingName ? (
+                        <div className="flex items-center gap-1.5">
+                          <Input
+                            ref={nameInputRef}
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="h-8 w-56 font-bold text-lg"
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" && name.trim()) {
+                                setIsEditingName(false);
+                              } else if (e.key === "Escape") {
+                                setName(originalName);
+                                setIsEditingName(false);
+                              }
+                            }}
+                          />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100"
+                            onClick={() => {
+                              if (name.trim()) {
+                                setIsEditingName(false);
+                              }
+                            }}
+                            disabled={!name.trim()}
+                          >
+                            <Check className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 text-red-600 hover:text-red-700 hover:bg-red-100"
+                            onClick={() => {
+                              setName(originalName);
+                              setIsEditingName(false);
+                            }}
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div
+                          className="group flex items-center gap-1.5 px-2 py-1 -mx-2 -my-1 rounded-md cursor-pointer hover:bg-muted/50 transition-all duration-200"
+                          onClick={() => {
+                            setOriginalName(name);
+                            setIsEditingName(true);
+                            setTimeout(() => nameInputRef.current?.focus(), 0);
+                          }}
+                        >
+                          <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
+                            {name || "Nome do Restaurante"}
+                          </h3>
+                          <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                        </div>
+                      )}
                       {/* Rating */}
                       <div className="flex items-center gap-1">
                         <svg className="h-4 w-4 text-yellow-400 fill-yellow-400" viewBox="0 0 24 24">

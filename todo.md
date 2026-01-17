@@ -412,3 +412,8 @@
 ## Correção Ícone Editar Nome do Restaurante
 - [x] Fazer o ícone de editar dar foco no input ao clicar (ref + onClick)
 - [x] Adicionar hover vermelho no nome do restaurante (group-hover:text-primary)
+
+## Estilo de Edição do Nome do Restaurante
+- [x] Implementar hover igual às categorias do catálogo (group-hover:text-primary, hover:bg-muted/50)
+- [x] Ao editar, mostrar botões check (confirmar) e X (cancelar)
+- [x] Input com borda ao editar igual ao catálogo
