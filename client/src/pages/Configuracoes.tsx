@@ -208,7 +208,7 @@ export default function Configuracoes() {
   };
 
   const copyMenuLink = () => {
-    const link = `${window.location.origin}/menu/${menuSlug}`;
+    const link = `https://mindi.manus.space/menu/${menuSlug}`;
     navigator.clipboard.writeText(link);
     toast.success("Link copiado!");
   };
@@ -592,7 +592,7 @@ export default function Configuracoes() {
                 <Label htmlFor="menuSlug" className="text-sm font-semibold">Link do cardápio</Label>
                 <div className="flex gap-2 mt-2">
                   <div className="flex items-center px-4 bg-muted/50 rounded-l-xl border border-r-0 border-border/50 text-sm text-muted-foreground font-medium">
-                    {window.location.host}/menu/
+                    mindi.manus.space/menu/
                   </div>
                   <Input
                     id="menuSlug"

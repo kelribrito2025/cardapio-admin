@@ -427,3 +427,6 @@
 
 ## Remoção Container Aberto/Fechado da Topbar
 - [x] Remover container de Aberto/Fechado da topbar (já está no menu do perfil)
+
+## URL de Produção do Cardápio
+- [x] Alterar link do cardápio nas configurações para usar URL de produção (mindi.manus.space)
