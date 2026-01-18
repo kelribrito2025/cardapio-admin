@@ -440,3 +440,6 @@
 ## Layout Formulário Novo Produto
 - [x] Colocar campos preço, categoria e tempo de preparo na mesma linha do nome
 - [x] Fazer todos os campos ocuparem a largura disponível sem espaço em branco
+
+## Ajuste Campo Nome do Produto
+- [x] Aumentar tamanho do campo Nome do produto para ocupar espaço restante

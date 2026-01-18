@@ -351,8 +351,8 @@ export default function ProductForm() {
             <SectionCard title="Informações Básicas">
               <div className="space-y-5">
                 {/* Nome, Preço, Categoria e Tempo de preparo na mesma linha */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="md:col-span-2 lg:col-span-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4">
+                  <div className="md:col-span-2 lg:col-span-5">
                     <Label htmlFor="name" className="text-sm font-semibold">Nome do produto *</Label>
                     <Input
                       id="name"
@@ -369,7 +369,7 @@ export default function ProductForm() {
                     )}
                   </div>
 
-                  <div>
+                  <div className="lg:col-span-2">
                     <Label htmlFor="price" className="text-sm font-semibold">Preço *</Label>
                     <Input
                       id="price"
@@ -389,7 +389,7 @@ export default function ProductForm() {
                     )}
                   </div>
 
-                  <div>
+                  <div className="lg:col-span-3">
                     <Label htmlFor="category" className="text-sm font-semibold">Categoria</Label>
                     <Select value={categoryId} onValueChange={setCategoryId}>
                       <SelectTrigger className="mt-1.5 h-9 text-sm rounded-lg border-border/50">
@@ -405,7 +405,7 @@ export default function ProductForm() {
                     </Select>
                   </div>
 
-                  <div>
+                  <div className="lg:col-span-2">
                     <Label htmlFor="prepTime" className="text-sm font-semibold">Tempo de preparo</Label>
                     <Input
                       id="prepTime"
