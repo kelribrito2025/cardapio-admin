@@ -436,3 +436,7 @@
 
 ## Alinhamento Menus Topbar Perfil Público
 - [x] Alinhar menus Início, Pedidos e Perfil no final da topbar para alinhar com o final da imagem da capa
+
+## Layout Formulário Novo Produto
+- [x] Colocar campos preço, categoria e tempo de preparo na mesma linha do nome
+- [x] Fazer todos os campos ocuparem a largura disponível sem espaço em branco

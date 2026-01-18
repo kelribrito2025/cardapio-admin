@@ -350,9 +350,9 @@ export default function ProductForm() {
             {/* Basic Info */}
             <SectionCard title="Informações Básicas">
               <div className="space-y-5">
-                {/* Nome, Categoria e Preço na mesma linha no desktop */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-                  <div className="lg:col-span-6">
+                {/* Nome, Preço, Categoria e Tempo de preparo na mesma linha */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="md:col-span-2 lg:col-span-1">
                     <Label htmlFor="name" className="text-sm font-semibold">Nome do produto *</Label>
                     <Input
                       id="name"
@@ -369,23 +369,7 @@ export default function ProductForm() {
                     )}
                   </div>
 
-                  <div className="lg:col-span-3">
-                    <Label htmlFor="category" className="text-sm font-semibold">Categoria</Label>
-                    <Select value={categoryId} onValueChange={setCategoryId}>
-                      <SelectTrigger className="mt-2 h-10 text-base rounded-lg border-border/50">
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-lg">
-                        {categories?.map((cat) => (
-                          <SelectItem key={cat.id} value={String(cat.id)} className="rounded text-base">
-                            {cat.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="lg:col-span-3">
+                  <div>
                     <Label htmlFor="price" className="text-sm font-semibold">Preço *</Label>
                     <Input
                       id="price"
@@ -404,6 +388,35 @@ export default function ProductForm() {
                       <p className="text-xs text-destructive mt-1.5">{errors.price}</p>
                     )}
                   </div>
+
+                  <div>
+                    <Label htmlFor="category" className="text-sm font-semibold">Categoria</Label>
+                    <Select value={categoryId} onValueChange={setCategoryId}>
+                      <SelectTrigger className="mt-1.5 h-9 text-sm rounded-lg border-border/50">
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-lg">
+                        {categories?.map((cat) => (
+                          <SelectItem key={cat.id} value={String(cat.id)} className="rounded text-sm">
+                            {cat.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="prepTime" className="text-sm font-semibold">Tempo de preparo</Label>
+                    <Input
+                      id="prepTime"
+                      type="number"
+                      min="0"
+                      value={prepTime}
+                      onChange={(e) => setPrepTime(e.target.value)}
+                      placeholder="Ex: 30 min"
+                      className="mt-1.5 h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -414,20 +427,7 @@ export default function ProductForm() {
                     onChange={(e) => setDescription(capitalizeFirst(e.target.value))}
                     placeholder="Descreva os ingredientes e características do produto"
                     rows={2}
-                    className="mt-2 text-base rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20 resize-none"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="prepTime" className="text-sm font-semibold">Tempo de preparo (minutos)</Label>
-                  <Input
-                    id="prepTime"
-                    type="number"
-                    min="0"
-                    value={prepTime}
-                    onChange={(e) => setPrepTime(e.target.value)}
-                    placeholder="Ex: 30"
-                    className="mt-2 max-w-[180px] h-10 text-base rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
+                    className="mt-2 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20 resize-none"
                   />
                 </div>
               </div>
