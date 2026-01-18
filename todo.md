@@ -430,3 +430,6 @@
 
 ## URL de Produção do Cardápio
 - [x] Alterar link do cardápio nas configurações para usar URL de produção (mindi.manus.space)
+
+## Layout Campos de Atendimento
+- [x] Colocar campos WhatsApp e Instagram na mesma linha do link do cardápio
