@@ -420,3 +420,7 @@
 
 ## Ícone Editar Sempre Visível
 - [x] Remover opacity-0 do ícone de editar para ficar sempre visível
+
+## Container Aberto/Fechado no Menu do Perfil
+- [x] Adicionar container de Aberto/Fechado no menu dropdown do perfil
+- [x] Posicionar acima do botão de Configurações

@@ -417,6 +417,31 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <p className="text-sm font-semibold">{user.name || "Usuário"}</p>
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
+                  {/* Container Aberto/Fechado */}
+                  {establishment && (
+                    <div className="px-3 py-2 border-b border-border/50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className={cn(
+                            "h-2 w-2 rounded-full",
+                            establishment.isOpen ? "bg-emerald-500 animate-pulse" : "bg-gray-400"
+                          )} />
+                          <span className={cn(
+                            "text-sm font-medium",
+                            establishment.isOpen ? "text-emerald-600" : "text-muted-foreground"
+                          )}>
+                            {establishment.isOpen ? "Aberto" : "Fechado"}
+                          </span>
+                        </div>
+                        <Switch
+                          checked={establishment.isOpen}
+                          onCheckedChange={handleToggleOpen}
+                          disabled={toggleOpenMutation.isPending}
+                          className="data-[state=checked]:bg-emerald-500 scale-90"
+                        />
+                      </div>
+                    </div>
+                  )}
                   <div className="p-1">
                     <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
                       <Link href="/configuracoes">

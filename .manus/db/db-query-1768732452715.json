@@ -1,0 +1,60 @@
+{
+  "query": "SELECT id, name, images FROM products LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, images FROM products LIMIT 10;",
+  "rows": [
+    {
+      "id": "4",
+      "name": "Coca lata",
+      "images": "[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/Fap7Z6lB_I2hUZBo0exYg.webp\"]"
+    },
+    {
+      "id": "5",
+      "name": "Suco de goiaba",
+      "images": "[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/Yo2zhBVRJtzW6o4DNJN4r.webp\"]"
+    },
+    {
+      "id": "30001",
+      "name": "Pudim de leite",
+      "images": "[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/Qzii2npZ_YZ3Tfh8d8tIi.jpeg\"]"
+    },
+    {
+      "id": "60001",
+      "name": "X-Bacon",
+      "images": "NULL"
+    },
+    {
+      "id": "60002",
+      "name": "X-Egg",
+      "images": "NULL"
+    },
+    {
+      "id": "60003",
+      "name": "X-Burguer",
+      "images": "NULL"
+    },
+    {
+      "id": "60004",
+      "name": "X-Tudo",
+      "images": "NULL"
+    },
+    {
+      "id": "60005",
+      "name": "Angus Premium",
+      "images": "NULL"
+    },
+    {
+      "id": "60006",
+      "name": "BBQ Pulled Pork",
+      "images": "NULL"
+    },
+    {
+      "id": "60007",
+      "name": "Trufado",
+      "images": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\timages\n4\tCoca lata\t[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/Fap7Z6lB_I2hUZBo0exYg.webp\"]\n5\tSuco de goiaba\t[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/Yo2zhBVRJtzW6o4DNJN4r.webp\"]\n30001\tPudim de leite\t[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/Qzii2npZ_YZ3Tfh8d8tIi.jpeg\"]\n60001\tX-Bacon\tNULL\n60002\tX-Egg\tNULL\n60003\tX-Burguer\tNULL\n60004\tX-Tudo\tNULL\n60005\tAngus Premium\tNULL\n60006\tBBQ Pulled Pork\tNULL\n60007\tTrufado\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 395
+}
