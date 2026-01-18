@@ -448,3 +448,6 @@
 - [x] Remover campo tempo de preparo do formulário de produto
 - [x] Remover campo prepTime do schema do banco de dados
 - [x] Migrar banco de dados
+
+## Máscara de Moeda no Campo de Preço
+- [x] Implementar máscara de moeda (R$) no campo de preço do formulário de produto

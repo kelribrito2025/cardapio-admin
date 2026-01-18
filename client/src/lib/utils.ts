@@ -26,3 +26,50 @@ export function handleCapitalizeInput(setter: (value: string) => void) {
     setter(capitalizeFirst(value));
   };
 }
+
+/**
+ * Formata um valor numérico como moeda brasileira (R$)
+ * @param value - Valor numérico ou string
+ * @returns String formatada como moeda (ex: "R$ 10,50")
+ */
+export function formatCurrency(value: number | string): string {
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(numValue)) return 'R$ 0,00';
+  return numValue.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  });
+}
+
+/**
+ * Formata um valor de input como moeda brasileira (apenas números)
+ * Remove caracteres não numéricos e formata como valor monetário
+ * @param value - Valor do input
+ * @returns Valor formatado para exibição (ex: "10,50")
+ */
+export function formatPriceInput(value: string): string {
+  // Remove tudo que não é número
+  const numbers = value.replace(/\D/g, '');
+  
+  // Converte para centavos e depois para reais
+  const cents = parseInt(numbers || '0', 10);
+  const reais = cents / 100;
+  
+  // Formata com 2 casas decimais
+  return reais.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+/**
+ * Converte valor formatado de moeda para número decimal
+ * @param value - Valor formatado (ex: "10,50" ou "1.234,56")
+ * @returns Número decimal (ex: 10.50 ou 1234.56)
+ */
+export function parsePriceInput(value: string): string {
+  // Remove pontos de milhar e substitui vírgula por ponto
+  const normalized = value.replace(/\./g, '').replace(',', '.');
+  const num = parseFloat(normalized);
+  return isNaN(num) ? '0' : num.toString();
+}

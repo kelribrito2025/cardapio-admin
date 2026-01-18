@@ -25,7 +25,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useParams } from "wouter";
 import { toast } from "sonner";
-import { cn, capitalizeFirst } from "@/lib/utils";
+import { cn, capitalizeFirst, formatPriceInput, parsePriceInput } from "@/lib/utils";
 
 interface ComplementGroup {
   id?: number;
@@ -118,7 +118,9 @@ export default function ProductForm() {
       setName(product.name);
       setDescription(product.description || "");
       setCategoryId(product.categoryId ? String(product.categoryId) : "");
-      setPrice(String(product.price));
+      // Formatar preço para exibição (ex: "10,50")
+      const priceValue = parseFloat(String(product.price));
+      setPrice(priceValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
       setImages(product.images || []);
       setStatus(product.status === "archived" ? "paused" : product.status);
       setHasStock(product.hasStock);
@@ -171,7 +173,7 @@ export default function ProductForm() {
       name: name.trim(),
       description: description.trim() || undefined,
       categoryId: categoryId ? Number(categoryId) : null,
-      price,
+      price: parsePriceInput(price),
       images: images.length > 0 ? images : undefined,
       status,
       hasStock,
@@ -368,19 +370,24 @@ export default function ProductForm() {
 
                   <div className="lg:col-span-3">
                     <Label htmlFor="price" className="text-sm font-semibold">Preço *</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      placeholder="0,00"
-                      className={cn(
-                        "mt-1.5 h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20",
-                        errors.price && "border-destructive focus:ring-destructive/20"
-                      )}
-                    />
+                    <div className="relative mt-1.5">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">R$</span>
+                      <Input
+                        id="price"
+                        type="text"
+                        inputMode="numeric"
+                        value={price}
+                        onChange={(e) => {
+                          const formatted = formatPriceInput(e.target.value);
+                          setPrice(formatted);
+                        }}
+                        placeholder="0,00"
+                        className={cn(
+                          "h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20 pl-10",
+                          errors.price && "border-destructive focus:ring-destructive/20"
+                        )}
+                      />
+                    </div>
                     {errors.price && (
                       <p className="text-xs text-destructive mt-1.5">{errors.price}</p>
                     )}
