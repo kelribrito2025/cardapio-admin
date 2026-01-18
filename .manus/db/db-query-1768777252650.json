@@ -1,0 +1,31 @@
+{
+  "query": "SELECT id, name, menuSlug, logo, coverImage FROM establishments;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, menuSlug, logo, coverImage FROM establishments;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "oi",
+      "menuSlug": "teste-burguer",
+      "logo": "https://manus.im/app/1rlcYWriZMuF1BIdjI0GS1",
+      "coverImage": "https://manus.im/app/1rlcYWriZMuF1BIdjI0GS1"
+    },
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "menuSlug": "kelri",
+      "logo": "https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/establishments/a8s_zGzx4vBT_bGSoZHM7.png",
+      "coverImage": "https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/establishments/LzBDBmXmYI3ULpu6VKpvV.jpeg"
+    },
+    {
+      "id": "30002",
+      "name": "Burger House Admin",
+      "menuSlug": "burger-house-admin",
+      "logo": "NULL",
+      "coverImage": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tmenuSlug\tlogo\tcoverImage\n1\toi\tteste-burguer\thttps://manus.im/app/1rlcYWriZMuF1BIdjI0GS1\thttps://manus.im/app/1rlcYWriZMuF1BIdjI0GS1\n30001\tSushi Haruno\tkelri\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/establishments/a8s_zGzx4vBT_bGSoZHM7.png\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/establishments/LzBDBmXmYI3ULpu6VKpvV.jpeg\n30002\tBurger House Admin\tburger-house-admin\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

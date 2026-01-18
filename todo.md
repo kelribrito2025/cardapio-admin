@@ -433,3 +433,6 @@
 
 ## Layout Campos de Atendimento
 - [x] Colocar campos WhatsApp e Instagram na mesma linha do link do cardápio
+
+## Alinhamento Menus Topbar Perfil Público
+- [x] Alinhar menus Início, Pedidos e Perfil no final da topbar para alinhar com o final da imagem da capa

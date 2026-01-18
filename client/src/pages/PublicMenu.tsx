@@ -157,7 +157,7 @@ export default function PublicMenu() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 py-3">
+        <div className="max-w-6xl mx-auto px-4 py-3 pr-0">
           <div className="flex items-center gap-4">
             {/* Logo */}
             {establishment.logo ? (
@@ -186,8 +186,11 @@ export default function PublicMenu() {
               </div>
             </div>
 
-            {/* Navigation Menu */}
-            <nav className="hidden md:flex items-center gap-6">
+            {/* Spacer to push navigation to the right edge */}
+            <div className="flex-1" />
+
+            {/* Navigation Menu - aligned to right edge of cover image */}
+            <nav className="hidden md:flex items-center gap-6 pr-4">
               <button className="flex items-center gap-1.5 text-red-500 font-medium text-sm hover:text-red-600 transition-colors">
                 <Home className="h-4 w-4" />
                 <span>Início</span>
@@ -203,7 +206,7 @@ export default function PublicMenu() {
             </nav>
 
             {/* Mobile Menu Button */}
-            <button className="md:hidden p-2 text-gray-600 hover:text-gray-900">
+            <button className="md:hidden p-2 text-gray-600 hover:text-gray-900 mr-4">
               <Menu className="h-5 w-5" />
             </button>
           </div>
