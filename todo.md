@@ -443,3 +443,8 @@
 
 ## Ajuste Campo Nome do Produto
 - [x] Aumentar tamanho do campo Nome do produto para ocupar espaço restante
+
+## Remover Campo Tempo de Preparo
+- [x] Remover campo tempo de preparo do formulário de produto
+- [x] Remover campo prepTime do schema do banco de dados
+- [x] Migrar banco de dados

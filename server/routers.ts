@@ -293,7 +293,6 @@ export const appRouter = router({
         status: z.enum(["active", "paused", "archived"]).optional(),
         stockQuantity: z.number().nullable().optional(),
         hasStock: z.boolean().optional(),
-        prepTime: z.number().nullable().optional(),
       }))
       .mutation(async ({ input }) => {
         const id = await db.createProduct(input);
@@ -311,7 +310,6 @@ export const appRouter = router({
         status: z.enum(["active", "paused", "archived"]).optional(),
         stockQuantity: z.number().nullable().optional(),
         hasStock: z.boolean().optional(),
-        prepTime: z.number().nullable().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;

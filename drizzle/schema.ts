@@ -77,7 +77,6 @@ export const products = mysqlTable("products", {
   status: mysqlEnum("status", ["active", "paused", "archived"]).default("active").notNull(),
   stockQuantity: int("stockQuantity"),
   hasStock: boolean("hasStock").default(true).notNull(),
-  prepTime: int("prepTime"), // in minutes
   sortOrder: int("sortOrder").default(0).notNull(),
   salesCount: int("salesCount").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
