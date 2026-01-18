@@ -351,30 +351,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
             {/* Right side */}
             <div className="flex items-center gap-3">
-              {/* Store toggle */}
-              {establishment && (
-                <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-background rounded-lg border border-border/50">
-                  <div className="flex items-center gap-1.5">
-                    <span className={cn(
-                      "h-1.5 w-1.5 rounded-full",
-                      establishment.isOpen ? "bg-emerald-500 pulse-dot" : "bg-gray-400"
-                    )} />
-                    <span className={cn(
-                      "text-xs font-medium",
-                      establishment.isOpen ? "text-emerald-600" : "text-muted-foreground"
-                    )}>
-                      {establishment.isOpen ? "Aberto" : "Fechado"}
-                    </span>
-                  </div>
-                  <Switch
-                    checked={establishment.isOpen}
-                    onCheckedChange={handleToggleOpen}
-                    disabled={toggleOpenMutation.isPending}
-                    className="data-[state=checked]:bg-emerald-500 scale-90"
-                  />
-                </div>
-              )}
-
               {/* Ver Menu Button */}
               {establishment?.menuSlug && (
                 <a

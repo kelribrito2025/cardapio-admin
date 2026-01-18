@@ -424,3 +424,6 @@
 ## Container Aberto/Fechado no Menu do Perfil
 - [x] Adicionar container de Aberto/Fechado no menu dropdown do perfil
 - [x] Posicionar acima do botão de Configurações
+
+## Remoção Container Aberto/Fechado da Topbar
+- [x] Remover container de Aberto/Fechado da topbar (já está no menu do perfil)
