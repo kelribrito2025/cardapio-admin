@@ -566,3 +566,11 @@
 
 ## Ajuste Visual da Sacola
 - [x] Remover fotos dos itens na sacola
+
+
+## Modal de Cupom no Menu Público
+- [x] Criar modal de cupom ao clicar em "Tem um cupom?"
+- [x] Adicionar campo de texto para digitar o cupom
+- [x] Adicionar botão "Aplicar cupom" ao lado do campo
+- [x] Validar se sacola está vazia e exibir mensagem de feedback
+- [x] Manter modal aberto após validação

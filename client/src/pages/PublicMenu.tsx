@@ -32,6 +32,9 @@ export default function PublicMenu() {
     complements: Array<{ id: number; name: string; price: string }>;
   }>>([]);
   const [selectedComplements, setSelectedComplements] = useState<Map<number, Set<number>>>(new Map());
+  const [showCouponModal, setShowCouponModal] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponError, setCouponError] = useState("");
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
@@ -632,7 +635,12 @@ export default function PublicMenu() {
                 })()}
 
                 {/* Cupom */}
-                <button className="w-full flex items-center justify-between mt-4 py-3 border-t border-gray-100 hover:bg-gray-50 -mx-4 px-4 transition-colors">
+                <button 
+                  onClick={() => {
+                    setShowCouponModal(true);
+                    setCouponError("");
+                  }}
+                  className="w-full flex items-center justify-between mt-4 py-3 border-t border-gray-100 hover:bg-gray-50 -mx-4 px-4 transition-colors">
                   <div className="flex items-center gap-3">
                     <Ticket className="h-5 w-5 text-gray-500" />
                     <div className="text-left">
@@ -1045,6 +1053,72 @@ export default function PublicMenu() {
                   </button>
                 );
               })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Cupom */}
+      {showCouponModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowCouponModal(false)}
+          />
+          
+          {/* Modal Content */}
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+            {/* Header */}
+            <div className="border-b px-6 py-4 flex items-center justify-between rounded-t-2xl">
+              <div className="flex items-center gap-3">
+                <Ticket className="h-5 w-5 text-red-500" />
+                <h2 className="text-lg font-bold text-gray-900">Aplicar cupom</h2>
+              </div>
+              <button 
+                onClick={() => setShowCouponModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6">
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  value={couponCode}
+                  onChange={(e) => {
+                    setCouponCode(e.target.value.toUpperCase());
+                    setCouponError("");
+                  }}
+                  placeholder="Digite o código do cupom"
+                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 uppercase"
+                />
+                <button
+                  onClick={() => {
+                    if (cart.length === 0) {
+                      setCouponError("Adicione os itens na sacola para aplicar o cupom.");
+                    } else {
+                      // Por enquanto, apenas validação visual
+                      // Futuramente aqui será implementada a lógica de validação do cupom
+                      setCouponError("");
+                      setShowCouponModal(false);
+                    }
+                  }}
+                  className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors whitespace-nowrap"
+                >
+                  Aplicar cupom
+                </button>
+              </div>
+              
+              {/* Mensagem de erro */}
+              {couponError && (
+                <p className="mt-3 text-sm text-red-500 font-medium">
+                  {couponError}
+                </p>
+              )}
             </div>
           </div>
         </div>
