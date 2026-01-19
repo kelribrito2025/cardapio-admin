@@ -313,7 +313,7 @@ export default function PublicMenu() {
 
                   {/* Service Types Badge */}
                   {getServiceTypes() && (
-                    <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200">
+                    <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200" style={{paddingRight: '9px', paddingLeft: '9px', paddingTop: '3px', paddingBottom: '3px', height: '24px'}}>
                       {getServiceTypes()}
                     </span>
                   )}
