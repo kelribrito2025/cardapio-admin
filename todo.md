@@ -508,3 +508,6 @@
 ## Reposicionar Ícone de Compartilhar
 - [x] Mover ícone de compartilhar para a mesma linha do texto de avaliações
 - [x] Posicionar no final da linha (justify-between)
+
+## Aproximar Ícones WhatsApp/Instagram
+- [x] Reduzir gap entre ícones de WhatsApp e Instagram (gap-0.5 = 2px)

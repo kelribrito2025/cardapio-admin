@@ -242,7 +242,7 @@ export default function PublicMenu() {
             
             {/* Ícones sociais embutidos no recorte */}
             {(establishment.whatsapp || establishment.instagram) && (
-              <div className="absolute bottom-1 right-1 flex items-center gap-1">
+              <div className="absolute bottom-1 right-1 flex items-center gap-0.5">
                 {establishment.whatsapp && (
                   <a 
                     href={`https://wa.me/${establishment.whatsapp.replace(/\D/g, '')}`}
