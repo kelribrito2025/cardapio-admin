@@ -590,3 +590,5 @@
 - [x] Adicionar borda esquerda vermelha nos cards de produtos
 
 - [x] Mudar borda vermelha da lateral esquerda para a parte inferior dos cards
+
+- [x] Reverter borda para lateral esquerda com 3px de espessura
