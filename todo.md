@@ -478,3 +478,7 @@
 ## Salvamento Automático no Preview do Perfil Público
 - [x] Remover botão de salvar do container de Preview do Perfil Público
 - [x] Implementar salvamento automático ao alterar foto, nome ou outros campos
+
+## Reorganizar Campos de Endereço
+- [x] Linha 1: Rua, Número e Bairro
+- [x] Linha 2: Complemento, Cidade, Estado e CEP

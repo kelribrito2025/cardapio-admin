@@ -506,8 +506,9 @@ export default function Configuracoes() {
             description="Usado como endereço de retirada"
           >
             <div className="space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="sm:col-span-2">
+              {/* Linha 1: Rua, Número, Bairro */}
+              <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
+                <div className="sm:col-span-3">
                   <Label htmlFor="street" className="text-sm font-semibold">Rua</Label>
                   <Input
                     id="street"
@@ -517,7 +518,7 @@ export default function Configuracoes() {
                     className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
-                <div>
+                <div className="sm:col-span-1">
                   <Label htmlFor="number" className="text-sm font-semibold">Número</Label>
                   <Input
                     id="number"
@@ -527,20 +528,7 @@ export default function Configuracoes() {
                     className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="complement" className="text-sm font-semibold">Complemento</Label>
-                  <Input
-                    id="complement"
-                    value={complement}
-                    onChange={(e) => setComplement(e.target.value)}
-                    placeholder="Sala, Bloco, etc."
-                    className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
-                  />
-                </div>
-                <div>
+                <div className="sm:col-span-2">
                   <Label htmlFor="neighborhood" className="text-sm font-semibold">Bairro</Label>
                   <Input
                     id="neighborhood"
@@ -552,8 +540,19 @@ export default function Configuracoes() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
+              {/* Linha 2: Complemento, Cidade, Estado, CEP */}
+              <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
+                <div className="sm:col-span-2">
+                  <Label htmlFor="complement" className="text-sm font-semibold">Complemento</Label>
+                  <Input
+                    id="complement"
+                    value={complement}
+                    onChange={(e) => setComplement(e.target.value)}
+                    placeholder="Sala, Bloco, etc."
+                    className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+                <div className="sm:col-span-2">
                   <Label htmlFor="city" className="text-sm font-semibold">Cidade</Label>
                   <Input
                     id="city"
@@ -563,7 +562,7 @@ export default function Configuracoes() {
                     className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
-                <div>
+                <div className="sm:col-span-1">
                   <Label htmlFor="state" className="text-sm font-semibold">Estado</Label>
                   <Input
                     id="state"
@@ -573,7 +572,7 @@ export default function Configuracoes() {
                     className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
-                <div>
+                <div className="sm:col-span-1">
                   <Label htmlFor="zipCode" className="text-sm font-semibold">CEP</Label>
                   <Input
                     id="zipCode"
