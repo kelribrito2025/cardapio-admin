@@ -130,6 +130,8 @@ export const orders = mysqlTable("orders", {
   paymentMethod: mysqlEnum("paymentMethod", ["cash", "card", "pix", "boleto"]).default("cash").notNull(),
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
   deliveryFee: decimal("deliveryFee", { precision: 10, scale: 2 }).default("0").notNull(),
+  discount: decimal("discount", { precision: 10, scale: 2 }).default("0").notNull(),
+  couponCode: varchar("couponCode", { length: 50 }),
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
   notes: text("notes"),
   changeAmount: decimal("changeAmount", { precision: 10, scale: 2 }),

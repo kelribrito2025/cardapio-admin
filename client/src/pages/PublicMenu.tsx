@@ -35,6 +35,14 @@ export default function PublicMenu() {
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    id: number;
+    code: string;
+    discount: number;
+    type: "percentage" | "fixed";
+    value: number;
+  } | null>(null);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   
   // Estados para o fluxo de finalização de pedido
   const [checkoutStep, setCheckoutStep] = useState(0); // 0 = fechado, 1-5 = modais
@@ -764,40 +772,74 @@ export default function PublicMenu() {
                     const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
                     return sum + (Number(item.price) + complementsTotal) * item.quantity;
                   }, 0);
+                  const discount = appliedCoupon?.discount || 0;
+                  const total = Math.max(0, subtotal - discount);
                   return (
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Subtotal</span>
                         <span className="text-gray-600">{formatPrice(subtotal)}</span>
                       </div>
+                      {appliedCoupon && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-green-600 flex items-center gap-1">
+                            <Ticket className="h-3.5 w-3.5" />
+                            Cupom {appliedCoupon.code}
+                          </span>
+                          <span className="text-green-600">-{formatPrice(discount)}</span>
+                        </div>
+                      )}
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-400">Taxa de entrega</span>
                         <span className="text-gray-400">R$ 0,00</span>
                       </div>
                       <div className="flex justify-between font-bold text-base pt-2">
                         <span className="text-gray-900">Total</span>
-                        <span className="text-gray-900">{formatPrice(subtotal)}</span>
+                        <span className="text-gray-900">{formatPrice(total)}</span>
                       </div>
                     </div>
                   );
                 })()}
 
                 {/* Cupom */}
-                <button 
-                  onClick={() => {
-                    setShowCouponModal(true);
-                    setCouponError("");
-                  }}
-                  className="w-full flex items-center justify-between mt-4 py-3 border-t border-gray-100 hover:bg-gray-50 -mx-4 px-4 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <Ticket className="h-5 w-5 text-gray-500" />
-                    <div className="text-left">
-                      <p className="font-medium text-gray-800 text-sm">Tem um cupom?</p>
-                      <p className="text-xs text-gray-400">Clique e insira o código</p>
+                {appliedCoupon ? (
+                  <div className="w-full flex items-center justify-between mt-4 py-3 border-t border-gray-100 -mx-4 px-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-100 rounded-lg">
+                        <Ticket className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium text-green-700 text-sm">Cupom aplicado!</p>
+                        <p className="text-xs text-green-600">{appliedCoupon.code} - {appliedCoupon.type === 'percentage' ? `${appliedCoupon.value}% de desconto` : `R$ ${appliedCoupon.value.toFixed(2).replace('.', ',')} de desconto`}</p>
+                      </div>
                     </div>
+                    <button
+                      onClick={() => {
+                        setAppliedCoupon(null);
+                        setCouponCode("");
+                      }}
+                      className="p-2 hover:bg-red-50 rounded-full transition-colors"
+                    >
+                      <X className="h-4 w-4 text-red-500" />
+                    </button>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-gray-400" />
-                </button>
+                ) : (
+                  <button 
+                    onClick={() => {
+                      setShowCouponModal(true);
+                      setCouponError("");
+                    }}
+                    className="w-full flex items-center justify-between mt-4 py-3 border-t border-gray-100 hover:bg-gray-50 -mx-4 px-4 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <Ticket className="h-5 w-5 text-gray-500" />
+                      <div className="text-left">
+                        <p className="font-medium text-gray-800 text-sm">Tem um cupom?</p>
+                        <p className="text-xs text-gray-400">Clique e insira o código</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-gray-400" />
+                  </button>
+                )}
 
                 {/* Button */}
                 <button 
@@ -1315,19 +1357,30 @@ export default function PublicMenu() {
                       const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
                       return sum + (Number(item.price) + complementsTotal) * item.quantity;
                     }, 0);
+                    const discount = appliedCoupon?.discount || 0;
+                    const total = Math.max(0, subtotal - discount);
                     return (
                       <>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Subtotal</span>
                           <span className="text-gray-600">{formatPrice(subtotal)}</span>
                         </div>
+                        {appliedCoupon && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-green-600 flex items-center gap-1">
+                              <Ticket className="h-3.5 w-3.5" />
+                              Cupom {appliedCoupon.code}
+                            </span>
+                            <span className="text-green-600">-{formatPrice(discount)}</span>
+                          </div>
+                        )}
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-400">Taxa de entrega</span>
                           <span className="text-gray-400">A calcular</span>
                         </div>
                         <div className="flex justify-between font-bold text-base pt-2 border-t border-gray-100">
                           <span className="text-gray-900">Total</span>
-                          <span className="text-gray-900">{formatPrice(subtotal)}</span>
+                          <span className="text-gray-900">{formatPrice(total)}</span>
                         </div>
                       </>
                     );
@@ -1661,17 +1714,34 @@ export default function PublicMenu() {
                 )}
 
                 {/* Total */}
-                <div className="border-t border-dashed border-gray-200 pt-4">
+                <div className="border-t border-dashed border-gray-200 pt-4 space-y-2">
                   {(() => {
                     const subtotal = cart.reduce((sum, item) => {
                       const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
                       return sum + (Number(item.price) + complementsTotal) * item.quantity;
                     }, 0);
+                    const discount = appliedCoupon?.discount || 0;
+                    const total = Math.max(0, subtotal - discount);
                     return (
-                      <div className="flex justify-between font-bold text-lg">
-                        <span className="text-gray-900">Total</span>
-                        <span className="text-red-500">{formatPrice(subtotal)}</span>
-                      </div>
+                      <>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Subtotal</span>
+                          <span className="text-gray-600">{formatPrice(subtotal)}</span>
+                        </div>
+                        {appliedCoupon && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-green-600 flex items-center gap-1">
+                              <Ticket className="h-3.5 w-3.5" />
+                              Cupom {appliedCoupon.code}
+                            </span>
+                            <span className="text-green-600">-{formatPrice(discount)}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between font-bold text-lg pt-2">
+                          <span className="text-gray-900">Total</span>
+                          <span className="text-red-500">{formatPrice(total)}</span>
+                        </div>
+                      </>
                     );
                   })()}
                 </div>
@@ -1844,6 +1914,10 @@ export default function PublicMenu() {
                       return sum + itemTotal + complementsTotal;
                     }, 0);
                     
+                    // Calcular desconto do cupom
+                    const discount = appliedCoupon?.discount || 0;
+                    const total = Math.max(0, subtotal - discount);
+                    
                     // Montar endereço completo
                     const fullAddress = deliveryType === 'delivery' 
                       ? `${deliveryAddress.street}, ${deliveryAddress.number}${deliveryAddress.complement ? ` - ${deliveryAddress.complement}` : ''}, ${deliveryAddress.neighborhood}${deliveryAddress.reference ? ` (Ref: ${deliveryAddress.reference})` : ''}`
@@ -1859,9 +1933,12 @@ export default function PublicMenu() {
                       paymentMethod,
                       subtotal: subtotal.toFixed(2),
                       deliveryFee: "0",
-                      total: subtotal.toFixed(2),
+                      discount: discount.toFixed(2),
+                      total: total.toFixed(2),
                       notes: orderObservation || undefined,
                       changeAmount: paymentMethod === 'cash' && changeAmount ? changeAmount : undefined,
+                      couponCode: appliedCoupon?.code || undefined,
+                      couponId: appliedCoupon?.id || undefined,
                       items: cart.map(item => ({
                         productId: item.productId,
                         productName: item.name,
@@ -1937,21 +2014,65 @@ export default function PublicMenu() {
                   }}
                   placeholder="Digite o código do cupom"
                   className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 uppercase"
+                  disabled={isValidatingCoupon}
                 />
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (cart.length === 0) {
                       setCouponError("Adicione os itens na sacola para aplicar o cupom.");
-                    } else {
-                      // Por enquanto, apenas validação visual
-                      // Futuramente aqui será implementada a lógica de validação do cupom
-                      setCouponError("");
-                      setShowCouponModal(false);
+                      return;
+                    }
+                    if (!couponCode.trim()) {
+                      setCouponError("Digite o código do cupom.");
+                      return;
+                    }
+                    if (!data?.establishment?.id) {
+                      setCouponError("Erro ao identificar o estabelecimento.");
+                      return;
+                    }
+                    
+                    setIsValidatingCoupon(true);
+                    setCouponError("");
+                    
+                    try {
+                      // Calcular subtotal
+                      const subtotal = cart.reduce((sum, item) => {
+                        const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
+                        return sum + (Number(item.price) + complementsTotal) * item.quantity;
+                      }, 0);
+                      
+                      // Validar cupom via API
+                      const response = await fetch(`/api/trpc/publicMenu.validateCoupon?input=${encodeURIComponent(JSON.stringify({
+                        establishmentId: data.establishment.id,
+                        code: couponCode.toUpperCase(),
+                        orderValue: subtotal,
+                        deliveryType: deliveryType === 'pickup' ? 'pickup' : 'delivery',
+                      }))}`).then(res => res.json());
+                      
+                      const result = response.result?.data;
+                      
+                      if (result?.valid && result?.coupon) {
+                        setAppliedCoupon({
+                          id: result.coupon.id,
+                          code: result.coupon.code,
+                          discount: result.discount,
+                          type: result.coupon.type,
+                          value: Number(result.coupon.value),
+                        });
+                        setShowCouponModal(false);
+                      } else {
+                        setCouponError(result?.error || "Cupom inválido.");
+                      }
+                    } catch (error) {
+                      setCouponError("Erro ao validar cupom. Tente novamente.");
+                    } finally {
+                      setIsValidatingCoupon(false);
                     }
                   }}
-                  className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors whitespace-nowrap"
+                  disabled={isValidatingCoupon}
+                  className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Aplicar cupom
+                  {isValidatingCoupon ? "Validando..." : "Aplicar cupom"}
                 </button>
               </div>
               

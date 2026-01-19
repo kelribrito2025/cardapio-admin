@@ -735,3 +735,14 @@
 ### Responsividade e UX
 - [x] Garantir responsividade desktop/mobile
 - [x] Seguir padrão visual do Mindi (inputs, botões, cards, espaçamentos)
+
+
+## Integração de Cupons no Checkout do Cardápio Público
+
+- [x] Criar rota pública para validar cupom (publicMenu.validateCoupon)
+- [x] Atualizar modal de cupom no PublicMenu para validar via API
+- [x] Exibir desconto aplicado na sacola após validação
+- [x] Integrar desconto do cupom no cálculo do total
+- [x] Atualizar criação de pedido para incluir cupom e desconto
+- [x] Incrementar usedCount do cupom ao criar pedido
+- [x] Testar fluxo completo de aplicação de cupom

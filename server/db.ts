@@ -956,6 +956,8 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     paymentMethod: data.paymentMethod,
     subtotal: data.subtotal,
     deliveryFee: data.deliveryFee,
+    discount: data.discount || "0",
+    couponCode: data.couponCode || null,
     total: data.total,
     notes: data.notes,
     changeAmount: data.changeAmount,

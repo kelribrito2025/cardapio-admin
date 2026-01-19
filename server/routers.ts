@@ -717,9 +717,12 @@ export const appRouter = router({
         paymentMethod: z.enum(["cash", "card", "pix", "boleto"]),
         subtotal: z.string(),
         deliveryFee: z.string().optional(),
+        discount: z.string().optional(),
         total: z.string(),
         notes: z.string().optional(),
         changeAmount: z.string().optional(),
+        couponCode: z.string().optional(),
+        couponId: z.number().optional(),
         items: z.array(z.object({
           productId: z.number(),
           productName: z.string(),
@@ -734,7 +737,7 @@ export const appRouter = router({
         })),
       }))
       .mutation(async ({ input }) => {
-        const { items, ...orderData } = input;
+        const { items, couponId, ...orderData } = input;
         
         const result = await db.createPublicOrder(
           {
@@ -746,9 +749,11 @@ export const appRouter = router({
             paymentMethod: orderData.paymentMethod,
             subtotal: orderData.subtotal,
             deliveryFee: orderData.deliveryFee || "0",
+            discount: orderData.discount || "0",
             total: orderData.total,
             notes: orderData.notes || null,
             changeAmount: orderData.changeAmount || null,
+            couponCode: orderData.couponCode || null,
             orderNumber: "", // Will be generated in db function
           },
           items.map(item => ({
@@ -762,6 +767,11 @@ export const appRouter = router({
             notes: item.notes || null,
           }))
         );
+        
+        // Increment coupon usage if coupon was used
+        if (couponId && result) {
+          await db.incrementCouponUsage(couponId);
+        }
         
         return result;
       }),
@@ -784,6 +794,23 @@ export const appRouter = router({
       }))
       .query(async ({ input }) => {
         return db.getOrdersByPhone(input.phone, input.establishmentId);
+      }),
+    
+    // Validate coupon for checkout
+    validateCoupon: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        code: z.string().min(1, "Código do cupom é obrigatório"),
+        orderValue: z.number().min(0),
+        deliveryType: z.enum(["delivery", "pickup", "self_service"]),
+      }))
+      .query(async ({ input }) => {
+        return db.validateCoupon(
+          input.establishmentId,
+          input.code.toUpperCase(),
+          input.orderValue,
+          input.deliveryType
+        );
       }),
   }),
   

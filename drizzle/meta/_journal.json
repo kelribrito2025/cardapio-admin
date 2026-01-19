@@ -71,6 +71,13 @@
       "when": 1768863111135,
       "tag": "0009_magical_ender_wiggin",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1768865187235,
+      "tag": "0010_greedy_reavers",
+      "breakpoints": true
     }
   ]
 }
