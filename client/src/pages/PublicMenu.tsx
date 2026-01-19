@@ -267,7 +267,7 @@ export default function PublicMenu() {
           </div>
 
           {/* Info */}
-          <div className="flex-1 bg-white rounded-xl p-4 md:p-5 shadow-sm md:ml-4">
+          <div className="flex-1 bg-white rounded-xl p-4 md:p-5 shadow-sm md:ml-4" style={{paddingBottom: '4px'}}>
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
               <div className="flex-1">
                 {/* Restaurant Name, Rating and Share */}
@@ -372,7 +372,7 @@ export default function PublicMenu() {
 
                 {/* Dropdown de Redes Sociais */}
                 {(establishment.whatsapp || establishment.instagram) && (
-                <div className="relative mt-3 pt-3 border-t border-gray-100" ref={socialDropdownRef}>
+                <div className="relative mt-3 pt-3 border-t border-gray-100" ref={socialDropdownRef} style={{paddingTop: '0px'}}>
                   <button
                     onClick={() => setShowSocialDropdown(!showSocialDropdown)}
                     className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
