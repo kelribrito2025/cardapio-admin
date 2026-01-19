@@ -451,3 +451,7 @@
 
 ## Máscara de Moeda no Campo de Preço
 - [x] Implementar máscara de moeda (R$) no campo de preço do formulário de produto
+
+## Container de Ícones Sociais no Menu Público
+- [x] Criar container separado para ícones de compartilhar, WhatsApp e Instagram
+- [x] Posicionar abaixo do nome, status "Aberto agora" e badges de Entrega/Retirada
