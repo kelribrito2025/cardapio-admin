@@ -494,3 +494,7 @@
 
 ## Remover Descrição do Card Pedidos Recentes
 - [x] Remover texto "Últimas atualizações" do card Pedidos Recentes no Dashboard
+
+## Exibir Nome e Foto do Restaurante no Header
+- [x] Substituir texto "Cardápio" pelo nome do restaurante
+- [x] Substituir ícone padrão pela foto do perfil do restaurante

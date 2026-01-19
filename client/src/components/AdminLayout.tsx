@@ -161,11 +161,21 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           sidebarCollapsed ? "justify-center px-2" : "justify-between px-4"
         )}>
           <Link href="/" className="flex items-center gap-3">
-            <div className="p-1.5 bg-primary rounded-lg flex-shrink-0">
-              <Store className="h-4 w-4 text-primary-foreground" />
-            </div>
+            {establishment?.logo ? (
+              <img 
+                src={establishment.logo} 
+                alt={establishment.name || "Logo"}
+                className="h-8 w-8 rounded-lg object-cover flex-shrink-0"
+              />
+            ) : (
+              <div className="p-1.5 bg-primary rounded-lg flex-shrink-0">
+                <Store className="h-4 w-4 text-primary-foreground" />
+              </div>
+            )}
             {!sidebarCollapsed && (
-              <span className="font-semibold text-base text-gray-800 whitespace-nowrap">Cardápio</span>
+              <span className="font-semibold text-base text-gray-800 whitespace-nowrap truncate max-w-[140px]">
+                {establishment?.name || "Cardápio"}
+              </span>
             )}
           </Link>
           <div className="flex items-center gap-1">
