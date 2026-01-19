@@ -614,3 +614,7 @@
 
 ## Ajuste Largura Menu Público Desktop
 - [x] Aumentar largura do container do menu público em 20% na versão desktop
+
+
+## Correção Visual do Modal de Checkout
+- [x] Integrar indicador de progresso ao modal de resumo do pedido em um único bloco

@@ -1109,42 +1109,44 @@ export default function PublicMenu() {
             onClick={() => setCheckoutStep(0)}
           />
           
-          {/* Indicador de Progresso */}
-          <div className="relative bg-white rounded-t-2xl w-full max-w-lg mx-4 px-6 pt-4 pb-2">
-            <div className="flex items-center justify-between mb-2">
-              {[1, 2, 3, 4, 5].map((step) => (
-                <div key={step} className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
-                    checkoutStep >= step 
-                      ? 'bg-red-500 text-white' 
-                      : 'bg-gray-200 text-gray-500'
-                  }`}>
-                    {checkoutStep > step ? (
-                      <CheckCircle className="h-5 w-5" />
-                    ) : (
-                      step
+          {/* Modal de Checkout Unificado */}
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[85vh] flex flex-col overflow-hidden">
+            {/* Indicador de Progresso */}
+            <div className="flex-shrink-0 px-6 pt-4 pb-2 border-b">
+              <div className="flex items-center justify-between mb-2">
+                {[1, 2, 3, 4, 5].map((step) => (
+                  <div key={step} className="flex items-center">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+                      checkoutStep >= step 
+                        ? 'bg-red-500 text-white' 
+                        : 'bg-gray-200 text-gray-500'
+                    }`}>
+                      {checkoutStep > step ? (
+                        <CheckCircle className="h-5 w-5" />
+                      ) : (
+                        step
+                      )}
+                    </div>
+                    {step < 5 && (
+                      <div className={`w-8 sm:w-12 h-1 mx-1 rounded transition-all ${
+                        checkoutStep > step ? 'bg-red-500' : 'bg-gray-200'
+                      }`} />
                     )}
                   </div>
-                  {step < 5 && (
-                    <div className={`w-8 sm:w-12 h-1 mx-1 rounded transition-all ${
-                      checkoutStep > step ? 'bg-red-500' : 'bg-gray-200'
-                    }`} />
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
+              <div className="flex justify-between text-[10px] sm:text-xs text-gray-500">
+                <span className={checkoutStep >= 1 ? 'text-red-500 font-medium' : ''}>Resumo</span>
+                <span className={checkoutStep >= 2 ? 'text-red-500 font-medium' : ''}>Entrega</span>
+                <span className={checkoutStep >= 3 ? 'text-red-500 font-medium' : ''}>Confirmar</span>
+                <span className={checkoutStep >= 4 ? 'text-red-500 font-medium' : ''}>Dados</span>
+                <span className={checkoutStep >= 5 ? 'text-red-500 font-medium' : ''}>Enviar</span>
+              </div>
             </div>
-            <div className="flex justify-between text-[10px] sm:text-xs text-gray-500">
-              <span className={checkoutStep >= 1 ? 'text-red-500 font-medium' : ''}>Resumo</span>
-              <span className={checkoutStep >= 2 ? 'text-red-500 font-medium' : ''}>Entrega</span>
-              <span className={checkoutStep >= 3 ? 'text-red-500 font-medium' : ''}>Confirmar</span>
-              <span className={checkoutStep >= 4 ? 'text-red-500 font-medium' : ''}>Dados</span>
-              <span className={checkoutStep >= 5 ? 'text-red-500 font-medium' : ''}>Enviar</span>
-            </div>
-          </div>
 
-          {/* Modal 1 - Resumo dos Itens */}
-          {checkoutStep === 1 && (
-            <div className="relative bg-white rounded-b-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[70vh] flex flex-col">
+            {/* Modal 1 - Resumo dos Itens */}
+            {checkoutStep === 1 && (
+              <div className="flex flex-col flex-1 overflow-hidden">
               {/* Header */}
               <div className="flex-shrink-0 border-b px-6 py-4 flex items-center justify-between">
                 <h2 className="text-lg font-bold text-gray-900">Resumo do Pedido</h2>
@@ -1237,9 +1239,9 @@ export default function PublicMenu() {
             </div>
           )}
 
-          {/* Modal 2 - Entrega e Pagamento */}
-          {checkoutStep === 2 && (
-            <div className="relative bg-white rounded-b-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[70vh] flex flex-col">
+            {/* Modal 2 - Entrega e Pagamento */}
+            {checkoutStep === 2 && (
+              <div className="flex flex-col flex-1 overflow-hidden">
               {/* Header */}
               <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
                 <button 
@@ -1445,9 +1447,9 @@ export default function PublicMenu() {
             </div>
           )}
 
-          {/* Modal 3 - Resumo Final */}
-          {checkoutStep === 3 && (
-            <div className="relative bg-white rounded-b-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[70vh] flex flex-col">
+            {/* Modal 3 - Resumo Final */}
+            {checkoutStep === 3 && (
+              <div className="flex flex-col flex-1 overflow-hidden">
               {/* Header */}
               <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
                 <button 
@@ -1564,9 +1566,9 @@ export default function PublicMenu() {
             </div>
           )}
 
-          {/* Modal 4 - Identificação do Cliente */}
-          {checkoutStep === 4 && (
-            <div className="relative bg-white rounded-b-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[70vh] flex flex-col">
+            {/* Modal 4 - Identificação do Cliente */}
+            {checkoutStep === 4 && (
+              <div className="flex flex-col flex-1 overflow-hidden">
               {/* Header */}
               <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
                 <button 
@@ -1636,9 +1638,9 @@ export default function PublicMenu() {
             </div>
           )}
 
-          {/* Modal 5 - Confirmação Final */}
-          {checkoutStep === 5 && (
-            <div className="relative bg-white rounded-b-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[70vh] flex flex-col">
+            {/* Modal 5 - Confirmação Final */}
+            {checkoutStep === 5 && (
+              <div className="flex flex-col flex-1 overflow-hidden">
               {/* Header */}
               <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
                 <button 
@@ -1725,6 +1727,7 @@ export default function PublicMenu() {
               </div>
             </div>
           )}
+          </div>
         </div>
       )}
 
