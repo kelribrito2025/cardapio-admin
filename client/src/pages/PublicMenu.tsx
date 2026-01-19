@@ -1,7 +1,7 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, Store, Utensils, Menu, Star, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2 } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PublicMenu() {
@@ -35,6 +35,24 @@ export default function PublicMenu() {
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState("");
+  
+  // Estados para o fluxo de finalização de pedido
+  const [checkoutStep, setCheckoutStep] = useState(0); // 0 = fechado, 1-5 = modais
+  const [orderObservation, setOrderObservation] = useState("");
+  const [deliveryType, setDeliveryType] = useState<"pickup" | "delivery">("pickup");
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "pix">("pix");
+  const [changeAmount, setChangeAmount] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState({
+    street: "",
+    number: "",
+    neighborhood: "",
+    complement: "",
+    reference: "",
+  });
+  const [customerInfo, setCustomerInfo] = useState({
+    name: "",
+    phone: "",
+  });
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
@@ -654,6 +672,7 @@ export default function PublicMenu() {
                 {/* Button */}
                 <button 
                   disabled={cart.length === 0}
+                  onClick={() => cart.length > 0 && setCheckoutStep(1)}
                   className={`w-full mt-4 py-3.5 font-semibold rounded-xl transition-colors ${
                     cart.length === 0 
                       ? 'bg-red-400/80 text-white cursor-not-allowed' 
@@ -1055,6 +1074,578 @@ export default function PublicMenu() {
               })()}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Modais de Finalização de Pedido */}
+      {checkoutStep > 0 && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setCheckoutStep(0)}
+          />
+          
+          {/* Modal 1 - Resumo dos Itens */}
+          {checkoutStep === 1 && (
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+              {/* Header */}
+              <div className="flex-shrink-0 border-b px-6 py-4 flex items-center justify-between rounded-t-2xl">
+                <h2 className="text-lg font-bold text-gray-900">Resumo do Pedido</h2>
+                <button 
+                  onClick={() => setCheckoutStep(0)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {/* Lista de Itens */}
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-gray-800 text-sm">Itens do pedido</h3>
+                  {cart.map((item, index) => (
+                    <div key={index} className="flex gap-3 p-3 bg-gray-50 rounded-xl">
+                      {item.image && (
+                        <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg flex-shrink-0" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start">
+                          <p className="font-medium text-gray-900 text-sm">{item.quantity}x {item.name}</p>
+                          <p className="font-semibold text-red-500 text-sm">{formatPrice(Number(item.price) * item.quantity)}</p>
+                        </div>
+                        {item.complements.length > 0 && (
+                          <div className="mt-1">
+                            {item.complements.map((c) => (
+                              <p key={c.id} className="text-xs text-gray-500">+ {c.name} ({formatPrice(c.price)})</p>
+                            ))}
+                          </div>
+                        )}
+                        {item.observation && (
+                          <p className="text-xs text-gray-400 mt-1">Obs: {item.observation}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Resumo */}
+                <div className="border-t border-dashed border-gray-200 pt-4 space-y-2">
+                  {(() => {
+                    const subtotal = cart.reduce((sum, item) => {
+                      const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
+                      return sum + (Number(item.price) + complementsTotal) * item.quantity;
+                    }, 0);
+                    return (
+                      <>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Subtotal</span>
+                          <span className="text-gray-600">{formatPrice(subtotal)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-400">Taxa de entrega</span>
+                          <span className="text-gray-400">A calcular</span>
+                        </div>
+                        <div className="flex justify-between font-bold text-base pt-2 border-t border-gray-100">
+                          <span className="text-gray-900">Total</span>
+                          <span className="text-gray-900">{formatPrice(subtotal)}</span>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+
+                {/* Observação do Pedido */}
+                <div className="pt-2">
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">Observação do pedido</label>
+                  <textarea
+                    value={orderObservation}
+                    onChange={(e) => setOrderObservation(e.target.value)}
+                    placeholder="Ex: Sem cebola, bem passado..."
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex-shrink-0 border-t px-6 py-4">
+                <button
+                  onClick={() => setCheckoutStep(2)}
+                  className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
+                >
+                  Próximo
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Modal 2 - Entrega e Pagamento */}
+          {checkoutStep === 2 && (
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+              {/* Header */}
+              <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
+                <button 
+                  onClick={() => setCheckoutStep(1)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <ChevronLeft className="h-5 w-5 text-gray-500" />
+                </button>
+                <h2 className="text-lg font-bold text-gray-900">Entrega e Pagamento</h2>
+                <button 
+                  onClick={() => setCheckoutStep(0)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto"
+                >
+                  <X className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                {/* Forma de Entrega */}
+                <div>
+                  <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                    <Truck className="h-4 w-4 text-red-500" />
+                    Forma de entrega
+                  </h3>
+                  <div className="space-y-2">
+                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                      deliveryType === "pickup" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                    }`}>
+                      <input
+                        type="radio"
+                        name="deliveryType"
+                        value="pickup"
+                        checked={deliveryType === "pickup"}
+                        onChange={() => setDeliveryType("pickup")}
+                        className="w-4 h-4 text-red-500 focus:ring-red-500"
+                      />
+                      <Package className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-800">Retirar no local</span>
+                    </label>
+                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                      deliveryType === "delivery" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                    }`}>
+                      <input
+                        type="radio"
+                        name="deliveryType"
+                        value="delivery"
+                        checked={deliveryType === "delivery"}
+                        onChange={() => setDeliveryType("delivery")}
+                        className="w-4 h-4 text-red-500 focus:ring-red-500"
+                      />
+                      <Truck className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-800">Entrega</span>
+                    </label>
+                  </div>
+
+                  {/* Campos de Endereço (condicional) */}
+                  {deliveryType === "delivery" && (
+                    <div className="mt-4 space-y-3 p-4 bg-gray-50 rounded-xl">
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="col-span-2">
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Rua</label>
+                          <input
+                            type="text"
+                            value={deliveryAddress.street}
+                            onChange={(e) => setDeliveryAddress({...deliveryAddress, street: e.target.value})}
+                            placeholder="Nome da rua"
+                            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Número</label>
+                          <input
+                            type="text"
+                            value={deliveryAddress.number}
+                            onChange={(e) => setDeliveryAddress({...deliveryAddress, number: e.target.value})}
+                            placeholder="Nº"
+                            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Bairro</label>
+                        <input
+                          type="text"
+                          value={deliveryAddress.neighborhood}
+                          onChange={(e) => setDeliveryAddress({...deliveryAddress, neighborhood: e.target.value})}
+                          placeholder="Nome do bairro"
+                          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Complemento</label>
+                        <input
+                          type="text"
+                          value={deliveryAddress.complement}
+                          onChange={(e) => setDeliveryAddress({...deliveryAddress, complement: e.target.value})}
+                          placeholder="Apto, bloco, etc."
+                          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Ponto de referência</label>
+                        <input
+                          type="text"
+                          value={deliveryAddress.reference}
+                          onChange={(e) => setDeliveryAddress({...deliveryAddress, reference: e.target.value})}
+                          placeholder="Próximo a..."
+                          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Forma de Pagamento */}
+                <div>
+                  <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                    <CreditCard className="h-4 w-4 text-red-500" />
+                    Forma de pagamento
+                  </h3>
+                  <div className="space-y-2">
+                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                      paymentMethod === "cash" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                    }`}>
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="cash"
+                        checked={paymentMethod === "cash"}
+                        onChange={() => setPaymentMethod("cash")}
+                        className="w-4 h-4 text-red-500 focus:ring-red-500"
+                      />
+                      <Banknote className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-800">Dinheiro</span>
+                    </label>
+                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                      paymentMethod === "card" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                    }`}>
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="card"
+                        checked={paymentMethod === "card"}
+                        onChange={() => setPaymentMethod("card")}
+                        className="w-4 h-4 text-red-500 focus:ring-red-500"
+                      />
+                      <CreditCard className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-800">Cartão</span>
+                    </label>
+                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                      paymentMethod === "pix" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                    }`}>
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="pix"
+                        checked={paymentMethod === "pix"}
+                        onChange={() => setPaymentMethod("pix")}
+                        className="w-4 h-4 text-red-500 focus:ring-red-500"
+                      />
+                      <QrCode className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-800">Pix</span>
+                    </label>
+                  </div>
+
+                  {/* Campo de Troco (condicional) */}
+                  {paymentMethod === "cash" && (
+                    <div className="mt-4 p-4 bg-gray-50 rounded-xl">
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Precisa de troco para quanto?</label>
+                      <input
+                        type="text"
+                        value={changeAmount}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, "");
+                          if (value) {
+                            const formatted = (Number(value) / 100).toLocaleString("pt-BR", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            });
+                            setChangeAmount(formatted);
+                          } else {
+                            setChangeAmount("");
+                          }
+                        }}
+                        placeholder="0,00"
+                        className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex-shrink-0 border-t px-6 py-4">
+                <button
+                  onClick={() => setCheckoutStep(3)}
+                  className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
+                >
+                  Próximo
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Modal 3 - Resumo Final */}
+          {checkoutStep === 3 && (
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+              {/* Header */}
+              <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
+                <button 
+                  onClick={() => setCheckoutStep(2)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <ChevronLeft className="h-5 w-5 text-gray-500" />
+                </button>
+                <h2 className="text-lg font-bold text-gray-900">Resumo Final</h2>
+                <button 
+                  onClick={() => setCheckoutStep(0)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto"
+                >
+                  <X className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {/* Itens */}
+                <div>
+                  <h3 className="font-semibold text-gray-800 text-sm mb-2 flex items-center gap-2">
+                    <ShoppingBag className="h-4 w-4 text-red-500" />
+                    Itens
+                  </h3>
+                  <div className="space-y-2">
+                    {cart.map((item, index) => (
+                      <div key={index} className="flex justify-between text-sm">
+                        <div>
+                          <span className="text-gray-800">{item.quantity}x {item.name}</span>
+                          {item.complements.length > 0 && (
+                            <p className="text-xs text-gray-500">
+                              {item.complements.map(c => c.name).join(", ")}
+                            </p>
+                          )}
+                        </div>
+                        <span className="text-gray-600">{formatPrice(Number(item.price) * item.quantity)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Entrega */}
+                <div className="border-t border-gray-100 pt-4">
+                  <h3 className="font-semibold text-gray-800 text-sm mb-2 flex items-center gap-2">
+                    <Truck className="h-4 w-4 text-red-500" />
+                    Entrega
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {deliveryType === "pickup" ? "Retirar no local" : "Entrega"}
+                  </p>
+                  {deliveryType === "delivery" && deliveryAddress.street && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      {deliveryAddress.street}, {deliveryAddress.number}
+                      {deliveryAddress.complement && ` - ${deliveryAddress.complement}`}
+                      <br />
+                      {deliveryAddress.neighborhood}
+                      {deliveryAddress.reference && <><br />Ref: {deliveryAddress.reference}</>}
+                    </p>
+                  )}
+                </div>
+
+                {/* Pagamento */}
+                <div className="border-t border-gray-100 pt-4">
+                  <h3 className="font-semibold text-gray-800 text-sm mb-2 flex items-center gap-2">
+                    <CreditCard className="h-4 w-4 text-red-500" />
+                    Pagamento
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {paymentMethod === "cash" ? "Dinheiro" : paymentMethod === "card" ? "Cartão" : "Pix"}
+                  </p>
+                  {paymentMethod === "cash" && changeAmount && (
+                    <p className="text-sm text-gray-500 mt-1">Troco para: R$ {changeAmount}</p>
+                  )}
+                </div>
+
+                {/* Observações */}
+                {orderObservation && (
+                  <div className="border-t border-gray-100 pt-4">
+                    <h3 className="font-semibold text-gray-800 text-sm mb-2 flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-red-500" />
+                      Observações
+                    </h3>
+                    <p className="text-sm text-gray-600">{orderObservation}</p>
+                  </div>
+                )}
+
+                {/* Total */}
+                <div className="border-t border-dashed border-gray-200 pt-4">
+                  {(() => {
+                    const subtotal = cart.reduce((sum, item) => {
+                      const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
+                      return sum + (Number(item.price) + complementsTotal) * item.quantity;
+                    }, 0);
+                    return (
+                      <div className="flex justify-between font-bold text-lg">
+                        <span className="text-gray-900">Total</span>
+                        <span className="text-red-500">{formatPrice(subtotal)}</span>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex-shrink-0 border-t px-6 py-4">
+                <button
+                  onClick={() => setCheckoutStep(4)}
+                  className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
+                >
+                  Finalizar
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Modal 4 - Identificação do Cliente */}
+          {checkoutStep === 4 && (
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+              {/* Header */}
+              <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
+                <button 
+                  onClick={() => setCheckoutStep(3)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <ChevronLeft className="h-5 w-5 text-gray-500" />
+                </button>
+                <h2 className="text-lg font-bold text-gray-900">Seus dados</h2>
+                <button 
+                  onClick={() => setCheckoutStep(0)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto"
+                >
+                  <X className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Nome completo</label>
+                  <input
+                    type="text"
+                    value={customerInfo.name}
+                    onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
+                    placeholder="Digite seu nome"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
+                  <input
+                    type="tel"
+                    value={customerInfo.phone}
+                    onChange={(e) => {
+                      let value = e.target.value.replace(/\D/g, "");
+                      if (value.length <= 11) {
+                        if (value.length > 2) {
+                          value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+                        }
+                        if (value.length > 10) {
+                          value = `${value.slice(0, 10)}-${value.slice(10)}`;
+                        }
+                        setCustomerInfo({...customerInfo, phone: value});
+                      }
+                    }}
+                    placeholder="(00) 00000-0000"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  />
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex-shrink-0 border-t px-6 py-4">
+                <button
+                  onClick={() => setCheckoutStep(5)}
+                  disabled={!customerInfo.name || !customerInfo.phone}
+                  className={`w-full py-3.5 font-semibold rounded-xl transition-colors ${
+                    customerInfo.name && customerInfo.phone
+                      ? "bg-red-500 hover:bg-red-600 text-white"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
+                >
+                  Próximo
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Modal 5 - Confirmação Final */}
+          {checkoutStep === 5 && (
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+              {/* Header */}
+              <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
+                <button 
+                  onClick={() => setCheckoutStep(4)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <ChevronLeft className="h-5 w-5 text-gray-500" />
+                </button>
+                <h2 className="text-lg font-bold text-gray-900">Confirmação</h2>
+                <button 
+                  onClick={() => setCheckoutStep(0)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto"
+                >
+                  <X className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="text-center py-8">
+                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <CheckCircle className="h-10 w-10 text-green-500" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                    Quase lá, {customerInfo.name.split(" ")[0]}!
+                  </h3>
+                  <p className="text-gray-600 mb-2">
+                    O prazo de entrega está entre <strong>30 a 45 minutos</strong>.
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    Após enviar o seu pedido, favor aguardar a confirmação do nosso atendente.
+                  </p>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex-shrink-0 border-t px-6 py-4 flex gap-3">
+                <button
+                  onClick={() => setCheckoutStep(4)}
+                  className="flex-1 py-3.5 border border-gray-300 text-gray-700 font-semibold rounded-xl transition-colors hover:bg-gray-50"
+                >
+                  Voltar
+                </button>
+                <button
+                  onClick={() => {
+                    // Aqui será implementado o envio do pedido
+                    alert("Pedido enviado com sucesso!");
+                    setCheckoutStep(0);
+                    setCart([]);
+                    setOrderObservation("");
+                    setDeliveryType("pickup");
+                    setPaymentMethod("pix");
+                    setChangeAmount("");
+                    setDeliveryAddress({ street: "", number: "", neighborhood: "", complement: "", reference: "" });
+                    setCustomerInfo({ name: "", phone: "" });
+                  }}
+                  className="flex-1 py-3.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition-colors"
+                >
+                  Enviar pedido
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

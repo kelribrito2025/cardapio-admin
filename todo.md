@@ -592,3 +592,15 @@
 - [x] Mudar borda vermelha da lateral esquerda para a parte inferior dos cards
 
 - [x] Reverter borda para lateral esquerda com 3px de espessura
+
+
+## Fluxo de Finalização de Pedido
+- [x] Modal 1: Resumo dos itens, complementos, subtotal, taxa, total e observações
+- [x] Modal 2: Forma de entrega (retirar/entrega) e forma de pagamento (dinheiro/cartão/pix)
+- [x] Modal 2: Campos de endereço condicionais para entrega
+- [x] Modal 2: Campo de troco condicional para pagamento em dinheiro
+- [x] Modal 3: Resumo final completo do pedido
+- [x] Modal 4: Identificação do cliente (nome e telefone com máscara)
+- [x] Modal 5: Confirmação final com mensagem e botões Voltar/Enviar pedido
+- [x] Navegação sequencial entre modais com botão voltar
+- [x] Responsividade em todos os modais
