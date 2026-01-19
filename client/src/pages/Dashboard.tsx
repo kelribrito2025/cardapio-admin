@@ -209,7 +209,7 @@ export default function Dashboard() {
         </SectionCard>
 
         {/* Recent Orders */}
-        <SectionCard title="Pedidos Recentes" description="Últimas atualizações">
+        <SectionCard title="Pedidos Recentes">
           {ordersLoading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (

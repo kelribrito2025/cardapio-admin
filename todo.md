@@ -491,3 +491,6 @@
 
 ## Aumentar Largura do Campo Link do Cardápio
 - [x] Fazer o campo Link do cardápio ocupar todo o espaço restante (linha própria com largura total)
+
+## Remover Descrição do Card Pedidos Recentes
+- [x] Remover texto "Últimas atualizações" do card Pedidos Recentes no Dashboard
