@@ -208,3 +208,29 @@ export const stockMovements = mysqlTable("stockMovements", {
 
 export type StockMovement = typeof stockMovements.$inferSelect;
 export type InsertStockMovement = typeof stockMovements.$inferInsert;
+
+
+// Coupons
+export const coupons = mysqlTable("coupons", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  code: varchar("code", { length: 15 }).notNull(),
+  type: mysqlEnum("type", ["percentage", "fixed"]).default("percentage").notNull(),
+  value: decimal("value", { precision: 10, scale: 2 }).notNull(),
+  maxDiscount: decimal("maxDiscount", { precision: 10, scale: 2 }),
+  minOrderValue: decimal("minOrderValue", { precision: 10, scale: 2 }),
+  quantity: int("quantity"),
+  usedCount: int("usedCount").default(0).notNull(),
+  startDate: timestamp("startDate"),
+  endDate: timestamp("endDate"),
+  activeDays: json("activeDays").$type<string[]>(),
+  validOrigins: json("validOrigins").$type<string[]>(),
+  startTime: varchar("startTime", { length: 5 }),
+  endTime: varchar("endTime", { length: 5 }),
+  status: mysqlEnum("status", ["active", "inactive", "expired", "exhausted"]).default("active").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Coupon = typeof coupons.$inferSelect;
+export type InsertCoupon = typeof coupons.$inferInsert;

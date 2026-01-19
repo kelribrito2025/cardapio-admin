@@ -12,7 +12,8 @@ import {
   orderItems, InsertOrderItem,
   stockCategories, InsertStockCategory, StockCategory,
   stockItems, InsertStockItem, StockItem,
-  stockMovements, InsertStockMovement, StockMovement
+  stockMovements, InsertStockMovement, StockMovement,
+  coupons, InsertCoupon, Coupon
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -1091,4 +1092,221 @@ export async function getActiveOrdersByEstablishment(establishmentId: number) {
   );
   
   return ordersWithItems;
+}
+
+
+// ============ COUPON FUNCTIONS ============
+export async function getCouponsByEstablishment(
+  establishmentId: number,
+  filters?: {
+    search?: string;
+    status?: "active" | "inactive" | "expired" | "exhausted";
+    limit?: number;
+    offset?: number;
+  }
+) {
+  const db = await getDb();
+  if (!db) return { coupons: [], total: 0 };
+  
+  const conditions = [eq(coupons.establishmentId, establishmentId)];
+  
+  if (filters?.search) {
+    conditions.push(like(coupons.code, `%${filters.search}%`));
+  }
+  if (filters?.status) {
+    conditions.push(eq(coupons.status, filters.status));
+  }
+  
+  const whereClause = and(...conditions);
+  
+  // Get total count
+  const countResult = await db.select({ count: sql<number>`count(*)` })
+    .from(coupons)
+    .where(whereClause);
+  const total = countResult[0]?.count ?? 0;
+  
+  // Get coupons
+  let query = db.select().from(coupons)
+    .where(whereClause)
+    .orderBy(desc(coupons.createdAt)) as any;
+  
+  if (filters?.limit) {
+    query = query.limit(filters.limit);
+  }
+  if (filters?.offset) {
+    query = query.offset(filters.offset);
+  }
+  
+  const couponsList = await query;
+  
+  return { coupons: couponsList, total };
+}
+
+export async function getCouponById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(coupons).where(eq(coupons.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getCouponByCode(establishmentId: number, code: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(coupons)
+    .where(and(
+      eq(coupons.establishmentId, establishmentId),
+      eq(coupons.code, code.toUpperCase())
+    ))
+    .limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createCoupon(data: InsertCoupon) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Ensure code is uppercase
+  const couponData = {
+    ...data,
+    code: data.code.toUpperCase(),
+  };
+  
+  const result = await db.insert(coupons).values(couponData);
+  return result[0].insertId;
+}
+
+export async function updateCoupon(id: number, data: Partial<InsertCoupon>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Ensure code is uppercase if provided
+  const updateData = data.code 
+    ? { ...data, code: data.code.toUpperCase() }
+    : data;
+  
+  await db.update(coupons).set(updateData).where(eq(coupons.id, id));
+}
+
+export async function deleteCoupon(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(coupons).where(eq(coupons.id, id));
+}
+
+export async function toggleCouponStatus(id: number, status: "active" | "inactive") {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(coupons).set({ status }).where(eq(coupons.id, id));
+}
+
+export async function incrementCouponUsage(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(coupons)
+    .set({ usedCount: sql`${coupons.usedCount} + 1` })
+    .where(eq(coupons.id, id));
+  
+  // Check if coupon is exhausted
+  const coupon = await getCouponById(id);
+  if (coupon && coupon.quantity && coupon.usedCount >= coupon.quantity) {
+    await db.update(coupons)
+      .set({ status: "exhausted" })
+      .where(eq(coupons.id, id));
+  }
+}
+
+export async function validateCoupon(
+  establishmentId: number,
+  code: string,
+  orderValue: number,
+  deliveryType: "delivery" | "pickup" | "self_service"
+) {
+  const coupon = await getCouponByCode(establishmentId, code);
+  
+  if (!coupon) {
+    return { valid: false, error: "Cupom não encontrado" };
+  }
+  
+  if (coupon.status !== "active") {
+    const statusMessages: Record<string, string> = {
+      inactive: "Cupom desativado",
+      expired: "Cupom expirado",
+      exhausted: "Cupom esgotado",
+    };
+    return { valid: false, error: statusMessages[coupon.status] || "Cupom inválido" };
+  }
+  
+  // Check quantity
+  if (coupon.quantity && coupon.usedCount >= coupon.quantity) {
+    return { valid: false, error: "Cupom esgotado" };
+  }
+  
+  // Check minimum order value
+  if (coupon.minOrderValue && orderValue < Number(coupon.minOrderValue)) {
+    return { 
+      valid: false, 
+      error: `Valor mínimo do pedido: R$ ${Number(coupon.minOrderValue).toFixed(2).replace('.', ',')}` 
+    };
+  }
+  
+  // Check date validity
+  const now = new Date();
+  if (coupon.startDate && now < coupon.startDate) {
+    return { valid: false, error: "Cupom ainda não está válido" };
+  }
+  if (coupon.endDate && now > coupon.endDate) {
+    return { valid: false, error: "Cupom expirado" };
+  }
+  
+  // Check active days
+  if (coupon.activeDays && coupon.activeDays.length > 0) {
+    const dayNames = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
+    const today = dayNames[now.getDay()];
+    if (!coupon.activeDays.includes(today)) {
+      return { valid: false, error: "Cupom não válido hoje" };
+    }
+  }
+  
+  // Check valid origins
+  if (coupon.validOrigins && coupon.validOrigins.length > 0) {
+    const originMap: Record<string, string> = {
+      delivery: "delivery",
+      pickup: "retirada",
+      self_service: "autoatendimento",
+    };
+    const originName = originMap[deliveryType];
+    if (!coupon.validOrigins.includes(originName) && !coupon.validOrigins.includes(deliveryType)) {
+      return { valid: false, error: "Cupom não válido para este tipo de entrega" };
+    }
+  }
+  
+  // Check time validity
+  if (coupon.startTime && coupon.endTime) {
+    const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    if (currentTime < coupon.startTime || currentTime > coupon.endTime) {
+      return { valid: false, error: `Cupom válido apenas das ${coupon.startTime} às ${coupon.endTime}` };
+    }
+  }
+  
+  // Calculate discount
+  let discount = 0;
+  if (coupon.type === "percentage") {
+    discount = orderValue * (Number(coupon.value) / 100);
+    if (coupon.maxDiscount && discount > Number(coupon.maxDiscount)) {
+      discount = Number(coupon.maxDiscount);
+    }
+  } else {
+    discount = Number(coupon.value);
+  }
+  
+  return { 
+    valid: true, 
+    coupon,
+    discount: Math.min(discount, orderValue),
+  };
 }

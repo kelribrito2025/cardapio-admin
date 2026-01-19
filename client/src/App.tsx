@@ -14,6 +14,8 @@ import Estoque from "./pages/Estoque";
 import Configuracoes from "./pages/Configuracoes";
 import Planos from "./pages/Planos";
 import PublicMenu from "./pages/PublicMenu";
+import Cupons from "./pages/Cupons";
+import CouponForm from "./pages/CouponForm";
 
 // Auth Pages
 import Login from "./pages/Login";
@@ -37,6 +39,9 @@ function Router() {
       <Route path="/estoque" component={Estoque} />
       <Route path="/configuracoes" component={Configuracoes} />
       <Route path="/planos" component={Planos} />
+      <Route path="/cupons" component={Cupons} />
+      <Route path="/cupons/novo" component={CouponForm} />
+      <Route path="/cupons/:id" component={CouponForm} />
       
       {/* Public menu route */}
       <Route path="/menu/:slug" component={PublicMenu} />

@@ -701,3 +701,37 @@
 - [x] Atualizar página de pedidos do admin para usar SSE
 - [x] Manter polling como fallback caso conexão SSE falhe
 - [x] Testar latência e funcionamento em tempo real
+
+
+## Página de Gerenciamento de Cupons
+
+### Backend
+- [x] Criar tabela coupons no schema do banco de dados
+- [x] Adicionar campos: code, type, value, maxDiscount, minOrderValue, quantity, usedCount
+- [x] Adicionar campos de disponibilidade: startDate, endDate, activeDays, validOrigins, startTime, endTime
+- [x] Criar endpoints tRPC: list, create, update, delete, toggleStatus
+
+### Listagem de Cupons
+- [x] Criar página /cupons com tabela de cupons
+- [x] Exibir colunas: código, tipo, valor, valor máximo, mínimo pedido, validade, dias ativos, origem, status, quantidade, ações
+- [x] Adicionar botão "Criar novo cupom"
+- [x] Adicionar campo de busca por código
+- [x] Implementar ações: Editar, Desativar, Excluir
+
+### Formulário Criar/Editar Cupom
+- [x] Campo código do cupom (máx 15 caracteres)
+- [x] Toggle tipo de desconto (Percentual / Valor Fixo)
+- [x] Campo valor do desconto (dinâmico conforme tipo)
+- [x] Campo valor máximo do desconto
+- [x] Campo valor mínimo do pedido
+- [x] Campo quantidade total de cupons
+- [x] Seção Disponibilidade: período de validade (data inicial/final)
+- [x] Checkboxes dias da semana (Dom-Sáb)
+- [x] Checkboxes origem válida (Retirada, Delivery, Autoatendimento)
+- [x] Campos horário disponível (início/fim)
+- [x] Botão Criar/Salvar com validações
+- [x] Feedbacks de erro e sucesso
+
+### Responsividade e UX
+- [x] Garantir responsividade desktop/mobile
+- [x] Seguir padrão visual do Mindi (inputs, botões, cards, espaçamentos)

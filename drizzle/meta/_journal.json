@@ -64,6 +64,13 @@
       "when": 1768860062623,
       "tag": "0008_worthless_epoch",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1768863111135,
+      "tag": "0009_magical_ender_wiggin",
+      "breakpoints": true
     }
   ]
 }

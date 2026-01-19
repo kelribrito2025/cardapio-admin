@@ -20,6 +20,7 @@ import {
   PanelLeftClose,
   ExternalLink,
   Crown,
+  Ticket,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
@@ -48,6 +49,7 @@ const navItems = [
   { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo" },
   { icon: ClipboardList, label: "Pedidos", href: "/pedidos" },
   { icon: Package, label: "Estoque", href: "/estoque" },
+  { icon: Ticket, label: "Cupons", href: "/cupons" },
 ];
 
 interface AdminLayoutProps {

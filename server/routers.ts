@@ -834,6 +834,129 @@ export const appRouter = router({
       }),
   }),
 
+  // ============ COUPONS ============
+  coupon: router({
+    list: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        search: z.string().optional(),
+        status: z.enum(["active", "inactive", "expired", "exhausted"]).optional(),
+        limit: z.number().optional(),
+        offset: z.number().optional(),
+      }))
+      .query(async ({ input }) => {
+        const { establishmentId, ...filters } = input;
+        return db.getCouponsByEstablishment(establishmentId, filters);
+      }),
+    
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return db.getCouponById(input.id);
+      }),
+    
+    create: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        code: z.string().min(1).max(15),
+        type: z.enum(["percentage", "fixed"]),
+        value: z.string(),
+        maxDiscount: z.string().nullable().optional(),
+        minOrderValue: z.string().nullable().optional(),
+        quantity: z.number().nullable().optional(),
+        startDate: z.date().nullable().optional(),
+        endDate: z.date().nullable().optional(),
+        activeDays: z.array(z.string()).nullable().optional(),
+        validOrigins: z.array(z.string()).nullable().optional(),
+        startTime: z.string().nullable().optional(),
+        endTime: z.string().nullable().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        // Check if code already exists
+        const existing = await db.getCouponByCode(input.establishmentId, input.code);
+        if (existing) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Já existe um cupom com este código.",
+          });
+        }
+        
+        const id = await db.createCoupon(input);
+        return { id };
+      }),
+    
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        code: z.string().min(1).max(15).optional(),
+        type: z.enum(["percentage", "fixed"]).optional(),
+        value: z.string().optional(),
+        maxDiscount: z.string().nullable().optional(),
+        minOrderValue: z.string().nullable().optional(),
+        quantity: z.number().nullable().optional(),
+        startDate: z.date().nullable().optional(),
+        endDate: z.date().nullable().optional(),
+        activeDays: z.array(z.string()).nullable().optional(),
+        validOrigins: z.array(z.string()).nullable().optional(),
+        startTime: z.string().nullable().optional(),
+        endTime: z.string().nullable().optional(),
+        status: z.enum(["active", "inactive", "expired", "exhausted"]).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        
+        // Check if code already exists (if updating code)
+        if (data.code) {
+          const coupon = await db.getCouponById(id);
+          if (coupon) {
+            const existing = await db.getCouponByCode(coupon.establishmentId, data.code);
+            if (existing && existing.id !== id) {
+              throw new TRPCError({
+                code: "CONFLICT",
+                message: "Já existe um cupom com este código.",
+              });
+            }
+          }
+        }
+        
+        await db.updateCoupon(id, data);
+        return { success: true };
+      }),
+    
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteCoupon(input.id);
+        return { success: true };
+      }),
+    
+    toggleStatus: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        status: z.enum(["active", "inactive"]),
+      }))
+      .mutation(async ({ input }) => {
+        await db.toggleCouponStatus(input.id, input.status);
+        return { success: true };
+      }),
+    
+    validate: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        code: z.string(),
+        orderValue: z.number(),
+        deliveryType: z.enum(["delivery", "pickup", "self_service"]),
+      }))
+      .query(async ({ input }) => {
+        return db.validateCoupon(
+          input.establishmentId,
+          input.code,
+          input.orderValue,
+          input.deliveryType
+        );
+      }),
+  }),
+
   // ============ UPLOAD ============
   upload: router({
     image: protectedProcedure
