@@ -618,3 +618,12 @@
 
 ## Correção Visual do Modal de Checkout
 - [x] Integrar indicador de progresso ao modal de resumo do pedido em um único bloco
+
+
+## Confirmação de Pedido e Acompanhamento
+- [x] Exibir mensagem "Pedido enviado com sucesso!" no mesmo modal após clicar em Enviar
+- [x] Adicionar botão "Acompanhar pedido" abaixo da mensagem de sucesso
+- [x] Criar modal de acompanhamento com timeline de status
+- [x] Implementar status: Enviado, Aceito, Saiu para entrega, Entregue
+- [x] Status atual em cor primária, futuros em cinza, concluídos em verde
+- [x] Modal responsivo e reutilizável

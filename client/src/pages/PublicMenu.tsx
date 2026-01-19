@@ -54,6 +54,9 @@ export default function PublicMenu() {
     phone: "",
   });
   const [isSendingOrder, setIsSendingOrder] = useState(false);
+  const [orderSent, setOrderSent] = useState(false);
+  const [showTrackingModal, setShowTrackingModal] = useState(false);
+  const [orderStatus, setOrderStatus] = useState<"sent" | "accepted" | "delivering" | "delivered">("sent");
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
@@ -1660,23 +1663,48 @@ export default function PublicMenu() {
 
               {/* Body */}
               <div className="flex-1 overflow-y-auto p-6">
-                <div className="text-center py-8">
-                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle className="h-10 w-10 text-green-500" />
+                {!orderSent ? (
+                  <div className="text-center py-8">
+                    <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <CheckCircle className="h-10 w-10 text-green-500" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                      Quase lá, {customerInfo.name.split(" ")[0]}!
+                    </h3>
+                    <p className="text-gray-600 mb-2">
+                      O prazo de entrega está entre <strong>30 a 45 minutos</strong>.
+                    </p>
+                    <p className="text-gray-500 text-sm">
+                      Após enviar o seu pedido, favor aguardar a confirmação do nosso atendente.
+                    </p>
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    Quase lá, {customerInfo.name.split(" ")[0]}!
-                  </h3>
-                  <p className="text-gray-600 mb-2">
-                    O prazo de entrega está entre <strong>30 a 45 minutos</strong>.
-                  </p>
-                  <p className="text-gray-500 text-sm">
-                    Após enviar o seu pedido, favor aguardar a confirmação do nosso atendente.
-                  </p>
-                </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+                      <CheckCircle className="h-12 w-12 text-green-500" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-green-600 mb-4">
+                      Pedido enviado com sucesso!
+                    </h3>
+                    <p className="text-gray-600 mb-6">
+                      Seu pedido foi recebido e está sendo processado.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setCheckoutStep(0);
+                        setShowTrackingModal(true);
+                      }}
+                      className="w-full py-3.5 bg-primary text-white font-semibold rounded-xl transition-colors hover:bg-primary/90 flex items-center justify-center gap-2"
+                    >
+                      <Package className="h-5 w-5" />
+                      Acompanhar pedido
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Footer */}
+              {!orderSent && (
               <div className="flex-shrink-0 border-t px-6 py-4 flex gap-3">
                 <button
                   onClick={() => setCheckoutStep(4)}
@@ -1684,6 +1712,7 @@ export default function PublicMenu() {
                 >
                   Voltar
                 </button>
+                {!isSendingOrder ? (
                 <button
                   onClick={() => {
                     if (isSendingOrder) return;
@@ -1696,13 +1725,8 @@ export default function PublicMenu() {
                     // Simular envio do pedido com 3 segundos de carregamento
                     setTimeout(() => {
                       setIsSendingOrder(false);
-                      alert("Pedido enviado com sucesso!");
-                      setCheckoutStep(0);
-                      setCart([]);
-                      setOrderObservation("");
-                      setDeliveryType("pickup");
-                      setPaymentMethod("pix");
-                      setChangeAmount("");
+                      setOrderSent(true);
+                      setOrderStatus("sent");
                     }, 3000);
                   }}
                   disabled={isSendingOrder}
@@ -1724,7 +1748,20 @@ export default function PublicMenu() {
                     'Enviar pedido'
                   )}
                 </button>
+                ) : (
+                <button
+                  disabled={true}
+                  className="flex-1 py-3.5 bg-green-400 cursor-not-allowed text-white font-semibold rounded-xl flex items-center justify-center gap-2"
+                >
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Enviando...
+                </button>
+                )}
               </div>
+              )}
             </div>
           )}
           </div>
@@ -1792,6 +1829,130 @@ export default function PublicMenu() {
                   {couponError}
                 </p>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Acompanhamento do Pedido */}
+      {showTrackingModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowTrackingModal(false)}
+          />
+          
+          {/* Modal Content */}
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[80vh] overflow-hidden">
+            {/* Header */}
+            <div className="border-b px-6 py-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-900">Acompanhar Pedido</h2>
+              <button 
+                onClick={() => setShowTrackingModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Body - Timeline */}
+            <div className="p-6">
+              <div className="relative">
+                {/* Linha vertical conectando os status */}
+                <div className="absolute left-5 top-5 bottom-5 w-0.5 bg-gray-200" />
+                
+                {/* Status: Enviado */}
+                <div className="relative flex items-start gap-4 pb-8">
+                  <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    orderStatus === 'sent' ? 'bg-primary text-white' :
+                    ['accepted', 'delivering', 'delivered'].includes(orderStatus) ? 'bg-green-500 text-white' :
+                    'bg-gray-200 text-gray-400'
+                  }`}>
+                    <Package className="h-5 w-5" />
+                  </div>
+                  <div className="pt-2">
+                    <h4 className={`font-semibold ${
+                      orderStatus === 'sent' ? 'text-primary' :
+                      ['accepted', 'delivering', 'delivered'].includes(orderStatus) ? 'text-green-600' :
+                      'text-gray-400'
+                    }`}>Enviado</h4>
+                    <p className="text-sm text-gray-500">Seu pedido foi recebido</p>
+                  </div>
+                </div>
+
+                {/* Status: Aceito */}
+                <div className="relative flex items-start gap-4 pb-8">
+                  <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    orderStatus === 'accepted' ? 'bg-primary text-white' :
+                    ['delivering', 'delivered'].includes(orderStatus) ? 'bg-green-500 text-white' :
+                    'bg-gray-200 text-gray-400'
+                  }`}>
+                    <CheckCircle className="h-5 w-5" />
+                  </div>
+                  <div className="pt-2">
+                    <h4 className={`font-semibold ${
+                      orderStatus === 'accepted' ? 'text-primary' :
+                      ['delivering', 'delivered'].includes(orderStatus) ? 'text-green-600' :
+                      'text-gray-400'
+                    }`}>Aceito</h4>
+                    <p className="text-sm text-gray-500">O restaurante aceitou seu pedido</p>
+                  </div>
+                </div>
+
+                {/* Status: Saiu para entrega */}
+                <div className="relative flex items-start gap-4 pb-8">
+                  <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    orderStatus === 'delivering' ? 'bg-primary text-white' :
+                    orderStatus === 'delivered' ? 'bg-green-500 text-white' :
+                    'bg-gray-200 text-gray-400'
+                  }`}>
+                    <Truck className="h-5 w-5" />
+                  </div>
+                  <div className="pt-2">
+                    <h4 className={`font-semibold ${
+                      orderStatus === 'delivering' ? 'text-primary' :
+                      orderStatus === 'delivered' ? 'text-green-600' :
+                      'text-gray-400'
+                    }`}>Saiu para entrega</h4>
+                    <p className="text-sm text-gray-500">Seu pedido está a caminho</p>
+                  </div>
+                </div>
+
+                {/* Status: Entregue */}
+                <div className="relative flex items-start gap-4">
+                  <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    orderStatus === 'delivered' ? 'bg-green-500 text-white' :
+                    'bg-gray-200 text-gray-400'
+                  }`}>
+                    <CheckCircle className="h-5 w-5" />
+                  </div>
+                  <div className="pt-2">
+                    <h4 className={`font-semibold ${
+                      orderStatus === 'delivered' ? 'text-green-600' : 'text-gray-400'
+                    }`}>Entregue</h4>
+                    <p className="text-sm text-gray-500">Pedido entregue com sucesso</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="border-t px-6 py-4">
+              <button
+                onClick={() => {
+                  setShowTrackingModal(false);
+                  setOrderSent(false);
+                  setCart([]);
+                  setOrderObservation("");
+                  setDeliveryType("pickup");
+                  setPaymentMethod("pix");
+                  setChangeAmount("");
+                }}
+                className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors"
+              >
+                Fechar
+              </button>
             </div>
           </div>
         </div>
