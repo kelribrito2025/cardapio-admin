@@ -544,7 +544,6 @@ export default function ProductForm() {
             {/* Complements */}
             <SectionCard 
               title="Complementos / Adicionais"
-              description="Configure opções extras para o produto"
               actions={
                 <Button type="button" variant="outline" size="sm" onClick={addComplementGroup} className="rounded-lg border-border/50 hover:bg-accent text-xs h-8">
                   <Plus className="h-3.5 w-3.5 mr-1" />
