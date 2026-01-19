@@ -588,3 +588,5 @@
 
 ## Borda Lateral nos Cards de Produtos
 - [x] Adicionar borda esquerda vermelha nos cards de produtos
+
+- [x] Mudar borda vermelha da lateral esquerda para a parte inferior dos cards
