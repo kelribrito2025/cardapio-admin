@@ -488,3 +488,6 @@
 
 ## Reduzir Largura dos Campos WhatsApp e Instagram
 - [x] Diminuir largura dos campos WhatsApp e Instagram em 20% (maxWidth: 80%)
+
+## Aumentar Largura do Campo Link do Cardápio
+- [x] Fazer o campo Link do cardápio ocupar todo o espaço restante (linha própria com largura total)

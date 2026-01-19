@@ -597,31 +597,32 @@ export default function Configuracoes() {
           {/* Configurações básicas */}
           <SectionCard title="Configurações básicas de atendimento">
             <div className="space-y-5">
-              {/* Linha 1: Link do cardápio, WhatsApp e Instagram */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="menuSlug" className="text-sm font-semibold">Link do cardápio</Label>
-                  <div className="flex gap-2 mt-2">
-                    <div className="flex items-center px-3 bg-muted/50 rounded-l-xl border border-r-0 border-border/50 text-xs text-muted-foreground font-medium">
-                      mindi.manus.space/menu/
-                    </div>
-                    <Input
-                      id="menuSlug"
-                      value={menuSlug}
-                      onChange={(e) => setMenuSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
-                      placeholder="seu-restaurante"
-                      className="rounded-l-none flex-1 h-10 rounded-r-xl border-border/50 focus:ring-2 focus:ring-primary/20"
-                    />
-                    <Button variant="outline" size="icon" onClick={copyMenuLink} title="Copiar link" className="h-10 w-10 rounded-xl border-border/50 hover:bg-accent" disabled={!menuSlug}>
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="icon" onClick={openMenuPreview} title="Visualizar cardápio" className="h-10 w-10 rounded-xl border-border/50 hover:bg-accent" disabled={!menuSlug}>
-                      <ExternalLink className="h-4 w-4" />
-                    </Button>
+              {/* Linha 1: Link do cardápio (largura total) */}
+              <div>
+                <Label htmlFor="menuSlug" className="text-sm font-semibold">Link do cardápio</Label>
+                <div className="flex gap-2 mt-2">
+                  <div className="flex items-center px-3 bg-muted/50 rounded-l-xl border border-r-0 border-border/50 text-xs text-muted-foreground font-medium">
+                    mindi.manus.space/menu/
                   </div>
+                  <Input
+                    id="menuSlug"
+                    value={menuSlug}
+                    onChange={(e) => setMenuSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+                    placeholder="seu-restaurante"
+                    className="rounded-l-none flex-1 h-10 rounded-r-xl border-border/50 focus:ring-2 focus:ring-primary/20"
+                  />
+                  <Button variant="outline" size="icon" onClick={copyMenuLink} title="Copiar link" className="h-10 w-10 rounded-xl border-border/50 hover:bg-accent" disabled={!menuSlug}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="icon" onClick={openMenuPreview} title="Visualizar cardápio" className="h-10 w-10 rounded-xl border-border/50 hover:bg-accent" disabled={!menuSlug}>
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
                 </div>
+              </div>
 
-                <div style={{ maxWidth: '80%' }}>
+              {/* Linha 2: WhatsApp e Instagram */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
                   <Label htmlFor="whatsapp" className="text-sm font-semibold">WhatsApp</Label>
                   <div className="flex items-center gap-2 mt-2">
                     <div className="p-2.5 bg-emerald-50 rounded-xl">
@@ -637,7 +638,7 @@ export default function Configuracoes() {
                   </div>
                 </div>
 
-                <div style={{ maxWidth: '80%' }}>
+                <div>
                   <Label htmlFor="instagram" className="text-sm font-semibold">Instagram</Label>
                   <div className="flex items-center gap-2 mt-2">
                     <div className="p-2.5 bg-pink-50 rounded-xl">
