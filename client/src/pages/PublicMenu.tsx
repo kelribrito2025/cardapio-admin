@@ -1168,7 +1168,7 @@ function ProductCard({
   const mainImage = product.images?.[0];
 
   return (
-    <div className="bg-white rounded-lg border border-gray-100 overflow-hidden hover:border-gray-200 transition-colors cursor-pointer">
+    <div className="bg-white rounded-lg border border-gray-100 overflow-hidden hover:border-gray-200 transition-colors cursor-pointer border-l-4 border-l-red-500">
       <div className="flex">
         <div className="flex-1 p-3">
           <h3 className="font-medium text-gray-900 text-sm leading-tight">{product.name}</h3>

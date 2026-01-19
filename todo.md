@@ -584,3 +584,7 @@
 ## Correção Botão Adicionar Cortado
 - [x] Garantir que o footer do modal fique sempre visível
 - [x] Ajustar estrutura do modal para não cortar o botão
+
+
+## Borda Lateral nos Cards de Produtos
+- [x] Adicionar borda esquerda vermelha nos cards de produtos
