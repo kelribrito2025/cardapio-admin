@@ -621,7 +621,7 @@ export default function Configuracoes() {
                   </div>
                 </div>
 
-                <div>
+                <div style={{ maxWidth: '80%' }}>
                   <Label htmlFor="whatsapp" className="text-sm font-semibold">WhatsApp</Label>
                   <div className="flex items-center gap-2 mt-2">
                     <div className="p-2.5 bg-emerald-50 rounded-xl">
@@ -637,7 +637,7 @@ export default function Configuracoes() {
                   </div>
                 </div>
 
-                <div>
+                <div style={{ maxWidth: '80%' }}>
                   <Label htmlFor="instagram" className="text-sm font-semibold">Instagram</Label>
                   <div className="flex items-center gap-2 mt-2">
                     <div className="p-2.5 bg-pink-50 rounded-xl">

@@ -485,3 +485,6 @@
 
 ## Formas de Pagamento em Linha Horizontal
 - [x] Colocar as 4 formas de pagamento em uma linha horizontal (grid 4 colunas)
+
+## Reduzir Largura dos Campos WhatsApp e Instagram
+- [x] Diminuir largura dos campos WhatsApp e Instagram em 20% (maxWidth: 80%)
