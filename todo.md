@@ -562,3 +562,7 @@
 - [x] Adicionar botão de remover item na sacola
 - [x] Implementar função para remover item do carrinho
 - [x] Atualizar totais após remoção
+
+
+## Ajuste Visual da Sacola
+- [x] Remover fotos dos itens na sacola

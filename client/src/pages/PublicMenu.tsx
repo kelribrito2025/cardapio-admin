@@ -569,9 +569,6 @@ export default function PublicMenu() {
                       const itemTotal = (Number(item.price) + complementsTotal) * item.quantity;
                       return (
                         <div key={index} className="flex gap-3 pb-3 border-b border-gray-100 last:border-0 group">
-                          {item.image && (
-                            <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
-                          )}
                           <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start gap-2">
                               <div className="flex-1 min-w-0">
