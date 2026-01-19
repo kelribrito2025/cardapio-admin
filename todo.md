@@ -579,3 +579,8 @@
 ## Ajuste Altura Modal de Adicionar Item
 - [x] Reduzir altura máxima do modal em 20%
 - [x] Garantir responsividade para várias telas (mobile, tablet, desktop)
+
+
+## Correção Botão Adicionar Cortado
+- [x] Garantir que o footer do modal fique sempre visível
+- [x] Ajustar estrutura do modal para não cortar o botão

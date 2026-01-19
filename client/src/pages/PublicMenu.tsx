@@ -937,7 +937,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Footer com Quantidade e Botão Adicionar */}
-            <div className="border-t bg-white p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
+            <div className="border-t bg-white p-3 sm:p-4 flex items-center gap-3 sm:gap-4 flex-shrink-0">
               {/* Controle de Quantidade */}
               <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-2 py-1">
                 <button
