@@ -53,6 +53,7 @@ export default function PublicMenu() {
     name: "",
     phone: "",
   });
+  const [isSendingOrder, setIsSendingOrder] = useState(false);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
@@ -76,6 +77,28 @@ export default function PublicMenu() {
       setActiveCategory(data.categories[0].id);
     }
   }, [data?.categories, activeCategory]);
+
+  // Carregar endereço salvo do localStorage
+  useEffect(() => {
+    const savedAddress = localStorage.getItem('savedDeliveryAddress');
+    if (savedAddress) {
+      try {
+        const parsed = JSON.parse(savedAddress);
+        setDeliveryAddress(parsed);
+      } catch (e) {
+        console.error('Erro ao carregar endereço salvo:', e);
+      }
+    }
+    const savedCustomer = localStorage.getItem('savedCustomerInfo');
+    if (savedCustomer) {
+      try {
+        const parsed = JSON.parse(savedCustomer);
+        setCustomerInfo(parsed);
+      } catch (e) {
+        console.error('Erro ao carregar dados do cliente:', e);
+      }
+    }
+  }, []);
 
   // Close social dropdown when clicking outside
   useEffect(() => {
@@ -1086,11 +1109,44 @@ export default function PublicMenu() {
             onClick={() => setCheckoutStep(0)}
           />
           
+          {/* Indicador de Progresso */}
+          <div className="relative bg-white rounded-t-2xl w-full max-w-lg mx-4 px-6 pt-4 pb-2">
+            <div className="flex items-center justify-between mb-2">
+              {[1, 2, 3, 4, 5].map((step) => (
+                <div key={step} className="flex items-center">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+                    checkoutStep >= step 
+                      ? 'bg-red-500 text-white' 
+                      : 'bg-gray-200 text-gray-500'
+                  }`}>
+                    {checkoutStep > step ? (
+                      <CheckCircle className="h-5 w-5" />
+                    ) : (
+                      step
+                    )}
+                  </div>
+                  {step < 5 && (
+                    <div className={`w-8 sm:w-12 h-1 mx-1 rounded transition-all ${
+                      checkoutStep > step ? 'bg-red-500' : 'bg-gray-200'
+                    }`} />
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-between text-[10px] sm:text-xs text-gray-500">
+              <span className={checkoutStep >= 1 ? 'text-red-500 font-medium' : ''}>Resumo</span>
+              <span className={checkoutStep >= 2 ? 'text-red-500 font-medium' : ''}>Entrega</span>
+              <span className={checkoutStep >= 3 ? 'text-red-500 font-medium' : ''}>Confirmar</span>
+              <span className={checkoutStep >= 4 ? 'text-red-500 font-medium' : ''}>Dados</span>
+              <span className={checkoutStep >= 5 ? 'text-red-500 font-medium' : ''}>Enviar</span>
+            </div>
+          </div>
+
           {/* Modal 1 - Resumo dos Itens */}
           {checkoutStep === 1 && (
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+            <div className="relative bg-white rounded-b-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[70vh] flex flex-col">
               {/* Header */}
-              <div className="flex-shrink-0 border-b px-6 py-4 flex items-center justify-between rounded-t-2xl">
+              <div className="flex-shrink-0 border-b px-6 py-4 flex items-center justify-between">
                 <h2 className="text-lg font-bold text-gray-900">Resumo do Pedido</h2>
                 <button 
                   onClick={() => setCheckoutStep(0)}
@@ -1183,7 +1239,7 @@ export default function PublicMenu() {
 
           {/* Modal 2 - Entrega e Pagamento */}
           {checkoutStep === 2 && (
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+            <div className="relative bg-white rounded-b-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[70vh] flex flex-col">
               {/* Header */}
               <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
                 <button 
@@ -1391,7 +1447,7 @@ export default function PublicMenu() {
 
           {/* Modal 3 - Resumo Final */}
           {checkoutStep === 3 && (
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+            <div className="relative bg-white rounded-b-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[70vh] flex flex-col">
               {/* Header */}
               <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
                 <button 
@@ -1510,7 +1566,7 @@ export default function PublicMenu() {
 
           {/* Modal 4 - Identificação do Cliente */}
           {checkoutStep === 4 && (
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+            <div className="relative bg-white rounded-b-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[70vh] flex flex-col">
               {/* Header */}
               <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
                 <button 
@@ -1582,7 +1638,7 @@ export default function PublicMenu() {
 
           {/* Modal 5 - Confirmação Final */}
           {checkoutStep === 5 && (
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+            <div className="relative bg-white rounded-b-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[70vh] flex flex-col">
               {/* Header */}
               <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
                 <button 
@@ -1628,20 +1684,43 @@ export default function PublicMenu() {
                 </button>
                 <button
                   onClick={() => {
-                    // Aqui será implementado o envio do pedido
-                    alert("Pedido enviado com sucesso!");
-                    setCheckoutStep(0);
-                    setCart([]);
-                    setOrderObservation("");
-                    setDeliveryType("pickup");
-                    setPaymentMethod("pix");
-                    setChangeAmount("");
-                    setDeliveryAddress({ street: "", number: "", neighborhood: "", complement: "", reference: "" });
-                    setCustomerInfo({ name: "", phone: "" });
+                    if (isSendingOrder) return;
+                    setIsSendingOrder(true);
+                    // Salvar endereço e dados do cliente no localStorage
+                    if (deliveryType === 'delivery') {
+                      localStorage.setItem('savedDeliveryAddress', JSON.stringify(deliveryAddress));
+                    }
+                    localStorage.setItem('savedCustomerInfo', JSON.stringify(customerInfo));
+                    // Simular envio do pedido com 3 segundos de carregamento
+                    setTimeout(() => {
+                      setIsSendingOrder(false);
+                      alert("Pedido enviado com sucesso!");
+                      setCheckoutStep(0);
+                      setCart([]);
+                      setOrderObservation("");
+                      setDeliveryType("pickup");
+                      setPaymentMethod("pix");
+                      setChangeAmount("");
+                    }, 3000);
                   }}
-                  className="flex-1 py-3.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition-colors"
+                  disabled={isSendingOrder}
+                  className={`flex-1 py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
+                    isSendingOrder 
+                      ? 'bg-green-400 cursor-not-allowed' 
+                      : 'bg-green-500 hover:bg-green-600'
+                  } text-white`}
                 >
-                  Enviar pedido
+                  {isSendingOrder ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Enviando...
+                    </>
+                  ) : (
+                    'Enviar pedido'
+                  )}
                 </button>
               </div>
             </div>

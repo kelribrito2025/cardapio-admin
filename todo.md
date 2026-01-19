@@ -604,3 +604,9 @@
 - [x] Modal 5: Confirmação final com mensagem e botões Voltar/Enviar pedido
 - [x] Navegação sequencial entre modais com botão voltar
 - [x] Responsividade em todos os modais
+
+
+## Melhorias no Fluxo de Finalização
+- [x] Adicionar indicador de progresso no topo dos modais (5 etapas)
+- [x] Implementar salvamento de endereço do cliente no localStorage
+- [x] Criar feedback de carregamento no botão enviar pedido (3 segundos)
