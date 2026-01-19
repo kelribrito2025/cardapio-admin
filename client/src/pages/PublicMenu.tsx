@@ -233,7 +233,7 @@ export default function PublicMenu() {
 
       {/* Cover Image */}
       <div className="max-w-6xl mx-auto px-4 pt-4">
-        <div className="relative h-40 md:h-52 lg:h-60 rounded-2xl overflow-hidden bg-gray-200">
+        <div className="relative h-36 md:h-48 lg:h-56 rounded-2xl overflow-hidden bg-gray-200">
           {establishment.coverImage ? (
             <img
               src={establishment.coverImage}
