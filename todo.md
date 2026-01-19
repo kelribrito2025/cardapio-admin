@@ -474,3 +474,7 @@
 ## Reduzir Altura do Banner
 - [x] Diminuir altura da capa/banner em 17% (h-48→h-40, h-64→h-52, h-72→h-60)
 - [x] Diminuir altura da capa/banner em mais 5% (h-40→h-36, h-52→h-48, h-60→h-56)
+
+## Salvamento Automático no Preview do Perfil Público
+- [x] Remover botão de salvar do container de Preview do Perfil Público
+- [x] Implementar salvamento automático ao alterar foto, nome ou outros campos

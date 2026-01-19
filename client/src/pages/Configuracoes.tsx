@@ -196,8 +196,16 @@ export default function Configuracoes() {
 
         if (type === "logo") {
           setLogo(result.url);
+          // Auto-save after logo upload
+          if (establishment) {
+            updateMutation.mutate({ id: establishment.id, logo: result.url });
+          }
         } else {
           setCoverImage(result.url);
+          // Auto-save after cover upload
+          if (establishment) {
+            updateMutation.mutate({ id: establishment.id, coverImage: result.url });
+          }
         }
       };
       reader.readAsDataURL(file);
@@ -342,6 +350,10 @@ export default function Configuracoes() {
                             onKeyDown={(e) => {
                               if (e.key === "Enter" && name.trim()) {
                                 setIsEditingName(false);
+                                // Auto-save name
+                                if (establishment && name.trim() !== originalName) {
+                                  updateMutation.mutate({ id: establishment.id, name: name.trim() });
+                                }
                               } else if (e.key === "Escape") {
                                 setName(originalName);
                                 setIsEditingName(false);
@@ -355,6 +367,10 @@ export default function Configuracoes() {
                             onClick={() => {
                               if (name.trim()) {
                                 setIsEditingName(false);
+                                // Auto-save name
+                                if (establishment && name.trim() !== originalName) {
+                                  updateMutation.mutate({ id: establishment.id, name: name.trim() });
+                                }
                               }
                             }}
                             disabled={!name.trim()}
@@ -477,13 +493,7 @@ export default function Configuracoes() {
                   </div>
                 </div>
                 
-                {/* Botão Salvar */}
-                <div className="mt-4 flex justify-end">
-                  <Button onClick={handleSaveEstablishment} disabled={isPending} className="rounded-xl shadow-sm">
-                    <Save className="h-4 w-4 mr-2" />
-                    {isPending ? "Salvando..." : "Salvar Alterações"}
-                  </Button>
-                </div>
+
               </div>
             </div>
           </SectionCard>
