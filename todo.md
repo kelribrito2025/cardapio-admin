@@ -480,3 +480,7 @@
 ## Ajuste Recorte Conforme Mockup
 - [x] Ajustar curva do recorte para começar mais à esquerda e descer suavemente
 - [x] Reduzir tamanho dos ícones (h-5 w-5 = 20px)
+
+## Recorte Arredondado (Semicírculo)
+- [x] Criar recorte arredondado como semicírculo no canto inferior direito
+- [x] Baixar posição do recorte (começa em 85% da altura)
