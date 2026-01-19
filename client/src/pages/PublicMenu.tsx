@@ -1425,20 +1425,46 @@ export default function PublicMenu() {
                     Forma de pagamento
                   </h3>
                   <div className="space-y-2">
-                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
-                      paymentMethod === "cash" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
-                    }`}>
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="cash"
-                        checked={paymentMethod === "cash"}
-                        onChange={() => setPaymentMethod("cash")}
-                        className="w-4 h-4 text-red-500 focus:ring-red-500"
-                      />
-                      <Banknote className="h-5 w-5 text-gray-600" />
-                      <span className="font-medium text-gray-800">Dinheiro</span>
-                    </label>
+                    <div>
+                      <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                        paymentMethod === "cash" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                      }`}>
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="cash"
+                          checked={paymentMethod === "cash"}
+                          onChange={() => setPaymentMethod("cash")}
+                          className="w-4 h-4 text-red-500 focus:ring-red-500"
+                        />
+                        <Banknote className="h-5 w-5 text-gray-600" />
+                        <span className="font-medium text-gray-800">Dinheiro</span>
+                      </label>
+                      {/* Campo de Troco (logo abaixo de Dinheiro) */}
+                      {paymentMethod === "cash" && (
+                        <div className="mt-2 p-4 bg-gray-50 rounded-xl ml-7">
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Precisa de troco para quanto?</label>
+                          <input
+                            type="text"
+                            value={changeAmount}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/\D/g, "");
+                              if (value) {
+                                const formatted = (Number(value) / 100).toLocaleString("pt-BR", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                });
+                                setChangeAmount(formatted);
+                              } else {
+                                setChangeAmount("");
+                              }
+                            }}
+                            placeholder="0,00"
+                            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                          />
+                        </div>
+                      )}
+                    </div>
                     <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
                       paymentMethod === "card" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
                     }`}>
@@ -1469,30 +1495,7 @@ export default function PublicMenu() {
                     </label>
                   </div>
 
-                  {/* Campo de Troco (condicional) */}
-                  {paymentMethod === "cash" && (
-                    <div className="mt-4 p-4 bg-gray-50 rounded-xl">
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Precisa de troco para quanto?</label>
-                      <input
-                        type="text"
-                        value={changeAmount}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, "");
-                          if (value) {
-                            const formatted = (Number(value) / 100).toLocaleString("pt-BR", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            });
-                            setChangeAmount(formatted);
-                          } else {
-                            setChangeAmount("");
-                          }
-                        }}
-                        placeholder="0,00"
-                        className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
-                      />
-                    </div>
-                  )}
+
                 </div>
               </div>
 

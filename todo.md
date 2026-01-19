@@ -652,3 +652,7 @@
 ## Substituir Perfil por Sacola no Desktop
 - [x] Substituir botão Perfil pelo botão Sacola no header desktop
 - [x] Adicionar badge de quantidade de itens no carrinho
+
+
+## Correção Posição Campo de Troco
+- [x] Mover campo "Precisa de troco" para logo abaixo do card Dinheiro
