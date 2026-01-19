@@ -470,3 +470,6 @@
 ## Ocultar Número de Avaliações em Mobile
 - [x] Remover número de avaliações ao lado da nota em mobile
 - [x] Mostrar total de avaliações ao clicar na estrela/nota (tooltip)
+
+## Reduzir Altura do Banner
+- [x] Diminuir altura da capa/banner em 17% (h-48→h-40, h-64→h-52, h-72→h-60)
