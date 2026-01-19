@@ -73,6 +73,7 @@ export default function PublicMenu() {
     observation: string;
   }>>([]);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [currentOrderNumber, setCurrentOrderNumber] = useState<string | null>(null);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
@@ -88,6 +89,64 @@ export default function PublicMenu() {
   const { data: productComplements } = trpc.publicMenu.getProductComplements.useQuery(
     { productId: selectedProduct?.id || 0 },
     { enabled: !!selectedProduct?.id }
+  );
+
+  // Mutation para criar pedido
+  const createOrderMutation = trpc.publicMenu.createOrder.useMutation({
+    onSuccess: (result) => {
+      // Salvar endereço e dados do cliente no localStorage
+      if (deliveryType === 'delivery') {
+        localStorage.setItem('savedDeliveryAddress', JSON.stringify(deliveryAddress));
+      }
+      localStorage.setItem('savedCustomerInfo', JSON.stringify(customerInfo));
+      
+      // Criar novo pedido para o histórico local
+      const newOrder = {
+        id: result.orderNumber,
+        date: new Date().toISOString(),
+        items: cart.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          complements: item.complements.map(c => ({ name: c.name, price: c.price }))
+        })),
+        total: cart.reduce((sum, item) => {
+          const itemTotal = parseFloat(item.price) * item.quantity;
+          const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
+          return sum + itemTotal + complementsTotal;
+        }, 0).toFixed(2),
+        status: "sent" as const,
+        deliveryType,
+        paymentMethod,
+        address: deliveryType === 'delivery' ? deliveryAddress : undefined,
+        customerName: customerInfo.name,
+        customerPhone: customerInfo.phone,
+        observation: orderObservation
+      };
+      
+      // Salvar no localStorage
+      const existingOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
+      const updatedOrders = [newOrder, ...existingOrders];
+      localStorage.setItem('userOrders', JSON.stringify(updatedOrders));
+      setUserOrders(updatedOrders);
+      setSelectedOrderId(newOrder.id);
+      setCurrentOrderNumber(result.orderNumber);
+      
+      setIsSendingOrder(false);
+      setOrderSent(true);
+      setOrderStatus("sent");
+    },
+    onError: (error) => {
+      console.error('Erro ao enviar pedido:', error);
+      setIsSendingOrder(false);
+      alert('Erro ao enviar pedido. Por favor, tente novamente.');
+    }
+  });
+
+  // Query para buscar pedidos pelo telefone
+  const { data: phoneOrders, refetch: refetchPhoneOrders } = trpc.publicMenu.getOrdersByPhone.useQuery(
+    { phone: customerInfo.phone, establishmentId: data?.establishment?.id || 0 },
+    { enabled: false } // Só busca quando chamado manualmente
   );
 
   // Set first category as active when data loads
@@ -1773,53 +1832,46 @@ export default function PublicMenu() {
                 >
                   Voltar
                 </button>
-                {!isSendingOrder ? (
                 <button
                   onClick={() => {
-                    if (isSendingOrder) return;
+                    if (isSendingOrder || !establishment) return;
                     setIsSendingOrder(true);
-                    // Salvar endereço e dados do cliente no localStorage
-                    if (deliveryType === 'delivery') {
-                      localStorage.setItem('savedDeliveryAddress', JSON.stringify(deliveryAddress));
-                    }
-                    localStorage.setItem('savedCustomerInfo', JSON.stringify(customerInfo));
-                    // Simular envio do pedido com 3 segundos de carregamento
-                    setTimeout(() => {
-                      // Criar novo pedido
-                      const newOrder = {
-                        id: `PED-${Date.now()}`,
-                        date: new Date().toISOString(),
-                        items: cart.map(item => ({
-                          name: item.name,
-                          quantity: item.quantity,
-                          price: item.price,
-                          complements: item.complements.map(c => ({ name: c.name, price: c.price }))
-                        })),
-                        total: cart.reduce((sum, item) => {
-                          const itemTotal = parseFloat(item.price) * item.quantity;
-                          const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
-                          return sum + itemTotal + complementsTotal;
-                        }, 0).toFixed(2),
-                        status: "sent" as const,
-                        deliveryType,
-                        paymentMethod,
-                        address: deliveryType === 'delivery' ? deliveryAddress : undefined,
-                        customerName: customerInfo.name,
-                        customerPhone: customerInfo.phone,
-                        observation: orderObservation
-                      };
-                      
-                      // Salvar no localStorage
-                      const existingOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
-                      const updatedOrders = [newOrder, ...existingOrders];
-                      localStorage.setItem('userOrders', JSON.stringify(updatedOrders));
-                      setUserOrders(updatedOrders);
-                      setSelectedOrderId(newOrder.id);
-                      
-                      setIsSendingOrder(false);
-                      setOrderSent(true);
-                      setOrderStatus("sent");
-                    }, 3000);
+                    
+                    // Calcular totais
+                    const subtotal = cart.reduce((sum, item) => {
+                      const itemTotal = parseFloat(item.price) * item.quantity;
+                      const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
+                      return sum + itemTotal + complementsTotal;
+                    }, 0);
+                    
+                    // Montar endereço completo
+                    const fullAddress = deliveryType === 'delivery' 
+                      ? `${deliveryAddress.street}, ${deliveryAddress.number}${deliveryAddress.complement ? ` - ${deliveryAddress.complement}` : ''}, ${deliveryAddress.neighborhood}${deliveryAddress.reference ? ` (Ref: ${deliveryAddress.reference})` : ''}`
+                      : null;
+                    
+                    // Enviar pedido via API
+                    createOrderMutation.mutate({
+                      establishmentId: establishment.id,
+                      customerName: customerInfo.name,
+                      customerPhone: customerInfo.phone,
+                      customerAddress: fullAddress || undefined,
+                      deliveryType,
+                      paymentMethod,
+                      subtotal: subtotal.toFixed(2),
+                      deliveryFee: "0",
+                      total: subtotal.toFixed(2),
+                      notes: orderObservation || undefined,
+                      changeAmount: paymentMethod === 'cash' && changeAmount ? changeAmount : undefined,
+                      items: cart.map(item => ({
+                        productId: item.productId,
+                        productName: item.name,
+                        quantity: item.quantity,
+                        unitPrice: item.price,
+                        totalPrice: ((parseFloat(item.price) + item.complements.reduce((s, c) => s + parseFloat(c.price), 0)) * item.quantity).toFixed(2),
+                        complements: item.complements.map(c => ({ name: c.name, price: parseFloat(c.price) })),
+                        notes: item.observation || undefined,
+                      })),
+                    });
                   }}
                   disabled={isSendingOrder}
                   className={`flex-1 py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
@@ -1840,18 +1892,6 @@ export default function PublicMenu() {
                     'Enviar pedido'
                   )}
                 </button>
-                ) : (
-                <button
-                  disabled={true}
-                  className="flex-1 py-3.5 bg-green-400 cursor-not-allowed text-white font-semibold rounded-xl flex items-center justify-center gap-2"
-                >
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Enviando...
-                </button>
-                )}
               </div>
               )}
             </div>

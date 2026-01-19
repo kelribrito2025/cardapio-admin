@@ -660,3 +660,34 @@
 
 ## Correção Modal Sacola Desktop
 - [x] Corrigir modal da sacola para aparecer na versão desktop
+
+
+## Integração Backend Pedidos
+- [ ] Criar tabelas orders e orderItems no banco de dados
+- [ ] Criar rotas tRPC para criar pedido (público) e listar/atualizar pedidos (admin)
+- [ ] Atualizar cardápio público para enviar pedidos ao backend
+- [ ] Remover dados mockados da página de pedidos do admin
+- [ ] Implementar listagem de pedidos em tempo real no admin
+- [ ] Implementar atualização de status do pedido pelo admin
+
+
+## Integração de Pedidos com Backend
+- [x] Criar campo changeAmount no schema de orders para troco
+- [x] Criar funções de banco de dados para pedidos públicos (createPublicOrder, getPublicOrderByNumber, getOrdersByPhone, getAllOrdersByEstablishment, getActiveOrdersByEstablishment)
+- [x] Criar rotas tRPC para criar pedido público (publicMenu.createOrder)
+- [x] Criar rotas tRPC para buscar pedido por número (publicMenu.getOrderByNumber)
+- [x] Criar rotas tRPC para buscar pedidos por telefone (publicMenu.getOrdersByPhone)
+- [x] Criar router orders para admin (list, get, getActive, updateStatus)
+- [x] Atualizar PublicMenu.tsx para enviar pedidos via API em vez de localStorage
+- [x] Atualizar página Pedidos.tsx do admin para usar as novas rotas
+- [x] Implementar polling de 10 segundos para atualização automática de pedidos
+- [x] Criar testes unitários para as funções de pedidos
+
+
+## Integração de Pedidos com Backend (Solicitação do Usuário)
+
+- [x] Criar rotas públicas para criar pedidos via API
+- [x] Integrar cardápio público com backend para salvar pedidos
+- [x] Remover dados mockados da página de pedidos do admin
+- [x] Implementar atualização em tempo real dos pedidos (polling a cada 30s)
+- [x] Permitir que o restaurante atualize status dos pedidos

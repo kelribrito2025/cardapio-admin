@@ -913,3 +913,143 @@ export async function getStockSummary(establishmentId: number) {
     outOfStock: items.filter(i => i.status === "out_of_stock").length,
   };
 }
+
+
+// ============ PUBLIC ORDER FUNCTIONS ============
+export async function createPublicOrder(data: InsertOrder, items: InsertOrderItem[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Generate order number
+  const orderNumber = `#${Date.now().toString(36).toUpperCase()}`;
+  
+  const result = await db.insert(orders).values({
+    ...data,
+    orderNumber,
+    status: "new",
+  });
+  const orderId = result[0].insertId;
+  
+  if (items.length > 0) {
+    const itemsWithOrderId = items.map(item => ({ ...item, orderId }));
+    await db.insert(orderItems).values(itemsWithOrderId);
+  }
+  
+  return { orderId, orderNumber };
+}
+
+export async function getPublicOrderByNumber(orderNumber: string, establishmentId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(orders)
+    .where(and(
+      eq(orders.orderNumber, orderNumber),
+      eq(orders.establishmentId, establishmentId)
+    ))
+    .limit(1);
+  
+  if (result.length === 0) return undefined;
+  
+  const order = result[0];
+  const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id));
+  
+  return { ...order, items };
+}
+
+export async function getOrdersByPhone(phone: string, establishmentId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db.select().from(orders)
+    .where(and(
+      eq(orders.customerPhone, phone),
+      eq(orders.establishmentId, establishmentId)
+    ))
+    .orderBy(desc(orders.createdAt))
+    .limit(20);
+  
+  // Buscar itens de cada pedido
+  const ordersWithItems = await Promise.all(
+    result.map(async (order) => {
+      const items = await db.select().from(orderItems)
+        .where(eq(orderItems.orderId, order.id));
+      return { ...order, items };
+    })
+  );
+  
+  return ordersWithItems;
+}
+
+export async function getAllOrdersByEstablishment(
+  establishmentId: number,
+  filters?: {
+    status?: "new" | "preparing" | "ready" | "completed" | "cancelled";
+    limit?: number;
+    offset?: number;
+  }
+) {
+  const db = await getDb();
+  if (!db) return { orders: [], total: 0 };
+  
+  const conditions = [eq(orders.establishmentId, establishmentId)];
+  if (filters?.status) {
+    conditions.push(eq(orders.status, filters.status));
+  }
+  
+  const whereClause = and(...conditions);
+  
+  // Get total count
+  const countResult = await db.select({ count: sql<number>`count(*)` })
+    .from(orders)
+    .where(whereClause);
+  const total = countResult[0]?.count ?? 0;
+  
+  // Get orders
+  let query = db.select().from(orders)
+    .where(whereClause)
+    .orderBy(desc(orders.createdAt));
+  
+  if (filters?.limit) {
+    query = query.limit(filters.limit) as typeof query;
+  }
+  if (filters?.offset) {
+    query = query.offset(filters.offset) as typeof query;
+  }
+  
+  const ordersList = await query;
+  
+  // Buscar itens de cada pedido
+  const ordersWithItems = await Promise.all(
+    ordersList.map(async (order) => {
+      const items = await db.select().from(orderItems)
+        .where(eq(orderItems.orderId, order.id));
+      return { ...order, items };
+    })
+  );
+  
+  return { orders: ordersWithItems, total };
+}
+
+export async function getActiveOrdersByEstablishment(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db.select().from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      sql`${orders.status} IN ('new', 'preparing', 'ready')`
+    ))
+    .orderBy(desc(orders.createdAt));
+  
+  // Buscar itens de cada pedido
+  const ordersWithItems = await Promise.all(
+    result.map(async (order) => {
+      const items = await db.select().from(orderItems)
+        .where(eq(orderItems.orderId, order.id));
+      return { ...order, items };
+    })
+  );
+  
+  return ordersWithItems;
+}

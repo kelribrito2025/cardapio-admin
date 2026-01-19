@@ -85,36 +85,40 @@ export default function Pedidos() {
 
   // All hooks MUST be called before any early return
   // Query para buscar todos os pedidos (para contagem)
-  const { data: allOrders } = trpc.order.list.useQuery(
+  const { data: allOrdersData, refetch: refetchAll } = trpc.orders.list.useQuery(
     { 
       establishmentId: establishmentId!,
     },
     { 
       enabled: !!establishmentId,
-      refetchInterval: 30000,
+      refetchInterval: 10000, // Atualiza a cada 10 segundos
     }
   );
 
   // Query para buscar pedidos filtrados por status
-  const { data: orders, refetch, isLoading } = trpc.order.list.useQuery(
+  const { data: ordersData, refetch, isLoading } = trpc.orders.list.useQuery(
     { 
       establishmentId: establishmentId!,
       status: activeTab !== "all" ? activeTab : undefined,
     },
     { 
       enabled: !!establishmentId,
-      refetchInterval: 30000,
+      refetchInterval: 10000, // Atualiza a cada 10 segundos
     }
   );
 
-  const { data: orderDetails } = trpc.order.get.useQuery(
+  const allOrders = allOrdersData?.orders || [];
+  const orders = ordersData?.orders || [];
+
+  const { data: orderDetails } = trpc.orders.get.useQuery(
     { id: selectedOrder! },
     { enabled: !!selectedOrder }
   );
 
-  const updateStatusMutation = trpc.order.updateStatus.useMutation({
+  const updateStatusMutation = trpc.orders.updateStatus.useMutation({
     onSuccess: () => {
       refetch();
+      refetchAll();
       toast.success("Status atualizado");
     },
     onError: () => toast.error("Erro ao atualizar status"),

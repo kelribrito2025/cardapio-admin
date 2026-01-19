@@ -57,6 +57,13 @@
       "when": 1768778876469,
       "tag": "0007_silent_tomas",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1768860062623,
+      "tag": "0008_worthless_epoch",
+      "breakpoints": true
     }
   ]
 }

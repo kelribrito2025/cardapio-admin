@@ -705,6 +705,133 @@ export const appRouter = router({
         );
         return groupsWithItems;
       }),
+    
+    // Create order from public menu
+    createOrder: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        customerName: z.string().min(1, "Nome é obrigatório"),
+        customerPhone: z.string().min(1, "Telefone é obrigatório"),
+        customerAddress: z.string().optional(),
+        deliveryType: z.enum(["delivery", "pickup"]),
+        paymentMethod: z.enum(["cash", "card", "pix", "boleto"]),
+        subtotal: z.string(),
+        deliveryFee: z.string().optional(),
+        total: z.string(),
+        notes: z.string().optional(),
+        changeAmount: z.string().optional(),
+        items: z.array(z.object({
+          productId: z.number(),
+          productName: z.string(),
+          quantity: z.number(),
+          unitPrice: z.string(),
+          totalPrice: z.string(),
+          complements: z.array(z.object({
+            name: z.string(),
+            price: z.number(),
+          })).optional(),
+          notes: z.string().optional(),
+        })),
+      }))
+      .mutation(async ({ input }) => {
+        const { items, ...orderData } = input;
+        
+        const result = await db.createPublicOrder(
+          {
+            establishmentId: orderData.establishmentId,
+            customerName: orderData.customerName,
+            customerPhone: orderData.customerPhone,
+            customerAddress: orderData.customerAddress || null,
+            deliveryType: orderData.deliveryType,
+            paymentMethod: orderData.paymentMethod,
+            subtotal: orderData.subtotal,
+            deliveryFee: orderData.deliveryFee || "0",
+            total: orderData.total,
+            notes: orderData.notes || null,
+            changeAmount: orderData.changeAmount || null,
+            orderNumber: "", // Will be generated in db function
+          },
+          items.map(item => ({
+            orderId: 0, // Will be set in db function
+            productId: item.productId,
+            productName: item.productName,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            totalPrice: item.totalPrice,
+            complements: item.complements || [],
+            notes: item.notes || null,
+          }))
+        );
+        
+        return result;
+      }),
+    
+    // Get order by number (for tracking)
+    getOrderByNumber: publicProcedure
+      .input(z.object({
+        orderNumber: z.string(),
+        establishmentId: z.number(),
+      }))
+      .query(async ({ input }) => {
+        return db.getPublicOrderByNumber(input.orderNumber, input.establishmentId);
+      }),
+    
+    // Get orders by phone (for order history)
+    getOrdersByPhone: publicProcedure
+      .input(z.object({
+        phone: z.string(),
+        establishmentId: z.number(),
+      }))
+      .query(async ({ input }) => {
+        return db.getOrdersByPhone(input.phone, input.establishmentId);
+      }),
+  }),
+  
+  // ============ ORDERS (ADMIN) ============
+  orders: router({
+    // List all orders for admin
+    list: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        status: z.enum(["new", "preparing", "ready", "completed", "cancelled"]).optional(),
+        limit: z.number().optional(),
+        offset: z.number().optional(),
+      }))
+      .query(async ({ input }) => {
+        return db.getAllOrdersByEstablishment(input.establishmentId, {
+          status: input.status,
+          limit: input.limit,
+          offset: input.offset,
+        });
+      }),
+    
+    // Get active orders (new, preparing, ready)
+    getActive: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getActiveOrdersByEstablishment(input.establishmentId);
+      }),
+    
+    // Get single order with items
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const order = await db.getOrderById(input.id);
+        if (!order) return null;
+        const items = await db.getOrderItems(order.id);
+        return { ...order, items };
+      }),
+    
+    // Update order status
+    updateStatus: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        status: z.enum(["new", "preparing", "ready", "completed", "cancelled"]),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateOrderStatus(input.id, input.status);
+        return { success: true };
+      }),
   }),
 
   // ============ UPLOAD ============
