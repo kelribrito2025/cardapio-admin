@@ -482,3 +482,6 @@
 ## Reorganizar Campos de Endereço
 - [x] Linha 1: Rua, Número e Bairro
 - [x] Linha 2: Complemento, Cidade, Estado e CEP
+
+## Formas de Pagamento em Linha Horizontal
+- [x] Colocar as 4 formas de pagamento em uma linha horizontal (grid 4 colunas)

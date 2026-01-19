@@ -670,38 +670,38 @@ export default function Configuracoes() {
           {/* Formas de pagamento */}
           <SectionCard title="Formas de pagamento">
             <div className="space-y-4">
-              <div className="space-y-3">
-                <label className="flex items-center justify-between p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
-                  <span className="font-semibold text-sm">Dinheiro</span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <label className="flex flex-col items-center gap-2 p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
                   <Checkbox
                     checked={acceptsCash}
                     onCheckedChange={(checked) => setAcceptsCash(checked as boolean)}
                     className="h-5 w-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
+                  <span className="font-semibold text-sm">Dinheiro</span>
                 </label>
-                <label className="flex items-center justify-between p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
-                  <span className="font-semibold text-sm">Cartão</span>
+                <label className="flex flex-col items-center gap-2 p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
                   <Checkbox
                     checked={acceptsCard}
                     onCheckedChange={(checked) => setAcceptsCard(checked as boolean)}
                     className="h-5 w-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
+                  <span className="font-semibold text-sm">Cartão</span>
                 </label>
-                <label className="flex items-center justify-between p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
-                  <span className="font-semibold text-sm">Pix</span>
+                <label className="flex flex-col items-center gap-2 p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
                   <Checkbox
                     checked={acceptsPix}
                     onCheckedChange={(checked) => setAcceptsPix(checked as boolean)}
                     className="h-5 w-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
+                  <span className="font-semibold text-sm">Pix</span>
                 </label>
-                <label className="flex items-center justify-between p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
-                  <span className="font-semibold text-sm">Boleto</span>
+                <label className="flex flex-col items-center gap-2 p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
                   <Checkbox
                     checked={acceptsBoleto}
                     onCheckedChange={(checked) => setAcceptsBoleto(checked as boolean)}
                     className="h-5 w-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
+                  <span className="font-semibold text-sm">Boleto</span>
                 </label>
               </div>
 
