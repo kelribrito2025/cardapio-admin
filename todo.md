@@ -504,3 +504,7 @@
 ## Ajuste Posição Ícones no Recorte
 - [x] Aproximar ícones um do outro (gap-1 = 4px)
 - [x] Posicionar ícones mais para o canto (bottom-1 right-1)
+
+## Reposicionar Ícone de Compartilhar
+- [x] Mover ícone de compartilhar para a mesma linha do texto de avaliações
+- [x] Posicionar no final da linha (justify-between)

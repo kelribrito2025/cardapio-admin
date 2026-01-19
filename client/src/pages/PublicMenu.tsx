@@ -298,20 +298,41 @@ export default function PublicMenu() {
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
               <div className="flex-1">
                 {/* Restaurant Name and Rating */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-                    {establishment.name}
-                  </h1>
-                  {/* Rating */}
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                    <span className="text-sm font-semibold text-gray-800">
-                      {establishment.rating ? Number(establishment.rating).toFixed(1).replace('.', ',') : '0,0'}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      ({establishment.reviewCount || 0} avaliações)
-                    </span>
+                <div className="flex items-center gap-2 flex-wrap justify-between w-full">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+                      {establishment.name}
+                    </h1>
+                    {/* Rating */}
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                      <span className="text-sm font-semibold text-gray-800">
+                        {establishment.rating ? Number(establishment.rating).toFixed(1).replace('.', ',') : '0,0'}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        ({establishment.reviewCount || 0} avaliações)
+                      </span>
+                    </div>
                   </div>
+                  {/* Botão Compartilhar - no final da linha */}
+                  <button 
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({
+                          title: establishment.name,
+                          text: `Confira o cardápio de ${establishment.name}`,
+                          url: window.location.href,
+                        });
+                      } else {
+                        navigator.clipboard.writeText(window.location.href);
+                        alert('Link copiado!');
+                      }
+                    }}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+                    title="Compartilhar"
+                  >
+                    <Share2 className="h-5 w-5 text-gray-500" />
+                  </button>
                 </div>
 
                 {/* Address and More Info */}
@@ -365,29 +386,7 @@ export default function PublicMenu() {
                 </div>
               </div>
 
-              {/* Social Media Icons - canto superior direito (esconder WhatsApp/Instagram no mobile, já estão no bloco flutuante) */}
-              <div className="flex items-center gap-1">
-                {/* Botão Compartilhar */}
-                <button 
-                  onClick={() => {
-                    if (navigator.share) {
-                      navigator.share({
-                        title: establishment.name,
-                        text: `Confira o cardápio de ${establishment.name}`,
-                        url: window.location.href,
-                      });
-                    } else {
-                      navigator.clipboard.writeText(window.location.href);
-                      alert('Link copiado!');
-                    }
-                  }}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                  title="Compartilhar"
-                >
-                  <Share2 className="h-5 w-5 text-gray-500" />
-                </button>
-                {/* WhatsApp e Instagram ficam no recorte do banner */}
-              </div>
+              {/* WhatsApp e Instagram ficam no recorte do banner */}
             </div>
           </div>
         </div>
