@@ -266,21 +266,26 @@ export default function PublicMenu() {
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
               <div className="flex-1">
                 {/* Restaurant Name, Rating and Share */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-                    {establishment.name}
-                  </h1>
-                  {/* Rating */}
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                    <span className="text-sm font-semibold text-gray-800">
-                      {establishment.rating ? Number(establishment.rating).toFixed(1).replace('.', ',') : '0,0'}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      ({establishment.reviewCount || 0} avaliações)
-                    </span>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate max-w-[200px] md:max-w-none">
+                      {establishment.name}
+                    </h1>
+                    {/* Rating */}
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                      <span className="text-sm font-semibold text-gray-800">
+                        {establishment.rating ? Number(establishment.rating).toFixed(1).replace('.', ',') : '0,0'}
+                      </span>
+                      <span className="text-sm text-gray-500 hidden sm:inline">
+                        ({establishment.reviewCount || 0} avaliações)
+                      </span>
+                      <span className="text-sm text-gray-500 sm:hidden">
+                        ({establishment.reviewCount || 0})
+                      </span>
+                    </div>
                   </div>
-                  {/* Botão Compartilhar - fica na linha das avaliações, vai para baixo se não couber */}
+                  {/* Botão Compartilhar - sempre na mesma linha */}
                   <button 
                     onClick={() => {
                       if (navigator.share) {
@@ -294,7 +299,7 @@ export default function PublicMenu() {
                         alert('Link copiado!');
                       }
                     }}
-                    className="p-1.5 hover:bg-gray-100 rounded-full transition-colors ml-auto"
+                    className="p-1.5 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
                     title="Compartilhar"
                   >
                     <Share2 className="h-5 w-5 text-gray-500" />

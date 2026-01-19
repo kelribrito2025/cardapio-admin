@@ -463,3 +463,6 @@
 ## Dropdown para Ícones Sociais
 - [x] Substituir exibição direta de WhatsApp/Instagram por uma setinha
 - [x] Ao clicar na setinha, mostrar dropdown com ícones de WhatsApp e Instagram
+
+## Corrigir Quebra de Linha do Ícone de Compartilhar
+- [x] Evitar que o ícone de compartilhar quebre de linha em telas menores
