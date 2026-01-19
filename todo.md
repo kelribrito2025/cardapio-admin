@@ -647,3 +647,8 @@
 
 ## Ajuste Visual Modal Resumo do Pedido
 - [x] Remover fotos dos itens no modal de resumo do pedido
+
+
+## Substituir Perfil por Sacola no Desktop
+- [x] Substituir botão Perfil pelo botão Sacola no header desktop
+- [x] Adicionar badge de quantidade de itens no carrinho
