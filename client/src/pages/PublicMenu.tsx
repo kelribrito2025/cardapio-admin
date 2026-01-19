@@ -849,7 +849,7 @@ export default function PublicMenu() {
                     return (
                       <div key={group.id} className="border border-gray-200 rounded-xl overflow-hidden">
                         {/* Header do Grupo */}
-                        <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                        <div className="bg-gray-50 px-4 py-3 border-b border-gray-200" style={{paddingTop: '8px', height: '58px'}}>
                           <div className="flex items-center justify-between">
                             <h4 className="font-semibold text-gray-900">{group.name}</h4>
                             {group.isRequired && (
