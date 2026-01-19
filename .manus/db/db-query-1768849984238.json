@@ -1,0 +1,90 @@
+{
+  "query": "SELECT id, name FROM products LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name FROM products LIMIT 20;",
+  "rows": [
+    {
+      "id": "4",
+      "name": "Coca lata"
+    },
+    {
+      "id": "5",
+      "name": "Suco de goiaba"
+    },
+    {
+      "id": "30001",
+      "name": "Pudim de leite"
+    },
+    {
+      "id": "60001",
+      "name": "X-Bacon"
+    },
+    {
+      "id": "60002",
+      "name": "X-Egg"
+    },
+    {
+      "id": "60003",
+      "name": "X-Burguer"
+    },
+    {
+      "id": "60004",
+      "name": "X-Tudo"
+    },
+    {
+      "id": "60005",
+      "name": "Angus Premium"
+    },
+    {
+      "id": "60006",
+      "name": "BBQ Pulled Pork"
+    },
+    {
+      "id": "60007",
+      "name": "Trufado"
+    },
+    {
+      "id": "60008",
+      "name": "Blue Cheese Burger"
+    },
+    {
+      "id": "60009",
+      "name": "Da Casa"
+    },
+    {
+      "id": "60010",
+      "name": "Costela Desfiada"
+    },
+    {
+      "id": "60011",
+      "name": "Picanha Burger"
+    },
+    {
+      "id": "60012",
+      "name": "Smash Duplo"
+    },
+    {
+      "id": "60013",
+      "name": "Combo Premium"
+    },
+    {
+      "id": "60014",
+      "name": "Combo Clássico"
+    },
+    {
+      "id": "60015",
+      "name": "Combo Família"
+    },
+    {
+      "id": "60016",
+      "name": "Combo Kids"
+    },
+    {
+      "id": "60017",
+      "name": "Batata Frita"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\n4\tCoca lata\n5\tSuco de goiaba\n30001\tPudim de leite\n60001\tX-Bacon\n60002\tX-Egg\n60003\tX-Burguer\n60004\tX-Tudo\n60005\tAngus Premium\n60006\tBBQ Pulled Pork\n60007\tTrufado\n60008\tBlue Cheese Burger\n60009\tDa Casa\n60010\tCostela Desfiada\n60011\tPicanha Burger\n60012\tSmash Duplo\n60013\tCombo Premium\n60014\tCombo Clássico\n60015\tCombo Família\n60016\tCombo Kids\n60017\tBatata Frita\n",
+  "stderr": "",
+  "execution_time_ms": 96
+}

@@ -1,0 +1,22 @@
+{
+  "query": "SELECT id, name FROM products WHERE name LIKE '%X%Tudo%' OR name LIKE '%x-tudo%' OR name LIKE '%xtudo%' OR name = 'X Tudo' OR name = 'X-Tudo' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name FROM products WHERE name LIKE '%X%Tudo%' OR name LIKE '%x-tudo%' OR name LIKE '%xtudo%' OR name = 'X Tudo' OR name = 'X-Tudo' LIMIT 5;",
+  "rows": [
+    {
+      "id": "60004",
+      "name": "X-Tudo"
+    },
+    {
+      "id": "60047",
+      "name": "X-Tudo"
+    },
+    {
+      "id": "60083",
+      "name": "X-Tudo"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\n60004\tX-Tudo\n60047\tX-Tudo\n60083\tX-Tudo\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

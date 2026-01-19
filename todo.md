@@ -545,3 +545,9 @@
 - [x] Implementar seleção de complementos (checkbox/radio conforme regras)
 - [x] Calcular preço total incluindo complementos selecionados
 - [x] Incluir complementos selecionados ao adicionar à sacola
+
+## Complementos no X-Tudo e Correção do Carrinho
+- [x] Adicionar grupos de complementos ao produto X-Tudo (Adicionais, Ponto da carne, Bebida)
+- [x] Corrigir exibição da sacola para mostrar itens adicionados dinamicamente
+- [x] Corrigir cálculo de subtotal e total na sacola
+- [x] Corrigir botão "Adicionar" para adicionar item ao carrinho corretamente

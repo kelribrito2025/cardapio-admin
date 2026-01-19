@@ -557,29 +557,71 @@ export default function PublicMenu() {
                 <h3 className="font-bold text-gray-900 mb-4">Sua sacola</h3>
                 
                 {/* Empty cart state */}
-                <div className="text-center py-8">
-                  <ShoppingBag className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                  <p className="text-gray-400 font-medium">Sacola vazia</p>
-                </div>
+                {cart.length === 0 ? (
+                  <div className="text-center py-8">
+                    <ShoppingBag className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                    <p className="text-gray-400 font-medium">Sacola vazia</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {cart.map((item, index) => {
+                      const complementsTotal = item.complements.reduce((sum, c) => sum + Number(c.price), 0);
+                      const itemTotal = (Number(item.price) + complementsTotal) * item.quantity;
+                      return (
+                        <div key={index} className="flex gap-3 pb-3 border-b border-gray-100 last:border-0">
+                          {item.image && (
+                            <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-start gap-2">
+                              <div>
+                                <p className="font-medium text-gray-900 text-sm truncate">{item.quantity}x {item.name}</p>
+                                {item.complements.length > 0 && (
+                                  <p className="text-xs text-gray-500 truncate">
+                                    {item.complements.map(c => c.name).join(', ')}
+                                  </p>
+                                )}
+                              </div>
+                              <span className="text-sm font-semibold text-gray-900 flex-shrink-0">
+                                {formatPrice(itemTotal)}
+                              </span>
+                            </div>
+                            {item.observation && (
+                              <p className="text-xs text-gray-400 mt-0.5 truncate">Obs: {item.observation}</p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
 
                 {/* Divider */}
                 <div className="border-t border-dashed border-gray-200 my-4" />
 
                 {/* Totals */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Subtotal</span>
-                    <span className="text-gray-600">R$ 0,00</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Taxa de entrega</span>
-                    <span className="text-gray-400">R$ 0,00</span>
-                  </div>
-                  <div className="flex justify-between font-bold text-base pt-2">
-                    <span className="text-gray-900">Total</span>
-                    <span className="text-gray-900">R$ 0,00</span>
-                  </div>
-                </div>
+                {(() => {
+                  const subtotal = cart.reduce((sum, item) => {
+                    const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
+                    return sum + (Number(item.price) + complementsTotal) * item.quantity;
+                  }, 0);
+                  return (
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Subtotal</span>
+                        <span className="text-gray-600">{formatPrice(subtotal)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Taxa de entrega</span>
+                        <span className="text-gray-400">R$ 0,00</span>
+                      </div>
+                      <div className="flex justify-between font-bold text-base pt-2">
+                        <span className="text-gray-900">Total</span>
+                        <span className="text-gray-900">{formatPrice(subtotal)}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Cupom */}
                 <button className="w-full flex items-center justify-between mt-4 py-3 border-t border-gray-100 hover:bg-gray-50 -mx-4 px-4 transition-colors">
@@ -595,10 +637,14 @@ export default function PublicMenu() {
 
                 {/* Button */}
                 <button 
-                  disabled
-                  className="w-full mt-4 py-3.5 bg-red-400/80 text-white font-semibold rounded-xl cursor-not-allowed"
+                  disabled={cart.length === 0}
+                  className={`w-full mt-4 py-3.5 font-semibold rounded-xl transition-colors ${
+                    cart.length === 0 
+                      ? 'bg-red-400/80 text-white cursor-not-allowed' 
+                      : 'bg-red-500 hover:bg-red-600 text-white'
+                  }`}
                 >
-                  Sacola vazia
+                  {cart.length === 0 ? 'Sacola vazia' : `Finalizar pedido`}
                 </button>
               </div>
             </div>

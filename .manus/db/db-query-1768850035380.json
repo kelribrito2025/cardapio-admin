@@ -1,0 +1,60 @@
+{
+  "query": "SELECT id, name, establishmentId FROM products WHERE name LIKE '%tudo%' OR name LIKE '%X%' LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, establishmentId FROM products WHERE name LIKE '%tudo%' OR name LIKE '%X%' LIMIT 10;",
+  "rows": [
+    {
+      "id": "60001",
+      "name": "X-Bacon",
+      "establishmentId": "1"
+    },
+    {
+      "id": "60002",
+      "name": "X-Egg",
+      "establishmentId": "1"
+    },
+    {
+      "id": "60003",
+      "name": "X-Burguer",
+      "establishmentId": "1"
+    },
+    {
+      "id": "60004",
+      "name": "X-Tudo",
+      "establishmentId": "1"
+    },
+    {
+      "id": "60045",
+      "name": "X-Burguer",
+      "establishmentId": "2"
+    },
+    {
+      "id": "60046",
+      "name": "X-Bacon",
+      "establishmentId": "2"
+    },
+    {
+      "id": "60047",
+      "name": "X-Tudo",
+      "establishmentId": "2"
+    },
+    {
+      "id": "60048",
+      "name": "X-Egg",
+      "establishmentId": "2"
+    },
+    {
+      "id": "60081",
+      "name": "X-Egg",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "60082",
+      "name": "X-Burguer",
+      "establishmentId": "30001"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\testablishmentId\n60001\tX-Bacon\t1\n60002\tX-Egg\t1\n60003\tX-Burguer\t1\n60004\tX-Tudo\t1\n60045\tX-Burguer\t2\n60046\tX-Bacon\t2\n60047\tX-Tudo\t2\n60048\tX-Egg\t2\n60081\tX-Egg\t30001\n60082\tX-Burguer\t30001\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}
