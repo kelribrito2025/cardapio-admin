@@ -501,3 +501,6 @@
 
 ## Trocar Ícone de Maximizar Menu
 - [x] Substituir ícone PanelLeft por ChevronRight (menor) quando menu estiver minimizado
+
+## Corrigir Proporções das Abas de Navegação
+- [x] Verificar e corrigir proporções das abas Estabelecimento e Atendimento (padding px-4 py-2, min-w-[140px])
