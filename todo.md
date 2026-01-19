@@ -523,3 +523,6 @@
 - [x] Adicionar item "Planos" no dropdown do perfil (abaixo de Configurações)
 - [x] Adicionar rota /planos no App.tsx
 - [x] Garantir responsividade da página (grid 1-3 colunas)
+
+## Remover Container de Estabelecimento da Sidebar
+- [x] Remover o container "ESTABELECIMENTO / Restaurante Doca Iracema" da barra lateral

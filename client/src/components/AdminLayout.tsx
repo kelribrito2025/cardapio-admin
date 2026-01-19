@@ -265,32 +265,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
 
 
-        {/* Store info */}
-        {establishment && !sidebarCollapsed && (
-          <div className="p-3 mx-3 mb-3 bg-gray-100/80 rounded-lg border border-gray-200/50">
-            <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5">
-              Estabelecimento
-            </p>
-            <p className="font-semibold text-sm text-gray-800 truncate">
-              {establishment.name || "Meu Restaurante"}
-            </p>
-          </div>
-        )}
-
-        {/* Collapsed store indicator */}
-        {establishment && sidebarCollapsed && (
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <div className="mx-2 mb-2 p-3 bg-gray-100/80 rounded-xl border border-gray-200/50 flex justify-center">
-                <Store className="h-5 w-5 text-gray-600" />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="font-medium">
-              {establishment.name || "Meu Restaurante"}
-            </TooltipContent>
-          </Tooltip>
-        )}
-
         {/* Free Trial Card - Expanded (at the very bottom) */}
         {!sidebarCollapsed && (
           <div className="mt-auto mx-3 mb-3 p-4 rounded-xl bg-card border border-border/50 shadow-soft">
