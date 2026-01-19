@@ -19,6 +19,7 @@ import {
   PanelLeft,
   PanelLeftClose,
   ExternalLink,
+  Crown,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
@@ -439,6 +440,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       <Link href="/configuracoes">
                         <Settings className="h-4 w-4 mr-2.5" />
                         Configurações
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
+                      <Link href="/planos">
+                        <Crown className="h-4 w-4 mr-2.5" />
+                        Planos
                       </Link>
                     </DropdownMenuItem>
                   </div>

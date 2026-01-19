@@ -12,6 +12,7 @@ import ProductForm from "./pages/ProductForm";
 import Pedidos from "./pages/Pedidos";
 import Estoque from "./pages/Estoque";
 import Configuracoes from "./pages/Configuracoes";
+import Planos from "./pages/Planos";
 import PublicMenu from "./pages/PublicMenu";
 
 // Auth Pages
@@ -35,6 +36,7 @@ function Router() {
       <Route path="/pedidos" component={Pedidos} />
       <Route path="/estoque" component={Estoque} />
       <Route path="/configuracoes" component={Configuracoes} />
+      <Route path="/planos" component={Planos} />
       
       {/* Public menu route */}
       <Route path="/menu/:slug" component={PublicMenu} />

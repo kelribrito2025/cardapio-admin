@@ -514,3 +514,12 @@
 
 ## Ajustar Visual do Card Avaliação Gratuita
 - [x] Modificar estilo do card "Avaliação gratuita" na sidebar para ficar consistente com o sistema
+
+## Página de Planos
+- [x] Criar página /planos com identidade visual do sistema
+- [x] Implementar 3 cards: Gratuito, Lite, Pro
+- [x] Cada card com: título, lista de recursos, preço, botão de assinatura
+- [x] Destaque especial no plano Pro (cor primária, badge "Mais popular")
+- [x] Adicionar item "Planos" no dropdown do perfil (abaixo de Configurações)
+- [x] Adicionar rota /planos no App.tsx
+- [x] Garantir responsividade da página (grid 1-3 colunas)
