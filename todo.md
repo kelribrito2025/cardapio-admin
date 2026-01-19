@@ -494,3 +494,9 @@
 - [x] Remover recorte SVG do banner mobile
 - [x] Remover ícones flutuantes do recorte
 - [x] Mostrar ícones na seção de informações do restaurante (mobile e desktop)
+
+## Recorte Curvo no Banner com Ícones Embutidos
+- [x] Criar recorte curvo no canto inferior direito do banner
+- [x] Posicionar ícones WhatsApp e Instagram dentro do recorte
+- [x] Ícones centralizados com margem de respiro
+- [x] Manter proporção no mobile
