@@ -466,3 +466,7 @@
 
 ## Corrigir Quebra de Linha do Ícone de Compartilhar
 - [x] Evitar que o ícone de compartilhar quebre de linha em telas menores
+
+## Ocultar Número de Avaliações em Mobile
+- [x] Remover número de avaliações ao lado da nota em mobile
+- [x] Mostrar total de avaliações ao clicar na estrela/nota (tooltip)

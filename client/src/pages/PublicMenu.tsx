@@ -11,7 +11,9 @@ export default function PublicMenu() {
   const [isScrolling, setIsScrolling] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showSocialDropdown, setShowSocialDropdown] = useState(false);
+  const [showRatingTooltip, setShowRatingTooltip] = useState(false);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
+  const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
   const categoryRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const categoryButtonRefs = useRef<{ [key: number]: HTMLButtonElement | null }>({});
@@ -33,6 +35,9 @@ export default function PublicMenu() {
     const handleClickOutside = (event: MouseEvent) => {
       if (socialDropdownRef.current && !socialDropdownRef.current.contains(event.target as Node)) {
         setShowSocialDropdown(false);
+      }
+      if (ratingTooltipRef.current && !ratingTooltipRef.current.contains(event.target as Node)) {
+        setShowRatingTooltip(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -271,18 +276,27 @@ export default function PublicMenu() {
                     <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate max-w-[200px] md:max-w-none">
                       {establishment.name}
                     </h1>
-                    {/* Rating */}
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                      <span className="text-sm font-semibold text-gray-800">
-                        {establishment.rating ? Number(establishment.rating).toFixed(1).replace('.', ',') : '0,0'}
-                      </span>
-                      <span className="text-sm text-gray-500 hidden sm:inline">
-                        ({establishment.reviewCount || 0} avaliações)
-                      </span>
-                      <span className="text-sm text-gray-500 sm:hidden">
-                        ({establishment.reviewCount || 0})
-                      </span>
+                    {/* Rating - clicável em mobile para mostrar total de avaliações */}
+                    <div className="relative flex-shrink-0" ref={ratingTooltipRef}>
+                      <button
+                        onClick={() => setShowRatingTooltip(!showRatingTooltip)}
+                        className="flex items-center gap-1 sm:cursor-default"
+                      >
+                        <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                        <span className="text-sm font-semibold text-gray-800">
+                          {establishment.rating ? Number(establishment.rating).toFixed(1).replace('.', ',') : '0,0'}
+                        </span>
+                        <span className="text-sm text-gray-500 hidden sm:inline">
+                          ({establishment.reviewCount || 0} avaliações)
+                        </span>
+                      </button>
+                      {/* Tooltip para mobile */}
+                      {showRatingTooltip && (
+                        <div className="absolute left-0 top-full mt-1 bg-gray-800 text-white text-xs px-3 py-2 rounded-lg shadow-lg z-50 whitespace-nowrap sm:hidden">
+                          {establishment.reviewCount || 0} avaliações
+                          <div className="absolute -top-1 left-4 w-2 h-2 bg-gray-800 rotate-45"></div>
+                        </div>
+                      )}
                     </div>
                   </div>
                   {/* Botão Compartilhar - sempre na mesma linha */}
