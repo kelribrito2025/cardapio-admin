@@ -215,28 +215,49 @@ export default function PublicMenu() {
 
       {/* Cover Image */}
       <div className="max-w-6xl mx-auto px-4 pt-4">
-        <div className="relative h-48 md:h-64 lg:h-72 rounded-2xl overflow-hidden bg-gray-200">
-          {establishment.coverImage ? (
-            <img
-              src={establishment.coverImage}
-              alt="Capa do restaurante"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-red-500/20 to-red-500/5 flex items-center justify-center">
-              <Utensils className="h-16 w-16 text-red-500/30" />
-            </div>
-          )}
+        <div className="relative h-48 md:h-64 lg:h-72">
+          {/* Banner com recorte curvo no mobile */}
+          <div 
+            className="relative w-full h-full rounded-2xl overflow-hidden bg-gray-200"
+            style={{
+              // Recorte curvo no canto inferior direito apenas no mobile
+              clipPath: (establishment.whatsapp || establishment.instagram) 
+                ? 'url(#bannerClipMobile)' 
+                : undefined
+            }}
+          >
+            {/* SVG clip path definition - apenas mobile */}
+            <svg className="absolute" width="0" height="0">
+              <defs>
+                <clipPath id="bannerClipMobile" clipPathUnits="objectBoundingBox">
+                  {/* Recorte que cria um entalhe curvo no canto inferior direito */}
+                  <path d="M0,0 L1,0 L1,0.7 Q0.85,0.7 0.85,1 L0,1 Z" />
+                </clipPath>
+              </defs>
+            </svg>
+            
+            {establishment.coverImage ? (
+              <img
+                src={establishment.coverImage}
+                alt="Capa do restaurante"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-red-500/20 to-red-500/5 flex items-center justify-center">
+                <Utensils className="h-16 w-16 text-red-500/30" />
+              </div>
+            )}
+          </div>
           
-          {/* Bloco flutuante com ícones sociais - apenas mobile */}
+          {/* Ícones sociais embutidos no recorte - apenas mobile */}
           {(establishment.whatsapp || establishment.instagram) && (
-            <div className="md:hidden absolute bottom-3 right-3 flex items-center gap-2 bg-white rounded-xl px-3 py-2 shadow-lg border border-gray-100">
+            <div className="md:hidden absolute bottom-0 right-0 flex items-center justify-center gap-3 bg-gray-50 px-4 py-3" style={{ width: '15%', height: '30%', borderTopLeftRadius: '1rem' }}>
               {establishment.whatsapp && (
                 <a 
                   href={`https://wa.me/${establishment.whatsapp.replace(/\D/g, '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-2 bg-white hover:bg-gray-100 rounded-full transition-colors shadow-sm"
                   title="WhatsApp"
                 >
                   <svg className="h-5 w-5 text-green-500" viewBox="0 0 24 24" fill="currentColor">
@@ -249,7 +270,7 @@ export default function PublicMenu() {
                   href={`https://instagram.com/${establishment.instagram.replace('@', '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-2 bg-white hover:bg-gray-100 rounded-full transition-colors shadow-sm"
                   title="Instagram"
                 >
                   <svg className="h-5 w-5 text-pink-500" viewBox="0 0 24 24" fill="currentColor">
