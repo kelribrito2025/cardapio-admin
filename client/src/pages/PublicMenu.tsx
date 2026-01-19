@@ -1,7 +1,7 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, Store, Utensils, Menu, Star, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, Store, Utensils, Menu, Star, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PublicMenu() {
@@ -568,13 +568,13 @@ export default function PublicMenu() {
                       const complementsTotal = item.complements.reduce((sum, c) => sum + Number(c.price), 0);
                       const itemTotal = (Number(item.price) + complementsTotal) * item.quantity;
                       return (
-                        <div key={index} className="flex gap-3 pb-3 border-b border-gray-100 last:border-0">
+                        <div key={index} className="flex gap-3 pb-3 border-b border-gray-100 last:border-0 group">
                           {item.image && (
                             <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
                           )}
                           <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start gap-2">
-                              <div>
+                              <div className="flex-1 min-w-0">
                                 <p className="font-medium text-gray-900 text-sm truncate">{item.quantity}x {item.name}</p>
                                 {item.complements.length > 0 && (
                                   <p className="text-xs text-gray-500 truncate">
@@ -582,9 +582,20 @@ export default function PublicMenu() {
                                   </p>
                                 )}
                               </div>
-                              <span className="text-sm font-semibold text-gray-900 flex-shrink-0">
-                                {formatPrice(itemTotal)}
-                              </span>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <span className="text-sm font-semibold text-gray-900">
+                                  {formatPrice(itemTotal)}
+                                </span>
+                                <button
+                                  onClick={() => {
+                                    setCart(prev => prev.filter((_, i) => i !== index));
+                                  }}
+                                  className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                                  title="Remover item"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </div>
                             </div>
                             {item.observation && (
                               <p className="text-xs text-gray-400 mt-0.5 truncate">Obs: {item.observation}</p>

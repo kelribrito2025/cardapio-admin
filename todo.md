@@ -551,3 +551,14 @@
 - [x] Corrigir exibição da sacola para mostrar itens adicionados dinamicamente
 - [x] Corrigir cálculo de subtotal e total na sacola
 - [x] Corrigir botão "Adicionar" para adicionar item ao carrinho corretamente
+
+## Funcionalidade de Remover Itens da Sacola
+- [ ] Adicionar botão de remover item na sacola
+- [ ] Implementar função para remover item do carrinho
+- [ ] Atualizar totais após remoção
+
+
+## Funcionalidade de Remover Itens da Sacola
+- [x] Adicionar botão de remover item na sacola
+- [x] Implementar função para remover item do carrinho
+- [x] Atualizar totais após remoção
