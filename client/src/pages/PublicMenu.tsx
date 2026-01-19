@@ -245,7 +245,7 @@ export default function PublicMenu() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 py-3 pr-0">
+        <div className="max-w-7xl mx-auto px-4 py-3 pr-0">
           <div className="flex items-center gap-4">
             {/* Logo */}
             {establishment.logo ? (
@@ -302,7 +302,7 @@ export default function PublicMenu() {
       </header>
 
       {/* Cover Image */}
-      <div className="max-w-6xl mx-auto px-4 pt-4">
+      <div className="max-w-7xl mx-auto px-4 pt-4">
         <div className="relative h-36 md:h-48 lg:h-56 rounded-2xl overflow-hidden bg-gray-200">
           {establishment.coverImage ? (
             <img
@@ -319,7 +319,7 @@ export default function PublicMenu() {
       </div>
 
       {/* Restaurant Info Block */}
-      <div className="max-w-6xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="relative -mt-16 md:-mt-20 flex flex-col md:flex-row md:items-end gap-4 pb-4">
           {/* Profile Image */}
           <div className="relative z-10 ml-4 md:ml-6">
@@ -495,7 +495,7 @@ export default function PublicMenu() {
       {/* Categories Navigation */}
       {categories.length > 0 && (
         <div className="bg-white border-y sticky top-[60px] z-40">
-          <div className="max-w-6xl mx-auto px-4">
+          <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center gap-2">
               {/* Menu Icon */}
               <button className="p-2 text-gray-500 hover:text-gray-700 flex-shrink-0">
@@ -529,7 +529,7 @@ export default function PublicMenu() {
       )}
 
       {/* Products */}
-      <main className="max-w-6xl mx-auto px-4 py-4">
+      <main className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex gap-6">
           {/* Products List */}
           <div className="flex-1">
@@ -712,7 +712,7 @@ export default function PublicMenu() {
 
       {/* Footer */}
       <footer className="bg-white border-t py-6 mt-8">
-        <div className="max-w-6xl mx-auto px-4 text-center">
+        <div className="max-w-7xl mx-auto px-4 text-center">
           <p className="text-sm text-gray-500">
             Cardápio digital por{" "}
             <span className="font-semibold text-red-500">Mindi</span>
@@ -1877,7 +1877,7 @@ function MenuSkeleton() {
     <div className="min-h-screen bg-gray-50">
       {/* Header Skeleton */}
       <header className="bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-3">
+        <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center gap-4">
             <Skeleton className="h-10 w-10 rounded-lg" />
             <Skeleton className="h-10 flex-1 max-w-xl rounded-lg" />
@@ -1891,12 +1891,12 @@ function MenuSkeleton() {
       </header>
 
       {/* Cover Skeleton */}
-      <div className="max-w-6xl mx-auto px-4 pt-4">
+      <div className="max-w-7xl mx-auto px-4 pt-4">
         <Skeleton className="h-48 md:h-64 lg:h-72 rounded-2xl" />
       </div>
 
       {/* Info Skeleton */}
-      <div className="max-w-6xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="relative -mt-16 md:-mt-20 flex flex-col md:flex-row md:items-end gap-4 pb-4">
           <Skeleton className="h-28 w-28 md:h-36 md:w-36 rounded-full ml-4 md:ml-6" />
           <div className="flex-1 bg-white rounded-xl p-4 md:p-5 shadow-sm md:ml-4">
@@ -1909,7 +1909,7 @@ function MenuSkeleton() {
 
       {/* Categories Skeleton */}
       <div className="bg-white border-y">
-        <div className="max-w-6xl mx-auto px-4 py-3">
+        <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((i) => (
               <Skeleton key={i} className="h-8 w-24 rounded-lg" />
@@ -1919,7 +1919,7 @@ function MenuSkeleton() {
       </div>
 
       {/* Products Skeleton */}
-      <main className="max-w-6xl mx-auto px-4 py-4">
+      <main className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex gap-6">
           <div className="flex-1">
             <Skeleton className="h-6 w-32 mb-4" />

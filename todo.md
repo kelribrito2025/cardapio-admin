@@ -610,3 +610,7 @@
 - [x] Adicionar indicador de progresso no topo dos modais (5 etapas)
 - [x] Implementar salvamento de endereço do cliente no localStorage
 - [x] Criar feedback de carregamento no botão enviar pedido (3 segundos)
+
+
+## Ajuste Largura Menu Público Desktop
+- [x] Aumentar largura do container do menu público em 20% na versão desktop
