@@ -472,3 +472,7 @@
 - [x] Mover ícones mais para baixo no recorte
 - [x] Aproximar ícones (gap-2 = 8px de distância)
 - [x] Suavizar curvas do recorte para ficar mais fluido
+
+## Correção Recorte Banner
+- [x] Remover fundo branco que aparece atrás do WhatsApp
+- [x] Baixar posição do recorte (começa em 82% da altura agora)
