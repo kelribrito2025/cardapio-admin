@@ -1220,10 +1220,7 @@ export default function PublicMenu() {
                 <div className="space-y-3">
                   <h3 className="font-semibold text-gray-800 text-sm">Itens do pedido</h3>
                   {cart.map((item, index) => (
-                    <div key={index} className="flex gap-3 p-3 bg-gray-50 rounded-xl">
-                      {item.image && (
-                        <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg flex-shrink-0" />
-                      )}
+                    <div key={index} className="p-3 bg-gray-50 rounded-xl">
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
                           <p className="font-medium text-gray-900 text-sm">{item.quantity}x {item.name}</p>

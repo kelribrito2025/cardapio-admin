@@ -643,3 +643,7 @@
 - [x] Exibir histórico de pedidos anteriores
 - [x] Integrar botão Pedidos do menu mobile com a nova funcionalidade
 - [x] Permitir abrir modal de acompanhamento a partir de um pedido
+
+
+## Ajuste Visual Modal Resumo do Pedido
+- [x] Remover fotos dos itens no modal de resumo do pedido
