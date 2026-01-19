@@ -261,7 +261,7 @@ export default function Configuracoes() {
         {/* Estabelecimento Tab */}
         <TabsContent value="estabelecimento" className="space-y-5">
           {/* Preview do Perfil Público */}
-          <SectionCard title="Preview do Perfil Público" description="Veja como seu restaurante aparecerá para os clientes">
+          <SectionCard title="Preview do Perfil Público">
             <div className="bg-white rounded-2xl overflow-hidden border border-border/30 shadow-sm">
               {/* Cover Image */}
               <div className="relative h-48 bg-gradient-to-br from-red-100 to-red-50">
@@ -503,7 +503,6 @@ export default function Configuracoes() {
           {/* Endereço */}
           <SectionCard 
             title="Endereço do Estabelecimento"
-            description="Usado como endereço de retirada"
           >
             <div className="space-y-5">
               {/* Linha 1: Rua, Número, Bairro */}

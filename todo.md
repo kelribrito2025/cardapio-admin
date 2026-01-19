@@ -507,3 +507,7 @@
 
 ## Remover Botão de Atualizar em /pedidos
 - [x] Remover o botão de atualizar da página de pedidos
+
+## Remover Descrições dos Cards em /configuracoes
+- [x] Remover descrição "Veja como seu restaurante aparecerá para os clientes" do card Preview
+- [x] Remover descrição "Usado como endereço de retirada" do card Endereço
