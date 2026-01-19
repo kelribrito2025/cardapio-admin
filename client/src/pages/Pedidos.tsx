@@ -193,12 +193,6 @@ export default function Pedidos() {
       <PageHeader
         title="Pedidos"
         description="Gerencie os pedidos do seu estabelecimento"
-        actions={
-          <Button variant="outline" onClick={() => refetch()} className="rounded-lg border-border/50 hover:bg-accent h-9 px-3.5 text-sm">
-            <RefreshCw className={cn("h-4 w-4 mr-2", isLoading && "animate-spin")} />
-            Atualizar
-          </Button>
-        }
       />
 
       {/* Status Summary Cards */}

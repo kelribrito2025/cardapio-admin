@@ -504,3 +504,6 @@
 
 ## Corrigir Proporções das Abas de Navegação
 - [x] Verificar e corrigir proporções das abas Estabelecimento e Atendimento (padding px-4 py-2, min-w-[140px])
+
+## Remover Botão de Atualizar em /pedidos
+- [x] Remover o botão de atualizar da página de pedidos
