@@ -574,3 +574,8 @@
 - [x] Adicionar botão "Aplicar cupom" ao lado do campo
 - [x] Validar se sacola está vazia e exibir mensagem de feedback
 - [x] Manter modal aberto após validação
+
+
+## Ajuste Altura Modal de Adicionar Item
+- [x] Reduzir altura máxima do modal em 20%
+- [x] Garantir responsividade para várias telas (mobile, tablet, desktop)

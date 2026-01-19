@@ -790,11 +790,11 @@ export default function PublicMenu() {
             onClick={() => setSelectedProduct(null)}
           />
           
-          {/* Modal Content */}
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+{/* Modal Content */}
+           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[72vh] sm:max-h-[70vh] md:max-h-[72vh] overflow-hidden flex flex-col">
             {/* Imagem do Produto */}
             {selectedProduct.images?.[0] && (
-              <div className="relative w-full h-48 flex-shrink-0">
+              <div className="relative w-full h-32 sm:h-40 md:h-48 flex-shrink-0">
                 <img
                   src={selectedProduct.images[0]}
                   alt={selectedProduct.name}
@@ -823,7 +823,7 @@ export default function PublicMenu() {
             )}
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
               {/* Título e Preço */}
               <div>
                 <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
@@ -937,7 +937,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Footer com Quantidade e Botão Adicionar */}
-            <div className="border-t bg-white p-4 flex items-center gap-4">
+            <div className="border-t bg-white p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
               {/* Controle de Quantidade */}
               <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-2 py-1">
                 <button
