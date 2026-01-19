@@ -451,3 +451,10 @@
 
 ## Máscara de Moeda no Campo de Preço
 - [x] Implementar máscara de moeda (R$) no campo de preço do formulário de produto
+
+## Reposicionar Ícones WhatsApp/Instagram no Mobile
+- [x] Criar bloco flutuante no canto inferior direito do banner (apenas mobile)
+- [x] Fundo branco com sombra e borda arredondada
+- [x] Manter ícones WhatsApp e Instagram lado a lado
+- [x] Manter links funcionais para os perfis do restaurante
+- [x] Não alterar layout desktop
