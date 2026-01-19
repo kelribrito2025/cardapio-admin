@@ -511,3 +511,6 @@
 ## Remover Descrições dos Cards em /configuracoes
 - [x] Remover descrição "Veja como seu restaurante aparecerá para os clientes" do card Preview
 - [x] Remover descrição "Usado como endereço de retirada" do card Endereço
+
+## Ajustar Visual do Card Avaliação Gratuita
+- [x] Modificar estilo do card "Avaliação gratuita" na sidebar para ficar consistente com o sistema

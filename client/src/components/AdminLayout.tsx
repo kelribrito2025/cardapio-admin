@@ -292,18 +292,23 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Free Trial Card - Expanded (at the very bottom) */}
         {!sidebarCollapsed && (
-          <div className="mt-auto mx-3 mb-3 p-3 rounded-lg border border-gray-200/50 relative overflow-hidden"
-            style={{
-              background: "linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 60%, rgba(239,68,68,0.15) 100%)"
-            }}
-          >
-            <h4 className="text-red-500 font-semibold text-xs mb-0.5">
-              Avaliação gratuita
-            </h4>
-            <p className="text-gray-600 text-[10px] leading-relaxed mb-2">
-              Você tem 15 dias de acesso gratuito antes da expiração.
-            </p>
-            <button className="w-full py-2 px-3 border border-gray-300 rounded-md text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+          <div className="mt-auto mx-3 mb-3 p-4 rounded-xl bg-card border border-border/50 shadow-soft">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="text-foreground font-semibold text-sm">
+                  Avaliação gratuita
+                </h4>
+                <p className="text-muted-foreground text-xs">
+                  15 dias restantes
+                </p>
+              </div>
+            </div>
+            <button className="w-full py-2 px-3 bg-primary text-primary-foreground rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors">
               Atualizar agora
             </button>
           </div>
