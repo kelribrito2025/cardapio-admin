@@ -193,60 +193,56 @@ export default function Cupons() {
           </Button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Card className="border-green-100 bg-green-50/50">
-            <CardContent className="p-3">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-green-100 rounded-lg">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-xs text-green-600 font-medium">Ativos</p>
-                  <p className="text-lg font-semibold text-green-700">{activeCoupons}</p>
-                </div>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Ativos */}
+          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Ativos</p>
+                <p className="text-2xl font-bold mt-1 tracking-tight text-green-600">{activeCoupons}</p>
               </div>
-            </CardContent>
-          </Card>
-          <Card className="border-gray-100 bg-gray-50/50">
-            <CardContent className="p-3">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-gray-100 rounded-lg">
-                  <XCircle className="h-4 w-4 text-gray-600" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-600 font-medium">Inativos</p>
-                  <p className="text-lg font-semibold text-gray-700">{inactiveCoupons}</p>
-                </div>
+              <div className="p-2.5 bg-green-100 rounded-lg shrink-0">
+                <CheckCircle className="h-5 w-5 text-green-600" />
               </div>
-            </CardContent>
-          </Card>
-          <Card className="border-orange-100 bg-orange-50/50">
-            <CardContent className="p-3">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-orange-100 rounded-lg">
-                  <AlertCircle className="h-4 w-4 text-orange-600" />
-                </div>
-                <div>
-                  <p className="text-xs text-orange-600 font-medium">Expirados</p>
-                  <p className="text-lg font-semibold text-orange-700">{expiredCoupons}</p>
-                </div>
+            </div>
+          </div>
+          {/* Inativos */}
+          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Inativos</p>
+                <p className="text-2xl font-bold mt-1 tracking-tight text-gray-600">{inactiveCoupons}</p>
               </div>
-            </CardContent>
-          </Card>
-          <Card className="border-red-100 bg-red-50/50">
-            <CardContent className="p-3">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-red-100 rounded-lg">
-                  <Ban className="h-4 w-4 text-red-600" />
-                </div>
-                <div>
-                  <p className="text-xs text-red-600 font-medium">Esgotados</p>
-                  <p className="text-lg font-semibold text-red-700">{exhaustedCoupons}</p>
-                </div>
+              <div className="p-2.5 bg-gray-100 rounded-lg shrink-0">
+                <XCircle className="h-5 w-5 text-gray-600" />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+          {/* Expirados */}
+          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Expirados</p>
+                <p className="text-2xl font-bold mt-1 tracking-tight text-orange-600">{expiredCoupons}</p>
+              </div>
+              <div className="p-2.5 bg-orange-100 rounded-lg shrink-0">
+                <AlertCircle className="h-5 w-5 text-orange-600" />
+              </div>
+            </div>
+          </div>
+          {/* Esgotados */}
+          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 border-red-200/50 bg-red-50/30">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Esgotados</p>
+                <p className="text-2xl font-bold mt-1 tracking-tight text-red-600">{exhaustedCoupons}</p>
+              </div>
+              <div className="p-2.5 bg-red-100 rounded-lg shrink-0">
+                <Ban className="h-5 w-5 text-red-600" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Search */}

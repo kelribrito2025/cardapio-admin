@@ -746,3 +746,8 @@
 - [x] Atualizar criação de pedido para incluir cupom e desconto
 - [x] Incrementar usedCount do cupom ao criar pedido
 - [x] Testar fluxo completo de aplicação de cupom
+
+
+## Correção Visual dos Cards de Cupons
+
+- [x] Ajustar cards da página de cupons para seguir o mesmo padrão da página de estoque
