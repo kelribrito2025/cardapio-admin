@@ -484,3 +484,8 @@
 ## Recorte Arredondado (Semicírculo)
 - [x] Criar recorte arredondado como semicírculo no canto inferior direito
 - [x] Baixar posição do recorte (começa em 85% da altura)
+
+## Recorte Conforme Imagem de Referência
+- [x] Criar arco suave que começa em 65% da altura na lateral direita
+- [x] Curva descendo suavemente até 80% da largura na base
+- [x] Posicionar ícones dentro da área recortada (bottom-4 right-6)

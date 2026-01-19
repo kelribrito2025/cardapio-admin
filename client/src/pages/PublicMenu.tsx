@@ -227,12 +227,12 @@ export default function PublicMenu() {
               borderRadius: '1rem'
             }}
           >
-            {/* SVG clip path definition - recorte arredondado (semicírculo) no canto inferior direito */}
+            {/* SVG clip path definition - arco suave na lateral direita conforme referência */}
             <svg className="absolute" width="0" height="0">
               <defs>
                 <clipPath id="bannerClipMobile" clipPathUnits="objectBoundingBox">
-                  {/* Semicírculo: arco suave começando em 85% da altura, curvando para o canto */}
-                  <path d="M0,0 L1,0 L1,0.85 A0.15,0.15 0 0,1 0.85,1 L0,1 Z" />
+                  {/* Arco suave: começa em ~65% da altura na direita, curva até ~80% da largura na base */}
+                  <path d="M0,0 L1,0 L1,0.65 Q0.95,0.85 0.80,1 L0,1 Z" />
                 </clipPath>
               </defs>
             </svg>
@@ -252,7 +252,7 @@ export default function PublicMenu() {
           
           {/* Ícones sociais no recorte - apenas mobile, sem fundo */}
           {(establishment.whatsapp || establishment.instagram) && (
-            <div className="md:hidden absolute bottom-1 right-2 flex items-center justify-center gap-2">
+            <div className="md:hidden absolute bottom-4 right-6 flex items-center justify-center gap-3">
               {establishment.whatsapp && (
                 <a 
                   href={`https://wa.me/${establishment.whatsapp.replace(/\D/g, '')}`}
