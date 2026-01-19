@@ -498,3 +498,6 @@
 ## Exibir Nome e Foto do Restaurante no Header
 - [x] Substituir texto "Cardápio" pelo nome do restaurante
 - [x] Substituir ícone padrão pela foto do perfil do restaurante
+
+## Trocar Ícone de Maximizar Menu
+- [x] Substituir ícone PanelLeft por ChevronRight (menor) quando menu estiver minimizado

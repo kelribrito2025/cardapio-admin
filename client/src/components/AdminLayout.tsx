@@ -14,6 +14,7 @@ import {
   X,
   LogOut,
   ChevronDown,
+  ChevronRight,
   Store,
   PanelLeft,
   PanelLeftClose,
@@ -186,7 +187,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               title={sidebarCollapsed ? "Expandir menu" : "Minimizar menu"}
             >
               {sidebarCollapsed ? (
-                <PanelLeft className="h-5 w-5" />
+                <ChevronRight className="h-4 w-4" />
               ) : (
                 <PanelLeftClose className="h-5 w-5" />
               )}
