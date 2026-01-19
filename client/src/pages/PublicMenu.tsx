@@ -56,6 +56,7 @@ export default function PublicMenu() {
   const [isSendingOrder, setIsSendingOrder] = useState(false);
   const [orderSent, setOrderSent] = useState(false);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
+  const [showMobileBag, setShowMobileBag] = useState(false);
   const [orderStatus, setOrderStatus] = useState<"sent" | "accepted" | "delivering" | "delivered">("sent");
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
@@ -734,9 +735,17 @@ export default function PublicMenu() {
             <ClipboardList className="h-5 w-5" />
             <span className="text-xs font-medium">Pedidos</span>
           </button>
-          <button className="flex flex-col items-center gap-0.5 px-4 py-2 text-gray-500">
-            <User className="h-5 w-5" />
-            <span className="text-xs font-medium">Perfil</span>
+          <button 
+            className="flex flex-col items-center gap-0.5 px-4 py-2 text-gray-500 relative"
+            onClick={() => setShowMobileBag(true)}
+          >
+            <ShoppingBag className="h-5 w-5" />
+            {cart.length > 0 && (
+              <span className="absolute -top-0.5 right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                {cart.reduce((sum, item) => sum + item.quantity, 0)}
+              </span>
+            )}
+            <span className="text-xs font-medium">Sacola</span>
           </button>
         </div>
       </nav>
@@ -1835,6 +1844,110 @@ export default function PublicMenu() {
       )}
 
       {/* Modal de Acompanhamento do Pedido */}
+      {/* Modal da Sacola Mobile */}
+      {showMobileBag && (
+        <div className="fixed inset-0 z-[100] flex items-end md:hidden">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setShowMobileBag(false)}
+          />
+          
+          {/* Modal */}
+          <div className="relative w-full bg-white rounded-t-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom duration-300">
+            {/* Header */}
+            <div className="flex-shrink-0 border-b px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShoppingBag className="h-5 w-5 text-red-500" />
+                <h2 className="text-lg font-bold text-gray-900">Sua sacola</h2>
+              </div>
+              <button 
+                onClick={() => setShowMobileBag(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto p-4">
+              {cart.length === 0 ? (
+                <div className="text-center py-8">
+                  <ShoppingBag className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">Sua sacola está vazia</p>
+                  <p className="text-sm text-gray-400 mt-1">Adicione itens do cardápio</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {cart.map((item, index) => (
+                    <div key={index} className="flex items-start justify-between p-3 bg-gray-50 rounded-xl">
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-gray-900">{item.quantity}x {item.name}</span>
+                          <span className="text-red-500 font-semibold ml-2">
+                            R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}
+                          </span>
+                        </div>
+                        {item.complements.length > 0 && (
+                          <div className="mt-1 text-xs text-gray-500">
+                            {item.complements.map(c => `+ ${c.name}`).join(', ')}
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => {
+                          const newCart = [...cart];
+                          newCart.splice(index, 1);
+                          setCart(newCart);
+                        }}
+                        className="ml-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            {cart.length > 0 && (
+              <div className="flex-shrink-0 border-t p-4 space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Subtotal</span>
+                  <span className="font-medium">R$ {cart.reduce((sum, item) => {
+                    const itemTotal = parseFloat(item.price) * item.quantity;
+                    const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
+                    return sum + itemTotal + complementsTotal;
+                  }, 0).toFixed(2).replace('.', ',')}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Taxa de entrega</span>
+                  <span className="text-gray-500">R$ 0,00</span>
+                </div>
+                <div className="flex justify-between font-bold text-lg pt-2 border-t">
+                  <span>Total</span>
+                  <span className="text-red-500">R$ {cart.reduce((sum, item) => {
+                    const itemTotal = parseFloat(item.price) * item.quantity;
+                    const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
+                    return sum + itemTotal + complementsTotal;
+                  }, 0).toFixed(2).replace('.', ',')}</span>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowMobileBag(false);
+                    setCheckoutStep(1);
+                  }}
+                  className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
+                >
+                  Finalizar pedido
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {showTrackingModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center">
           {/* Backdrop */}

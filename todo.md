@@ -627,3 +627,9 @@
 - [x] Implementar status: Enviado, Aceito, Saiu para entrega, Entregue
 - [x] Status atual em cor primária, futuros em cinza, concluídos em verde
 - [x] Modal responsivo e reutilizável
+
+
+## Ajuste Sacola no Mobile
+- [x] Substituir ícone de perfil pelo ícone de sacola no menu mobile
+- [x] Ao clicar, abrir o modal/drawer da sacola
+- [x] Manter comportamento do desktop inalterado
