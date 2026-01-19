@@ -459,3 +459,7 @@
 ## Reposicionar Ícone de Compartilhar
 - [x] Mover ícone de compartilhar para a mesma linha das avaliações (no final)
 - [x] Quando nome for muito grande, ícone vai para o container de WhatsApp/Instagram (via flex-wrap)
+
+## Dropdown para Ícones Sociais
+- [x] Substituir exibição direta de WhatsApp/Instagram por uma setinha
+- [x] Ao clicar na setinha, mostrar dropdown com ícones de WhatsApp e Instagram
