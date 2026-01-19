@@ -1,7 +1,7 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, Store, Utensils, Menu, Star, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2 } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, Store, Utensils, Menu, Star, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PublicMenu() {
@@ -12,6 +12,24 @@ export default function PublicMenu() {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showSocialDropdown, setShowSocialDropdown] = useState(false);
   const [showRatingTooltip, setShowRatingTooltip] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<{
+    id: number;
+    name: string;
+    description: string | null;
+    price: string;
+    images: string[] | null;
+    hasStock: boolean;
+  } | null>(null);
+  const [productQuantity, setProductQuantity] = useState(1);
+  const [productObservation, setProductObservation] = useState("");
+  const [cart, setCart] = useState<Array<{
+    productId: number;
+    name: string;
+    price: string;
+    quantity: number;
+    observation: string;
+    image: string | null;
+  }>>([]);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
@@ -485,7 +503,18 @@ export default function PublicMenu() {
 
                     <div className="grid gap-2">
                       {categoryProducts.map((product) => (
-                        <ProductCard key={product.id} product={product} formatPrice={formatPrice} />
+                        <div
+                          key={product.id}
+                          onClick={() => {
+                            if (product.hasStock) {
+                              setSelectedProduct(product);
+                              setProductQuantity(1);
+                              setProductObservation("");
+                            }
+                          }}
+                        >
+                          <ProductCard product={product} formatPrice={formatPrice} />
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -677,6 +706,141 @@ export default function PublicMenu() {
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Adicionar Item ao Carrinho */}
+      {selectedProduct && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setSelectedProduct(null)}
+          />
+          
+          {/* Modal Content */}
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Imagem do Produto */}
+            {selectedProduct.images?.[0] && (
+              <div className="relative w-full h-48 flex-shrink-0">
+                <img
+                  src={selectedProduct.images[0]}
+                  alt={selectedProduct.name}
+                  className="w-full h-full object-cover"
+                />
+                <button 
+                  onClick={() => setSelectedProduct(null)}
+                  className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors"
+                >
+                  <X className="h-5 w-5 text-gray-700" />
+                </button>
+              </div>
+            )}
+
+            {/* Header sem imagem */}
+            {!selectedProduct.images?.[0] && (
+              <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-900">Adicionar Item</h2>
+                <button 
+                  onClick={() => setSelectedProduct(null)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+            )}
+
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {/* Título e Preço */}
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
+                <p className="text-lg font-semibold text-red-500 mt-1">
+                  {formatPrice(selectedProduct.price)}
+                </p>
+              </div>
+
+              {/* Descrição */}
+              {selectedProduct.description && (
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  {selectedProduct.description}
+                </p>
+              )}
+
+              {/* Campo de Observação */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Observações
+                </label>
+                <textarea
+                  value={productObservation}
+                  onChange={(e) => setProductObservation(e.target.value)}
+                  placeholder="Ex: Sem cebola, bem passado..."
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
+                />
+              </div>
+            </div>
+
+            {/* Footer com Quantidade e Botão Adicionar */}
+            <div className="border-t bg-white p-4 flex items-center gap-4">
+              {/* Controle de Quantidade */}
+              <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-2 py-1">
+                <button
+                  type="button"
+                  onClick={() => setProductQuantity(Math.max(1, productQuantity - 1))}
+                  className="p-2 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
+                  disabled={productQuantity <= 1}
+                >
+                  <Minus className="h-4 w-4 text-gray-700" />
+                </button>
+                <span className="text-lg font-semibold text-gray-900 min-w-[24px] text-center">
+                  {productQuantity}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setProductQuantity(productQuantity + 1)}
+                  className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                >
+                  <Plus className="h-4 w-4 text-gray-700" />
+                </button>
+              </div>
+
+              {/* Botão Adicionar */}
+              <button
+                onClick={() => {
+                  const newItem = {
+                    productId: selectedProduct.id,
+                    name: selectedProduct.name,
+                    price: selectedProduct.price,
+                    quantity: productQuantity,
+                    observation: productObservation,
+                    image: selectedProduct.images?.[0] || null,
+                  };
+                  
+                  setCart((prev) => {
+                    const existingIndex = prev.findIndex(
+                      (item) => item.productId === newItem.productId && item.observation === newItem.observation
+                    );
+                    
+                    if (existingIndex >= 0) {
+                      const updated = [...prev];
+                      updated[existingIndex].quantity += newItem.quantity;
+                      return updated;
+                    }
+                    
+                    return [...prev, newItem];
+                  });
+                  
+                  setSelectedProduct(null);
+                }}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                <ShoppingBag className="h-5 w-5" />
+                <span>Adicionar {formatPrice(Number(selectedProduct.price) * productQuantity)}</span>
+              </button>
             </div>
           </div>
         </div>

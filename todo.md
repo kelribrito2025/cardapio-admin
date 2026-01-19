@@ -526,3 +526,14 @@
 
 ## Remover Container de Estabelecimento da Sidebar
 - [x] Remover o container "ESTABELECIMENTO / Restaurante Doca Iracema" da barra lateral
+
+## Modal de Adicionar Item ao Carrinho
+- [x] Criar modal com foto do item em destaque no topo
+- [x] Exibir título e descrição do item
+- [x] Adicionar campo de observação (texto livre)
+- [x] Implementar controle de quantidade (-, número, +)
+- [x] Adicionar botão "Adicionar" com estilo visual padrão
+- [x] Abrir modal ao clicar em qualquer item do cardápio
+- [x] Quantidade mínima: 1
+- [x] Atualizar sacola imediatamente ao clicar em Adicionar
+- [x] Fechar modal após adicionar
