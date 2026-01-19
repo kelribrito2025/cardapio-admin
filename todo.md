@@ -489,3 +489,8 @@
 - [x] Criar arco suave que começa em 65% da altura na lateral direita
 - [x] Curva descendo suavemente até 80% da largura na base
 - [x] Posicionar ícones dentro da área recortada (bottom-4 right-6)
+
+## Remover Recorte do Banner
+- [x] Remover recorte SVG do banner mobile
+- [x] Remover ícones flutuantes do recorte
+- [x] Mostrar ícones na seção de informações do restaurante (mobile e desktop)
