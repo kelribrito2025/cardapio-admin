@@ -811,7 +811,7 @@ export default function PublicMenu() {
 
             {/* Header sem imagem */}
             {!selectedProduct.images?.[0] && (
-              <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+              <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between" style={{height: '49px'}}>
                 <h2 className="text-lg font-bold text-gray-900">Adicionar Item</h2>
                 <button 
                   onClick={() => setSelectedProduct(null)}
