@@ -58,6 +58,21 @@ export default function PublicMenu() {
   const [showTrackingModal, setShowTrackingModal] = useState(false);
   const [showMobileBag, setShowMobileBag] = useState(false);
   const [orderStatus, setOrderStatus] = useState<"sent" | "accepted" | "delivering" | "delivered">("sent");
+  const [showOrdersModal, setShowOrdersModal] = useState(false);
+  const [userOrders, setUserOrders] = useState<Array<{
+    id: string;
+    date: string;
+    items: Array<{ name: string; quantity: number; price: string; complements: Array<{ name: string; price: string }> }>;
+    total: string;
+    status: "sent" | "accepted" | "delivering" | "delivered";
+    deliveryType: "pickup" | "delivery";
+    paymentMethod: "cash" | "card" | "pix";
+    address?: { street: string; number: string; neighborhood: string; complement: string; reference: string };
+    customerName: string;
+    customerPhone: string;
+    observation: string;
+  }>>([]);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
@@ -81,6 +96,19 @@ export default function PublicMenu() {
       setActiveCategory(data.categories[0].id);
     }
   }, [data?.categories, activeCategory]);
+
+  // Carregar pedidos salvos do localStorage
+  useEffect(() => {
+    const savedOrders = localStorage.getItem('userOrders');
+    if (savedOrders) {
+      try {
+        const parsed = JSON.parse(savedOrders);
+        setUserOrders(parsed);
+      } catch (e) {
+        console.error('Erro ao carregar pedidos salvos:', e);
+      }
+    }
+  }, []);
 
   // Carregar endereço salvo do localStorage
   useEffect(() => {
@@ -287,9 +315,17 @@ export default function PublicMenu() {
                 <Home className="h-4 w-4" />
                 <span>Início</span>
               </button>
-              <button className="flex items-center gap-1.5 text-gray-600 font-medium text-sm hover:text-gray-900 transition-colors">
+              <button 
+                className="flex items-center gap-1.5 text-gray-600 font-medium text-sm hover:text-gray-900 transition-colors relative"
+                onClick={() => setShowOrdersModal(true)}
+              >
                 <ClipboardList className="h-4 w-4" />
                 <span>Pedidos</span>
+                {userOrders.filter(o => o.status !== 'delivered').length > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                    {userOrders.filter(o => o.status !== 'delivered').length}
+                  </span>
+                )}
               </button>
               <button className="flex items-center gap-1.5 text-gray-600 font-medium text-sm hover:text-gray-900 transition-colors">
                 <User className="h-4 w-4" />
@@ -731,8 +767,16 @@ export default function PublicMenu() {
             <Home className="h-5 w-5" />
             <span className="text-xs font-medium">Início</span>
           </button>
-          <button className="flex flex-col items-center gap-0.5 px-4 py-2 text-gray-500">
+          <button 
+            className="flex flex-col items-center gap-0.5 px-4 py-2 text-gray-500 relative"
+            onClick={() => setShowOrdersModal(true)}
+          >
             <ClipboardList className="h-5 w-5" />
+            {userOrders.filter(o => o.status !== 'delivered').length > 0 && (
+              <span className="absolute -top-0.5 right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                {userOrders.filter(o => o.status !== 'delivered').length}
+              </span>
+            )}
             <span className="text-xs font-medium">Pedidos</span>
           </button>
           <button 
@@ -1733,6 +1777,37 @@ export default function PublicMenu() {
                     localStorage.setItem('savedCustomerInfo', JSON.stringify(customerInfo));
                     // Simular envio do pedido com 3 segundos de carregamento
                     setTimeout(() => {
+                      // Criar novo pedido
+                      const newOrder = {
+                        id: `PED-${Date.now()}`,
+                        date: new Date().toISOString(),
+                        items: cart.map(item => ({
+                          name: item.name,
+                          quantity: item.quantity,
+                          price: item.price,
+                          complements: item.complements.map(c => ({ name: c.name, price: c.price }))
+                        })),
+                        total: cart.reduce((sum, item) => {
+                          const itemTotal = parseFloat(item.price) * item.quantity;
+                          const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
+                          return sum + itemTotal + complementsTotal;
+                        }, 0).toFixed(2),
+                        status: "sent" as const,
+                        deliveryType,
+                        paymentMethod,
+                        address: deliveryType === 'delivery' ? deliveryAddress : undefined,
+                        customerName: customerInfo.name,
+                        customerPhone: customerInfo.phone,
+                        observation: orderObservation
+                      };
+                      
+                      // Salvar no localStorage
+                      const existingOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
+                      const updatedOrders = [newOrder, ...existingOrders];
+                      localStorage.setItem('userOrders', JSON.stringify(updatedOrders));
+                      setUserOrders(updatedOrders);
+                      setSelectedOrderId(newOrder.id);
+                      
                       setIsSendingOrder(false);
                       setOrderSent(true);
                       setOrderStatus("sent");
@@ -1944,6 +2019,127 @@ export default function PublicMenu() {
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Pedidos */}
+      {showOrdersModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center md:items-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setShowOrdersModal(false)}
+          />
+          
+          {/* Modal */}
+          <div className="relative w-full max-w-lg mx-4 bg-white rounded-2xl max-h-[85vh] flex flex-col">
+            {/* Header */}
+            <div className="flex-shrink-0 border-b px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <ClipboardList className="h-5 w-5 text-red-500" />
+                <h2 className="text-lg font-bold text-gray-900">Meus Pedidos</h2>
+              </div>
+              <button 
+                onClick={() => setShowOrdersModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto p-4">
+              {userOrders.length === 0 ? (
+                <div className="text-center py-12">
+                  <ClipboardList className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">Nenhum pedido ainda</h3>
+                  <p className="text-gray-500 text-sm">Seus pedidos aparecerão aqui após você fazer o primeiro pedido.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Pedidos em andamento */}
+                  {userOrders.filter(o => o.status !== 'delivered').length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Em andamento</h3>
+                      <div className="space-y-3">
+                        {userOrders.filter(o => o.status !== 'delivered').map(order => (
+                          <div 
+                            key={order.id}
+                            className="bg-white border-2 border-red-200 rounded-xl p-4 cursor-pointer hover:border-red-400 transition-colors"
+                            onClick={() => {
+                              setSelectedOrderId(order.id);
+                              setOrderStatus(order.status);
+                              setShowOrdersModal(false);
+                              setShowTrackingModal(true);
+                            }}
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-bold text-gray-900">#{order.id.replace('PED-', '').slice(-6)}</span>
+                              <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                                order.status === 'sent' ? 'bg-yellow-100 text-yellow-700' :
+                                order.status === 'accepted' ? 'bg-blue-100 text-blue-700' :
+                                order.status === 'delivering' ? 'bg-purple-100 text-purple-700' :
+                                'bg-green-100 text-green-700'
+                              }`}>
+                                {order.status === 'sent' ? 'Enviado' :
+                                 order.status === 'accepted' ? 'Aceito' :
+                                 order.status === 'delivering' ? 'Saiu para entrega' :
+                                 'Entregue'}
+                              </span>
+                            </div>
+                            <div className="text-sm text-gray-600 mb-2">
+                              {order.items.map(i => `${i.quantity}x ${i.name}`).join(', ')}
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-gray-500">
+                                {new Date(order.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                              <span className="font-bold text-red-500">R$ {order.total.replace('.', ',')}</span>
+                            </div>
+                            <div className="mt-2 flex items-center gap-2 text-xs text-red-500">
+                              <Clock className="h-3 w-3" />
+                              <span>Toque para acompanhar</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Histórico de pedidos */}
+                  {userOrders.filter(o => o.status === 'delivered').length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Histórico</h3>
+                      <div className="space-y-3">
+                        {userOrders.filter(o => o.status === 'delivered').map(order => (
+                          <div 
+                            key={order.id}
+                            className="bg-gray-50 border border-gray-200 rounded-xl p-4"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-bold text-gray-900">#{order.id.replace('PED-', '').slice(-6)}</span>
+                              <span className="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700">
+                                Entregue
+                              </span>
+                            </div>
+                            <div className="text-sm text-gray-600 mb-2">
+                              {order.items.map(i => `${i.quantity}x ${i.name}`).join(', ')}
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-gray-500">
+                                {new Date(order.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                              </span>
+                              <span className="font-bold text-gray-700">R$ {order.total.replace('.', ',')}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

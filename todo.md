@@ -633,3 +633,13 @@
 - [x] Substituir ícone de perfil pelo ícone de sacola no menu mobile
 - [x] Ao clicar, abrir o modal/drawer da sacola
 - [x] Manter comportamento do desktop inalterado
+
+
+## Menu de Pedidos no Cardápio Público
+- [x] Criar estrutura de armazenamento de pedidos no localStorage
+- [x] Salvar pedido enviado com todos os dados (itens, endereço, pagamento, status)
+- [x] Implementar modal de Pedidos com histórico e pedidos atuais
+- [x] Exibir pedidos em andamento com status atual
+- [x] Exibir histórico de pedidos anteriores
+- [x] Integrar botão Pedidos do menu mobile com a nova funcionalidade
+- [x] Permitir abrir modal de acompanhamento a partir de um pedido
