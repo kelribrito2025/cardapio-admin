@@ -500,3 +500,7 @@
 - [x] Posicionar ícones WhatsApp e Instagram dentro do recorte
 - [x] Ícones centralizados com margem de respiro
 - [x] Manter proporção no mobile
+
+## Ajuste Posição Ícones no Recorte
+- [x] Aproximar ícones um do outro (gap-1 = 4px)
+- [x] Posicionar ícones mais para o canto (bottom-1 right-1)
