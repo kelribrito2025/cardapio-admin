@@ -656,3 +656,7 @@
 
 ## Correção Posição Campo de Troco
 - [x] Mover campo "Precisa de troco" para logo abaixo do card Dinheiro
+
+
+## Correção Modal Sacola Desktop
+- [x] Corrigir modal da sacola para aparecer na versão desktop

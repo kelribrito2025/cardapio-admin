@@ -1927,9 +1927,9 @@ export default function PublicMenu() {
       )}
 
       {/* Modal de Acompanhamento do Pedido */}
-      {/* Modal da Sacola Mobile */}
+      {/* Modal da Sacola */}
       {showMobileBag && (
-        <div className="fixed inset-0 z-[100] flex items-end md:hidden">
+        <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50"
@@ -1937,7 +1937,7 @@ export default function PublicMenu() {
           />
           
           {/* Modal */}
-          <div className="relative w-full bg-white rounded-t-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom duration-300">
+          <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
             <div className="flex-shrink-0 border-b px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
