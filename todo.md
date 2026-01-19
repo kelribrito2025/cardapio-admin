@@ -455,3 +455,7 @@
 ## Container de Ícones Sociais no Menu Público
 - [x] Criar container separado para ícones de compartilhar, WhatsApp e Instagram
 - [x] Posicionar abaixo do nome, status "Aberto agora" e badges de Entrega/Retirada
+
+## Reposicionar Ícone de Compartilhar
+- [x] Mover ícone de compartilhar para a mesma linha das avaliações (no final)
+- [x] Quando nome for muito grande, ícone vai para o container de WhatsApp/Instagram (via flex-wrap)

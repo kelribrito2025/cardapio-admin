@@ -252,7 +252,7 @@ export default function PublicMenu() {
           <div className="flex-1 bg-white rounded-xl p-4 md:p-5 shadow-sm md:ml-4">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
               <div className="flex-1">
-                {/* Restaurant Name and Rating */}
+                {/* Restaurant Name, Rating and Share */}
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-xl md:text-2xl font-bold text-gray-900">
                     {establishment.name}
@@ -267,6 +267,25 @@ export default function PublicMenu() {
                       ({establishment.reviewCount || 0} avaliações)
                     </span>
                   </div>
+                  {/* Botão Compartilhar - fica na linha das avaliações, vai para baixo se não couber */}
+                  <button 
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({
+                          title: establishment.name,
+                          text: `Confira o cardápio de ${establishment.name}`,
+                          url: window.location.href,
+                        });
+                      } else {
+                        navigator.clipboard.writeText(window.location.href);
+                        alert('Link copiado!');
+                      }
+                    }}
+                    className="p-1.5 hover:bg-gray-100 rounded-full transition-colors ml-auto"
+                    title="Compartilhar"
+                  >
+                    <Share2 className="h-5 w-5 text-gray-500" />
+                  </button>
                 </div>
 
                 {/* Address and More Info */}
@@ -320,26 +339,8 @@ export default function PublicMenu() {
                 </div>
 
                 {/* Container de Ícones Sociais - abaixo do status e badges */}
+                {(establishment.whatsapp || establishment.instagram) && (
                 <div className="flex items-center gap-1 mt-3 pt-3 border-t border-gray-100">
-                  {/* Botão Compartilhar */}
-                  <button 
-                    onClick={() => {
-                      if (navigator.share) {
-                        navigator.share({
-                          title: establishment.name,
-                          text: `Confira o cardápio de ${establishment.name}`,
-                          url: window.location.href,
-                        });
-                      } else {
-                        navigator.clipboard.writeText(window.location.href);
-                        alert('Link copiado!');
-                      }
-                    }}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                    title="Compartilhar"
-                  >
-                    <Share2 className="h-5 w-5 text-gray-500" />
-                  </button>
                   {establishment.whatsapp && (
                     <a 
                       href={`https://wa.me/${establishment.whatsapp.replace(/\D/g, '')}`}
@@ -367,6 +368,7 @@ export default function PublicMenu() {
                     </a>
                   )}
                 </div>
+                )}
               </div>
             </div>
           </div>
