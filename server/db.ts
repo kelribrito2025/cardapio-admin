@@ -1,5 +1,6 @@
 import { eq, desc, asc, and, like, sql, gte, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import { notifyNewOrder, notifyOrderUpdate } from "./_core/sse";
 import { 
   InsertUser, users, 
   establishments, InsertEstablishment, Establishment,
@@ -530,6 +531,13 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
   }
   
   await db.update(orders).set(updateData).where(eq(orders.id, id));
+  
+  // Buscar pedido atualizado para notificar via SSE
+  const updatedOrder = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
+  if (updatedOrder.length > 0) {
+    const order = updatedOrder[0];
+    notifyOrderUpdate(order.establishmentId, { id, status, updatedAt: new Date() });
+  }
 }
 
 // ============ DASHBOARD/STATS FUNCTIONS ============
@@ -934,6 +942,37 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     const itemsWithOrderId = items.map(item => ({ ...item, orderId }));
     await db.insert(orderItems).values(itemsWithOrderId);
   }
+  
+  // Notificar via SSE sobre novo pedido
+  const newOrder = {
+    id: orderId,
+    orderNumber,
+    establishmentId: data.establishmentId,
+    customerName: data.customerName,
+    customerPhone: data.customerPhone,
+    customerAddress: data.customerAddress,
+    deliveryType: data.deliveryType,
+    paymentMethod: data.paymentMethod,
+    subtotal: data.subtotal,
+    deliveryFee: data.deliveryFee,
+    total: data.total,
+    notes: data.notes,
+    changeAmount: data.changeAmount,
+    status: "new",
+    createdAt: new Date(),
+    items: items.map((item, index) => ({
+      id: index + 1,
+      orderId,
+      productId: item.productId,
+      productName: item.productName,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      totalPrice: item.totalPrice,
+      complements: item.complements,
+      notes: item.notes,
+    })),
+  };
+  notifyNewOrder(data.establishmentId, newOrder);
   
   return { orderId, orderNumber };
 }

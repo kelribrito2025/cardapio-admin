@@ -691,3 +691,13 @@
 - [x] Remover dados mockados da página de pedidos do admin
 - [x] Implementar atualização em tempo real dos pedidos (polling a cada 30s)
 - [x] Permitir que o restaurante atualize status dos pedidos
+
+
+## Migração de Polling para SSE (Server-Sent Events)
+
+- [x] Criar endpoint SSE no backend para streaming de pedidos por estabelecimento
+- [x] Implementar sistema de emissão de eventos quando pedidos são criados
+- [x] Implementar sistema de emissão de eventos quando status de pedidos são atualizados
+- [x] Atualizar página de pedidos do admin para usar SSE
+- [x] Manter polling como fallback caso conexão SSE falhe
+- [x] Testar latência e funcionamento em tempo real

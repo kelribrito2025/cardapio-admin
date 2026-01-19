@@ -40,7 +40,8 @@ import {
   Edit,
   ArrowLeft,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useOrdersSSE } from "@/hooks/useOrdersSSE";
 import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
@@ -84,6 +85,8 @@ export default function Pedidos() {
   }, [establishment]);
 
   // All hooks MUST be called before any early return
+  const utils = trpc.useUtils();
+  
   // Query para buscar todos os pedidos (para contagem)
   const { data: allOrdersData, refetch: refetchAll } = trpc.orders.list.useQuery(
     { 
@@ -91,7 +94,8 @@ export default function Pedidos() {
     },
     { 
       enabled: !!establishmentId,
-      refetchInterval: 10000, // Atualiza a cada 10 segundos
+      // Polling como fallback apenas se SSE não estiver conectado
+      refetchInterval: false,
     }
   );
 
@@ -103,9 +107,66 @@ export default function Pedidos() {
     },
     { 
       enabled: !!establishmentId,
-      refetchInterval: 10000, // Atualiza a cada 10 segundos
+      // Polling como fallback apenas se SSE não estiver conectado
+      refetchInterval: false,
     }
   );
+
+  // Handlers para eventos SSE
+  const handleNewOrder = useCallback(() => {
+    // Atualizar cache do tRPC quando novo pedido chegar
+    refetch();
+    refetchAll();
+    // Tocar som de notificação
+    try {
+      const audio = new Audio('/notification.mp3');
+      audio.volume = 0.5;
+      audio.play().catch(() => {});
+    } catch {}
+    toast.success("Novo pedido recebido!", {
+      description: "Um novo pedido acabou de chegar.",
+      duration: 5000,
+    });
+  }, [refetch, refetchAll]);
+
+  const handleOrderUpdate = useCallback(() => {
+    // Atualizar cache do tRPC quando pedido for atualizado
+    refetch();
+    refetchAll();
+  }, [refetch, refetchAll]);
+
+  const handleSSEConnected = useCallback(() => {
+    console.log("[Pedidos] SSE conectado - tempo real ativado");
+  }, []);
+
+  const handleSSEDisconnected = useCallback(() => {
+    console.log("[Pedidos] SSE desconectado - ativando fallback de polling");
+    // Quando SSE desconectar, fazer refetch manual
+    refetch();
+    refetchAll();
+  }, [refetch, refetchAll]);
+
+  // Hook SSE para receber pedidos em tempo real
+  const { status: sseStatus, isConnected: sseConnected } = useOrdersSSE({
+    onNewOrder: handleNewOrder,
+    onOrderUpdate: handleOrderUpdate,
+    onConnected: handleSSEConnected,
+    onDisconnected: handleSSEDisconnected,
+    enabled: !!establishmentId,
+  });
+
+  // Fallback: polling a cada 30 segundos se SSE não estiver conectado
+  useEffect(() => {
+    if (!establishmentId || sseConnected) return;
+    
+    const interval = setInterval(() => {
+      console.log("[Pedidos] Polling fallback - SSE não conectado");
+      refetch();
+      refetchAll();
+    }, 30000);
+    
+    return () => clearInterval(interval);
+  }, [establishmentId, sseConnected, refetch, refetchAll]);
 
   const allOrders = allOrdersData?.orders || [];
   const orders = ordersData?.orders || [];
@@ -194,10 +255,28 @@ export default function Pedidos() {
 
   return (
     <AdminLayout>
-      <PageHeader
-        title="Pedidos"
-        description="Gerencie os pedidos do seu estabelecimento"
-      />
+      <div className="flex items-center justify-between mb-6">
+        <PageHeader
+          title="Pedidos"
+          description="Gerencie os pedidos do seu estabelecimento"
+        />
+        <div className="flex items-center gap-2">
+          <div className={cn(
+            "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium",
+            sseConnected 
+              ? "bg-emerald-100 text-emerald-700" 
+              : "bg-amber-100 text-amber-700"
+          )}>
+            <span className={cn(
+              "w-2 h-2 rounded-full",
+              sseConnected 
+                ? "bg-emerald-500 animate-pulse" 
+                : "bg-amber-500"
+            )} />
+            {sseConnected ? "Tempo real" : "Polling"}
+          </div>
+        </div>
+      </div>
 
       {/* Status Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
