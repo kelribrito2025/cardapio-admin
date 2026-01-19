@@ -248,11 +248,11 @@ export default function Configuracoes() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-6 bg-muted/50 p-1.5 rounded-xl">
-          <TabsTrigger value="estabelecimento" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm">
+          <TabsTrigger value="estabelecimento" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
             <Store className="h-4 w-4" />
             Estabelecimento
           </TabsTrigger>
-          <TabsTrigger value="atendimento" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm">
+          <TabsTrigger value="atendimento" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
             <Settings2 className="h-4 w-4" />
             Atendimento
           </TabsTrigger>
