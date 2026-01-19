@@ -29,7 +29,9 @@ export default function PublicMenu() {
     quantity: number;
     observation: string;
     image: string | null;
+    complements: Array<{ id: number; name: string; price: string }>;
   }>>([]);
+  const [selectedComplements, setSelectedComplements] = useState<Map<number, Set<number>>>(new Map());
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
@@ -39,6 +41,12 @@ export default function PublicMenu() {
   const { data, isLoading, error } = trpc.publicMenu.getBySlug.useQuery(
     { slug: slug || "" },
     { enabled: !!slug }
+  );
+
+  // Query para buscar complementos do produto selecionado
+  const { data: productComplements } = trpc.publicMenu.getProductComplements.useQuery(
+    { productId: selectedProduct?.id || 0 },
+    { enabled: !!selectedProduct?.id }
   );
 
   // Set first category as active when data loads
@@ -769,6 +777,88 @@ export default function PublicMenu() {
                 </p>
               )}
 
+              {/* Grupos de Complementos */}
+              {productComplements && productComplements.length > 0 && (
+                <div className="space-y-4">
+                  {productComplements.map((group) => {
+                    const selectedInGroup = selectedComplements.get(group.id) || new Set<number>();
+                    const isRadio = group.maxQuantity === 1;
+                    
+                    return (
+                      <div key={group.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                        {/* Header do Grupo */}
+                        <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-semibold text-gray-900">{group.name}</h4>
+                            {group.isRequired && (
+                              <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
+                                Obrigatório
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-500 mt-0.5">
+                            {group.minQuantity > 0 ? `Mín: ${group.minQuantity}` : ''}
+                            {group.minQuantity > 0 && group.maxQuantity > 1 ? ' | ' : ''}
+                            {group.maxQuantity > 1 ? `Máx: ${group.maxQuantity}` : ''}
+                            {group.maxQuantity === 1 && group.minQuantity === 0 ? 'Escolha até 1' : ''}
+                          </p>
+                        </div>
+                        
+                        {/* Itens do Grupo */}
+                        <div className="divide-y divide-gray-100">
+                          {group.items.map((item) => {
+                            const isSelected = selectedInGroup.has(item.id);
+                            
+                            return (
+                              <label
+                                key={item.id}
+                                className={`flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors ${
+                                  isSelected ? 'bg-red-50' : ''
+                                }`}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <input
+                                    type={isRadio ? 'radio' : 'checkbox'}
+                                    name={`group-${group.id}`}
+                                    checked={isSelected}
+                                    onChange={() => {
+                                      setSelectedComplements((prev) => {
+                                        const newMap = new Map(prev);
+                                        const currentSet = new Set(prev.get(group.id) || []);
+                                        
+                                        if (isRadio) {
+                                          // Radio: substitui a seleção
+                                          newMap.set(group.id, new Set([item.id]));
+                                        } else {
+                                          // Checkbox: toggle
+                                          if (currentSet.has(item.id)) {
+                                            currentSet.delete(item.id);
+                                          } else if (currentSet.size < group.maxQuantity) {
+                                            currentSet.add(item.id);
+                                          }
+                                          newMap.set(group.id, currentSet);
+                                        }
+                                        
+                                        return newMap;
+                                      });
+                                    }}
+                                    className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500"
+                                  />
+                                  <span className="text-sm text-gray-900">{item.name}</span>
+                                </div>
+                                {Number(item.price) > 0 && (
+                                  <span className="text-sm text-gray-600">+ {formatPrice(item.price)}</span>
+                                )}
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
               {/* Campo de Observação */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -809,38 +899,98 @@ export default function PublicMenu() {
               </div>
 
               {/* Botão Adicionar */}
-              <button
-                onClick={() => {
-                  const newItem = {
-                    productId: selectedProduct.id,
-                    name: selectedProduct.name,
-                    price: selectedProduct.price,
-                    quantity: productQuantity,
-                    observation: productObservation,
-                    image: selectedProduct.images?.[0] || null,
-                  };
-                  
-                  setCart((prev) => {
-                    const existingIndex = prev.findIndex(
-                      (item) => item.productId === newItem.productId && item.observation === newItem.observation
-                    );
-                    
-                    if (existingIndex >= 0) {
-                      const updated = [...prev];
-                      updated[existingIndex].quantity += newItem.quantity;
-                      return updated;
+              {(() => {
+                // Calcular preço total com complementos
+                let complementsTotal = 0;
+                const selectedComplementsList: Array<{ id: number; name: string; price: string }> = [];
+                
+                if (productComplements) {
+                  productComplements.forEach((group) => {
+                    const selectedInGroup = selectedComplements.get(group.id);
+                    if (selectedInGroup) {
+                      group.items.forEach((item) => {
+                        if (selectedInGroup.has(item.id)) {
+                          complementsTotal += Number(item.price);
+                          selectedComplementsList.push({
+                            id: item.id,
+                            name: item.name,
+                            price: item.price,
+                          });
+                        }
+                      });
                     }
-                    
-                    return [...prev, newItem];
                   });
-                  
-                  setSelectedProduct(null);
-                }}
-                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2"
-              >
-                <ShoppingBag className="h-5 w-5" />
-                <span>Adicionar {formatPrice(Number(selectedProduct.price) * productQuantity)}</span>
-              </button>
+                }
+                
+                const unitPrice = Number(selectedProduct.price) + complementsTotal;
+                const totalPrice = unitPrice * productQuantity;
+                
+                // Verificar se grupos obrigatórios estão preenchidos
+                let requiredGroupsMet = true;
+                if (productComplements) {
+                  productComplements.forEach((group) => {
+                    if (group.isRequired || group.minQuantity > 0) {
+                      const selectedInGroup = selectedComplements.get(group.id);
+                      const selectedCount = selectedInGroup?.size || 0;
+                      if (selectedCount < (group.minQuantity || 1)) {
+                        requiredGroupsMet = false;
+                      }
+                    }
+                  });
+                }
+                
+                return (
+                  <button
+                    onClick={() => {
+                      const newItem = {
+                        productId: selectedProduct.id,
+                        name: selectedProduct.name,
+                        price: selectedProduct.price,
+                        quantity: productQuantity,
+                        observation: productObservation,
+                        image: selectedProduct.images?.[0] || null,
+                        complements: selectedComplementsList,
+                      };
+                      
+                      setCart((prev) => {
+                        // Para itens com complementos, sempre adiciona como novo item
+                        if (selectedComplementsList.length > 0) {
+                          return [...prev, newItem];
+                        }
+                        
+                        const existingIndex = prev.findIndex(
+                          (item) => item.productId === newItem.productId && 
+                                   item.observation === newItem.observation &&
+                                   item.complements.length === 0
+                        );
+                        
+                        if (existingIndex >= 0) {
+                          const updated = [...prev];
+                          updated[existingIndex].quantity += newItem.quantity;
+                          return updated;
+                        }
+                        
+                        return [...prev, newItem];
+                      });
+                      
+                      // Limpar seleções
+                      setSelectedComplements(new Map());
+                      setProductObservation("");
+                      setProductQuantity(1);
+                      setSelectedProduct(null);
+                    }}
+                    disabled={!requiredGroupsMet}
+                    className={`flex-1 font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 ${
+                      requiredGroupsMet 
+                        ? 'bg-red-500 hover:bg-red-600 text-white' 
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                  >
+                    <ShoppingBag className="h-5 w-5" />
+                    <span>Adicionar {formatPrice(totalPrice)}</span>
+                  </button>
+                );
+              })()}
             </div>
           </div>
         </div>

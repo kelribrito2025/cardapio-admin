@@ -689,6 +689,22 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.getPublicMenuData(input.slug);
       }),
+    
+    getProductComplements: publicProcedure
+      .input(z.object({ productId: z.number() }))
+      .query(async ({ input }) => {
+        const groups = await db.getComplementGroupsByProduct(input.productId);
+        const groupsWithItems = await Promise.all(
+          groups.map(async (group) => {
+            const items = await db.getComplementItemsByGroup(group.id);
+            return {
+              ...group,
+              items: items.filter(item => item.isActive),
+            };
+          })
+        );
+        return groupsWithItems;
+      }),
   }),
 
   // ============ UPLOAD ============

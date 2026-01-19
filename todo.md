@@ -537,3 +537,11 @@
 - [x] Quantidade mínima: 1
 - [x] Atualizar sacola imediatamente ao clicar em Adicionar
 - [x] Fechar modal após adicionar
+
+## Grupos de Complementos no Modal
+- [x] Buscar dados dos complementos associados ao produto
+- [x] Exibir grupos de complementos no modal (nome do grupo, mínimo/máximo)
+- [x] Listar itens de cada grupo com nome e preço adicional
+- [x] Implementar seleção de complementos (checkbox/radio conforme regras)
+- [x] Calcular preço total incluindo complementos selecionados
+- [x] Incluir complementos selecionados ao adicionar à sacola
