@@ -770,3 +770,8 @@
 - [x] Ocultar fotos dos itens na versão mobile da página /catalogo
 
 - [x] Substituir ícones de duplicar e lixeira por menu dropdown (três pontinhos) na versão mobile
+
+
+## Ajuste Visual - Página de Estoque
+
+- [x] Ajustar lista de itens da página de estoque para seguir o mesmo visual da página de cupons

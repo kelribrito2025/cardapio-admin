@@ -428,17 +428,17 @@ export default function Estoque() {
           ) : stockItems && stockItems.length > 0 ? (
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/30 hover:bg-muted/30">
+                <TableRow className="bg-gray-50/50">
                   <TableHead className="w-10">
                     <Checkbox />
                   </TableHead>
-                  <TableHead className="font-semibold text-foreground text-sm">Item</TableHead>
-                  <TableHead className="font-semibold text-foreground text-sm">Estoque atual</TableHead>
-                  <TableHead className="font-semibold text-foreground text-sm">Status</TableHead>
-                  <TableHead className="font-semibold text-foreground text-sm">Custo unitário</TableHead>
-                  <TableHead className="font-semibold text-foreground text-sm">Valor total</TableHead>
-                  <TableHead className="font-semibold text-foreground text-sm">Última atualização</TableHead>
-                  <TableHead className="w-10"></TableHead>
+                  <TableHead className="font-medium">Item</TableHead>
+                  <TableHead className="font-medium">Estoque atual</TableHead>
+                  <TableHead className="font-medium">Status</TableHead>
+                  <TableHead className="font-medium">Custo unitário</TableHead>
+                  <TableHead className="font-medium">Valor total</TableHead>
+                  <TableHead className="font-medium">Última atualização</TableHead>
+                  <TableHead className="font-medium w-[50px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -472,64 +472,71 @@ export default function Estoque() {
                   }
 
                   return (
-                    <TableRow key={item.id} className="hover:bg-muted/20 cursor-pointer" onClick={() => openEditDialog(item)}>
-                      <TableCell className="py-1" onClick={(e) => e.stopPropagation()}>
+                    <TableRow 
+                      key={item.id} 
+                      className="cursor-pointer hover:bg-gray-50/50" 
+                      onClick={() => openEditDialog(item)}
+                    >
+                      <TableCell onClick={(e) => e.stopPropagation()}>
                         <Checkbox />
                       </TableCell>
-                      <TableCell className="py-1">
-                        <span className="font-medium text-base text-foreground">{item.name}</span>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className="p-1.5 bg-blue-50 rounded">
+                            <Package className="h-3.5 w-3.5 text-blue-600" />
+                          </div>
+                          <span className="font-medium text-gray-900">{item.name}</span>
+                        </div>
                       </TableCell>
-                      <TableCell className="py-1">
-                        <span className="font-medium text-base text-foreground">{currentQty} {unitLabel}</span>
+                      <TableCell>
+                        <span className="font-medium text-gray-900">{currentQty} {unitLabel}</span>
                       </TableCell>
-                      <TableCell className="py-1">
+                      <TableCell>
                         <Badge 
                           variant="outline" 
-                          className={`${config.bgColor} ${config.color} ${config.borderColor} font-medium px-2 py-0.5 text-xs`}
+                          className={`${config.bgColor} ${config.color} ${config.borderColor} gap-1`}
                         >
+                          {config.icon}
                           {config.label}
                         </Badge>
                       </TableCell>
-                      <TableCell className="py-1">
-                        <span className="text-base text-foreground">
-                          R$ {costPerUnit.toFixed(2)}/{unitLabel}
-                        </span>
+                      <TableCell className="text-sm text-gray-600">
+                        R$ {costPerUnit.toFixed(2)}/{unitLabel}
                       </TableCell>
-                      <TableCell className="py-1">
-                        <span className="font-semibold text-base text-foreground">
+                      <TableCell>
+                        <span className="font-medium text-gray-900">
                           R$ {totalValue.toFixed(2)}
                         </span>
                       </TableCell>
-                      <TableCell className="py-1">
-                        <span className="text-xs text-muted-foreground">{timeAgo}</span>
+                      <TableCell className="text-sm text-gray-600">
+                        {timeAgo}
                       </TableCell>
-                      <TableCell className="py-1">
+                      <TableCell onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
-                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                              <MoreVertical className="h-3.5 w-3.5" />
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => openMovementDialog(item, "entry")} className="text-xs">
-                              <PackagePlus className="h-3.5 w-3.5 mr-1.5 text-green-600" />
+                            <DropdownMenuItem onClick={() => openMovementDialog(item, "entry")}>
+                              <PackagePlus className="h-4 w-4 mr-2 text-green-600" />
                               Entrada
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => openMovementDialog(item, "exit")} className="text-xs">
-                              <PackageMinus className="h-3.5 w-3.5 mr-1.5 text-red-600" />
+                            <DropdownMenuItem onClick={() => openMovementDialog(item, "exit")}>
+                              <PackageMinus className="h-4 w-4 mr-2 text-red-600" />
                               Saída
                             </DropdownMenuItem>
-                            
-                            <DropdownMenuItem onClick={() => openHistoryDialog(item)} className="text-xs">
-                              <History className="h-3.5 w-3.5 mr-1.5" />
+                            <DropdownMenuItem onClick={() => openHistoryDialog(item)}>
+                              <History className="h-4 w-4 mr-2" />
                               Histórico
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               onClick={() => markOutOfStockMutation.mutate({ id: item.id })}
-                              className="text-orange-600 text-xs"
+                              className="text-orange-600 focus:text-orange-600"
                             >
-                              <XCircle className="h-3.5 w-3.5 mr-1.5" />
+                              <XCircle className="h-4 w-4 mr-2" />
                               Marcar em falta
                             </DropdownMenuItem>
                             <DropdownMenuItem
@@ -538,9 +545,9 @@ export default function Estoque() {
                                   deleteItemMutation.mutate({ id: item.id });
                                 }
                               }}
-                              className="text-red-600 text-xs"
+                              className="text-red-600 focus:text-red-600"
                             >
-                              <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                              <Trash2 className="h-4 w-4 mr-2" />
                               Excluir
                             </DropdownMenuItem>
                           </DropdownMenuContent>
