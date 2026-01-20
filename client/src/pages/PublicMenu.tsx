@@ -2466,10 +2466,15 @@ export default function PublicMenu() {
                             <div 
                               className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
                               onClick={() => {
-                                setSelectedOrderId(order.id);
-                                setCurrentOrderNumber(order.id);
-                                setShowOrdersModal(false);
-                                setShowTrackingModal(true);
+                                setExpandedOrderIds(prev => {
+                                  const newSet = new Set(prev);
+                                  if (newSet.has(order.id)) {
+                                    newSet.delete(order.id);
+                                  } else {
+                                    newSet.add(order.id);
+                                  }
+                                  return newSet;
+                                });
                               }}
                             >
                               <div className="flex items-center gap-6 flex-1">
@@ -2502,23 +2507,7 @@ export default function PublicMenu() {
                                   <p className="font-bold text-green-600">R$ {order.total.replace('.', ',')}</p>
                                 </div>
                               </div>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setExpandedOrderIds(prev => {
-                                    const newSet = new Set(prev);
-                                    if (newSet.has(order.id)) {
-                                      newSet.delete(order.id);
-                                    } else {
-                                      newSet.add(order.id);
-                                    }
-                                    return newSet;
-                                  });
-                                }}
-                                className="p-1 hover:bg-gray-100 rounded transition-colors"
-                              >
-                                <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform ${expandedOrderIds.has(order.id) ? 'rotate-180' : ''}`} />
-                              </button>
+                              <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform ${expandedOrderIds.has(order.id) ? 'rotate-180' : ''}`} />
                             </div>
                             
                             {/* Dropdown de itens */}
