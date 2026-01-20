@@ -1,0 +1,110 @@
+{
+  "query": "SELECT * FROM reviews ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM reviews ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "17",
+      "establishmentId": "30001",
+      "orderId": "NULL",
+      "customerName": "kelri",
+      "rating": "5",
+      "comment": "ooooo",
+      "createdAt": "2026-01-20 20:31:51",
+      "customerPhone": "(88) 99929-0000"
+    },
+    {
+      "id": "16",
+      "establishmentId": "30001",
+      "orderId": "NULL",
+      "customerName": "kelri",
+      "rating": "5",
+      "comment": "teste 5",
+      "createdAt": "2026-01-20 20:18:58",
+      "customerPhone": ""
+    },
+    {
+      "id": "15",
+      "establishmentId": "30001",
+      "orderId": "NULL",
+      "customerName": "kelri",
+      "rating": "5",
+      "comment": "Teste 111111",
+      "createdAt": "2026-01-20 20:05:57",
+      "customerPhone": ""
+    },
+    {
+      "id": "14",
+      "establishmentId": "1",
+      "orderId": "NULL",
+      "customerName": "kelri",
+      "rating": "5",
+      "comment": "Teste 44444",
+      "createdAt": "2026-01-20 16:24:14",
+      "customerPhone": ""
+    },
+    {
+      "id": "13",
+      "establishmentId": "1",
+      "orderId": "NULL",
+      "customerName": "hhhhhh",
+      "rating": "3",
+      "comment": "teste okkkkk",
+      "createdAt": "2026-01-20 12:36:56",
+      "customerPhone": ""
+    },
+    {
+      "id": "12",
+      "establishmentId": "1",
+      "orderId": "NULL",
+      "customerName": "Teste",
+      "rating": "5",
+      "comment": "Comentário de teste",
+      "createdAt": "2026-01-20 12:33:17",
+      "customerPhone": ""
+    },
+    {
+      "id": "11",
+      "establishmentId": "1",
+      "orderId": "NULL",
+      "customerName": "hhhhhh",
+      "rating": "4",
+      "comment": "ooookkokokk",
+      "createdAt": "2026-01-20 12:31:25",
+      "customerPhone": ""
+    },
+    {
+      "id": "10",
+      "establishmentId": "1",
+      "orderId": "NULL",
+      "customerName": "hhhhhh",
+      "rating": "4",
+      "comment": "ooookkokokk",
+      "createdAt": "2026-01-20 12:31:17",
+      "customerPhone": ""
+    },
+    {
+      "id": "8",
+      "establishmentId": "1",
+      "orderId": "5",
+      "customerName": "hhhhhh",
+      "rating": "5",
+      "comment": "Muito bom gostei da comida kkk",
+      "createdAt": "2026-01-20 12:17:42",
+      "customerPhone": ""
+    },
+    {
+      "id": "9",
+      "establishmentId": "1",
+      "orderId": "5",
+      "customerName": "hhhhhh",
+      "rating": "5",
+      "comment": "Muito bom gostei da comida kkk",
+      "createdAt": "2026-01-20 12:17:42",
+      "customerPhone": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\torderId\tcustomerName\trating\tcomment\tcreatedAt\tcustomerPhone\n17\t30001\tNULL\tkelri\t5\tooooo\t2026-01-20 20:31:51\t(88) 99929-0000\n16\t30001\tNULL\tkelri\t5\tteste 5\t2026-01-20 20:18:58\t\n15\t30001\tNULL\tkelri\t5\tTeste 111111\t2026-01-20 20:05:57\t\n14\t1\tNULL\tkelri\t5\tTeste 44444\t2026-01-20 16:24:14\t\n13\t1\tNULL\thhhhhh\t3\tteste okkkkk\t2026-01-20 12:36:56\t\n12\t1\tNULL\tTeste\t5\tComentário de teste\t2026-01-20 12:33:17\t\n11\t1\tNULL\thhhhhh\t4\tooookkokokk\t2026-01-20 12:31:25\t\n10\t1\tNULL\thhhhhh\t4\tooookkokokk\t2026-01-20 12:31:17\t\n8\t1\t5\thhhhhh\t5\tMuito bom gostei da comida kkk\t2026-01-20 12:17:42\t\n9\t1\t5\thhhhhh\t5\tMuito bom gostei da comida kkk\t2026-01-20 12:17:42\t\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

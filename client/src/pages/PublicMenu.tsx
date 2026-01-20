@@ -84,11 +84,34 @@ export default function PublicMenu() {
   }>>([]);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   
-  // Reset canReviewChecked quando mudar de pedido
+  // Reset canReviewChecked quando mudar de pedido e verificar imediatamente
   useEffect(() => {
     setCanReviewChecked(false);
     setCanReview(true);
-  }, [selectedOrderId]);
+    
+    // Se o pedido já está entregue, verificar imediatamente se pode avaliar
+    if (selectedOrderId) {
+      const selectedOrder = userOrders.find(o => o.id === selectedOrderId);
+      if (selectedOrder?.status === 'delivered' && selectedOrder?.customerPhone && data?.establishment?.id) {
+        const url = `/api/trpc/publicMenu.canReview?input=${encodeURIComponent(JSON.stringify({
+          establishmentId: data.establishment.id,
+          customerPhone: selectedOrder.customerPhone
+        }))}`;
+        fetch(url)
+          .then(res => res.json())
+          .then(result => {
+            if (result?.result?.data) {
+              setCanReview(result.result.data.canReview);
+              setCanReviewChecked(true);
+            }
+          })
+          .catch(err => {
+            console.error('Erro ao verificar se pode avaliar:', err);
+            setCanReviewChecked(true);
+          });
+      }
+    }
+  }, [selectedOrderId, userOrders, data?.establishment?.id]);
   const [currentOrderNumber, setCurrentOrderNumber] = useState<string | null>(null);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [ratingValue, setRatingValue] = useState(0);
@@ -2983,15 +3006,27 @@ export default function PublicMenu() {
                   <button
                     onClick={async () => {
                       if (!establishment || ratingValue === 0) return;
+                      // Usar o telefone do pedido selecionado
+                      const selectedOrder = userOrders.find(o => o.id === selectedOrderId);
+                      const phoneToUse = selectedOrder?.customerPhone || customerInfo.phone || '';
+                      const nameToUse = selectedOrder?.customerName || customerInfo.name || 'Cliente';
+                      
+                      if (!phoneToUse) {
+                        alert('Telefone não encontrado. Não é possível enviar avaliação.');
+                        return;
+                      }
+                      
                       try {
                         await createReviewMutation.mutateAsync({
                           establishmentId: establishment.id,
-                          customerName: customerInfo.name || 'Cliente',
-                          customerPhone: customerInfo.phone || '',
+                          customerName: nameToUse,
+                          customerPhone: phoneToUse,
                           rating: ratingValue,
                           comment: ratingComment || undefined,
                         });
                         setRatingSuccess(true);
+                        // Após sucesso, atualizar canReview para false
+                        setCanReview(false);
                       } catch (error) {
                         console.error('Erro ao enviar avaliação:', error);
                         alert('Erro ao enviar avaliação. Tente novamente.');
