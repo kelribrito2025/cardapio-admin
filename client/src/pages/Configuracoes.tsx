@@ -331,6 +331,22 @@ export default function Configuracoes() {
                 {/* Logo - positioned to overlap cover */}
                 <div className="absolute -top-16 left-6">
                   <div className="relative">
+                    {/* Balão de Nota - exibe apenas se existir nota e estiver dentro de 24h */}
+                    {publicNote && publicNoteCreatedAt && (
+                      new Date().getTime() - new Date(publicNoteCreatedAt).getTime() < 24 * 60 * 60 * 1000
+                    ) && (
+                      <div className="absolute -top-14 left-0 z-20 animate-float-balloon">
+                        <div className="relative">
+                          {/* Balão estilo bolha */}
+                          <div className="bg-white rounded-[20px] px-3 py-1.5 shadow-md border border-gray-200 max-w-[140px]">
+                            <p className="text-xs text-gray-700 text-center leading-tight break-words">{publicNote}</p>
+                          </div>
+                          {/* Bico do balão em formato de balão de pensamento - círculo maior à esquerda, menor à direita */}
+                          <div className="absolute -bottom-2.5 left-4 w-3.5 h-3.5 bg-white rounded-full border border-gray-200 shadow-sm"></div>
+                          <div className="absolute -bottom-5 left-7 w-2 h-2 bg-white rounded-full border border-gray-200 shadow-sm"></div>
+                        </div>
+                      </div>
+                    )}
                     <div className={cn(
                       "w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden",
                       "bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center"
