@@ -68,6 +68,7 @@ export default function PublicMenu() {
   const [orderStatus, setOrderStatus] = useState<"sent" | "accepted" | "delivering" | "delivered" | "cancelled">("sent");
   const [cancellationReasonDisplay, setCancellationReasonDisplay] = useState<string | null>(null);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
+  const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set());
   const [userOrders, setUserOrders] = useState<Array<{
     id: string;
     date: string;
@@ -2459,43 +2460,93 @@ export default function PublicMenu() {
                         {userOrders.filter(o => o.status !== 'delivered').map(order => (
                           <div 
                             key={order.id}
-                            className="bg-white border-2 border-red-200 rounded-xl p-4 cursor-pointer hover:border-red-400 transition-colors"
-                            onClick={() => {
-                              setSelectedOrderId(order.id);
-                              // O order.id já é o número do pedido (result.orderNumber)
-                              setCurrentOrderNumber(order.id);
-                              // Não definir orderStatus aqui - deixar a query buscar do banco
-                              setShowOrdersModal(false);
-                              setShowTrackingModal(true);
-                            }}
+                            className="bg-white border-l-4 border-l-green-500 border border-gray-200 rounded-lg overflow-hidden"
                           >
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="font-bold text-gray-900">#{order.id.replace('PED-', '').slice(-6)}</span>
-                              <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                                order.status === 'sent' ? 'bg-yellow-100 text-yellow-700' :
-                                order.status === 'accepted' ? 'bg-blue-100 text-blue-700' :
-                                order.status === 'delivering' ? 'bg-purple-100 text-purple-700' :
-                                'bg-green-100 text-green-700'
-                              }`}>
-                                {order.status === 'sent' ? 'Enviado' :
-                                 order.status === 'accepted' ? 'Pedido aceito' :
-                                 order.status === 'delivering' ? (order.deliveryType === 'pickup' ? 'Pedido Finalizado' : 'Saiu para entrega') :
-                                 'Entregue'}
-                              </span>
+                            {/* Header compacto */}
+                            <div 
+                              className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                              onClick={() => {
+                                setSelectedOrderId(order.id);
+                                setCurrentOrderNumber(order.id);
+                                setShowOrdersModal(false);
+                                setShowTrackingModal(true);
+                              }}
+                            >
+                              <div className="flex items-center gap-6 flex-1">
+                                <div>
+                                  <span className="text-[10px] text-gray-400 uppercase tracking-wide">Pedido</span>
+                                  <p className="font-bold text-gray-900">{order.id}</p>
+                                </div>
+                                <div>
+                                  <span className="text-[10px] text-gray-400 uppercase tracking-wide">Status</span>
+                                  <p className={`font-medium ${
+                                    order.status === 'sent' ? 'text-yellow-600' :
+                                    order.status === 'accepted' ? 'text-blue-600' :
+                                    order.status === 'delivering' ? 'text-purple-600' :
+                                    'text-green-600'
+                                  }`}>
+                                    {order.status === 'sent' ? 'Enviado' :
+                                     order.status === 'accepted' ? 'Aceito' :
+                                     order.status === 'delivering' ? (order.deliveryType === 'pickup' ? 'Finalizado' : 'Em entrega') :
+                                     'Entregue'}
+                                  </p>
+                                </div>
+                                <div>
+                                  <span className="text-[10px] text-gray-400 uppercase tracking-wide">Data/Hora</span>
+                                  <p className="text-gray-700">
+                                    {new Date(order.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} {new Date(order.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                  </p>
+                                </div>
+                                <div>
+                                  <span className="text-[10px] text-gray-400 uppercase tracking-wide">Total</span>
+                                  <p className="font-bold text-green-600">R$ {order.total.replace('.', ',')}</p>
+                                </div>
+                              </div>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setExpandedOrderIds(prev => {
+                                    const newSet = new Set(prev);
+                                    if (newSet.has(order.id)) {
+                                      newSet.delete(order.id);
+                                    } else {
+                                      newSet.add(order.id);
+                                    }
+                                    return newSet;
+                                  });
+                                }}
+                                className="p-1 hover:bg-gray-100 rounded transition-colors"
+                              >
+                                <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform ${expandedOrderIds.has(order.id) ? 'rotate-180' : ''}`} />
+                              </button>
                             </div>
-                            <div className="text-sm text-gray-600 mb-2">
-                              {order.items.map(i => `${i.quantity}x ${i.name}`).join(', ')}
-                            </div>
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-gray-500">
-                                {new Date(order.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                              </span>
-                              <span className="font-bold text-red-500">R$ {order.total.replace('.', ',')}</span>
-                            </div>
-                            <div className="mt-2 flex items-center gap-2 text-xs text-red-500">
-                              <Clock className="h-3 w-3" />
-                              <span>Toque para acompanhar</span>
-                            </div>
+                            
+                            {/* Dropdown de itens */}
+                            {expandedOrderIds.has(order.id) && (
+                              <div className="border-t border-gray-100 px-4 py-3 bg-gray-50">
+                                <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Itens do pedido</h4>
+                                <div className="space-y-1">
+                                  {order.items.map((item, idx) => (
+                                    <div key={idx} className="flex justify-between text-sm">
+                                      <span className="text-gray-700">{item.quantity}x {item.name}</span>
+                                      <span className="text-gray-600">R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                                <button
+                                  onClick={() => {
+                                    setSelectedOrderId(order.id);
+                                    setCurrentOrderNumber(order.id);
+                                    setShowOrdersModal(false);
+                                    setShowTrackingModal(true);
+                                  }}
+                                  className="mt-3 w-full py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+                                >
+                                  <Clock className="h-4 w-4" />
+                                  Acompanhar pedido
+                                </button>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -2510,23 +2561,60 @@ export default function PublicMenu() {
                         {userOrders.filter(o => o.status === 'delivered').map(order => (
                           <div 
                             key={order.id}
-                            className="bg-gray-50 border border-gray-200 rounded-xl p-4"
+                            className="bg-white border-l-4 border-l-green-500 border border-gray-200 rounded-lg overflow-hidden"
                           >
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="font-bold text-gray-900">#{order.id.replace('PED-', '').slice(-6)}</span>
-                              <span className="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700">
-                                Entregue
-                              </span>
+                            {/* Header compacto */}
+                            <div 
+                              className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                              onClick={() => {
+                                setExpandedOrderIds(prev => {
+                                  const newSet = new Set(prev);
+                                  if (newSet.has(order.id)) {
+                                    newSet.delete(order.id);
+                                  } else {
+                                    newSet.add(order.id);
+                                  }
+                                  return newSet;
+                                });
+                              }}
+                            >
+                              <div className="flex items-center gap-6 flex-1">
+                                <div>
+                                  <span className="text-[10px] text-gray-400 uppercase tracking-wide">Pedido</span>
+                                  <p className="font-bold text-gray-900">{order.id}</p>
+                                </div>
+                                <div>
+                                  <span className="text-[10px] text-gray-400 uppercase tracking-wide">Status</span>
+                                  <p className="font-medium text-green-600">Entregue</p>
+                                </div>
+                                <div>
+                                  <span className="text-[10px] text-gray-400 uppercase tracking-wide">Data/Hora</span>
+                                  <p className="text-gray-700">
+                                    {new Date(order.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} {new Date(order.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                  </p>
+                                </div>
+                                <div>
+                                  <span className="text-[10px] text-gray-400 uppercase tracking-wide">Total</span>
+                                  <p className="font-bold text-green-600">R$ {order.total.replace('.', ',')}</p>
+                                </div>
+                              </div>
+                              <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform ${expandedOrderIds.has(order.id) ? 'rotate-180' : ''}`} />
                             </div>
-                            <div className="text-sm text-gray-600 mb-2">
-                              {order.items.map(i => `${i.quantity}x ${i.name}`).join(', ')}
-                            </div>
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-gray-500">
-                                {new Date(order.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                              </span>
-                              <span className="font-bold text-gray-700">R$ {order.total.replace('.', ',')}</span>
-                            </div>
+                            
+                            {/* Dropdown de itens */}
+                            {expandedOrderIds.has(order.id) && (
+                              <div className="border-t border-gray-100 px-4 py-3 bg-gray-50">
+                                <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Itens do pedido</h4>
+                                <div className="space-y-1">
+                                  {order.items.map((item, idx) => (
+                                    <div key={idx} className="flex justify-between text-sm">
+                                      <span className="text-gray-700">{item.quantity}x {item.name}</span>
+                                      <span className="text-gray-600">R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
