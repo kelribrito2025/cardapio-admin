@@ -1018,3 +1018,4 @@
 - [x] Inverter posição dos círculos: maior à esquerda, menor à direita
 - [x] Atualizar preview do perfil público nas configurações para incluir balão de nota
 - [x] Adicionar dropdown de Redes Sociais com separador no preview das configurações
+- [x] Adicionar menu dropdown completo com ícones de WhatsApp e Instagram no preview
