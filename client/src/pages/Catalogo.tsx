@@ -25,6 +25,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Plus,
   Search,
   UtensilsCrossed,
@@ -39,6 +45,7 @@ import {
   Check,
   X,
   Pencil,
+  MoreVertical,
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
@@ -168,22 +175,48 @@ function SortableProductItem({
           onCheckedChange={() => onToggleStatus(product.id, product.status)}
           className="scale-90"
         />
-<Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onDuplicate(product.id)}
-                          className="h-8 w-8 rounded-md hover:bg-accent"
-                        >
-                          <Copy className="h-4 w-4" />
+        {/* Botões visíveis apenas em desktop */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onDuplicate(product.id)}
+          className="hidden md:flex h-8 w-8 rounded-md hover:bg-accent"
+        >
+          <Copy className="h-4 w-4" />
         </Button>
-<Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onDelete(product.id)}
-                          className="h-8 w-8 rounded-md hover:bg-destructive/10 text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onDelete(product.id)}
+          className="hidden md:flex h-8 w-8 rounded-md hover:bg-destructive/10 text-destructive"
+        >
+          <Trash2 className="h-4 w-4" />
         </Button>
+        {/* Menu dropdown visível apenas em mobile */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden h-8 w-8 rounded-md"
+            >
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onDuplicate(product.id)}>
+              <Copy className="h-4 w-4 mr-2" />
+              Duplicar
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => onDelete(product.id)}
+              className="text-destructive focus:text-destructive"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Excluir
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
