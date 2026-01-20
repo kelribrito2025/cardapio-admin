@@ -581,8 +581,9 @@ export default function PublicMenu() {
                   <div className="bg-white rounded-[20px] px-3 py-1.5 shadow-md border border-gray-200 max-w-[140px] md:max-w-[160px]">
                     <p className="text-xs text-gray-700 text-center leading-tight break-words">{establishment.publicNote}</p>
                   </div>
-                  {/* Bico do balão em formato de gota arredondada */}
+                  {/* Bico do balão em formato de balão de pensamento - dois círculos */}
                   <div className="absolute -bottom-2.5 left-4 w-4 h-4 bg-white rounded-full border border-gray-200 shadow-sm"></div>
+                  <div className="absolute -bottom-5 left-3 w-2.5 h-2.5 bg-white rounded-full border border-gray-200 shadow-sm"></div>
                 </div>
               </div>
             )}

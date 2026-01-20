@@ -1012,3 +1012,4 @@
 - [x] Adicionar efeito de animação suave no balão (float/pulse)
 
 - [x] Balão de nota com bico em formato de gota arredondada (estilo imagem de referência)
+- [x] Adicionar segundo círculo menor ao balão para efeito de balão de pensamento
