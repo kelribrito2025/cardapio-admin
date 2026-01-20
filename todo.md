@@ -842,3 +842,10 @@
 
 - [x] Ajustar badge para contar apenas pedidos não entregues
 - [x] Badge deve diminuir quando pedido mudar para status "entregue"
+
+
+## Sistema de Avaliação por Estrelas
+
+- [x] Adicionar seletor de estrelas de 1 a 5 no modal de avaliação
+- [x] Adicionar campo de comentário/texto para avaliação
+- [x] Estrelas devem ser clicáveis e mostrar seleção visual

@@ -83,6 +83,9 @@ export default function PublicMenu() {
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [currentOrderNumber, setCurrentOrderNumber] = useState<string | null>(null);
   const [showRatingModal, setShowRatingModal] = useState(false);
+  const [ratingValue, setRatingValue] = useState(0);
+  const [ratingHover, setRatingHover] = useState(0);
+  const [ratingComment, setRatingComment] = useState("");
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
@@ -2569,10 +2572,7 @@ export default function PublicMenu() {
 
             {/* Body */}
             <div className="p-6">
-              <div className="text-center py-8">
-                <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Star className="h-10 w-10 text-yellow-500 fill-yellow-500" />
-                </div>
+              <div className="text-center">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
                   Como foi sua experiência?
                 </h3>
@@ -2580,11 +2580,51 @@ export default function PublicMenu() {
                   Sua avaliação ajuda outros clientes e o restaurante a melhorar.
                 </p>
                 
-                {/* Placeholder para campos de avaliação futuros */}
-                <div className="bg-gray-50 rounded-xl p-6 text-center">
-                  <p className="text-gray-400 text-sm">
-                    Campos de avaliação em breve...
+                {/* Sistema de estrelas */}
+                <div className="flex justify-center gap-2 mb-6">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRatingValue(star)}
+                      onMouseEnter={() => setRatingHover(star)}
+                      onMouseLeave={() => setRatingHover(0)}
+                      className="p-1 transition-transform hover:scale-110 focus:outline-none"
+                    >
+                      <Star 
+                        className={`h-10 w-10 transition-colors ${
+                          star <= (ratingHover || ratingValue)
+                            ? 'text-yellow-400 fill-yellow-400'
+                            : 'text-gray-300'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+                
+                {/* Texto indicando a nota selecionada */}
+                {ratingValue > 0 && (
+                  <p className="text-sm font-medium text-gray-700 mb-4">
+                    {ratingValue === 1 && 'Muito ruim'}
+                    {ratingValue === 2 && 'Ruim'}
+                    {ratingValue === 3 && 'Regular'}
+                    {ratingValue === 4 && 'Bom'}
+                    {ratingValue === 5 && 'Excelente!'}
                   </p>
+                )}
+                
+                {/* Campo de comentário */}
+                <div className="text-left">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Deixe um comentário (opcional)
+                  </label>
+                  <textarea
+                    value={ratingComment}
+                    onChange={(e) => setRatingComment(e.target.value)}
+                    placeholder="Conte como foi sua experiência com o restaurante..."
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none text-sm"
+                  />
                 </div>
               </div>
             </div>
@@ -2592,17 +2632,31 @@ export default function PublicMenu() {
             {/* Footer */}
             <div className="border-t px-6 py-4 flex gap-3">
               <button
-                onClick={() => setShowRatingModal(false)}
+                onClick={() => {
+                  setShowRatingModal(false);
+                  setRatingValue(0);
+                  setRatingHover(0);
+                  setRatingComment("");
+                }}
                 className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={() => {
-                  // Placeholder para enviar avaliação
+                  // TODO: Enviar avaliação para o backend
+                  console.log('Avaliação:', { rating: ratingValue, comment: ratingComment });
                   setShowRatingModal(false);
+                  setRatingValue(0);
+                  setRatingHover(0);
+                  setRatingComment("");
                 }}
-                className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
+                disabled={ratingValue === 0}
+                className={`flex-1 py-3 font-semibold rounded-xl transition-colors ${
+                  ratingValue === 0
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-red-500 hover:bg-red-600 text-white'
+                }`}
               >
                 Enviar avaliação
               </button>
