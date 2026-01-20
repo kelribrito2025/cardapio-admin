@@ -99,6 +99,13 @@
       "when": 1768938454314,
       "tag": "0013_last_odin",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "5",
+      "when": 1768940739160,
+      "tag": "0014_lethal_talon",
+      "breakpoints": true
     }
   ]
 }

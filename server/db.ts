@@ -1346,6 +1346,24 @@ export async function getReviewsByEstablishment(establishmentId: number, limit =
     .limit(limit);
 }
 
+// Get last review by customer phone for 30-day limit check
+export async function getLastReviewByCustomer(establishmentId: number, customerPhone: string) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(reviews)
+    .where(
+      and(
+        eq(reviews.establishmentId, establishmentId),
+        eq(reviews.customerPhone, customerPhone)
+      )
+    )
+    .orderBy(desc(reviews.createdAt))
+    .limit(1);
+  
+  return result[0] || null;
+}
+
 export async function updateEstablishmentRating(establishmentId: number) {
   const db = await getDb();
   if (!db) return;

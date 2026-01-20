@@ -950,3 +950,22 @@
 - [x] Tornar campos Rua, Número e Bairro obrigatórios quando tipo de entrega for Entrega
 - [x] Bloquear botão Próximo se campos obrigatórios não estiverem preenchidos
 - [x] Exibir indicador visual de campos obrigatórios
+
+
+## Sistema de Avaliação do Restaurante
+
+- [ ] Criar tabela de avaliações no banco de dados (ratings)
+- [ ] Criar endpoint para verificar se cliente pode avaliar (última avaliação > 30 dias)
+- [ ] Criar endpoint para enviar avaliação
+- [ ] Implementar modal de avaliação no frontend
+- [ ] Exibir modal apenas quando pedido atingir status "entregue" e cliente puder avaliar
+- [ ] Armazenar avaliação com data para controle de 30 dias
+
+
+## Sistema de Avaliação do Restaurante (30 dias)
+
+- [x] Criar tabela de avaliações com campo customerPhone para identificar cliente
+- [x] Criar endpoint para verificar se cliente pode avaliar (30 dias)
+- [x] Criar endpoint para criar avaliação com validação de 30 dias
+- [x] Exibir modal de avaliação apenas quando pedido atingir status "entregue" E última avaliação > 30 dias
+- [x] Ocultar botão de avaliar se cliente já avaliou nos últimos 30 dias

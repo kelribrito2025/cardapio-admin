@@ -82,6 +82,12 @@ export default function PublicMenu() {
     observation: string;
   }>>([]);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  
+  // Reset canReviewChecked quando mudar de pedido
+  useEffect(() => {
+    setCanReviewChecked(false);
+    setCanReview(true);
+  }, [selectedOrderId]);
   const [currentOrderNumber, setCurrentOrderNumber] = useState<string | null>(null);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [ratingValue, setRatingValue] = useState(0);
@@ -89,6 +95,8 @@ export default function PublicMenu() {
   const [ratingComment, setRatingComment] = useState("");
   const [showReviewsModal, setShowReviewsModal] = useState(false);
   const [ratingSuccess, setRatingSuccess] = useState(false);
+  const [canReviewChecked, setCanReviewChecked] = useState(false);
+  const [canReview, setCanReview] = useState(true);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
@@ -228,8 +236,35 @@ export default function PublicMenu() {
         localStorage.setItem('userOrders', JSON.stringify(updatedOrders));
         return updatedOrders;
       });
+      
+      // Quando pedido for entregue, verificar se pode avaliar (30 dias)
+      if (mappedStatus === 'delivered' && !canReviewChecked) {
+        const selectedOrder = userOrders.find(o => o.id === selectedOrderId);
+        if (selectedOrder?.customerPhone && data?.establishment?.id) {
+          // Verificar no backend se pode avaliar
+          fetch(`/api/trpc/publicMenu.canReview?input=${encodeURIComponent(JSON.stringify({
+            establishmentId: data.establishment.id,
+            customerPhone: selectedOrder.customerPhone
+          }))}`)
+            .then(res => res.json())
+            .then(result => {
+              if (result?.result?.data) {
+                setCanReview(result.result.data.canReview);
+                setCanReviewChecked(true);
+                // Se pode avaliar, mostrar modal automaticamente
+                if (result.result.data.canReview) {
+                  setShowRatingModal(true);
+                }
+              }
+            })
+            .catch(err => {
+              console.error('Erro ao verificar se pode avaliar:', err);
+              setCanReviewChecked(true);
+            });
+        }
+      }
     }
-  }, [currentOrderData?.status, selectedOrderId]);
+  }, [currentOrderData?.status, selectedOrderId, canReviewChecked, userOrders, data?.establishment?.id]);
 
   // Set first category as active when data loads
   useEffect(() => {
@@ -2593,8 +2628,8 @@ export default function PublicMenu() {
 
             {/* Footer */}
             <div className="border-t px-6 py-4 space-y-3">
-              {/* Botão Avaliar restaurante - só aparece quando status for entregue */}
-              {orderStatus === 'delivered' && (
+              {/* Botão Avaliar restaurante - só aparece quando status for entregue E pode avaliar (30 dias) */}
+              {orderStatus === 'delivered' && canReview && (
                 <button
                   onClick={() => {
                     setShowRatingModal(true);
@@ -2604,6 +2639,14 @@ export default function PublicMenu() {
                   <Star className="h-5 w-5" />
                   Avaliar restaurante
                 </button>
+              )}
+              {/* Mensagem quando já avaliou nos últimos 30 dias */}
+              {orderStatus === 'delivered' && !canReview && canReviewChecked && (
+                <div className="text-center py-2 px-4 bg-gray-100 rounded-xl">
+                  <p className="text-sm text-gray-600">
+                    Você já avaliou este restaurante nos últimos 30 dias.
+                  </p>
+                </div>
               )}
               <button
                 onClick={() => {
@@ -2768,6 +2811,7 @@ export default function PublicMenu() {
                         await createReviewMutation.mutateAsync({
                           establishmentId: establishment.id,
                           customerName: customerInfo.name || 'Cliente',
+                          customerPhone: customerInfo.phone || '',
                           rating: ratingValue,
                           comment: ratingComment || undefined,
                         });

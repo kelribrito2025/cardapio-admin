@@ -239,13 +239,14 @@ export const coupons = mysqlTable("coupons", {
 export type Coupon = typeof coupons.$inferSelect;
 export type InsertCoupon = typeof coupons.$inferInsert;
 
-// Reviews table
+// Reviews table (avaliações do restaurante)
 export const reviews = mysqlTable("reviews", {
   id: int("id").autoincrement().primaryKey(),
   establishmentId: int("establishmentId").notNull(),
   orderId: int("orderId"),
   customerName: varchar("customerName", { length: 255 }).notNull(),
-  rating: int("rating").notNull(),
+  customerPhone: varchar("customerPhone", { length: 30 }).notNull(), // Para identificar cliente único
+  rating: int("rating").notNull(), // 1-5 estrelas
   comment: text("comment"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });

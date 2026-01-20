@@ -814,20 +814,64 @@ export const appRouter = router({
         );
       }),
 
+    // Check if customer can review (last review > 30 days ago)
+    canReview: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        customerPhone: z.string().min(1),
+      }))
+      .query(async ({ input }) => {
+        const lastReview = await db.getLastReviewByCustomer(
+          input.establishmentId,
+          input.customerPhone
+        );
+        
+        if (!lastReview) {
+          return { canReview: true, lastReviewDate: null };
+        }
+        
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        const canReview = new Date(lastReview.createdAt) < thirtyDaysAgo;
+        return { 
+          canReview, 
+          lastReviewDate: lastReview.createdAt,
+          daysUntilNextReview: canReview ? 0 : Math.ceil((new Date(lastReview.createdAt).getTime() + 30 * 24 * 60 * 60 * 1000 - Date.now()) / (24 * 60 * 60 * 1000))
+        };
+      }),
+
     // Create review from public menu
     createReview: publicProcedure
       .input(z.object({
         establishmentId: z.number(),
         orderId: z.number().optional(),
         customerName: z.string().min(1, "Nome é obrigatório"),
+        customerPhone: z.string().min(1, "Telefone é obrigatório"),
         rating: z.number().min(1).max(5),
         comment: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
+        // Verificar se pode avaliar (30 dias desde última avaliação)
+        const lastReview = await db.getLastReviewByCustomer(
+          input.establishmentId,
+          input.customerPhone
+        );
+        
+        if (lastReview) {
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          
+          if (new Date(lastReview.createdAt) >= thirtyDaysAgo) {
+            throw new Error("Você já avaliou este restaurante nos últimos 30 dias.");
+          }
+        }
+        
         const reviewId = await db.createReview({
           establishmentId: input.establishmentId,
           orderId: input.orderId || null,
           customerName: input.customerName,
+          customerPhone: input.customerPhone,
           rating: input.rating,
           comment: input.comment || null,
         });
