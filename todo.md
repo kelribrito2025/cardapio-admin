@@ -793,3 +793,8 @@
 
 - [x] Analisar como o modal de acompanhamento busca o status do pedido
 - [x] Implementar atualização em tempo real do status no modal (polling a cada 5s com getOrderByNumber)
+
+
+## Ajuste Visual - Badge de Pedidos no Cardápio Público
+
+- [x] Ajustar posição do badge de pedidos para não sobrepor a letra 's'
