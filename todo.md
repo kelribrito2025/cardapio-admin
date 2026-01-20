@@ -1011,3 +1011,9 @@
 
 - [x] Adicionar efeito de animação suave no balão (float/pulse)
 
+
+
+## Balão Estilo Instagram com Pontos Redondos
+
+- [x] Criar balão com três pontos redondos na parte inferior (estilo Instagram)
+
