@@ -937,3 +937,9 @@
 
 - [x] Adicionar seta de voltar no título do modal (a partir da etapa 2)
 - [x] Permitir clicar nas etapas anteriores já concluídas para voltar
+
+
+## Loading no Botão Enviar Pedido
+
+- [x] Adicionar estado de loading com delay de 3 segundos no botão Enviar pedido
+- [x] Exibir ícone de loading enquanto o pedido está sendo processado

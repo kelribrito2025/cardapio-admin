@@ -2008,6 +2008,8 @@ export default function PublicMenu() {
                     if (isSendingOrder || !establishment || !establishment.isOpen) return;
                     setIsSendingOrder(true);
                     
+                    // Delay de 3 segundos para mostrar loading
+                    setTimeout(() => {
                     // Calcular totais
                     const subtotal = cart.reduce((sum, item) => {
                       const itemTotal = parseFloat(item.price) * item.quantity;
@@ -2050,6 +2052,7 @@ export default function PublicMenu() {
                         notes: item.observation || undefined,
                       })),
                     });
+                    }, 3000); // Delay de 3 segundos
                   }}
                   disabled={isSendingOrder || !establishment.isOpen}
                   className={`flex-1 py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
