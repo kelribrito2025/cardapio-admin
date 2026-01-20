@@ -2340,7 +2340,7 @@ export default function PublicMenu() {
                                 'bg-green-100 text-green-700'
                               }`}>
                                 {order.status === 'sent' ? 'Enviado' :
-                                 order.status === 'accepted' ? 'Aceito' :
+                                 order.status === 'accepted' ? 'Pedido aceito' :
                                  order.status === 'delivering' ? 'Saiu para entrega' :
                                  'Entregue'}
                               </span>
@@ -2481,8 +2481,8 @@ export default function PublicMenu() {
                       orderStatus === 'accepted' ? 'text-primary' :
                       ['delivering', 'delivered'].includes(orderStatus) ? 'text-green-600' :
                       'text-gray-400'
-                    }`}>Aceito</h4>
-                    <p className="text-sm text-gray-500">O restaurante aceitou seu pedido</p>
+                    }`}>Pedido aceito</h4>
+                    <p className="text-sm text-gray-500">Iniciamos o preparo do seu pedido.</p>
                   </div>
                 </div>
 

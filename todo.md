@@ -902,3 +902,9 @@
 ## Texto "Ver menu" na Versão Mobile
 
 - [x] Adicionar texto "Ver menu" junto com o ícone na versão mobile (igual desktop)
+
+
+## Edição do Status "Aceito" no Modal de Acompanhar Pedido
+
+- [x] Alterar título de "Aceito" para "Pedido aceito"
+- [x] Alterar descrição de "O restaurante aceitou seu pedido" para "Iniciamos o preparo do seu pedido."
