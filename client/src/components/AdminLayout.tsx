@@ -23,6 +23,7 @@ import {
   Ticket,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNewOrders } from "@/contexts/NewOrdersContext";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,6 +60,7 @@ interface AdminLayoutProps {
 export function AdminLayout({ children }: AdminLayoutProps) {
   const { user, loading: authLoading, logout } = useAuth();
   const [location] = useLocation();
+  const { newOrdersCount } = useNewOrders();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -218,10 +220,29 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             const isActive = location === item.href || 
               (item.href !== "/" && location.startsWith(item.href));
             
+            // Verificar se é o item de Pedidos e se tem pedidos novos
+            const showBadge = item.href === "/pedidos" && newOrdersCount > 0;
+            
             const navContent = (
               <>
-                <item.icon className={cn("h-4 w-4 flex-shrink-0", sidebarCollapsed && "mx-auto")} />
-                {!sidebarCollapsed && <span className="text-sm">{item.label}</span>}
+                <div className="relative">
+                  <item.icon className={cn("h-4 w-4 flex-shrink-0", sidebarCollapsed && "mx-auto")} />
+                  {showBadge && sidebarCollapsed && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse">
+                      {newOrdersCount > 9 ? "9+" : newOrdersCount}
+                    </span>
+                  )}
+                </div>
+                {!sidebarCollapsed && (
+                  <span className="text-sm flex items-center gap-2">
+                    {item.label}
+                    {showBadge && (
+                      <span className="bg-red-500 text-white text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center animate-pulse">
+                        {newOrdersCount > 99 ? "99+" : newOrdersCount}
+                      </span>
+                    )}
+                  </span>
+                )}
               </>
             );
 

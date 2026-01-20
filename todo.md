@@ -803,3 +803,12 @@
 ## Ajuste Visual - Badge da Sacola no Cardápio Público
 
 - [x] Aplicar o mesmo ajuste de posicionamento do badge no ícone da sacola
+
+
+## Badge de Contagem de Pedidos Novos no Menu Admin
+
+- [x] Criar contexto global para gerenciar contagem de pedidos novos (NewOrdersContext)
+- [x] Integrar contagem com SSE para atualização em tempo real
+- [x] Adicionar badge no menu Pedidos do AdminLayout
+- [x] Implementar lógica de zerar badge ao entrar na página de pedidos
+- [x] Badge deve aparecer apenas quando houver pedidos com status "new"
