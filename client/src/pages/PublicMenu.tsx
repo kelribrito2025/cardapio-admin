@@ -157,6 +157,31 @@ export default function PublicMenu() {
     { enabled: false } // Só busca quando chamado manualmente
   );
 
+  // Query para buscar status do pedido atual em tempo real
+  const { data: currentOrderData } = trpc.publicMenu.getOrderByNumber.useQuery(
+    { orderNumber: currentOrderNumber || "", establishmentId: data?.establishment?.id || 0 },
+    { 
+      enabled: !!currentOrderNumber && !!data?.establishment?.id && showTrackingModal,
+      refetchInterval: 5000, // Atualiza a cada 5 segundos
+    }
+  );
+
+  // Atualizar o status do pedido quando os dados mudarem
+  useEffect(() => {
+    if (currentOrderData?.status) {
+      const statusMap: Record<string, "sent" | "accepted" | "delivering" | "delivered"> = {
+        'new': 'sent',
+        'preparing': 'accepted',
+        'ready': 'delivering',
+        'completed': 'delivered',
+      };
+      const mappedStatus = statusMap[currentOrderData.status] || 'sent';
+      if (mappedStatus !== orderStatus) {
+        setOrderStatus(mappedStatus);
+      }
+    }
+  }, [currentOrderData?.status]);
+
   // Set first category as active when data loads
   useEffect(() => {
     if (data?.categories && data.categories.length > 0 && activeCategory === null) {

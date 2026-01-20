@@ -787,3 +787,9 @@
 ## Ajuste Mobile - Ocultar Descrição no Catálogo
 
 - [x] Ocultar descrição dos itens na versão mobile da página /catalogo
+
+
+## Bug: Modal de Acompanhamento não atualiza status em tempo real
+
+- [x] Analisar como o modal de acompanhamento busca o status do pedido
+- [x] Implementar atualização em tempo real do status no modal (polling a cada 5s com getOrderByNumber)
