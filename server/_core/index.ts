@@ -45,21 +45,32 @@ async function startServer() {
   app.get("/api/orders/stream", async (req, res) => {
     try {
       // Extrair token do cookie ou header
-      const token = req.cookies?.manus_session || req.headers.authorization?.replace("Bearer ", "");
+      const token = req.cookies?.app_session_id || req.headers.authorization?.replace("Bearer ", "");
       if (!token) {
-        res.status(401).json({ error: "Unauthorized" });
+        console.log("[SSE] Sem token de autenticação");
+        res.status(401).json({ error: "Unauthorized - no token" });
         return;
       }
       
       // Verificar token e obter usuário
-      const payload = await sdk.verifySession(token);
-      if (!payload?.openId) {
+      let payload;
+      try {
+        payload = await sdk.verifySession(token);
+      } catch (verifyError) {
+        console.log("[SSE] Erro ao verificar token:", verifyError);
         res.status(401).json({ error: "Invalid token" });
+        return;
+      }
+      
+      if (!payload?.openId) {
+        console.log("[SSE] Token sem openId");
+        res.status(401).json({ error: "Invalid token - no openId" });
         return;
       }
       
       const user = await getUserByOpenId(payload.openId);
       if (!user) {
+        console.log("[SSE] Usuário não encontrado para openId:", payload.openId);
         res.status(401).json({ error: "User not found" });
         return;
       }
@@ -67,6 +78,7 @@ async function startServer() {
       // Obter estabelecimento do usuário
       const establishment = await getEstablishmentByUserId(user.id);
       if (!establishment) {
+        console.log("[SSE] Estabelecimento não encontrado para usuário:", user.id);
         res.status(404).json({ error: "Establishment not found" });
         return;
       }

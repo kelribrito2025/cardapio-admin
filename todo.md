@@ -757,3 +757,9 @@
 
 - [x] Investigar causa do erro na validação do cupom (problema na comparação de datas - endDate era comparado com meia-noite em vez do final do dia)
 - [x] Corrigir o bug identificado (ajustado endDate para 23:59:59 antes da comparação)
+
+
+## Erros na Página de Pedidos
+
+- [x] Corrigir erro de establishmentId null na query de pedidos (já estava tratado com enabled: !!establishmentId)
+- [x] Corrigir erro de conexão SSE (cookie name estava errado: manus_session -> app_session_id)

@@ -87,7 +87,8 @@ export function useOrdersSSE(options: UseOrdersSSEOptions = {}) {
     };
 
     eventSource.onerror = (event) => {
-      console.error("[SSE] Erro na conexão:", event);
+      // EventSource errors don't have useful info, just log the state
+      console.error("[SSE] Erro na conexão - readyState:", eventSource.readyState);
       setStatus("error");
       onError?.(event);
 
