@@ -135,6 +135,7 @@ export const orders = mysqlTable("orders", {
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
   notes: text("notes"),
   changeAmount: decimal("changeAmount", { precision: 10, scale: 2 }),
+  cancellationReason: text("cancellationReason"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   completedAt: timestamp("completedAt"),

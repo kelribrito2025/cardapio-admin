@@ -65,14 +65,15 @@ export default function PublicMenu() {
   const [orderSent, setOrderSent] = useState(false);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
   const [showMobileBag, setShowMobileBag] = useState(false);
-  const [orderStatus, setOrderStatus] = useState<"sent" | "accepted" | "delivering" | "delivered">("sent");
+  const [orderStatus, setOrderStatus] = useState<"sent" | "accepted" | "delivering" | "delivered" | "cancelled">("sent");
+  const [cancellationReasonDisplay, setCancellationReasonDisplay] = useState<string | null>(null);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
   const [userOrders, setUserOrders] = useState<Array<{
     id: string;
     date: string;
     items: Array<{ name: string; quantity: number; price: string; complements: Array<{ name: string; price: string }> }>;
     total: string;
-    status: "sent" | "accepted" | "delivering" | "delivered";
+    status: "sent" | "accepted" | "delivering" | "delivered" | "cancelled";
     deliveryType: "pickup" | "delivery";
     paymentMethod: "cash" | "card" | "pix";
     address?: { street: string; number: string; neighborhood: string; complement: string; reference: string };
@@ -200,15 +201,23 @@ export default function PublicMenu() {
   // Atualizar o status do pedido quando os dados mudarem
   useEffect(() => {
     if (currentOrderData?.status && selectedOrderId) {
-      const statusMap: Record<string, "sent" | "accepted" | "delivering" | "delivered"> = {
+      const statusMap: Record<string, "sent" | "accepted" | "delivering" | "delivered" | "cancelled"> = {
         'new': 'sent',
         'preparing': 'accepted',
         'ready': 'delivering',
         'completed': 'delivered',
+        'cancelled': 'cancelled',
       };
       const mappedStatus = statusMap[currentOrderData.status] || 'sent';
       if (mappedStatus !== orderStatus) {
         setOrderStatus(mappedStatus);
+      }
+      
+      // Salvar o motivo de cancelamento se houver
+      if (currentOrderData.status === 'cancelled' && currentOrderData.cancellationReason) {
+        setCancellationReasonDisplay(currentOrderData.cancellationReason);
+      } else {
+        setCancellationReasonDisplay(null);
       }
       
       // Atualizar o status do pedido no localStorage e no estado
@@ -2413,8 +2422,28 @@ export default function PublicMenu() {
               </button>
             </div>
 
-            {/* Body - Timeline */}
+            {/* Body - Timeline ou Cancelado */}
             <div className="p-6">
+              {orderStatus === 'cancelled' ? (
+                /* Exibição de Pedido Cancelado */
+                <div className="text-center py-8">
+                  <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <X className="h-10 w-10 text-red-500" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-red-600 mb-4">
+                    Pedido Cancelado
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Infelizmente seu pedido foi cancelado pelo restaurante.
+                  </p>
+                  {cancellationReasonDisplay && (
+                    <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-left">
+                      <p className="text-sm font-semibold text-red-700 mb-1">Motivo do cancelamento:</p>
+                      <p className="text-sm text-red-600">{cancellationReasonDisplay}</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
               <div className="relative">
                 {/* Linha vertical conectando os status */}
                 <div className="absolute left-5 top-5 bottom-5 w-0.5 bg-gray-200" />
@@ -2492,6 +2521,7 @@ export default function PublicMenu() {
                   </div>
                 </div>
               </div>
+              )}
             </div>
 
             {/* Footer */}

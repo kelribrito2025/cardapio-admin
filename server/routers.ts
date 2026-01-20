@@ -884,9 +884,10 @@ export const appRouter = router({
       .input(z.object({
         id: z.number(),
         status: z.enum(["new", "preparing", "ready", "completed", "cancelled"]),
+        cancellationReason: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
-        await db.updateOrderStatus(input.id, input.status);
+        await db.updateOrderStatus(input.id, input.status, input.cancellationReason);
         return { success: true };
       }),
   }),

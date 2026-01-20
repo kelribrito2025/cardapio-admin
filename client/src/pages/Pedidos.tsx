@@ -77,6 +77,7 @@ export default function Pedidos() {
   const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState<number | null>(null);
+  const [cancellationReason, setCancellationReason] = useState("");
 
   useEffect(() => {
     if (establishment) {
@@ -219,11 +220,12 @@ export default function Pedidos() {
   const handleCancelOrder = () => {
     if (orderToCancel) {
       updateStatusMutation.mutate(
-        { id: orderToCancel, status: "cancelled" },
+        { id: orderToCancel, status: "cancelled", cancellationReason: cancellationReason || undefined },
         {
           onSuccess: () => {
             setCancelDialogOpen(false);
             setOrderToCancel(null);
+            setCancellationReason("");
           },
         }
       );
@@ -743,7 +745,10 @@ export default function Pedidos() {
       </Sheet>
 
       {/* Cancel Confirmation Dialog */}
-      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+      <Dialog open={cancelDialogOpen} onOpenChange={(open) => {
+        setCancelDialogOpen(open);
+        if (!open) setCancellationReason("");
+      }}>
         <DialogContent className="rounded-2xl">
           <DialogHeader>
             <DialogTitle>Cancelar pedido</DialogTitle>
@@ -751,6 +756,18 @@ export default function Pedidos() {
               Tem certeza que deseja cancelar este pedido? Esta ação não pode ser desfeita.
             </DialogDescription>
           </DialogHeader>
+          <div className="py-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Motivo do cancelamento (obrigatório)
+            </label>
+            <textarea
+              value={cancellationReason}
+              onChange={(e) => setCancellationReason(e.target.value)}
+              placeholder="Ex: Produto indisponível, cliente solicitou cancelamento..."
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
+              rows={3}
+            />
+          </div>
           <DialogFooter className="gap-3">
             <Button variant="outline" onClick={() => setCancelDialogOpen(false)} className="rounded-xl">
               Voltar
@@ -758,7 +775,7 @@ export default function Pedidos() {
             <Button
               variant="destructive"
               onClick={handleCancelOrder}
-              disabled={updateStatusMutation.isPending}
+              disabled={updateStatusMutation.isPending || !cancellationReason.trim()}
               className="rounded-xl"
             >
               {updateStatusMutation.isPending ? "Cancelando..." : "Cancelar Pedido"}

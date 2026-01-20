@@ -884,3 +884,11 @@
 - [x] Mover título para acima das etapas (1, 2, 3, 4, 5)
 - [x] Etapas devem ficar abaixo do título
 - [x] Remover headers duplicados dos modais 2, 3, 4 e 5
+
+
+## Motivo de Cancelamento de Pedido
+
+- [x] Adicionar campo cancellationReason na tabela orders
+- [x] Adicionar campo de texto no modal de cancelar pedido (admin)
+- [x] Atualizar endpoint de cancelamento para salvar o motivo
+- [x] Exibir status "Cancelado" e motivo no modal de Acompanhar Pedido (público)

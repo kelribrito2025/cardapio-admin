@@ -523,13 +523,16 @@ export async function createOrder(data: InsertOrder, items: InsertOrderItem[]) {
   return orderId;
 }
 
-export async function updateOrderStatus(id: number, status: "new" | "preparing" | "ready" | "completed" | "cancelled") {
+export async function updateOrderStatus(id: number, status: "new" | "preparing" | "ready" | "completed" | "cancelled", cancellationReason?: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
   const updateData: Partial<Order> = { status };
   if (status === "completed" || status === "cancelled") {
     updateData.completedAt = new Date();
+  }
+  if (status === "cancelled" && cancellationReason) {
+    updateData.cancellationReason = cancellationReason;
   }
   
   await db.update(orders).set(updateData).where(eq(orders.id, id));
@@ -538,7 +541,7 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
   const updatedOrder = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
   if (updatedOrder.length > 0) {
     const order = updatedOrder[0];
-    notifyOrderUpdate(order.establishmentId, { id, status, updatedAt: new Date() });
+    notifyOrderUpdate(order.establishmentId, { id, status, updatedAt: new Date(), cancellationReason });
   }
 }
 
