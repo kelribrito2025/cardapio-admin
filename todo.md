@@ -828,3 +828,11 @@
 - [x] Exibir mensagem "Restaurante fechado" no botão
 - [x] Bloquear botão "Finalizar pedido" na sacola quando loja fechada
 - [x] Bloquear botão "Enviar pedido" no checkout quando loja fechada
+
+
+## Botão Avaliar Restaurante no Modal de Acompanhar Pedido
+
+- [x] Adicionar botão "Avaliar restaurante" no modal de acompanhamento
+- [x] Botão só aparece quando status for "entregue"
+- [x] Criar modal simples de avaliação (preparado para campos futuros)
+- [x] Seguir estilo visual dos botões do cardápio público

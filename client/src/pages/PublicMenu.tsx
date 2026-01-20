@@ -82,6 +82,7 @@ export default function PublicMenu() {
   }>>([]);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [currentOrderNumber, setCurrentOrderNumber] = useState<string | null>(null);
+  const [showRatingModal, setShowRatingModal] = useState(false);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
@@ -2500,7 +2501,19 @@ export default function PublicMenu() {
             </div>
 
             {/* Footer */}
-            <div className="border-t px-6 py-4">
+            <div className="border-t px-6 py-4 space-y-3">
+              {/* Botão Avaliar restaurante - só aparece quando status for entregue */}
+              {orderStatus === 'delivered' && (
+                <button
+                  onClick={() => {
+                    setShowRatingModal(true);
+                  }}
+                  className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+                >
+                  <Star className="h-5 w-5" />
+                  Avaliar restaurante
+                </button>
+              )}
               <button
                 onClick={() => {
                   setShowTrackingModal(false);
@@ -2514,6 +2527,75 @@ export default function PublicMenu() {
                 className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors"
               >
                 Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Avaliação do Restaurante */}
+      {showRatingModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowRatingModal(false)}
+          />
+          
+          {/* Modal Content */}
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[80vh] overflow-hidden">
+            {/* Header */}
+            <div className="border-b px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                <h2 className="text-lg font-bold text-gray-900">Avaliar restaurante</h2>
+              </div>
+              <button 
+                onClick={() => setShowRatingModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6">
+              <div className="text-center py-8">
+                <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Star className="h-10 w-10 text-yellow-500 fill-yellow-500" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Como foi sua experiência?
+                </h3>
+                <p className="text-gray-500 text-sm mb-6">
+                  Sua avaliação ajuda outros clientes e o restaurante a melhorar.
+                </p>
+                
+                {/* Placeholder para campos de avaliação futuros */}
+                <div className="bg-gray-50 rounded-xl p-6 text-center">
+                  <p className="text-gray-400 text-sm">
+                    Campos de avaliação em breve...
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="border-t px-6 py-4 flex gap-3">
+              <button
+                onClick={() => setShowRatingModal(false)}
+                className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  // Placeholder para enviar avaliação
+                  setShowRatingModal(false);
+                }}
+                className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
+              >
+                Enviar avaliação
               </button>
             </div>
           </div>

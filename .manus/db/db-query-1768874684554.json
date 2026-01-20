@@ -1,0 +1,30 @@
+{
+  "query": "SELECT id, orderNumber, status FROM orders LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, status FROM orders LIMIT 10;",
+  "rows": [
+    {
+      "id": "60002",
+      "orderNumber": "#MKLQQV7T",
+      "status": "cancelled"
+    },
+    {
+      "id": "60003",
+      "orderNumber": "#MKLWF716",
+      "status": "completed"
+    },
+    {
+      "id": "60004",
+      "orderNumber": "#MKLXAG2V",
+      "status": "completed"
+    },
+    {
+      "id": "60005",
+      "orderNumber": "#MKLXMP35",
+      "status": "preparing"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tstatus\n60002\t#MKLQQV7T\tcancelled\n60003\t#MKLWF716\tcompleted\n60004\t#MKLXAG2V\tcompleted\n60005\t#MKLXMP35\tpreparing\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}
