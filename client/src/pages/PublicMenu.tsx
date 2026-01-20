@@ -158,13 +158,22 @@ export default function PublicMenu() {
   );
 
   // Query para buscar status do pedido atual em tempo real
-  const { data: currentOrderData } = trpc.publicMenu.getOrderByNumber.useQuery(
+  const { data: currentOrderData, refetch: refetchOrderStatus } = trpc.publicMenu.getOrderByNumber.useQuery(
     { orderNumber: currentOrderNumber || "", establishmentId: data?.establishment?.id || 0 },
     { 
       enabled: !!currentOrderNumber && !!data?.establishment?.id && showTrackingModal,
       refetchInterval: 5000, // Atualiza a cada 5 segundos
+      refetchOnMount: 'always', // Sempre buscar ao montar
+      staleTime: 0, // Considerar dados sempre desatualizados
     }
   );
+
+  // Forçar refetch quando o modal abrir
+  useEffect(() => {
+    if (showTrackingModal && currentOrderNumber) {
+      refetchOrderStatus();
+    }
+  }, [showTrackingModal, currentOrderNumber]);
 
   // Atualizar o status do pedido quando os dados mudarem
   useEffect(() => {
@@ -2265,7 +2274,9 @@ export default function PublicMenu() {
                             className="bg-white border-2 border-red-200 rounded-xl p-4 cursor-pointer hover:border-red-400 transition-colors"
                             onClick={() => {
                               setSelectedOrderId(order.id);
-                              setOrderStatus(order.status);
+                              // O order.id já é o número do pedido (result.orderNumber)
+                              setCurrentOrderNumber(order.id);
+                              // Não definir orderStatus aqui - deixar a query buscar do banco
                               setShowOrdersModal(false);
                               setShowTrackingModal(true);
                             }}

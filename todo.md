@@ -812,3 +812,10 @@
 - [x] Adicionar badge no menu Pedidos do AdminLayout
 - [x] Implementar lógica de zerar badge ao entrar na página de pedidos
 - [x] Badge deve aparecer apenas quando houver pedidos com status "new"
+
+
+## Bug: Modal de Acompanhar Pedido reseta status ao reabrir
+
+- [x] Corrigir modal para buscar status atual do banco ao abrir (adicionado refetchOnMount e staleTime: 0)
+- [x] Não usar estado local/cache para o status do pedido (removido setOrderStatus no onClick)
+- [x] Modal deve sempre exibir o status real do pedido (força refetch ao abrir modal)
