@@ -2364,7 +2364,7 @@ export default function PublicMenu() {
                               }`}>
                                 {order.status === 'sent' ? 'Enviado' :
                                  order.status === 'accepted' ? 'Pedido aceito' :
-                                 order.status === 'delivering' ? 'Saiu para entrega' :
+                                 order.status === 'delivering' ? (order.deliveryType === 'pickup' ? 'Pedido Finalizado' : 'Saiu para entrega') :
                                  'Entregue'}
                               </span>
                             </div>

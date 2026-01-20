@@ -926,3 +926,8 @@
 
 - [x] Alterar status "Saiu para entrega" para "Pedido Finalizado" quando tipo de entrega for retirada
 - [x] Alterar descrição para "Tudo certo! Seu pedido já está disponível para retirada."
+
+
+## Badge Condicional no Modal Meus Pedidos
+
+- [x] Corrigir badge para exibir "Pedido Finalizado" em vez de "Saiu para entrega" quando for retirada no local
