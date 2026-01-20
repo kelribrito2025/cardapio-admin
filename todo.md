@@ -1005,3 +1005,9 @@
 - [x] Reduzir tamanho do balão e texto em 20%
 - [x] Mudar modelo do balão para estilo com seta no canto inferior esquerdo
 
+
+
+## Efeito de Animação no Balão de Nota
+
+- [x] Adicionar efeito de animação suave no balão (float/pulse)
+

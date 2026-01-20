@@ -575,7 +575,7 @@ export default function PublicMenu() {
             {establishment.publicNote && establishment.publicNoteCreatedAt && (
               new Date().getTime() - new Date(establishment.publicNoteCreatedAt).getTime() < 24 * 60 * 60 * 1000
             ) && (
-              <div className="absolute -top-12 md:-top-14 left-0 z-20">
+              <div className="absolute -top-12 md:-top-14 left-0 z-20 animate-float-balloon">
                 <div className="relative">
                   {/* Balão estilo bolha */}
                   <div className="bg-white rounded-[20px] px-3 py-1.5 shadow-md border border-gray-200 max-w-[140px] md:max-w-[160px]">
