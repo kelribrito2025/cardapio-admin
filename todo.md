@@ -985,3 +985,14 @@
 - [x] Identificar problema de sincronização de estado ou redirecionamento
 - [x] Corrigir o bug para login funcionar na primeira tentativa
 
+
+
+## Balão de Nota Temporária no Cardápio Público
+
+- [x] Adicionar campos public_note e public_note_created_at no schema
+- [x] Criar endpoints para salvar e remover nota
+- [x] Adicionar seção de configuração com campo de texto e sugestões
+- [x] Implementar botões Salvar Nota e Remover Nota
+- [x] Exibir balão de nota no cardápio público acima da foto de perfil
+- [x] Implementar lógica de expiração automática de 24h
+

@@ -206,6 +206,27 @@ export const appRouter = router({
         await db.toggleEstablishmentOpen(input.id, input.isOpen);
         return { success: true };
       }),
+    
+    // Salvar nota pública temporária
+    savePublicNote: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        note: z.string().max(80, "A nota deve ter no máximo 80 caracteres"),
+      }))
+      .mutation(async ({ input }) => {
+        await db.savePublicNote(input.id, input.note);
+        return { success: true };
+      }),
+    
+    // Remover nota pública
+    removePublicNote: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.removePublicNote(input.id);
+        return { success: true };
+      }),
   }),
 
   // ============ CATEGORIES ============

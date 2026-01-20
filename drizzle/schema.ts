@@ -44,6 +44,8 @@ export const establishments = mysqlTable("establishments", {
   allowsPickup: boolean("allowsPickup").default(true).notNull(),
   rating: decimal("rating", { precision: 2, scale: 1 }).default("0"),
   reviewCount: int("reviewCount").default(0).notNull(),
+  publicNote: varchar("publicNote", { length: 100 }),
+  publicNoteCreatedAt: timestamp("publicNoteCreatedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

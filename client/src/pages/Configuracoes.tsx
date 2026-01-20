@@ -24,6 +24,8 @@ import {
   Pencil,
   Check,
   X,
+  MessageCircle,
+  Trash2,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -56,6 +58,10 @@ export default function Configuracoes() {
   const [acceptsBoleto, setAcceptsBoleto] = useState(false);
   const [allowsDelivery, setAllowsDelivery] = useState(true);
   const [allowsPickup, setAllowsPickup] = useState(true);
+  
+  // Public note state
+  const [publicNote, setPublicNote] = useState("");
+  const [publicNoteCreatedAt, setPublicNoteCreatedAt] = useState<Date | null>(null);
 
   // File input refs
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -89,6 +95,8 @@ export default function Configuracoes() {
       setAcceptsBoleto(establishment.acceptsBoleto);
       setAllowsDelivery(establishment.allowsDelivery);
       setAllowsPickup(establishment.allowsPickup);
+      setPublicNote(establishment.publicNote || "");
+      setPublicNoteCreatedAt(establishment.publicNoteCreatedAt ? new Date(establishment.publicNoteCreatedAt) : null);
     }
   }, [establishment]);
 
@@ -116,6 +124,24 @@ export default function Configuracoes() {
         toast.error("Erro ao salvar configurações");
       }
     },
+  });
+  
+  const saveNoteMutation = trpc.establishment.savePublicNote.useMutation({
+    onSuccess: () => {
+      refetch();
+      toast.success("Nota salva com sucesso! Ela ficará visível por 24 horas.");
+    },
+    onError: () => toast.error("Erro ao salvar nota"),
+  });
+  
+  const removeNoteMutation = trpc.establishment.removePublicNote.useMutation({
+    onSuccess: () => {
+      refetch();
+      setPublicNote("");
+      setPublicNoteCreatedAt(null);
+      toast.success("Nota removida com sucesso");
+    },
+    onError: () => toast.error("Erro ao remover nota"),
   });
 
   const handleSaveEstablishment = () => {
@@ -501,7 +527,139 @@ export default function Configuracoes() {
             </div>
           </SectionCard>
 
-
+          {/* Nota do Restaurante */}
+          <SectionCard title="Nota do Restaurante">
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Deixe uma nota temporária para seus clientes. Ela aparecerá como um balão acima da foto de perfil no cardápio público e ficará visível por 24 horas.
+              </p>
+              
+              {/* Sugestões rápidas */}
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Sugestões rápidas</Label>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "Promoção válida hoje!",
+                    "Temos novidades no cardápio 👀",
+                    "Combo especial disponível!",
+                    "Hoje o tempo de entrega está reduzido 🚀",
+                    "Aproveite nossas ofertas do dia!",
+                    "Obrigado por pedir com a gente ❤️",
+                    "Estamos com alta demanda, pedimos paciência 🙏",
+                    "Sugestão do chef disponível!",
+                    "Recomendado: experimente nosso prato mais vendido!",
+                    "Cupom especial disponível — pergunte no WhatsApp!",
+                  ].map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      type="button"
+                      onClick={() => setPublicNote(suggestion)}
+                      className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-primary/10 hover:text-primary rounded-full transition-colors border border-gray-200 hover:border-primary/30"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Campo de texto */}
+              <div className="space-y-2">
+                <Label htmlFor="publicNote" className="text-sm font-semibold flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4 text-primary" />
+                  Nota do Restaurante (opcional)
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="publicNote"
+                    value={publicNote}
+                    onChange={(e) => setPublicNote(e.target.value.slice(0, 80))}
+                    placeholder="Deixe uma nota temporária para seus clientes..."
+                    maxLength={80}
+                    className="h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 pr-16"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                    {publicNote.length}/80
+                  </span>
+                </div>
+              </div>
+              
+              {/* Preview do balão */}
+              {publicNote && (
+                <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                  <Label className="text-xs font-medium text-muted-foreground mb-2 block">Preview do balão:</Label>
+                  <div className="flex justify-center">
+                    <div className="relative">
+                      {/* Balão */}
+                      <div className="bg-white rounded-2xl px-4 py-2 shadow-lg border border-gray-100 max-w-xs">
+                        <p className="text-sm text-gray-800 text-center">{publicNote}</p>
+                      </div>
+                      {/* Seta do balão */}
+                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-r border-b border-gray-100 transform rotate-45"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Status da nota atual */}
+              {publicNoteCreatedAt && (
+                <div className="p-3 bg-amber-50 rounded-xl border border-amber-200">
+                  <p className="text-sm text-amber-800">
+                    <strong>Nota ativa:</strong> Criada em {publicNoteCreatedAt.toLocaleString('pt-BR')}. 
+                    Expira em {new Date(publicNoteCreatedAt.getTime() + 24 * 60 * 60 * 1000).toLocaleString('pt-BR')}.
+                  </p>
+                </div>
+              )}
+              
+              {/* Botões */}
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => {
+                    if (!publicNote.trim()) {
+                      toast.error("Digite uma nota para salvar");
+                      return;
+                    }
+                    if (!establishment) return;
+                    saveNoteMutation.mutate({ id: establishment.id, note: publicNote.trim() });
+                  }}
+                  disabled={!publicNote.trim() || saveNoteMutation.isPending}
+                  className="flex-1 h-11 rounded-xl bg-primary hover:bg-primary/90"
+                >
+                  {saveNoteMutation.isPending ? (
+                    <span className="flex items-center gap-2">
+                      <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                      Salvando...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <Save className="h-4 w-4" />
+                      Salvar Nota
+                    </span>
+                  )}
+                </Button>
+                
+                {publicNoteCreatedAt && (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      if (!establishment) return;
+                      removeNoteMutation.mutate({ id: establishment.id });
+                    }}
+                    disabled={removeNoteMutation.isPending}
+                    className="h-11 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                  >
+                    {removeNoteMutation.isPending ? (
+                      <span className="h-4 w-4 border-2 border-red-300 border-t-red-600 rounded-full animate-spin"></span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <Trash2 className="h-4 w-4" />
+                        Remover Nota
+                      </span>
+                    )}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </SectionCard>
 
           {/* Endereço */}
           <SectionCard 

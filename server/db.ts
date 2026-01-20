@@ -170,6 +170,26 @@ export async function toggleEstablishmentOpen(id: number, isOpen: boolean) {
   await db.update(establishments).set({ isOpen }).where(eq(establishments.id, id));
 }
 
+export async function savePublicNote(id: number, note: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(establishments).set({ 
+    publicNote: note,
+    publicNoteCreatedAt: new Date(),
+  }).where(eq(establishments.id, id));
+}
+
+export async function removePublicNote(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(establishments).set({ 
+    publicNote: null,
+    publicNoteCreatedAt: null,
+  }).where(eq(establishments.id, id));
+}
+
 export async function getEstablishmentBySlug(slug: string) {
   const db = await getDb();
   if (!db) return undefined;
