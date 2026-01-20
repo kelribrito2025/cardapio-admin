@@ -1261,8 +1261,13 @@ export async function validateCoupon(
   if (coupon.startDate && now < coupon.startDate) {
     return { valid: false, error: "Cupom ainda não está válido" };
   }
-  if (coupon.endDate && now > coupon.endDate) {
-    return { valid: false, error: "Cupom expirado" };
+  if (coupon.endDate) {
+    // Ajustar endDate para o final do dia (23:59:59)
+    const endOfDay = new Date(coupon.endDate);
+    endOfDay.setHours(23, 59, 59, 999);
+    if (now > endOfDay) {
+      return { valid: false, error: "Cupom expirado" };
+    }
   }
   
   // Check active days

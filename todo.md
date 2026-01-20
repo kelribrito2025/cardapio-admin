@@ -751,3 +751,9 @@
 ## Correção Visual dos Cards de Cupons
 
 - [x] Ajustar cards da página de cupons para seguir o mesmo padrão da página de estoque
+
+
+## Bug: Cupom SEG10 retornando "Cupom inválido"
+
+- [x] Investigar causa do erro na validação do cupom (problema na comparação de datas - endDate era comparado com meia-noite em vez do final do dia)
+- [x] Corrigir o bug identificado (ajustado endDate para 23:59:59 antes da comparação)
