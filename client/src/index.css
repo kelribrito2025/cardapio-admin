@@ -329,45 +329,5 @@
 }
 
 .animate-float-balloon {
-  animation: float-balloon 3s ease-in-out infinite;
-}
-
-/* Estilo do balão de nota - modelo amarelo/laranja */
-.balao-nota {
-  background: #fffde7;
-  color: #f57f17;
-  padding: 10px 16px;
-  border-radius: 12px;
-  position: relative;
-  box-shadow: 0 3px 10px rgba(245,127,23,0.2);
-  font-size: 11px;
-  font-weight: 700;
-  max-width: 140px;
-  border-right: 2px solid #ffeb3b;
-}
-
-.balao-nota::before {
-  content: '';
-  position: absolute;
-  bottom: -6px;
-  left: 20px;
-  width: 0;
-  height: 0;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-top: 7px solid #fffde7;
-}
-
-@media (min-width: 768px) {
-  .balao-nota {
-    padding: 12px 18px;
-    font-size: 12px;
-    max-width: 160px;
-  }
-  .balao-nota::before {
-    bottom: -8px;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 8px solid #fffde7;
-  }
+  animation: float-balloon 3s ease-in-out infinite, pulse-glow 3s ease-in-out infinite;
 }
