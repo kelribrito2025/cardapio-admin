@@ -865,3 +865,9 @@
 
 - [x] Investigar e corrigir problema no envio de avaliação
 - [x] Adicionar tela de confirmação de sucesso após envio
+
+
+## Bug: Erro ao Enviar Avaliação
+
+- [x] Investigar erro no envio de avaliação
+- [x] Corrigir problema identificado (tratamento de valores null no cálculo de média)

@@ -1347,18 +1347,26 @@ export async function updateEstablishmentRating(establishmentId: number) {
   const db = await getDb();
   if (!db) return;
   
-  // Calculate average rating and count
-  const result = await db.select({
-    avgRating: sql<number>`AVG(rating)`,
-    count: sql<number>`COUNT(*)`
-  }).from(reviews).where(eq(reviews.establishmentId, establishmentId));
-  
-  const avgRating = result[0]?.avgRating ?? 0;
-  const count = result[0]?.count ?? 0;
-  
-  // Update establishment
-  await db.update(establishments).set({
-    rating: String(avgRating.toFixed(1)),
-    reviewCount: count
-  }).where(eq(establishments.id, establishmentId));
+  try {
+    // Calculate average rating and count
+    const result = await db.select({
+      avgRating: sql<number>`AVG(rating)`,
+      count: sql<number>`COUNT(*)`
+    }).from(reviews).where(eq(reviews.establishmentId, establishmentId));
+    
+    const avgRating = result[0]?.avgRating ?? 0;
+    const count = result[0]?.count ?? 0;
+    
+    // Ensure avgRating is a valid number before calling toFixed
+    const ratingValue = typeof avgRating === 'number' && !isNaN(avgRating) ? avgRating : 0;
+    
+    // Update establishment
+    await db.update(establishments).set({
+      rating: String(ratingValue.toFixed(1)),
+      reviewCount: count
+    }).where(eq(establishments.id, establishmentId));
+  } catch (error) {
+    console.error('Error updating establishment rating:', error);
+    // Don't throw - let the review creation succeed even if rating update fails
+  }
 }

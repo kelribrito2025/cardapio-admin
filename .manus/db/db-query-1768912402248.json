@@ -1,0 +1,55 @@
+{
+  "query": "SELECT * FROM reviews ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM reviews ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "12",
+      "establishmentId": "1",
+      "orderId": "NULL",
+      "customerName": "Teste",
+      "rating": "5",
+      "comment": "Comentário de teste",
+      "createdAt": "2026-01-20 12:33:17"
+    },
+    {
+      "id": "11",
+      "establishmentId": "1",
+      "orderId": "NULL",
+      "customerName": "hhhhhh",
+      "rating": "4",
+      "comment": "ooookkokokk",
+      "createdAt": "2026-01-20 12:31:25"
+    },
+    {
+      "id": "10",
+      "establishmentId": "1",
+      "orderId": "NULL",
+      "customerName": "hhhhhh",
+      "rating": "4",
+      "comment": "ooookkokokk",
+      "createdAt": "2026-01-20 12:31:17"
+    },
+    {
+      "id": "9",
+      "establishmentId": "1",
+      "orderId": "5",
+      "customerName": "hhhhhh",
+      "rating": "5",
+      "comment": "Muito bom gostei da comida kkk",
+      "createdAt": "2026-01-20 12:17:42"
+    },
+    {
+      "id": "8",
+      "establishmentId": "1",
+      "orderId": "5",
+      "customerName": "hhhhhh",
+      "rating": "5",
+      "comment": "Muito bom gostei da comida kkk",
+      "createdAt": "2026-01-20 12:17:42"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\torderId\tcustomerName\trating\tcomment\tcreatedAt\n12\t1\tNULL\tTeste\t5\tComentário de teste\t2026-01-20 12:33:17\n11\t1\tNULL\thhhhhh\t4\tooookkokokk\t2026-01-20 12:31:25\n10\t1\tNULL\thhhhhh\t4\tooookkokokk\t2026-01-20 12:31:17\n9\t1\t5\thhhhhh\t5\tMuito bom gostei da comida kkk\t2026-01-20 12:17:42\n8\t1\t5\thhhhhh\t5\tMuito bom gostei da comida kkk\t2026-01-20 12:17:42\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}
