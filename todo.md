@@ -859,3 +859,9 @@
 - [x] Criar modal de avaliações que abre ao clicar na estrela/nota
 - [x] Exibir nome do cliente, estrelas, comentário e data
 - [x] Integrar botão "Enviar avaliação" com o backend
+
+
+## Bug: Envio de Avaliação não Funciona
+
+- [x] Investigar e corrigir problema no envio de avaliação
+- [x] Adicionar tela de confirmação de sucesso após envio

@@ -87,6 +87,7 @@ export default function PublicMenu() {
   const [ratingHover, setRatingHover] = useState(0);
   const [ratingComment, setRatingComment] = useState("");
   const [showReviewsModal, setShowReviewsModal] = useState(false);
+  const [ratingSuccess, setRatingSuccess] = useState(false);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
@@ -2564,126 +2565,165 @@ export default function PublicMenu() {
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setShowRatingModal(false)}
+            onClick={() => {
+              if (!ratingSuccess) {
+                setShowRatingModal(false);
+                setRatingValue(0);
+                setRatingHover(0);
+                setRatingComment("");
+              }
+            }}
           />
           
           {/* Modal Content */}
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[80vh] overflow-hidden">
-            {/* Header */}
-            <div className="border-b px-6 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
-                <h2 className="text-lg font-bold text-gray-900">Avaliar restaurante</h2>
-              </div>
-              <button 
-                onClick={() => setShowRatingModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="h-5 w-5 text-gray-500" />
-              </button>
-            </div>
-
-            {/* Body */}
-            <div className="p-6">
-              <div className="text-center">
+            {ratingSuccess ? (
+              /* Tela de Sucesso */
+              <div className="p-8 text-center">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle className="h-10 w-10 text-green-500" />
+                </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  Como foi sua experiência?
+                  Avaliação enviada!
                 </h3>
                 <p className="text-gray-500 text-sm mb-6">
-                  Sua avaliação ajuda outros clientes e o restaurante a melhorar.
+                  Obrigado por avaliar. Sua opinião é muito importante para nós!
                 </p>
-                
-                {/* Sistema de estrelas */}
-                <div className="flex justify-center gap-2 mb-6">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setRatingValue(star)}
-                      onMouseEnter={() => setRatingHover(star)}
-                      onMouseLeave={() => setRatingHover(0)}
-                      className="p-1 transition-transform hover:scale-110 focus:outline-none"
-                    >
-                      <Star 
-                        className={`h-10 w-10 transition-colors ${
-                          star <= (ratingHover || ratingValue)
-                            ? 'text-yellow-400 fill-yellow-400'
-                            : 'text-gray-300'
-                        }`}
-                      />
-                    </button>
-                  ))}
-                </div>
-                
-                {/* Texto indicando a nota selecionada */}
-                {ratingValue > 0 && (
-                  <p className="text-sm font-medium text-gray-700 mb-4">
-                    {ratingValue === 1 && 'Muito ruim'}
-                    {ratingValue === 2 && 'Ruim'}
-                    {ratingValue === 3 && 'Regular'}
-                    {ratingValue === 4 && 'Bom'}
-                    {ratingValue === 5 && 'Excelente!'}
-                  </p>
-                )}
-                
-                {/* Campo de comentário */}
-                <div className="text-left">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Deixe um comentário (opcional)
-                  </label>
-                  <textarea
-                    value={ratingComment}
-                    onChange={(e) => setRatingComment(e.target.value)}
-                    placeholder="Conte como foi sua experiência com o restaurante..."
-                    rows={4}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="border-t px-6 py-4 flex gap-3">
-              <button
-                onClick={() => {
-                  setShowRatingModal(false);
-                  setRatingValue(0);
-                  setRatingHover(0);
-                  setRatingComment("");
-                }}
-                className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={async () => {
-                  if (!establishment || ratingValue === 0) return;
-                  try {
-                    await createReviewMutation.mutateAsync({
-                      establishmentId: establishment.id,
-                      orderId: selectedOrderId ? parseInt(selectedOrderId.replace(/\D/g, '')) : undefined,
-                      customerName: customerInfo.name || 'Cliente',
-                      rating: ratingValue,
-                      comment: ratingComment || undefined,
-                    });
+                <button
+                  onClick={() => {
                     setShowRatingModal(false);
+                    setRatingSuccess(false);
                     setRatingValue(0);
                     setRatingHover(0);
                     setRatingComment("");
-                  } catch (error) {
-                    console.error('Erro ao enviar avaliação:', error);
-                  }
-                }}
-                disabled={ratingValue === 0 || createReviewMutation.isPending}
-                className={`flex-1 py-3 font-semibold rounded-xl transition-colors ${
-                  ratingValue === 0 || createReviewMutation.isPending
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-red-500 hover:bg-red-600 text-white'
-                }`}
-              >
-                {createReviewMutation.isPending ? 'Enviando...' : 'Enviar avaliação'}
-              </button>
-            </div>
+                  }}
+                  className="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
+                >
+                  Fechar
+                </button>
+              </div>
+            ) : (
+              /* Formulário de Avaliação */
+              <>
+                {/* Header */}
+                <div className="border-b px-6 py-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                    <h2 className="text-lg font-bold text-gray-900">Avaliar restaurante</h2>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      setShowRatingModal(false);
+                      setRatingValue(0);
+                      setRatingHover(0);
+                      setRatingComment("");
+                    }}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <X className="h-5 w-5 text-gray-500" />
+                  </button>
+                </div>
+
+                {/* Body */}
+                <div className="p-6">
+                  <div className="text-center">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      Como foi sua experiência?
+                    </h3>
+                    <p className="text-gray-500 text-sm mb-6">
+                      Sua avaliação ajuda outros clientes e o restaurante a melhorar.
+                    </p>
+                    
+                    {/* Sistema de estrelas */}
+                    <div className="flex justify-center gap-2 mb-6">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setRatingValue(star)}
+                          onMouseEnter={() => setRatingHover(star)}
+                          onMouseLeave={() => setRatingHover(0)}
+                          className="p-1 transition-transform hover:scale-110 focus:outline-none"
+                        >
+                          <Star 
+                            className={`h-10 w-10 transition-colors ${
+                              star <= (ratingHover || ratingValue)
+                                ? 'text-yellow-400 fill-yellow-400'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {/* Texto indicando a nota selecionada */}
+                    {ratingValue > 0 && (
+                      <p className="text-sm font-medium text-gray-700 mb-4">
+                        {ratingValue === 1 && 'Muito ruim'}
+                        {ratingValue === 2 && 'Ruim'}
+                        {ratingValue === 3 && 'Regular'}
+                        {ratingValue === 4 && 'Bom'}
+                        {ratingValue === 5 && 'Excelente!'}
+                      </p>
+                    )}
+                    
+                    {/* Campo de comentário */}
+                    <div className="text-left">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Deixe um comentário (opcional)
+                      </label>
+                      <textarea
+                        value={ratingComment}
+                        onChange={(e) => setRatingComment(e.target.value)}
+                        placeholder="Conte como foi sua experiência com o restaurante..."
+                        rows={4}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="border-t px-6 py-4 flex gap-3">
+                  <button
+                    onClick={() => {
+                      setShowRatingModal(false);
+                      setRatingValue(0);
+                      setRatingHover(0);
+                      setRatingComment("");
+                    }}
+                    className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={async () => {
+                      if (!establishment || ratingValue === 0) return;
+                      try {
+                        await createReviewMutation.mutateAsync({
+                          establishmentId: establishment.id,
+                          customerName: customerInfo.name || 'Cliente',
+                          rating: ratingValue,
+                          comment: ratingComment || undefined,
+                        });
+                        setRatingSuccess(true);
+                      } catch (error) {
+                        console.error('Erro ao enviar avaliação:', error);
+                        alert('Erro ao enviar avaliação. Tente novamente.');
+                      }
+                    }}
+                    disabled={ratingValue === 0 || createReviewMutation.isPending}
+                    className={`flex-1 py-3 font-semibold rounded-xl transition-colors ${
+                      ratingValue === 0 || createReviewMutation.isPending
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-red-500 hover:bg-red-600 text-white'
+                    }`}
+                  >
+                    {createReviewMutation.isPending ? 'Enviando...' : 'Enviar avaliação'}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
