@@ -1,0 +1,38 @@
+{
+  "query": "SELECT id, code, establishmentId, type, value, status, startDate, endDate, activeDays, validOrigins, startTime, endTime FROM coupons WHERE code = 'SEG10';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, code, establishmentId, type, value, status, startDate, endDate, activeDays, validOrigins, startTime, endTime FROM coupons WHERE code = 'SEG10';",
+  "rows": [
+    {
+      "id": "1",
+      "code": "SEG10",
+      "establishmentId": "1",
+      "type": "fixed",
+      "value": "10.00",
+      "status": "active",
+      "startDate": "2026-01-15 00:00:00",
+      "endDate": "2026-01-19 00:00:00",
+      "activeDays": "[\"dom\", \"seg\", \"ter\", \"qua\", \"qui\", \"sex\", \"sab\"]",
+      "validOrigins": "[\"delivery\", \"retirada\", \"autoatendimento\"]",
+      "startTime": "NULL",
+      "endTime": "NULL"
+    },
+    {
+      "id": "2",
+      "code": "SEG10",
+      "establishmentId": "30001",
+      "type": "fixed",
+      "value": "10.00",
+      "status": "active",
+      "startDate": "NULL",
+      "endDate": "NULL",
+      "activeDays": "NULL",
+      "validOrigins": "NULL",
+      "startTime": "NULL",
+      "endTime": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcode\testablishmentId\ttype\tvalue\tstatus\tstartDate\tendDate\tactiveDays\tvalidOrigins\tstartTime\tendTime\n1\tSEG10\t1\tfixed\t10.00\tactive\t2026-01-15 00:00:00\t2026-01-19 00:00:00\t[\"dom\", \"seg\", \"ter\", \"qua\", \"qui\", \"sex\", \"sab\"]\t[\"delivery\", \"retirada\", \"autoatendimento\"]\tNULL\tNULL\n2\tSEG10\t30001\tfixed\t10.00\tactive\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

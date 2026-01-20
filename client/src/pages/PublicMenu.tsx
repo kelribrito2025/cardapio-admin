@@ -2041,15 +2041,17 @@ export default function PublicMenu() {
                         return sum + (Number(item.price) + complementsTotal) * item.quantity;
                       }, 0);
                       
-                      // Validar cupom via API
+                      // Validar cupom via API (tRPC espera input com chave "json")
                       const response = await fetch(`/api/trpc/publicMenu.validateCoupon?input=${encodeURIComponent(JSON.stringify({
-                        establishmentId: data.establishment.id,
-                        code: couponCode.toUpperCase(),
-                        orderValue: subtotal,
-                        deliveryType: deliveryType === 'pickup' ? 'pickup' : 'delivery',
+                        json: {
+                          establishmentId: data.establishment.id,
+                          code: couponCode.toUpperCase(),
+                          orderValue: subtotal,
+                          deliveryType: deliveryType === 'pickup' ? 'pickup' : 'delivery',
+                        }
                       }))}`).then(res => res.json());
                       
-                      const result = response.result?.data;
+                      const result = response.result?.data?.json;
                       
                       if (result?.valid && result?.coupon) {
                         setAppliedCoupon({

@@ -1,0 +1,50 @@
+{
+  "query": "SELECT * FROM coupons WHERE code = 'SEG10';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM coupons WHERE code = 'SEG10';",
+  "rows": [
+    {
+      "id": "1",
+      "establishmentId": "1",
+      "code": "SEG10",
+      "type": "fixed",
+      "value": "10.00",
+      "maxDiscount": "NULL",
+      "minOrderValue": "30.00",
+      "quantity": "1",
+      "usedCount": "0",
+      "startDate": "2026-01-15 00:00:00",
+      "endDate": "2026-01-19 00:00:00",
+      "activeDays": "[\"dom\", \"seg\", \"ter\", \"qua\", \"qui\", \"sex\", \"sab\"]",
+      "validOrigins": "[\"delivery\", \"retirada\", \"autoatendimento\"]",
+      "startTime": "NULL",
+      "endTime": "NULL",
+      "status": "active",
+      "createdAt": "2026-01-19 23:28:59",
+      "updatedAt": "2026-01-20 00:35:56"
+    },
+    {
+      "id": "2",
+      "establishmentId": "30001",
+      "code": "SEG10",
+      "type": "fixed",
+      "value": "10.00",
+      "maxDiscount": "NULL",
+      "minOrderValue": "39.90",
+      "quantity": "2",
+      "usedCount": "0",
+      "startDate": "NULL",
+      "endDate": "NULL",
+      "activeDays": "NULL",
+      "validOrigins": "NULL",
+      "startTime": "NULL",
+      "endTime": "NULL",
+      "status": "active",
+      "createdAt": "2026-01-20 00:58:12",
+      "updatedAt": "2026-01-20 00:58:12"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\tcode\ttype\tvalue\tmaxDiscount\tminOrderValue\tquantity\tusedCount\tstartDate\tendDate\tactiveDays\tvalidOrigins\tstartTime\tendTime\tstatus\tcreatedAt\tupdatedAt\n1\t1\tSEG10\tfixed\t10.00\tNULL\t30.00\t1\t0\t2026-01-15 00:00:00\t2026-01-19 00:00:00\t[\"dom\", \"seg\", \"ter\", \"qua\", \"qui\", \"sex\", \"sab\"]\t[\"delivery\", \"retirada\", \"autoatendimento\"]\tNULL\tNULL\tactive\t2026-01-19 23:28:59\t2026-01-20 00:35:56\n2\t30001\tSEG10\tfixed\t10.00\tNULL\t39.90\t2\t0\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tactive\t2026-01-20 00:58:12\t2026-01-20 00:58:12\n",
+  "stderr": "",
+  "execution_time_ms": 85
+}

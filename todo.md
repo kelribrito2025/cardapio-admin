@@ -775,3 +775,10 @@
 ## Ajuste Visual - Página de Estoque
 
 - [x] Ajustar lista de itens da página de estoque para seguir o mesmo visual da página de cupons
+
+
+## Bug: Cupom SEG10 retornando "Cupom inválido" no checkout
+
+- [x] Verificar dados do cupom SEG10 no banco de dados
+- [x] Analisar lógica de validação e identificar o problema (formato do input tRPC estava incorreto - faltava a chave "json")
+- [x] Corrigir o bug identificado (adicionada chave "json" no input e extração do resultado)
