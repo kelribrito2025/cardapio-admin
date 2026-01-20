@@ -1025,3 +1025,4 @@
 - [x] Remover espaço vazio grande abaixo do botão Acompanhar pedido no modal de Enviar Pedido
 - [x] Mover botão Acompanhar pedido para o footer do modal de Enviar Pedido
 - [x] Alterar cor do botão Acompanhar pedido para vermelho
+- [x] Verificar e corrigir o fluxo de modais de checkout - modal de Confirmação

@@ -1490,7 +1490,7 @@ export default function PublicMenu() {
                     {checkoutStep === 2 && 'Tipo de Entrega'}
                     {checkoutStep === 3 && 'Confirmar Endereço'}
                     {checkoutStep === 4 && 'Seus Dados'}
-                    {checkoutStep === 5 && 'Enviar Pedido'}
+                    {checkoutStep === 5 && 'Confirmação'}
                   </h2>
                 </div>
                 <button 
