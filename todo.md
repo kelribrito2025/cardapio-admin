@@ -1031,3 +1031,4 @@
 - [x] Implementar atualização automática do status dos pedidos no modal Meus Pedidos
 - [x] Corrigir lógica de avaliação: não exibir botão quando já avaliou nos últimos 30 dias e corrigir erro ao enviar
 - [x] Corrigir erro 'Cannot access data before initialization' no PublicMenu
+- [x] Reorganizar modal Confirmar Endereço com ícones em círculos coloridos e cards com fundo claro

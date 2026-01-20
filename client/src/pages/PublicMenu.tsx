@@ -1953,72 +1953,86 @@ export default function PublicMenu() {
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              <div className="flex-1 overflow-y-auto p-6 space-y-5">
                 {/* Itens */}
                 <div>
-                  <h3 className="font-semibold text-gray-800 text-sm mb-2 flex items-center gap-2">
-                    <ShoppingBag className="h-4 w-4 text-red-500" />
-                    Itens
-                  </h3>
-                  <div className="space-y-2">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+                      <ShoppingBag className="h-5 w-5 text-red-500" />
+                    </div>
+                    <h3 className="font-bold text-gray-900">Itens</h3>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-4 space-y-2">
                     {cart.map((item, index) => (
                       <div key={index} className="flex justify-between text-sm">
                         <div>
-                          <span className="text-gray-800">{item.quantity}x {item.name}</span>
+                          <span className="text-gray-800 font-medium">{item.quantity}x {item.name}</span>
                           {item.complements.length > 0 && (
                             <p className="text-xs text-gray-500">
                               {item.complements.map(c => c.name).join(", ")}
                             </p>
                           )}
                         </div>
-                        <span className="text-gray-600">{formatPrice(Number(item.price) * item.quantity)}</span>
+                        <span className="text-gray-700 font-medium">{formatPrice(Number(item.price) * item.quantity)}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Entrega */}
-                <div className="border-t border-gray-100 pt-4">
-                  <h3 className="font-semibold text-gray-800 text-sm mb-2 flex items-center gap-2">
-                    <Truck className="h-4 w-4 text-red-500" />
-                    Entrega
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {deliveryType === "pickup" ? "Retirar no local" : "Entrega"}
-                  </p>
-                  {deliveryType === "delivery" && deliveryAddress.street && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      {deliveryAddress.street}, {deliveryAddress.number}
-                      {deliveryAddress.complement && ` - ${deliveryAddress.complement}`}
-                      <br />
-                      {deliveryAddress.neighborhood}
-                      {deliveryAddress.reference && <><br />Ref: {deliveryAddress.reference}</>}
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                      <Truck className="h-5 w-5 text-blue-500" />
+                    </div>
+                    <h3 className="font-bold text-gray-900">Entrega</h3>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <p className="text-sm text-gray-800 font-medium">
+                      {deliveryType === "pickup" ? "Retirar no local" : "Entrega"}
                     </p>
-                  )}
+                    {deliveryType === "delivery" && deliveryAddress.street && (
+                      <p className="text-sm text-gray-500 mt-1">
+                        {deliveryAddress.street}, {deliveryAddress.number}
+                        {deliveryAddress.complement && ` - ${deliveryAddress.complement}`}
+                        <br />
+                        {deliveryAddress.neighborhood}
+                        {deliveryAddress.reference && <><br />Ref: {deliveryAddress.reference}</>}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Pagamento */}
-                <div className="border-t border-gray-100 pt-4">
-                  <h3 className="font-semibold text-gray-800 text-sm mb-2 flex items-center gap-2">
-                    <CreditCard className="h-4 w-4 text-red-500" />
-                    Pagamento
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {paymentMethod === "cash" ? "Dinheiro" : paymentMethod === "card" ? "Cartão" : "Pix"}
-                  </p>
-                  {paymentMethod === "cash" && changeAmount && (
-                    <p className="text-sm text-gray-500 mt-1">Troco para: R$ {changeAmount}</p>
-                  )}
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
+                      <CreditCard className="h-5 w-5 text-green-500" />
+                    </div>
+                    <h3 className="font-bold text-gray-900">Pagamento</h3>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <p className="text-sm text-gray-800 font-medium">
+                      {paymentMethod === "cash" ? "Dinheiro" : paymentMethod === "card" ? "Cartão" : "Pix"}
+                    </p>
+                    {paymentMethod === "cash" && changeAmount && (
+                      <p className="text-sm text-gray-500 mt-1">Troco para: R$ {changeAmount}</p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Observações */}
                 {orderObservation && (
-                  <div className="border-t border-gray-100 pt-4">
-                    <h3 className="font-semibold text-gray-800 text-sm mb-2 flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-red-500" />
-                      Observações
-                    </h3>
-                    <p className="text-sm text-gray-600">{orderObservation}</p>
+                  <div>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
+                        <FileText className="h-5 w-5 text-purple-500" />
+                      </div>
+                      <h3 className="font-bold text-gray-900">Observações</h3>
+                    </div>
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <p className="text-sm text-gray-600">{orderObservation}</p>
+                    </div>
                   </div>
                 )}
 
