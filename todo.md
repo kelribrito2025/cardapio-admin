@@ -849,3 +849,13 @@
 - [x] Adicionar seletor de estrelas de 1 a 5 no modal de avaliação
 - [x] Adicionar campo de comentário/texto para avaliação
 - [x] Estrelas devem ser clicáveis e mostrar seleção visual
+
+
+## Sistema Completo de Avaliações
+
+- [x] Criar tabela de reviews no banco de dados
+- [x] Criar endpoint para salvar avaliação (createReview)
+- [x] Criar endpoint para listar avaliações (getReviews)
+- [x] Criar modal de avaliações que abre ao clicar na estrela/nota
+- [x] Exibir nome do cliente, estrelas, comentário e data
+- [x] Integrar botão "Enviar avaliação" com o backend

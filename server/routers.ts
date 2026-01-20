@@ -812,6 +812,36 @@ export const appRouter = router({
           input.deliveryType
         );
       }),
+
+    // Create review from public menu
+    createReview: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        orderId: z.number().optional(),
+        customerName: z.string().min(1, "Nome é obrigatório"),
+        rating: z.number().min(1).max(5),
+        comment: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const reviewId = await db.createReview({
+          establishmentId: input.establishmentId,
+          orderId: input.orderId || null,
+          customerName: input.customerName,
+          rating: input.rating,
+          comment: input.comment || null,
+        });
+        return { success: true, reviewId };
+      }),
+
+    // Get reviews for establishment
+    getReviews: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        limit: z.number().optional(),
+      }))
+      .query(async ({ input }) => {
+        return db.getReviewsByEstablishment(input.establishmentId, input.limit || 50);
+      }),
   }),
   
   // ============ ORDERS (ADMIN) ============

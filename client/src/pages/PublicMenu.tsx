@@ -86,6 +86,7 @@ export default function PublicMenu() {
   const [ratingValue, setRatingValue] = useState(0);
   const [ratingHover, setRatingHover] = useState(0);
   const [ratingComment, setRatingComment] = useState("");
+  const [showReviewsModal, setShowReviewsModal] = useState(false);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
@@ -101,6 +102,22 @@ export default function PublicMenu() {
   const { data: productComplements } = trpc.publicMenu.getProductComplements.useQuery(
     { productId: selectedProduct?.id || 0 },
     { enabled: !!selectedProduct?.id }
+  );
+
+  // Mutation para criar avaliação
+  const createReviewMutation = trpc.publicMenu.createReview.useMutation({
+    onSuccess: () => {
+      // Invalidar query de reviews para atualizar a lista
+      if (data?.establishment) {
+        reviewsQuery.refetch();
+      }
+    },
+  });
+
+  // Query para buscar avaliações do estabelecimento
+  const reviewsQuery = trpc.publicMenu.getReviews.useQuery(
+    { establishmentId: data?.establishment?.id || 0 },
+    { enabled: !!data?.establishment?.id }
   );
 
   // Mutation para criar pedido
@@ -508,11 +525,11 @@ export default function PublicMenu() {
                     <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate max-w-[200px] md:max-w-none">
                       {establishment.name}
                     </h1>
-                    {/* Rating - clicável em mobile para mostrar total de avaliações */}
+                    {/* Rating - clicável para abrir modal de avaliações */}
                     <div className="relative flex-shrink-0" ref={ratingTooltipRef}>
                       <button
-                        onClick={() => setShowRatingTooltip(!showRatingTooltip)}
-                        className="flex items-center gap-1 sm:cursor-default"
+                        onClick={() => setShowReviewsModal(true)}
+                        className="flex items-center gap-1 hover:bg-gray-100 rounded-lg px-2 py-1 transition-colors cursor-pointer"
                       >
                         <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
                         <span className="text-sm font-semibold text-gray-800">
@@ -521,14 +538,10 @@ export default function PublicMenu() {
                         <span className="text-sm text-gray-500 hidden sm:inline">
                           ({establishment.reviewCount || 0} avaliações)
                         </span>
+                        <span className="text-sm text-gray-500 sm:hidden">
+                          ({establishment.reviewCount || 0})
+                        </span>
                       </button>
-                      {/* Tooltip para mobile */}
-                      {showRatingTooltip && (
-                        <div className="absolute left-0 top-full mt-1 bg-gray-800 text-white text-xs px-3 py-2 rounded-lg shadow-lg z-50 whitespace-nowrap sm:hidden">
-                          {establishment.reviewCount || 0} avaliações
-                          <div className="absolute -top-1 left-4 w-2 h-2 bg-gray-800 rotate-45"></div>
-                        </div>
-                      )}
                     </div>
                   </div>
                   {/* Botão Compartilhar - sempre na mesma linha */}
@@ -2643,23 +2656,138 @@ export default function PublicMenu() {
                 Cancelar
               </button>
               <button
-                onClick={() => {
-                  // TODO: Enviar avaliação para o backend
-                  console.log('Avaliação:', { rating: ratingValue, comment: ratingComment });
-                  setShowRatingModal(false);
-                  setRatingValue(0);
-                  setRatingHover(0);
-                  setRatingComment("");
+                onClick={async () => {
+                  if (!establishment || ratingValue === 0) return;
+                  try {
+                    await createReviewMutation.mutateAsync({
+                      establishmentId: establishment.id,
+                      orderId: selectedOrderId ? parseInt(selectedOrderId.replace(/\D/g, '')) : undefined,
+                      customerName: customerInfo.name || 'Cliente',
+                      rating: ratingValue,
+                      comment: ratingComment || undefined,
+                    });
+                    setShowRatingModal(false);
+                    setRatingValue(0);
+                    setRatingHover(0);
+                    setRatingComment("");
+                  } catch (error) {
+                    console.error('Erro ao enviar avaliação:', error);
+                  }
                 }}
-                disabled={ratingValue === 0}
+                disabled={ratingValue === 0 || createReviewMutation.isPending}
                 className={`flex-1 py-3 font-semibold rounded-xl transition-colors ${
-                  ratingValue === 0
+                  ratingValue === 0 || createReviewMutation.isPending
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : 'bg-red-500 hover:bg-red-600 text-white'
                 }`}
               >
-                Enviar avaliação
+                {createReviewMutation.isPending ? 'Enviando...' : 'Enviar avaliação'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Avaliações do Restaurante */}
+      {showReviewsModal && establishment && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowReviewsModal(false)}
+          />
+          
+          {/* Modal Content */}
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[85vh] overflow-hidden flex flex-col">
+            {/* Header */}
+            <div className="border-b px-6 py-4 flex items-center justify-between flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                <div>
+                  <h2 className="text-lg font-bold text-gray-900">Avaliações</h2>
+                  <p className="text-sm text-gray-500">
+                    {establishment.rating ? Number(establishment.rating).toFixed(1).replace('.', ',') : '0,0'} • {establishment.reviewCount || 0} avaliações
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowReviewsModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Body - Lista de Avaliações */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {reviewsQuery.isLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+                        <div className="flex-1">
+                          <div className="h-4 bg-gray-200 rounded w-24 mb-1"></div>
+                          <div className="h-3 bg-gray-200 rounded w-16"></div>
+                        </div>
+                      </div>
+                      <div className="h-4 bg-gray-200 rounded w-full mb-1"></div>
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : reviewsQuery.data && reviewsQuery.data.length > 0 ? (
+                <div className="space-y-4">
+                  {reviewsQuery.data.map((review) => (
+                    <div key={review.id} className="border-b pb-4 last:border-b-0 last:pb-0">
+                      <div className="flex items-start gap-3">
+                        {/* Avatar */}
+                        <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-red-600 font-semibold text-sm">
+                            {review.customerName.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          {/* Nome e Data */}
+                          <div className="flex items-center justify-between gap-2 mb-1">
+                            <span className="font-semibold text-gray-900 truncate">
+                              {review.customerName}
+                            </span>
+                            <span className="text-xs text-gray-400 flex-shrink-0">
+                              {new Date(review.createdAt).toLocaleDateString('pt-BR')}
+                            </span>
+                          </div>
+                          {/* Estrelas */}
+                          <div className="flex items-center gap-0.5 mb-2">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star
+                                key={star}
+                                className={`h-4 w-4 ${
+                                  star <= review.rating
+                                    ? 'text-yellow-400 fill-yellow-400'
+                                    : 'text-gray-300'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          {/* Comentário */}
+                          {review.comment && (
+                            <p className="text-sm text-gray-600">
+                              {review.comment}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Star className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 font-medium">Nenhuma avaliação ainda</p>
+                  <p className="text-sm text-gray-400 mt-1">Seja o primeiro a avaliar!</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

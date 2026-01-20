@@ -78,6 +78,13 @@
       "when": 1768865187235,
       "tag": "0010_greedy_reavers",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1768910526210,
+      "tag": "0011_legal_ultimates",
+      "breakpoints": true
     }
   ]
 }

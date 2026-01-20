@@ -13,7 +13,8 @@ import {
   stockCategories, InsertStockCategory, StockCategory,
   stockItems, InsertStockItem, StockItem,
   stockMovements, InsertStockMovement, StockMovement,
-  coupons, InsertCoupon, Coupon
+  coupons, InsertCoupon, Coupon,
+  reviews, InsertReview, Review
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -1316,4 +1317,48 @@ export async function validateCoupon(
     coupon,
     discount: Math.min(discount, orderValue),
   };
+}
+
+
+// ============ REVIEW FUNCTIONS ============
+export async function createReview(data: InsertReview) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(reviews).values(data);
+  
+  // Update establishment rating and review count
+  await updateEstablishmentRating(data.establishmentId);
+  
+  return result[0].insertId;
+}
+
+export async function getReviewsByEstablishment(establishmentId: number, limit = 50) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(reviews)
+    .where(eq(reviews.establishmentId, establishmentId))
+    .orderBy(desc(reviews.createdAt))
+    .limit(limit);
+}
+
+export async function updateEstablishmentRating(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return;
+  
+  // Calculate average rating and count
+  const result = await db.select({
+    avgRating: sql<number>`AVG(rating)`,
+    count: sql<number>`COUNT(*)`
+  }).from(reviews).where(eq(reviews.establishmentId, establishmentId));
+  
+  const avgRating = result[0]?.avgRating ?? 0;
+  const count = result[0]?.count ?? 0;
+  
+  // Update establishment
+  await db.update(establishments).set({
+    rating: String(avgRating.toFixed(1)),
+    reviewCount: count
+  }).where(eq(establishments.id, establishmentId));
 }
