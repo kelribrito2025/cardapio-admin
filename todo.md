@@ -1020,3 +1020,4 @@
 - [x] Adicionar dropdown de Redes Sociais com separador no preview das configurações
 - [x] Adicionar menu dropdown completo com ícones de WhatsApp e Instagram no preview
 - [x] Corrigir dropdown de Redes Sociais cortado - abrir para cima
+- [x] Diminuir altura do campo de observações em 25%
