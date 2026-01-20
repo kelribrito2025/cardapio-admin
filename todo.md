@@ -1015,3 +1015,4 @@
 - [x] Adicionar segundo círculo menor ao balão para efeito de balão de pensamento
 - [x] Ajustar posição dos círculos do balão para ficarem centralizados na parte inferior
 - [x] Mover círculos do balão para o lado esquerdo
+- [x] Inverter posição dos círculos: maior à esquerda, menor à direita
