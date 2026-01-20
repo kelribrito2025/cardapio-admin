@@ -374,7 +374,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   className="flex items-center gap-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-xs font-medium transition-colors"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Ver menu</span>
+                  <span>Ver menu</span>
                 </a>
               )}
 

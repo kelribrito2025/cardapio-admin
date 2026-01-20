@@ -897,3 +897,8 @@
 ## Botão Ver Menu na Versão Mobile
 
 - [x] Adicionar botão "Ver menu" na topbar mobile do painel admin
+
+
+## Texto "Ver menu" na Versão Mobile
+
+- [x] Adicionar texto "Ver menu" junto com o ícone na versão mobile (igual desktop)
