@@ -587,9 +587,14 @@ export default function Configuracoes() {
               {publicNote && (
                 <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
                   <Label className="text-xs font-medium text-muted-foreground mb-2 block">Preview do balão:</Label>
-                  <div className="flex justify-center pb-3">
-                    <div className="balao-nota text-center leading-tight break-words">
-                      {publicNote}
+                  <div className="flex justify-start pl-8">
+                    <div className="relative">
+                      {/* Balão estilo bolha */}
+                      <div className="bg-white rounded-[20px] px-3 py-1.5 shadow-md border border-gray-200 max-w-[140px]">
+                        <p className="text-xs text-gray-700 text-center leading-tight break-words">{publicNote}</p>
+                      </div>
+                      {/* Seta do balão no canto inferior esquerdo */}
+                      <div className="absolute -bottom-1.5 left-4 w-3 h-3 bg-white border-r border-b border-gray-200 transform rotate-45"></div>
                     </div>
                   </div>
                 </div>
