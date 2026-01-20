@@ -1,0 +1,41 @@
+{
+  "query": "SELECT * FROM establishments LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM establishments LIMIT 1;",
+  "rows": [
+    {
+      "id": "1",
+      "userId": "1",
+      "name": "Restaurante Doca Iracema",
+      "logo": "https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/establishments/vTd53HrEYCZ6NPPAqMdNs.png",
+      "coverImage": "https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/establishments/JwFPkA0pz2dPS4O4O6SGh.jpeg",
+      "street": "Rua manoel estorgio",
+      "number": "279",
+      "complement": "NULL",
+      "neighborhood": "Varzea",
+      "city": "Carnaubal",
+      "state": "CE",
+      "zipCode": "62375-000",
+      "isOpen": "1",
+      "menuSlug": "teste-burguer",
+      "whatsapp": "NULL",
+      "acceptsCash": "1",
+      "acceptsCard": "1",
+      "acceptsPix": "0",
+      "acceptsBoleto": "0",
+      "allowsDelivery": "1",
+      "allowsPickup": "1",
+      "createdAt": "2026-01-13 02:29:19",
+      "updatedAt": "2026-01-20 16:24:14",
+      "rating": "4.7",
+      "reviewCount": "14",
+      "instagram": "@sushiharuno",
+      "pixKey": "NULL",
+      "publicNote": "NULL",
+      "publicNoteCreatedAt": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\tname\tlogo\tcoverImage\tstreet\tnumber\tcomplement\tneighborhood\tcity\tstate\tzipCode\tisOpen\tmenuSlug\twhatsapp\tacceptsCash\tacceptsCard\tacceptsPix\tacceptsBoleto\tallowsDelivery\tallowsPickup\tcreatedAt\tupdatedAt\trating\treviewCount\tinstagram\tpixKey\tpublicNote\tpublicNoteCreatedAt\n1\t1\tRestaurante Doca Iracema\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/establishments/vTd53HrEYCZ6NPPAqMdNs.png\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/establishments/JwFPkA0pz2dPS4O4O6SGh.jpeg\tRua manoel estorgio\t279\tNULL\tVarzea\tCarnaubal\tCE\t62375-000\t1\tteste-burguer\tNULL\t1\t1\t0\t0\t1\t1\t2026-01-13 02:29:19\t2026-01-20 16:24:14\t4.7\t14\t@sushiharuno\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}
