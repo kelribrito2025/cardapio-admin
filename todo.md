@@ -943,3 +943,10 @@
 
 - [x] Adicionar estado de loading com delay de 3 segundos no botão Enviar pedido
 - [x] Exibir ícone de loading enquanto o pedido está sendo processado
+
+
+## Validação Obrigatória de Endereço para Entrega
+
+- [x] Tornar campos Rua, Número e Bairro obrigatórios quando tipo de entrega for Entrega
+- [x] Bloquear botão Próximo se campos obrigatórios não estiverem preenchidos
+- [x] Exibir indicador visual de campos obrigatórios

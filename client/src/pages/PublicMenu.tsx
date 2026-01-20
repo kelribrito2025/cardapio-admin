@@ -1602,7 +1602,7 @@ export default function PublicMenu() {
                     <div className="mt-4 space-y-3 p-4 bg-gray-50 rounded-xl">
                       <div className="grid grid-cols-3 gap-3">
                         <div className="col-span-2">
-                          <label className="block text-xs font-medium text-gray-600 mb-1">Rua</label>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Rua <span className="text-red-500">*</span></label>
                           <input
                             type="text"
                             value={deliveryAddress.street}
@@ -1612,7 +1612,7 @@ export default function PublicMenu() {
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-gray-600 mb-1">Número</label>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Número <span className="text-red-500">*</span></label>
                           <input
                             type="text"
                             value={deliveryAddress.number}
@@ -1623,7 +1623,7 @@ export default function PublicMenu() {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Bairro</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Bairro <span className="text-red-500">*</span></label>
                         <input
                           type="text"
                           value={deliveryAddress.neighborhood}
@@ -1762,12 +1762,31 @@ export default function PublicMenu() {
 
               {/* Footer */}
               <div className="flex-shrink-0 border-t px-6 py-4">
-                <button
-                  onClick={() => setCheckoutStep(3)}
-                  className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
-                >
-                  Próximo
-                </button>
+                {(() => {
+                  const isAddressValid = deliveryType === 'pickup' || (
+                    deliveryAddress.street.trim() !== '' &&
+                    deliveryAddress.number.trim() !== '' &&
+                    deliveryAddress.neighborhood.trim() !== ''
+                  );
+                  return (
+                    <button
+                      onClick={() => {
+                        if (!isAddressValid) {
+                          alert('Por favor, preencha todos os campos obrigatórios do endereço (Rua, Número e Bairro).');
+                          return;
+                        }
+                        setCheckoutStep(3);
+                      }}
+                      className={`w-full py-3.5 font-semibold rounded-xl transition-colors ${
+                        isAddressValid
+                          ? 'bg-red-500 hover:bg-red-600 text-white'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                    >
+                      Próximo
+                    </button>
+                  );
+                })()}
               </div>
             </div>
           )}
