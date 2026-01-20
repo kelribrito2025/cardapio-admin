@@ -871,3 +871,9 @@
 
 - [x] Investigar erro no envio de avaliação
 - [x] Corrigir problema identificado (tratamento de valores null no cálculo de média)
+
+
+## Correção da Média de Avaliações e Estrelas Parciais
+
+- [x] Corrigir exibição da média de avaliações (MySQL retornava string)
+- [x] Implementar estrelas parciais (ex: 4,5 = 4 cheias + 1 meia)

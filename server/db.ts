@@ -1354,15 +1354,22 @@ export async function updateEstablishmentRating(establishmentId: number) {
       count: sql<number>`COUNT(*)`
     }).from(reviews).where(eq(reviews.establishmentId, establishmentId));
     
-    const avgRating = result[0]?.avgRating ?? 0;
-    const count = result[0]?.count ?? 0;
+    // MySQL returns AVG as string, need to parse it
+    const rawAvgRating = result[0]?.avgRating;
+    const rawCount = result[0]?.count;
+    
+    // Parse values - MySQL may return string or number
+    const avgRating = typeof rawAvgRating === 'string' ? parseFloat(rawAvgRating) : (rawAvgRating ?? 0);
+    const count = typeof rawCount === 'string' ? parseInt(rawCount) : (rawCount ?? 0);
     
     // Ensure avgRating is a valid number before calling toFixed
-    const ratingValue = typeof avgRating === 'number' && !isNaN(avgRating) ? avgRating : 0;
+    const ratingValue = !isNaN(avgRating) ? avgRating : 0;
+    
+    console.log('Updating establishment rating:', { establishmentId, avgRating: ratingValue.toFixed(1), count });
     
     // Update establishment
     await db.update(establishments).set({
-      rating: String(ratingValue.toFixed(1)),
+      rating: ratingValue.toFixed(1),
       reviewCount: count
     }).where(eq(establishments.id, establishmentId));
   } catch (error) {

@@ -1,7 +1,7 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PublicMenu() {
@@ -532,8 +532,32 @@ export default function PublicMenu() {
                         onClick={() => setShowReviewsModal(true)}
                         className="flex items-center gap-1 hover:bg-gray-100 rounded-lg px-2 py-1 transition-colors cursor-pointer"
                       >
-                        <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                        <span className="text-sm font-semibold text-gray-800">
+                        {/* Estrelas com suporte a meia estrela */}
+                        {(() => {
+                          const rating = Number(establishment.rating) || 0;
+                          const fullStars = Math.floor(rating);
+                          const hasHalfStar = rating - fullStars >= 0.3 && rating - fullStars < 0.8;
+                          const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+                          return (
+                            <div className="flex items-center">
+                              {[...Array(fullStars)].map((_, i) => (
+                                <Star key={`full-${i}`} className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                              ))}
+                              {hasHalfStar && (
+                                <div className="relative h-4 w-4">
+                                  <Star className="absolute h-4 w-4 text-gray-300" />
+                                  <div className="absolute overflow-hidden w-1/2">
+                                    <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                                  </div>
+                                </div>
+                              )}
+                              {[...Array(Math.max(0, emptyStars))].map((_, i) => (
+                                <Star key={`empty-${i}`} className="h-4 w-4 text-gray-300" />
+                              ))}
+                            </div>
+                          );
+                        })()}
+                        <span className="text-sm font-semibold text-gray-800 ml-1">
                           {establishment.rating ? Number(establishment.rating).toFixed(1).replace('.', ',') : '0,0'}
                         </span>
                         <span className="text-sm text-gray-500 hidden sm:inline">
