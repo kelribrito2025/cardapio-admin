@@ -977,3 +977,11 @@
 - [x] Melhorar mensagem de erro no frontend com detalhes do problema
 - [x] Adicionar try-catch com tratamento específico de erros
 
+
+
+## Bug de Login - Duas Tentativas
+
+- [x] Investigar fluxo de autenticação na página /login
+- [x] Identificar problema de sincronização de estado ou redirecionamento
+- [x] Corrigir o bug para login funcionar na primeira tentativa
+

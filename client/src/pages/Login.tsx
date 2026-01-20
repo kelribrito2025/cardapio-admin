@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import { AuthLayout } from "@/components/AuthLayout";
 import { Button } from "@/components/ui/button";
@@ -10,16 +10,19 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
 export default function Login() {
-  const [, setLocation] = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const utils = trpc.useUtils();
 
   const loginMutation = trpc.auth.loginWithEmail.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Login realizado com sucesso!");
-      setLocation("/");
+      // Invalidar o cache de autenticação para forçar nova verificação
+      await utils.auth.me.invalidate();
+      // Usar window.location para garantir reload completo do estado
+      window.location.href = "/";
     },
     onError: (error: { message?: string }) => {
       toast.error(error.message || "Erro ao fazer login. Verifique suas credenciais.");
