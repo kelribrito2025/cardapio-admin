@@ -836,3 +836,9 @@
 - [x] Botão só aparece quando status for "entregue"
 - [x] Criar modal simples de avaliação (preparado para campos futuros)
 - [x] Seguir estilo visual dos botões do cardápio público
+
+
+## Badge de Contagem de Pedidos - Mostrar apenas não entregues
+
+- [x] Ajustar badge para contar apenas pedidos não entregues
+- [x] Badge deve diminuir quando pedido mudar para status "entregue"

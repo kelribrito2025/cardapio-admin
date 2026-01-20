@@ -178,7 +178,7 @@ export default function PublicMenu() {
 
   // Atualizar o status do pedido quando os dados mudarem
   useEffect(() => {
-    if (currentOrderData?.status) {
+    if (currentOrderData?.status && selectedOrderId) {
       const statusMap: Record<string, "sent" | "accepted" | "delivering" | "delivered"> = {
         'new': 'sent',
         'preparing': 'accepted',
@@ -189,8 +189,17 @@ export default function PublicMenu() {
       if (mappedStatus !== orderStatus) {
         setOrderStatus(mappedStatus);
       }
+      
+      // Atualizar o status do pedido no localStorage e no estado
+      setUserOrders(prevOrders => {
+        const updatedOrders = prevOrders.map(order => 
+          order.id === selectedOrderId ? { ...order, status: mappedStatus } : order
+        );
+        localStorage.setItem('userOrders', JSON.stringify(updatedOrders));
+        return updatedOrders;
+      });
     }
-  }, [currentOrderData?.status]);
+  }, [currentOrderData?.status, selectedOrderId]);
 
   // Set first category as active when data loads
   useEffect(() => {
