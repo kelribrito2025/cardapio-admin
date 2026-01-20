@@ -920,3 +920,9 @@
 - [x] Adicionar campo pixKey no schema de establishments
 - [x] Criar campo para inserir chave Pix na página de Configurações (Formas de pagamento)
 - [x] Exibir chave Pix com botão copiar quando Pix for selecionado no modal de checkout
+
+
+## Status Condicional para Retirada no Local
+
+- [x] Alterar status "Saiu para entrega" para "Pedido Finalizado" quando tipo de entrega for retirada
+- [x] Alterar descrição para "Tudo certo! Seu pedido já está disponível para retirada."

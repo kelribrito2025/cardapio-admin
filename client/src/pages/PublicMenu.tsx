@@ -2509,24 +2509,32 @@ export default function PublicMenu() {
                   </div>
                 </div>
 
-                {/* Status: Saiu para entrega */}
-                <div className="relative flex items-start gap-4 pb-8">
-                  <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    orderStatus === 'delivering' ? 'bg-primary text-white' :
-                    orderStatus === 'delivered' ? 'bg-green-500 text-white' :
-                    'bg-gray-200 text-gray-400'
-                  }`}>
-                    <Bike className="h-5 w-5" />
-                  </div>
-                  <div className="pt-2">
-                    <h4 className={`font-semibold ${
-                      orderStatus === 'delivering' ? 'text-primary' :
-                      orderStatus === 'delivered' ? 'text-green-600' :
-                      'text-gray-400'
-                    }`}>Saiu para entrega</h4>
-                    <p className="text-sm text-gray-500">Seu pedido está a caminho</p>
-                  </div>
-                </div>
+                {/* Status: Saiu para entrega / Pedido Finalizado (retirada) */}
+                {(() => {
+                  const selectedOrder = userOrders.find(o => o.id === selectedOrderId);
+                  const isPickup = selectedOrder?.deliveryType === 'pickup';
+                  return (
+                    <div className="relative flex items-start gap-4 pb-8">
+                      <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                        orderStatus === 'delivering' ? 'bg-primary text-white' :
+                        orderStatus === 'delivered' ? 'bg-green-500 text-white' :
+                        'bg-gray-200 text-gray-400'
+                      }`}>
+                        {isPickup ? <CheckCircle className="h-5 w-5" /> : <Bike className="h-5 w-5" />}
+                      </div>
+                      <div className="pt-2">
+                        <h4 className={`font-semibold ${
+                          orderStatus === 'delivering' ? 'text-primary' :
+                          orderStatus === 'delivered' ? 'text-green-600' :
+                          'text-gray-400'
+                        }`}>{isPickup ? 'Pedido Finalizado' : 'Saiu para entrega'}</h4>
+                        <p className="text-sm text-gray-500">
+                          {isPickup ? 'Tudo certo! Seu pedido já está disponível para retirada.' : 'Seu pedido está a caminho'}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Status: Entregue */}
                 <div className="relative flex items-start gap-4">
