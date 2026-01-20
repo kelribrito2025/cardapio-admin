@@ -371,10 +371,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   href={`/menu/${establishment.menuSlug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hidden sm:flex items-center gap-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-xs font-medium transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-xs font-medium transition-colors"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
-                  Ver menu
+                  <span className="hidden sm:inline">Ver menu</span>
                 </a>
               )}
 

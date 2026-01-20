@@ -892,3 +892,8 @@
 - [x] Adicionar campo de texto no modal de cancelar pedido (admin)
 - [x] Atualizar endpoint de cancelamento para salvar o motivo
 - [x] Exibir status "Cancelado" e motivo no modal de Acompanhar Pedido (público)
+
+
+## Botão Ver Menu na Versão Mobile
+
+- [x] Adicionar botão "Ver menu" na topbar mobile do painel admin
