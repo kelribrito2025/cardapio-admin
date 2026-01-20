@@ -740,7 +740,18 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const { items, couponId, ...orderData } = input;
         
-        const result = await db.createPublicOrder(
+        console.log('[CreateOrder] Iniciando criação de pedido:', {
+          establishmentId: orderData.establishmentId,
+          customerName: orderData.customerName,
+          customerPhone: orderData.customerPhone,
+          deliveryType: orderData.deliveryType,
+          paymentMethod: orderData.paymentMethod,
+          itemsCount: items.length,
+          total: orderData.total,
+        });
+        
+        try {
+          const result = await db.createPublicOrder(
           {
             establishmentId: orderData.establishmentId,
             customerName: orderData.customerName,
@@ -774,7 +785,22 @@ export const appRouter = router({
           await db.incrementCouponUsage(couponId);
         }
         
+        console.log('[CreateOrder] Pedido criado com sucesso:', result);
         return result;
+        } catch (error) {
+          console.error('[CreateOrder] Erro ao criar pedido:', error);
+          console.error('[CreateOrder] Dados do pedido:', {
+            establishmentId: orderData.establishmentId,
+            customerName: orderData.customerName,
+            customerPhone: orderData.customerPhone,
+            deliveryType: orderData.deliveryType,
+            paymentMethod: orderData.paymentMethod,
+            subtotal: orderData.subtotal,
+            total: orderData.total,
+            itemsCount: items.length,
+          });
+          throw error;
+        }
       }),
     
     // Get order by number (for tracking)

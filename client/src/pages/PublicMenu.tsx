@@ -175,10 +175,34 @@ export default function PublicMenu() {
       setOrderSent(true);
       setOrderStatus("sent");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Erro ao enviar pedido:', error);
       setIsSendingOrder(false);
-      alert('Erro ao enviar pedido. Por favor, tente novamente.');
+      
+      // Extrair mensagem de erro detalhada
+      let errorMessage = 'Erro ao enviar pedido. Por favor, tente novamente.';
+      
+      if (error?.message) {
+        if (error.message.includes('Network')) {
+          errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+        } else if (error.message.includes('timeout')) {
+          errorMessage = 'O servidor demorou muito para responder. Tente novamente.';
+        } else if (error.message.includes('validation') || error.message.includes('required')) {
+          errorMessage = 'Dados inválidos. Verifique se todos os campos estão preenchidos corretamente.';
+        } else {
+          errorMessage = `Erro: ${error.message}`;
+        }
+      }
+      
+      // Log detalhado para debug
+      console.error('Detalhes do erro:', {
+        message: error?.message,
+        code: error?.data?.code,
+        httpStatus: error?.data?.httpStatus,
+        path: error?.data?.path,
+      });
+      
+      alert(errorMessage);
     }
   });
 

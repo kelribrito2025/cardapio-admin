@@ -1,0 +1,28 @@
+{
+  "query": "SELECT id, name, menuSlug, isOpen FROM establishments;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, menuSlug, isOpen FROM establishments;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Restaurante Doca Iracema",
+      "menuSlug": "teste-burguer",
+      "isOpen": "1"
+    },
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "menuSlug": "kelri",
+      "isOpen": "1"
+    },
+    {
+      "id": "30002",
+      "name": "Burger House Admin",
+      "menuSlug": "burger-house-admin",
+      "isOpen": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tmenuSlug\tisOpen\n1\tRestaurante Doca Iracema\tteste-burguer\t1\n30001\tSushi Haruno\tkelri\t1\n30002\tBurger House Admin\tburger-house-admin\t1\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

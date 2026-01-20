@@ -1,0 +1,25 @@
+{
+  "query": "SELECT id, name, menuSlug FROM establishments LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, menuSlug FROM establishments LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Restaurante Doca Iracema",
+      "menuSlug": "teste-burguer"
+    },
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "menuSlug": "kelri"
+    },
+    {
+      "id": "30002",
+      "name": "Burger House Admin",
+      "menuSlug": "burger-house-admin"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tmenuSlug\n1\tRestaurante Doca Iracema\tteste-burguer\n30001\tSushi Haruno\tkelri\n30002\tBurger House Admin\tburger-house-admin\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}

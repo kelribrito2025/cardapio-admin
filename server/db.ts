@@ -930,58 +930,81 @@ export async function getStockSummary(establishmentId: number) {
 
 // ============ PUBLIC ORDER FUNCTIONS ============
 export async function createPublicOrder(data: InsertOrder, items: InsertOrderItem[]) {
+  console.log('[DB:createPublicOrder] Iniciando...');
+  
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) {
+    console.error('[DB:createPublicOrder] Database não disponível');
+    throw new Error("Database not available");
+  }
   
   // Generate order number
   const orderNumber = `#${Date.now().toString(36).toUpperCase()}`;
+  console.log('[DB:createPublicOrder] Order number gerado:', orderNumber);
   
-  const result = await db.insert(orders).values({
-    ...data,
-    orderNumber,
-    status: "new",
-  });
-  const orderId = result[0].insertId;
-  
-  if (items.length > 0) {
-    const itemsWithOrderId = items.map(item => ({ ...item, orderId }));
-    await db.insert(orderItems).values(itemsWithOrderId);
+  try {
+    console.log('[DB:createPublicOrder] Inserindo pedido no banco...');
+    const result = await db.insert(orders).values({
+      ...data,
+      orderNumber,
+      status: "new",
+    });
+    const orderId = result[0].insertId;
+    console.log('[DB:createPublicOrder] Pedido inserido com ID:', orderId);
+    
+    if (items.length > 0) {
+      console.log('[DB:createPublicOrder] Inserindo', items.length, 'itens...');
+      const itemsWithOrderId = items.map(item => ({ ...item, orderId }));
+      await db.insert(orderItems).values(itemsWithOrderId);
+      console.log('[DB:createPublicOrder] Itens inseridos com sucesso');
+    }
+    
+    // Notificar via SSE sobre novo pedido
+    const newOrder = {
+      id: orderId,
+      orderNumber,
+      establishmentId: data.establishmentId,
+      customerName: data.customerName,
+      customerPhone: data.customerPhone,
+      customerAddress: data.customerAddress,
+      deliveryType: data.deliveryType,
+      paymentMethod: data.paymentMethod,
+      subtotal: data.subtotal,
+      deliveryFee: data.deliveryFee,
+      discount: data.discount || "0",
+      couponCode: data.couponCode || null,
+      total: data.total,
+      notes: data.notes,
+      changeAmount: data.changeAmount,
+      status: "new",
+      createdAt: new Date(),
+      items: items.map((item, index) => ({
+        id: index + 1,
+        orderId,
+        productId: item.productId,
+        productName: item.productName,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        totalPrice: item.totalPrice,
+        complements: item.complements,
+        notes: item.notes,
+      })),
+    };
+    notifyNewOrder(data.establishmentId, newOrder);
+    
+    console.log('[DB:createPublicOrder] Pedido criado com sucesso:', { orderId, orderNumber });
+    return { orderId, orderNumber };
+  } catch (error) {
+    console.error('[DB:createPublicOrder] Erro ao criar pedido:', error);
+    console.error('[DB:createPublicOrder] Dados recebidos:', {
+      establishmentId: data.establishmentId,
+      customerName: data.customerName,
+      deliveryType: data.deliveryType,
+      paymentMethod: data.paymentMethod,
+      itemsCount: items.length,
+    });
+    throw error;
   }
-  
-  // Notificar via SSE sobre novo pedido
-  const newOrder = {
-    id: orderId,
-    orderNumber,
-    establishmentId: data.establishmentId,
-    customerName: data.customerName,
-    customerPhone: data.customerPhone,
-    customerAddress: data.customerAddress,
-    deliveryType: data.deliveryType,
-    paymentMethod: data.paymentMethod,
-    subtotal: data.subtotal,
-    deliveryFee: data.deliveryFee,
-    discount: data.discount || "0",
-    couponCode: data.couponCode || null,
-    total: data.total,
-    notes: data.notes,
-    changeAmount: data.changeAmount,
-    status: "new",
-    createdAt: new Date(),
-    items: items.map((item, index) => ({
-      id: index + 1,
-      orderId,
-      productId: item.productId,
-      productName: item.productName,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-      totalPrice: item.totalPrice,
-      complements: item.complements,
-      notes: item.notes,
-    })),
-  };
-  notifyNewOrder(data.establishmentId, newOrder);
-  
-  return { orderId, orderNumber };
 }
 
 export async function getPublicOrderByNumber(orderNumber: string, establishmentId: number) {

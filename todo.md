@@ -969,3 +969,11 @@
 - [x] Criar endpoint para criar avaliação com validação de 30 dias
 - [x] Exibir modal de avaliação apenas quando pedido atingir status "entregue" E última avaliação > 30 dias
 - [x] Ocultar botão de avaliar se cliente já avaliou nos últimos 30 dias
+
+
+## Tratamento de Erro Detalhado no Envio de Pedidos
+
+- [x] Adicionar logs detalhados no backend ao criar pedido
+- [x] Melhorar mensagem de erro no frontend com detalhes do problema
+- [x] Adicionar try-catch com tratamento específico de erros
+

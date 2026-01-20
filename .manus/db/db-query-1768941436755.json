@@ -1,0 +1,50 @@
+{
+  "query": "SELECT id, orderNumber, customerName, customerPhone, status, createdAt FROM orders ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, customerName, customerPhone, status, createdAt FROM orders ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "60024",
+      "orderNumber": "#MKN1UKYU",
+      "customerName": "kelri",
+      "customerPhone": "(88) 99929-0000",
+      "status": "completed",
+      "createdAt": "2026-01-20 20:31:25"
+    },
+    {
+      "id": "60021",
+      "orderNumber": "#MKN1BKCU",
+      "customerName": "kelri",
+      "customerPhone": "(88) 99929-0000",
+      "status": "completed",
+      "createdAt": "2026-01-20 20:16:38"
+    },
+    {
+      "id": "60020",
+      "orderNumber": "#MKN14VP7",
+      "customerName": "kelri",
+      "customerPhone": "(88) 99929-0000",
+      "status": "completed",
+      "createdAt": "2026-01-20 20:11:26"
+    },
+    {
+      "id": "60019",
+      "orderNumber": "#MKN0X7IN",
+      "customerName": "kelri",
+      "customerPhone": "(88) 99929-0000",
+      "status": "completed",
+      "createdAt": "2026-01-20 20:05:28"
+    },
+    {
+      "id": "60018",
+      "orderNumber": "#MKN0R5NY",
+      "customerName": "kelri",
+      "customerPhone": "(88) 99929-0000",
+      "status": "completed",
+      "createdAt": "2026-01-20 20:00:45"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tcustomerName\tcustomerPhone\tstatus\tcreatedAt\n60024\t#MKN1UKYU\tkelri\t(88) 99929-0000\tcompleted\t2026-01-20 20:31:25\n60021\t#MKN1BKCU\tkelri\t(88) 99929-0000\tcompleted\t2026-01-20 20:16:38\n60020\t#MKN14VP7\tkelri\t(88) 99929-0000\tcompleted\t2026-01-20 20:11:26\n60019\t#MKN0X7IN\tkelri\t(88) 99929-0000\tcompleted\t2026-01-20 20:05:28\n60018\t#MKN0R5NY\tkelri\t(88) 99929-0000\tcompleted\t2026-01-20 20:00:45\n",
+  "stderr": "",
+  "execution_time_ms": 167
+}
