@@ -1017,3 +1017,9 @@
 
 - [x] Aplicar estilo balao-5 com borda, sombra sólida e seta estilizada
 
+
+
+## Novo Modelo Visual do Balão (Amarelo/Laranja)
+
+- [x] Aplicar estilo balao-60 com fundo amarelo, texto laranja e seta triangular
+

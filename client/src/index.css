@@ -332,43 +332,42 @@
   animation: float-balloon 3s ease-in-out infinite;
 }
 
-/* Estilo do balão de nota - modelo com borda e sombra sólida */
+/* Estilo do balão de nota - modelo amarelo/laranja */
 .balao-nota {
-  background: white;
-  color: #2d3748;
-  padding: 10px 14px;
-  border-radius: 20px;
-  border: 2px solid #2d3748;
+  background: #fffde7;
+  color: #f57f17;
+  padding: 10px 16px;
+  border-radius: 12px;
   position: relative;
-  box-shadow: 3px 3px 0px #2d3748;
+  box-shadow: 0 3px 10px rgba(245,127,23,0.2);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   max-width: 140px;
+  border-right: 2px solid #ffeb3b;
 }
 
-.balao-nota::after {
+.balao-nota::before {
   content: '';
   position: absolute;
-  bottom: -10px;
+  bottom: -6px;
   left: 20px;
-  width: 16px;
-  height: 16px;
-  background: white;
-  border-left: 2px solid #2d3748;
-  border-bottom: 2px solid #2d3748;
-  transform: rotate(-45deg);
-  border-radius: 0 0 0 5px;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid #fffde7;
 }
 
 @media (min-width: 768px) {
   .balao-nota {
-    padding: 12px 16px;
+    padding: 12px 18px;
     font-size: 12px;
     max-width: 160px;
   }
-  .balao-nota::after {
-    bottom: -12px;
-    width: 18px;
-    height: 18px;
+  .balao-nota::before {
+    bottom: -8px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #fffde7;
   }
 }
