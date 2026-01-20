@@ -798,3 +798,8 @@
 ## Ajuste Visual - Badge de Pedidos no Cardápio Público
 
 - [x] Ajustar posição do badge de pedidos para não sobrepor a letra 's'
+
+
+## Ajuste Visual - Badge da Sacola no Cardápio Público
+
+- [x] Aplicar o mesmo ajuste de posicionamento do badge no ícone da sacola

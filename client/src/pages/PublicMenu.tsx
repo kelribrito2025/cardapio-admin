@@ -420,13 +420,13 @@ export default function PublicMenu() {
                 )}
               </button>
               <button 
-                className="flex items-center gap-1.5 text-gray-600 font-medium text-sm hover:text-gray-900 transition-colors relative"
+                className="flex items-center gap-1.5 text-gray-600 font-medium text-sm hover:text-gray-900 transition-colors relative pr-3"
                 onClick={() => setShowMobileBag(true)}
               >
                 <ShoppingBag className="h-4 w-4" />
                 <span>Sacola</span>
                 {cart.length > 0 && (
-                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                  <span className="absolute -top-1.5 -right-0 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                     {cart.reduce((sum, item) => sum + item.quantity, 0)}
                   </span>
                 )}
