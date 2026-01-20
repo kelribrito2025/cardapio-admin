@@ -1011,3 +1011,9 @@
 
 - [x] Adicionar efeito de animação suave no balão (float/pulse)
 
+
+
+## Novo Modelo Visual do Balão
+
+- [x] Aplicar estilo balao-5 com borda, sombra sólida e seta estilizada
+
