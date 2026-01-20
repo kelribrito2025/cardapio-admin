@@ -128,7 +128,7 @@ function SortableProductItem({
         className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
         onClick={() => onEdit(product.id)}
       >
-        <div className="h-12 w-12 rounded-lg bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-border/30">
+        <div className="hidden md:flex h-12 w-12 rounded-lg bg-muted/50 items-center justify-center overflow-hidden flex-shrink-0 border border-border/30">
           {product.images && product.images.length > 0 ? (
             <img
               src={product.images[0]}

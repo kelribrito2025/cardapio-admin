@@ -763,3 +763,8 @@
 
 - [x] Corrigir erro de establishmentId null na query de pedidos (já estava tratado com enabled: !!establishmentId)
 - [x] Corrigir erro de conexão SSE (cookie name estava errado: manus_session -> app_session_id)
+
+
+## Ajuste Mobile - Página de Catálogo
+
+- [x] Ocultar fotos dos itens na versão mobile da página /catalogo
