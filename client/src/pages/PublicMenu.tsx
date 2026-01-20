@@ -2087,7 +2087,7 @@ export default function PublicMenu() {
                     setCheckoutStep(0);
                     setShowTrackingModal(true);
                   }}
-                  className="w-full py-3.5 bg-gray-100 text-gray-700 font-semibold rounded-xl transition-colors hover:bg-gray-200 flex items-center justify-center gap-2"
+                  className="w-full py-3.5 bg-primary text-white font-semibold rounded-xl transition-colors hover:bg-primary/90 flex items-center justify-center gap-2"
                 >
                   <Package className="h-5 w-5" />
                   Acompanhar pedido
