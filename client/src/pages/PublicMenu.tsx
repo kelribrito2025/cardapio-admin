@@ -1612,8 +1612,8 @@ export default function PublicMenu() {
                     value={orderObservation}
                     onChange={(e) => setOrderObservation(e.target.value)}
                     placeholder="Ex: Sem cebola, bem passado..."
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
-                    rows={3}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
+                    rows={2}
                   />
                 </div>
               </div>
