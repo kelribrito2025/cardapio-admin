@@ -877,3 +877,10 @@
 
 - [x] Corrigir exibição da média de avaliações (MySQL retornava string)
 - [x] Implementar estrelas parciais (ex: 4,5 = 4 cheias + 1 meia)
+
+
+## Reorganizar Modal do Fluxo do Pedido
+
+- [x] Mover título para acima das etapas (1, 2, 3, 4, 5)
+- [x] Etapas devem ficar abaixo do título
+- [x] Remover headers duplicados dos modais 2, 3, 4 e 5

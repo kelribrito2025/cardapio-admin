@@ -1387,8 +1387,26 @@ export default function PublicMenu() {
           
           {/* Modal de Checkout Unificado */}
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[85vh] flex flex-col overflow-hidden">
-            {/* Indicador de Progresso */}
+            {/* Header com Título */}
             <div className="flex-shrink-0 px-6 pt-4 pb-2 border-b">
+              {/* Título e Botão Fechar */}
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold text-gray-900">
+                  {checkoutStep === 1 && 'Resumo do Pedido'}
+                  {checkoutStep === 2 && 'Tipo de Entrega'}
+                  {checkoutStep === 3 && 'Confirmar Endereço'}
+                  {checkoutStep === 4 && 'Seus Dados'}
+                  {checkoutStep === 5 && 'Enviar Pedido'}
+                </h2>
+                <button 
+                  onClick={() => setCheckoutStep(0)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+              
+              {/* Indicador de Progresso */}
               <div className="flex items-center justify-between mb-2">
                 {[1, 2, 3, 4, 5].map((step) => (
                   <div key={step} className="flex items-center">
@@ -1423,16 +1441,6 @@ export default function PublicMenu() {
             {/* Modal 1 - Resumo dos Itens */}
             {checkoutStep === 1 && (
               <div className="flex flex-col flex-1 overflow-hidden">
-              {/* Header */}
-              <div className="flex-shrink-0 border-b px-6 py-4 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-gray-900">Resumo do Pedido</h2>
-                <button 
-                  onClick={() => setCheckoutStep(0)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <X className="h-5 w-5 text-gray-500" />
-                </button>
-              </div>
 
               {/* Body */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
@@ -1526,22 +1534,6 @@ export default function PublicMenu() {
             {/* Modal 2 - Entrega e Pagamento */}
             {checkoutStep === 2 && (
               <div className="flex flex-col flex-1 overflow-hidden">
-              {/* Header */}
-              <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
-                <button 
-                  onClick={() => setCheckoutStep(1)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <ChevronLeft className="h-5 w-5 text-gray-500" />
-                </button>
-                <h2 className="text-lg font-bold text-gray-900">Entrega e Pagamento</h2>
-                <button 
-                  onClick={() => setCheckoutStep(0)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto"
-                >
-                  <X className="h-5 w-5 text-gray-500" />
-                </button>
-              </div>
 
               {/* Body */}
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -1737,22 +1729,6 @@ export default function PublicMenu() {
             {/* Modal 3 - Resumo Final */}
             {checkoutStep === 3 && (
               <div className="flex flex-col flex-1 overflow-hidden">
-              {/* Header */}
-              <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
-                <button 
-                  onClick={() => setCheckoutStep(2)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <ChevronLeft className="h-5 w-5 text-gray-500" />
-                </button>
-                <h2 className="text-lg font-bold text-gray-900">Resumo Final</h2>
-                <button 
-                  onClick={() => setCheckoutStep(0)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto"
-                >
-                  <X className="h-5 w-5 text-gray-500" />
-                </button>
-              </div>
 
               {/* Body */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
@@ -1873,22 +1849,6 @@ export default function PublicMenu() {
             {/* Modal 4 - Identificação do Cliente */}
             {checkoutStep === 4 && (
               <div className="flex flex-col flex-1 overflow-hidden">
-              {/* Header */}
-              <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
-                <button 
-                  onClick={() => setCheckoutStep(3)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <ChevronLeft className="h-5 w-5 text-gray-500" />
-                </button>
-                <h2 className="text-lg font-bold text-gray-900">Seus dados</h2>
-                <button 
-                  onClick={() => setCheckoutStep(0)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto"
-                >
-                  <X className="h-5 w-5 text-gray-500" />
-                </button>
-              </div>
 
               {/* Body */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
@@ -1945,22 +1905,6 @@ export default function PublicMenu() {
             {/* Modal 5 - Confirmação Final */}
             {checkoutStep === 5 && (
               <div className="flex flex-col flex-1 overflow-hidden">
-              {/* Header */}
-              <div className="flex-shrink-0 border-b px-6 py-4 flex items-center gap-3 rounded-t-2xl">
-                <button 
-                  onClick={() => setCheckoutStep(4)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <ChevronLeft className="h-5 w-5 text-gray-500" />
-                </button>
-                <h2 className="text-lg font-bold text-gray-900">Confirmação</h2>
-                <button 
-                  onClick={() => setCheckoutStep(0)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto"
-                >
-                  <X className="h-5 w-5 text-gray-500" />
-                </button>
-              </div>
 
               {/* Body */}
               <div className="flex-1 overflow-y-auto p-6">
