@@ -1022,3 +1022,4 @@
 - [x] Corrigir dropdown de Redes Sociais cortado - abrir para cima
 - [x] Diminuir altura do campo de observações em 25%
 - [x] Diminuir altura do campo de observação no modal de Resumo do Pedido em 25%
+- [x] Remover espaço vazio grande abaixo do botão Acompanhar pedido no modal de Enviar Pedido

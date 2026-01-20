@@ -2048,7 +2048,7 @@ export default function PublicMenu() {
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className={`overflow-y-auto p-6 ${!orderSent ? 'flex-1' : ''}`}>
                 {!orderSent ? (
                   <div className="text-center py-8">
                     <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
