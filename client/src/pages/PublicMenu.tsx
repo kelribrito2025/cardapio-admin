@@ -1400,13 +1400,23 @@ export default function PublicMenu() {
             <div className="flex-shrink-0 px-6 pt-4 pb-2 border-b">
               {/* Título e Botão Fechar */}
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-gray-900">
-                  {checkoutStep === 1 && 'Resumo do Pedido'}
-                  {checkoutStep === 2 && 'Tipo de Entrega'}
-                  {checkoutStep === 3 && 'Confirmar Endereço'}
-                  {checkoutStep === 4 && 'Seus Dados'}
-                  {checkoutStep === 5 && 'Enviar Pedido'}
-                </h2>
+                <div className="flex items-center gap-2">
+                  {checkoutStep > 1 && (
+                    <button
+                      onClick={() => setCheckoutStep(checkoutStep - 1)}
+                      className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+                    >
+                      <ChevronLeft className="h-5 w-5 text-gray-500" />
+                    </button>
+                  )}
+                  <h2 className="text-lg font-bold text-gray-900">
+                    {checkoutStep === 1 && 'Resumo do Pedido'}
+                    {checkoutStep === 2 && 'Tipo de Entrega'}
+                    {checkoutStep === 3 && 'Confirmar Endereço'}
+                    {checkoutStep === 4 && 'Seus Dados'}
+                    {checkoutStep === 5 && 'Enviar Pedido'}
+                  </h2>
+                </div>
                 <button 
                   onClick={() => setCheckoutStep(0)}
                   className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -1419,17 +1429,21 @@ export default function PublicMenu() {
               <div className="flex items-center justify-between mb-2">
                 {[1, 2, 3, 4, 5].map((step) => (
                   <div key={step} className="flex items-center">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
-                      checkoutStep >= step 
-                        ? 'bg-red-500 text-white' 
-                        : 'bg-gray-200 text-gray-500'
-                    }`}>
+                    <button
+                      onClick={() => step < checkoutStep && setCheckoutStep(step)}
+                      disabled={step >= checkoutStep}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+                        checkoutStep >= step 
+                          ? 'bg-red-500 text-white' 
+                          : 'bg-gray-200 text-gray-500'
+                      } ${step < checkoutStep ? 'cursor-pointer hover:ring-2 hover:ring-red-300' : ''}`}
+                    >
                       {checkoutStep > step ? (
                         <CheckCircle className="h-5 w-5" />
                       ) : (
                         step
                       )}
-                    </div>
+                    </button>
                     {step < 5 && (
                       <div className={`w-8 sm:w-12 h-1 mx-1 rounded transition-all ${
                         checkoutStep > step ? 'bg-red-500' : 'bg-gray-200'

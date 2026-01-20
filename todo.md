@@ -931,3 +931,9 @@
 ## Badge Condicional no Modal Meus Pedidos
 
 - [x] Corrigir badge para exibir "Pedido Finalizado" em vez de "Saiu para entrega" quando for retirada no local
+
+
+## Navegação de Voltar no Fluxo de Pedido
+
+- [x] Adicionar seta de voltar no título do modal (a partir da etapa 2)
+- [x] Permitir clicar nas etapas anteriores já concluídas para voltar
