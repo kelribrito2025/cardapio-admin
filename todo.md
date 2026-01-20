@@ -1028,3 +1028,4 @@
 - [x] Verificar e corrigir o fluxo de modais de checkout - modal de Confirmação
 - [x] Remodelar card de pedidos no modal Meus Pedidos com dropdown expansível para itens
 - [x] Corrigir clique no card de pedidos para fazer dropdown em vez de ir para Acompanhar Pedido
+- [x] Implementar atualização automática do status dos pedidos no modal Meus Pedidos

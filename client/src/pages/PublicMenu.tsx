@@ -311,6 +311,61 @@ export default function PublicMenu() {
     }
   }, []);
 
+  // Sincronizar status dos pedidos quando o modal Meus Pedidos é aberto
+  useEffect(() => {
+    const syncOrderStatuses = async () => {
+      if (!showOrdersModal || !data?.establishment?.id || userOrders.length === 0) return;
+      
+      const statusMap: Record<string, "sent" | "accepted" | "delivering" | "delivered" | "cancelled"> = {
+        'new': 'sent',
+        'preparing': 'accepted',
+        'ready': 'delivering',
+        'completed': 'delivered',
+        'cancelled': 'cancelled',
+      };
+      
+      // Buscar status atualizado de cada pedido em andamento
+      const ordersToUpdate = userOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled');
+      
+      if (ordersToUpdate.length === 0) return;
+      
+      try {
+        const updatedOrders = await Promise.all(
+          ordersToUpdate.map(async (order) => {
+            try {
+              const response = await fetch(`/api/trpc/publicMenu.getOrderByNumber?input=${encodeURIComponent(JSON.stringify({
+                orderNumber: order.id,
+                establishmentId: data.establishment.id
+              }))}`).then(res => res.json());
+              
+              if (response?.result?.data?.status) {
+                const newStatus = statusMap[response.result.data.status] || order.status;
+                return { ...order, status: newStatus };
+              }
+              return order;
+            } catch {
+              return order;
+            }
+          })
+        );
+        
+        // Atualizar o estado com os novos status
+        setUserOrders(prevOrders => {
+          const newOrders = prevOrders.map(order => {
+            const updated = updatedOrders.find(u => u.id === order.id);
+            return updated || order;
+          });
+          localStorage.setItem('userOrders', JSON.stringify(newOrders));
+          return newOrders;
+        });
+      } catch (e) {
+        console.error('Erro ao sincronizar status dos pedidos:', e);
+      }
+    };
+    
+    syncOrderStatuses();
+  }, [showOrdersModal, data?.establishment?.id]);
+
   // Carregar endereço salvo do localStorage
   useEffect(() => {
     const savedAddress = localStorage.getItem('savedDeliveryAddress');
