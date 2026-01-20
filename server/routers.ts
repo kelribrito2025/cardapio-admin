@@ -164,6 +164,7 @@ export const appRouter = router({
         acceptsCash: z.boolean().optional(),
         acceptsCard: z.boolean().optional(),
         acceptsPix: z.boolean().optional(),
+        pixKey: z.string().nullable().optional(),
         acceptsBoleto: z.boolean().optional(),
         allowsDelivery: z.boolean().optional(),
         allowsPickup: z.boolean().optional(),

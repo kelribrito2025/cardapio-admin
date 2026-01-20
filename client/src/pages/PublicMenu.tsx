@@ -1,7 +1,7 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, Bike } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, Bike, Copy } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PublicMenu() {
@@ -1719,6 +1719,29 @@ export default function PublicMenu() {
                     </label>
                   </div>
 
+                  {/* Chave Pix */}
+                  {paymentMethod === "pix" && establishment.pixKey && (
+                    <div className="mt-4 p-4 bg-teal-50 border border-teal-200 rounded-xl">
+                      <p className="text-sm text-teal-700 font-medium mb-2">Chave Pix do restaurante:</p>
+                      <div className="flex items-center gap-2">
+                        <code className="flex-1 bg-white px-3 py-2 rounded-lg text-sm text-gray-800 border border-teal-200 break-all">
+                          {establishment.pixKey}
+                        </code>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(establishment.pixKey || "");
+                            alert("Chave Pix copiada!");
+                          }}
+                          className="flex-shrink-0 p-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg transition-colors"
+                          title="Copiar chave Pix"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <p className="text-xs text-teal-600 mt-2">Copie a chave para realizar o pagamento via Pix.</p>
+                    </div>
+                  )}
 
                 </div>
               </div>

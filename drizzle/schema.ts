@@ -38,6 +38,7 @@ export const establishments = mysqlTable("establishments", {
   acceptsCash: boolean("acceptsCash").default(true).notNull(),
   acceptsCard: boolean("acceptsCard").default(true).notNull(),
   acceptsPix: boolean("acceptsPix").default(false).notNull(),
+  pixKey: varchar("pixKey", { length: 255 }),
   acceptsBoleto: boolean("acceptsBoleto").default(false).notNull(),
   allowsDelivery: boolean("allowsDelivery").default(true).notNull(),
   allowsPickup: boolean("allowsPickup").default(true).notNull(),

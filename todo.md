@@ -913,3 +913,10 @@
 ## Ícone de Moto no Status "Saiu para entrega"
 
 - [x] Trocar ícone do carro para ícone de moto no status "Saiu para entrega"
+
+
+## Chave Pix no Checkout
+
+- [x] Adicionar campo pixKey no schema de establishments
+- [x] Criar campo para inserir chave Pix na página de Configurações (Formas de pagamento)
+- [x] Exibir chave Pix com botão copiar quando Pix for selecionado no modal de checkout

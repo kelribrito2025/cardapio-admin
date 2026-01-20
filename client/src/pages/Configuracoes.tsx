@@ -52,6 +52,7 @@ export default function Configuracoes() {
   const [acceptsCash, setAcceptsCash] = useState(true);
   const [acceptsCard, setAcceptsCard] = useState(true);
   const [acceptsPix, setAcceptsPix] = useState(false);
+  const [pixKey, setPixKey] = useState("");
   const [acceptsBoleto, setAcceptsBoleto] = useState(false);
   const [allowsDelivery, setAllowsDelivery] = useState(true);
   const [allowsPickup, setAllowsPickup] = useState(true);
@@ -84,6 +85,7 @@ export default function Configuracoes() {
       setAcceptsCash(establishment.acceptsCash);
       setAcceptsCard(establishment.acceptsCard);
       setAcceptsPix(establishment.acceptsPix);
+      setPixKey(establishment.pixKey || "");
       setAcceptsBoleto(establishment.acceptsBoleto);
       setAllowsDelivery(establishment.allowsDelivery);
       setAllowsPickup(establishment.allowsPickup);
@@ -156,6 +158,7 @@ export default function Configuracoes() {
       acceptsCash,
       acceptsCard,
       acceptsPix,
+      pixKey: pixKey || null,
       acceptsBoleto,
       allowsDelivery,
       allowsPickup,
@@ -704,6 +707,21 @@ export default function Configuracoes() {
                   <span className="font-semibold text-sm">Boleto</span>
                 </label>
               </div>
+
+              {/* Campo de Chave Pix */}
+              {acceptsPix && (
+                <div className="space-y-2">
+                  <Label htmlFor="pixKey" className="text-sm font-medium">Chave Pix</Label>
+                  <Input
+                    id="pixKey"
+                    value={pixKey}
+                    onChange={(e) => setPixKey(e.target.value)}
+                    placeholder="CPF, CNPJ, email, telefone ou chave aleatória"
+                    className="rounded-xl"
+                  />
+                  <p className="text-xs text-muted-foreground">Esta chave será exibida para o cliente copiar ao selecionar Pix como forma de pagamento.</p>
+                </div>
+              )}
 
               <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
                 <Save className="h-4 w-4 mr-2" />
