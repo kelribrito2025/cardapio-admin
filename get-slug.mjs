@@ -1,20 +1,15 @@
+import { drizzle } from 'drizzle-orm/mysql2';
 import mysql from 'mysql2/promise';
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const connection = await mysql.createConnection({
+  host: process.env.DATABASE_HOST,
+  user: process.env.DATABASE_USERNAME,
+  password: process.env.DATABASE_PASSWORD,
+  database: process.env.DATABASE_NAME,
+  port: 4000,
+  ssl: { rejectUnauthorized: true }
+});
 
-async function main() {
-  const connection = await mysql.createConnection(DATABASE_URL);
-  
-  const [result] = await connection.execute(
-    `SELECT p.id, p.name, p.establishmentId, e.menuSlug 
-     FROM products p 
-     JOIN establishments e ON p.establishmentId = e.id 
-     WHERE p.id = 60004`
-  );
-  
-  console.log('Resultado:', result);
-  
-  await connection.end();
-}
-
-main().catch(console.error);
+const [rows] = await connection.execute('SELECT id, name, menuSlug, isOpen FROM establishments LIMIT 10');
+console.log(JSON.stringify(rows, null, 2));
+await connection.end();

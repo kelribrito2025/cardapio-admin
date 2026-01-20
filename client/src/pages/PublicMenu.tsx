@@ -877,15 +877,26 @@ export default function PublicMenu() {
 
                 {/* Button */}
                 <button 
-                  disabled={cart.length === 0}
-                  onClick={() => cart.length > 0 && setCheckoutStep(1)}
-                  className={`w-full mt-4 py-3.5 font-semibold rounded-xl transition-colors ${
-                    cart.length === 0 
-                      ? 'bg-red-400/80 text-white cursor-not-allowed' 
-                      : 'bg-red-500 hover:bg-red-600 text-white'
+                  disabled={cart.length === 0 || !establishment.isOpen}
+                  onClick={() => cart.length > 0 && establishment.isOpen && setCheckoutStep(1)}
+                  className={`w-full mt-4 py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
+                    !establishment.isOpen
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : cart.length === 0 
+                        ? 'bg-red-400/80 text-white cursor-not-allowed' 
+                        : 'bg-red-500 hover:bg-red-600 text-white'
                   }`}
                 >
-                  {cart.length === 0 ? 'Sacola vazia' : `Finalizar pedido`}
+                  {!establishment.isOpen ? (
+                    <>
+                      <Clock className="h-5 w-5" />
+                      Restaurante Fechado
+                    </>
+                  ) : cart.length === 0 ? (
+                    'Sacola vazia'
+                  ) : (
+                    'Finalizar pedido'
+                  )}
                 </button>
               </div>
             </div>
@@ -1242,9 +1253,15 @@ export default function PublicMenu() {
                   });
                 }
                 
+                // Verificar se a loja está aberta
+                const isStoreOpen = establishment.isOpen;
+                const canAddToCart = requiredGroupsMet && isStoreOpen;
+                
                 return (
                   <button
                     onClick={() => {
+                      if (!isStoreOpen) return;
+                      
                       const newItem = {
                         productId: selectedProduct.id,
                         name: selectedProduct.name,
@@ -1282,15 +1299,24 @@ export default function PublicMenu() {
                       setProductQuantity(1);
                       setSelectedProduct(null);
                     }}
-                    disabled={!requiredGroupsMet}
+                    disabled={!canAddToCart}
                     className={`flex-1 font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 ${
-                      requiredGroupsMet 
+                      canAddToCart 
                         ? 'bg-red-500 hover:bg-red-600 text-white' 
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                   >
-                    <ShoppingBag className="h-5 w-5" />
-                    <span>Adicionar {formatPrice(totalPrice)}</span>
+                    {isStoreOpen ? (
+                      <>
+                        <ShoppingBag className="h-5 w-5" />
+                        <span>Adicionar {formatPrice(totalPrice)}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Clock className="h-5 w-5" />
+                        <span>Restaurante Fechado</span>
+                      </>
+                    )}
                   </button>
                 );
               })()}
@@ -1938,7 +1964,7 @@ export default function PublicMenu() {
                 </button>
                 <button
                   onClick={() => {
-                    if (isSendingOrder || !establishment) return;
+                    if (isSendingOrder || !establishment || !establishment.isOpen) return;
                     setIsSendingOrder(true);
                     
                     // Calcular totais
@@ -1984,14 +2010,21 @@ export default function PublicMenu() {
                       })),
                     });
                   }}
-                  disabled={isSendingOrder}
+                  disabled={isSendingOrder || !establishment.isOpen}
                   className={`flex-1 py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
-                    isSendingOrder 
-                      ? 'bg-green-400 cursor-not-allowed' 
-                      : 'bg-green-500 hover:bg-green-600'
-                  } text-white`}
+                    !establishment.isOpen
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : isSendingOrder 
+                        ? 'bg-green-400 cursor-not-allowed' 
+                        : 'bg-green-500 hover:bg-green-600'
+                  } ${establishment.isOpen ? 'text-white' : ''}`}
                 >
-                  {isSendingOrder ? (
+                  {!establishment.isOpen ? (
+                    <>
+                      <Clock className="h-5 w-5" />
+                      Restaurante Fechado
+                    </>
+                  ) : isSendingOrder ? (
                     <>
                       <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -2215,12 +2248,25 @@ export default function PublicMenu() {
                 </div>
                 <button
                   onClick={() => {
+                    if (!establishment.isOpen) return;
                     setShowMobileBag(false);
                     setCheckoutStep(1);
                   }}
-                  className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
+                  disabled={!establishment.isOpen}
+                  className={`w-full py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
+                    !establishment.isOpen
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-red-500 hover:bg-red-600 text-white'
+                  }`}
                 >
-                  Finalizar pedido
+                  {!establishment.isOpen ? (
+                    <>
+                      <Clock className="h-5 w-5" />
+                      Restaurante Fechado
+                    </>
+                  ) : (
+                    'Finalizar pedido'
+                  )}
                 </button>
               </div>
             )}

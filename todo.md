@@ -819,3 +819,12 @@
 - [x] Corrigir modal para buscar status atual do banco ao abrir (adicionado refetchOnMount e staleTime: 0)
 - [x] Não usar estado local/cache para o status do pedido (removido setOrderStatus no onClick)
 - [x] Modal deve sempre exibir o status real do pedido (força refetch ao abrir modal)
+
+
+## Bloquear Pedidos com Loja Fechada
+
+- [x] Verificar horário de funcionamento no cardápio público
+- [x] Bloquear botão de adicionar quando loja fechada
+- [x] Exibir mensagem "Restaurante fechado" no botão
+- [x] Bloquear botão "Finalizar pedido" na sacola quando loja fechada
+- [x] Bloquear botão "Enviar pedido" no checkout quando loja fechada
