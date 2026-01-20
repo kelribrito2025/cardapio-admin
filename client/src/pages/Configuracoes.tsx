@@ -525,9 +525,9 @@ export default function Configuracoes() {
                         </svg>
                       </button>
                       
-                      {/* Dropdown Menu */}
+                      {/* Dropdown Menu - abre para cima */}
                       {showSocialDropdown && (
-                        <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 min-w-[160px]">
+                        <div className="absolute left-0 bottom-full mb-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 min-w-[160px]">
                           {whatsapp && (
                             <a 
                               href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`}
