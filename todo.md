@@ -782,3 +782,8 @@
 - [x] Verificar dados do cupom SEG10 no banco de dados
 - [x] Analisar lógica de validação e identificar o problema (formato do input tRPC estava incorreto - faltava a chave "json")
 - [x] Corrigir o bug identificado (adicionada chave "json" no input e extração do resultado)
+
+
+## Ajuste Mobile - Ocultar Descrição no Catálogo
+
+- [x] Ocultar descrição dos itens na versão mobile da página /catalogo

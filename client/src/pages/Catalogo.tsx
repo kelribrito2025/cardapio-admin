@@ -159,7 +159,7 @@ function SortableProductItem({
             )}
           </div>
           {product.description && (
-            <p className="text-sm text-muted-foreground truncate mt-1">
+            <p className="hidden md:block text-sm text-muted-foreground truncate mt-1">
               {product.description}
             </p>
           )}
