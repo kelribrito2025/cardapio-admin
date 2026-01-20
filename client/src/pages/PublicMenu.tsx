@@ -2072,25 +2072,28 @@ export default function PublicMenu() {
                     <h3 className="text-2xl font-bold text-green-600 mb-4">
                       Pedido enviado com sucesso!
                     </h3>
-                    <p className="text-gray-600 mb-6">
+                    <p className="text-gray-600">
                       Seu pedido foi recebido e está sendo processado.
                     </p>
-                    <button
-                      onClick={() => {
-                        setCheckoutStep(0);
-                        setShowTrackingModal(true);
-                      }}
-                      className="w-full py-3.5 bg-primary text-white font-semibold rounded-xl transition-colors hover:bg-primary/90 flex items-center justify-center gap-2"
-                    >
-                      <Package className="h-5 w-5" />
-                      Acompanhar pedido
-                    </button>
                   </div>
                 )}
               </div>
 
               {/* Footer */}
-              {!orderSent && (
+              {orderSent ? (
+              <div className="flex-shrink-0 border-t px-6 py-4">
+                <button
+                  onClick={() => {
+                    setCheckoutStep(0);
+                    setShowTrackingModal(true);
+                  }}
+                  className="w-full py-3.5 bg-gray-100 text-gray-700 font-semibold rounded-xl transition-colors hover:bg-gray-200 flex items-center justify-center gap-2"
+                >
+                  <Package className="h-5 w-5" />
+                  Acompanhar pedido
+                </button>
+              </div>
+              ) : (
               <div className="flex-shrink-0 border-t px-6 py-4 flex gap-3">
                 <button
                   onClick={() => setCheckoutStep(4)}
