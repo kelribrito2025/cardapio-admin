@@ -575,14 +575,14 @@ export default function PublicMenu() {
             {establishment.publicNote && establishment.publicNoteCreatedAt && (
               new Date().getTime() - new Date(establishment.publicNoteCreatedAt).getTime() < 24 * 60 * 60 * 1000
             ) && (
-              <div className="absolute -top-16 left-1/2 -translate-x-1/2 z-20 animate-bounce-slow">
+              <div className="absolute -top-12 md:-top-14 left-0 z-20">
                 <div className="relative">
-                  {/* Balão */}
-                  <div className="bg-white rounded-2xl px-4 py-2 shadow-lg border border-gray-100 whitespace-nowrap max-w-[200px] md:max-w-xs">
-                    <p className="text-sm text-gray-800 text-center truncate">{establishment.publicNote}</p>
+                  {/* Balão estilo bolha */}
+                  <div className="bg-white rounded-[20px] px-3 py-1.5 shadow-md border border-gray-200 max-w-[140px] md:max-w-[160px]">
+                    <p className="text-xs text-gray-700 text-center leading-tight break-words">{establishment.publicNote}</p>
                   </div>
-                  {/* Seta do balão apontando para baixo */}
-                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-r border-b border-gray-100 transform rotate-45"></div>
+                  {/* Seta do balão no canto inferior esquerdo */}
+                  <div className="absolute -bottom-1.5 left-4 w-3 h-3 bg-white border-r border-b border-gray-200 transform rotate-45"></div>
                 </div>
               </div>
             )}

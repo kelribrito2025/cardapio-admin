@@ -996,3 +996,12 @@
 - [x] Exibir balão de nota no cardápio público acima da foto de perfil
 - [x] Implementar lógica de expiração automática de 24h
 
+
+
+## Ajustes no Balão de Nota
+
+- [x] Posicionar balão corretamente acima da foto de perfil (canto superior esquerdo)
+- [x] Adicionar quebra de linha para textos longos
+- [x] Reduzir tamanho do balão e texto em 20%
+- [x] Mudar modelo do balão para estilo com seta no canto inferior esquerdo
+
