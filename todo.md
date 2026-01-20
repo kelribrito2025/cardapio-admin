@@ -908,3 +908,8 @@
 
 - [x] Alterar título de "Aceito" para "Pedido aceito"
 - [x] Alterar descrição de "O restaurante aceitou seu pedido" para "Iniciamos o preparo do seu pedido."
+
+
+## Ícone de Moto no Status "Saiu para entrega"
+
+- [x] Trocar ícone do carro para ícone de moto no status "Saiu para entrega"

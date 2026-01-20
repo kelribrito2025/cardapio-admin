@@ -1,7 +1,7 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, Bike } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PublicMenu() {
@@ -2493,7 +2493,7 @@ export default function PublicMenu() {
                     orderStatus === 'delivered' ? 'bg-green-500 text-white' :
                     'bg-gray-200 text-gray-400'
                   }`}>
-                    <Truck className="h-5 w-5" />
+                    <Bike className="h-5 w-5" />
                   </div>
                   <div className="pt-2">
                     <h4 className={`font-semibold ${
