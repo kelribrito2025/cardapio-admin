@@ -1006,7 +1006,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     throw new Error("Database not available");
   }
   
-  // Generate order number with format #P00000 (5 digits)
+  // Generate order number with format #P1, #P2, etc. (sem zeros à esquerda)
   // Get the next order number from the database
   const lastOrderResult = await db.select({ orderNumber: orders.orderNumber })
     .from(orders)
@@ -1017,14 +1017,15 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
   let nextNumber = 1;
   if (lastOrderResult.length > 0 && lastOrderResult[0].orderNumber) {
     const lastNumber = lastOrderResult[0].orderNumber;
-    // Extract number from format #P00000
+    // Extract number from format #P1, #P2, etc.
     const match = lastNumber.match(/#P(\d+)/);
     if (match) {
       nextNumber = parseInt(match[1], 10) + 1;
     }
   }
   
-  const orderNumber = `#P${nextNumber.toString().padStart(5, '0')}`;
+  // Formato simplificado: #P1, #P2, #P3... (sem zeros à esquerda)
+  const orderNumber = `#P${nextNumber}`;
   console.log('[DB:createPublicOrder] Order number gerado:', orderNumber);
   
   try {

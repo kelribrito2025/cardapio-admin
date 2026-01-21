@@ -1320,3 +1320,16 @@
 - [x] Atualizar chamada de SMS no db.ts para passar o deliveryType do pedido
   - order.deliveryType passado como terceiro parâmetro
   - Log atualizado para mostrar tipo de entrega
+
+
+## Simplificar Formato do Número do Pedido
+
+- [x] Identificar onde o número do pedido é gerado (db.ts ou routers.ts)
+  - Localizado em server/db.ts, função createPublicOrder, linha 1027
+- [x] Mudar formato de #P00024 para #P24 (sem zeros à esquerda)
+  - Removido .padStart(5, '0') da geração do número
+  - Agora usa formato simples: `#P${nextNumber}`
+- [x] Primeiro pedido de novo restaurante deve ser #P1
+  - Lógica mantida: nextNumber começa em 1 se não houver pedidos anteriores
+- [x] Testar criação de novos pedidos com formato simplificado
+  - 119 testes passando
