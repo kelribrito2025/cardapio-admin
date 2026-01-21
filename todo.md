@@ -1574,3 +1574,7 @@
 ## Bug: Scroll no Modal Meus Pedidos
 
 - [x] Corrigir scroll do modal Meus Pedidos que está rolando a página de fundo em vez do conteúdo do modal
+
+## Modal de Produto - Estilo Bottom Sheet
+
+- [x] Alterar modal de detalhes do produto para estilo bottom sheet no mobile

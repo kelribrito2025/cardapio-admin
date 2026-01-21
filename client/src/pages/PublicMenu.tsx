@@ -1527,15 +1527,14 @@ export default function PublicMenu() {
 
       {/* Modal Adicionar Item ao Carrinho */}
       {selectedProduct && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+        <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setSelectedProduct(null)}
           />
           
-{/* Modal Content */}
-           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[72vh] sm:max-h-[70vh] md:max-h-[72vh] overflow-hidden flex flex-col">
+          {/* Modal Content - Bottom Sheet no mobile */}
+          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Imagem do Produto */}
             {selectedProduct.images?.[0] && (
               <div className="relative w-full h-32 sm:h-40 md:h-48 flex-shrink-0">
