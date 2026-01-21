@@ -1590,3 +1590,8 @@
 ## Ajuste Adicional da Altura da Foto
 
 - [x] Aumentar altura da foto do produto em 50% (do valor original)
+
+## Visualização em Tela Cheia da Foto do Produto
+
+- [x] Adicionar ícone de olho com transparência na foto do produto
+- [x] Implementar modal de visualização em tela cheia ao clicar na foto

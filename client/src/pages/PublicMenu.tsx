@@ -2,7 +2,7 @@ import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, Bike, Copy, Loader2 } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, Bike, Copy, Loader2, Eye } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -96,6 +96,7 @@ export default function PublicMenu() {
   const [ratingHover, setRatingHover] = useState(0);
   const [ratingComment, setRatingComment] = useState("");
   const [showReviewsModal, setShowReviewsModal] = useState(false);
+  const [showFullscreenImage, setShowFullscreenImage] = useState(false);
   const [ratingSuccess, setRatingSuccess] = useState(false);
   const [canReviewChecked, setCanReviewChecked] = useState(false);
   const [canReview, setCanReview] = useState(true);
@@ -591,7 +592,7 @@ export default function PublicMenu() {
 
   // Bloquear scroll do body quando modais estão abertos
   useEffect(() => {
-    const isAnyModalOpen = showOrdersModal || showTrackingModal || showMobileBag || checkoutStep > 0 || showInfoModal || showCouponModal || showReviewsModal || showRatingModal || selectedProduct !== null;
+    const isAnyModalOpen = showOrdersModal || showTrackingModal || showMobileBag || checkoutStep > 0 || showInfoModal || showCouponModal || showReviewsModal || showRatingModal || selectedProduct !== null || showFullscreenImage;
     
     if (isAnyModalOpen) {
       document.body.style.overflow = 'hidden';
@@ -602,7 +603,7 @@ export default function PublicMenu() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [showOrdersModal, showTrackingModal, showMobileBag, checkoutStep, showInfoModal, showCouponModal, showReviewsModal, showRatingModal, selectedProduct]);
+  }, [showOrdersModal, showTrackingModal, showMobileBag, checkoutStep, showInfoModal, showCouponModal, showReviewsModal, showRatingModal, selectedProduct, showFullscreenImage]);
 
   // Scroll the category nav to show the active category button
   const scrollCategoryNavToActive = useCallback((categoryId: number) => {
@@ -1541,11 +1542,21 @@ export default function PublicMenu() {
                 <img
                   src={selectedProduct.images[0]}
                   alt={selectedProduct.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover cursor-pointer"
+                  onClick={() => setShowFullscreenImage(true)}
                 />
+                {/* Ícone de olho para indicar que pode clicar */}
+                <div 
+                  className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
+                  onClick={() => setShowFullscreenImage(true)}
+                >
+                  <div className="bg-white/80 rounded-full p-3 shadow-lg">
+                    <Eye className="h-6 w-6 text-gray-700" />
+                  </div>
+                </div>
                 <button 
                   onClick={() => setSelectedProduct(null)}
-                  className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors"
+                  className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
                 >
                   <X className="h-5 w-5 text-gray-700" />
                 </button>
@@ -3423,6 +3434,27 @@ export default function PublicMenu() {
       )}
 
       {/* Modal de Avaliações do Restaurante */}
+      {/* Modal de Imagem em Tela Cheia */}
+      {showFullscreenImage && selectedProduct?.images?.[0] && (
+        <div 
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95"
+          onClick={() => setShowFullscreenImage(false)}
+        >
+          <button 
+            onClick={() => setShowFullscreenImage(false)}
+            className="absolute top-4 right-4 p-3 bg-white/20 hover:bg-white/30 rounded-full transition-colors z-10"
+          >
+            <X className="h-6 w-6 text-white" />
+          </button>
+          <img
+            src={selectedProduct.images[0]}
+            alt={selectedProduct.name}
+            className="max-w-full max-h-full object-contain p-4"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+
       {showReviewsModal && establishment && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center">
           {/* Backdrop */}
