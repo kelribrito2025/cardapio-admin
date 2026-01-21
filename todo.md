@@ -1253,3 +1253,16 @@
   - DISPAROPRO_PARCEIRO_ID: ID do parceiro
 - [x] Testes unitários criados (sms.test.ts, sms-credentials.test.ts)
   - 119 testes passando
+
+
+## Bug Fix - Modal de Pedido Enviado Não Aparece
+
+- [x] Investigar por que o modal de "Pedido enviado" não aparece após clicar em enviar
+  - Problema: setCheckoutStep(0) estava sendo chamado no onSuccess
+  - Isso fechava o modal antes do usuário ver a mensagem de sucesso
+- [x] Verificar se orderSent está sendo setado corretamente
+  - orderSent estava sendo setado para true corretamente
+- [x] Corrigir o fluxo de exibição do modal
+  - Removido setCheckoutStep(0) do onSuccess
+  - Agora o modal permanece aberto mostrando "Pedido enviado com sucesso!"
+  - checkoutStep só é resetado quando usuário clica em "Acompanhar pedido"

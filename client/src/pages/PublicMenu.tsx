@@ -210,12 +210,13 @@ export default function PublicMenu() {
       setOrderStatus("sent");
       
       // Limpar sacola e resetar estados após pedido enviado com sucesso
+      // Nota: NÃO resetar checkoutStep aqui para manter o modal de sucesso visível
+      // O checkoutStep será resetado quando o usuário clicar em "Acompanhar pedido"
       setCart([]);
       setOrderObservation("");
       setAppliedCoupon(null);
       setChangeAmount("");
       setChangeAmountError(null);
-      setCheckoutStep(0);
     },
     onError: (error: any) => {
       console.error('Erro ao enviar pedido:', error);
