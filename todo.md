@@ -1675,3 +1675,9 @@
 - [x] Alterar ícone do status 'out_for_delivery' para Bike com animação bounce e ping
 - [x] Usar cor violet-600 para o ícone principal e violet-400 para o ping
 - [x] Alterar cor do texto do status para violet-600 quando estiver em entrega
+
+## Verificação da Atualização em Tempo Real do Modal Acompanhar Pedido
+- [x] Verificar implementação atual dos useEffects para atualização de status
+- [x] Corrigir lógica de sincronização do orderStatus quando SSE atualiza userOrders
+- [x] Adicionar ref para showTrackingModal para evitar problemas de closure
+- [x] Usar callback no setOrderStatus para evitar stale closure

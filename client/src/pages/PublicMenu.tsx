@@ -185,7 +185,7 @@ export default function PublicMenu() {
       
       // Iniciar tracking SSE APENAS após o pedido ser criado com sucesso
       orderSSE.trackOrder(result.orderNumber, (update) => {
-        console.log('[PublicMenu] Atualização SSE recebida:', update);
+        console.log('[PublicMenu] Atualização SSE recebida (novo pedido):', update);
         const newStatus = statusMap[update.status] || 'sent';
         
         // Atualizar o pedido no estado local
@@ -200,8 +200,11 @@ export default function PublicMenu() {
           return newOrders;
         });
         
-        // Se o modal de tracking está aberto para este pedido, atualizar
-        if (currentOrderNumberRef.current === update.orderNumber) {
+        // Se o modal de tracking está aberto para este pedido, atualizar diretamente
+        // Usa refs para evitar problemas de closure
+        console.log('[PublicMenu] Modal aberto:', showTrackingModalRef.current, 'Pedido atual:', currentOrderNumberRef.current, 'Pedido atualizado:', update.orderNumber);
+        if (showTrackingModalRef.current && currentOrderNumberRef.current === update.orderNumber) {
+          console.log('[PublicMenu] Atualizando orderStatus no modal para:', newStatus);
           setOrderStatus(newStatus);
           if (update.cancellationReason) {
             setCancellationReasonDisplay(update.cancellationReason);
@@ -289,19 +292,26 @@ export default function PublicMenu() {
 
   // Sincronizar orderStatus quando userOrders muda e o modal está aberto
   // Isso garante que atualizações SSE reflitam no modal imediatamente
+  // Usa setOrderStatus com callback para evitar problemas de closure com orderStatus
   useEffect(() => {
     if (showTrackingModal && currentOrderNumber) {
       const selectedOrder = userOrders.find(o => o.id === currentOrderNumber);
-      if (selectedOrder && selectedOrder.status !== orderStatus) {
-        console.log('[PublicMenu] Sincronizando orderStatus com userOrders:', selectedOrder.status);
-        setOrderStatus(selectedOrder.status);
-        if (selectedOrder.status === 'cancelled') {
-          // Buscar motivo de cancelamento do servidor se necessário
-          refetchOrderStatus();
-        }
+      if (selectedOrder) {
+        // Usar callback para comparar com o valor atual e evitar problemas de stale closure
+        setOrderStatus(prevStatus => {
+          if (prevStatus !== selectedOrder.status) {
+            console.log('[PublicMenu] Sincronizando orderStatus com userOrders:', selectedOrder.status, '(anterior:', prevStatus, ')');
+            if (selectedOrder.status === 'cancelled') {
+              // Buscar motivo de cancelamento do servidor se necessário
+              refetchOrderStatus();
+            }
+            return selectedOrder.status;
+          }
+          return prevStatus;
+        });
       }
     }
-  }, [userOrders, showTrackingModal, currentOrderNumber]);
+  }, [userOrders, showTrackingModal, currentOrderNumber, refetchOrderStatus]);
 
   // Atualizar o status do pedido quando os dados mudarem
   useEffect(() => {
@@ -506,13 +516,18 @@ export default function PublicMenu() {
     };
   }, [showOrdersModal, data?.establishment?.id]);
 
-  // Ref para o currentOrderNumber (usado pelo callback SSE)
+  // Refs para o currentOrderNumber e showTrackingModal (usados pelo callback SSE)
   const currentOrderNumberRef = useRef<string | null>(null);
+  const showTrackingModalRef = useRef<boolean>(false);
   
-  // Atualizar ref do currentOrderNumber
+  // Atualizar refs quando os estados mudarem
   useEffect(() => {
     currentOrderNumberRef.current = currentOrderNumber;
   }, [currentOrderNumber]);
+  
+  useEffect(() => {
+    showTrackingModalRef.current = showTrackingModal;
+  }, [showTrackingModal]);
   
   // Inicializar SSE singleton para pedidos ativos existentes (ao carregar a página)
   // Isso garante que pedidos feitos anteriormente continuem sendo monitorados
@@ -557,8 +572,11 @@ export default function PublicMenu() {
         return newOrders;
       });
       
-      // Se o modal de tracking está aberto para este pedido, atualizar
-      if (currentOrderNumberRef.current === update.orderNumber) {
+      // Se o modal de tracking está aberto para este pedido, atualizar diretamente
+      // Usa refs para evitar problemas de closure
+      console.log('[PublicMenu] Modal aberto:', showTrackingModalRef.current, 'Pedido atual:', currentOrderNumberRef.current, 'Pedido atualizado:', update.orderNumber);
+      if (showTrackingModalRef.current && currentOrderNumberRef.current === update.orderNumber) {
+        console.log('[PublicMenu] Atualizando orderStatus no modal para:', newStatus);
         setOrderStatus(newStatus);
         if (update.cancellationReason) {
           setCancellationReasonDisplay(update.cancellationReason);
