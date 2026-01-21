@@ -1086,3 +1086,8 @@
 
 - [x] Eliminar todas as chamadas duplicadas de canReview (removido userOrders das dependências)
 - [x] Garantir que canReview seja chamado apenas UMA vez por pedido (usando ref em vez de estado)
+
+
+## Bug Fix - Botão de avaliar aparecendo quando já avaliou
+
+- [x] Corrigir verificação de canReview para esconder botão quando já avaliou nos últimos 30 dias (adicionado orderStatus como dependência)

@@ -291,19 +291,18 @@ export default function PublicMenu() {
         return updatedOrders;
       });
       
-      // Quando pedido mudar para entregue, forçar nova verificação de canReview
-      if (mappedStatus === 'delivered' && canReviewCheckingRef.current !== selectedOrderId + '_delivered') {
-        canReviewCheckingRef.current = null; // Resetar para forçar nova verificação
-      }
+      // Não precisa mais resetar canReviewCheckingRef aqui
+      // O useEffect de canReview agora usa orderStatus como dependência
     }
   }, [currentOrderData?.status, selectedOrderId]);
 
   // Ref para controlar se já verificamos canReview para este pedido
   const canReviewCheckingRef = useRef<string | null>(null);
   
-  // Verificar canReview apenas UMA VEZ quando o pedido mudar
-  // Usa uma chave única (orderId + establishmentId) para evitar chamadas duplicadas
-  // IMPORTANTE: Usa userOrdersRef.current para evitar re-execuções quando userOrders muda
+  // Verificar canReview quando:
+  // 1. O pedido selecionado mudar
+  // 2. O status do pedido mudar para 'delivered'
+  // Usa uma chave única (orderId + establishmentId + status) para evitar chamadas duplicadas
   useEffect(() => {
     // Se não tem pedido selecionado, resetar
     if (!selectedOrderId) {
@@ -318,23 +317,24 @@ export default function PublicMenu() {
       return;
     }
     
-    // Criar chave única para este pedido + estabelecimento
-    const checkKey = `${selectedOrderId}_${data.establishment.id}`;
-    
-    // Se já verificou este pedido, não fazer nada
-    if (canReviewCheckingRef.current === checkKey) {
-      return;
-    }
-    
-    // Buscar o pedido selecionado usando a ref (evita re-renders)
-    const selectedOrder = userOrdersRef.current.find(o => o.id === selectedOrderId);
-    
-    // Se o pedido não está entregue, não precisa verificar
-    if (selectedOrder?.status !== 'delivered') {
+    // Se o status atual não é 'delivered', não precisa verificar
+    // Usa orderStatus do estado (mais confiável que a ref)
+    if (orderStatus !== 'delivered') {
       setCanReviewChecked(false);
       setCanReview(true);
       return;
     }
+    
+    // Criar chave única para este pedido + estabelecimento + status delivered
+    const checkKey = `${selectedOrderId}_${data.establishment.id}_delivered`;
+    
+    // Se já verificou este pedido com status delivered, não fazer nada
+    if (canReviewCheckingRef.current === checkKey) {
+      return;
+    }
+    
+    // Buscar o pedido selecionado usando a ref
+    const selectedOrder = userOrdersRef.current.find(o => o.id === selectedOrderId);
     
     // Se não tem telefone do cliente, não pode verificar
     if (!selectedOrder?.customerPhone) {
@@ -346,7 +346,7 @@ export default function PublicMenu() {
     // Marcar que estamos verificando este pedido
     canReviewCheckingRef.current = checkKey;
     setCanReviewChecked(false);
-    setCanReview(true);
+    setCanReview(true); // Mostrar botão enquanto verifica (otimista)
     
     // Verificar no backend se pode avaliar
     const url = `/api/trpc/publicMenu.canReview?input=${encodeURIComponent(JSON.stringify({
@@ -370,7 +370,7 @@ export default function PublicMenu() {
           setCanReview(true); // Em caso de erro, permitir avaliar
         }
       });
-  }, [selectedOrderId, data?.establishment?.id]); // Removido userOrders das dependências
+  }, [selectedOrderId, data?.establishment?.id, orderStatus]); // Adicionado orderStatus para verificar quando mudar para delivered
 
   // Set first category as active when data loads
   useEffect(() => {
