@@ -1485,3 +1485,11 @@
 ## Bug - Placeholder do Campo de Busca Mobile
 
 - [x] Corrigir placeholder do campo de busca no mobile para mostrar "Buscar no cardápio" completo
+
+
+## Bug - Largura do Campo de Busca Mobile
+
+- [x] Aumentar largura do campo de busca no mobile para mostrar placeholder "Buscar no cardápio" completo
+  - Adicionado min-w-[180px] para garantir largura mínima
+  - Removido truncate do placeholder
+  - Spacer escondido no mobile para dar mais espaço ao campo

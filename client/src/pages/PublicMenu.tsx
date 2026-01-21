@@ -734,7 +734,7 @@ export default function PublicMenu() {
             )}
 
             {/* Search Bar */}
-            <div className="flex-1 max-w-xl min-w-0">
+            <div className="flex-1 min-w-[180px] max-w-xl">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
@@ -742,13 +742,13 @@ export default function PublicMenu() {
                   placeholder="Buscar no cardápio"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-gray-100 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white transition-colors placeholder:text-gray-400 placeholder:truncate"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-100 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white transition-colors placeholder:text-gray-400"
                 />
               </div>
             </div>
 
-            {/* Spacer to push navigation to the right edge */}
-            <div className="flex-1" />
+            {/* Spacer to push navigation to the right edge - hidden on mobile */}
+            <div className="hidden md:flex flex-1" />
 
             {/* Navigation Menu - aligned to right edge of cover image */}
             <nav className="hidden md:flex items-center gap-6 pr-4">
