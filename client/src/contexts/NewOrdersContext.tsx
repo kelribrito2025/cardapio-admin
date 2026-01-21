@@ -29,9 +29,9 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
 
   // Query para buscar pedidos novos (status = 'new')
   const { data: ordersData, refetch: refetchOrders } = trpc.orders.list.useQuery(
-    { establishmentId: establishment?.id || 0 },
+    { establishmentId: establishment?.id ?? 0 },
     { 
-      enabled: !!establishment?.id,
+      enabled: !!establishment?.id && establishment.id > 0,
       refetchInterval: false, // Não usar polling, vamos usar SSE
     }
   );

@@ -1043,3 +1043,8 @@
 - [x] Refatorar conexão SSE no frontend para usar IDs de pedidos do localStorage
 - [x] Garantir atualização automática do modal Meus Pedidos sem clique
 - [x] Testar fluxo completo de atualização em tempo real
+
+
+## Bug Fix - establishmentId null na página /pedidos
+
+- [x] Corrigir erro onde establishmentId é passado como null na query de pedidos
