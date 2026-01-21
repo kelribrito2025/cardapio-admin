@@ -2835,11 +2835,11 @@ export default function PublicMenu() {
               ) : (
                 <div className="space-y-4">
                   {/* Pedidos em andamento */}
-                  {userOrders.filter(o => o.status !== 'delivered').length > 0 && (
+                  {userOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length > 0 && (
                     <div>
                       <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Em andamento</h3>
                       <div className="space-y-3">
-                        {userOrders.filter(o => o.status !== 'delivered').map(order => (
+                        {userOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').map(order => (
                           <div 
                             key={order.id}
                             className="bg-white border-l-4 border-l-green-500 border border-gray-200 rounded-lg overflow-hidden"
@@ -2924,15 +2924,15 @@ export default function PublicMenu() {
                     </div>
                   )}
 
-                  {/* Histórico de pedidos */}
-                  {userOrders.filter(o => o.status === 'delivered').length > 0 && (
+                  {/* Histórico de pedidos (entregues e cancelados) */}
+                  {userOrders.filter(o => o.status === 'delivered' || o.status === 'cancelled').length > 0 && (
                     <div>
                       <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Histórico</h3>
                       <div className="space-y-3">
-                        {userOrders.filter(o => o.status === 'delivered').map(order => (
+                        {userOrders.filter(o => o.status === 'delivered' || o.status === 'cancelled').map(order => (
                           <div 
                             key={order.id}
-                            className="bg-white border-l-4 border-l-green-500 border border-gray-200 rounded-lg overflow-hidden"
+                            className={`bg-white border-l-4 ${order.status === 'cancelled' ? 'border-l-red-500' : 'border-l-green-500'} border border-gray-200 rounded-lg overflow-hidden`}
                           >
                             {/* Header compacto */}
                             <div 
@@ -2956,7 +2956,9 @@ export default function PublicMenu() {
                                 </div>
                                 <div>
                                   <span className="text-[10px] text-gray-400 uppercase tracking-wide">Status</span>
-                                  <p className="font-medium text-green-600">Entregue</p>
+                                  <p className={`font-medium ${order.status === 'cancelled' ? 'text-red-600' : 'text-green-600'}`}>
+                                    {order.status === 'cancelled' ? 'Cancelado' : 'Entregue'}
+                                  </p>
                                 </div>
                                 <div>
                                   <span className="text-[10px] text-gray-400 uppercase tracking-wide">Data/Hora</span>

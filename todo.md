@@ -1459,3 +1459,13 @@
   - countRef.current mantém valor atualizado entre renders
 - [x] Atualmente só atualiza após F5 (refresh da página)
   - Corrigido: agora atualiza em tempo real via SSE
+
+
+## Bug - Status Cancelado Aparece como Entregue
+
+- [x] Corrigir pedido cancelado que aparece como "entregue" no modal Meus Pedidos
+  - Filtro de "Em andamento" agora exclui pedidos cancelados
+  - Pedidos cancelados vão para o Histórico junto com entregues
+- [x] Status deve mostrar "Cancelado" corretamente sem precisar clicar em "Acompanhar"
+  - Texto "Cancelado" em vermelho
+  - Borda lateral vermelha para pedidos cancelados
