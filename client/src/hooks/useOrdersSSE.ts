@@ -1,4 +1,9 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
+
+// ============================================
+// SSE MANAGER - SINGLETON COM LÍDER/SEGUIDOR
+// Garante apenas 1 conexão SSE por navegador
+// ============================================
 
 type SSEStatus = "connecting" | "connected" | "disconnected" | "error";
 
@@ -37,6 +42,312 @@ interface SSEOrderUpdate {
   updatedAt: Date | string;
 }
 
+// Gerar ID único para esta aba
+const TAB_ID = `tab_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+// Estado global do SSE Manager
+let eventSource: EventSource | null = null;
+let isLeader = false;
+let bc: BroadcastChannel | null = null;
+let currentEstablishmentId: number | null = null;
+let reconnectTimeout: NodeJS.Timeout | null = null;
+let reconnectAttempts = 0;
+let leaderCheckTimeout: NodeJS.Timeout | null = null;
+let status: SSEStatus = "disconnected";
+
+const MAX_RECONNECT_ATTEMPTS = 5;
+// Backoff exponencial: 1s, 2s, 5s, 10s, 20s
+const BACKOFF_DELAYS = [1000, 2000, 5000, 10000, 20000];
+
+// Callbacks registrados pelos componentes
+const callbacks: Set<{
+  onNewOrder?: (order: SSEOrder) => void;
+  onOrderUpdate?: (update: SSEOrderUpdate) => void;
+  onConnected?: () => void;
+  onDisconnected?: () => void;
+  onError?: (error: Event) => void;
+  setStatus: (status: SSEStatus) => void;
+}> = new Set();
+
+function notifyAll(event: "newOrder" | "orderUpdate" | "connected" | "disconnected" | "error" | "status", data?: unknown) {
+  callbacks.forEach((cb) => {
+    switch (event) {
+      case "newOrder":
+        cb.onNewOrder?.(data as SSEOrder);
+        break;
+      case "orderUpdate":
+        cb.onOrderUpdate?.(data as SSEOrderUpdate);
+        break;
+      case "connected":
+        cb.onConnected?.();
+        cb.setStatus("connected");
+        break;
+      case "disconnected":
+        cb.onDisconnected?.();
+        cb.setStatus("disconnected");
+        break;
+      case "error":
+        cb.onError?.(data as Event);
+        cb.setStatus("error");
+        break;
+      case "status":
+        cb.setStatus(data as SSEStatus);
+        break;
+    }
+  });
+}
+
+function initBroadcastChannel(establishmentId: number) {
+  if (bc) return; // Já inicializado
+
+  console.log(`[SSE-Tab] Aba aberta: ${TAB_ID}`);
+  
+  bc = new BroadcastChannel("mindi-orders-channel");
+  currentEstablishmentId = establishmentId;
+
+  bc.onmessage = (msg) => {
+    const data = msg.data;
+    console.log("[SSE-BC] Recebido broadcast:", data.type);
+
+    switch (data.type) {
+      case "who-is-leader":
+        // Outra aba perguntando quem é líder
+        if (isLeader) {
+          bc?.postMessage({ type: "leader-exists", tabId: TAB_ID });
+        }
+        break;
+
+      case "leader-exists":
+        // Já existe um líder, não precisamos ser
+        if (data.tabId !== TAB_ID) {
+          console.log(`[SSE-Tab] Líder atual: ${data.tabId} (não sou eu)`);
+          isLeader = false;
+          // Cancelar qualquer tentativa de se tornar líder
+          if (leaderCheckTimeout) {
+            clearTimeout(leaderCheckTimeout);
+            leaderCheckTimeout = null;
+          }
+          // Fechar nossa conexão SSE se tivermos uma
+          if (eventSource) {
+            console.log("[SSE-Tab] Fechando conexão SSE pois outro é líder");
+            eventSource.close();
+            eventSource = null;
+          }
+        }
+        break;
+
+      case "order-update":
+        // Evento de atualização de pedido do líder
+        if (!isLeader && data.payload) {
+          console.log("[SSE-Orders] Evento recebido via broadcast:", data.payload.id || data.payload.orderNumber, "status:", data.payload.status);
+          if (data.payload.orderNumber) {
+            notifyAll("newOrder", data.payload);
+          } else {
+            notifyAll("orderUpdate", data.payload);
+          }
+        }
+        break;
+
+      case "status-update":
+        // Atualização de status do líder
+        if (!isLeader) {
+          status = data.status;
+          notifyAll("status", data.status);
+          if (data.status === "connected") {
+            notifyAll("connected");
+          } else if (data.status === "disconnected") {
+            notifyAll("disconnected");
+          }
+        }
+        break;
+
+      case "leader-closed":
+        // Líder fechou, precisamos eleger novo
+        if (!isLeader) {
+          console.log("[SSE-Tab] Líder fechou, tentando assumir...");
+          tryBecomeLeader(establishmentId);
+        }
+        break;
+    }
+  };
+
+  // Perguntar se existe líder
+  bc.postMessage({ type: "who-is-leader" });
+
+  // Aguardar 1s para ver se alguém responde
+  leaderCheckTimeout = setTimeout(() => {
+    if (!isLeader && !eventSource) {
+      console.log("[SSE-Tab] Nenhum líder respondeu, assumindo liderança...");
+      becomeLeader(establishmentId);
+    }
+  }, 1000);
+}
+
+function tryBecomeLeader(establishmentId: number) {
+  // Aguardar um tempo aleatório para evitar race condition
+  const delay = Math.random() * 500 + 500; // 500-1000ms
+  
+  leaderCheckTimeout = setTimeout(() => {
+    if (!isLeader && !eventSource) {
+      becomeLeader(establishmentId);
+    }
+  }, delay);
+}
+
+function becomeLeader(establishmentId: number) {
+  // Verificar se já existe conexão SSE (previne múltiplas conexões)
+  if (eventSource) {
+    console.log("[SSE-Leader] Conexão já existe, não criando outra");
+    return;
+  }
+
+  isLeader = true;
+  console.log(`[SSE-Tab] Líder atual: ${TAB_ID} (sou eu)`);
+  
+  // Anunciar que somos o líder
+  bc?.postMessage({ type: "leader-exists", tabId: TAB_ID });
+
+  console.log("[SSE-Leader] Criando conexão SSE...");
+  
+  status = "connecting";
+  notifyAll("status", "connecting");
+  bc?.postMessage({ type: "status-update", status: "connecting" });
+
+  eventSource = new EventSource("/api/orders/stream", {
+    withCredentials: true,
+  });
+
+  eventSource.onopen = () => {
+    console.log("[SSE-Leader] Conexão estabelecida.");
+    status = "connected";
+    reconnectAttempts = 0;
+    notifyAll("connected");
+    bc?.postMessage({ type: "status-update", status: "connected" });
+  };
+
+  eventSource.onerror = (event) => {
+    const readyState = eventSource?.readyState;
+    console.warn("[SSE-Leader] Erro na conexão – readyState:", readyState);
+
+    if (readyState === EventSource.CLOSED) {
+      status = "error";
+      notifyAll("error", event);
+      bc?.postMessage({ type: "status-update", status: "error" });
+
+      eventSource?.close();
+      eventSource = null;
+
+      // Verificar se é erro de rate limit (429)
+      // O servidor retorna "Rate exceeded." como texto
+      console.warn("[SSE-Leader] Rate limit detectado (429). Aguardando backoff...");
+
+      // Backoff exponencial
+      if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS && isLeader) {
+        const delay = BACKOFF_DELAYS[Math.min(reconnectAttempts, BACKOFF_DELAYS.length - 1)];
+        console.log(`[SSE-Leader] Reconectando em ${delay}ms (tentativa ${reconnectAttempts + 1}/${MAX_RECONNECT_ATTEMPTS})`);
+
+        if (reconnectTimeout) {
+          clearTimeout(reconnectTimeout);
+        }
+
+        reconnectTimeout = setTimeout(() => {
+          reconnectAttempts++;
+          if (isLeader && !eventSource) {
+            becomeLeader(establishmentId);
+          }
+        }, delay);
+      } else {
+        console.log("[SSE-Leader] Máximo de tentativas atingido ou não sou mais líder");
+        status = "disconnected";
+        notifyAll("disconnected");
+        bc?.postMessage({ type: "status-update", status: "disconnected" });
+      }
+    }
+  };
+
+  // Evento de conexão estabelecida
+  eventSource.addEventListener("connected", (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      console.log("[SSE-Leader] Conectado ao estabelecimento:", data.establishmentId);
+    } catch (e) {
+      console.error("[SSE-Error] Erro ao parsear evento connected:", e);
+    }
+  });
+
+  // Evento de novo pedido
+  eventSource.addEventListener("new_order", (event) => {
+    try {
+      const order = JSON.parse(event.data) as SSEOrder;
+      console.log("[SSE-Orders] Evento recebido:", order.orderNumber, "status:", order.status);
+      notifyAll("newOrder", order);
+      // Broadcast para outras abas
+      bc?.postMessage({ type: "order-update", payload: order });
+    } catch (e) {
+      console.error("[SSE-Error] Erro ao parsear novo pedido:", e);
+    }
+  });
+
+  // Evento de atualização de pedido
+  eventSource.addEventListener("order_update", (event) => {
+    try {
+      const update = JSON.parse(event.data) as SSEOrderUpdate;
+      console.log("[SSE-Orders] Evento recebido:", update.id, "status:", update.status);
+      notifyAll("orderUpdate", update);
+      // Broadcast para outras abas
+      bc?.postMessage({ type: "order-update", payload: update });
+    } catch (e) {
+      console.error("[SSE-Error] Erro ao parsear atualização:", e);
+    }
+  });
+
+  // Heartbeat
+  eventSource.addEventListener("heartbeat", () => {
+    // Silencioso, apenas mantém conexão viva
+  });
+}
+
+function cleanup() {
+  console.log(`[SSE-Tab] Cleanup da aba ${TAB_ID}`);
+
+  // Se somos o líder, avisar outras abas
+  if (isLeader) {
+    bc?.postMessage({ type: "leader-closed" });
+  }
+
+  // Limpar timeouts
+  if (reconnectTimeout) {
+    clearTimeout(reconnectTimeout);
+    reconnectTimeout = null;
+  }
+
+  if (leaderCheckTimeout) {
+    clearTimeout(leaderCheckTimeout);
+    leaderCheckTimeout = null;
+  }
+
+  // Fechar conexão SSE se formos o líder
+  if (eventSource) {
+    eventSource.close();
+    eventSource = null;
+  }
+
+  // Fechar canal de broadcast
+  if (bc) {
+    bc.close();
+    bc = null;
+  }
+
+  isLeader = false;
+  status = "disconnected";
+  currentEstablishmentId = null;
+  reconnectAttempts = 0;
+}
+
+// ============================================
+// HOOK - Interface para componentes React
+// ============================================
+
 interface UseOrdersSSEOptions {
   establishmentId?: number;
   onNewOrder?: (order: SSEOrder) => void;
@@ -47,441 +358,6 @@ interface UseOrdersSSEOptions {
   enabled?: boolean;
 }
 
-// ============================================
-// SISTEMA DE LÍDER/SEGUIDOR COM BROADCASTCHANNEL
-// Garante apenas 1 conexão SSE por navegador (todas as abas)
-// ============================================
-
-const CHANNEL_NAME = "orders-sse-channel";
-const LEADER_HEARTBEAT_INTERVAL = 2000; // 2 segundos
-const LEADER_TIMEOUT = 5000; // 5 segundos sem heartbeat = líder morto
-
-interface BroadcastMessage {
-  type: "leader_heartbeat" | "leader_elected" | "sse_event" | "request_leader" | "status_update";
-  tabId: string;
-  establishmentId?: number;
-  data?: unknown;
-  status?: SSEStatus;
-}
-
-// Gerar ID único para esta aba
-const TAB_ID = `tab_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-interface GlobalSSEState {
-  channel: BroadcastChannel | null;
-  eventSource: EventSource | null;
-  establishmentId: number | null;
-  status: SSEStatus;
-  isLeader: boolean;
-  leaderId: string | null;
-  lastLeaderHeartbeat: number;
-  leaderHeartbeatInterval: NodeJS.Timeout | null;
-  leaderCheckInterval: NodeJS.Timeout | null;
-  reconnectTimeout: NodeJS.Timeout | null;
-  reconnectAttempts: number;
-  listeners: Set<{
-    onNewOrder?: (order: SSEOrder) => void;
-    onOrderUpdate?: (update: SSEOrderUpdate) => void;
-    onConnected?: () => void;
-    onDisconnected?: () => void;
-    onError?: (error: Event) => void;
-    setStatus: (status: SSEStatus) => void;
-    setLastEvent: (date: Date) => void;
-  }>;
-}
-
-const globalSSE: GlobalSSEState = {
-  channel: null,
-  eventSource: null,
-  establishmentId: null,
-  status: "disconnected",
-  isLeader: false,
-  leaderId: null,
-  lastLeaderHeartbeat: 0,
-  leaderHeartbeatInterval: null,
-  leaderCheckInterval: null,
-  reconnectTimeout: null,
-  reconnectAttempts: 0,
-  listeners: new Set(),
-};
-
-const MAX_RECONNECT_ATTEMPTS = 5;
-const BASE_RECONNECT_DELAY = 3000;
-
-function notifyListeners(event: "status" | "newOrder" | "orderUpdate" | "connected" | "disconnected" | "error" | "lastEvent", data?: unknown) {
-  globalSSE.listeners.forEach((listener) => {
-    switch (event) {
-      case "status":
-        listener.setStatus(data as SSEStatus);
-        break;
-      case "newOrder":
-        listener.onNewOrder?.(data as SSEOrder);
-        break;
-      case "orderUpdate":
-        listener.onOrderUpdate?.(data as SSEOrderUpdate);
-        break;
-      case "connected":
-        listener.onConnected?.();
-        break;
-      case "disconnected":
-        listener.onDisconnected?.();
-        break;
-      case "error":
-        listener.onError?.(data as Event);
-        break;
-      case "lastEvent":
-        listener.setLastEvent(data as Date);
-        break;
-    }
-  });
-}
-
-function broadcast(message: BroadcastMessage) {
-  if (globalSSE.channel) {
-    globalSSE.channel.postMessage(message);
-  }
-}
-
-function initBroadcastChannel(establishmentId: number) {
-  if (globalSSE.channel) {
-    return; // Já inicializado
-  }
-
-  globalSSE.channel = new BroadcastChannel(CHANNEL_NAME);
-  globalSSE.establishmentId = establishmentId;
-
-  globalSSE.channel.onmessage = (event: MessageEvent<BroadcastMessage>) => {
-    const message = event.data;
-
-    // Ignorar mensagens de estabelecimentos diferentes
-    if (message.establishmentId && message.establishmentId !== globalSSE.establishmentId) {
-      return;
-    }
-
-    switch (message.type) {
-      case "leader_heartbeat":
-        // Atualizar timestamp do último heartbeat do líder
-        if (message.tabId !== TAB_ID) {
-          globalSSE.lastLeaderHeartbeat = Date.now();
-          globalSSE.leaderId = message.tabId;
-          globalSSE.isLeader = false;
-        }
-        break;
-
-      case "leader_elected":
-        // Outro tab se elegeu líder
-        if (message.tabId !== TAB_ID) {
-          console.log(`[SSE-Tab] Líder eleito: ${message.tabId}`);
-          globalSSE.leaderId = message.tabId;
-          globalSSE.isLeader = false;
-          globalSSE.lastLeaderHeartbeat = Date.now();
-          // Fechar nossa conexão SSE se tivermos uma
-          if (globalSSE.eventSource) {
-            globalSSE.eventSource.close();
-            globalSSE.eventSource = null;
-          }
-        }
-        break;
-
-      case "sse_event":
-        // Evento SSE recebido do líder
-        if (!globalSSE.isLeader && message.data) {
-          const { eventType, eventData } = message.data as { eventType: string; eventData: unknown };
-          handleSSEEvent(eventType, eventData);
-        }
-        break;
-
-      case "status_update":
-        // Atualização de status do líder
-        if (!globalSSE.isLeader && message.status) {
-          globalSSE.status = message.status;
-          notifyListeners("status", message.status);
-          if (message.status === "connected") {
-            notifyListeners("connected");
-          } else if (message.status === "disconnected") {
-            notifyListeners("disconnected");
-          }
-        }
-        break;
-
-      case "request_leader":
-        // Outra aba está pedindo quem é o líder
-        if (globalSSE.isLeader) {
-          broadcast({
-            type: "leader_heartbeat",
-            tabId: TAB_ID,
-            establishmentId: globalSSE.establishmentId!,
-          });
-        }
-        break;
-    }
-  };
-
-  // Iniciar verificação de líder
-  startLeaderCheck(establishmentId);
-}
-
-function handleSSEEvent(eventType: string, eventData: unknown) {
-  notifyListeners("lastEvent", new Date());
-  
-  switch (eventType) {
-    case "new_order":
-      notifyListeners("newOrder", eventData as SSEOrder);
-      break;
-    case "order_update":
-      notifyListeners("orderUpdate", eventData as SSEOrderUpdate);
-      break;
-    case "connected":
-      notifyListeners("connected");
-      break;
-  }
-}
-
-function startLeaderCheck(establishmentId: number) {
-  // Limpar intervalos anteriores
-  if (globalSSE.leaderCheckInterval) {
-    clearInterval(globalSSE.leaderCheckInterval);
-  }
-
-  // Pedir para o líder atual se identificar
-  broadcast({
-    type: "request_leader",
-    tabId: TAB_ID,
-    establishmentId,
-  });
-
-  // Aguardar um pouco para ver se há líder
-  setTimeout(() => {
-    const timeSinceLastHeartbeat = Date.now() - globalSSE.lastLeaderHeartbeat;
-    
-    if (timeSinceLastHeartbeat > LEADER_TIMEOUT || globalSSE.lastLeaderHeartbeat === 0) {
-      // Não há líder ou líder morreu - assumir liderança
-      becomeLeader(establishmentId);
-    }
-  }, 1000);
-
-  // Verificar periodicamente se o líder ainda está vivo
-  globalSSE.leaderCheckInterval = setInterval(() => {
-    const timeSinceLastHeartbeat = Date.now() - globalSSE.lastLeaderHeartbeat;
-    
-    if (!globalSSE.isLeader && timeSinceLastHeartbeat > LEADER_TIMEOUT) {
-      console.log("[SSE-Tab] Líder não responde, assumindo liderança...");
-      becomeLeader(establishmentId);
-    }
-  }, LEADER_TIMEOUT / 2);
-}
-
-function becomeLeader(establishmentId: number) {
-  if (globalSSE.isLeader) {
-    return; // Já somos o líder
-  }
-
-  console.log(`[SSE-Tab] Esta aba (${TAB_ID}) é agora o líder`);
-  globalSSE.isLeader = true;
-  globalSSE.leaderId = TAB_ID;
-
-  // Anunciar que somos o líder
-  broadcast({
-    type: "leader_elected",
-    tabId: TAB_ID,
-    establishmentId,
-  });
-
-  // Iniciar heartbeat
-  if (globalSSE.leaderHeartbeatInterval) {
-    clearInterval(globalSSE.leaderHeartbeatInterval);
-  }
-  
-  globalSSE.leaderHeartbeatInterval = setInterval(() => {
-    broadcast({
-      type: "leader_heartbeat",
-      tabId: TAB_ID,
-      establishmentId,
-    });
-  }, LEADER_HEARTBEAT_INTERVAL);
-
-  // Conectar ao SSE
-  connectSSE(establishmentId);
-}
-
-function connectSSE(establishmentId: number) {
-  // Só o líder pode conectar
-  if (!globalSSE.isLeader) {
-    return;
-  }
-
-  // Se já existe conexão ativa, não criar outra
-  if (globalSSE.eventSource && globalSSE.eventSource.readyState !== EventSource.CLOSED) {
-    console.log("[SSE-Leader] Conexão já existe e está ativa");
-    return;
-  }
-
-  // Limpar conexão anterior se existir
-  if (globalSSE.eventSource) {
-    globalSSE.eventSource.close();
-    globalSSE.eventSource = null;
-  }
-
-  globalSSE.status = "connecting";
-  notifyListeners("status", "connecting");
-  broadcast({ type: "status_update", tabId: TAB_ID, establishmentId, status: "connecting" });
-
-  console.log("[SSE-Leader] Criando conexão SSE...");
-
-  const eventSource = new EventSource("/api/orders/stream", {
-    withCredentials: true,
-  });
-
-  eventSource.onopen = () => {
-    console.log("[SSE-Leader] Conexão estabelecida");
-    globalSSE.status = "connected";
-    globalSSE.reconnectAttempts = 0;
-    notifyListeners("status", "connected");
-    notifyListeners("connected");
-    broadcast({ type: "status_update", tabId: TAB_ID, establishmentId, status: "connected" });
-  };
-
-  eventSource.onerror = (event) => {
-    console.error("[SSE-Leader] Erro na conexão - readyState:", eventSource.readyState);
-
-    if (eventSource.readyState === EventSource.CLOSED) {
-      globalSSE.status = "error";
-      globalSSE.eventSource = null;
-      notifyListeners("status", "error");
-      notifyListeners("error", event);
-      broadcast({ type: "status_update", tabId: TAB_ID, establishmentId, status: "error" });
-
-      // Tentar reconectar com backoff exponencial
-      if (globalSSE.reconnectAttempts < MAX_RECONNECT_ATTEMPTS && globalSSE.isLeader) {
-        const delay = BASE_RECONNECT_DELAY * Math.pow(2, globalSSE.reconnectAttempts);
-        console.log(`[SSE-Leader] Reconectando em ${delay}ms (tentativa ${globalSSE.reconnectAttempts + 1}/${MAX_RECONNECT_ATTEMPTS})`);
-
-        if (globalSSE.reconnectTimeout) {
-          clearTimeout(globalSSE.reconnectTimeout);
-        }
-
-        globalSSE.reconnectTimeout = setTimeout(() => {
-          globalSSE.reconnectAttempts++;
-          if (globalSSE.isLeader) {
-            connectSSE(establishmentId);
-          }
-        }, delay);
-      } else {
-        console.log("[SSE-Leader] Máximo de tentativas atingido");
-        globalSSE.status = "disconnected";
-        notifyListeners("status", "disconnected");
-        notifyListeners("disconnected");
-        broadcast({ type: "status_update", tabId: TAB_ID, establishmentId, status: "disconnected" });
-      }
-    }
-  };
-
-  // Evento de conexão estabelecida
-  eventSource.addEventListener("connected", (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      console.log("[SSE-Leader] Conectado ao estabelecimento:", data.establishmentId);
-      notifyListeners("lastEvent", new Date());
-      // Broadcast para outras abas
-      broadcast({
-        type: "sse_event",
-        tabId: TAB_ID,
-        establishmentId,
-        data: { eventType: "connected", eventData: data },
-      });
-    } catch (e) {
-      console.error("[SSE-Leader] Erro ao parsear evento connected:", e);
-    }
-  });
-
-  // Evento de novo pedido
-  eventSource.addEventListener("new_order", (event) => {
-    try {
-      const order = JSON.parse(event.data) as SSEOrder;
-      console.log("[SSE-Leader] Novo pedido recebido:", order.orderNumber);
-      notifyListeners("lastEvent", new Date());
-      notifyListeners("newOrder", order);
-      // Broadcast para outras abas
-      broadcast({
-        type: "sse_event",
-        tabId: TAB_ID,
-        establishmentId,
-        data: { eventType: "new_order", eventData: order },
-      });
-    } catch (e) {
-      console.error("[SSE-Leader] Erro ao parsear novo pedido:", e);
-    }
-  });
-
-  // Evento de atualização de pedido
-  eventSource.addEventListener("order_update", (event) => {
-    try {
-      const update = JSON.parse(event.data) as SSEOrderUpdate;
-      console.log("[SSE-Leader] Pedido atualizado:", update.id, "->", update.status);
-      notifyListeners("lastEvent", new Date());
-      notifyListeners("orderUpdate", update);
-      // Broadcast para outras abas
-      broadcast({
-        type: "sse_event",
-        tabId: TAB_ID,
-        establishmentId,
-        data: { eventType: "order_update", eventData: update },
-      });
-    } catch (e) {
-      console.error("[SSE-Leader] Erro ao parsear atualização:", e);
-    }
-  });
-
-  // Heartbeat
-  eventSource.addEventListener("heartbeat", () => {
-    notifyListeners("lastEvent", new Date());
-  });
-
-  globalSSE.eventSource = eventSource;
-}
-
-function cleanup() {
-  console.log(`[SSE-Tab] Cleanup da aba ${TAB_ID}`);
-
-  // Limpar intervalos
-  if (globalSSE.leaderHeartbeatInterval) {
-    clearInterval(globalSSE.leaderHeartbeatInterval);
-    globalSSE.leaderHeartbeatInterval = null;
-  }
-
-  if (globalSSE.leaderCheckInterval) {
-    clearInterval(globalSSE.leaderCheckInterval);
-    globalSSE.leaderCheckInterval = null;
-  }
-
-  if (globalSSE.reconnectTimeout) {
-    clearTimeout(globalSSE.reconnectTimeout);
-    globalSSE.reconnectTimeout = null;
-  }
-
-  // Fechar conexão SSE se formos o líder
-  if (globalSSE.isLeader && globalSSE.eventSource) {
-    globalSSE.eventSource.close();
-    globalSSE.eventSource = null;
-  }
-
-  // Fechar canal de broadcast
-  if (globalSSE.channel) {
-    globalSSE.channel.close();
-    globalSSE.channel = null;
-  }
-
-  globalSSE.isLeader = false;
-  globalSSE.leaderId = null;
-  globalSSE.status = "disconnected";
-  globalSSE.establishmentId = null;
-  globalSSE.reconnectAttempts = 0;
-  globalSSE.lastLeaderHeartbeat = 0;
-}
-
-// ============================================
-// HOOK - Interface para componentes React
-// ============================================
 export function useOrdersSSE(options: UseOrdersSSEOptions = {}) {
   const {
     establishmentId,
@@ -493,8 +369,8 @@ export function useOrdersSSE(options: UseOrdersSSEOptions = {}) {
     enabled = true,
   } = options;
 
-  const [status, setStatus] = useState<SSEStatus>(globalSSE.status);
-  const [lastEvent, setLastEvent] = useState<Date | null>(null);
+  const [currentStatus, setStatus] = useState<SSEStatus>(status);
+  const mountedRef = useRef(false);
 
   // Ref para manter as callbacks atualizadas
   const callbacksRef = useRef({
@@ -515,8 +391,15 @@ export function useOrdersSSE(options: UseOrdersSSEOptions = {}) {
     };
   }, [onNewOrder, onOrderUpdate, onConnected, onDisconnected, onError]);
 
-  // Registrar listener e inicializar sistema
+  // Registrar listener e inicializar sistema - APENAS UMA VEZ
   useEffect(() => {
+    // Prevenir duplo mount do StrictMode
+    if (mountedRef.current) {
+      console.log("[SSE-Hook] Ignorando remount (StrictMode)");
+      return;
+    }
+    mountedRef.current = true;
+
     if (!enabled || !establishmentId) {
       return;
     }
@@ -528,38 +411,39 @@ export function useOrdersSSE(options: UseOrdersSSEOptions = {}) {
       onDisconnected: () => callbacksRef.current.onDisconnected?.(),
       onError: (error: Event) => callbacksRef.current.onError?.(error),
       setStatus,
-      setLastEvent,
     };
 
-    globalSSE.listeners.add(listener);
-    console.log(`[SSE-Hook] Listener registrado (aba ${TAB_ID}). Total: ${globalSSE.listeners.size}`);
+    callbacks.add(listener);
+    console.log(`[SSE-Hook] Listener registrado. Total: ${callbacks.size}`);
 
     // Inicializar BroadcastChannel e sistema de líder
     initBroadcastChannel(establishmentId);
 
     // Sincronizar status inicial
-    setStatus(globalSSE.status);
+    setStatus(status);
 
     // Cleanup ao desmontar
     return () => {
-      globalSSE.listeners.delete(listener);
-      console.log(`[SSE-Hook] Listener removido. Restantes: ${globalSSE.listeners.size}`);
+      callbacks.delete(listener);
+      console.log(`[SSE-Hook] Listener removido. Restantes: ${callbacks.size}`);
 
-      // Se não há mais listeners nesta aba, fazer cleanup
-      if (globalSSE.listeners.size === 0) {
+      // Se não há mais listeners, fazer cleanup completo
+      if (callbacks.size === 0) {
         cleanup();
       }
+
+      mountedRef.current = false;
     };
   }, [enabled, establishmentId]);
 
   const reconnect = useCallback(() => {
-    if (establishmentId && globalSSE.isLeader) {
-      globalSSE.reconnectAttempts = 0;
-      if (globalSSE.eventSource) {
-        globalSSE.eventSource.close();
-        globalSSE.eventSource = null;
+    if (establishmentId && isLeader) {
+      reconnectAttempts = 0;
+      if (eventSource) {
+        eventSource.close();
+        eventSource = null;
       }
-      setTimeout(() => connectSSE(establishmentId), 100);
+      setTimeout(() => becomeLeader(establishmentId), 100);
     }
   }, [establishmentId]);
 
@@ -568,12 +452,11 @@ export function useOrdersSSE(options: UseOrdersSSEOptions = {}) {
   }, []);
 
   return {
-    status,
-    lastEvent,
-    isConnected: status === "connected",
-    isConnecting: status === "connecting",
-    hasError: status === "error",
-    isLeader: globalSSE.isLeader,
+    status: currentStatus,
+    isConnected: currentStatus === "connected",
+    isConnecting: currentStatus === "connecting",
+    hasError: currentStatus === "error",
+    isLeader,
     reconnect,
     disconnect,
   };

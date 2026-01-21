@@ -1114,3 +1114,32 @@
 - [x] Outras abas recebem eventos via BroadcastChannel
 - [x] Eleição automática de novo líder quando aba líder fecha (timeout 5s)
 - [x] Garantir apenas 1 conexão SSE por restaurante por navegador
+
+
+## Correção Completa SSE - Checklist
+
+### A - Controle de Conexão SSE (líder/seguidor)
+- [x] Verificar no mount se há líder ativo via BroadcastChannel
+- [x] Apenas aba líder pode criar EventSource
+- [x] Abas seguidoras NUNCA chamam /api/orders/stream
+- [x] Quando líder fecha, outra aba assume em 5s (leader-closed broadcast)
+- [x] Evitar múltiplas criações de SSE quando React remonta (mountedRef)
+- [x] Criar singleton para conexão SSE (variáveis globais)
+
+### B - Controle de Requisições TRPC
+- [x] Garantir orders.list execute UMA vez no mount (initialFetchDone ref)
+- [x] Verificar StrictMode não duplica effects (mountedRef)
+- [x] Adicionar throttle/debounce se houver polling (staleTime: 30000)
+- [x] Não chamar orders.list após SSE reconectar (removido do NewOrdersContext)
+- [x] Remover refetchInterval de hooks (refetchInterval: false)
+
+### C - Tratamento de Erros 429
+- [x] Se "Rate exceeded" não dar retry imediato
+- [x] Backoff exponencial: 1s, 2s, 5s, 10s, 20s (BACKOFF_DELAYS)
+- [x] Tratar resposta de erro como texto, não JSON
+- [x] Logar com tags [SSE-Error], [SSE-Leader], [SSE-Tab], [SSE-BC]
+
+### D - Prevenção de Race Conditions
+- [x] Garantir apenas 1 instância SSE por navegador (BroadcastChannel)
+- [x] Reconexões só quando CLOSED + líder + retry habilitado
+- [x] Broadcast ao trocar líder (leader-exists, leader-closed)

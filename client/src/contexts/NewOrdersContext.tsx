@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
+import { useOrdersSSE } from "@/hooks/useOrdersSSE";
 
 interface NewOrdersContextType {
   newOrdersCount: number;
@@ -21,24 +22,47 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     return saved ? parseInt(saved, 10) : 0;
   });
 
+  // Ref para evitar chamadas duplicadas
+  const initialFetchDone = useRef(false);
+
   // Query para buscar o estabelecimento do usuário
   const { data: establishment } = trpc.establishment.get.useQuery(
     undefined,
     { enabled: !!user }
   );
 
-  // Query para buscar pedidos novos (status = 'new')
+  // Query para buscar pedidos novos (status = 'new') - SEM refetchInterval
   const { data: ordersData, refetch: refetchOrders } = trpc.orders.list.useQuery(
     { establishmentId: establishment?.id ?? 0 },
     { 
       enabled: !!establishment?.id && establishment.id > 0,
       refetchInterval: false, // Não usar polling, vamos usar SSE
+      staleTime: 30000, // Considerar dados válidos por 30s
     }
   );
 
-  // Calcular contagem de pedidos novos
+  // Usar o hook SSE compartilhado (não cria conexão própria)
+  useOrdersSSE({
+    establishmentId: establishment?.id,
+    enabled: !!establishment?.id && establishment.id > 0,
+    onNewOrder: useCallback(() => {
+      // Quando um novo pedido chega, incrementar a contagem se não estiver na página de pedidos
+      if (location !== "/pedidos") {
+        setNewOrdersCount(prev => prev + 1);
+      }
+      // NÃO chamar refetchOrders aqui - o componente Pedidos.tsx já faz isso
+      // Isso evita chamadas duplicadas de orders.list
+    }, [location]),
+    onOrderUpdate: useCallback(() => {
+      // NÃO chamar refetchOrders aqui - o componente Pedidos.tsx já faz isso
+      // Isso evita chamadas duplicadas de orders.list
+    }, []),
+  });
+
+  // Calcular contagem de pedidos novos - APENAS UMA VEZ no mount
   useEffect(() => {
-    if (ordersData?.orders) {
+    if (ordersData?.orders && !initialFetchDone.current) {
+      initialFetchDone.current = true;
       const newOrders = ordersData.orders.filter(order => order.status === 'new');
       // Contar apenas pedidos criados após o último timestamp visto
       const unseenNewOrders = newOrders.filter(order => {
@@ -58,38 +82,6 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
       setNewOrdersCount(0);
     }
   }, [location]);
-
-  // SSE para atualização em tempo real
-  useEffect(() => {
-    if (!establishment?.id) return;
-
-    const eventSource = new EventSource(`/api/orders/stream?establishmentId=${establishment.id}`, {
-      withCredentials: true,
-    });
-
-    eventSource.addEventListener("new_order", () => {
-      // Quando um novo pedido chega, incrementar a contagem se não estiver na página de pedidos
-      if (location !== "/pedidos") {
-        setNewOrdersCount(prev => prev + 1);
-      }
-      // Refetch para atualizar a lista
-      refetchOrders();
-    });
-
-    eventSource.addEventListener("order_updated", () => {
-      // Quando um pedido é atualizado (aceito/cancelado), refetch para recalcular
-      refetchOrders();
-    });
-
-    eventSource.onerror = () => {
-      // Em caso de erro, tentar reconectar após 5 segundos
-      eventSource.close();
-    };
-
-    return () => {
-      eventSource.close();
-    };
-  }, [establishment?.id, location, refetchOrders]);
 
   const markOrdersAsSeen = useCallback(() => {
     const now = Date.now();
