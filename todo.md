@@ -1566,3 +1566,7 @@
 ## Modal Meus Pedidos - Estilo Bottom Sheet
 
 - [x] Alterar modal de Meus Pedidos para estilo bottom sheet
+
+## Texto Avaliações no Mobile
+
+- [x] Restaurar texto "Avaliações" no botão de avaliações na versão mobile

@@ -974,7 +974,7 @@ export default function PublicMenu() {
                           ({establishment.reviewCount || 0} avaliações)
                         </span>
                         <span className="text-sm text-gray-500 sm:hidden">
-                          ({establishment.reviewCount || 0})
+                          ({establishment.reviewCount || 0} avaliações)
                         </span>
                       </button>
                     </div>
