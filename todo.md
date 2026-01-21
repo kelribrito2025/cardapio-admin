@@ -1544,3 +1544,12 @@
   - Seus Dados
   - Confirmação
   - Removido onClick do backdrop do modal unificado de checkout
+
+
+## Modais de Checkout - Estilo Bottom Sheet
+
+- [x] Alterar modais de checkout para estilo bottom sheet (de baixo para cima)
+  - Container com items-end no mobile, items-center no desktop
+  - Animação slide-in-from-bottom
+  - Bordas arredondadas apenas no topo no mobile
+- [x] Aplicar mesmo estilo do modal da sacola mobile

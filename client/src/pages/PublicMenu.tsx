@@ -1812,14 +1812,14 @@ export default function PublicMenu() {
 
       {/* Modais de Finalização de Pedido */}
       {checkoutStep > 0 && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+        <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
           {/* Backdrop */}
           <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/50"
           />
           
-          {/* Modal de Checkout Unificado */}
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[85vh] flex flex-col overflow-hidden">
+          {/* Modal de Checkout Unificado - Bottom Sheet no mobile */}
+          <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl max-h-[90vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header com Título */}
             <div className="flex-shrink-0 px-6 pt-4 pb-2 border-b">
               {/* Título e Botão Fechar */}
