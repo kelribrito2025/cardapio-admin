@@ -370,7 +370,6 @@ export function useOrdersSSE(options: UseOrdersSSEOptions = {}) {
   } = options;
 
   const [currentStatus, setStatus] = useState<SSEStatus>(status);
-  const mountedRef = useRef(false);
 
   // Ref para manter as callbacks atualizadas
   const callbacksRef = useRef({
@@ -391,19 +390,13 @@ export function useOrdersSSE(options: UseOrdersSSEOptions = {}) {
     };
   }, [onNewOrder, onOrderUpdate, onConnected, onDisconnected, onError]);
 
-  // Registrar listener e inicializar sistema - APENAS UMA VEZ
+  // Registrar listener e inicializar sistema
   useEffect(() => {
-    // Prevenir duplo mount do StrictMode
-    if (mountedRef.current) {
-      console.log("[SSE-Hook] Ignorando remount (StrictMode)");
-      return;
-    }
-    mountedRef.current = true;
-
     if (!enabled || !establishmentId) {
       return;
     }
 
+    // Criar listener único para esta instância do hook
     const listener = {
       onNewOrder: (order: SSEOrder) => callbacksRef.current.onNewOrder?.(order),
       onOrderUpdate: (update: SSEOrderUpdate) => callbacksRef.current.onOrderUpdate?.(update),
@@ -416,8 +409,10 @@ export function useOrdersSSE(options: UseOrdersSSEOptions = {}) {
     callbacks.add(listener);
     console.log(`[SSE-Hook] Listener registrado. Total: ${callbacks.size}`);
 
-    // Inicializar BroadcastChannel e sistema de líder
-    initBroadcastChannel(establishmentId);
+    // Inicializar BroadcastChannel e sistema de líder (apenas se ainda não foi inicializado)
+    if (!bc) {
+      initBroadcastChannel(establishmentId);
+    }
 
     // Sincronizar status inicial
     setStatus(status);
@@ -431,8 +426,6 @@ export function useOrdersSSE(options: UseOrdersSSEOptions = {}) {
       if (callbacks.size === 0) {
         cleanup();
       }
-
-      mountedRef.current = false;
     };
   }, [enabled, establishmentId]);
 

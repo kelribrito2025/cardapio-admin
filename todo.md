@@ -1637,3 +1637,9 @@
 - [x] Investigar por que o badge de contagem de pedidos não atualiza quando novo pedido chega
 - [x] Corrigir a atualização em tempo real do badge de pedidos
 - [x] Adicionar SSE ao Dashboard para atualizar pedidos recentes em tempo real
+
+## Bug: Badge no Menu Lateral não Aparece
+
+- [x] Investigar por que o badge no menu lateral não aparece quando novos pedidos chegam via SSE
+- [x] Corrigir a atualização do badge no menu lateral em tempo real
+- [x] Garantir que o badge apareça imediatamente quando um novo pedido chega
