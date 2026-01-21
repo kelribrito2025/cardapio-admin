@@ -1618,3 +1618,8 @@
 ## Modal de Informações - Estilo Bottom Sheet
 
 - [x] Alterar modal de informações do menu público para estilo bottom sheet no mobile
+
+## Modais Bottom Sheet - Avaliações e Cupom
+
+- [x] Alterar modal de avaliações para estilo bottom sheet no mobile
+- [x] Alterar modal de cupom para estilo bottom sheet no mobile

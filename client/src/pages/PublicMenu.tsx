@@ -2637,14 +2637,15 @@ export default function PublicMenu() {
 
       {/* Modal de Cupom */}
       {showCouponModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+        <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowCouponModal(false)}
           />
           
-          {/* Modal Content */}
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+          {/* Modal Content - Bottom Sheet no mobile */}
+          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
             <div className="border-b px-6 py-4 flex items-center justify-between rounded-t-2xl">
               <div className="flex items-center gap-3">
@@ -3457,14 +3458,15 @@ export default function PublicMenu() {
       )}
 
       {showReviewsModal && establishment && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center">
+        <div className="fixed inset-0 z-[110] flex items-end md:items-center md:justify-center">
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowReviewsModal(false)}
           />
           
-          {/* Modal Content */}
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[85vh] overflow-hidden flex flex-col">
+          {/* Modal Content - Bottom Sheet no mobile */}
+          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-lg md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
             <div className="border-b px-6 py-4 flex items-center justify-between flex-shrink-0">
               <div className="flex items-center gap-3">
