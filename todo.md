@@ -1296,3 +1296,17 @@
   - Log informativo quando SMS está desativado
 - [x] Testar ativação e desativação do SMS
   - 119 testes passando
+
+
+## Bug Fix - Badge de Contagem de Pedidos Não Aparece
+
+- [x] Investigar código do badge de contagem de pedidos na barra lateral
+  - Problema: initialFetchDone.current impedia recalculação da contagem
+  - O SSE só incrementava se não estivesse na página de pedidos
+- [x] Verificar se a query de contagem de pedidos novos está funcionando
+  - Query estava funcionando, mas a lógica de contagem estava incorreta
+- [x] Corrigir o problema de exibição do badge
+  - Removido initialFetchDone.current que bloqueava atualizações
+  - SSE agora sempre incrementa a contagem quando novo pedido chega
+  - Contagem inicial recalculada quando dados mudam
+  - Logs de debug adicionados para acompanhamento
