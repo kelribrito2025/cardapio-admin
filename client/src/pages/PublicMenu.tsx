@@ -2854,14 +2854,14 @@ export default function PublicMenu() {
 
       {/* Modal de Pedidos */}
       {showOrdersModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center md:items-center">
+        <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50"
           />
           
-          {/* Modal */}
-          <div className="relative w-full max-w-lg mx-4 bg-white rounded-2xl max-h-[85vh] flex flex-col">
+          {/* Modal - Bottom Sheet no mobile */}
+          <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
             <div className="flex-shrink-0 border-b px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">

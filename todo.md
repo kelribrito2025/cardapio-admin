@@ -1561,3 +1561,8 @@
   - Container com items-end no mobile, items-center no desktop
   - Animação slide-in-from-bottom
   - Bordas arredondadas apenas no topo no mobile
+
+
+## Modal Meus Pedidos - Estilo Bottom Sheet
+
+- [x] Alterar modal de Meus Pedidos para estilo bottom sheet
