@@ -51,6 +51,7 @@ export default function PublicMenu() {
   const [deliveryType, setDeliveryType] = useState<"pickup" | "delivery">("pickup");
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "pix">("pix");
   const [changeAmount, setChangeAmount] = useState("");
+  const [changeAmountError, setChangeAmountError] = useState<string | null>(null);
   const [deliveryAddress, setDeliveryAddress] = useState({
     street: "",
     number: "",
@@ -1988,24 +1989,62 @@ export default function PublicMenu() {
                       {paymentMethod === "cash" && (
                         <div className="mt-2 p-4 bg-gray-50 rounded-xl ml-7">
                           <label className="block text-xs font-medium text-gray-600 mb-1">Precisa de troco para quanto?</label>
-                          <input
-                            type="text"
-                            value={changeAmount}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/\D/g, "");
-                              if (value) {
-                                const formatted = (Number(value) / 100).toLocaleString("pt-BR", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                });
-                                setChangeAmount(formatted);
-                              } else {
-                                setChangeAmount("");
-                              }
-                            }}
-                            placeholder="0,00"
-                            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
-                          />
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={changeAmount}
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, "");
+                                if (value) {
+                                  const formatted = (Number(value) / 100).toLocaleString("pt-BR", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  });
+                                  setChangeAmount(formatted);
+                                  
+                                  // Validar se o valor do troco é maior que o total
+                                  const numericValue = Number(value) / 100;
+                                  // Calcular total do carrinho para validação
+                                  const cartTotal = cart.reduce((sum, item) => {
+                                    const itemTotal = parseFloat(item.price) * item.quantity;
+                                    const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
+                                    return sum + itemTotal + complementsTotal;
+                                  }, 0) - (appliedCoupon?.discount || 0);
+                                  
+                                  if (numericValue > 0 && numericValue <= cartTotal) {
+                                    setChangeAmountError("O valor do troco deve ser maior que o total do pedido (R$ " + cartTotal.toFixed(2).replace('.', ',') + ")");
+                                  } else {
+                                    setChangeAmountError(null);
+                                  }
+                                } else {
+                                  setChangeAmount("");
+                                  setChangeAmountError(null);
+                                }
+                              }}
+                              placeholder="0,00"
+                              className={`w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 ${
+                                changeAmountError 
+                                  ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500 bg-red-50' 
+                                  : 'border-gray-200 focus:ring-red-500/20 focus:border-red-500'
+                              }`}
+                            />
+                            {changeAmountError && (
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                <svg className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                          {changeAmountError && (
+                            <p className="mt-2 text-xs text-red-600 flex items-center gap-1">
+                              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                              </svg>
+                              {changeAmountError}
+                            </p>
+                          )}
+                          <p className="mt-1 text-xs text-gray-500">Deixe em branco se não precisar de troco</p>
                         </div>
                       )}
                     </div>
@@ -2348,6 +2387,22 @@ export default function PublicMenu() {
                 <button
                   onClick={() => {
                     if (isSendingOrder || !establishment || !establishment.isOpen) return;
+                    
+                    // Validar valor do troco antes de enviar
+                    if (paymentMethod === 'cash' && changeAmount) {
+                      const changeValue = parseFloat(changeAmount.replace(/\./g, '').replace(',', '.'));
+                      const orderTotal = cart.reduce((sum, item) => {
+                        const itemTotal = parseFloat(item.price) * item.quantity;
+                        const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
+                        return sum + itemTotal + complementsTotal;
+                      }, 0) - (appliedCoupon?.discount || 0);
+                      
+                      if (changeValue <= orderTotal) {
+                        setChangeAmountError("O valor do troco deve ser maior que o total do pedido (R$ " + orderTotal.toFixed(2).replace('.', ',') + ")");
+                        return;
+                      }
+                    }
+                    
                     setIsSendingOrder(true);
                     
                     // Delay de 3 segundos para mostrar loading
@@ -2396,14 +2451,16 @@ export default function PublicMenu() {
                     });
                     }, 3000); // Delay de 3 segundos
                   }}
-                  disabled={isSendingOrder || !establishment.isOpen}
+                  disabled={isSendingOrder || !establishment.isOpen || !!changeAmountError}
                   className={`flex-1 py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
                     !establishment.isOpen
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : isSendingOrder 
-                        ? 'bg-green-400 cursor-not-allowed' 
-                        : 'bg-green-500 hover:bg-green-600'
-                  } ${establishment.isOpen ? 'text-white' : ''}`}
+                      : changeAmountError
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : isSendingOrder 
+                          ? 'bg-green-400 cursor-not-allowed' 
+                          : 'bg-green-500 hover:bg-green-600'
+                  } ${establishment.isOpen && !changeAmountError ? 'text-white' : ''}`}
                 >
                   {!establishment.isOpen ? (
                     <>

@@ -1180,3 +1180,21 @@
   - changeAmount é decimal(10,2) que requer formato com ponto decimal
 - [x] Corrigir código de criação de pedidos no frontend
   - Adicionado .replace(/\\./g, '').replace(',', '.') para converter formato brasileiro para numérico
+
+
+## Validação de Valor de Troco
+
+- [x] Validar que o valor do troco seja maior que o total do pedido
+  - Validação em tempo real no onChange do campo
+  - Validação adicional ao clicar no botão de enviar
+- [x] Exibir mensagem de erro clara se o valor for menor que o total
+  - Mensagem: "O valor do troco deve ser maior que o total do pedido (R$ X,XX)"
+  - Ícone de alerta junto à mensagem
+- [x] Adicionar feedback visual (borda vermelha, ícone de erro)
+  - Borda vermelha no campo de input
+  - Fundo vermelho claro (bg-red-50)
+  - Ícone de erro dentro do campo
+- [x] Bloquear envio do pedido se a validação falhar
+  - Botão desabilitado quando há erro
+  - Botão fica cinza para indicar estado desabilitado
+- [x] Adicionar dica "Deixe em branco se não precisar de troco"
