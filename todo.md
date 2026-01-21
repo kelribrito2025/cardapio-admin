@@ -1080,3 +1080,9 @@
 
 - [x] Investigar e corrigir erro 400 na API publicMenu (adicionado polling a cada 10s)
 - [x] Garantir atualização do status no modal Meus Pedidos (sincronização automática)
+
+
+## Bug Fix - ERR_INSUFFICIENT_RESOURCES persistente no canReview
+
+- [x] Eliminar todas as chamadas duplicadas de canReview (removido userOrders das dependências)
+- [x] Garantir que canReview seja chamado apenas UMA vez por pedido (usando ref em vez de estado)

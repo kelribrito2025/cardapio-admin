@@ -95,6 +95,7 @@ export default function PublicMenu() {
   const [ratingSuccess, setRatingSuccess] = useState(false);
   const [canReviewChecked, setCanReviewChecked] = useState(false);
   const [canReview, setCanReview] = useState(true);
+  const userOrdersRef = useRef<typeof userOrders>([]);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
   const categoriesNavRef = useRef<HTMLDivElement>(null);
@@ -127,6 +128,11 @@ export default function PublicMenu() {
     { establishmentId: data?.establishment?.id || 0 },
     { enabled: !!data?.establishment?.id }
   );
+
+  // Manter ref de userOrders sincronizada
+  useEffect(() => {
+    userOrdersRef.current = userOrders;
+  }, [userOrders]);
 
   // Mutation para criar pedido
   const createOrderMutation = trpc.publicMenu.createOrder.useMutation({
@@ -297,6 +303,7 @@ export default function PublicMenu() {
   
   // Verificar canReview apenas UMA VEZ quando o pedido mudar
   // Usa uma chave única (orderId + establishmentId) para evitar chamadas duplicadas
+  // IMPORTANTE: Usa userOrdersRef.current para evitar re-execuções quando userOrders muda
   useEffect(() => {
     // Se não tem pedido selecionado, resetar
     if (!selectedOrderId) {
@@ -319,8 +326,8 @@ export default function PublicMenu() {
       return;
     }
     
-    // Buscar o pedido selecionado
-    const selectedOrder = userOrders.find(o => o.id === selectedOrderId);
+    // Buscar o pedido selecionado usando a ref (evita re-renders)
+    const selectedOrder = userOrdersRef.current.find(o => o.id === selectedOrderId);
     
     // Se o pedido não está entregue, não precisa verificar
     if (selectedOrder?.status !== 'delivered') {
@@ -363,7 +370,7 @@ export default function PublicMenu() {
           setCanReview(true); // Em caso de erro, permitir avaliar
         }
       });
-  }, [selectedOrderId, data?.establishment?.id, userOrders]); // Dependências necessárias
+  }, [selectedOrderId, data?.establishment?.id]); // Removido userOrders das dependências
 
   // Set first category as active when data loads
   useEffect(() => {
