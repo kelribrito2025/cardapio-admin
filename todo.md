@@ -1333,3 +1333,13 @@
   - Lógica mantida: nextNumber começa em 1 se não houver pedidos anteriores
 - [x] Testar criação de novos pedidos com formato simplificado
   - 119 testes passando
+
+## Exibir Número do Pedido no Modal de Sucesso
+
+- [x] Identificar onde o modal de "Pedido enviado com sucesso" é renderizado
+  - Localizado em PublicMenu.tsx, linha 2364-2381
+- [x] Adicionar exibição do número do pedido (ex: #P25) no modal
+  - Adicionado parágrafo com "Número do pedido: {currentOrderNumber}"
+  - Estilo destacado com cor primária
+- [x] Garantir que o número do pedido seja obtido da resposta da mutation
+  - Já existia currentOrderNumber sendo setado no onSuccess

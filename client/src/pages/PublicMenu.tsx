@@ -2366,9 +2366,14 @@ export default function PublicMenu() {
                     <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
                       <CheckCircle className="h-12 w-12 text-green-500" />
                     </div>
-                    <h3 className="text-2xl font-bold text-green-600 mb-4">
+                    <h3 className="text-2xl font-bold text-green-600 mb-2">
                       Pedido enviado com sucesso!
                     </h3>
+                    {currentOrderNumber && (
+                      <p className="text-xl font-semibold text-gray-800 mb-4">
+                        Número do pedido: <span className="text-primary">{currentOrderNumber}</span>
+                      </p>
+                    )}
                     <p className="text-gray-600">
                       Seu pedido foi recebido e está sendo processado.
                     </p>
