@@ -1582,3 +1582,7 @@
 ## Ícone Loading no Modal Meus Pedidos
 
 - [x] Adicionar ícone de loading animado ao lado do título "Em andamento"
+
+## Altura da Foto no Modal de Produto
+
+- [x] Aumentar altura da foto do produto em 40% no modal de detalhes do item
