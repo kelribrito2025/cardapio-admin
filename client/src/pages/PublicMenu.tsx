@@ -819,9 +819,9 @@ export default function PublicMenu() {
               >
                 <ClipboardList className="h-4 w-4" />
                 <span>Pedidos</span>
-                {userOrders.filter(o => o.status !== 'delivered').length > 0 && (
+                {userOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length > 0 && (
                   <span className="absolute -top-1.5 -right-0 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                    {userOrders.filter(o => o.status !== 'delivered').length}
+                    {userOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length}
                   </span>
                 )}
               </button>
@@ -1426,9 +1426,9 @@ export default function PublicMenu() {
             onClick={() => setShowOrdersModal(true)}
           >
             <ClipboardList className="h-5 w-5" />
-            {userOrders.filter(o => o.status !== 'delivered').length > 0 && (
+            {userOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length > 0 && (
               <span className="absolute -top-0.5 right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                {userOrders.filter(o => o.status !== 'delivered').length}
+                {userOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length}
               </span>
             )}
             <span className="text-xs font-medium">Pedidos</span>

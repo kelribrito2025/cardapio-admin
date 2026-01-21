@@ -1506,3 +1506,11 @@
   - Preço em vermelho, fonte semibold
 - [x] Botão X para limpar a busca
 - [x] Mensagem "Nenhum produto encontrado" quando sem resultados
+
+
+## Bug - Badge Conta Pedidos Cancelados
+
+- [x] Corrigir badge de pedidos para não contar pedidos cancelados
+  - Filtro atualizado para excluir status 'delivered' E 'cancelled'
+- [x] Badge deve mostrar apenas pedidos em andamento (não entregues e não cancelados)
+  - Corrigido no desktop e mobile
