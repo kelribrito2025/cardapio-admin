@@ -1407,3 +1407,17 @@
 - [x] Corrigir placeholder do campo de busca cortado
   - Alterado placeholder de "Buscar no cardápio" para "Buscar..." (mais curto)
   - Adicionado min-w-0 para permitir que o campo encolha corretamente
+
+
+## Sistema de Crop para Imagens (Perfil e Capa)
+
+- [x] Instalar biblioteca react-easy-crop
+- [x] Criar componente ImageCropModal reutilizável
+- [x] Implementar modal de crop com zoom e movimentação
+- [x] Integrar crop para foto de perfil (proporção 1:1, máscara circular)
+- [x] Integrar crop para foto de capa (proporção 16:9)
+- [x] Adicionar validação de tamanho máximo (8MB)
+- [x] Adicionar validação de largura mínima (1200px para capa)
+- [x] Comprimir imagem após recorte (JPEG 90%)
+- [x] Atualizar preview imediatamente após confirmar
+- [x] Testar funcionalidade completa - 130 testes passando

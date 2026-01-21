@@ -31,6 +31,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { ImageCropModal } from "@/components/ImageCropModal";
 
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
@@ -70,6 +71,11 @@ export default function Configuracoes() {
   
   // Note style state
   const [noteStyle, setNoteStyle] = useState("default");
+
+  // Image crop modal state
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState("");
+  const [cropType, setCropType] = useState<"logo" | "cover">("logo");
 
   // File input refs
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -224,7 +230,8 @@ export default function Configuracoes() {
     });
   };
 
-  const handleFileUpload = async (file: File, type: "logo" | "cover") => {
+  // Abrir modal de crop ao selecionar arquivo
+  const handleFileSelect = (file: File, type: "logo" | "cover") => {
     if (!file) return;
 
     // Validate file type
@@ -233,30 +240,65 @@ export default function Configuracoes() {
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("A imagem deve ter no máximo 5MB");
+    // Validate file size (max 8MB)
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 8MB");
       return;
     }
 
+    // Validar dimensões mínimas para capa
+    if (type === "cover") {
+      const img = new Image();
+      img.onload = () => {
+        if (img.width < 1200) {
+          toast.error("A imagem de capa deve ter no mínimo 1200px de largura");
+          return;
+        }
+        // Abrir modal de crop
+        const reader = new FileReader();
+        reader.onload = () => {
+          setCropImageSrc(reader.result as string);
+          setCropType(type);
+          setCropModalOpen(true);
+        };
+        reader.readAsDataURL(file);
+      };
+      img.onerror = () => {
+        toast.error("Erro ao carregar imagem");
+      };
+      img.src = URL.createObjectURL(file);
+    } else {
+      // Para logo, abrir direto o modal
+      const reader = new FileReader();
+      reader.onload = () => {
+        setCropImageSrc(reader.result as string);
+        setCropType(type);
+        setCropModalOpen(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Processar imagem recortada e enviar para o servidor
+  const handleCroppedImage = async (croppedBlob: Blob) => {
     try {
-      // Convert to base64
+      toast.loading("Enviando imagem...", { id: "upload" });
+
+      // Converter blob para base64
       const reader = new FileReader();
       reader.onload = async () => {
         const base64 = (reader.result as string).split(",")[1];
         
-        toast.loading("Enviando imagem...", { id: "upload" });
-        
         const result = await uploadMutation.mutateAsync({
           base64,
-          mimeType: file.type,
+          mimeType: "image/jpeg",
           folder: "establishments",
         });
 
         toast.dismiss("upload");
         toast.success("Imagem enviada com sucesso!");
 
-        if (type === "logo") {
+        if (cropType === "logo") {
           setLogo(result.url);
           // Auto-save after logo upload
           if (establishment) {
@@ -270,7 +312,7 @@ export default function Configuracoes() {
           }
         }
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(croppedBlob);
     } catch (error) {
       toast.dismiss("upload");
       toast.error("Erro ao enviar imagem");
@@ -354,7 +396,7 @@ export default function Configuracoes() {
                   className="hidden"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (file) handleFileUpload(file, "cover");
+                    if (file) handleFileSelect(file, "cover");
                   }}
                 />
               </div>
@@ -406,7 +448,7 @@ export default function Configuracoes() {
                       className="hidden"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
-                        if (file) handleFileUpload(file, "logo");
+                        if (file) handleFileSelect(file, "logo");
                       }}
                     />
                   </div>
@@ -1182,6 +1224,21 @@ export default function Configuracoes() {
           </SectionCard>
         </TabsContent>
       </Tabs>
+
+      {/* Modal de Crop de Imagem */}
+      <ImageCropModal
+        isOpen={cropModalOpen}
+        onClose={() => {
+          setCropModalOpen(false);
+          setCropImageSrc("");
+        }}
+        imageSrc={cropImageSrc}
+        onCropComplete={handleCroppedImage}
+        aspectRatio={cropType === "logo" ? 1 : 16 / 9}
+        cropShape={cropType === "logo" ? "round" : "rect"}
+        title={cropType === "logo" ? "Recortar Logo" : "Recortar Capa"}
+        minWidth={cropType === "cover" ? 1200 : undefined}
+      />
     </AdminLayout>
   );
 }
