@@ -1631,3 +1631,9 @@
 ## Fechar Modal ao Clicar Fora
 
 - [x] Adicionar funcionalidade de fechar modal de detalhes do item ao clicar no backdrop
+
+## Bug: Badge de Pedidos não Atualiza em Tempo Real
+
+- [x] Investigar por que o badge de contagem de pedidos não atualiza quando novo pedido chega
+- [x] Corrigir a atualização em tempo real do badge de pedidos
+- [x] Adicionar SSE ao Dashboard para atualizar pedidos recentes em tempo real

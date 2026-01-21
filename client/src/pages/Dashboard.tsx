@@ -21,7 +21,8 @@ import {
 } from "recharts";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useOrdersSSE } from "@/hooks/useOrdersSSE";
 
 export default function Dashboard() {
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
@@ -44,7 +45,7 @@ export default function Dashboard() {
     { enabled: !!establishmentId }
   );
 
-  const { data: recentOrders, isLoading: ordersLoading } = trpc.dashboard.recentOrders.useQuery(
+  const { data: recentOrders, isLoading: ordersLoading, refetch: refetchRecentOrders } = trpc.dashboard.recentOrders.useQuery(
     { establishmentId: establishmentId!, limit: 5 },
     { enabled: !!establishmentId }
   );
@@ -58,6 +59,23 @@ export default function Dashboard() {
     { establishmentId: establishmentId! },
     { enabled: !!establishmentId }
   );
+
+  // Handlers para SSE - atualizar dados quando novo pedido chegar
+  const handleNewOrder = useCallback(() => {
+    refetchRecentOrders();
+  }, [refetchRecentOrders]);
+
+  const handleOrderUpdate = useCallback(() => {
+    refetchRecentOrders();
+  }, [refetchRecentOrders]);
+
+  // Hook SSE para receber pedidos em tempo real
+  useOrdersSSE({
+    establishmentId: establishmentId ?? undefined,
+    onNewOrder: handleNewOrder,
+    onOrderUpdate: handleOrderUpdate,
+    enabled: !!establishmentId && establishmentId > 0,
+  });
 
   // Se não há estabelecimento, redirecionar para configurações
   if (!establishmentLoading && !establishment) {
