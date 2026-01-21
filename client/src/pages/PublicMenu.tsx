@@ -472,16 +472,29 @@ export default function PublicMenu() {
   
   // Inicializar SSE singleton para pedidos ativos existentes (ao carregar a página)
   // Isso garante que pedidos feitos anteriormente continuem sendo monitorados
+  // Usa um estado separado para controlar se já inicializou o SSE
+  const [sseInitialized, setSseInitialized] = useState(false);
+  
   useEffect(() => {
-    // Pegar os orderNumbers dos pedidos em andamento do localStorage
+    // Só inicializar SSE após os pedidos serem carregados do localStorage
+    // e apenas uma vez
+    if (sseInitialized || userOrders.length === 0) {
+      return;
+    }
+    
+    // Pegar os orderNumbers dos pedidos em andamento
     const activeOrders = userOrders.filter(o => 
       o.status !== 'delivered' && o.status !== 'cancelled'
     );
     
-    // Se não tem pedidos em andamento, não conectar
+    // Se não tem pedidos em andamento, marcar como inicializado mas não conectar
     if (activeOrders.length === 0) {
+      setSseInitialized(true);
       return;
     }
+    
+    console.log(`[PublicMenu] Inicializando SSE para ${activeOrders.length} pedidos ativos`);
+    setSseInitialized(true);
     
     // Callback para atualizações de status
     const handleStatusUpdate = (update: { orderNumber: string; status: string; cancellationReason?: string }) => {
@@ -521,7 +534,7 @@ export default function PublicMenu() {
         orderSSE.untrackOrder(order.id);
       });
     };
-  }, []); // Executar apenas uma vez ao montar o componente
+  }, [userOrders, sseInitialized]); // Executar quando userOrders mudar (após carregar do localStorage)
 
   // Carregar endereço salvo do localStorage
   useEffect(() => {

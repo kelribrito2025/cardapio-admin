@@ -1143,3 +1143,19 @@
 - [x] Garantir apenas 1 instância SSE por navegador (BroadcastChannel)
 - [x] Reconexões só quando CLOSED + líder + retry habilitado
 - [x] Broadcast ao trocar líder (leader-exists, leader-closed)
+
+
+## Bug Fix - Erro 400 no Menu Público e SSE
+
+### Investigação
+- [x] Verificar payload enviado pelo menu público (establishmentId, items, price, etc)
+- [x] Verificar endpoint TRPC publicMenu.createOrder e validação Zod (logs já existem)
+- [x] Verificar formato dos IDs de pedidos (#P00006 - formato correto)
+
+### Correções
+- [x] Corrigir SSE singleton no menu público para evitar múltiplas conexões
+- [x] Não abrir SSE se criação do pedido falhar (já implementado no onSuccess)
+- [x] Adicionar logs no backend para diagnóstico (já existem)
+
+### Validação
+- [ ] Testar criação de 10 pedidos seguidos sem recarregar página
