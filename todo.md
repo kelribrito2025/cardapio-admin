@@ -1397,3 +1397,13 @@
 - [x] Ocultar nota automaticamente quando expirada
   - Nota não é exibida se data atual > noteExpiresAt
 - [x] Todos os 119 testes passando
+
+
+## Bugs Mobile - Menu Público
+
+- [x] Corrigir pontos extras (.....) aparecendo no endereço na versão mobile
+  - Adicionado truncate com max-width para cortar texto longo com elipsis (...)
+  - Adicionado bairro e cidade na exibição do endereço
+- [x] Corrigir placeholder do campo de busca cortado
+  - Alterado placeholder de "Buscar no cardápio" para "Buscar..." (mais curto)
+  - Adicionado min-w-0 para permitir que o campo encolha corretamente

@@ -1,0 +1,19 @@
+{
+  "query": "SELECT id, name, street, number, neighborhood, city, state FROM establishments LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, street, number, neighborhood, city, state FROM establishments LIMIT 5;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "street": "Rua manoel estorgio bairro varzea - Carnaubal ",
+      "number": "279",
+      "neighborhood": "Varzea",
+      "city": "Carnaubal",
+      "state": "CE"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tstreet\tnumber\tneighborhood\tcity\tstate\n30001\tSushi Haruno\tRua manoel estorgio bairro varzea - Carnaubal \t279\tVarzea\tCarnaubal\tCE\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

@@ -734,15 +734,15 @@ export default function PublicMenu() {
             )}
 
             {/* Search Bar */}
-            <div className="flex-1 max-w-xl">
+            <div className="flex-1 max-w-xl min-w-0">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Buscar no cardápio"
+                  placeholder="Buscar..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-gray-100 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white transition-colors"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-100 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white transition-colors placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -969,17 +969,21 @@ export default function PublicMenu() {
                 <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
                   {establishment.street && (
                     <>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="h-3.5 w-3.5 text-gray-500" />
-                        {establishment.street}
-                        {establishment.number && `, ${establishment.number}`}
+                      <span className="flex items-center gap-1 min-w-0 flex-shrink">
+                        <MapPin className="h-3.5 w-3.5 text-gray-500 flex-shrink-0" />
+                        <span className="truncate max-w-[180px] sm:max-w-[300px]">
+                          {establishment.street}
+                          {establishment.number && `, ${establishment.number}`}
+                          {establishment.neighborhood && ` - ${establishment.neighborhood}`}
+                          {establishment.city && ` - ${establishment.city}`}
+                        </span>
                       </span>
-                      <span className="text-gray-400">•</span>
+                      <span className="text-gray-400 flex-shrink-0">•</span>
                     </>
                   )}
                   <button 
                     onClick={() => setShowInfoModal(true)}
-                    className="flex items-center gap-1 text-gray-600 hover:text-red-500 font-medium transition-colors"
+                    className="flex items-center gap-1 text-gray-600 hover:text-red-500 font-medium transition-colors flex-shrink-0"
                   >
                     <Info className="h-4 w-4" style={{width: '14px', height: '14px'}} />
                     Informações
