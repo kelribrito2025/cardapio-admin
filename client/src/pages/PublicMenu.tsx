@@ -1538,7 +1538,7 @@ export default function PublicMenu() {
           <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Imagem do Produto */}
             {selectedProduct.images?.[0] && (
-              <div className="relative w-full h-48 sm:h-60 md:h-72 flex-shrink-0">
+              <div className="relative w-full h-[268px] sm:h-60 md:h-72 flex-shrink-0">
                 <img
                   src={selectedProduct.images[0]}
                   alt={selectedProduct.name}

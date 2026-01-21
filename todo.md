@@ -1595,3 +1595,7 @@
 
 - [x] Adicionar ícone de olho com transparência na foto do produto
 - [x] Implementar modal de visualização em tela cheia ao clicar na foto
+
+## Ajuste Altura da Foto Mobile
+
+- [x] Aumentar altura da foto do produto em 40% apenas na versão mobile
