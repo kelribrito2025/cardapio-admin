@@ -1074,3 +1074,9 @@
 
 - [x] Corrigir chamadas excessivas de publicMenu.canReview (usar chave única para evitar duplicação)
 - [x] Esconder botão de avaliar quando usuário já avaliou (lógica já existia, corrigido para não chamar múltiplas vezes)
+
+
+## Bug Fix - Erro 400 na API publicMenu e status não atualiza
+
+- [x] Investigar e corrigir erro 400 na API publicMenu (adicionado polling a cada 10s)
+- [x] Garantir atualização do status no modal Meus Pedidos (sincronização automática)

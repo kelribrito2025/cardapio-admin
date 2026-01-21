@@ -386,11 +386,12 @@ export default function PublicMenu() {
   }, []);
 
   // Sincronizar status dos pedidos quando o modal Meus Pedidos é aberto
+  // E também periodicamente enquanto o modal estiver aberto
   useEffect(() => {
     const syncOrderStatuses = async () => {
       if (!showOrdersModal || !data?.establishment?.id || userOrders.length === 0) return;
       
-      const statusMap: Record<string, "sent" | "accepted" | "delivering" | "delivered" | "cancelled"> = {
+      const localStatusMap: Record<string, "sent" | "accepted" | "delivering" | "delivered" | "cancelled"> = {
         'new': 'sent',
         'preparing': 'accepted',
         'ready': 'delivering',
@@ -413,7 +414,7 @@ export default function PublicMenu() {
               }))}`).then(res => res.json());
               
               if (response?.result?.data?.status) {
-                const newStatus = statusMap[response.result.data.status] || order.status;
+                const newStatus = localStatusMap[response.result.data.status] || order.status;
                 return { ...order, status: newStatus };
               }
               return order;
@@ -437,7 +438,20 @@ export default function PublicMenu() {
       }
     };
     
+    // Sincronizar imediatamente ao abrir o modal
     syncOrderStatuses();
+    
+    // Sincronizar a cada 10 segundos enquanto o modal estiver aberto
+    let intervalId: NodeJS.Timeout | null = null;
+    if (showOrdersModal) {
+      intervalId = setInterval(syncOrderStatuses, 10000);
+    }
+    
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
   }, [showOrdersModal, data?.establishment?.id]);
 
   // Ref para o currentOrderNumber (usado pelo callback SSE)
