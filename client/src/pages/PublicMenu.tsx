@@ -208,6 +208,14 @@ export default function PublicMenu() {
       setIsSendingOrder(false);
       setOrderSent(true);
       setOrderStatus("sent");
+      
+      // Limpar sacola e resetar estados após pedido enviado com sucesso
+      setCart([]);
+      setOrderObservation("");
+      setAppliedCoupon(null);
+      setChangeAmount("");
+      setChangeAmountError(null);
+      setCheckoutStep(0);
     },
     onError: (error: any) => {
       console.error('Erro ao enviar pedido:', error);

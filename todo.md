@@ -1198,3 +1198,15 @@
   - Botão desabilitado quando há erro
   - Botão fica cinza para indicar estado desabilitado
 - [x] Adicionar dica "Deixe em branco se não precisar de troco"
+
+
+## Bug Fix - Limpar Sacola Após Enviar Pedido
+
+- [x] Limpar sacola automaticamente após pedido ser enviado com sucesso
+  - Adicionado setCart([]) no onSuccess da mutation createOrder
+- [x] Resetar estados relacionados (cupom aplicado, observação, etc.)
+  - setOrderObservation("")
+  - setAppliedCoupon(null)
+  - setChangeAmount("")
+  - setChangeAmountError(null)
+  - setCheckoutStep(0)
