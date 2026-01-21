@@ -969,15 +969,23 @@ export default function PublicMenu() {
                 <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
                   {establishment.street && (
                     <>
-                      <span className="flex items-center gap-1 min-w-0 flex-shrink">
-                        <MapPin className="h-3.5 w-3.5 text-gray-500 flex-shrink-0" />
-                        <span className="truncate max-w-[180px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-none">
+                      <a 
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                          [establishment.street, establishment.number, establishment.neighborhood, establishment.city, establishment.state].filter(Boolean).join(", ")
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 min-w-0 flex-shrink hover:text-red-500 transition-colors cursor-pointer group"
+                        title="Abrir no Google Maps"
+                      >
+                        <MapPin className="h-3.5 w-3.5 text-gray-500 flex-shrink-0 group-hover:text-red-500" />
+                        <span className="truncate max-w-[180px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-none underline-offset-2 group-hover:underline">
                           {establishment.street}
                           {establishment.number && `, ${establishment.number}`}
                           {establishment.neighborhood && ` - ${establishment.neighborhood}`}
                           {establishment.city && ` - ${establishment.city}`}
                         </span>
-                      </span>
+                      </a>
                       <span className="text-gray-400 flex-shrink-0">•</span>
                     </>
                   )}

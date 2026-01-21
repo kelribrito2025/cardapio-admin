@@ -1440,3 +1440,11 @@
   - Complemento (opcional)
 - [x] Adicionar indicador visual de campo obrigatório (*)
 - [x] Validar antes de salvar com mensagem de erro listando campos faltantes
+
+
+## Link do Endereço para Google Maps
+
+- [x] Tornar endereço clicável no menu público para abrir no Google Maps
+  - Endereço agora é um link que abre no Google Maps em nova aba
+  - Efeito hover com underline e mudança de cor
+  - Tooltip "Abrir no Google Maps"
