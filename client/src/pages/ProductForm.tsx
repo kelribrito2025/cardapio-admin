@@ -117,7 +117,13 @@ export default function ProductForm() {
     if (product) {
       setName(product.name);
       setDescription(product.description || "");
-      setCategoryId(product.categoryId ? String(product.categoryId) : "none");
+      // Garantir que categoryId seja convertido corretamente
+      // product.categoryId pode ser number, null ou undefined
+      if (product.categoryId !== null && product.categoryId !== undefined && product.categoryId !== 0) {
+        setCategoryId(String(product.categoryId));
+      } else {
+        setCategoryId("none");
+      }
       // Formatar preço para exibição (ex: "10,50")
       const priceValue = parseFloat(String(product.price));
       setPrice(priceValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
@@ -395,7 +401,7 @@ export default function ProductForm() {
 
                   <div className="lg:col-span-3">
                     <Label htmlFor="category" className="text-sm font-semibold">Categoria</Label>
-                    <Select value={categoryId} onValueChange={setCategoryId}>
+                    <Select key={`category-${categoryId}`} value={categoryId} onValueChange={setCategoryId}>
                       <SelectTrigger className="mt-1.5 h-9 text-sm rounded-lg border-border/50">
                         <SelectValue placeholder="Selecione" />
                       </SelectTrigger>

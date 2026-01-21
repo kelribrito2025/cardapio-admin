@@ -1603,3 +1603,8 @@
 ## Bug: Categoria não selecionada ao editar item
 
 - [x] Corrigir bug onde a categoria não fica selecionada ao editar item do cardápio, fazendo o item ir para "Sem categoria"
+
+## Bug: Categoria ainda não selecionada ao editar item (continuação)
+
+- [x] Investigar por que a categoria não está sendo selecionada ao editar item
+- [x] Corrigir definitivamente o bug de categoria

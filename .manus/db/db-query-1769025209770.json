@@ -1,0 +1,600 @@
+{
+  "query": "SELECT id, name, categoryId FROM products;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, categoryId FROM products;",
+  "rows": [
+    {
+      "id": "4",
+      "name": "Coca lata",
+      "categoryId": "2"
+    },
+    {
+      "id": "5",
+      "name": "Suco de goiaba",
+      "categoryId": "2"
+    },
+    {
+      "id": "30001",
+      "name": "Pudim de leite",
+      "categoryId": "4"
+    },
+    {
+      "id": "60001",
+      "name": "X-Bacon",
+      "categoryId": "30001"
+    },
+    {
+      "id": "60002",
+      "name": "X-Egg",
+      "categoryId": "30001"
+    },
+    {
+      "id": "60003",
+      "name": "X-Burguer",
+      "categoryId": "30001"
+    },
+    {
+      "id": "60004",
+      "name": "X-Tudo",
+      "categoryId": "30001"
+    },
+    {
+      "id": "60005",
+      "name": "Angus Premium",
+      "categoryId": "30002"
+    },
+    {
+      "id": "60006",
+      "name": "BBQ Pulled Pork",
+      "categoryId": "30002"
+    },
+    {
+      "id": "60007",
+      "name": "Trufado",
+      "categoryId": "30002"
+    },
+    {
+      "id": "60008",
+      "name": "Blue Cheese Burger",
+      "categoryId": "30002"
+    },
+    {
+      "id": "60009",
+      "name": "Da Casa",
+      "categoryId": "30003"
+    },
+    {
+      "id": "60010",
+      "name": "Costela Desfiada",
+      "categoryId": "30003"
+    },
+    {
+      "id": "60011",
+      "name": "Picanha Burger",
+      "categoryId": "30003"
+    },
+    {
+      "id": "60012",
+      "name": "Smash Duplo",
+      "categoryId": "30003"
+    },
+    {
+      "id": "60013",
+      "name": "Combo Premium",
+      "categoryId": "30004"
+    },
+    {
+      "id": "60014",
+      "name": "Combo Clássico",
+      "categoryId": "30004"
+    },
+    {
+      "id": "60015",
+      "name": "Combo Família",
+      "categoryId": "30004"
+    },
+    {
+      "id": "60016",
+      "name": "Combo Kids",
+      "categoryId": "30004"
+    },
+    {
+      "id": "60017",
+      "name": "Batata Frita",
+      "categoryId": "30005"
+    },
+    {
+      "id": "60018",
+      "name": "Onion Rings",
+      "categoryId": "30005"
+    },
+    {
+      "id": "60019",
+      "name": "Chicken Fingers",
+      "categoryId": "30005"
+    },
+    {
+      "id": "60020",
+      "name": "Nachos Supreme",
+      "categoryId": "30005"
+    },
+    {
+      "id": "60021",
+      "name": "Coca-Cola 350ml",
+      "categoryId": "30006"
+    },
+    {
+      "id": "60022",
+      "name": "Coca-Cola 350ml",
+      "categoryId": "2"
+    },
+    {
+      "id": "60023",
+      "name": "Suco Natural",
+      "categoryId": "30006"
+    },
+    {
+      "id": "60024",
+      "name": "Suco Natural",
+      "categoryId": "2"
+    },
+    {
+      "id": "60025",
+      "name": "Milkshake",
+      "categoryId": "30006"
+    },
+    {
+      "id": "60026",
+      "name": "Milkshake",
+      "categoryId": "2"
+    },
+    {
+      "id": "60027",
+      "name": "Coca-Cola 600ml",
+      "categoryId": "30006"
+    },
+    {
+      "id": "60028",
+      "name": "Coca-Cola 600ml",
+      "categoryId": "2"
+    },
+    {
+      "id": "60029",
+      "name": "Brownie com Sorvete",
+      "categoryId": "30007"
+    },
+    {
+      "id": "60030",
+      "name": "Brownie com Sorvete",
+      "categoryId": "4"
+    },
+    {
+      "id": "60031",
+      "name": "Petit Gateau",
+      "categoryId": "30007"
+    },
+    {
+      "id": "60032",
+      "name": "Petit Gateau",
+      "categoryId": "4"
+    },
+    {
+      "id": "60033",
+      "name": "Cheesecake",
+      "categoryId": "30007"
+    },
+    {
+      "id": "60034",
+      "name": "Cheesecake",
+      "categoryId": "4"
+    },
+    {
+      "id": "60035",
+      "name": "Sorvete Artesanal",
+      "categoryId": "30007"
+    },
+    {
+      "id": "60036",
+      "name": "Sorvete Artesanal",
+      "categoryId": "4"
+    },
+    {
+      "id": "60037",
+      "name": "Mini Burguer",
+      "categoryId": "30008"
+    },
+    {
+      "id": "60038",
+      "name": "Nuggets",
+      "categoryId": "30008"
+    },
+    {
+      "id": "60039",
+      "name": "Hot Dog Kids",
+      "categoryId": "30008"
+    },
+    {
+      "id": "60040",
+      "name": "Mini Pizza",
+      "categoryId": "30008"
+    },
+    {
+      "id": "60041",
+      "name": "Veggie Burger",
+      "categoryId": "30009"
+    },
+    {
+      "id": "60042",
+      "name": "Portobello Burger",
+      "categoryId": "30009"
+    },
+    {
+      "id": "60043",
+      "name": "Beyond Burger",
+      "categoryId": "30009"
+    },
+    {
+      "id": "60044",
+      "name": "Falafel Wrap",
+      "categoryId": "30009"
+    },
+    {
+      "id": "60045",
+      "name": "X-Burguer",
+      "categoryId": "30010"
+    },
+    {
+      "id": "60046",
+      "name": "X-Bacon",
+      "categoryId": "30010"
+    },
+    {
+      "id": "60047",
+      "name": "X-Tudo",
+      "categoryId": "30010"
+    },
+    {
+      "id": "60048",
+      "name": "X-Egg",
+      "categoryId": "30010"
+    },
+    {
+      "id": "60049",
+      "name": "Blue Cheese Burger",
+      "categoryId": "30011"
+    },
+    {
+      "id": "60050",
+      "name": "Angus Premium",
+      "categoryId": "30011"
+    },
+    {
+      "id": "60051",
+      "name": "Trufado",
+      "categoryId": "30011"
+    },
+    {
+      "id": "60052",
+      "name": "BBQ Pulled Pork",
+      "categoryId": "30011"
+    },
+    {
+      "id": "60053",
+      "name": "Picanha Burger",
+      "categoryId": "30012"
+    },
+    {
+      "id": "60054",
+      "name": "Da Casa",
+      "categoryId": "30012"
+    },
+    {
+      "id": "60055",
+      "name": "Costela Desfiada",
+      "categoryId": "30012"
+    },
+    {
+      "id": "60056",
+      "name": "Smash Duplo",
+      "categoryId": "30012"
+    },
+    {
+      "id": "60057",
+      "name": "Combo Premium",
+      "categoryId": "30013"
+    },
+    {
+      "id": "60058",
+      "name": "Combo Clássico",
+      "categoryId": "30013"
+    },
+    {
+      "id": "60059",
+      "name": "Combo Família",
+      "categoryId": "30013"
+    },
+    {
+      "id": "60060",
+      "name": "Combo Kids",
+      "categoryId": "30013"
+    },
+    {
+      "id": "60061",
+      "name": "Batata Frita",
+      "categoryId": "30014"
+    },
+    {
+      "id": "60062",
+      "name": "Nachos Supreme",
+      "categoryId": "30014"
+    },
+    {
+      "id": "60063",
+      "name": "Onion Rings",
+      "categoryId": "30014"
+    },
+    {
+      "id": "60064",
+      "name": "Chicken Fingers",
+      "categoryId": "30014"
+    },
+    {
+      "id": "60065",
+      "name": "Coca-Cola 350ml",
+      "categoryId": "30015"
+    },
+    {
+      "id": "60066",
+      "name": "Suco Natural",
+      "categoryId": "30015"
+    },
+    {
+      "id": "60067",
+      "name": "Coca-Cola 600ml",
+      "categoryId": "30015"
+    },
+    {
+      "id": "60068",
+      "name": "Milkshake",
+      "categoryId": "30015"
+    },
+    {
+      "id": "60069",
+      "name": "Brownie com Sorvete",
+      "categoryId": "30016"
+    },
+    {
+      "id": "60070",
+      "name": "Sorvete Artesanal",
+      "categoryId": "30016"
+    },
+    {
+      "id": "60071",
+      "name": "Cheesecake",
+      "categoryId": "30016"
+    },
+    {
+      "id": "60072",
+      "name": "Petit Gateau",
+      "categoryId": "30016"
+    },
+    {
+      "id": "60073",
+      "name": "Hot Dog Kids",
+      "categoryId": "30017"
+    },
+    {
+      "id": "60074",
+      "name": "Nuggets",
+      "categoryId": "30017"
+    },
+    {
+      "id": "60075",
+      "name": "Mini Burguer",
+      "categoryId": "30017"
+    },
+    {
+      "id": "60076",
+      "name": "Mini Pizza",
+      "categoryId": "30017"
+    },
+    {
+      "id": "60077",
+      "name": "Beyond Burger",
+      "categoryId": "30018"
+    },
+    {
+      "id": "60078",
+      "name": "Veggie Burger",
+      "categoryId": "30018"
+    },
+    {
+      "id": "60079",
+      "name": "Falafel Wrap",
+      "categoryId": "30018"
+    },
+    {
+      "id": "60080",
+      "name": "Portobello Burger",
+      "categoryId": "30018"
+    },
+    {
+      "id": "60081",
+      "name": "X-Egg",
+      "categoryId": "30027"
+    },
+    {
+      "id": "60082",
+      "name": "X-Burguer 3",
+      "categoryId": "30027"
+    },
+    {
+      "id": "60083",
+      "name": "X-Tudo",
+      "categoryId": "30025"
+    },
+    {
+      "id": "60084",
+      "name": "X-Bacon",
+      "categoryId": "30024"
+    },
+    {
+      "id": "60086",
+      "name": "Angus Premium",
+      "categoryId": "30027"
+    },
+    {
+      "id": "60087",
+      "name": "Blue Cheese Burger",
+      "categoryId": "30024"
+    },
+    {
+      "id": "60089",
+      "name": "Da Casa",
+      "categoryId": "30024"
+    },
+    {
+      "id": "60090",
+      "name": "Picanha Burger",
+      "categoryId": "30027"
+    },
+    {
+      "id": "60091",
+      "name": "Costela Desfiada",
+      "categoryId": "30024"
+    },
+    {
+      "id": "60092",
+      "name": "Smash Duplo",
+      "categoryId": "30023"
+    },
+    {
+      "id": "60093",
+      "name": "Combo Clássico",
+      "categoryId": "30020"
+    },
+    {
+      "id": "60094",
+      "name": "Combo Família",
+      "categoryId": "30020"
+    },
+    {
+      "id": "60095",
+      "name": "Combo Premium",
+      "categoryId": "30020"
+    },
+    {
+      "id": "60096",
+      "name": "Combo Kids",
+      "categoryId": "30020"
+    },
+    {
+      "id": "60097",
+      "name": "Onion Rings",
+      "categoryId": "30026"
+    },
+    {
+      "id": "60098",
+      "name": "Nachos Supreme",
+      "categoryId": "30026"
+    },
+    {
+      "id": "60099",
+      "name": "Chicken Fingers",
+      "categoryId": "30026"
+    },
+    {
+      "id": "60100",
+      "name": "Batata Frita",
+      "categoryId": "30026"
+    },
+    {
+      "id": "60101",
+      "name": "Coca-Cola 600ml",
+      "categoryId": "30019"
+    },
+    {
+      "id": "60102",
+      "name": "Suco Natural",
+      "categoryId": "30019"
+    },
+    {
+      "id": "60103",
+      "name": "Coca-Cola 350ml",
+      "categoryId": "30019"
+    },
+    {
+      "id": "60104",
+      "name": "Milkshake",
+      "categoryId": "30019"
+    },
+    {
+      "id": "60105",
+      "name": "Cheesecake",
+      "categoryId": "30021"
+    },
+    {
+      "id": "60106",
+      "name": "Brownie com Sorvete",
+      "categoryId": "30021"
+    },
+    {
+      "id": "60107",
+      "name": "Petit Gateau",
+      "categoryId": "30021"
+    },
+    {
+      "id": "60108",
+      "name": "Sorvete Artesanal",
+      "categoryId": "30021"
+    },
+    {
+      "id": "60109",
+      "name": "Mini Burguer",
+      "categoryId": "30025"
+    },
+    {
+      "id": "60110",
+      "name": "Mini Pizza",
+      "categoryId": "30025"
+    },
+    {
+      "id": "60111",
+      "name": "Hot Dog Kids",
+      "categoryId": "30025"
+    },
+    {
+      "id": "60112",
+      "name": "Nuggets",
+      "categoryId": "30025"
+    },
+    {
+      "id": "60113",
+      "name": "Portobello Burger",
+      "categoryId": "30022"
+    },
+    {
+      "id": "60114",
+      "name": "Beyond Burger",
+      "categoryId": "30022"
+    },
+    {
+      "id": "60115",
+      "name": "Veggie Burger",
+      "categoryId": "30022"
+    },
+    {
+      "id": "60116",
+      "name": "Falafel Wrap",
+      "categoryId": "30022"
+    },
+    {
+      "id": "90001",
+      "name": "Teste",
+      "categoryId": "2"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tcategoryId\n4\tCoca lata\t2\n5\tSuco de goiaba\t2\n30001\tPudim de leite\t4\n60001\tX-Bacon\t30001\n60002\tX-Egg\t30001\n60003\tX-Burguer\t30001\n60004\tX-Tudo\t30001\n60005\tAngus Premium\t30002\n60006\tBBQ Pulled Pork\t30002\n60007\tTrufado\t30002\n60008\tBlue Cheese Burger\t30002\n60009\tDa Casa\t30003\n60010\tCostela Desfiada\t30003\n60011\tPicanha Burger\t30003\n60012\tSmash Duplo\t30003\n60013\tCombo Premium\t30004\n60014\tCombo Clássico\t30004\n60015\tCombo Família\t30004\n60016\tCombo Kids\t30004\n60017\tBatata Frita\t30005\n60018\tOnion Rings\t30005\n60019\tChicken Fingers\t30005\n60020\tNachos Supreme\t30005\n60021\tCoca-Cola 350ml\t30006\n60022\tCoca-Cola 350ml\t2\n60023\tSuco Natural\t30006\n60024\tSuco Natural\t2\n60025\tMilkshake\t30006\n60026\tMilkshake\t2\n60027\tCoca-Cola 600ml\t30006\n60028\tCoca-Cola 600ml\t2\n60029\tBrownie com Sorvete\t30007\n60030\tBrownie com Sorvete\t4\n60031\tPetit Gateau\t30007\n60032\tPetit Gateau\t4\n60033\tCheesecake\t30007\n60034\tCheesecake\t4\n60035\tSorvete Artesanal\t30007\n60036\tSorvete Artesanal\t4\n60037\tMini Burguer\t30008\n60038\tNuggets\t30008\n60039\tHot Dog Kids\t30008\n60040\tMini Pizza\t30008\n60041\tVeggie Burger\t30009\n60042\tPortobello Burger\t30009\n60043\tBeyond Burger\t30009\n60044\tFalafel Wrap\t30009\n60045\tX-Burguer\t30010\n60046\tX-Bacon\t30010\n60047\tX-Tudo\t30010\n60048\tX-Egg\t30010\n60049\tBlue Cheese Burger\t30011\n60050\tAngus Premium\t30011\n60051\tTrufado\t30011\n60052\tBBQ Pulled Pork\t30011\n60053\tPicanha Burger\t30012\n60054\tDa Casa\t30012\n60055\tCostela Desfiada\t30012\n60056\tSmash Duplo\t30012\n60057\tCombo Premium\t30013\n60058\tCombo Clássico\t30013\n60059\tCombo Família\t30013\n60060\tCombo Kids\t30013\n60061\tBatata Frita\t30014\n60062\tNachos Supreme\t30014\n60063\tOnion Rings\t30014\n60064\tChicken Fingers\t30014\n60065\tCoca-Cola 350ml\t30015\n60066\tSuco Natural\t30015\n60067\tCoca-Cola 600ml\t30015\n60068\tMilkshake\t30015\n60069\tBrownie com Sorvete\t30016\n60070\tSorvete Artesanal\t30016\n60071\tCheesecake\t30016\n60072\tPetit Gateau\t30016\n60073\tHot Dog Kids\t30017\n60074\tNuggets\t30017\n60075\tMini Burguer\t30017\n60076\tMini Pizza\t30017\n60077\tBeyond Burger\t30018\n60078\tVeggie Burger\t30018\n60079\tFalafel Wrap\t30018\n60080\tPortobello Burger\t30018\n60081\tX-Egg\t30027\n60082\tX-Burguer 3\t30027\n60083\tX-Tudo\t30025\n60084\tX-Bacon\t30024\n60086\tAngus Premium\t30027\n60087\tBlue Cheese Burger\t30024\n60089\tDa Casa\t30024\n60090\tPicanha Burger\t30027\n60091\tCostela Desfiada\t30024\n60092\tSmash Duplo\t30023\n60093\tCombo Clássico\t30020\n60094\tCombo Família\t30020\n60095\tCombo Premium\t30020\n60096\tCombo Kids\t30020\n60097\tOnion Rings\t30026\n60098\tNachos Supreme\t30026\n60099\tChicken Fingers\t30026\n60100\tBatata Frita\t30026\n60101\tCoca-Cola 600ml\t30019\n60102\tSuco Natural\t30019\n60103\tCoca-Cola 350ml\t30019\n60104\tMilkshake\t30019\n60105\tCheesecake\t30021\n60106\tBrownie com Sorvete\t30021\n60107\tPetit Gateau\t30021\n60108\tSorvete Artesanal\t30021\n60109\tMini Burguer\t30025\n60110\tMini Pizza\t30025\n60111\tHot Dog Kids\t30025\n60112\tNuggets\t30025\n60113\tPortobello Burger\t30022\n60114\tBeyond Burger\t30022\n60115\tVeggie Burger\t30022\n60116\tFalafel Wrap\t30022\n90001\tTeste\t2\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

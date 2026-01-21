@@ -1,0 +1,35 @@
+{
+  "query": "SELECT id, name, categoryId FROM products LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, categoryId FROM products LIMIT 5;",
+  "rows": [
+    {
+      "id": "4",
+      "name": "Coca lata",
+      "categoryId": "2"
+    },
+    {
+      "id": "5",
+      "name": "Suco de goiaba",
+      "categoryId": "2"
+    },
+    {
+      "id": "30001",
+      "name": "Pudim de leite",
+      "categoryId": "4"
+    },
+    {
+      "id": "60001",
+      "name": "X-Bacon",
+      "categoryId": "30001"
+    },
+    {
+      "id": "60002",
+      "name": "X-Egg",
+      "categoryId": "30001"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tcategoryId\n4\tCoca lata\t2\n5\tSuco de goiaba\t2\n30001\tPudim de leite\t4\n60001\tX-Bacon\t30001\n60002\tX-Egg\t30001\n",
+  "stderr": "",
+  "execution_time_ms": 110
+}
