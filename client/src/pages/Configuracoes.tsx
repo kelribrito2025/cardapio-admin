@@ -188,6 +188,20 @@ export default function Configuracoes() {
       return;
     }
 
+    // Validar campos obrigatórios de endereço
+    const missingFields = [];
+    if (!street.trim()) missingFields.push("Rua");
+    if (!number.trim()) missingFields.push("Número");
+    if (!neighborhood.trim()) missingFields.push("Bairro");
+    if (!city.trim()) missingFields.push("Cidade");
+    if (!state.trim()) missingFields.push("Estado");
+    if (!zipCode.trim()) missingFields.push("CEP");
+
+    if (missingFields.length > 0) {
+      toast.error(`Preencha os campos obrigatórios: ${missingFields.join(", ")}`);
+      return;
+    }
+
     const data = {
       name: name.trim(),
       logo: logo || undefined,
@@ -890,36 +904,50 @@ export default function Configuracoes() {
             title="Endereço do Estabelecimento"
           >
             <div className="space-y-5">
+              <p className="text-xs text-muted-foreground">Campos marcados com <span className="text-red-500">*</span> são obrigatórios</p>
+              
               {/* Linha 1: Rua, Número, Bairro */}
               <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
                 <div className="sm:col-span-3">
-                  <Label htmlFor="street" className="text-sm font-semibold">Rua</Label>
+                  <Label htmlFor="street" className="text-sm font-semibold">Rua <span className="text-red-500">*</span></Label>
                   <Input
                     id="street"
                     value={street}
                     onChange={(e) => setStreet(e.target.value)}
                     placeholder="Nome da rua"
-                    className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
+                    required
+                    className={cn(
+                      "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                      !street.trim() && "border-red-300 focus:border-red-500"
+                    )}
                   />
                 </div>
                 <div className="sm:col-span-1">
-                  <Label htmlFor="number" className="text-sm font-semibold">Número</Label>
+                  <Label htmlFor="number" className="text-sm font-semibold">Número <span className="text-red-500">*</span></Label>
                   <Input
                     id="number"
                     value={number}
                     onChange={(e) => setNumber(e.target.value)}
                     placeholder="123"
-                    className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
+                    required
+                    className={cn(
+                      "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                      !number.trim() && "border-red-300 focus:border-red-500"
+                    )}
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <Label htmlFor="neighborhood" className="text-sm font-semibold">Bairro</Label>
+                  <Label htmlFor="neighborhood" className="text-sm font-semibold">Bairro <span className="text-red-500">*</span></Label>
                   <Input
                     id="neighborhood"
                     value={neighborhood}
                     onChange={(e) => setNeighborhood(e.target.value)}
                     placeholder="Nome do bairro"
-                    className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
+                    required
+                    className={cn(
+                      "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                      !neighborhood.trim() && "border-red-300 focus:border-red-500"
+                    )}
                   />
                 </div>
               </div>
@@ -927,7 +955,7 @@ export default function Configuracoes() {
               {/* Linha 2: Complemento, Cidade, Estado, CEP */}
               <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
                 <div className="sm:col-span-2">
-                  <Label htmlFor="complement" className="text-sm font-semibold">Complemento</Label>
+                  <Label htmlFor="complement" className="text-sm font-semibold">Complemento <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
                   <Input
                     id="complement"
                     value={complement}
@@ -937,33 +965,45 @@ export default function Configuracoes() {
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <Label htmlFor="city" className="text-sm font-semibold">Cidade</Label>
+                  <Label htmlFor="city" className="text-sm font-semibold">Cidade <span className="text-red-500">*</span></Label>
                   <Input
                     id="city"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="Nome da cidade"
-                    className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
+                    required
+                    className={cn(
+                      "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                      !city.trim() && "border-red-300 focus:border-red-500"
+                    )}
                   />
                 </div>
                 <div className="sm:col-span-1">
-                  <Label htmlFor="state" className="text-sm font-semibold">Estado</Label>
+                  <Label htmlFor="state" className="text-sm font-semibold">Estado <span className="text-red-500">*</span></Label>
                   <Input
                     id="state"
                     value={state}
                     onChange={(e) => setState(e.target.value)}
                     placeholder="UF"
-                    className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
+                    required
+                    className={cn(
+                      "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                      !state.trim() && "border-red-300 focus:border-red-500"
+                    )}
                   />
                 </div>
                 <div className="sm:col-span-1">
-                  <Label htmlFor="zipCode" className="text-sm font-semibold">CEP</Label>
+                  <Label htmlFor="zipCode" className="text-sm font-semibold">CEP <span className="text-red-500">*</span></Label>
                   <Input
                     id="zipCode"
                     value={zipCode}
                     onChange={(e) => setZipCode(e.target.value)}
                     placeholder="00000-000"
-                    className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
+                    required
+                    className={cn(
+                      "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                      !zipCode.trim() && "border-red-300 focus:border-red-500"
+                    )}
                   />
                 </div>
               </div>

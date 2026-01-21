@@ -1427,3 +1427,16 @@
 
 - [x] Corrigir endereço truncado na versão desktop do menu público
   - Aumentado max-width progressivo: 180px (mobile) → 400px (sm) → 500px (md) → sem limite (lg+)
+
+## Campos de Endereço Obrigatórios
+
+- [x] Tornar campos de endereço obrigatórios (exceto complemento)
+  - Rua (obrigatório)
+  - Número (obrigatório)
+  - Bairro (obrigatório)
+  - Cidade (obrigatório)
+  - Estado (obrigatório)
+  - CEP (obrigatório)
+  - Complemento (opcional)
+- [x] Adicionar indicador visual de campo obrigatório (*)
+- [x] Validar antes de salvar com mensagem de erro listando campos faltantes
