@@ -2381,7 +2381,7 @@ export default function PublicMenu() {
                       discount: discount.toFixed(2),
                       total: total.toFixed(2),
                       notes: orderObservation || undefined,
-                      changeAmount: paymentMethod === 'cash' && changeAmount ? changeAmount : undefined,
+                      changeAmount: paymentMethod === 'cash' && changeAmount ? changeAmount.replace(/\./g, '').replace(',', '.') : undefined,
                       couponCode: appliedCoupon?.code || undefined,
                       couponId: appliedCoupon?.id || undefined,
                       items: cart.map(item => ({

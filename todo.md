@@ -1169,3 +1169,14 @@
 - [x] Corrigir parâmetros inválidos na query
   - Solução: substituir fetch direto por trpcUtils.client.publicMenu.getOrderByNumber.query()
   - Adicionado trpcUtils = trpc.useUtils() para chamadas imperativas
+
+
+## Bug Fix - Erro de Inserção de Pedido no Banco de Dados
+
+- [x] Analisar erro "Failed query: insert into orders" ao enviar pedido
+  - Problema: campo changeAmount estava sendo enviado com formato brasileiro (vírgula como separador decimal: 100,00)
+  - O banco de dados espera formato numérico com ponto (100.00)
+- [x] Verificar schema da tabela orders e tipos de dados
+  - changeAmount é decimal(10,2) que requer formato com ponto decimal
+- [x] Corrigir código de criação de pedidos no frontend
+  - Adicionado .replace(/\\./g, '').replace(',', '.') para converter formato brasileiro para numérico
