@@ -102,6 +102,9 @@ export default function PublicMenu() {
   const categoryRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const categoryButtonRefs = useRef<{ [key: number]: HTMLButtonElement | null }>({});
 
+  // Utils do TRPC para chamadas imperativas
+  const trpcUtils = trpc.useUtils();
+
   const { data, isLoading, error } = trpc.publicMenu.getBySlug.useQuery(
     { slug: slug || "" },
     { enabled: !!slug }
@@ -415,13 +418,14 @@ export default function PublicMenu() {
         const updatedOrders = await Promise.all(
           ordersToUpdate.map(async (order) => {
             try {
-              const response = await fetch(`/api/trpc/publicMenu.getOrderByNumber?input=${encodeURIComponent(JSON.stringify({
+              // Usar trpcUtils.client para chamada imperativa
+              const response = await trpcUtils.client.publicMenu.getOrderByNumber.query({
                 orderNumber: order.id,
                 establishmentId: data.establishment.id
-              }))}`).then(res => res.json());
+              });
               
-              if (response?.result?.data?.status) {
-                const newStatus = localStatusMap[response.result.data.status] || order.status;
+              if (response?.status) {
+                const newStatus = localStatusMap[response.status] || order.status;
                 return { ...order, status: newStatus };
               }
               return order;

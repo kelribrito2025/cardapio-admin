@@ -1159,3 +1159,13 @@
 
 ### Validação
 - [ ] Testar criação de 10 pedidos seguidos sem recarregar página
+
+
+## Bug Fix - Erro 400 em TRPC publicMenu após primeiro pedido
+
+- [x] Identificar qual query TRPC está causando erro 400 (URL contém tId%22%3A30001)
+  - Problema: chamada fetch direta para API TRPC com JSON mal formatado na URL
+  - Local: PublicMenu.tsx, função syncOrderStatuses (linha 418)
+- [x] Corrigir parâmetros inválidos na query
+  - Solução: substituir fetch direto por trpcUtils.client.publicMenu.getOrderByNumber.query()
+  - Adicionado trpcUtils = trpc.useUtils() para chamadas imperativas
