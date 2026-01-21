@@ -970,7 +970,7 @@ export default function PublicMenu() {
                         <span className="text-sm font-semibold text-gray-800 ml-1">
                           {establishment.rating ? Number(establishment.rating).toFixed(1).replace('.', ',') : '0,0'}
                         </span>
-                        <span className="text-sm text-gray-500 hidden sm:inline">
+                        <span className="text-sm text-gray-500 hidden sm:inline" style={{marginLeft: '-2px'}}>
                           ({establishment.reviewCount || 0} avaliações)
                         </span>
                         <span className="text-sm text-gray-500 sm:hidden">
