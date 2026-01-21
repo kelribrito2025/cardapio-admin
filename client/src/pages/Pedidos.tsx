@@ -91,10 +91,10 @@ export default function Pedidos() {
   // Query para buscar todos os pedidos (para contagem)
   const { data: allOrdersData, refetch: refetchAll } = trpc.orders.list.useQuery(
     { 
-      establishmentId: establishmentId!,
+      establishmentId: establishmentId ?? 0,
     },
     { 
-      enabled: !!establishmentId,
+      enabled: !!establishmentId && establishmentId > 0,
       // Polling como fallback apenas se SSE não estiver conectado
       refetchInterval: false,
     }
@@ -103,11 +103,11 @@ export default function Pedidos() {
   // Query para buscar pedidos filtrados por status
   const { data: ordersData, refetch, isLoading } = trpc.orders.list.useQuery(
     { 
-      establishmentId: establishmentId!,
+      establishmentId: establishmentId ?? 0,
       status: activeTab !== "all" ? activeTab : undefined,
     },
     { 
-      enabled: !!establishmentId,
+      enabled: !!establishmentId && establishmentId > 0,
       // Polling como fallback apenas se SSE não estiver conectado
       refetchInterval: false,
     }

@@ -1048,3 +1048,9 @@
 ## Bug Fix - establishmentId null na página /pedidos
 
 - [x] Corrigir erro onde establishmentId é passado como null na query de pedidos
+
+
+## Bug Fix - Cardápio não encontrado no menu público
+
+- [x] Investigar e corrigir erro "Cardápio não encontrado" após últimas alterações
+- [x] Corrigir erro de establishmentId null nas queries de Pedidos.tsx
