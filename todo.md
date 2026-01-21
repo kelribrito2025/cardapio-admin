@@ -1480,3 +1480,8 @@
   - Modal de Acompanhar Pedido
   - Modal de Avaliações
 - [x] Modais devem fechar apenas pelo botão X
+
+
+## Bug - Placeholder do Campo de Busca Mobile
+
+- [x] Corrigir placeholder do campo de busca no mobile para mostrar "Buscar no cardápio" completo
