@@ -1222,3 +1222,34 @@
   - Adicionado setOrderSent(false) no botão "Finalizar pedido" (mobile)
 - [x] Garantir que o fluxo de checkout funcione corretamente para múltiplos pedidos
   - Agora cada novo checkout começa com orderSent=false
+
+
+## Integração SMS DisparoPro
+
+- [x] Acessar documentação da API DisparoPro
+  - Endpoint: POST https://apihttp.disparopro.com.br:8433/mt
+  - Autenticação: Bearer Token no header Authorization
+- [x] Criar função utilitária para envio de SMS (server/_core/sms.ts)
+  - sendSMS(): função genérica para envio
+  - sendOrderReadySMS(): função específica para pedido pronto
+  - normalizePhoneNumber(): normaliza telefone para formato 55DDDNNNNNNNNN
+  - isValidPhoneNumber(): valida se telefone é válido
+- [x] Normalizar telefone (DDD + número) antes de enviar
+  - Remove caracteres especiais
+  - Adiciona código do país 55 se necessário
+  - Valida tamanho (12-13 dígitos)
+- [x] Integrar envio de SMS no fluxo de atualização de status "ready"
+  - Integrado em db.ts na função updateOrderStatus()
+  - Busca nome do restaurante para mensagem personalizada
+- [x] Garantir que SMS só seja enviado uma vez (quando status muda para "ready")
+  - Condição: status === "ready"
+- [x] Tratar erros silenciosamente (logar, não quebrar fluxo)
+  - Envio assíncrono com .then().catch()
+  - Logs de sucesso e erro no console
+- [x] Ignorar envio se telefone não for válido
+  - Validação com isValidPhoneNumber() antes de enviar
+- [x] Solicitar token/config da DisparoPro via webdev_request_secrets
+  - DISPAROPRO_TOKEN: Token de autenticação
+  - DISPAROPRO_PARCEIRO_ID: ID do parceiro
+- [x] Testes unitários criados (sms.test.ts, sms-credentials.test.ts)
+  - 119 testes passando

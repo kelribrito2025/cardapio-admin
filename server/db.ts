@@ -1,6 +1,7 @@
 import { eq, desc, asc, and, like, sql, gte, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate } from "./_core/sse";
+import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
 import { 
   InsertUser, users, 
   establishments, InsertEstablishment, Establishment,
@@ -573,6 +574,31 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
         updatedAt: new Date(),
         cancellationReason
       });
+    }
+    
+    // Enviar SMS quando o status mudar para "ready" (pedido pronto/saindo para entrega)
+    if (status === "ready" && order.customerPhone && isValidPhoneNumber(order.customerPhone)) {
+      // Buscar nome do estabelecimento para a mensagem
+      const establishmentResult = await db.select({ name: establishments.name })
+        .from(establishments)
+        .where(eq(establishments.id, order.establishmentId))
+        .limit(1);
+      
+      if (establishmentResult.length > 0) {
+        const restaurantName = establishmentResult[0].name;
+        // Enviar SMS de forma assíncrona (não bloqueia o fluxo)
+        sendOrderReadySMS(order.customerPhone, restaurantName)
+          .then(result => {
+            if (result.success) {
+              console.log(`[SMS] SMS enviado com sucesso para pedido ${order.orderNumber}`);
+            } else {
+              console.warn(`[SMS] Falha ao enviar SMS para pedido ${order.orderNumber}: ${result.error}`);
+            }
+          })
+          .catch(err => {
+            console.error(`[SMS] Erro ao enviar SMS para pedido ${order.orderNumber}:`, err);
+          });
+      }
     }
   }
 }
