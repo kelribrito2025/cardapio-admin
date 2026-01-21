@@ -158,3 +158,156 @@ describe("SSE Module", () => {
     });
   });
 });
+
+
+// ==================== TESTES PARA SSE DE CLIENTES ====================
+import {
+  addCustomerConnection,
+  removeCustomerConnection,
+  sendCustomerEvent,
+  notifyCustomerOrderUpdate,
+  getCustomerConnectionCount,
+} from "./_core/sse";
+
+describe("SSE Customer Module", () => {
+  describe("addCustomerConnection", () => {
+    it("should add a connection for a customer phone", () => {
+      const res = createMockResponse();
+      const phone = "11999990001";
+
+      addCustomerConnection(phone, res);
+
+      expect(getCustomerConnectionCount(phone)).toBeGreaterThanOrEqual(1);
+    });
+
+    it("should allow multiple connections for the same phone", () => {
+      const res1 = createMockResponse();
+      const res2 = createMockResponse();
+      const phone = "11999990002";
+
+      addCustomerConnection(phone, res1);
+      addCustomerConnection(phone, res2);
+
+      expect(getCustomerConnectionCount(phone)).toBeGreaterThanOrEqual(2);
+    });
+  });
+
+  describe("removeCustomerConnection", () => {
+    it("should remove a customer connection", () => {
+      const res = createMockResponse();
+      const phone = "11999990003";
+
+      addCustomerConnection(phone, res);
+      const countBefore = getCustomerConnectionCount(phone);
+      
+      removeCustomerConnection(phone, res);
+      const countAfter = getCustomerConnectionCount(phone);
+
+      expect(countAfter).toBeLessThan(countBefore);
+    });
+
+    it("should handle removing non-existent connection gracefully", () => {
+      const res = createMockResponse();
+      const phone = "11999999999";
+
+      // Should not throw
+      expect(() => removeCustomerConnection(phone, res)).not.toThrow();
+    });
+  });
+
+  describe("sendCustomerEvent", () => {
+    it("should send event to all connections of a customer", () => {
+      const res1 = createMockResponse();
+      const res2 = createMockResponse();
+      const phone = "11999990004";
+
+      addCustomerConnection(phone, res1);
+      addCustomerConnection(phone, res2);
+
+      sendCustomerEvent(phone, "test_event", { message: "hello" });
+
+      expect(res1.write).toHaveBeenCalled();
+      expect(res2.write).toHaveBeenCalled();
+    });
+
+    it("should format event correctly", () => {
+      const res = createMockResponse();
+      const phone = "11999990005";
+      const eventType = "order_status_update";
+      const data = { orderNumber: "#60001", status: "preparing" };
+
+      addCustomerConnection(phone, res);
+      sendCustomerEvent(phone, eventType, data);
+
+      expect(res.write).toHaveBeenCalledWith(
+        expect.stringContaining(`event: ${eventType}`)
+      );
+      expect(res.write).toHaveBeenCalledWith(
+        expect.stringContaining(JSON.stringify(data))
+      );
+    });
+
+    it("should not throw when no connections exist", () => {
+      expect(() => sendCustomerEvent("00000000000", "test", {})).not.toThrow();
+    });
+  });
+
+  describe("notifyCustomerOrderUpdate", () => {
+    it("should send order_status_update event to customer", () => {
+      const res = createMockResponse();
+      const phone = "11999990006";
+      const orderUpdate = {
+        id: 1,
+        orderNumber: "#60001",
+        status: "preparing",
+        updatedAt: new Date(),
+      };
+
+      addCustomerConnection(phone, res);
+      notifyCustomerOrderUpdate(phone, orderUpdate);
+
+      expect(res.write).toHaveBeenCalledWith(
+        expect.stringContaining("event: order_status_update")
+      );
+      expect(res.write).toHaveBeenCalledWith(
+        expect.stringContaining("#60001")
+      );
+    });
+
+    it("should include cancellation reason when provided", () => {
+      const res = createMockResponse();
+      const phone = "11999990007";
+      const orderUpdate = {
+        id: 2,
+        orderNumber: "#60002",
+        status: "cancelled",
+        cancellationReason: "Produto indisponível",
+        updatedAt: new Date(),
+      };
+
+      addCustomerConnection(phone, res);
+      notifyCustomerOrderUpdate(phone, orderUpdate);
+
+      expect(res.write).toHaveBeenCalledWith(
+        expect.stringContaining("Produto indisponível")
+      );
+    });
+  });
+
+  describe("getCustomerConnectionCount", () => {
+    it("should return 0 for non-existent phone", () => {
+      expect(getCustomerConnectionCount("00000000001")).toBe(0);
+    });
+
+    it("should return correct count for existing phone", () => {
+      const res1 = createMockResponse();
+      const res2 = createMockResponse();
+      const phone = "11999990008";
+
+      addCustomerConnection(phone, res1);
+      addCustomerConnection(phone, res2);
+
+      expect(getCustomerConnectionCount(phone)).toBeGreaterThanOrEqual(2);
+    });
+  });
+});

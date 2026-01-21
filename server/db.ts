@@ -1,6 +1,6 @@
 import { eq, desc, asc, and, like, sql, gte, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { notifyNewOrder, notifyOrderUpdate } from "./_core/sse";
+import { notifyNewOrder, notifyOrderUpdate, notifyCustomerOrderUpdate } from "./_core/sse";
 import { 
   InsertUser, users, 
   establishments, InsertEstablishment, Establishment,
@@ -561,7 +561,20 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
   const updatedOrder = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
   if (updatedOrder.length > 0) {
     const order = updatedOrder[0];
+    // Notificar o dashboard do restaurante
     notifyOrderUpdate(order.establishmentId, { id, status, updatedAt: new Date(), cancellationReason });
+    
+    // Notificar o cliente via SSE (se tiver telefone)
+    if (order.customerPhone) {
+      const normalizedPhone = order.customerPhone.replace(/\D/g, "");
+      notifyCustomerOrderUpdate(normalizedPhone, {
+        id,
+        orderNumber: order.orderNumber,
+        status,
+        updatedAt: new Date(),
+        cancellationReason
+      });
+    }
   }
 }
 

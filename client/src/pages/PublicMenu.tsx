@@ -391,6 +391,114 @@ export default function PublicMenu() {
     syncOrderStatuses();
   }, [showOrdersModal, data?.establishment?.id]);
 
+  // Ref para armazenar o telefone do cliente e evitar reconexões desnecessárias
+  const customerPhoneRef = useRef<string>('');
+  const eventSourceRef = useRef<EventSource | null>(null);
+  const currentOrderNumberRef = useRef<string | null>(null);
+  
+  // Atualizar ref do currentOrderNumber
+  useEffect(() => {
+    currentOrderNumberRef.current = currentOrderNumber;
+  }, [currentOrderNumber]);
+  
+  // Conexão SSE para atualização em tempo real do status dos pedidos
+  useEffect(() => {
+    // Pegar o telefone do localStorage (do último pedido ou customerInfo salvo)
+    const savedCustomerInfo = localStorage.getItem('customerInfo');
+    let customerPhone = '';
+    
+    if (savedCustomerInfo) {
+      try {
+        const parsed = JSON.parse(savedCustomerInfo);
+        customerPhone = parsed.phone?.replace(/\D/g, '') || '';
+      } catch (e) {
+        console.error('Erro ao carregar customerInfo:', e);
+      }
+    }
+    
+    // Se não tem telefone salvo, tentar pegar do primeiro pedido
+    if (!customerPhone && userOrders.length > 0) {
+      customerPhone = userOrders[0].customerPhone?.replace(/\D/g, '') || '';
+    }
+    
+    // Se ainda não tem telefone, não conectar
+    if (!customerPhone || customerPhone.length < 10) {
+      return;
+    }
+    
+    // Se já está conectado com o mesmo telefone, não reconectar
+    if (customerPhoneRef.current === customerPhone && eventSourceRef.current) {
+      return;
+    }
+    
+    // Fechar conexão anterior se existir
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+    }
+    
+    customerPhoneRef.current = customerPhone;
+    
+    // Criar conexão SSE
+    const eventSource = new EventSource(`/api/customer/orders/stream?phone=${encodeURIComponent(customerPhone)}`);
+    eventSourceRef.current = eventSource;
+    
+    const statusMap: Record<string, "sent" | "accepted" | "delivering" | "delivered" | "cancelled"> = {
+      'new': 'sent',
+      'preparing': 'accepted',
+      'ready': 'delivering',
+      'completed': 'delivered',
+      'cancelled': 'cancelled',
+    };
+    
+    eventSource.addEventListener('order_status_update', (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log('[SSE-Customer] Recebido evento de atualização de status:', data);
+        
+        // Atualizar o pedido no estado
+        setUserOrders(prevOrders => {
+          const newOrders = prevOrders.map(order => {
+            if (order.id === data.orderNumber) {
+              const newStatus = statusMap[data.status] || order.status;
+              return { ...order, status: newStatus };
+            }
+            return order;
+          });
+          localStorage.setItem('userOrders', JSON.stringify(newOrders));
+          return newOrders;
+        });
+        
+        // Se o modal de tracking está aberto e é o mesmo pedido, atualizar o status
+        if (currentOrderNumberRef.current === data.orderNumber) {
+          const newStatus = statusMap[data.status] || 'sent';
+          setOrderStatus(newStatus);
+          if (data.cancellationReason) {
+            setCancellationReasonDisplay(data.cancellationReason);
+          }
+        }
+      } catch (e) {
+        console.error('[SSE-Customer] Erro ao processar evento:', e);
+      }
+    });
+    
+    eventSource.addEventListener('connected', (event) => {
+      console.log('[SSE-Customer] Conexão estabelecida:', event.data);
+    });
+    
+    eventSource.onerror = (error) => {
+      console.error('[SSE-Customer] Erro na conexão:', error);
+    };
+    
+    // Cleanup quando o componente desmontar
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+        console.log('[SSE-Customer] Conexão fechada');
+      }
+    };
+  }, [userOrders.length]);
+
   // Carregar endereço salvo do localStorage
   useEffect(() => {
     const savedAddress = localStorage.getItem('savedDeliveryAddress');

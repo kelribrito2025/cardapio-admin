@@ -8,7 +8,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
-import { addConnection, removeConnection, sendHeartbeat } from "./sse";
+import { addConnection, removeConnection, sendHeartbeat, addCustomerConnection, removeCustomerConnection, sendCustomerHeartbeat } from "./sse";
 import { getUserByOpenId, getEstablishmentByUserId } from "../db";
 import { sdk } from "./sdk";
 
@@ -113,6 +113,58 @@ async function startServer() {
       res.status(500).json({ error: "Internal server error" });
     }
   });
+  
+  // SSE endpoint para clientes acompanharem pedidos em tempo real (por telefone)
+  app.get("/api/customer/orders/stream", async (req, res) => {
+    try {
+      const customerPhone = req.query.phone as string;
+      
+      if (!customerPhone) {
+        console.log("[SSE-Customer] Sem telefone fornecido");
+        res.status(400).json({ error: "Phone number required" });
+        return;
+      }
+      
+      // Normalizar telefone (remover caracteres não numéricos)
+      const normalizedPhone = customerPhone.replace(/\D/g, "");
+      
+      if (normalizedPhone.length < 10) {
+        console.log("[SSE-Customer] Telefone inválido:", customerPhone);
+        res.status(400).json({ error: "Invalid phone number" });
+        return;
+      }
+      
+      // Configurar headers SSE
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+      res.setHeader("X-Accel-Buffering", "no"); // Para nginx
+      res.flushHeaders();
+      
+      // Enviar evento de conexão estabelecida
+      res.write(`event: connected\ndata: ${JSON.stringify({ phone: normalizedPhone })}\n\n`);
+      
+      // Adicionar conexão ao pool de clientes
+      addCustomerConnection(normalizedPhone, res);
+      
+      // Configurar heartbeat a cada 30 segundos
+      const heartbeatInterval = setInterval(() => {
+        sendCustomerHeartbeat(normalizedPhone);
+      }, 30000);
+      
+      // Cleanup quando conexão fechar
+      req.on("close", () => {
+        clearInterval(heartbeatInterval);
+        removeCustomerConnection(normalizedPhone, res);
+        console.log(`[SSE-Customer] Conexão fechada para cliente ${normalizedPhone}`);
+      });
+      
+    } catch (error) {
+      console.error("[SSE-Customer] Erro ao estabelecer conexão:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+  
   // tRPC API
   app.use(
     "/api/trpc",

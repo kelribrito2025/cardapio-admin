@@ -1032,3 +1032,4 @@
 - [x] Corrigir lógica de avaliação: não exibir botão quando já avaliou nos últimos 30 dias e corrigir erro ao enviar
 - [x] Corrigir erro 'Cannot access data before initialization' no PublicMenu
 - [x] Reorganizar modal Confirmar Endereço com ícones em círculos coloridos e cards com fundo claro
+- [x] Implementar SSE única por usuário para atualização em tempo real do status no modal Meus Pedidos
