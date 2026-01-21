@@ -1599,3 +1599,7 @@
 ## Ajuste Altura da Foto Mobile
 
 - [x] Aumentar altura da foto do produto em 40% apenas na versão mobile
+
+## Bug: Categoria não selecionada ao editar item
+
+- [x] Corrigir bug onde a categoria não fica selecionada ao editar item do cardápio, fazendo o item ir para "Sem categoria"

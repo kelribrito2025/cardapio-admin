@@ -53,7 +53,7 @@ export default function ProductForm() {
   // Form state
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [categoryId, setCategoryId] = useState<string>("");
+  const [categoryId, setCategoryId] = useState<string>("none");
   const [price, setPrice] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [status, setStatus] = useState<"active" | "paused">("active");
@@ -117,7 +117,7 @@ export default function ProductForm() {
     if (product) {
       setName(product.name);
       setDescription(product.description || "");
-      setCategoryId(product.categoryId ? String(product.categoryId) : "");
+      setCategoryId(product.categoryId ? String(product.categoryId) : "none");
       // Formatar preço para exibição (ex: "10,50")
       const priceValue = parseFloat(String(product.price));
       setPrice(priceValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
@@ -172,7 +172,7 @@ export default function ProductForm() {
       establishmentId,
       name: name.trim(),
       description: description.trim() || undefined,
-      categoryId: categoryId ? Number(categoryId) : null,
+      categoryId: categoryId && categoryId !== "none" ? Number(categoryId) : null,
       price: parsePriceInput(price),
       images: images.length > 0 ? images : undefined,
       status,
@@ -400,6 +400,9 @@ export default function ProductForm() {
                         <SelectValue placeholder="Selecione" />
                       </SelectTrigger>
                       <SelectContent className="rounded-lg">
+                        <SelectItem value="none" className="rounded text-sm text-muted-foreground">
+                          Sem categoria
+                        </SelectItem>
                         {categories?.map((cat) => (
                           <SelectItem key={cat.id} value={String(cat.id)} className="rounded text-sm">
                             {cat.name}
