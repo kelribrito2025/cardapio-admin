@@ -1447,14 +1447,15 @@ export default function PublicMenu() {
 
       {/* Modal Mais Informações */}
       {showInfoModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+        <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowInfoModal(false)}
           />
           
-          {/* Modal Content */}
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+          {/* Modal Content - Bottom Sheet no mobile */}
+          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
             <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '46px'}}>
               <h2 className="text-lg font-bold text-gray-900">Informações</h2>

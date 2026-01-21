@@ -1614,3 +1614,7 @@
 - [x] Implementar drag-and-drop de produtos entre categorias diferentes
 - [x] Atualizar categoryId do produto ao soltar em outra categoria
 - [x] Adicionar feedback visual durante o arraste entre categorias
+
+## Modal de Informações - Estilo Bottom Sheet
+
+- [x] Alterar modal de informações do menu público para estilo bottom sheet no mobile
