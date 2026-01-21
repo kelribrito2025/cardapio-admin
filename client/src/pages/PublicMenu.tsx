@@ -971,7 +971,7 @@ export default function PublicMenu() {
                     <>
                       <span className="flex items-center gap-1 min-w-0 flex-shrink">
                         <MapPin className="h-3.5 w-3.5 text-gray-500 flex-shrink-0" />
-                        <span className="truncate max-w-[180px] sm:max-w-[300px]">
+                        <span className="truncate max-w-[180px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-none">
                           {establishment.street}
                           {establishment.number && `, ${establishment.number}`}
                           {establishment.neighborhood && ` - ${establishment.neighborhood}`}

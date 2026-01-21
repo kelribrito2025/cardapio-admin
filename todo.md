@@ -1421,3 +1421,9 @@
 - [x] Comprimir imagem após recorte (JPEG 90%)
 - [x] Atualizar preview imediatamente após confirmar
 - [x] Testar funcionalidade completa - 130 testes passando
+
+
+## Bug Desktop - Endereço Truncado
+
+- [x] Corrigir endereço truncado na versão desktop do menu público
+  - Aumentado max-width progressivo: 180px (mobile) → 400px (sm) → 500px (md) → sem limite (lg+)
