@@ -66,6 +66,9 @@ export default function Configuracoes() {
   
   // SMS settings state
   const [smsEnabled, setSmsEnabled] = useState(false);
+  
+  // Note style state
+  const [noteStyle, setNoteStyle] = useState("default");
 
   // File input refs
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -117,6 +120,7 @@ export default function Configuracoes() {
       setPublicNote(establishment.publicNote || "");
       setPublicNoteCreatedAt(establishment.publicNoteCreatedAt ? new Date(establishment.publicNoteCreatedAt) : null);
       setSmsEnabled(establishment.smsEnabled || false);
+      setNoteStyle(establishment.noteStyle || "default");
     }
   }, [establishment]);
 
@@ -646,18 +650,95 @@ export default function Configuracoes() {
                 </div>
               </div>
               
+              {/* Seleção de Estilo do Balão */}
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Estilo do Balão</Label>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                  {[
+                    { id: "default", name: "Padrão", bg: "bg-white", text: "text-gray-700", border: "border-gray-200" },
+                    { id: "sunset", name: "Pôr do Sol", bg: "bg-gradient-to-r from-orange-400 to-pink-500", text: "text-white", border: "border-transparent" },
+                    { id: "ocean", name: "Oceano", bg: "bg-gradient-to-r from-cyan-400 to-blue-500", text: "text-white", border: "border-transparent" },
+                    { id: "forest", name: "Floresta", bg: "bg-gradient-to-r from-green-400 to-emerald-500", text: "text-white", border: "border-transparent" },
+                    { id: "purple", name: "Roxo", bg: "bg-gradient-to-r from-purple-400 to-pink-500", text: "text-white", border: "border-transparent" },
+                    { id: "fire", name: "Fogo", bg: "bg-gradient-to-r from-red-500 to-orange-500", text: "text-white", border: "border-transparent" },
+                    { id: "gold", name: "Dourado", bg: "bg-gradient-to-r from-yellow-400 to-amber-500", text: "text-white", border: "border-transparent" },
+                    { id: "night", name: "Noite", bg: "bg-gradient-to-r from-gray-700 to-gray-900", text: "text-white", border: "border-transparent" },
+                    { id: "candy", name: "Doce", bg: "bg-gradient-to-r from-pink-400 to-rose-400", text: "text-white", border: "border-transparent" },
+                    { id: "mint", name: "Menta", bg: "bg-gradient-to-r from-teal-400 to-cyan-400", text: "text-white", border: "border-transparent" },
+                    { id: "peach", name: "Pêssego", bg: "bg-gradient-to-r from-orange-300 to-rose-300", text: "text-gray-800", border: "border-transparent" },
+                    { id: "royal", name: "Real", bg: "bg-gradient-to-r from-indigo-500 to-purple-600", text: "text-white", border: "border-transparent" },
+                  ].map((style) => (
+                    <button
+                      key={style.id}
+                      type="button"
+                      onClick={() => setNoteStyle(style.id)}
+                      className={cn(
+                        "relative p-2 rounded-xl transition-all duration-200 border-2",
+                        noteStyle === style.id 
+                          ? "border-primary ring-2 ring-primary/20" 
+                          : "border-gray-200 hover:border-gray-300"
+                      )}
+                    >
+                      <div className={cn(
+                        "h-8 rounded-lg",
+                        style.bg,
+                        style.border !== "border-transparent" && "border " + style.border
+                      )} />
+                      <span className="text-[10px] mt-1 block text-center text-muted-foreground">{style.name}</span>
+                      {noteStyle === style.id && (
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                          <Check className="h-2.5 w-2.5 text-white" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
               {/* Preview do balão */}
               {publicNote && (
                 <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
                   <Label className="text-xs font-medium text-muted-foreground mb-2 block">Preview do balão:</Label>
                   <div className="flex justify-start pl-8">
                     <div className="relative">
-                      {/* Balão estilo bolha */}
-                      <div className="bg-white rounded-[20px] px-3 py-1.5 shadow-md border border-gray-200 max-w-[140px]">
-                        <p className="text-xs text-gray-700 text-center leading-tight break-words">{publicNote}</p>
+                      {/* Balão estilo bolha com estilo selecionado */}
+                      <div className={cn(
+                        "rounded-[20px] px-3 py-1.5 shadow-md max-w-[140px]",
+                        noteStyle === "default" && "bg-white border border-gray-200",
+                        noteStyle === "sunset" && "bg-gradient-to-r from-orange-400 to-pink-500",
+                        noteStyle === "ocean" && "bg-gradient-to-r from-cyan-400 to-blue-500",
+                        noteStyle === "forest" && "bg-gradient-to-r from-green-400 to-emerald-500",
+                        noteStyle === "purple" && "bg-gradient-to-r from-purple-400 to-pink-500",
+                        noteStyle === "fire" && "bg-gradient-to-r from-red-500 to-orange-500",
+                        noteStyle === "gold" && "bg-gradient-to-r from-yellow-400 to-amber-500",
+                        noteStyle === "night" && "bg-gradient-to-r from-gray-700 to-gray-900",
+                        noteStyle === "candy" && "bg-gradient-to-r from-pink-400 to-rose-400",
+                        noteStyle === "mint" && "bg-gradient-to-r from-teal-400 to-cyan-400",
+                        noteStyle === "peach" && "bg-gradient-to-r from-orange-300 to-rose-300",
+                        noteStyle === "royal" && "bg-gradient-to-r from-indigo-500 to-purple-600"
+                      )}>
+                        <p className={cn(
+                          "text-xs text-center leading-tight break-words",
+                          noteStyle === "default" ? "text-gray-700" : 
+                          noteStyle === "peach" ? "text-gray-800" : "text-white"
+                        )}>{publicNote}</p>
                       </div>
                       {/* Seta do balão no canto inferior esquerdo */}
-                      <div className="absolute -bottom-1.5 left-4 w-3 h-3 bg-white border-r border-b border-gray-200 transform rotate-45"></div>
+                      <div className={cn(
+                        "absolute -bottom-1.5 left-4 w-3 h-3 transform rotate-45",
+                        noteStyle === "default" && "bg-white border-r border-b border-gray-200",
+                        noteStyle === "sunset" && "bg-pink-500",
+                        noteStyle === "ocean" && "bg-blue-500",
+                        noteStyle === "forest" && "bg-emerald-500",
+                        noteStyle === "purple" && "bg-pink-500",
+                        noteStyle === "fire" && "bg-orange-500",
+                        noteStyle === "gold" && "bg-amber-500",
+                        noteStyle === "night" && "bg-gray-900",
+                        noteStyle === "candy" && "bg-rose-400",
+                        noteStyle === "mint" && "bg-cyan-400",
+                        noteStyle === "peach" && "bg-rose-300",
+                        noteStyle === "royal" && "bg-purple-600"
+                      )}></div>
                     </div>
                   </div>
                 </div>
@@ -682,7 +763,7 @@ export default function Configuracoes() {
                       return;
                     }
                     if (!establishment) return;
-                    saveNoteMutation.mutate({ id: establishment.id, note: publicNote.trim() });
+                    saveNoteMutation.mutate({ id: establishment.id, note: publicNote.trim(), noteStyle });
                   }}
                   disabled={!publicNote.trim() || saveNoteMutation.isPending}
                   className="flex-1 h-11 rounded-xl bg-primary hover:bg-primary/90"

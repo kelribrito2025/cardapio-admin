@@ -1353,3 +1353,29 @@
   - Quando não ativo: bg-red-500 text-white
 - [x] Garantir contraste adequado em ambos os estados (selecionado e não selecionado)
   - Aplicado para ambos os badges (sidebar colapsada e expandida)
+
+## Personalização de Cores Degradê para Balão de Nota
+
+- [ ] Adicionar campo noteStyle no schema do estabelecimento
+- [ ] Criar opções de estilos degradê pré-definidos
+- [ ] Criar interface de seleção de estilos nas configurações
+- [ ] Aplicar estilo selecionado no balão de nota do menu público
+- [ ] Testar a personalização de cores
+
+
+## Personalização de Cores Degradê para Balão de Nota
+
+- [x] Adicionar campo noteStyle (string) no schema do estabelecimento
+  - Campo adicionado em drizzle/schema.ts com default "default"
+- [x] Executar migração do banco de dados para adicionar coluna
+  - Coluna noteStyle adicionada via ALTER TABLE
+- [x] Criar interface de seleção de estilos degradê nas configurações
+  - 12 estilos disponíveis: Padrão, Pôr do Sol, Oceano, Floresta, Roxo, Fogo, Dourado, Noite, Doce, Menta, Pêssego, Real
+  - Grid responsivo com preview de cada estilo
+- [x] Implementar preview do balão com estilo selecionado
+  - Preview atualiza em tempo real ao selecionar estilo
+- [x] Aplicar estilo selecionado no balão de nota do menu público
+  - Balão e bicos aplicam o estilo salvo
+  - Texto ajusta cor automaticamente para contraste
+- [x] Testar personalização de cores
+  - 119 testes passando

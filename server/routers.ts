@@ -214,9 +214,10 @@ export const appRouter = router({
       .input(z.object({
         id: z.number(),
         note: z.string().max(80, "A nota deve ter no máximo 80 caracteres"),
+        noteStyle: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
-        await db.savePublicNote(input.id, input.note);
+        await db.savePublicNote(input.id, input.note, input.noteStyle);
         return { success: true };
       }),
     

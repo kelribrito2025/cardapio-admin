@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
 import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, Bike, Copy } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 export default function PublicMenu() {
   const { slug } = useParams<{ slug: string }>();
@@ -817,13 +818,59 @@ export default function PublicMenu() {
             ) && (
               <div className="absolute -top-14 md:-top-16 left-0 z-20 animate-float-balloon">
                 <div className="relative">
-                  {/* Balão estilo bolha */}
-                  <div className="bg-white rounded-[20px] px-3 py-1.5 shadow-md border border-gray-200 max-w-[140px] md:max-w-[160px]">
-                    <p className="text-xs text-gray-700 text-center leading-tight break-words">{establishment.publicNote}</p>
+                  {/* Balão estilo bolha com estilo personalizado */}
+                  <div className={cn(
+                    "rounded-[20px] px-3 py-1.5 shadow-md max-w-[140px] md:max-w-[160px]",
+                    (!establishment.noteStyle || establishment.noteStyle === "default") && "bg-white border border-gray-200",
+                    establishment.noteStyle === "sunset" && "bg-gradient-to-r from-orange-400 to-pink-500",
+                    establishment.noteStyle === "ocean" && "bg-gradient-to-r from-cyan-400 to-blue-500",
+                    establishment.noteStyle === "forest" && "bg-gradient-to-r from-green-400 to-emerald-500",
+                    establishment.noteStyle === "purple" && "bg-gradient-to-r from-purple-400 to-pink-500",
+                    establishment.noteStyle === "fire" && "bg-gradient-to-r from-red-500 to-orange-500",
+                    establishment.noteStyle === "gold" && "bg-gradient-to-r from-yellow-400 to-amber-500",
+                    establishment.noteStyle === "night" && "bg-gradient-to-r from-gray-700 to-gray-900",
+                    establishment.noteStyle === "candy" && "bg-gradient-to-r from-pink-400 to-rose-400",
+                    establishment.noteStyle === "mint" && "bg-gradient-to-r from-teal-400 to-cyan-400",
+                    establishment.noteStyle === "peach" && "bg-gradient-to-r from-orange-300 to-rose-300",
+                    establishment.noteStyle === "royal" && "bg-gradient-to-r from-indigo-500 to-purple-600"
+                  )}>
+                    <p className={cn(
+                      "text-xs text-center leading-tight break-words",
+                      (!establishment.noteStyle || establishment.noteStyle === "default") ? "text-gray-700" : 
+                      establishment.noteStyle === "peach" ? "text-gray-800" : "text-white"
+                    )}>{establishment.publicNote}</p>
                   </div>
                   {/* Bico do balão em formato de balão de pensamento - círculo maior à esquerda, menor à direita */}
-                  <div className="absolute -bottom-2.5 left-4 w-3.5 h-3.5 bg-white rounded-full border border-gray-200 shadow-sm"></div>
-                  <div className="absolute -bottom-5 left-7 w-2 h-2 bg-white rounded-full border border-gray-200 shadow-sm"></div>
+                  <div className={cn(
+                    "absolute -bottom-2.5 left-4 w-3.5 h-3.5 rounded-full shadow-sm",
+                    (!establishment.noteStyle || establishment.noteStyle === "default") && "bg-white border border-gray-200",
+                    establishment.noteStyle === "sunset" && "bg-pink-500",
+                    establishment.noteStyle === "ocean" && "bg-blue-500",
+                    establishment.noteStyle === "forest" && "bg-emerald-500",
+                    establishment.noteStyle === "purple" && "bg-pink-500",
+                    establishment.noteStyle === "fire" && "bg-orange-500",
+                    establishment.noteStyle === "gold" && "bg-amber-500",
+                    establishment.noteStyle === "night" && "bg-gray-900",
+                    establishment.noteStyle === "candy" && "bg-rose-400",
+                    establishment.noteStyle === "mint" && "bg-cyan-400",
+                    establishment.noteStyle === "peach" && "bg-rose-300",
+                    establishment.noteStyle === "royal" && "bg-purple-600"
+                  )}></div>
+                  <div className={cn(
+                    "absolute -bottom-5 left-7 w-2 h-2 rounded-full shadow-sm",
+                    (!establishment.noteStyle || establishment.noteStyle === "default") && "bg-white border border-gray-200",
+                    establishment.noteStyle === "sunset" && "bg-pink-500",
+                    establishment.noteStyle === "ocean" && "bg-blue-500",
+                    establishment.noteStyle === "forest" && "bg-emerald-500",
+                    establishment.noteStyle === "purple" && "bg-pink-500",
+                    establishment.noteStyle === "fire" && "bg-orange-500",
+                    establishment.noteStyle === "gold" && "bg-amber-500",
+                    establishment.noteStyle === "night" && "bg-gray-900",
+                    establishment.noteStyle === "candy" && "bg-rose-400",
+                    establishment.noteStyle === "mint" && "bg-cyan-400",
+                    establishment.noteStyle === "peach" && "bg-rose-300",
+                    establishment.noteStyle === "royal" && "bg-purple-600"
+                  )}></div>
                 </div>
               </div>
             )}
