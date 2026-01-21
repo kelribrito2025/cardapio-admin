@@ -1670,3 +1670,8 @@
 ## Alteração da Cor do Drop Zone no Catálogo
 - [x] Mudar cor da área de drop de vermelho para verde quando item estiver pronto para soltar
 - [x] Manter vermelho apenas para estado inicial "Solte aqui para mover"
+
+## Ícone Animado para Status "Saiu para Entrega"
+- [x] Alterar ícone do status 'out_for_delivery' para Bike com animação bounce e ping
+- [x] Usar cor violet-600 para o ícone principal e violet-400 para o ping
+- [x] Alterar cor do texto do status para violet-600 quando estiver em entrega

@@ -3198,16 +3198,25 @@ export default function PublicMenu() {
                   const isPickup = selectedOrder?.deliveryType === 'pickup';
                   return (
                     <div className="relative flex items-start gap-4 pb-8">
-                      <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        orderStatus === 'delivering' ? 'bg-primary text-white' :
-                        orderStatus === 'delivered' ? 'bg-green-500 text-white' :
-                        'bg-gray-200 text-gray-400'
-                      }`}>
-                        {isPickup ? <CheckCircle className="h-5 w-5" /> : <Bike className="h-5 w-5" />}
-                      </div>
+                      {/* Ícone com animação especial para status 'delivering' (Saiu para entrega) */}
+                      {orderStatus === 'delivering' && !isPickup ? (
+                        <div className="relative z-10 w-10 h-10 flex items-center justify-center flex-shrink-0">
+                          <Bike className="w-8 h-8 text-violet-600 animate-bounce" />
+                          <div className="absolute inset-0 animate-ping flex items-center justify-center">
+                            <Bike className="w-8 h-8 text-violet-400 opacity-75" />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                          orderStatus === 'delivered' ? 'bg-green-500 text-white' :
+                          'bg-gray-200 text-gray-400'
+                        }`}>
+                          {isPickup ? <CheckCircle className="h-5 w-5" /> : <Bike className="h-5 w-5" />}
+                        </div>
+                      )}
                       <div className="pt-2">
                         <h4 className={`font-semibold ${
-                          orderStatus === 'delivering' ? 'text-primary' :
+                          orderStatus === 'delivering' ? 'text-violet-600' :
                           orderStatus === 'delivered' ? 'text-green-600' :
                           'text-gray-400'
                         }`}>{isPickup ? 'Pedido Finalizado' : 'Saiu para entrega'}</h4>
