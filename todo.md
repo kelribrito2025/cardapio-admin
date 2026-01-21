@@ -1279,3 +1279,20 @@
 - [x] Corrigir normalização do telefone se necessário
   - Não foi necessário - normalização já estava correta
 - [x] Usuário confirmou recebimento do SMS de teste
+
+
+## Configuração de Ativação/Desativação de SMS
+
+- [x] Adicionar campo smsEnabled (boolean) no schema do estabelecimento
+  - Campo adicionado em drizzle/schema.ts com default false
+- [x] Executar migração do banco de dados
+  - Coluna adicionada via ALTER TABLE
+- [x] Criar seção de configuração de SMS na página de configurações
+  - Nova seção "Notificações SMS" na tab Atendimento
+- [x] Adicionar toggle para ativar/desativar SMS
+  - Toggle switch com preview da mensagem quando ativado
+- [x] Modificar lógica de envio de SMS para verificar se está habilitado
+  - Verifica smsEnabled antes de enviar
+  - Log informativo quando SMS está desativado
+- [x] Testar ativação e desativação do SMS
+  - 119 testes passando

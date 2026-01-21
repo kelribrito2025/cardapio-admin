@@ -169,6 +169,7 @@ export const appRouter = router({
         acceptsBoleto: z.boolean().optional(),
         allowsDelivery: z.boolean().optional(),
         allowsPickup: z.boolean().optional(),
+        smsEnabled: z.boolean().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
