@@ -1,6 +1,7 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
+import { orderSSE, statusMap } from "@/lib/orderSSE";
 import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, Bike, Copy } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -167,6 +168,32 @@ export default function PublicMenu() {
       setUserOrders(updatedOrders);
       setSelectedOrderId(newOrder.id);
       setCurrentOrderNumber(result.orderNumber);
+      
+      // Iniciar tracking SSE APENAS após o pedido ser criado com sucesso
+      orderSSE.trackOrder(result.orderNumber, (update) => {
+        console.log('[PublicMenu] Atualização SSE recebida:', update);
+        const newStatus = statusMap[update.status] || 'sent';
+        
+        // Atualizar o pedido no estado local
+        setUserOrders(prevOrders => {
+          const newOrders = prevOrders.map(order => {
+            if (order.id === update.orderNumber) {
+              return { ...order, status: newStatus };
+            }
+            return order;
+          });
+          localStorage.setItem('userOrders', JSON.stringify(newOrders));
+          return newOrders;
+        });
+        
+        // Se o modal de tracking está aberto para este pedido, atualizar
+        if (currentOrderNumberRef.current === update.orderNumber) {
+          setOrderStatus(newStatus);
+          if (update.cancellationReason) {
+            setCancellationReasonDisplay(update.cancellationReason);
+          }
+        }
+      });
       
       setIsSendingOrder(false);
       setOrderSent(true);
@@ -391,159 +418,66 @@ export default function PublicMenu() {
     syncOrderStatuses();
   }, [showOrdersModal, data?.establishment?.id]);
 
-  // Ref para armazenar os orderNumbers conectados e evitar reconexões desnecessárias
-  const connectedOrdersRef = useRef<string>('');
-  const eventSourceRef = useRef<EventSource | null>(null);
+  // Ref para o currentOrderNumber (usado pelo callback SSE)
   const currentOrderNumberRef = useRef<string | null>(null);
-  const sseReconnectAttempts = useRef(0);
-  const sseReconnectTimeout = useRef<NodeJS.Timeout | null>(null);
-  const sseEnabled = useRef(true); // Flag para desabilitar SSE em caso de rate limiting
   
   // Atualizar ref do currentOrderNumber
   useEffect(() => {
     currentOrderNumberRef.current = currentOrderNumber;
   }, [currentOrderNumber]);
   
-  // Conexão SSE para atualização em tempo real do status dos pedidos
-  // Usa orderNumbers em vez de telefone, pois clientes não têm conta/login
-  // DESABILITADO TEMPORARIAMENTE: SSE está causando rate limiting no servidor
-  // O status será atualizado via polling quando o usuário abrir o modal de tracking
+  // Inicializar SSE singleton para pedidos ativos existentes (ao carregar a página)
+  // Isso garante que pedidos feitos anteriormente continuem sendo monitorados
   useEffect(() => {
-    // SSE desabilitado para evitar rate limiting
-    // O status é sincronizado quando o usuário abre o modal "Meus Pedidos" ou "Acompanhar Pedido"
-    return;
-    
-    // Código SSE comentado para referência futura
-    /*
     // Pegar os orderNumbers dos pedidos em andamento do localStorage
     const activeOrders = userOrders.filter(o => 
       o.status !== 'delivered' && o.status !== 'cancelled'
     );
     
-    // Se não tem pedidos em andamento ou SSE desabilitado, não conectar
-    if (activeOrders.length === 0 || !sseEnabled.current) {
-      // Fechar conexão existente se não há mais pedidos ativos
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-        eventSourceRef.current = null;
-        connectedOrdersRef.current = '';
-        console.log('[SSE-Order] Conexão fechada - sem pedidos ativos ou SSE desabilitado');
-      }
+    // Se não tem pedidos em andamento, não conectar
+    if (activeOrders.length === 0) {
       return;
     }
     
-    // Criar string com os orderNumbers para comparar
-    const orderNumbersString = activeOrders.map(o => o.id).sort().join(',');
-    
-    // Se já está conectado com os mesmos pedidos, não reconectar
-    if (connectedOrdersRef.current === orderNumbersString && eventSourceRef.current) {
-      return;
-    }
-    
-    // Fechar conexão anterior se existir
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-    }
-    
-    // Limpar timeout de reconexão anterior
-    if (sseReconnectTimeout.current) {
-      clearTimeout(sseReconnectTimeout.current);
-      sseReconnectTimeout.current = null;
-    }
-    
-    connectedOrdersRef.current = orderNumbersString;
-    
-    // Criar conexão SSE com os orderNumbers
-    const eventSource = new EventSource(`/api/orders/track/stream?orders=${encodeURIComponent(orderNumbersString)}`);
-    eventSourceRef.current = eventSource;
-    
-    const statusMap: Record<string, "sent" | "accepted" | "delivering" | "delivered" | "cancelled"> = {
-      'new': 'sent',
-      'preparing': 'accepted',
-      'ready': 'delivering',
-      'completed': 'delivered',
-      'cancelled': 'cancelled',
-    };
-    
-    eventSource.addEventListener('order_status_update', (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        console.log('[SSE-Order] Recebido evento de atualização de status:', data);
-        sseReconnectAttempts.current = 0; // Reset tentativas em caso de sucesso
-        
-        // Atualizar o pedido no estado
-        setUserOrders(prevOrders => {
-          const newOrders = prevOrders.map(order => {
-            if (order.id === data.orderNumber) {
-              const newStatus = statusMap[data.status] || order.status;
-              return { ...order, status: newStatus };
-            }
-            return order;
-          });
-          localStorage.setItem('userOrders', JSON.stringify(newOrders));
-          return newOrders;
-        });
-        
-        // Se o modal de tracking está aberto e é o mesmo pedido, atualizar o status
-        if (currentOrderNumberRef.current === data.orderNumber) {
-          const newStatus = statusMap[data.status] || 'sent';
-          setOrderStatus(newStatus);
-          if (data.cancellationReason) {
-            setCancellationReasonDisplay(data.cancellationReason);
+    // Callback para atualizações de status
+    const handleStatusUpdate = (update: { orderNumber: string; status: string; cancellationReason?: string }) => {
+      console.log('[PublicMenu] Atualização SSE recebida:', update);
+      const newStatus = statusMap[update.status] || 'sent';
+      
+      // Atualizar o pedido no estado local
+      setUserOrders(prevOrders => {
+        const newOrders = prevOrders.map(order => {
+          if (order.id === update.orderNumber) {
+            return { ...order, status: newStatus };
           }
+          return order;
+        });
+        localStorage.setItem('userOrders', JSON.stringify(newOrders));
+        return newOrders;
+      });
+      
+      // Se o modal de tracking está aberto para este pedido, atualizar
+      if (currentOrderNumberRef.current === update.orderNumber) {
+        setOrderStatus(newStatus);
+        if (update.cancellationReason) {
+          setCancellationReasonDisplay(update.cancellationReason);
         }
-      } catch (e) {
-        console.error('[SSE-Order] Erro ao processar evento:', e);
       }
-    });
-    
-    eventSource.addEventListener('connected', (event) => {
-      console.log('[SSE-Order] Conexão estabelecida:', event.data);
-      sseReconnectAttempts.current = 0; // Reset tentativas em caso de sucesso
-    });
-    
-    eventSource.onerror = (error) => {
-      console.error('[SSE-Order] Erro na conexão:', error);
-      
-      // Incrementar tentativas de reconexão
-      sseReconnectAttempts.current++;
-      
-      // Se excedeu o limite de tentativas (5), desabilitar SSE
-      if (sseReconnectAttempts.current >= 5) {
-        console.log('[SSE-Order] Máximo de tentativas atingido. Desabilitando SSE.');
-        sseEnabled.current = false;
-        if (eventSourceRef.current) {
-          eventSourceRef.current.close();
-          eventSourceRef.current = null;
-        }
-        return;
-      }
-      
-      // Backoff exponencial: 5s, 10s, 20s, 40s, 80s
-      const delay = 5000 * Math.pow(2, sseReconnectAttempts.current - 1);
-      console.log(`[SSE-Order] Tentando reconectar em ${delay/1000}s (tentativa ${sseReconnectAttempts.current}/5)`);
-      
-      sseReconnectTimeout.current = setTimeout(() => {
-        if (eventSourceRef.current === eventSource) {
-          connectedOrdersRef.current = ''; // Forçar reconexão
-        }
-      }, delay);
     };
     
-    // Cleanup quando o componente desmontar
+    // Registrar cada pedido ativo no SSE singleton
+    // O singleton garante que apenas UMA conexão seja aberta
+    activeOrders.forEach(order => {
+      orderSSE.trackOrder(order.id, handleStatusUpdate);
+    });
+    
+    // Cleanup: remover pedidos do tracking quando o componente desmontar
     return () => {
-      if (sseReconnectTimeout.current) {
-        clearTimeout(sseReconnectTimeout.current);
-        sseReconnectTimeout.current = null;
-      }
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-        eventSourceRef.current = null;
-        console.log('[SSE-Order] Conexão fechada');
-      }
+      activeOrders.forEach(order => {
+        orderSSE.untrackOrder(order.id);
+      });
     };
-    */
-  }, [userOrders]);
+  }, []); // Executar apenas uma vez ao montar o componente
 
   // Carregar endereço salvo do localStorage
   useEffect(() => {

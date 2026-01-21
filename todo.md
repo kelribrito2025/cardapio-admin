@@ -1060,3 +1060,11 @@
 
 - [x] Investigar e corrigir problema na versão publicada (mindi.manus.space)
 - [x] Corrigir erro de Rate Limiting (429) no SSE do menu público - SSE desabilitado temporariamente
+
+
+## SSE Singleton - Conexão única por cliente
+
+- [x] Criar singleton SSE global para gerenciar conexão única
+- [x] SSE deve iniciar somente após criação do pedido (não antes)
+- [x] Tratamento silencioso de erro 429 com reconexão (backoff exponencial: 3s, 6s, 12s...)
+- [x] Reutilizar conexão existente em vez de abrir nova
