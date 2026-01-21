@@ -2552,13 +2552,7 @@ export default function PublicMenu() {
                 </button>
               </div>
               ) : (
-              <div className="flex-shrink-0 border-t px-6 py-4 flex gap-3">
-                <button
-                  onClick={() => setCheckoutStep(4)}
-                  className="flex-1 py-3.5 border border-gray-300 text-gray-700 font-semibold rounded-xl transition-colors hover:bg-gray-50"
-                >
-                  Voltar
-                </button>
+              <div className="flex-shrink-0 border-t px-6 py-4">
                 <button
                   onClick={() => {
                     if (isSendingOrder || !establishment || !establishment.isOpen) return;
@@ -2627,7 +2621,7 @@ export default function PublicMenu() {
                     }, 3000); // Delay de 3 segundos
                   }}
                   disabled={isSendingOrder || !establishment.isOpen || !!changeAmountError}
-                  className={`flex-1 py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
+                  className={`w-full py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
                     !establishment.isOpen
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : changeAmountError

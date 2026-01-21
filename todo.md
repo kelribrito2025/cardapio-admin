@@ -1652,3 +1652,7 @@
 ## Correção da Observação no Modal da Sacola
 - [x] Exibir observação do item imediatamente no modal "Sua Sacola" após adicionar
 - [x] Garantir que a observação apareça junto com o item na sacola
+
+## Remover Botão Voltar do Modal de Confirmação
+- [x] Remover botão "Voltar" do step 5 (Enviar) do modal de checkout
+- [x] Manter apenas o botão "Enviar pedido"
