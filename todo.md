@@ -1068,3 +1068,9 @@
 - [x] SSE deve iniciar somente após criação do pedido (não antes)
 - [x] Tratamento silencioso de erro 429 com reconexão (backoff exponencial: 3s, 6s, 12s...)
 - [x] Reutilizar conexão existente em vez de abrir nova
+
+
+## Bug Fix - canReview causando ERR_INSUFFICIENT_RESOURCES
+
+- [x] Corrigir chamadas excessivas de publicMenu.canReview (usar chave única para evitar duplicação)
+- [x] Esconder botão de avaliar quando usuário já avaliou (lógica já existia, corrigido para não chamar múltiplas vezes)

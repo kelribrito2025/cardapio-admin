@@ -285,63 +285,85 @@ export default function PublicMenu() {
         return updatedOrders;
       });
       
-      // Quando pedido for entregue, verificar se pode avaliar (30 dias)
-      if (mappedStatus === 'delivered' && !canReviewChecked) {
-        const selectedOrder = userOrders.find(o => o.id === selectedOrderId);
-        if (selectedOrder?.customerPhone && data?.establishment?.id) {
-          // Verificar no backend se pode avaliar
-          fetch(`/api/trpc/publicMenu.canReview?input=${encodeURIComponent(JSON.stringify({
-            establishmentId: data.establishment.id,
-            customerPhone: selectedOrder.customerPhone
-          }))}`)
-            .then(res => res.json())
-            .then(result => {
-              if (result?.result?.data) {
-                setCanReview(result.result.data.canReview);
-                setCanReviewChecked(true);
-                // Se pode avaliar, mostrar modal automaticamente
-                if (result.result.data.canReview) {
-                  setShowRatingModal(true);
-                }
-              }
-            })
-            .catch(err => {
-              console.error('Erro ao verificar se pode avaliar:', err);
-              setCanReviewChecked(true);
-            });
-        }
+      // Quando pedido mudar para entregue, forçar nova verificação de canReview
+      if (mappedStatus === 'delivered' && canReviewCheckingRef.current !== selectedOrderId + '_delivered') {
+        canReviewCheckingRef.current = null; // Resetar para forçar nova verificação
       }
     }
-  }, [currentOrderData?.status, selectedOrderId, canReviewChecked, userOrders, data?.establishment?.id]);
+  }, [currentOrderData?.status, selectedOrderId]);
 
-  // Reset canReviewChecked quando mudar de pedido e verificar imediatamente
+  // Ref para controlar se já verificamos canReview para este pedido
+  const canReviewCheckingRef = useRef<string | null>(null);
+  
+  // Verificar canReview apenas UMA VEZ quando o pedido mudar
+  // Usa uma chave única (orderId + establishmentId) para evitar chamadas duplicadas
   useEffect(() => {
+    // Se não tem pedido selecionado, resetar
+    if (!selectedOrderId) {
+      setCanReviewChecked(false);
+      setCanReview(true);
+      canReviewCheckingRef.current = null;
+      return;
+    }
+    
+    // Se não tem establishmentId ainda, aguardar
+    if (!data?.establishment?.id) {
+      return;
+    }
+    
+    // Criar chave única para este pedido + estabelecimento
+    const checkKey = `${selectedOrderId}_${data.establishment.id}`;
+    
+    // Se já verificou este pedido, não fazer nada
+    if (canReviewCheckingRef.current === checkKey) {
+      return;
+    }
+    
+    // Buscar o pedido selecionado
+    const selectedOrder = userOrders.find(o => o.id === selectedOrderId);
+    
+    // Se o pedido não está entregue, não precisa verificar
+    if (selectedOrder?.status !== 'delivered') {
+      setCanReviewChecked(false);
+      setCanReview(true);
+      return;
+    }
+    
+    // Se não tem telefone do cliente, não pode verificar
+    if (!selectedOrder?.customerPhone) {
+      setCanReviewChecked(true);
+      setCanReview(true); // Permitir avaliar se não conseguir verificar
+      return;
+    }
+    
+    // Marcar que estamos verificando este pedido
+    canReviewCheckingRef.current = checkKey;
     setCanReviewChecked(false);
     setCanReview(true);
     
-    // Se o pedido já está entregue, verificar imediatamente se pode avaliar
-    if (selectedOrderId && data?.establishment?.id) {
-      const selectedOrder = userOrders.find(o => o.id === selectedOrderId);
-      if (selectedOrder?.status === 'delivered' && selectedOrder?.customerPhone) {
-        const url = `/api/trpc/publicMenu.canReview?input=${encodeURIComponent(JSON.stringify({
-          establishmentId: data.establishment.id,
-          customerPhone: selectedOrder.customerPhone
-        }))}`;
-        fetch(url)
-          .then(res => res.json())
-          .then(result => {
-            if (result?.result?.data) {
-              setCanReview(result.result.data.canReview);
-              setCanReviewChecked(true);
-            }
-          })
-          .catch(err => {
-            console.error('Erro ao verificar se pode avaliar:', err);
-            setCanReviewChecked(true);
-          });
-      }
-    }
-  }, [selectedOrderId, userOrders, data?.establishment?.id]);
+    // Verificar no backend se pode avaliar
+    const url = `/api/trpc/publicMenu.canReview?input=${encodeURIComponent(JSON.stringify({
+      establishmentId: data.establishment.id,
+      customerPhone: selectedOrder.customerPhone
+    }))}`;
+    
+    fetch(url)
+      .then(res => res.json())
+      .then(result => {
+        // Verificar se ainda é o mesmo pedido
+        if (canReviewCheckingRef.current === checkKey && result?.result?.data) {
+          setCanReview(result.result.data.canReview);
+          setCanReviewChecked(true);
+        }
+      })
+      .catch(err => {
+        console.error('Erro ao verificar se pode avaliar:', err);
+        if (canReviewCheckingRef.current === checkKey) {
+          setCanReviewChecked(true);
+          setCanReview(true); // Em caso de erro, permitir avaliar
+        }
+      });
+  }, [selectedOrderId, data?.establishment?.id, userOrders]); // Dependências necessárias
 
   // Set first category as active when data loads
   useEffect(() => {
