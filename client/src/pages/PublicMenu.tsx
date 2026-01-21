@@ -270,12 +270,38 @@ export default function PublicMenu() {
     }
   );
 
-  // Forçar refetch quando o modal abrir
+  // Forçar refetch quando o modal abrir e inicializar orderStatus com o status do pedido selecionado
   useEffect(() => {
     if (showTrackingModal && currentOrderNumber) {
+      // Inicializar orderStatus com o status do pedido selecionado do userOrders
+      const selectedOrder = userOrders.find(o => o.id === currentOrderNumber);
+      if (selectedOrder) {
+        setOrderStatus(selectedOrder.status);
+        // Limpar motivo de cancelamento se não for cancelado
+        if (selectedOrder.status !== 'cancelled') {
+          setCancellationReasonDisplay(null);
+        }
+      }
+      // Buscar status atualizado do servidor
       refetchOrderStatus();
     }
   }, [showTrackingModal, currentOrderNumber]);
+
+  // Sincronizar orderStatus quando userOrders muda e o modal está aberto
+  // Isso garante que atualizações SSE reflitam no modal imediatamente
+  useEffect(() => {
+    if (showTrackingModal && currentOrderNumber) {
+      const selectedOrder = userOrders.find(o => o.id === currentOrderNumber);
+      if (selectedOrder && selectedOrder.status !== orderStatus) {
+        console.log('[PublicMenu] Sincronizando orderStatus com userOrders:', selectedOrder.status);
+        setOrderStatus(selectedOrder.status);
+        if (selectedOrder.status === 'cancelled') {
+          // Buscar motivo de cancelamento do servidor se necessário
+          refetchOrderStatus();
+        }
+      }
+    }
+  }, [userOrders, showTrackingModal, currentOrderNumber]);
 
   // Atualizar o status do pedido quando os dados mudarem
   useEffect(() => {

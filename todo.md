@@ -1643,3 +1643,8 @@
 - [x] Investigar por que o badge no menu lateral não aparece quando novos pedidos chegam via SSE
 - [x] Corrigir a atualização do badge no menu lateral em tempo real
 - [x] Garantir que o badge apareça imediatamente quando um novo pedido chega
+
+## Atualização em Tempo Real do Modal Acompanhar Pedido
+- [x] Implementar listener SSE no modal de acompanhamento para receber atualizações de status
+- [x] Atualizar status visual do pedido automaticamente sem fechar/abrir modal
+- [x] Usar conexão SSE existente (sem criar novas conexões)
