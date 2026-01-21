@@ -27,11 +27,14 @@ import {
   MessageCircle,
   Trash2,
   MessageSquare,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { ImageCropModal } from "@/components/ImageCropModal";
+import { useSoundNotification } from "@/contexts/SoundNotificationContext";
 
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
@@ -89,6 +92,9 @@ export default function Configuracoes() {
   // Social dropdown state for preview
   const [showSocialDropdown, setShowSocialDropdown] = useState(false);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
+  
+  // Sound notification
+  const { soundEnabled, setSoundEnabled, requestPermission } = useSoundNotification();
   
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -1215,6 +1221,69 @@ export default function Configuracoes() {
                 <Save className="h-4 w-4 mr-2" />
                 {isPending ? "Salvando..." : "Salvar"}
               </Button>
+            </div>
+          </SectionCard>
+
+          {/* Notificações Sonoras */}
+          <SectionCard title="Notificações Sonoras">
+            <div className="space-y-5">
+              <div className="flex items-start gap-4 p-4 bg-muted/30 rounded-xl border border-border/30">
+                <div className={cn(
+                  "p-3 rounded-xl",
+                  soundEnabled ? "bg-emerald-100" : "bg-muted/50"
+                )}>
+                  {soundEnabled ? (
+                    <Volume2 className="h-6 w-6 text-emerald-600" />
+                  ) : (
+                    <VolumeX className="h-6 w-6 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold text-sm">Alerta sonoro de novos pedidos</h4>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Quando ativado, você ouvirá um som sempre que um novo pedido chegar.
+                      </p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={soundEnabled}
+                        onChange={async (e) => {
+                          if (e.target.checked) {
+                            const granted = await requestPermission();
+                            if (granted) {
+                              toast.success("Alertas sonoros ativados!");
+                            } else {
+                              toast.error("Não foi possível ativar os alertas sonoros. Tente novamente.");
+                            }
+                          } else {
+                            setSoundEnabled(false);
+                            toast.info("Alertas sonoros desativados");
+                          }
+                        }}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                    </label>
+                  </div>
+                  {soundEnabled && (
+                    <div className="mt-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                      <p className="text-xs text-emerald-700">
+                        <strong>Ativo:</strong> Você receberá alertas sonoros para novos pedidos.
+                      </p>
+                    </div>
+                  )}
+                  {!soundEnabled && (
+                    <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                      <p className="text-xs text-amber-700">
+                        <strong>Desativado:</strong> Você não receberá alertas sonoros. Ative para não perder novos pedidos.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </SectionCard>
 

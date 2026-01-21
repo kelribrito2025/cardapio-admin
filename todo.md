@@ -1448,3 +1448,17 @@
   - Endereço agora é um link que abre no Google Maps em nova aba
   - Efeito hover com underline e mudança de cor
   - Tooltip "Abrir no Google Maps"
+
+
+## Sistema de Notificação Sonora para Novos Pedidos
+
+- [x] Criar hook useSoundNotification para gerenciar áudio
+- [x] Criar contexto SoundNotificationProvider
+- [x] Criar modal de permissão de som (requestSoundPermission)
+- [x] Criar banner discreto para ativar som
+- [x] Adicionar controle de som nas configurações (Ligar/Desligar)
+- [x] Salvar preferência no localStorage (cardapio_sound_enabled)
+- [x] Integrar com SSE existente (onNewOrder)
+- [x] Tocar som apenas quando order.status === "new" pela primeira vez
+- [x] Sistema anti-spam (Set de IDs já notificados, não repete em updates)
+- [x] Garantir compatibilidade com navegadores (play silencioso volume 0 para permissão)

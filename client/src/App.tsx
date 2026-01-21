@@ -5,6 +5,9 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { NewOrdersProvider } from "./contexts/NewOrdersContext";
+import { SoundNotificationProvider } from "./contexts/SoundNotificationContext";
+import { SoundPermissionModal } from "./components/SoundPermissionModal";
+import { SoundActivationBanner } from "./components/SoundActivationBanner";
 
 // Pages
 import Dashboard from "./pages/Dashboard";
@@ -57,12 +60,16 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
-        <NewOrdersProvider>
-          <TooltipProvider>
-            <Toaster position="top-right" />
-            <Router />
-          </TooltipProvider>
-        </NewOrdersProvider>
+        <SoundNotificationProvider>
+          <NewOrdersProvider>
+            <TooltipProvider>
+              <Toaster position="top-right" />
+              <Router />
+              <SoundPermissionModal />
+              <SoundActivationBanner />
+            </TooltipProvider>
+          </NewOrdersProvider>
+        </SoundNotificationProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
