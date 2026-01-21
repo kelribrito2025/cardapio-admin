@@ -2,7 +2,7 @@ import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, Bike, Copy } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, Bike, Copy, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -2903,7 +2903,10 @@ export default function PublicMenu() {
                   {/* Pedidos em andamento */}
                   {userOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length > 0 && (
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Em andamento</h3>
+                      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin text-green-500" />
+                        Em andamento
+                      </h3>
                       <div className="space-y-3">
                         {userOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').map(order => (
                           <div 

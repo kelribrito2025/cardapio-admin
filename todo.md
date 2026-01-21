@@ -1578,3 +1578,7 @@
 ## Modal de Produto - Estilo Bottom Sheet
 
 - [x] Alterar modal de detalhes do produto para estilo bottom sheet no mobile
+
+## Ícone Loading no Modal Meus Pedidos
+
+- [x] Adicionar ícone de loading animado ao lado do título "Em andamento"
