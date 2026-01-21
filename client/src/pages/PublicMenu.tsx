@@ -1533,6 +1533,7 @@ export default function PublicMenu() {
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setSelectedProduct(null)}
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}

@@ -1627,3 +1627,7 @@
 ## Bug: Scroll no Modal de Detalhes do Produto
 
 - [x] Corrigir scroll do modal de detalhes do produto que está movendo a página de fundo
+
+## Fechar Modal ao Clicar Fora
+
+- [x] Adicionar funcionalidade de fechar modal de detalhes do item ao clicar no backdrop
