@@ -46,7 +46,7 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
   
   // Inicializar o áudio
   useEffect(() => {
-    audioRef.current = new Audio("/sounds/new-order.mp3");
+    audioRef.current = new Audio("/sounds/new-order.wav");
     audioRef.current.preload = "auto";
     
     return () => {

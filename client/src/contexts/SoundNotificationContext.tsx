@@ -29,7 +29,7 @@ export function SoundNotificationProvider({ children }: { children: React.ReactN
 
   // Initialize audio element
   useEffect(() => {
-    audioRef.current = new Audio("/sounds/new-order.mp3");
+    audioRef.current = new Audio("/sounds/new-order.wav");
     audioRef.current.preload = "auto";
     
     return () => {
