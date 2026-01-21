@@ -1816,7 +1816,6 @@ export default function PublicMenu() {
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setCheckoutStep(0)}
           />
           
           {/* Modal de Checkout Unificado */}

@@ -1533,3 +1533,14 @@
 - [x] Substituir 5 estrelas por apenas 1 ícone de estrela na exibição de avaliações
   - Removida lógica de estrelas cheias/vazias/meia
   - Agora exibe apenas 1 estrela amarela + nota numérica
+
+
+## Modais de Checkout - Não Fechar ao Clicar Fora
+
+- [x] Impedir que modais do fluxo de checkout fechem ao clicar fora
+  - Resumo do Pedido
+  - Tipo de Entrega
+  - Confirmar Endereço
+  - Seus Dados
+  - Confirmação
+  - Removido onClick do backdrop do modal unificado de checkout
