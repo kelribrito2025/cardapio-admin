@@ -1343,3 +1343,13 @@
   - Estilo destacado com cor primária
 - [x] Garantir que o número do pedido seja obtido da resposta da mutation
   - Já existia currentOrderNumber sendo setado no onSuccess
+
+## Bug Fix - Badge Invisível Quando Item Pedidos Está Selecionado
+
+- [x] Identificar onde o badge de pedidos é renderizado na sidebar
+  - Localizado em AdminLayout.tsx, linhas 230-249
+- [x] Modificar estilo do badge para fundo branco e número vermelho quando selecionado
+  - Quando isActive: bg-white text-primary
+  - Quando não ativo: bg-red-500 text-white
+- [x] Garantir contraste adequado em ambos os estados (selecionado e não selecionado)
+  - Aplicado para ambos os badges (sidebar colapsada e expandida)

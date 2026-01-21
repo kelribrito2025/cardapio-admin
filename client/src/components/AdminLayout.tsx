@@ -228,7 +228,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 <div className="relative">
                   <item.icon className={cn("h-4 w-4 flex-shrink-0", sidebarCollapsed && "mx-auto")} />
                   {showBadge && sidebarCollapsed && (
-                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse">
+                    <span className={cn(
+                      "absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse",
+                      isActive ? "bg-white text-primary" : "bg-red-500 text-white"
+                    )}>
                       {newOrdersCount > 9 ? "9+" : newOrdersCount}
                     </span>
                   )}
@@ -237,7 +240,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   <span className="text-sm flex items-center gap-2">
                     {item.label}
                     {showBadge && (
-                      <span className="bg-red-500 text-white text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center animate-pulse">
+                      <span className={cn(
+                        "text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center animate-pulse",
+                        isActive ? "bg-white text-primary" : "bg-red-500 text-white"
+                      )}>
                         {newOrdersCount > 99 ? "99+" : newOrdersCount}
                       </span>
                     )}
