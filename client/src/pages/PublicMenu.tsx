@@ -3240,8 +3240,8 @@ export default function PublicMenu() {
 
             {/* Footer */}
             <div className="border-t px-6 py-4 space-y-3">
-              {/* Botão Avaliar restaurante - só aparece quando status for entregue E pode avaliar (30 dias) */}
-              {orderStatus === 'delivered' && canReview && (
+              {/* Botão Avaliar restaurante - só aparece quando status for entregue E pode avaliar (30 dias) E verificação já terminou */}
+              {orderStatus === 'delivered' && canReview && canReviewChecked && (
                 <button
                   onClick={() => {
                     setShowRatingModal(true);
@@ -3251,6 +3251,12 @@ export default function PublicMenu() {
                   <Star className="h-5 w-5" />
                   Avaliar restaurante
                 </button>
+              )}
+              {/* Loading enquanto verifica se pode avaliar */}
+              {orderStatus === 'delivered' && !canReviewChecked && (
+                <div className="text-center py-2 px-4 bg-gray-100 rounded-xl">
+                  <p className="text-sm text-gray-500">Verificando...</p>
+                </div>
               )}
               {/* Mensagem quando já avaliou nos últimos 30 dias */}
               {orderStatus === 'delivered' && !canReview && canReviewChecked && (
@@ -3440,9 +3446,17 @@ export default function PublicMenu() {
                         setRatingSuccess(true);
                         // Após sucesso, atualizar canReview para false
                         setCanReview(false);
-                      } catch (error) {
+                      } catch (error: any) {
                         console.error('Erro ao enviar avaliação:', error);
-                        alert('Erro ao enviar avaliação. Tente novamente.');
+                        // Verificar se é erro de já ter avaliado
+                        const errorMessage = error?.message || '';
+                        if (errorMessage.includes('30 dias') || errorMessage.includes('já avaliou')) {
+                          alert('Você já avaliou este restaurante nos últimos 30 dias.');
+                          setCanReview(false);
+                          setShowRatingModal(false);
+                        } else {
+                          alert('Erro ao enviar avaliação. Tente novamente.');
+                        }
                       }
                     }}
                     disabled={ratingValue === 0 || createReviewMutation.isPending}

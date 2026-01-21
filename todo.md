@@ -1660,3 +1660,9 @@
 ## Correção do Erro de Validação ao Enviar Pedido
 - [x] Investigar erro "The string did not match the expected pattern"
 - [x] Corrigir validação que está causando o erro (removido type=tel que causava validação nativa do navegador)
+
+## Correção do Sistema de Avaliação
+- [x] Ocultar botão de avaliação quando cliente já avaliou nos últimos 30 dias
+- [x] Corrigir verificação de avaliação existente antes de exibir formulário
+- [x] Adicionar estado de loading enquanto verifica se pode avaliar
+- [x] Melhorar tratamento de erro quando já avaliou
