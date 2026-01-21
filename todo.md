@@ -1310,3 +1310,13 @@
   - SSE agora sempre incrementa a contagem quando novo pedido chega
   - Contagem inicial recalculada quando dados mudam
   - Logs de debug adicionados para acompanhamento
+
+## Mensagem SMS Diferenciada por Tipo de Entrega
+
+- [x] Modificar função sendOrderReadySMS para aceitar parâmetro deliveryType
+  - Parâmetro opcional com default "delivery"
+- [x] Mensagem para entrega: "{Nome}: Seu pedido está saindo para entrega."
+- [x] Mensagem para retirada: "{Nome}: Seu pedido já está disponível para retirada."
+- [x] Atualizar chamada de SMS no db.ts para passar o deliveryType do pedido
+  - order.deliveryType passado como terceiro parâmetro
+  - Log atualizado para mostrar tipo de entrega

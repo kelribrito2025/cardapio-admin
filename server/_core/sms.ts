@@ -163,17 +163,22 @@ export async function sendSMS(payload: SMSPayload): Promise<SMSResponse> {
  * 
  * @param customerPhone - Telefone do cliente
  * @param restaurantName - Nome do restaurante
+ * @param deliveryType - Tipo de entrega: "delivery" para entrega ou "pickup" para retirada
  * @returns Resultado do envio
  */
 export async function sendOrderReadySMS(
   customerPhone: string,
-  restaurantName: string
+  restaurantName: string,
+  deliveryType: string = "delivery"
 ): Promise<SMSResponse> {
-  const message = `${restaurantName}: Seu pedido está saindo para entrega.`;
+  // Mensagem diferenciada por tipo de entrega
+  const message = deliveryType === "pickup"
+    ? `${restaurantName}: Seu pedido já está disponível para retirada.`
+    : `${restaurantName}: Seu pedido está saindo para entrega.`;
   
   return sendSMS({
     to: customerPhone,
     message,
-    campaignName: "Pedido Pronto",
+    campaignName: deliveryType === "pickup" ? "Pedido Pronto Retirada" : "Pedido Pronto Entrega",
   });
 }

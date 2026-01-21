@@ -593,10 +593,11 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
         // Só enviar SMS se a funcionalidade estiver ativada nas configurações
         if (smsEnabled) {
           // Enviar SMS de forma assíncrona (não bloqueia o fluxo)
-          sendOrderReadySMS(order.customerPhone, restaurantName)
+          // Passa o deliveryType para diferenciar a mensagem entre entrega e retirada
+          sendOrderReadySMS(order.customerPhone, restaurantName, order.deliveryType)
             .then(result => {
               if (result.success) {
-                console.log(`[SMS] SMS enviado com sucesso para pedido ${order.orderNumber}`);
+                console.log(`[SMS] SMS enviado com sucesso para pedido ${order.orderNumber} (${order.deliveryType})`);
               } else {
                 console.warn(`[SMS] Falha ao enviar SMS para pedido ${order.orderNumber}: ${result.error}`);
               }
