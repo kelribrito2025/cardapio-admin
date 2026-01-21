@@ -1648,3 +1648,7 @@
 - [x] Implementar listener SSE no modal de acompanhamento para receber atualizações de status
 - [x] Atualizar status visual do pedido automaticamente sem fechar/abrir modal
 - [x] Usar conexão SSE existente (sem criar novas conexões)
+
+## Correção da Observação no Modal da Sacola
+- [x] Exibir observação do item imediatamente no modal "Sua Sacola" após adicionar
+- [x] Garantir que a observação apareça junto com o item na sacola
