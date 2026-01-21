@@ -395,6 +395,9 @@ export default function PublicMenu() {
   const connectedOrdersRef = useRef<string>('');
   const eventSourceRef = useRef<EventSource | null>(null);
   const currentOrderNumberRef = useRef<string | null>(null);
+  const sseReconnectAttempts = useRef(0);
+  const sseReconnectTimeout = useRef<NodeJS.Timeout | null>(null);
+  const sseEnabled = useRef(true); // Flag para desabilitar SSE em caso de rate limiting
   
   // Atualizar ref do currentOrderNumber
   useEffect(() => {
@@ -403,20 +406,28 @@ export default function PublicMenu() {
   
   // Conexão SSE para atualização em tempo real do status dos pedidos
   // Usa orderNumbers em vez de telefone, pois clientes não têm conta/login
+  // DESABILITADO TEMPORARIAMENTE: SSE está causando rate limiting no servidor
+  // O status será atualizado via polling quando o usuário abrir o modal de tracking
   useEffect(() => {
+    // SSE desabilitado para evitar rate limiting
+    // O status é sincronizado quando o usuário abre o modal "Meus Pedidos" ou "Acompanhar Pedido"
+    return;
+    
+    // Código SSE comentado para referência futura
+    /*
     // Pegar os orderNumbers dos pedidos em andamento do localStorage
     const activeOrders = userOrders.filter(o => 
       o.status !== 'delivered' && o.status !== 'cancelled'
     );
     
-    // Se não tem pedidos em andamento, não conectar
-    if (activeOrders.length === 0) {
+    // Se não tem pedidos em andamento ou SSE desabilitado, não conectar
+    if (activeOrders.length === 0 || !sseEnabled.current) {
       // Fechar conexão existente se não há mais pedidos ativos
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
         eventSourceRef.current = null;
         connectedOrdersRef.current = '';
-        console.log('[SSE-Order] Conexão fechada - sem pedidos ativos');
+        console.log('[SSE-Order] Conexão fechada - sem pedidos ativos ou SSE desabilitado');
       }
       return;
     }
@@ -432,6 +443,12 @@ export default function PublicMenu() {
     // Fechar conexão anterior se existir
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
+    }
+    
+    // Limpar timeout de reconexão anterior
+    if (sseReconnectTimeout.current) {
+      clearTimeout(sseReconnectTimeout.current);
+      sseReconnectTimeout.current = null;
     }
     
     connectedOrdersRef.current = orderNumbersString;
@@ -452,6 +469,7 @@ export default function PublicMenu() {
       try {
         const data = JSON.parse(event.data);
         console.log('[SSE-Order] Recebido evento de atualização de status:', data);
+        sseReconnectAttempts.current = 0; // Reset tentativas em caso de sucesso
         
         // Atualizar o pedido no estado
         setUserOrders(prevOrders => {
@@ -481,26 +499,50 @@ export default function PublicMenu() {
     
     eventSource.addEventListener('connected', (event) => {
       console.log('[SSE-Order] Conexão estabelecida:', event.data);
+      sseReconnectAttempts.current = 0; // Reset tentativas em caso de sucesso
     });
     
     eventSource.onerror = (error) => {
       console.error('[SSE-Order] Erro na conexão:', error);
-      // Tentar reconectar após 5 segundos em caso de erro
-      setTimeout(() => {
+      
+      // Incrementar tentativas de reconexão
+      sseReconnectAttempts.current++;
+      
+      // Se excedeu o limite de tentativas (5), desabilitar SSE
+      if (sseReconnectAttempts.current >= 5) {
+        console.log('[SSE-Order] Máximo de tentativas atingido. Desabilitando SSE.');
+        sseEnabled.current = false;
+        if (eventSourceRef.current) {
+          eventSourceRef.current.close();
+          eventSourceRef.current = null;
+        }
+        return;
+      }
+      
+      // Backoff exponencial: 5s, 10s, 20s, 40s, 80s
+      const delay = 5000 * Math.pow(2, sseReconnectAttempts.current - 1);
+      console.log(`[SSE-Order] Tentando reconectar em ${delay/1000}s (tentativa ${sseReconnectAttempts.current}/5)`);
+      
+      sseReconnectTimeout.current = setTimeout(() => {
         if (eventSourceRef.current === eventSource) {
           connectedOrdersRef.current = ''; // Forçar reconexão
         }
-      }, 5000);
+      }, delay);
     };
     
     // Cleanup quando o componente desmontar
     return () => {
+      if (sseReconnectTimeout.current) {
+        clearTimeout(sseReconnectTimeout.current);
+        sseReconnectTimeout.current = null;
+      }
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
         eventSourceRef.current = null;
         console.log('[SSE-Order] Conexão fechada');
       }
     };
+    */
   }, [userOrders]);
 
   // Carregar endereço salvo do localStorage

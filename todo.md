@@ -1054,3 +1054,9 @@
 
 - [x] Investigar e corrigir erro "Cardápio não encontrado" após últimas alterações
 - [x] Corrigir erro de establishmentId null nas queries de Pedidos.tsx
+
+
+## Bug Fix - Versão publicada fora do ar
+
+- [x] Investigar e corrigir problema na versão publicada (mindi.manus.space)
+- [x] Corrigir erro de Rate Limiting (429) no SSE do menu público - SSE desabilitado temporariamente
