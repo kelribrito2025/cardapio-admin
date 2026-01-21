@@ -1448,3 +1448,14 @@
   - Endereço agora é um link que abre no Google Maps em nova aba
   - Efeito hover com underline e mudança de cor
   - Tooltip "Abrir no Google Maps"
+
+
+## Bug - Badge de Pedidos Não Atualiza
+
+- [x] Corrigir badge de pedidos que só conta o primeiro pedido via SSE
+  - Problema: stale closure no callback do useOrdersSSE
+  - Solução: usar useRef para manter contagem atualizada
+- [x] Badge deve incrementar para cada novo pedido recebido
+  - countRef.current mantém valor atualizado entre renders
+- [x] Atualmente só atualiza após F5 (refresh da página)
+  - Corrigido: agora atualiza em tempo real via SSE

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
@@ -21,6 +21,11 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     const saved = localStorage.getItem("lastSeenOrdersTimestamp");
     return saved ? parseInt(saved, 10) : 0;
   });
+  
+  // Ref para rastrear se já inicializamos
+  const initializedRef = useRef(false);
+  // Ref para a contagem atual (para evitar closure stale)
+  const countRef = useRef(0);
 
   // Query para buscar o estabelecimento do usuário
   const { data: establishment } = trpc.establishment.get.useQuery(
@@ -38,25 +43,30 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     }
   );
 
+  // Callback para novo pedido - usando ref para evitar stale closure
+  const handleNewOrder = useCallback(() => {
+    // Incrementar usando ref para garantir valor atualizado
+    countRef.current = countRef.current + 1;
+    setNewOrdersCount(countRef.current);
+    console.log("[NewOrders] Novo pedido recebido via SSE, contagem:", countRef.current);
+  }, []);
+
+  // Callback para update de pedido
+  const handleOrderUpdate = useCallback(() => {
+    // Não fazer nada no update - a contagem é baseada em pedidos novos
+  }, []);
+
   // Usar o hook SSE compartilhado
   useOrdersSSE({
     establishmentId: establishment?.id,
     enabled: !!establishment?.id && establishment.id > 0,
-    onNewOrder: useCallback(() => {
-      // Quando um novo pedido chega via SSE, incrementar a contagem
-      // independentemente de estar na página de pedidos ou não
-      // O badge só aparece se não estiver na página de pedidos (verificado no render)
-      setNewOrdersCount(prev => prev + 1);
-      console.log("[NewOrders] Novo pedido recebido via SSE, incrementando contagem");
-    }, []),
-    onOrderUpdate: useCallback(() => {
-      // Não fazer nada no update - a contagem é baseada em pedidos novos
-    }, []),
+    onNewOrder: handleNewOrder,
+    onOrderUpdate: handleOrderUpdate,
   });
 
   // Calcular contagem inicial de pedidos novos quando os dados carregam
   useEffect(() => {
-    if (ordersData?.orders) {
+    if (ordersData?.orders && !initializedRef.current) {
       const newOrders = ordersData.orders.filter(order => order.status === 'new');
       // Contar apenas pedidos criados após o último timestamp visto
       const unseenNewOrders = newOrders.filter(order => {
@@ -64,10 +74,12 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
         return orderTimestamp > lastSeenTimestamp;
       });
       
-      // Só atualizar se a contagem for diferente (evita loops)
-      if (unseenNewOrders.length !== newOrdersCount && location !== "/pedidos") {
+      // Só atualizar se não estiver na página de pedidos
+      if (location !== "/pedidos") {
+        countRef.current = unseenNewOrders.length;
         setNewOrdersCount(unseenNewOrders.length);
         console.log("[NewOrders] Contagem inicial calculada:", unseenNewOrders.length);
+        initializedRef.current = true;
       }
     }
   }, [ordersData, lastSeenTimestamp, location]);
@@ -78,7 +90,9 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
       const now = Date.now();
       setLastSeenTimestamp(now);
       localStorage.setItem("lastSeenOrdersTimestamp", String(now));
+      countRef.current = 0;
       setNewOrdersCount(0);
+      initializedRef.current = true; // Marcar como inicializado
       console.log("[NewOrders] Entrando na página de pedidos, zerando contagem");
     }
   }, [location]);
@@ -87,15 +101,18 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     const now = Date.now();
     setLastSeenTimestamp(now);
     localStorage.setItem("lastSeenOrdersTimestamp", String(now));
+    countRef.current = 0;
     setNewOrdersCount(0);
   }, []);
 
   const incrementCount = useCallback(() => {
-    setNewOrdersCount(prev => prev + 1);
+    countRef.current = countRef.current + 1;
+    setNewOrdersCount(countRef.current);
   }, []);
 
   const decrementCount = useCallback(() => {
-    setNewOrdersCount(prev => Math.max(0, prev - 1));
+    countRef.current = Math.max(0, countRef.current - 1);
+    setNewOrdersCount(countRef.current);
   }, []);
 
   return (
