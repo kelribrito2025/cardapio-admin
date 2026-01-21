@@ -1675,3 +1675,8 @@
 - [x] Alterar ícone do status 'out_for_delivery' para Bike com animação bounce e ping
 - [x] Usar cor violet-600 para o ícone principal e violet-400 para o ping
 - [x] Alterar cor do texto do status para violet-600 quando estiver em entrega
+
+## Correção dos Ícones de Status no Modal de Acompanhar Pedido
+- [x] Adicionar container redondo por trás do ícone de "Saiu para entrega"
+- [x] Adicionar efeito de animação bounce/ping nos ícones de Enviado, Pedido aceito e Entregue
+- [x] Manter container redondo colorido em todos os status
