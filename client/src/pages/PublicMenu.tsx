@@ -1253,7 +1253,12 @@ export default function PublicMenu() {
                 {/* Button */}
                 <button 
                   disabled={cart.length === 0 || !establishment.isOpen}
-                  onClick={() => cart.length > 0 && establishment.isOpen && setCheckoutStep(1)}
+                  onClick={() => {
+                    if (cart.length > 0 && establishment.isOpen) {
+                      setOrderSent(false); // Resetar para permitir novo pedido
+                      setCheckoutStep(1);
+                    }
+                  }}
                   className={`w-full mt-4 py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
                     !establishment.isOpen
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -2701,6 +2706,7 @@ export default function PublicMenu() {
                   onClick={() => {
                     if (!establishment.isOpen) return;
                     setShowMobileBag(false);
+                    setOrderSent(false); // Resetar para permitir novo pedido
                     setCheckoutStep(1);
                   }}
                   disabled={!establishment.isOpen}

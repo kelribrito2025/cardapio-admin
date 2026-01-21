@@ -1210,3 +1210,15 @@
   - setChangeAmount("")
   - setChangeAmountError(null)
   - setCheckoutStep(0)
+
+
+## Bug Fix - Segundo Pedido Pula Direto para Modal de Sucesso
+
+- [x] Identificar estados que não estão sendo resetados após primeiro pedido
+  - Problema: orderSent permanecia true após primeiro pedido
+  - Quando usuário iniciava novo checkout, step 5 mostrava "Pedido enviado" direto
+- [x] Resetar orderSent para false quando iniciar novo pedido
+  - Adicionado setOrderSent(false) no botão "Finalizar pedido" (desktop)
+  - Adicionado setOrderSent(false) no botão "Finalizar pedido" (mobile)
+- [x] Garantir que o fluxo de checkout funcione corretamente para múltiplos pedidos
+  - Agora cada novo checkout começa com orderSent=false
