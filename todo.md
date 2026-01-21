@@ -1105,3 +1105,12 @@
 - [x] Cancelar SSE ao sair da página (cleanup automático quando não há listeners)
 - [x] Remover reconexões agressivas (só reconecta quando CLOSED, backoff exponencial)
 - [x] SSE por establishmentId (passado como parâmetro do hook)
+
+
+## SSE Multi-Tab - Compartilhar conexão entre abas
+
+- [x] Implementar sistema de líder/seguidor com BroadcastChannel
+- [x] Aba líder mantém a conexão SSE real
+- [x] Outras abas recebem eventos via BroadcastChannel
+- [x] Eleição automática de novo líder quando aba líder fecha (timeout 5s)
+- [x] Garantir apenas 1 conexão SSE por restaurante por navegador
