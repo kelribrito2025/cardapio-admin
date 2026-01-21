@@ -1570,3 +1570,7 @@
 ## Texto Avaliações no Mobile
 
 - [x] Restaurar texto "Avaliações" no botão de avaliações na versão mobile
+
+## Bug: Scroll no Modal Meus Pedidos
+
+- [x] Corrigir scroll do modal Meus Pedidos que está rolando a página de fundo em vez do conteúdo do modal
