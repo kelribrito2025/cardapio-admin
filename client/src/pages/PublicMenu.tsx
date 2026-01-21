@@ -1400,7 +1400,6 @@ export default function PublicMenu() {
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setShowInfoModal(false)}
           />
           
           {/* Modal Content */}
@@ -2574,7 +2573,6 @@ export default function PublicMenu() {
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setShowCouponModal(false)}
           />
           
           {/* Modal Content */}
@@ -2805,7 +2803,6 @@ export default function PublicMenu() {
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50"
-            onClick={() => setShowOrdersModal(false)}
           />
           
           {/* Modal */}
@@ -3005,7 +3002,6 @@ export default function PublicMenu() {
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setShowTrackingModal(false)}
           />
           
           {/* Modal Content */}
@@ -3360,7 +3356,6 @@ export default function PublicMenu() {
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setShowReviewsModal(false)}
           />
           
           {/* Modal Content */}

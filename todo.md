@@ -1469,3 +1469,14 @@
 - [x] Status deve mostrar "Cancelado" corretamente sem precisar clicar em "Acompanhar"
   - Texto "Cancelado" em vermelho
   - Borda lateral vermelha para pedidos cancelados
+
+
+## Modais do Fluxo de Pedido - Não Fechar ao Tocar Fora
+
+- [x] Impedir que modais do fluxo de pedido fechem ao tocar fora do modal
+  - Modal de Informações
+  - Modal de Cupom
+  - Modal de Meus Pedidos
+  - Modal de Acompanhar Pedido
+  - Modal de Avaliações
+- [x] Modais devem fechar apenas pelo botão X
