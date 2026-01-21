@@ -1266,3 +1266,16 @@
   - Removido setCheckoutStep(0) do onSuccess
   - Agora o modal permanece aberto mostrando "Pedido enviado com sucesso!"
   - checkoutStep só é resetado quando usuário clica em "Acompanhar pedido"
+
+
+## Bug Fix - SMS Não Está Sendo Recebido
+
+- [x] Verificar se o DDI +55 está sendo adicionado corretamente ao telefone
+  - Confirmação: DDI 55 está sendo adicionado automaticamente
+  - Exemplo: 88999290000 -> 5588999290000
+- [x] Verificar logs do servidor para ver se o SMS está sendo enviado
+  - Teste manual de envio de SMS funcionou corretamente
+  - API DisparoPro retornou status "ACCEPTED" e "Message Sent"
+- [x] Corrigir normalização do telefone se necessário
+  - Não foi necessário - normalização já estava correta
+- [x] Usuário confirmou recebimento do SMS de teste

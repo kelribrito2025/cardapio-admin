@@ -1,0 +1,90 @@
+{
+  "query": "SELECT id, orderNumber, customerPhone, customerName, status, createdAt FROM orders WHERE customerPhone IS NOT NULL ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, customerPhone, customerName, status, createdAt FROM orders WHERE customerPhone IS NOT NULL ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "90016",
+      "orderNumber": "#P00021",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed",
+      "createdAt": "2026-01-21 15:46:50"
+    },
+    {
+      "id": "90015",
+      "orderNumber": "#P00020",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed",
+      "createdAt": "2026-01-21 15:43:50"
+    },
+    {
+      "id": "90014",
+      "orderNumber": "#P00019",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed",
+      "createdAt": "2026-01-21 15:41:56"
+    },
+    {
+      "id": "90013",
+      "orderNumber": "#P00018",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed",
+      "createdAt": "2026-01-21 15:16:41"
+    },
+    {
+      "id": "90012",
+      "orderNumber": "#P00017",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed",
+      "createdAt": "2026-01-21 15:14:13"
+    },
+    {
+      "id": "90011",
+      "orderNumber": "#P00016",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed",
+      "createdAt": "2026-01-21 15:13:47"
+    },
+    {
+      "id": "90010",
+      "orderNumber": "#P00015",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed",
+      "createdAt": "2026-01-21 15:13:28"
+    },
+    {
+      "id": "90009",
+      "orderNumber": "#P00014",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed",
+      "createdAt": "2026-01-21 15:04:57"
+    },
+    {
+      "id": "90008",
+      "orderNumber": "#P00013",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed",
+      "createdAt": "2026-01-21 15:02:24"
+    },
+    {
+      "id": "90007",
+      "orderNumber": "#P00012",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed",
+      "createdAt": "2026-01-21 15:00:44"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tcustomerPhone\tcustomerName\tstatus\tcreatedAt\n90016\t#P00021\t(88) 99929-9999\tchico tripa\tcompleted\t2026-01-21 15:46:50\n90015\t#P00020\t(88) 99929-9999\tchico tripa\tcompleted\t2026-01-21 15:43:50\n90014\t#P00019\t(88) 99929-9999\tchico tripa\tcompleted\t2026-01-21 15:41:56\n90013\t#P00018\t(88) 99929-9999\tchico tripa\tcompleted\t2026-01-21 15:16:41\n90012\t#P00017\t(88) 99929-9999\tchico tripa\tcompleted\t2026-01-21 15:14:13\n90011\t#P00016\t(88) 99929-9999\tchico tripa\tcompleted\t2026-01-21 15:13:47\n90010\t#P00015\t(88) 99929-9999\tchico tripa\tcompleted\t2026-01-21 15:13:28\n90009\t#P00014\t(88) 99929-9999\tchico tripa\tcompleted\t2026-01-21 15:04:57\n90008\t#P00013\t(88) 99929-9999\tchico tripa\tcompleted\t2026-01-21 15:02:24\n90007\t#P00012\t(88) 99929-9999\tchico tripa\tcompleted\t2026-01-21 15:00:44\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}

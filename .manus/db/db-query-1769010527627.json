@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, orderNumber, customerPhone, customerName, status FROM orders ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, customerPhone, customerName, status FROM orders ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "90016",
+      "orderNumber": "#P00021",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed"
+    },
+    {
+      "id": "90015",
+      "orderNumber": "#P00020",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed"
+    },
+    {
+      "id": "90014",
+      "orderNumber": "#P00019",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed"
+    },
+    {
+      "id": "90013",
+      "orderNumber": "#P00018",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed"
+    },
+    {
+      "id": "90012",
+      "orderNumber": "#P00017",
+      "customerPhone": "(88) 99929-9999",
+      "customerName": "chico tripa",
+      "status": "completed"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tcustomerPhone\tcustomerName\tstatus\n90016\t#P00021\t(88) 99929-9999\tchico tripa\tcompleted\n90015\t#P00020\t(88) 99929-9999\tchico tripa\tcompleted\n90014\t#P00019\t(88) 99929-9999\tchico tripa\tcompleted\n90013\t#P00018\t(88) 99929-9999\tchico tripa\tcompleted\n90012\t#P00017\t(88) 99929-9999\tchico tripa\tcompleted\n",
+  "stderr": "",
+  "execution_time_ms": 106
+}
