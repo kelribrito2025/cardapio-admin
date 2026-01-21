@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
@@ -38,69 +38,19 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     }
   );
 
-  // Ref para controle anti-spam do som (IDs de pedidos já notificados)
-  const notifiedOrdersRef = useRef<Set<number>>(new Set());
-  
-  // Ref para o áudio de notificação
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  
-  // Inicializar o áudio
-  useEffect(() => {
-    audioRef.current = new Audio("/sounds/new-order.wav");
-    audioRef.current.preload = "auto";
-    
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-    };
-  }, []);
-  
-  // Função para tocar o som de notificação
-  const playNotificationSound = useCallback(() => {
-    // Verificar se o som está habilitado no localStorage
-    const soundEnabled = localStorage.getItem("cardapio_sound_enabled") === "true";
-    if (!soundEnabled || !audioRef.current) return;
-    
-    try {
-      audioRef.current.currentTime = 0;
-      audioRef.current.volume = 1;
-      audioRef.current.play().catch((error) => {
-        console.warn("[NewOrders] Não foi possível tocar o som:", error);
-      });
-    } catch (error) {
-      console.warn("[NewOrders] Erro ao tocar som:", error);
-    }
-  }, []);
-
   // Usar o hook SSE compartilhado
   useOrdersSSE({
     establishmentId: establishment?.id,
     enabled: !!establishment?.id && establishment.id > 0,
-    onNewOrder: useCallback((order: { id: number; status: string }) => {
+    onNewOrder: useCallback(() => {
       // Quando um novo pedido chega via SSE, incrementar a contagem
       // independentemente de estar na página de pedidos ou não
       // O badge só aparece se não estiver na página de pedidos (verificado no render)
       setNewOrdersCount(prev => prev + 1);
       console.log("[NewOrders] Novo pedido recebido via SSE, incrementando contagem");
-      
-      // Tocar som apenas para pedidos novos (status === 'new') e que ainda não foram notificados
-      if (order.status === 'new' && !notifiedOrdersRef.current.has(order.id)) {
-        notifiedOrdersRef.current.add(order.id);
-        playNotificationSound();
-        console.log("[NewOrders] Som de notificação tocado para pedido:", order.id);
-        
-        // Limpar pedidos antigos do Set para evitar memory leak (manter últimos 100)
-        if (notifiedOrdersRef.current.size > 100) {
-          const arr = Array.from(notifiedOrdersRef.current);
-          notifiedOrdersRef.current = new Set(arr.slice(-50));
-        }
-      }
-    }, [playNotificationSound]),
+    }, []),
     onOrderUpdate: useCallback(() => {
       // Não fazer nada no update - a contagem é baseada em pedidos novos
-      // Não tocar som em mudanças de status (anti-spam)
     }, []),
   });
 
