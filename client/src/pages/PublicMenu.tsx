@@ -2459,7 +2459,9 @@ export default function PublicMenu() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
                   <input
-                    type="tel"
+                    type="text"
+                    inputMode="tel"
+                    autoComplete="tel"
                     value={customerInfo.phone}
                     onChange={(e) => {
                       let value = e.target.value.replace(/\D/g, "");

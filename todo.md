@@ -1656,3 +1656,7 @@
 ## Remover Botão Voltar do Modal de Confirmação
 - [x] Remover botão "Voltar" do step 5 (Enviar) do modal de checkout
 - [x] Manter apenas o botão "Enviar pedido"
+
+## Correção do Erro de Validação ao Enviar Pedido
+- [x] Investigar erro "The string did not match the expected pattern"
+- [x] Corrigir validação que está causando o erro (removido type=tel que causava validação nativa do navegador)
