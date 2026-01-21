@@ -69,6 +69,7 @@ export default function PublicMenu() {
   const [orderSent, setOrderSent] = useState(false);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
   const [showMobileBag, setShowMobileBag] = useState(false);
+  const [bagAutoOpenEnabled, setBagAutoOpenEnabled] = useState(true); // Controla se a sacola deve abrir automaticamente
   const [orderStatus, setOrderStatus] = useState<"sent" | "accepted" | "delivering" | "delivered" | "cancelled">("sent");
   const [cancellationReasonDisplay, setCancellationReasonDisplay] = useState<string | null>(null);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
@@ -1771,6 +1772,9 @@ export default function PublicMenu() {
                         complements: selectedComplementsList,
                       };
                       
+                      // Verificar se é o primeiro item (sacola vazia) para abrir automaticamente
+                      const wasCartEmpty = cart.length === 0;
+                      
                       setCart((prev) => {
                         // Para itens com complementos, sempre adiciona como novo item
                         if (selectedComplementsList.length > 0) {
@@ -1791,6 +1795,11 @@ export default function PublicMenu() {
                         
                         return [...prev, newItem];
                       });
+                      
+                      // Abrir sacola automaticamente apenas no primeiro item quando auto-open está habilitado
+                      if (wasCartEmpty && bagAutoOpenEnabled) {
+                        setShowMobileBag(true);
+                      }
                       
                       // Limpar seleções
                       setSelectedComplements(new Map());
@@ -2825,6 +2834,19 @@ export default function PublicMenu() {
                     return sum + itemTotal + complementsTotal;
                   }, 0).toFixed(2).replace('.', ',')}</span>
                 </div>
+                {/* Botão Adicionar mais itens */}
+                <button
+                  onClick={() => {
+                    setShowMobileBag(false);
+                    setBagAutoOpenEnabled(false); // Desabilitar auto-open após clicar em "Adicionar mais itens"
+                  }}
+                  className="w-full py-3 font-semibold rounded-xl transition-colors border-2 border-red-500 text-red-500 hover:bg-red-50 flex items-center justify-center gap-2"
+                >
+                  <Plus className="h-5 w-5" />
+                  Adicionar mais itens
+                </button>
+                
+                {/* Botão Finalizar pedido */}
                 <button
                   onClick={() => {
                     if (!establishment.isOpen) return;

@@ -1514,3 +1514,15 @@
   - Filtro atualizado para excluir status 'delivered' E 'cancelled'
 - [x] Badge deve mostrar apenas pedidos em andamento (não entregues e não cancelados)
   - Corrigido no desktop e mobile
+
+
+## Novo Comportamento da Sacola Mobile
+
+- [x] Abrir sacola automaticamente apenas quando primeiro item é adicionado (sacola vazia)
+  - Estado bagAutoOpenEnabled controla se auto-open está habilitado
+- [x] Adicionar botão "Adicionar mais itens" no modal da sacola
+  - Botão com borda vermelha e ícone de +
+- [x] Ao clicar em "Adicionar mais itens", fechar modal e desativar auto-open
+  - setBagAutoOpenEnabled(false) ao clicar
+- [x] Sacola só abre manualmente após o primeiro item
+  - Auto-open só funciona quando bagAutoOpenEnabled é true
