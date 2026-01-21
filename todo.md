@@ -1635,3 +1635,7 @@
 ## Reorganizar Layout do Pix
 
 - [x] Mover campo da chave Pix para dentro do container de seleção Pix no modal de pagamento
+
+## Layout Horizontal do Pix
+
+- [x] Colocar campo da chave Pix na mesma linha horizontal do nome Pix

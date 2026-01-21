@@ -2216,33 +2216,31 @@ export default function PublicMenu() {
                           value="pix"
                           checked={paymentMethod === "pix"}
                           onChange={() => setPaymentMethod("pix")}
-                          className="w-4 h-4 text-red-500 focus:ring-red-500"
+                          className="w-4 h-4 text-red-500 focus:ring-red-500 flex-shrink-0"
                         />
-                        <QrCode className="h-5 w-5 text-gray-600" />
-                        <span className="font-medium text-gray-800">Pix</span>
-                      </label>
-                      {/* Chave Pix - dentro do container de seleção */}
-                      {paymentMethod === "pix" && establishment.pixKey && (
-                        <div className="px-4 pb-4">
-                          <div className="flex items-center gap-2">
-                            <code className="flex-1 bg-white px-3 py-2 rounded-lg text-sm text-gray-800 border border-gray-200 break-all">
+                        <QrCode className="h-5 w-5 text-gray-600 flex-shrink-0" />
+                        <span className="font-medium text-gray-800 flex-shrink-0">Pix</span>
+                        {/* Chave Pix - na mesma linha */}
+                        {paymentMethod === "pix" && establishment.pixKey && (
+                          <div className="flex items-center gap-2 flex-1 ml-2">
+                            <code className="flex-1 bg-white px-2 py-1 rounded text-xs text-gray-700 border border-gray-200 truncate min-w-0">
                               {establishment.pixKey}
                             </code>
                             <button
                               type="button"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.preventDefault();
                                 navigator.clipboard.writeText(establishment.pixKey || "");
                                 alert("Chave Pix copiada!");
                               }}
-                              className="flex-shrink-0 p-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg transition-colors"
+                              className="flex-shrink-0 p-1.5 bg-teal-500 hover:bg-teal-600 text-white rounded transition-colors"
                               title="Copiar chave Pix"
                             >
-                              <Copy className="h-4 w-4" />
+                              <Copy className="h-3.5 w-3.5" />
                             </button>
                           </div>
-                          <p className="text-xs text-gray-500 mt-2">Copie a chave para realizar o pagamento via Pix.</p>
-                        </div>
-                      )}
+                        )}
+                      </label>
                     </div>
                   </div>
 
