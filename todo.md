@@ -1631,3 +1631,7 @@
 ## Fechar Modal ao Clicar Fora
 
 - [x] Adicionar funcionalidade de fechar modal de detalhes do item ao clicar no backdrop
+
+## Reorganizar Layout do Pix
+
+- [x] Mover campo da chave Pix para dentro do container de seleção Pix no modal de pagamento

@@ -2206,45 +2206,45 @@ export default function PublicMenu() {
                       <CreditCard className="h-5 w-5 text-gray-600" />
                       <span className="font-medium text-gray-800">Cartão</span>
                     </label>
-                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                    <div className={`border rounded-xl transition-colors ${
                       paymentMethod === "pix" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
                     }`}>
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="pix"
-                        checked={paymentMethod === "pix"}
-                        onChange={() => setPaymentMethod("pix")}
-                        className="w-4 h-4 text-red-500 focus:ring-red-500"
-                      />
-                      <QrCode className="h-5 w-5 text-gray-600" />
-                      <span className="font-medium text-gray-800">Pix</span>
-                    </label>
-                  </div>
-
-                  {/* Chave Pix */}
-                  {paymentMethod === "pix" && establishment.pixKey && (
-                    <div className="mt-4 p-4 bg-teal-50 border border-teal-200 rounded-xl">
-                      <p className="text-sm text-teal-700 font-medium mb-2">Chave Pix do restaurante:</p>
-                      <div className="flex items-center gap-2">
-                        <code className="flex-1 bg-white px-3 py-2 rounded-lg text-sm text-gray-800 border border-teal-200 break-all">
-                          {establishment.pixKey}
-                        </code>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            navigator.clipboard.writeText(establishment.pixKey || "");
-                            alert("Chave Pix copiada!");
-                          }}
-                          className="flex-shrink-0 p-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg transition-colors"
-                          title="Copiar chave Pix"
-                        >
-                          <Copy className="h-4 w-4" />
-                        </button>
-                      </div>
-                      <p className="text-xs text-teal-600 mt-2">Copie a chave para realizar o pagamento via Pix.</p>
+                      <label className="flex items-center gap-3 p-4 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="pix"
+                          checked={paymentMethod === "pix"}
+                          onChange={() => setPaymentMethod("pix")}
+                          className="w-4 h-4 text-red-500 focus:ring-red-500"
+                        />
+                        <QrCode className="h-5 w-5 text-gray-600" />
+                        <span className="font-medium text-gray-800">Pix</span>
+                      </label>
+                      {/* Chave Pix - dentro do container de seleção */}
+                      {paymentMethod === "pix" && establishment.pixKey && (
+                        <div className="px-4 pb-4">
+                          <div className="flex items-center gap-2">
+                            <code className="flex-1 bg-white px-3 py-2 rounded-lg text-sm text-gray-800 border border-gray-200 break-all">
+                              {establishment.pixKey}
+                            </code>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                navigator.clipboard.writeText(establishment.pixKey || "");
+                                alert("Chave Pix copiada!");
+                              }}
+                              className="flex-shrink-0 p-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg transition-colors"
+                              title="Copiar chave Pix"
+                            >
+                              <Copy className="h-4 w-4" />
+                            </button>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-2">Copie a chave para realizar o pagamento via Pix.</p>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
 
                 </div>
               </div>
