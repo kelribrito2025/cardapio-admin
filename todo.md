@@ -1623,3 +1623,7 @@
 
 - [x] Alterar modal de avaliações para estilo bottom sheet no mobile
 - [x] Alterar modal de cupom para estilo bottom sheet no mobile
+
+## Bug: Scroll no Modal de Detalhes do Produto
+
+- [x] Corrigir scroll do modal de detalhes do produto que está movendo a página de fundo

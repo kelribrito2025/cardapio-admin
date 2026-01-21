@@ -1455,7 +1455,7 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
             <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
               <h2 className="text-lg font-bold text-gray-900">Informações</h2>
@@ -1536,7 +1536,7 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{ touchAction: 'pan-y' }}>
             {/* Imagem do Produto */}
             {selectedProduct.images?.[0] && (
               <div className="relative w-full h-[268px] sm:h-60 md:h-72 flex-shrink-0">
@@ -1578,7 +1578,7 @@ export default function PublicMenu() {
             )}
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
               {/* Título e Preço */}
               <div>
                 <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
@@ -1916,7 +1916,7 @@ export default function PublicMenu() {
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-6 space-y-4">
                 {/* Lista de Itens */}
                 <div className="space-y-3">
                   <h3 className="font-semibold text-gray-800 text-sm">Itens do pedido</h3>
@@ -2009,7 +2009,7 @@ export default function PublicMenu() {
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-6 space-y-6">
                 {/* Forma de Entrega */}
                 <div>
                   <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
@@ -2284,7 +2284,7 @@ export default function PublicMenu() {
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-5">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-6 space-y-5">
                 {/* Itens */}
                 <div>
                   <div className="flex items-center gap-3 mb-3">
@@ -2418,7 +2418,7 @@ export default function PublicMenu() {
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-6 space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Nome completo</label>
                   <input
@@ -2474,7 +2474,7 @@ export default function PublicMenu() {
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
-              <div className={`overflow-y-auto p-6 ${!orderSent ? 'flex-1' : ''}`}>
+              <div className={`overflow-y-auto overscroll-contain p-6 ${!orderSent ? 'flex-1' : ''}`}>
                 {!orderSent ? (
                   <div className="text-center py-8">
                     <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -2774,7 +2774,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4">
               {cart.length === 0 ? (
                 <div className="text-center py-8">
                   <ShoppingBag className="h-12 w-12 text-gray-300 mx-auto mb-3" />
@@ -2904,7 +2904,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4">
               {userOrders.length === 0 ? (
                 <div className="text-center py-12">
                   <ClipboardList className="h-16 w-16 text-gray-300 mx-auto mb-4" />
@@ -3487,7 +3487,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body - Lista de Avaliações */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-6">
               {reviewsQuery.isLoading ? (
                 <div className="space-y-4">
                   {[1, 2, 3].map((i) => (
