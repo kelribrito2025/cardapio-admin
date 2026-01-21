@@ -10,6 +10,7 @@ export default function PublicMenu() {
   const { slug } = useParams<{ slug: string }>();
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showSocialDropdown, setShowSocialDropdown] = useState(false);
@@ -734,7 +735,7 @@ export default function PublicMenu() {
             )}
 
             {/* Search Bar */}
-            <div className="flex-1 min-w-[180px] max-w-xl">
+            <div className="flex-1 min-w-[180px] max-w-xl relative">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
@@ -742,9 +743,65 @@ export default function PublicMenu() {
                   placeholder="Buscar no cardápio"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-gray-100 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white transition-colors placeholder:text-gray-400"
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+                  className="w-full pl-10 pr-8 py-2 bg-gray-100 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white transition-colors placeholder:text-gray-400"
                 />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
               </div>
+              
+              {/* Dropdown de pré-visualização da busca */}
+              {isSearchFocused && searchQuery.trim() && filteredProducts.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 max-h-80 overflow-y-auto z-[60]">
+                  {filteredProducts.slice(0, 6).map((product) => (
+                    <button
+                      key={product.id}
+                      onClick={() => {
+                        setSelectedProduct({
+                          id: product.id,
+                          name: product.name,
+                          description: product.description,
+                          price: product.price,
+                          images: product.images,
+                          hasStock: product.hasStock
+                        });
+                        setSearchQuery("");
+                        setIsSearchFocused(false);
+                      }}
+                      className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 text-left"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-900 text-sm truncate">{product.name}</p>
+                        {product.description && (
+                          <p className="text-xs text-gray-500 truncate mt-0.5">{product.description}</p>
+                        )}
+                      </div>
+                      <div className="flex-shrink-0 text-sm font-semibold text-red-600">
+                        R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
+                      </div>
+                    </button>
+                  ))}
+                  {filteredProducts.length > 6 && (
+                    <div className="px-4 py-2 text-center text-xs text-gray-500 bg-gray-50">
+                      +{filteredProducts.length - 6} outros resultados
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Mensagem de nenhum resultado */}
+              {isSearchFocused && searchQuery.trim() && filteredProducts.length === 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-[60]">
+                  <p className="text-sm text-gray-500 text-center">Nenhum produto encontrado</p>
+                </div>
+              )}
             </div>
 
             {/* Spacer to push navigation to the right edge - hidden on mobile */}

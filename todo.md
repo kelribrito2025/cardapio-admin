@@ -1493,3 +1493,16 @@
   - Adicionado min-w-[180px] para garantir largura mínima
   - Removido truncate do placeholder
   - Spacer escondido no mobile para dar mais espaço ao campo
+
+
+## Dropdown de Pré-visualização na Busca
+
+- [x] Implementar dropdown com resultados da busca enquanto usuário digita
+  - Mostra até 6 resultados com link "+ X outros resultados"
+  - Ao clicar no item, abre o modal do produto
+- [x] Exibir título, descrição e preço de cada item
+  - Título em negrito, descrição em cinza abaixo
+- [x] Preço na lateral direita, centralizado verticalmente
+  - Preço em vermelho, fonte semibold
+- [x] Botão X para limpar a busca
+- [x] Mensagem "Nenhum produto encontrado" quando sem resultados
