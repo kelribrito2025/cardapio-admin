@@ -47,6 +47,7 @@ export const establishments = mysqlTable("establishments", {
   publicNote: varchar("publicNote", { length: 100 }),
   publicNoteCreatedAt: timestamp("publicNoteCreatedAt"),
   noteStyle: varchar("noteStyle", { length: 50 }).default("default"),
+  noteExpiresAt: timestamp("noteExpiresAt"),
   smsEnabled: boolean("smsEnabled").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

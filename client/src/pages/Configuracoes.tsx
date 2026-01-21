@@ -63,6 +63,7 @@ export default function Configuracoes() {
   // Public note state
   const [publicNote, setPublicNote] = useState("");
   const [publicNoteCreatedAt, setPublicNoteCreatedAt] = useState<Date | null>(null);
+  const [noteValidityDays, setNoteValidityDays] = useState(7);
   
   // SMS settings state
   const [smsEnabled, setSmsEnabled] = useState(false);
@@ -119,6 +120,13 @@ export default function Configuracoes() {
       setAllowsPickup(establishment.allowsPickup);
       setPublicNote(establishment.publicNote || "");
       setPublicNoteCreatedAt(establishment.publicNoteCreatedAt ? new Date(establishment.publicNoteCreatedAt) : null);
+      // Calcular dias de validade baseado na data de expiração
+      if (establishment.noteExpiresAt && establishment.publicNoteCreatedAt) {
+        const createdAt = new Date(establishment.publicNoteCreatedAt);
+        const expiresAt = new Date(establishment.noteExpiresAt);
+        const diffDays = Math.round((expiresAt.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+        setNoteValidityDays(Math.min(7, Math.max(1, diffDays)));
+      }
       setSmsEnabled(establishment.smsEnabled || false);
       setNoteStyle(establishment.noteStyle || "default");
     }
@@ -650,6 +658,36 @@ export default function Configuracoes() {
                 </div>
               </div>
               
+              {/* Seleção de Validade da Nota */}
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Validade da Nota</Label>
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5, 6, 7].map((days) => (
+                      <button
+                        key={days}
+                        type="button"
+                        onClick={() => setNoteValidityDays(days)}
+                        className={cn(
+                          "w-9 h-9 rounded-lg text-sm font-medium transition-all duration-200",
+                          noteValidityDays === days
+                            ? "bg-primary text-white shadow-md"
+                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        )}
+                      >
+                        {days}
+                      </button>
+                    ))}
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {noteValidityDays === 1 ? "dia" : "dias"}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  A nota será exibida por {noteValidityDays} {noteValidityDays === 1 ? "dia" : "dias"} a partir do momento em que for salva.
+                </p>
+              </div>
+              
               {/* Seleção de Estilo do Balão */}
               <div className="space-y-2">
                 <Label className="text-sm font-semibold">Estilo do Balão</Label>
@@ -763,7 +801,7 @@ export default function Configuracoes() {
                       return;
                     }
                     if (!establishment) return;
-                    saveNoteMutation.mutate({ id: establishment.id, note: publicNote.trim(), noteStyle });
+                    saveNoteMutation.mutate({ id: establishment.id, note: publicNote.trim(), noteStyle, validityDays: noteValidityDays });
                   }}
                   disabled={!publicNote.trim() || saveNoteMutation.isPending}
                   className="flex-1 h-11 rounded-xl bg-primary hover:bg-primary/90"

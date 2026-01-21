@@ -812,9 +812,12 @@ export default function PublicMenu() {
         <div className="relative -mt-16 md:-mt-20 flex flex-col md:flex-row md:items-end gap-4 pb-4">
           {/* Profile Image with Note Balloon */}
           <div className="relative z-10 ml-4 md:ml-6">
-            {/* Balão de Nota - exibe apenas se existir nota e estiver dentro de 24h */}
-            {establishment.publicNote && establishment.publicNoteCreatedAt && (
-              new Date().getTime() - new Date(establishment.publicNoteCreatedAt).getTime() < 24 * 60 * 60 * 1000
+            {/* Balão de Nota - exibe apenas se existir nota e não estiver expirada */}
+            {establishment.publicNote && (
+              // Verifica se a nota não expirou (usa noteExpiresAt se disponível, senão fallback para 24h)
+              establishment.noteExpiresAt 
+                ? new Date().getTime() < new Date(establishment.noteExpiresAt).getTime()
+                : establishment.publicNoteCreatedAt && new Date().getTime() - new Date(establishment.publicNoteCreatedAt).getTime() < 24 * 60 * 60 * 1000
             ) && (
               <div className="absolute -top-14 md:-top-16 left-0 z-20 animate-float-balloon">
                 <div className="relative">

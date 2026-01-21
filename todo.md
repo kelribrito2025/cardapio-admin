@@ -1379,3 +1379,21 @@
   - Texto ajusta cor automaticamente para contraste
 - [x] Testar personalização de cores
   - 119 testes passando
+
+
+## Validade da Nota do Restaurante (1-7 dias)
+
+- [x] Adicionar campo noteExpiresAt (datetime) no schema do estabelecimento
+  - Campo adicionado em drizzle/schema.ts como timestamp
+- [x] Executar migração do banco de dados
+  - Coluna noteExpiresAt já existe na tabela establishments
+- [x] Criar interface de seleção de validade (1-7 dias) nas configurações
+  - Botões de 1 a 7 dias com visual destacado para seleção
+  - Texto informativo sobre duração da exibição
+- [x] Calcular data de expiração ao salvar a nota
+  - Função savePublicNote calcula expiresAt baseado nos dias selecionados
+- [x] Atualizar lógica de exibição no menu público para verificar validade
+  - Verifica noteExpiresAt se disponível, senão fallback para 24h
+- [x] Ocultar nota automaticamente quando expirada
+  - Nota não é exibida se data atual > noteExpiresAt
+- [x] Todos os 119 testes passando

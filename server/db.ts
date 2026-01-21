@@ -171,14 +171,19 @@ export async function toggleEstablishmentOpen(id: number, isOpen: boolean) {
   await db.update(establishments).set({ isOpen }).where(eq(establishments.id, id));
 }
 
-export async function savePublicNote(id: number, note: string, noteStyle?: string) {
+export async function savePublicNote(id: number, note: string, noteStyle?: string, validityDays?: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
+  const now = new Date();
+  const days = validityDays || 7;
+  const expiresAt = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+  
   await db.update(establishments).set({ 
     publicNote: note,
-    publicNoteCreatedAt: new Date(),
+    publicNoteCreatedAt: now,
     noteStyle: noteStyle || "default",
+    noteExpiresAt: expiresAt,
   }).where(eq(establishments.id, id));
 }
 
