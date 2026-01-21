@@ -1586,3 +1586,7 @@
 ## Altura da Foto no Modal de Produto
 
 - [x] Aumentar altura da foto do produto em 40% no modal de detalhes do item
+
+## Ajuste Adicional da Altura da Foto
+
+- [x] Aumentar altura da foto do produto em 50% (do valor original)
