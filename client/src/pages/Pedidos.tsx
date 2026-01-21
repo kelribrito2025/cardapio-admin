@@ -148,12 +148,14 @@ export default function Pedidos() {
   }, [refetch, refetchAll]);
 
   // Hook SSE para receber pedidos em tempo real
+  // IMPORTANTE: Passa establishmentId para garantir conexão única por estabelecimento
   const { status: sseStatus, isConnected: sseConnected } = useOrdersSSE({
+    establishmentId: establishmentId ?? undefined,
     onNewOrder: handleNewOrder,
     onOrderUpdate: handleOrderUpdate,
     onConnected: handleSSEConnected,
     onDisconnected: handleSSEDisconnected,
-    enabled: !!establishmentId,
+    enabled: !!establishmentId && establishmentId > 0,
   });
 
   // Fallback: polling a cada 30 segundos se SSE não estiver conectado

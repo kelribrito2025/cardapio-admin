@@ -1096,3 +1096,12 @@
 ## Bug Fix - Rate Exceeded ao enviar pedido
 
 - [x] Investigar e corrigir erro de Rate Exceeded ao enviar pedido (removido polling de 5s, aumentado intervalo de sync para 30s)
+
+
+## Bug Fix - SSE múltiplas conexões na página /pedidos
+
+- [x] Criar conexão SSE única por estabelecimento (singleton global com globalSSE)
+- [x] Inicializar SSE apenas uma vez (useEffect com dependências mínimas)
+- [x] Cancelar SSE ao sair da página (cleanup automático quando não há listeners)
+- [x] Remover reconexões agressivas (só reconecta quando CLOSED, backoff exponencial)
+- [x] SSE por establishmentId (passado como parâmetro do hook)
