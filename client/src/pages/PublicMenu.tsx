@@ -391,8 +391,8 @@ export default function PublicMenu() {
     syncOrderStatuses();
   }, [showOrdersModal, data?.establishment?.id]);
 
-  // Ref para armazenar o telefone do cliente e evitar reconexões desnecessárias
-  const customerPhoneRef = useRef<string>('');
+  // Ref para armazenar os orderNumbers conectados e evitar reconexões desnecessárias
+  const connectedOrdersRef = useRef<string>('');
   const eventSourceRef = useRef<EventSource | null>(null);
   const currentOrderNumberRef = useRef<string | null>(null);
   
@@ -402,32 +402,30 @@ export default function PublicMenu() {
   }, [currentOrderNumber]);
   
   // Conexão SSE para atualização em tempo real do status dos pedidos
+  // Usa orderNumbers em vez de telefone, pois clientes não têm conta/login
   useEffect(() => {
-    // Pegar o telefone do localStorage (do último pedido ou customerInfo salvo)
-    const savedCustomerInfo = localStorage.getItem('customerInfo');
-    let customerPhone = '';
+    // Pegar os orderNumbers dos pedidos em andamento do localStorage
+    const activeOrders = userOrders.filter(o => 
+      o.status !== 'delivered' && o.status !== 'cancelled'
+    );
     
-    if (savedCustomerInfo) {
-      try {
-        const parsed = JSON.parse(savedCustomerInfo);
-        customerPhone = parsed.phone?.replace(/\D/g, '') || '';
-      } catch (e) {
-        console.error('Erro ao carregar customerInfo:', e);
+    // Se não tem pedidos em andamento, não conectar
+    if (activeOrders.length === 0) {
+      // Fechar conexão existente se não há mais pedidos ativos
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+        connectedOrdersRef.current = '';
+        console.log('[SSE-Order] Conexão fechada - sem pedidos ativos');
       }
-    }
-    
-    // Se não tem telefone salvo, tentar pegar do primeiro pedido
-    if (!customerPhone && userOrders.length > 0) {
-      customerPhone = userOrders[0].customerPhone?.replace(/\D/g, '') || '';
-    }
-    
-    // Se ainda não tem telefone, não conectar
-    if (!customerPhone || customerPhone.length < 10) {
       return;
     }
     
-    // Se já está conectado com o mesmo telefone, não reconectar
-    if (customerPhoneRef.current === customerPhone && eventSourceRef.current) {
+    // Criar string com os orderNumbers para comparar
+    const orderNumbersString = activeOrders.map(o => o.id).sort().join(',');
+    
+    // Se já está conectado com os mesmos pedidos, não reconectar
+    if (connectedOrdersRef.current === orderNumbersString && eventSourceRef.current) {
       return;
     }
     
@@ -436,10 +434,10 @@ export default function PublicMenu() {
       eventSourceRef.current.close();
     }
     
-    customerPhoneRef.current = customerPhone;
+    connectedOrdersRef.current = orderNumbersString;
     
-    // Criar conexão SSE
-    const eventSource = new EventSource(`/api/customer/orders/stream?phone=${encodeURIComponent(customerPhone)}`);
+    // Criar conexão SSE com os orderNumbers
+    const eventSource = new EventSource(`/api/orders/track/stream?orders=${encodeURIComponent(orderNumbersString)}`);
     eventSourceRef.current = eventSource;
     
     const statusMap: Record<string, "sent" | "accepted" | "delivering" | "delivered" | "cancelled"> = {
@@ -453,7 +451,7 @@ export default function PublicMenu() {
     eventSource.addEventListener('order_status_update', (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('[SSE-Customer] Recebido evento de atualização de status:', data);
+        console.log('[SSE-Order] Recebido evento de atualização de status:', data);
         
         // Atualizar o pedido no estado
         setUserOrders(prevOrders => {
@@ -477,16 +475,22 @@ export default function PublicMenu() {
           }
         }
       } catch (e) {
-        console.error('[SSE-Customer] Erro ao processar evento:', e);
+        console.error('[SSE-Order] Erro ao processar evento:', e);
       }
     });
     
     eventSource.addEventListener('connected', (event) => {
-      console.log('[SSE-Customer] Conexão estabelecida:', event.data);
+      console.log('[SSE-Order] Conexão estabelecida:', event.data);
     });
     
     eventSource.onerror = (error) => {
-      console.error('[SSE-Customer] Erro na conexão:', error);
+      console.error('[SSE-Order] Erro na conexão:', error);
+      // Tentar reconectar após 5 segundos em caso de erro
+      setTimeout(() => {
+        if (eventSourceRef.current === eventSource) {
+          connectedOrdersRef.current = ''; // Forçar reconexão
+        }
+      }, 5000);
     };
     
     // Cleanup quando o componente desmontar
@@ -494,10 +498,10 @@ export default function PublicMenu() {
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
         eventSourceRef.current = null;
-        console.log('[SSE-Customer] Conexão fechada');
+        console.log('[SSE-Order] Conexão fechada');
       }
     };
-  }, [userOrders.length]);
+  }, [userOrders]);
 
   // Carregar endereço salvo do localStorage
   useEffect(() => {

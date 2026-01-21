@@ -1033,3 +1033,13 @@
 - [x] Corrigir erro 'Cannot access data before initialization' no PublicMenu
 - [x] Reorganizar modal Confirmar Endereço com ícones em círculos coloridos e cards com fundo claro
 - [x] Implementar SSE única por usuário para atualização em tempo real do status no modal Meus Pedidos
+
+
+## Correção SSE - Usar IDs de Pedidos em vez de Telefone
+
+- [x] Alterar formato do número do pedido para #P00000 (5 dígitos)
+- [x] Modificar endpoint SSE para aceitar lista de IDs de pedidos
+- [x] Atualizar funções de notificação SSE para usar orderNumber
+- [x] Refatorar conexão SSE no frontend para usar IDs de pedidos do localStorage
+- [x] Garantir atualização automática do modal Meus Pedidos sem clique
+- [x] Testar fluxo completo de atualização em tempo real

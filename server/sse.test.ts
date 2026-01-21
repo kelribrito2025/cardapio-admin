@@ -1,68 +1,74 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { Response } from "express";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   addConnection,
   removeConnection,
   sendEvent,
   notifyNewOrder,
   notifyOrderUpdate,
+  sendHeartbeat,
   getConnectionCount,
   getTotalConnections,
+  addOrderConnection,
+  addOrderConnectionForMultiple,
+  removeOrderConnection,
+  removeOrderConnectionFromMultiple,
+  sendOrderEvent,
+  notifyOrderStatusUpdate,
+  sendOrderHeartbeat,
+  getOrderConnectionCount,
+  getTotalOrderConnections,
 } from "./_core/sse";
 
 // Mock Response object
-function createMockResponse(): Response {
-  const res = {
-    write: vi.fn().mockReturnValue(true),
-  } as unknown as Response;
-  return res;
+function createMockResponse() {
+  return {
+    write: vi.fn(),
+    end: vi.fn(),
+  } as unknown as import("express").Response;
 }
 
-describe("SSE Module", () => {
+describe("SSE - Estabelecimento", () => {
   beforeEach(() => {
-    // Reset connections between tests by removing all
-    // This is a workaround since we don't export a reset function
+    vi.clearAllMocks();
   });
 
   describe("addConnection", () => {
-    it("should add a connection for an establishment", () => {
+    it("adds a connection for an establishment", () => {
       const res = createMockResponse();
-      const establishmentId = 1;
+      const establishmentId = 100;
 
       addConnection(establishmentId, res);
 
-      expect(getConnectionCount(establishmentId)).toBeGreaterThanOrEqual(1);
+      expect(getConnectionCount(establishmentId)).toBe(1);
     });
 
-    it("should allow multiple connections for the same establishment", () => {
+    it("adds multiple connections for the same establishment", () => {
       const res1 = createMockResponse();
       const res2 = createMockResponse();
-      const establishmentId = 100;
+      const establishmentId = 101;
 
       addConnection(establishmentId, res1);
       addConnection(establishmentId, res2);
 
-      expect(getConnectionCount(establishmentId)).toBeGreaterThanOrEqual(2);
+      expect(getConnectionCount(establishmentId)).toBe(2);
     });
   });
 
   describe("removeConnection", () => {
-    it("should remove a connection", () => {
+    it("removes a connection from an establishment", () => {
       const res = createMockResponse();
       const establishmentId = 200;
 
       addConnection(establishmentId, res);
-      const countBefore = getConnectionCount(establishmentId);
-      
-      removeConnection(establishmentId, res);
-      const countAfter = getConnectionCount(establishmentId);
+      expect(getConnectionCount(establishmentId)).toBe(1);
 
-      expect(countAfter).toBeLessThan(countBefore);
+      removeConnection(establishmentId, res);
+      expect(getConnectionCount(establishmentId)).toBe(0);
     });
 
-    it("should handle removing non-existent connection gracefully", () => {
+    it("handles removing non-existent connection gracefully", () => {
       const res = createMockResponse();
-      const establishmentId = 999;
+      const establishmentId = 201;
 
       // Should not throw
       expect(() => removeConnection(establishmentId, res)).not.toThrow();
@@ -70,49 +76,43 @@ describe("SSE Module", () => {
   });
 
   describe("sendEvent", () => {
-    it("should send event to all connections of an establishment", () => {
+    it("sends event to all connections of an establishment", () => {
       const res1 = createMockResponse();
       const res2 = createMockResponse();
       const establishmentId = 300;
+      const eventType = "test_event";
+      const data = { message: "Hello" };
 
       addConnection(establishmentId, res1);
       addConnection(establishmentId, res2);
 
-      sendEvent(establishmentId, "test_event", { message: "hello" });
-
-      expect(res1.write).toHaveBeenCalled();
-      expect(res2.write).toHaveBeenCalled();
-    });
-
-    it("should format event correctly", () => {
-      const res = createMockResponse();
-      const establishmentId = 301;
-      const eventType = "test_event";
-      const data = { foo: "bar" };
-
-      addConnection(establishmentId, res);
       sendEvent(establishmentId, eventType, data);
 
-      expect(res.write).toHaveBeenCalledWith(
-        expect.stringContaining(`event: ${eventType}`)
+      expect(res1.write).toHaveBeenCalledWith(
+        `event: ${eventType}\ndata: ${JSON.stringify(data)}\n\n`
       );
-      expect(res.write).toHaveBeenCalledWith(
-        expect.stringContaining(JSON.stringify(data))
+      expect(res2.write).toHaveBeenCalledWith(
+        `event: ${eventType}\ndata: ${JSON.stringify(data)}\n\n`
       );
     });
 
-    it("should not throw when no connections exist", () => {
-      expect(() => sendEvent(9999, "test", {})).not.toThrow();
+    it("does nothing when no connections exist", () => {
+      const establishmentId = 301;
+      const eventType = "test_event";
+      const data = { message: "Hello" };
+
+      // Should not throw
+      expect(() => sendEvent(establishmentId, eventType, data)).not.toThrow();
     });
   });
 
   describe("notifyNewOrder", () => {
-    it("should send new_order event", () => {
+    it("sends new_order event", () => {
       const res = createMockResponse();
       const establishmentId = 400;
       const order = {
         id: 1,
-        orderNumber: "#TEST123",
+        orderNumber: "#P00001",
         total: "50.00",
       };
 
@@ -120,38 +120,53 @@ describe("SSE Module", () => {
       notifyNewOrder(establishmentId, order);
 
       expect(res.write).toHaveBeenCalledWith(
-        expect.stringContaining("event: new_order")
+        `event: new_order\ndata: ${JSON.stringify(order)}\n\n`
       );
     });
   });
 
   describe("notifyOrderUpdate", () => {
-    it("should send order_update event", () => {
+    it("sends order_update event", () => {
       const res = createMockResponse();
       const establishmentId = 500;
-      const update = {
+      const order = {
         id: 1,
         status: "preparing",
       };
 
       addConnection(establishmentId, res);
-      notifyOrderUpdate(establishmentId, update);
+      notifyOrderUpdate(establishmentId, order);
 
       expect(res.write).toHaveBeenCalledWith(
-        expect.stringContaining("event: order_update")
+        `event: order_update\ndata: ${JSON.stringify(order)}\n\n`
       );
     });
   });
 
+  describe("sendHeartbeat", () => {
+    it("sends heartbeat event", () => {
+      const res = createMockResponse();
+      const establishmentId = 600;
+
+      addConnection(establishmentId, res);
+      sendHeartbeat(establishmentId);
+
+      expect(res.write).toHaveBeenCalled();
+      const callArg = (res.write as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      expect(callArg).toContain("event: heartbeat");
+      expect(callArg).toContain("timestamp");
+    });
+  });
+
   describe("getTotalConnections", () => {
-    it("should return total number of connections across all establishments", () => {
+    it("returns total connections across all establishments", () => {
       const res1 = createMockResponse();
       const res2 = createMockResponse();
       const res3 = createMockResponse();
 
-      addConnection(600, res1);
-      addConnection(601, res2);
-      addConnection(601, res3);
+      addConnection(700, res1);
+      addConnection(700, res2);
+      addConnection(701, res3);
 
       const total = getTotalConnections();
       expect(total).toBeGreaterThanOrEqual(3);
@@ -159,155 +174,235 @@ describe("SSE Module", () => {
   });
 });
 
+describe("SSE - Pedidos (por orderNumber)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-// ==================== TESTES PARA SSE DE CLIENTES ====================
-import {
-  addCustomerConnection,
-  removeCustomerConnection,
-  sendCustomerEvent,
-  notifyCustomerOrderUpdate,
-  getCustomerConnectionCount,
-} from "./_core/sse";
-
-describe("SSE Customer Module", () => {
-  describe("addCustomerConnection", () => {
-    it("should add a connection for a customer phone", () => {
+  describe("addOrderConnection", () => {
+    it("adds a connection for an order", () => {
       const res = createMockResponse();
-      const phone = "11999990001";
+      const orderNumber = "#P00001";
 
-      addCustomerConnection(phone, res);
+      addOrderConnection(orderNumber, res);
 
-      expect(getCustomerConnectionCount(phone)).toBeGreaterThanOrEqual(1);
+      expect(getOrderConnectionCount(orderNumber)).toBe(1);
     });
 
-    it("should allow multiple connections for the same phone", () => {
+    it("adds multiple connections for the same order", () => {
       const res1 = createMockResponse();
       const res2 = createMockResponse();
-      const phone = "11999990002";
+      const orderNumber = "#P00002";
 
-      addCustomerConnection(phone, res1);
-      addCustomerConnection(phone, res2);
+      addOrderConnection(orderNumber, res1);
+      addOrderConnection(orderNumber, res2);
 
-      expect(getCustomerConnectionCount(phone)).toBeGreaterThanOrEqual(2);
+      expect(getOrderConnectionCount(orderNumber)).toBe(2);
     });
   });
 
-  describe("removeCustomerConnection", () => {
-    it("should remove a customer connection", () => {
+  describe("addOrderConnectionForMultiple", () => {
+    it("adds a connection for multiple orders at once", () => {
       const res = createMockResponse();
-      const phone = "11999990003";
+      const orderNumbers = ["#P00010", "#P00011", "#P00012"];
 
-      addCustomerConnection(phone, res);
-      const countBefore = getCustomerConnectionCount(phone);
-      
-      removeCustomerConnection(phone, res);
-      const countAfter = getCustomerConnectionCount(phone);
+      addOrderConnectionForMultiple(orderNumbers, res);
 
-      expect(countAfter).toBeLessThan(countBefore);
-    });
-
-    it("should handle removing non-existent connection gracefully", () => {
-      const res = createMockResponse();
-      const phone = "11999999999";
-
-      // Should not throw
-      expect(() => removeCustomerConnection(phone, res)).not.toThrow();
+      expect(getOrderConnectionCount("#P00010")).toBe(1);
+      expect(getOrderConnectionCount("#P00011")).toBe(1);
+      expect(getOrderConnectionCount("#P00012")).toBe(1);
     });
   });
 
-  describe("sendCustomerEvent", () => {
-    it("should send event to all connections of a customer", () => {
-      const res1 = createMockResponse();
-      const res2 = createMockResponse();
-      const phone = "11999990004";
+  describe("removeOrderConnection", () => {
+    it("removes a connection from an order", () => {
+      const res = createMockResponse();
+      const orderNumber = "#P00020";
 
-      addCustomerConnection(phone, res1);
-      addCustomerConnection(phone, res2);
+      addOrderConnection(orderNumber, res);
+      expect(getOrderConnectionCount(orderNumber)).toBe(1);
 
-      sendCustomerEvent(phone, "test_event", { message: "hello" });
-
-      expect(res1.write).toHaveBeenCalled();
-      expect(res2.write).toHaveBeenCalled();
+      removeOrderConnection(orderNumber, res);
+      expect(getOrderConnectionCount(orderNumber)).toBe(0);
     });
 
-    it("should format event correctly", () => {
+    it("handles removing non-existent connection gracefully", () => {
       const res = createMockResponse();
-      const phone = "11999990005";
+      const orderNumber = "#P00021";
+
+      expect(() => removeOrderConnection(orderNumber, res)).not.toThrow();
+    });
+  });
+
+  describe("removeOrderConnectionFromMultiple", () => {
+    it("removes a connection from multiple orders at once", () => {
+      const res = createMockResponse();
+      const orderNumbers = ["#P00030", "#P00031", "#P00032"];
+
+      addOrderConnectionForMultiple(orderNumbers, res);
+      expect(getOrderConnectionCount("#P00030")).toBe(1);
+      expect(getOrderConnectionCount("#P00031")).toBe(1);
+
+      removeOrderConnectionFromMultiple(orderNumbers, res);
+      expect(getOrderConnectionCount("#P00030")).toBe(0);
+      expect(getOrderConnectionCount("#P00031")).toBe(0);
+      expect(getOrderConnectionCount("#P00032")).toBe(0);
+    });
+  });
+
+  describe("sendOrderEvent", () => {
+    it("sends event to all connections of an order", () => {
+      const res1 = createMockResponse();
+      const res2 = createMockResponse();
+      const orderNumber = "#P00040";
       const eventType = "order_status_update";
-      const data = { orderNumber: "#60001", status: "preparing" };
+      const data = { orderNumber, status: "preparing" };
 
-      addCustomerConnection(phone, res);
-      sendCustomerEvent(phone, eventType, data);
+      addOrderConnection(orderNumber, res1);
+      addOrderConnection(orderNumber, res2);
 
-      expect(res.write).toHaveBeenCalledWith(
-        expect.stringContaining(`event: ${eventType}`)
+      sendOrderEvent(orderNumber, eventType, data);
+
+      expect(res1.write).toHaveBeenCalledWith(
+        `event: ${eventType}\ndata: ${JSON.stringify(data)}\n\n`
       );
-      expect(res.write).toHaveBeenCalledWith(
-        expect.stringContaining(JSON.stringify(data))
+      expect(res2.write).toHaveBeenCalledWith(
+        `event: ${eventType}\ndata: ${JSON.stringify(data)}\n\n`
       );
     });
 
-    it("should not throw when no connections exist", () => {
-      expect(() => sendCustomerEvent("00000000000", "test", {})).not.toThrow();
+    it("does nothing when no connections exist for the order", () => {
+      const orderNumber = "#P00041";
+      const eventType = "order_status_update";
+      const data = { orderNumber, status: "preparing" };
+
+      expect(() => sendOrderEvent(orderNumber, eventType, data)).not.toThrow();
     });
   });
 
-  describe("notifyCustomerOrderUpdate", () => {
-    it("should send order_status_update event to customer", () => {
+  describe("notifyOrderStatusUpdate", () => {
+    it("sends order_status_update event with correct data", () => {
       const res = createMockResponse();
-      const phone = "11999990006";
+      const orderNumber = "#P00050";
       const orderUpdate = {
         id: 1,
-        orderNumber: "#60001",
+        orderNumber,
         status: "preparing",
         updatedAt: new Date(),
       };
 
-      addCustomerConnection(phone, res);
-      notifyCustomerOrderUpdate(phone, orderUpdate);
+      addOrderConnection(orderNumber, res);
+      notifyOrderStatusUpdate(orderNumber, orderUpdate);
 
-      expect(res.write).toHaveBeenCalledWith(
-        expect.stringContaining("event: order_status_update")
-      );
-      expect(res.write).toHaveBeenCalledWith(
-        expect.stringContaining("#60001")
-      );
+      expect(res.write).toHaveBeenCalled();
+      const callArg = (res.write as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      expect(callArg).toContain("event: order_status_update");
+      expect(callArg).toContain(orderNumber);
+      expect(callArg).toContain("preparing");
     });
 
-    it("should include cancellation reason when provided", () => {
+    it("sends order_status_update event with cancellation reason", () => {
       const res = createMockResponse();
-      const phone = "11999990007";
+      const orderNumber = "#P00051";
       const orderUpdate = {
         id: 2,
-        orderNumber: "#60002",
+        orderNumber,
         status: "cancelled",
         cancellationReason: "Produto indisponível",
         updatedAt: new Date(),
       };
 
-      addCustomerConnection(phone, res);
-      notifyCustomerOrderUpdate(phone, orderUpdate);
+      addOrderConnection(orderNumber, res);
+      notifyOrderStatusUpdate(orderNumber, orderUpdate);
 
-      expect(res.write).toHaveBeenCalledWith(
-        expect.stringContaining("Produto indisponível")
-      );
+      expect(res.write).toHaveBeenCalled();
+      const callArg = (res.write as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      expect(callArg).toContain("event: order_status_update");
+      expect(callArg).toContain("cancelled");
+      expect(callArg).toContain("Produto indisponível");
     });
   });
 
-  describe("getCustomerConnectionCount", () => {
-    it("should return 0 for non-existent phone", () => {
-      expect(getCustomerConnectionCount("00000000001")).toBe(0);
-    });
+  describe("sendOrderHeartbeat", () => {
+    it("sends heartbeat event to order connection", () => {
+      const res = createMockResponse();
+      const orderNumber = "#P00060";
 
-    it("should return correct count for existing phone", () => {
+      addOrderConnection(orderNumber, res);
+      sendOrderHeartbeat(orderNumber);
+
+      expect(res.write).toHaveBeenCalled();
+      const callArg = (res.write as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      expect(callArg).toContain("event: heartbeat");
+      expect(callArg).toContain("timestamp");
+    });
+  });
+
+  describe("getTotalOrderConnections", () => {
+    it("returns total connections across all orders", () => {
       const res1 = createMockResponse();
       const res2 = createMockResponse();
-      const phone = "11999990008";
+      const res3 = createMockResponse();
 
-      addCustomerConnection(phone, res1);
-      addCustomerConnection(phone, res2);
+      addOrderConnection("#P00070", res1);
+      addOrderConnection("#P00070", res2);
+      addOrderConnection("#P00071", res3);
 
-      expect(getCustomerConnectionCount(phone)).toBeGreaterThanOrEqual(2);
+      const total = getTotalOrderConnections();
+      expect(total).toBeGreaterThanOrEqual(3);
+    });
+  });
+
+  describe("Cenário de uso real", () => {
+    it("simula cliente abrindo conexão para múltiplos pedidos e recebendo atualizações", () => {
+      const clientRes = createMockResponse();
+      const orderNumbers = ["#P00100", "#P00101", "#P00102"];
+
+      // Cliente abre conexão para seus 3 pedidos
+      addOrderConnectionForMultiple(orderNumbers, clientRes);
+
+      // Restaurante atualiza status do pedido #P00101
+      notifyOrderStatusUpdate("#P00101", {
+        id: 101,
+        orderNumber: "#P00101",
+        status: "preparing",
+        updatedAt: new Date(),
+      });
+
+      // Cliente deve receber a atualização
+      expect(clientRes.write).toHaveBeenCalled();
+      const callArg = (clientRes.write as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      expect(callArg).toContain("#P00101");
+      expect(callArg).toContain("preparing");
+
+      // Limpar
+      removeOrderConnectionFromMultiple(orderNumbers, clientRes);
+    });
+
+    it("simula múltiplos clientes acompanhando o mesmo pedido", () => {
+      const client1Res = createMockResponse();
+      const client2Res = createMockResponse();
+      const orderNumber = "#P00200";
+
+      // Dois clientes abrem conexão para o mesmo pedido (ex: dois dispositivos)
+      addOrderConnection(orderNumber, client1Res);
+      addOrderConnection(orderNumber, client2Res);
+
+      // Restaurante atualiza status
+      notifyOrderStatusUpdate(orderNumber, {
+        id: 200,
+        orderNumber,
+        status: "ready",
+        updatedAt: new Date(),
+      });
+
+      // Ambos clientes devem receber a atualização
+      expect(client1Res.write).toHaveBeenCalled();
+      expect(client2Res.write).toHaveBeenCalled();
+
+      // Limpar
+      removeOrderConnection(orderNumber, client1Res);
+      removeOrderConnection(orderNumber, client2Res);
     });
   });
 });

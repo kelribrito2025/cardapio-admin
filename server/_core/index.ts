@@ -8,7 +8,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
-import { addConnection, removeConnection, sendHeartbeat, addCustomerConnection, removeCustomerConnection, sendCustomerHeartbeat } from "./sse";
+import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, sendAllOrdersHeartbeat } from "./sse";
 import { getUserByOpenId, getEstablishmentByUserId } from "../db";
 import { sdk } from "./sdk";
 
@@ -114,25 +114,27 @@ async function startServer() {
     }
   });
   
-  // SSE endpoint para clientes acompanharem pedidos em tempo real (por telefone)
-  app.get("/api/customer/orders/stream", async (req, res) => {
+  // SSE endpoint para clientes acompanharem pedidos em tempo real (por orderNumbers)
+  app.get("/api/orders/track/stream", async (req, res) => {
     try {
-      const customerPhone = req.query.phone as string;
+      const orderNumbersParam = req.query.orders as string;
       
-      if (!customerPhone) {
-        console.log("[SSE-Customer] Sem telefone fornecido");
-        res.status(400).json({ error: "Phone number required" });
+      if (!orderNumbersParam) {
+        console.log("[SSE-Order] Sem orderNumbers fornecidos");
+        res.status(400).json({ error: "Order numbers required" });
         return;
       }
       
-      // Normalizar telefone (remover caracteres não numéricos)
-      const normalizedPhone = customerPhone.replace(/\D/g, "");
+      // Parse dos orderNumbers (separados por vírgula)
+      const orderNumbers = orderNumbersParam.split(',').map(o => o.trim()).filter(o => o.length > 0);
       
-      if (normalizedPhone.length < 10) {
-        console.log("[SSE-Customer] Telefone inválido:", customerPhone);
-        res.status(400).json({ error: "Invalid phone number" });
+      if (orderNumbers.length === 0) {
+        console.log("[SSE-Order] Lista de orderNumbers vazia");
+        res.status(400).json({ error: "At least one order number required" });
         return;
       }
+      
+      console.log(`[SSE-Order] Iniciando conexão para pedidos: ${orderNumbers.join(', ')}`);
       
       // Configurar headers SSE
       res.setHeader("Content-Type", "text/event-stream");
@@ -142,25 +144,30 @@ async function startServer() {
       res.flushHeaders();
       
       // Enviar evento de conexão estabelecida
-      res.write(`event: connected\ndata: ${JSON.stringify({ phone: normalizedPhone })}\n\n`);
+      res.write(`event: connected\ndata: ${JSON.stringify({ orders: orderNumbers })}\n\n`);
       
-      // Adicionar conexão ao pool de clientes
-      addCustomerConnection(normalizedPhone, res);
+      // Adicionar conexão ao pool para cada pedido
+      addOrderConnectionForMultiple(orderNumbers, res);
       
       // Configurar heartbeat a cada 30 segundos
       const heartbeatInterval = setInterval(() => {
-        sendCustomerHeartbeat(normalizedPhone);
+        // Enviar heartbeat genérico para esta conexão
+        try {
+          res.write(`event: heartbeat\ndata: ${JSON.stringify({ timestamp: Date.now() })}\n\n`);
+        } catch (error) {
+          console.error("[SSE-Order] Erro ao enviar heartbeat:", error);
+        }
       }, 30000);
       
       // Cleanup quando conexão fechar
       req.on("close", () => {
         clearInterval(heartbeatInterval);
-        removeCustomerConnection(normalizedPhone, res);
-        console.log(`[SSE-Customer] Conexão fechada para cliente ${normalizedPhone}`);
+        removeOrderConnectionFromMultiple(orderNumbers, res);
+        console.log(`[SSE-Order] Conexão fechada para pedidos: ${orderNumbers.join(', ')}`);
       });
       
     } catch (error) {
-      console.error("[SSE-Customer] Erro ao estabelecer conexão:", error);
+      console.error("[SSE-Order] Erro ao estabelecer conexão:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   });

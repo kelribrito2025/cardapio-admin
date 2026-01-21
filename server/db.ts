@@ -1,6 +1,6 @@
 import { eq, desc, asc, and, like, sql, gte, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { notifyNewOrder, notifyOrderUpdate, notifyCustomerOrderUpdate } from "./_core/sse";
+import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate } from "./_core/sse";
 import { 
   InsertUser, users, 
   establishments, InsertEstablishment, Establishment,
@@ -564,10 +564,9 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
     // Notificar o dashboard do restaurante
     notifyOrderUpdate(order.establishmentId, { id, status, updatedAt: new Date(), cancellationReason });
     
-    // Notificar o cliente via SSE (se tiver telefone)
-    if (order.customerPhone) {
-      const normalizedPhone = order.customerPhone.replace(/\D/g, "");
-      notifyCustomerOrderUpdate(normalizedPhone, {
+    // Notificar o cliente via SSE usando o orderNumber
+    if (order.orderNumber) {
+      notifyOrderStatusUpdate(order.orderNumber, {
         id,
         orderNumber: order.orderNumber,
         status,
@@ -971,8 +970,25 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     throw new Error("Database not available");
   }
   
-  // Generate order number
-  const orderNumber = `#${Date.now().toString(36).toUpperCase()}`;
+  // Generate order number with format #P00000 (5 digits)
+  // Get the next order number from the database
+  const lastOrderResult = await db.select({ orderNumber: orders.orderNumber })
+    .from(orders)
+    .where(eq(orders.establishmentId, data.establishmentId))
+    .orderBy(desc(orders.id))
+    .limit(1);
+  
+  let nextNumber = 1;
+  if (lastOrderResult.length > 0 && lastOrderResult[0].orderNumber) {
+    const lastNumber = lastOrderResult[0].orderNumber;
+    // Extract number from format #P00000
+    const match = lastNumber.match(/#P(\d+)/);
+    if (match) {
+      nextNumber = parseInt(match[1], 10) + 1;
+    }
+  }
+  
+  const orderNumber = `#P${nextNumber.toString().padStart(5, '0')}`;
   console.log('[DB:createPublicOrder] Order number gerado:', orderNumber);
   
   try {
