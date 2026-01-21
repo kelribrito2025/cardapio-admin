@@ -1681,3 +1681,14 @@
 - [x] Corrigir lógica de sincronização do orderStatus quando SSE atualiza userOrders
 - [x] Adicionar ref para showTrackingModal para evitar problemas de closure
 - [x] Usar callback no setOrderStatus para evitar stale closure
+
+## Correção do Badge de Novos Pedidos no Menu Lateral
+- [x] Investigar hook useOrdersSSE que bloqueia registro de múltiplos listeners
+- [x] Permitir que cada componente (NewOrdersContext, Dashboard, Pedidos) registre seu próprio listener
+- [x] Garantir que badge atualize imediatamente quando novo pedido chega via SSE
+
+## Garantir Funcionamento Simultâneo de Badge e Modal Acompanhar Pedido
+- [x] Verificar se refs showTrackingModalRef e currentOrderNumberRef estão implementadas
+- [x] Garantir que atualização em tempo real do modal funcione junto com badge
+- [x] Adicionar método updateCallback no orderSSE para substituir callbacks existentes
+- [x] Adicionar useEffect para atualizar callbacks quando modal abre/fecha

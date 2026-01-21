@@ -528,6 +528,42 @@ export default function PublicMenu() {
   useEffect(() => {
     showTrackingModalRef.current = showTrackingModal;
   }, [showTrackingModal]);
+
+  // Atualizar callbacks SSE quando showTrackingModal ou currentOrderNumber mudar
+  // Isso garante que os callbacks sempre usem os valores mais recentes das refs
+  useEffect(() => {
+    if (currentOrderNumber && userOrders.length > 0) {
+      const handleStatusUpdate = (update: { orderNumber: string; status: string; cancellationReason?: string }) => {
+        console.log('[PublicMenu] Atualização SSE recebida (callback atualizado):', update);
+        const newStatus = statusMap[update.status] || 'sent';
+        
+        // Atualizar o pedido no estado local
+        setUserOrders(prevOrders => {
+          const newOrders = prevOrders.map(order => {
+            if (order.id === update.orderNumber) {
+              return { ...order, status: newStatus };
+            }
+            return order;
+          });
+          localStorage.setItem('userOrders', JSON.stringify(newOrders));
+          return newOrders;
+        });
+        
+        // Se o modal de tracking está aberto para este pedido, atualizar diretamente
+        console.log('[PublicMenu] Modal aberto:', showTrackingModalRef.current, 'Pedido atual:', currentOrderNumberRef.current, 'Pedido atualizado:', update.orderNumber);
+        if (showTrackingModalRef.current && currentOrderNumberRef.current === update.orderNumber) {
+          console.log('[PublicMenu] Atualizando orderStatus no modal para:', newStatus);
+          setOrderStatus(newStatus);
+          if (update.cancellationReason) {
+            setCancellationReasonDisplay(update.cancellationReason);
+          }
+        }
+      };
+      
+      // Atualizar o callback para o pedido atual
+      orderSSE.updateCallback(currentOrderNumber, handleStatusUpdate);
+    }
+  }, [showTrackingModal, currentOrderNumber]);
   
   // Inicializar SSE singleton para pedidos ativos existentes (ao carregar a página)
   // Isso garante que pedidos feitos anteriormente continuem sendo monitorados

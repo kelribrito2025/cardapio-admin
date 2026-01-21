@@ -106,6 +106,18 @@ class OrderSSEManager {
   }
 
   /**
+   * Atualiza o callback de um pedido (substitui todos os callbacks existentes)
+   * Usado para garantir que o callback sempre use os valores mais recentes das refs
+   */
+  updateCallback(orderNumber: string, callback: StatusUpdateCallback): void {
+    if (this.connectedOrders.has(orderNumber)) {
+      // Substituir todos os callbacks por um novo
+      this.callbacks.set(orderNumber, [callback]);
+      console.log(`[SSE-Public] Callback atualizado para pedido: ${orderNumber}`);
+    }
+  }
+
+  /**
    * Remove um pedido do monitoramento
    */
   untrackOrder(orderNumber: string): void {

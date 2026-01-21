@@ -48,7 +48,6 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     // Incrementar usando ref para garantir valor atualizado
     countRef.current = countRef.current + 1;
     setNewOrdersCount(countRef.current);
-    console.log("[NewOrders] Novo pedido recebido via SSE, contagem:", countRef.current);
   }, []);
 
   // Callback para update de pedido
