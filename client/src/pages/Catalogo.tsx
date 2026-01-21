@@ -293,7 +293,7 @@ function CategoryDropZone({ categoryId, categoryName, isActive }: { categoryId: 
       className={cn(
         "p-3 border-b text-center text-sm font-medium transition-all duration-200",
         isOver 
-          ? "bg-primary/20 border-primary/30 text-primary" 
+          ? "bg-green-100 border-green-400 text-green-700" 
           : "bg-primary/10 border-primary/20 text-primary animate-pulse"
       )}
     >

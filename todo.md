@@ -1666,3 +1666,7 @@
 - [x] Corrigir verificação de avaliação existente antes de exibir formulário
 - [x] Adicionar estado de loading enquanto verifica se pode avaliar
 - [x] Melhorar tratamento de erro quando já avaliou
+
+## Alteração da Cor do Drop Zone no Catálogo
+- [x] Mudar cor da área de drop de vermelho para verde quando item estiver pronto para soltar
+- [x] Manter vermelho apenas para estado inicial "Solte aqui para mover"
