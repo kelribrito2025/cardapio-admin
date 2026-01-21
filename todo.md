@@ -1091,3 +1091,8 @@
 ## Bug Fix - Botão de avaliar aparecendo quando já avaliou
 
 - [x] Corrigir verificação de canReview para esconder botão quando já avaliou nos últimos 30 dias (adicionado orderStatus como dependência)
+
+
+## Bug Fix - Rate Exceeded ao enviar pedido
+
+- [x] Investigar e corrigir erro de Rate Exceeded ao enviar pedido (removido polling de 5s, aumentado intervalo de sync para 30s)

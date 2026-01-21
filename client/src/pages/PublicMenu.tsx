@@ -242,14 +242,14 @@ export default function PublicMenu() {
     { enabled: false } // Só busca quando chamado manualmente
   );
 
-  // Query para buscar status do pedido atual em tempo real
+  // Query para buscar status do pedido atual
+  // Não usa polling - atualizações vem via SSE ou sincronização manual
   const { data: currentOrderData, refetch: refetchOrderStatus } = trpc.publicMenu.getOrderByNumber.useQuery(
     { orderNumber: currentOrderNumber || "", establishmentId: data?.establishment?.id || 0 },
     { 
       enabled: !!currentOrderNumber && !!data?.establishment?.id && showTrackingModal,
-      refetchInterval: 5000, // Atualiza a cada 5 segundos
-      refetchOnMount: 'always', // Sempre buscar ao montar
-      staleTime: 0, // Considerar dados sempre desatualizados
+      refetchOnMount: true, // Buscar ao montar
+      staleTime: 30000, // Considerar dados válidos por 30 segundos
     }
   );
 
@@ -448,10 +448,11 @@ export default function PublicMenu() {
     // Sincronizar imediatamente ao abrir o modal
     syncOrderStatuses();
     
-    // Sincronizar a cada 10 segundos enquanto o modal estiver aberto
+    // Sincronizar a cada 30 segundos enquanto o modal estiver aberto
+    // Intervalo maior para evitar rate limiting
     let intervalId: NodeJS.Timeout | null = null;
     if (showOrdersModal) {
-      intervalId = setInterval(syncOrderStatuses, 10000);
+      intervalId = setInterval(syncOrderStatuses, 30000);
     }
     
     return () => {
