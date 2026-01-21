@@ -1526,3 +1526,10 @@
   - setBagAutoOpenEnabled(false) ao clicar
 - [x] Sacola só abre manualmente após o primeiro item
   - Auto-open só funciona quando bagAutoOpenEnabled é true
+
+
+## Alterar Exibição de Estrelas no Menu Público
+
+- [x] Substituir 5 estrelas por apenas 1 ícone de estrela na exibição de avaliações
+  - Removida lógica de estrelas cheias/vazias/meia
+  - Agora exibe apenas 1 estrela amarela + nota numérica
