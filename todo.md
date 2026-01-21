@@ -1608,3 +1608,9 @@
 
 - [x] Investigar por que a categoria não está sendo selecionada ao editar item
 - [x] Corrigir definitivamente o bug de categoria
+
+## Arrastar Produtos Entre Categorias
+
+- [x] Implementar drag-and-drop de produtos entre categorias diferentes
+- [x] Atualizar categoryId do produto ao soltar em outra categoria
+- [x] Adicionar feedback visual durante o arraste entre categorias

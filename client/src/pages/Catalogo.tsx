@@ -59,6 +59,10 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragStartEvent,
+  DragOverEvent,
+  DragOverlay,
+  useDroppable,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -275,6 +279,29 @@ function SortableCategoryItem({
   );
 }
 
+// Droppable Category Drop Zone Component
+function CategoryDropZone({ categoryId, categoryName, isActive }: { categoryId: number | null; categoryName: string; isActive: boolean }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: `category-drop-${categoryId ?? 0}`,
+  });
+
+  if (!isActive) return null;
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={cn(
+        "p-3 border-b text-center text-sm font-medium transition-all duration-200",
+        isOver 
+          ? "bg-primary/20 border-primary/30 text-primary" 
+          : "bg-primary/10 border-primary/20 text-primary animate-pulse"
+      )}
+    >
+      {isOver ? `Soltar em "${categoryName}"` : `Solte aqui para mover para "${categoryName}"`}
+    </div>
+  );
+}
+
 export default function Catalogo() {
   const [, navigate] = useLocation();
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
@@ -301,6 +328,10 @@ export default function Catalogo() {
   // Inline editing state
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
   const [editingCategoryName, setEditingCategoryName] = useState("");
+  
+  // Drag between categories state
+  const [activeProduct, setActiveProduct] = useState<any>(null);
+  const [activeProductCategoryId, setActiveProductCategoryId] = useState<number | null>(null);
 
   // Check if filters are active (disable drag when filters are active)
   const hasActiveFilters: boolean = !!(search || categoryFilter !== "all" || statusFilter !== "all" || stockFilter !== "all" || orderBy !== "sortOrder");
@@ -438,6 +469,18 @@ export default function Catalogo() {
     onError: () => toast.error("Erro ao atualizar categoria"),
   });
 
+  // Mutation para mover produto entre categorias
+  const moveProductCategoryMutation = trpc.product.update.useMutation({
+    onSuccess: () => {
+      refetchProducts();
+      toast.success("Produto movido para nova categoria");
+    },
+    onError: () => {
+      toast.error("Erro ao mover produto");
+      refetchProducts();
+    },
+  });
+
   // Se não há estabelecimento, mostrar tela de criação
   if (!establishmentLoading && !establishment) {
     return (
@@ -489,7 +532,93 @@ export default function Catalogo() {
     }
   };
 
-  // Handle product drag end
+  // Handle drag start - track which product is being dragged
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    const productId = active.id as number;
+    
+    // Find the product and its category
+    for (const [catId, products] of Object.entries(localProductsByCategory)) {
+      const product = products.find((p: any) => p.id === productId);
+      if (product) {
+        setActiveProduct(product);
+        setActiveProductCategoryId(Number(catId));
+        break;
+      }
+    }
+  };
+
+  // Handle drag end - check if dropped on different category
+  const handleGlobalDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    setActiveProduct(null);
+    setActiveProductCategoryId(null);
+    
+    if (!over) return;
+    
+    const productId = active.id as number;
+    const overId = String(over.id);
+    
+    // Check if dropped on a category drop zone
+    if (overId.startsWith('category-drop-')) {
+      const targetCategoryId = overId === 'category-drop-0' ? null : Number(overId.replace('category-drop-', ''));
+      const sourceCategoryId = activeProductCategoryId;
+      
+      // Only move if dropping on a different category
+      if (sourceCategoryId !== (targetCategoryId ?? 0)) {
+        // Optimistic update
+        const sourceProducts = [...(localProductsByCategory[sourceCategoryId ?? 0] || [])];
+        const productIndex = sourceProducts.findIndex((p) => p.id === productId);
+        
+        if (productIndex !== -1) {
+          const [movedProduct] = sourceProducts.splice(productIndex, 1);
+          const targetProducts = [...(localProductsByCategory[targetCategoryId ?? 0] || []), movedProduct];
+          
+          setLocalProductsByCategory({
+            ...localProductsByCategory,
+            [sourceCategoryId ?? 0]: sourceProducts,
+            [targetCategoryId ?? 0]: targetProducts,
+          });
+          
+          // Persist to server
+          moveProductCategoryMutation.mutate({
+            id: productId,
+            categoryId: targetCategoryId,
+          });
+        }
+      }
+      return;
+    }
+    
+    // Handle reordering within same category
+    if (activeProductCategoryId !== null) {
+      const categoryProducts = localProductsByCategory[activeProductCategoryId] || [];
+      const oldIndex = categoryProducts.findIndex((p) => p.id === active.id);
+      const newIndex = categoryProducts.findIndex((p) => p.id === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+        const newProducts = arrayMove(categoryProducts, oldIndex, newIndex);
+        setLocalProductsByCategory({
+          ...localProductsByCategory,
+          [activeProductCategoryId]: newProducts,
+        });
+
+        const updates = newProducts.map((product, index) => ({
+          id: product.id,
+          sortOrder: index,
+        }));
+        
+        reorderProductsMutation.mutate(updates, {
+          onSuccess: () => {
+            toast.success("Ordem atualizada");
+          },
+        });
+      }
+    }
+  };
+
+  // Handle product drag end (legacy - for individual category contexts)
   const handleProductDragEnd = (event: DragEndEvent, categoryId: number) => {
     const { active, over } = event;
     
@@ -702,13 +831,34 @@ export default function Catalogo() {
           />
         </SectionCard>
       ) : (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleGlobalDragEnd}
+        >
         <div className="space-y-5">
           {localCategories.map((category) => {
             const categoryProducts = localProductsByCategory[category.id] || [];
-            if (categoryProducts.length === 0) return null;
+            const isDropTarget = activeProduct && activeProductCategoryId !== category.id;
+            
+            // Mostrar categoria se tiver produtos OU se estiver arrastando um produto (para mostrar como drop target)
+            if (categoryProducts.length === 0 && !activeProduct) return null;
             
             return (
-              <div key={category.id} className="bg-card rounded-xl border border-border/50 shadow-soft overflow-hidden">
+              <div 
+                key={category.id} 
+                className={cn(
+                  "bg-card rounded-xl border border-border/50 shadow-soft overflow-hidden transition-all duration-200",
+                  isDropTarget && "ring-2 ring-primary/50 ring-offset-2"
+                )}
+              >
+                {/* Drop zone for this category */}
+                <CategoryDropZone 
+                  categoryId={category.id} 
+                  categoryName={category.name} 
+                  isActive={isDropTarget} 
+                />
                 <div className="flex items-center justify-between p-4 border-b border-border/50 bg-muted/20" style={{height: '46px'}}>
                   {editingCategoryId === category.id ? (
                     <div className="flex items-center gap-1.5">
@@ -769,58 +919,12 @@ export default function Catalogo() {
                     {categoryProducts.length} {categoryProducts.length === 1 ? "ítem" : "ítens"}
                   </span>
                 </div>
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={(event) => handleProductDragEnd(event, category.id)}
-                >
-                  <SortableContext
-                    items={categoryProducts.map((p) => p.id)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <div className="divide-y divide-border/50">
-                      {categoryProducts.map((product) => (
-                        <SortableProductItem
-                          key={product.id}
-                          product={product}
-                          isDragDisabled={hasActiveFilters}
-                          onToggleStatus={handleToggleStatus}
-                          onDuplicate={handleDuplicate}
-                          onDelete={(id) => {
-                            setProductToDelete(id);
-                            setDeleteDialogOpen(true);
-                          }}
-                          onEdit={(id) => navigate(`/catalogo/editar/${id}`)}
-                          formatCurrency={formatCurrency}
-                        />
-                      ))}
-                    </div>
-                  </SortableContext>
-                </DndContext>
-              </div>
-            );
-          })}
-          
-          {/* Products without category */}
-          {localProductsByCategory[0] && localProductsByCategory[0].length > 0 && (
-            <div className="bg-card rounded-2xl border border-border/50 shadow-soft overflow-hidden">
-              <div className="flex items-center justify-between p-5 border-b border-border/50 bg-muted/20">
-                <h3 className="font-bold text-lg">Sem categoria</h3>
-                <span className="text-sm text-muted-foreground font-medium">
-                  {localProductsByCategory[0].length} {localProductsByCategory[0].length === 1 ? "produto" : "produtos"}
-                </span>
-              </div>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={(event) => handleProductDragEnd(event, 0)}
-              >
                 <SortableContext
-                  items={localProductsByCategory[0].map((p) => p.id)}
+                  items={categoryProducts.map((p) => p.id)}
                   strategy={verticalListSortingStrategy}
                 >
                   <div className="divide-y divide-border/50">
-                    {localProductsByCategory[0].map((product) => (
+                    {categoryProducts.map((product) => (
                       <SortableProductItem
                         key={product.id}
                         product={product}
@@ -837,10 +941,56 @@ export default function Catalogo() {
                     ))}
                   </div>
                 </SortableContext>
-              </DndContext>
+              </div>
+            );
+          })}
+          
+          {/* Products without category */}
+          {(localProductsByCategory[0] && localProductsByCategory[0].length > 0) || activeProduct ? (
+            <div 
+              className={cn(
+                "bg-card rounded-2xl border border-border/50 shadow-soft overflow-hidden transition-all duration-200",
+                activeProduct && activeProductCategoryId !== 0 && "ring-2 ring-primary/50 ring-offset-2"
+              )}
+            >
+              {/* Drop zone for uncategorized */}
+              <CategoryDropZone 
+                categoryId={null} 
+                categoryName="Sem categoria" 
+                isActive={activeProduct && activeProductCategoryId !== 0} 
+              />
+              <div className="flex items-center justify-between p-5 border-b border-border/50 bg-muted/20">
+                <h3 className="font-bold text-lg">Sem categoria</h3>
+                <span className="text-sm text-muted-foreground font-medium">
+                  {(localProductsByCategory[0]?.length || 0)} {(localProductsByCategory[0]?.length || 0) === 1 ? "produto" : "produtos"}
+                </span>
+              </div>
+              <SortableContext
+                items={(localProductsByCategory[0] || []).map((p) => p.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="divide-y divide-border/50">
+                  {(localProductsByCategory[0] || []).map((product) => (
+                    <SortableProductItem
+                      key={product.id}
+                      product={product}
+                      isDragDisabled={hasActiveFilters}
+                      onToggleStatus={handleToggleStatus}
+                      onDuplicate={handleDuplicate}
+                      onDelete={(id) => {
+                        setProductToDelete(id);
+                        setDeleteDialogOpen(true);
+                      }}
+                      onEdit={(id) => navigate(`/catalogo/editar/${id}`)}
+                      formatCurrency={formatCurrency}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
             </div>
-          )}
+          ) : null}
         </div>
+        </DndContext>
       )}
 
       {/* Delete Dialog */}
