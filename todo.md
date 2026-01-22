@@ -1810,3 +1810,8 @@
 - [x] Remover botão dos pedidos em andamento
 - [x] Manter botão apenas em pedidos entregues ou cancelados
 - [x] Pedidos em andamento agora mostram apenas "Acompanhar pedido"
+
+## Bug: Botão "Pedir novamente" não aparece em pedidos cancelados
+- [x] Verificar condição que oculta o botão em pedidos cancelados
+- [x] Corrigir para exibir botão em pedidos cancelados também
+- [x] Removida condição order.status !== 'cancelled' do histórico

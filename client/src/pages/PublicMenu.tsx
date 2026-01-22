@@ -3325,9 +3325,8 @@ export default function PublicMenu() {
                                     </div>
                                   ))}
                                 </div>
-                                {/* Botão Pedir novamente - apenas para pedidos não cancelados */}
-                                {order.status !== 'cancelled' && (
-                                  <button
+                                {/* Botão Pedir novamente - para todos os pedidos do histórico */}
+                                <button
                                     onClick={() => {
                                       // Adicionar itens do pedido à sacola
                                       const newCartItems = order.items.map(item => ({
@@ -3373,8 +3372,7 @@ export default function PublicMenu() {
                                   >
                                     <RefreshCw className="h-4 w-4" />
                                     Pedir novamente
-                                  </button>
-                                )}
+                                </button>
                               </div>
                             )}
                           </div>
