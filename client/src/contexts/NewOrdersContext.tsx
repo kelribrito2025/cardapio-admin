@@ -44,10 +44,12 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
   );
 
   // Callback para novo pedido - usando ref para evitar stale closure
-  const handleNewOrder = useCallback(() => {
+  const handleNewOrder = useCallback((order: unknown) => {
     // Incrementar usando ref para garantir valor atualizado
     countRef.current = countRef.current + 1;
     setNewOrdersCount(countRef.current);
+    console.log("[NewOrders] Novo pedido recebido via SSE:", order);
+    console.log("[NewOrders] Nova contagem:", countRef.current);
   }, []);
 
   // Callback para update de pedido

@@ -1692,3 +1692,7 @@
 - [x] Garantir que atualização em tempo real do modal funcione junto com badge
 - [x] Adicionar método updateCallback no orderSSE para substituir callbacks existentes
 - [x] Adicionar useEffect para atualizar callbacks quando modal abre/fecha
+
+## Correção Final do Badge de Novos Pedidos
+- [ ] Investigar por que o badge não aparece após correções do modal
+- [ ] Garantir que ambas funcionalidades (badge e modal) funcionem simultaneamente

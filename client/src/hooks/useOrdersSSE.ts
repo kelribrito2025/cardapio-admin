@@ -70,9 +70,11 @@ const callbacks: Set<{
 }> = new Set();
 
 function notifyAll(event: "newOrder" | "orderUpdate" | "connected" | "disconnected" | "error" | "status", data?: unknown) {
-  callbacks.forEach((cb) => {
+  console.log(`[SSE-NotifyAll] Notificando ${callbacks.size} listeners sobre evento: ${event}`);
+  callbacks.forEach((cb, index) => {
     switch (event) {
       case "newOrder":
+        console.log(`[SSE-NotifyAll] Chamando onNewOrder do listener`, cb.onNewOrder ? 'existe' : 'não existe');
         cb.onNewOrder?.(data as SSEOrder);
         break;
       case "orderUpdate":
