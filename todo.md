@@ -1805,3 +1805,8 @@
 - [x] Preencher nome e telefone do cliente
 - [x] Preencher endereço de entrega (se delivery)
 - [x] Preencher observação do pedido
+
+## Ajuste: Botão "Pedir novamente" apenas em pedidos finalizados
+- [x] Remover botão dos pedidos em andamento
+- [x] Manter botão apenas em pedidos entregues ou cancelados
+- [x] Pedidos em andamento agora mostram apenas "Acompanhar pedido"

@@ -3243,67 +3243,18 @@ export default function PublicMenu() {
                                     </div>
                                   ))}
                                 </div>
-                                <div className="flex gap-2 mt-3">
-                                  <button
-                                    onClick={() => {
-                                      setSelectedOrderId(order.id);
-                                      setCurrentOrderNumber(order.id);
-                                      setShowOrdersModal(false);
-                                      setShowTrackingModal(true);
-                                    }}
-                                    className="flex-1 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
-                                  >
-                                    <Clock className="h-4 w-4" />
-                                    Acompanhar
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      // Adicionar itens do pedido à sacola
-                                      const newCartItems = order.items.map(item => ({
-                                        productId: 0,
-                                        name: item.name,
-                                        price: item.price,
-                                        quantity: item.quantity,
-                                        observation: "",
-                                        image: null,
-                                        complements: item.complements.map((c, idx) => ({
-                                          id: idx,
-                                          name: c.name,
-                                          price: c.price
-                                        }))
-                                      }));
-                                      setCart(newCartItems);
-                                      
-                                      // Preencher dados do pedido anterior
-                                      setDeliveryType(order.deliveryType);
-                                      setPaymentMethod(order.paymentMethod);
-                                      setCustomerInfo({
-                                        name: order.customerName,
-                                        phone: order.customerPhone
-                                      });
-                                      setOrderObservation(order.observation || "");
-                                      
-                                      // Preencher endereço se for delivery
-                                      if (order.deliveryType === 'delivery' && order.address) {
-                                        setDeliveryAddress({
-                                          street: order.address.street || "",
-                                          number: order.address.number || "",
-                                          neighborhood: order.address.neighborhood || "",
-                                          complement: order.address.complement || "",
-                                          reference: order.address.reference || ""
-                                        });
-                                      }
-                                      
-                                      setShowOrdersModal(false);
-                                      // Abrir modal de resumo (checkout step 1)
-                                      setCheckoutStep(1);
-                                    }}
-                                    className="flex-1 py-2 bg-green-500 text-white text-sm font-medium rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
-                                  >
-                                    <RefreshCw className="h-4 w-4" />
-                                    Pedir novamente
-                                  </button>
-                                </div>
+                                <button
+                                  onClick={() => {
+                                    setSelectedOrderId(order.id);
+                                    setCurrentOrderNumber(order.id);
+                                    setShowOrdersModal(false);
+                                    setShowTrackingModal(true);
+                                  }}
+                                  className="mt-3 w-full py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+                                >
+                                  <Clock className="h-4 w-4" />
+                                  Acompanhar pedido
+                                </button>
                               </div>
                             )}
                           </div>
