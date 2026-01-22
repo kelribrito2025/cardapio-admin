@@ -2836,7 +2836,7 @@ export default function PublicMenu() {
 
       {/* Modal de Cupom */}
       {showCouponModal && (
-        <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
+        <div className="fixed inset-0 z-[110] flex items-end md:items-center md:justify-center">
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"

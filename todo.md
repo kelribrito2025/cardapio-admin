@@ -1787,3 +1787,7 @@
 - [x] Som deve tocar apenas no painel administrativo
 - [x] Remover/desabilitar som no menu público quando pedido é enviado
 - [x] Solução: Verificar locationRef antes de tocar som (ignora rotas /menu/*)
+
+## Bug: Modal de cupom aparece atrás do modal da sacola
+- [x] Aumentar z-index do modal de cupom para aparecer na frente da sacola
+- [x] Solução: Alterado z-index de z-[100] para z-[110]
