@@ -1890,6 +1890,7 @@
 - [x] Exibir mensagem de "restaurante fechado" dentro do modal
 - [x] Mostrar botão para voltar ao carrinho
 - [x] Ícone XCircle vermelho para indicar erro
+<<<<<<< Updated upstream
 
 - [x] Corrigir bug do ícone de som que ativa automaticamente ao navegar entre páginas no painel administrativo
 - [x] Corrigir exibição do número do pedido com dois ## (##P235 → #P235) no card e modal de detalhes
@@ -1898,3 +1899,4 @@
 - [x] Adicionar funcionalidade de excluir categorias na página de Catálogo
 - [x] Usar imagem placeholder igual à do perfil do restaurante para itens do catálogo sem foto
 - [x] Aplicar mesmo estilo de placeholder de imagem do catálogo aos produtos sem foto no cardápio público
+- [x] Aplicar placeholder de imagem no modal de detalhes do produto no cardápio público

@@ -1773,8 +1773,21 @@ export default function PublicMenu() {
               </div>
             )}
 
-            {/* Header sem imagem */}
+            {/* Placeholder quando não há imagem */}
             {!selectedProduct.images?.[0] && (
+              <div className="relative w-full h-[180px] sm:h-48 md:h-56 flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80" />
+                <button 
+                  onClick={() => setSelectedProduct(null)}
+                  className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
+                >
+                  <X className="h-5 w-5 text-gray-700" />
+                </button>
+              </div>
+            )}
+
+            {/* Header sem imagem - removido, agora usa placeholder */}
+            {false && (
               <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between" style={{height: '49px'}}>
                 <h2 className="text-lg font-bold text-gray-900">Adicionar Item</h2>
                 <button 
