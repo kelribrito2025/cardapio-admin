@@ -195,6 +195,104 @@ export default function Pedidos() {
     onError: () => toast.error("Erro ao atualizar status"),
   });
 
+  // Função para imprimir apenas o pedido
+  const handlePrintOrder = () => {
+    if (!orderDetails) return;
+    
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      toast.error("Erro ao abrir janela de impressão");
+      return;
+    }
+    
+    const itemsHtml = orderDetails.items?.map(item => `
+      <tr>
+        <td style="padding: 4px 0; border-bottom: 1px dashed #ccc;">${item.quantity}x ${item.productName}</td>
+        <td style="padding: 4px 0; border-bottom: 1px dashed #ccc; text-align: right;">R$ ${Number(item.totalPrice).toFixed(2).replace('.', ',')}</td>
+      </tr>
+      ${item.notes ? `<tr><td colspan="2" style="padding: 2px 0 4px 16px; font-size: 11px; color: #666;">Obs: ${item.notes}</td></tr>` : ''}
+    `).join('') || '';
+    
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Pedido #${orderDetails.orderNumber}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: 'Courier New', monospace; font-size: 12px; padding: 10px; max-width: 300px; margin: 0 auto; }
+          .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 10px; }
+          .header h1 { font-size: 16px; margin-bottom: 4px; }
+          .header p { font-size: 11px; color: #666; }
+          .section { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #ccc; }
+          .section-title { font-weight: bold; font-size: 11px; text-transform: uppercase; margin-bottom: 6px; }
+          .info-row { display: flex; justify-content: space-between; margin-bottom: 2px; }
+          .info-label { color: #666; }
+          table { width: 100%; border-collapse: collapse; }
+          .total-row { font-weight: bold; font-size: 14px; border-top: 2px solid #000; padding-top: 6px; margin-top: 6px; }
+          .footer { text-align: center; margin-top: 15px; font-size: 10px; color: #666; }
+          @media print { body { padding: 0; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>PEDIDO #${orderDetails.orderNumber}</h1>
+          <p>${format(new Date(orderDetails.createdAt), "dd/MM/yyyy HH:mm")}</p>
+        </div>
+        
+        <div class="section">
+          <div class="section-title">Cliente</div>
+          <div class="info-row"><span class="info-label">Nome:</span><span>${orderDetails.customerName || 'Não informado'}</span></div>
+          ${orderDetails.customerPhone ? `<div class="info-row"><span class="info-label">Tel:</span><span>${orderDetails.customerPhone}</span></div>` : ''}
+        </div>
+        
+        <div class="section">
+          <div class="section-title">Entrega</div>
+          <div class="info-row"><span class="info-label">Tipo:</span><span>${orderDetails.deliveryType === 'delivery' ? 'Entrega' : 'Retirada'}</span></div>
+          ${orderDetails.customerAddress ? `<div class="info-row"><span class="info-label">End:</span><span style="text-align: right; max-width: 180px;">${orderDetails.customerAddress}</span></div>` : ''}
+        </div>
+        
+        <div class="section">
+          <div class="section-title">Itens</div>
+          <table>${itemsHtml}</table>
+        </div>
+        
+        <div class="section">
+          <div class="info-row"><span>Subtotal:</span><span>R$ ${Number(orderDetails.subtotal).toFixed(2).replace('.', ',')}</span></div>
+          ${Number(orderDetails.deliveryFee) > 0 ? `<div class="info-row"><span>Taxa Entrega:</span><span>R$ ${Number(orderDetails.deliveryFee).toFixed(2).replace('.', ',')}</span></div>` : ''}
+          <div class="info-row total-row"><span>TOTAL:</span><span>R$ ${Number(orderDetails.total).toFixed(2).replace('.', ',')}</span></div>
+        </div>
+        
+        <div class="section">
+          <div class="section-title">Pagamento</div>
+          <div class="info-row"><span class="info-label">Método:</span><span>${paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</span></div>
+        </div>
+        
+        ${orderDetails.notes ? `
+        <div class="section">
+          <div class="section-title">Observações</div>
+          <p>${orderDetails.notes}</p>
+        </div>
+        ` : ''}
+        
+        <div class="footer">
+          <p>Obrigado pela preferência!</p>
+        </div>
+        
+        <script>
+          window.onload = function() {
+            window.print();
+            window.onafterprint = function() { window.close(); };
+          };
+        </script>
+      </body>
+      </html>
+    `;
+    
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+  };
+
   // Se não há estabelecimento, mostrar tela de criação
   if (!establishmentLoading && !establishment) {
     return (
@@ -731,7 +829,7 @@ export default function Pedidos() {
 
           {/* Footer */}
           <div className="px-6 py-4 border-t border-border/50 flex items-center justify-between mt-auto">
-            <Button variant="outline" onClick={() => window.print()} className="gap-2">
+            <Button variant="outline" onClick={handlePrintOrder} className="gap-2">
               <Printer className="h-4 w-4" />
               Imprimir Pedido
             </Button>
