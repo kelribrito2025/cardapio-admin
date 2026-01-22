@@ -1782,3 +1782,8 @@
 - [x] Verificar classes de visibilidade do container de cupom
 - [x] Corrigir para aparecer em todas as resoluções
 - [x] Adicionar seção de cupom no modal da sacola mobile (showMobileBag)
+
+## Bug: Som de notificação tocando no menu público
+- [x] Som deve tocar apenas no painel administrativo
+- [x] Remover/desabilitar som no menu público quando pedido é enviado
+- [x] Solução: Verificar locationRef antes de tocar som (ignora rotas /menu/*)

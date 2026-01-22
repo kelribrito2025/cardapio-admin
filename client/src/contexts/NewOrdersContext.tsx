@@ -197,6 +197,14 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     }
   );
 
+  // Ref para a localização atual (para evitar closure stale)
+  const locationRef = useRef(location);
+  
+  // Atualizar ref quando location mudar
+  useEffect(() => {
+    locationRef.current = location;
+  }, [location]);
+
   // Callback para novo pedido - usando ref para evitar stale closure
   const handleNewOrder = useCallback((order: unknown) => {
     // Incrementar usando ref para garantir valor atualizado
@@ -205,8 +213,13 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     console.log("[NewOrders] Novo pedido recebido via SSE:", order);
     console.log("[NewOrders] Nova contagem:", countRef.current);
     
-    // Tocar som de notificação
-    playNotificationSound();
+    // Tocar som de notificação APENAS se não estiver no menu público
+    // O menu público usa a rota /menu/:slug
+    if (!locationRef.current.startsWith('/menu/')) {
+      playNotificationSound();
+    } else {
+      console.log("[NewOrders] Som não tocado - usuário está no menu público");
+    }
   }, []);
 
   // Callback para update de pedido
