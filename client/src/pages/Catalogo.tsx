@@ -147,7 +147,7 @@ function SortableProductItem({
               className="h-full w-full object-cover"
             />
           ) : (
-            <UtensilsCrossed className="h-5 w-5 text-white" />
+            <UtensilsCrossed className="h-5 w-5 text-white animate-placeholder-pulse" />
           )}
         </div>
         <div className="flex-1 min-w-0">

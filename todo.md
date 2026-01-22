@@ -1900,3 +1900,4 @@
 - [x] Usar imagem placeholder igual à do perfil do restaurante para itens do catálogo sem foto
 - [x] Aplicar mesmo estilo de placeholder de imagem do catálogo aos produtos sem foto no cardápio público
 - [x] Aplicar placeholder de imagem no modal de detalhes do produto no cardápio público
+- [x] Adicionar animação de pulso suave ao ícone do placeholder de produtos sem foto

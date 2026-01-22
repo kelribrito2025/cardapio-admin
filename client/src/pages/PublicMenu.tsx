@@ -1776,7 +1776,7 @@ export default function PublicMenu() {
             {/* Placeholder quando não há imagem */}
             {!selectedProduct.images?.[0] && (
               <div className="relative w-full h-[180px] sm:h-48 md:h-56 flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
-                <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80" />
+                <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80 animate-placeholder-pulse" />
                 <button 
                   onClick={() => setSelectedProduct(null)}
                   className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
@@ -4000,7 +4000,7 @@ function ProductCard({
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center rounded-r-lg">
-              <UtensilsCrossed className="h-6 w-6 md:h-8 md:w-8 text-white" />
+              <UtensilsCrossed className="h-6 w-6 md:h-8 md:w-8 text-white animate-placeholder-pulse" />
             </div>
           )}
         </div>
