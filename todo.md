@@ -1892,3 +1892,4 @@
 - [x] Ícone XCircle vermelho para indicar erro
 
 - [x] Corrigir bug do ícone de som que ativa automaticamente ao navegar entre páginas no painel administrativo
+- [x] Corrigir exibição do número do pedido com dois ## (##P235 → #P235) no card e modal de detalhes

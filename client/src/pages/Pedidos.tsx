@@ -226,7 +226,7 @@ export default function Pedidos() {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Pedido #${orderDetails.orderNumber}</title>
+        <title>Pedido ${orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</title>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { 
@@ -352,7 +352,7 @@ export default function Pedidos() {
           </div>
           
           <div class="order-info">
-            <h2>Pedido #${orderDetails.orderNumber}</h2>
+            <h2>Pedido ${orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</h2>
             <p>Realizado em: ${format(new Date(orderDetails.createdAt), "dd/MM/yyyy")} - ${format(new Date(orderDetails.createdAt), "HH:mm")}</p>
           </div>
           
@@ -664,7 +664,7 @@ export default function Pedidos() {
                         <div className={cn("p-1.5 rounded-lg bg-white/80", config.color)}>
                           <config.icon className="h-3.5 w-3.5" />
                         </div>
-                        <span className={cn("font-bold text-sm", config.color)}>#{order.orderNumber}</span>
+                        <span className={cn("font-bold text-sm", config.color)}>{order.orderNumber?.startsWith('#') ? order.orderNumber : `#${order.orderNumber}`}</span>
                       </div>
                       <div className={cn("flex items-center gap-1 text-xs font-medium", config.color)}>
                         <Clock className="h-3 w-3" />
@@ -773,7 +773,7 @@ export default function Pedidos() {
               {/* Order ID and Actions */}
               <div className="px-6 py-4 bg-muted/20 flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-bold">Pedido #{orderDetails.orderNumber}</h2>
+                  <h2 className="text-xl font-bold">Pedido {orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</h2>
                   <p className="text-sm text-muted-foreground">
                     {format(new Date(orderDetails.createdAt), "dd 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })}
                   </p>
