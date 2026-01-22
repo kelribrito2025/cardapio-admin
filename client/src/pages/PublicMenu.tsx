@@ -2499,15 +2499,18 @@ export default function PublicMenu() {
                   <div className="bg-gray-50 rounded-xl p-4 space-y-2">
                     {cart.map((item, index) => (
                       <div key={index} className="flex justify-between text-sm">
-                        <div>
+                        <div className="flex-1 min-w-0">
                           <span className="text-gray-800 font-medium">{item.quantity}x {item.name}</span>
                           {item.complements.length > 0 && (
                             <p className="text-xs text-gray-500">
                               {item.complements.map(c => c.name).join(", ")}
                             </p>
                           )}
+                          {item.observation && (
+                            <p className="text-xs text-gray-400 mt-0.5">Obs: {item.observation}</p>
+                          )}
                         </div>
-                        <span className="text-gray-700 font-medium">{formatPrice(Number(item.price) * item.quantity)}</span>
+                        <span className="text-gray-700 font-medium ml-2">{formatPrice(Number(item.price) * item.quantity)}</span>
                       </div>
                     ))}
                   </div>

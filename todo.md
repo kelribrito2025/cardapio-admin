@@ -1828,3 +1828,8 @@
 - [x] Adicionar espaço no topo para área clicável de fechar (max-h-[80vh])
 - [x] Manter altura máxima para não ocupar tela toda
 - [x] Cantos arredondados apenas no topo no mobile (rounded-t-2xl)
+
+## Bug: Observação do item não aparece no modal de Confirmar Endereço
+- [x] Exibir observação do item (item.observation) na seção Itens do checkoutStep 3
+- [x] Mostrar abaixo do nome do item, como no modal de Resumo
+- [x] Adicionado "Obs: {item.observation}" em texto cinza claro
