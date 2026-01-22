@@ -1,0 +1,16 @@
+{
+  "query": "SHOW TABLES LIKE '%complement%'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SHOW TABLES LIKE '%complement%'",
+  "rows": [
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2 (%complement%)": "complementGroups"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2 (%complement%)": "complementItems"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_enmWmXpAt34diouyKU4TE2 (%complement%)\ncomplementGroups\ncomplementItems\n",
+  "stderr": "",
+  "execution_time_ms": 72
+}

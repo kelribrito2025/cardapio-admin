@@ -1903,3 +1903,4 @@
 - [x] Adicionar animação de pulso suave ao ícone do placeholder de produtos sem foto
 - [x] Corrigir barra lateral minimizada para mostrar apenas ícone de abrir, sem a foto do restaurante
 - [x] Adicionar animação de transição suave ao expandir e recolher a barra lateral
+- [x] Corrigir exibição dos itens de complementos na página de edição do produto (itens não aparecem dentro dos grupos)

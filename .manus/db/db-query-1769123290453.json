@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO complementGroups (productId, name, minQuantity, maxQuantity, isRequired, sortOrder) \nSELECT id, 'Molhos', 0, 3, 0, 3 FROM products WHERE establishmentId = 30001 AND name = 'X-TUDO';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute INSERT INTO complementGroups (productId, name, minQuantity, maxQuantity, isRequired, sortOrder) \nSELECT id, 'Molhos', 0, 3, 0, 3 FROM products WHERE establishmentId = 30001 AND name = 'X-TUDO';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 66
+}

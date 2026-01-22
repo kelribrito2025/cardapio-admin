@@ -383,7 +383,17 @@ export const appRouter = router({
     listGroups: protectedProcedure
       .input(z.object({ productId: z.number() }))
       .query(async ({ input }) => {
-        return db.getComplementGroupsByProduct(input.productId);
+        const groups = await db.getComplementGroupsByProduct(input.productId);
+        const groupsWithItems = await Promise.all(
+          groups.map(async (group) => {
+            const items = await db.getComplementItemsByGroup(group.id);
+            return {
+              ...group,
+              items,
+            };
+          })
+        );
+        return groupsWithItems;
       }),
     
     listItems: protectedProcedure

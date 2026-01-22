@@ -1,0 +1,82 @@
+{
+  "query": "SELECT ci.id, ci.name, ci.price, cg.name as groupName \nFROM complementItems ci \nINNER JOIN complementGroups cg ON ci.groupId = cg.id \nINNER JOIN products p ON cg.productId = p.id \nWHERE p.name = 'X-TUDO' AND p.establishmentId = 30001\nORDER BY cg.sortOrder, ci.sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT ci.id, ci.name, ci.price, cg.name as groupName \nFROM complementItems ci \nINNER JOIN complementGroups cg ON ci.groupId = cg.id \nINNER JOIN products p ON cg.productId = p.id \nWHERE p.name = 'X-TUDO' AND p.establishmentId = 30001\nORDER BY cg.sortOrder, ci.sortOrder;",
+  "rows": [
+    {
+      "id": "30002",
+      "name": "Pão Tradicional",
+      "price": "0.00",
+      "groupName": "Tipo de Pão"
+    },
+    {
+      "id": "30001",
+      "name": "Pão Australiano",
+      "price": "2.00",
+      "groupName": "Tipo de Pão"
+    },
+    {
+      "id": "30003",
+      "name": "Pão Brioche",
+      "price": "3.00",
+      "groupName": "Tipo de Pão"
+    },
+    {
+      "id": "30008",
+      "name": "Bacon Extra",
+      "price": "4.00",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "30007",
+      "name": "Queijo Cheddar",
+      "price": "3.00",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "30004",
+      "name": "Ovo Extra",
+      "price": "2.50",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "30006",
+      "name": "Hambúrguer Extra",
+      "price": "8.00",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "30005",
+      "name": "Cebola Caramelizada",
+      "price": "3.50",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "30011",
+      "name": "Maionese da Casa",
+      "price": "0.00",
+      "groupName": "Molhos"
+    },
+    {
+      "id": "30010",
+      "name": "Barbecue",
+      "price": "0.00",
+      "groupName": "Molhos"
+    },
+    {
+      "id": "30009",
+      "name": "Mostarda e Mel",
+      "price": "1.50",
+      "groupName": "Molhos"
+    },
+    {
+      "id": "30012",
+      "name": "Molho Especial",
+      "price": "2.00",
+      "groupName": "Molhos"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tprice\tgroupName\n30002\tPão Tradicional\t0.00\tTipo de Pão\n30001\tPão Australiano\t2.00\tTipo de Pão\n30003\tPão Brioche\t3.00\tTipo de Pão\n30008\tBacon Extra\t4.00\tAdicionais\n30007\tQueijo Cheddar\t3.00\tAdicionais\n30004\tOvo Extra\t2.50\tAdicionais\n30006\tHambúrguer Extra\t8.00\tAdicionais\n30005\tCebola Caramelizada\t3.50\tAdicionais\n30011\tMaionese da Casa\t0.00\tMolhos\n30010\tBarbecue\t0.00\tMolhos\n30009\tMostarda e Mel\t1.50\tMolhos\n30012\tMolho Especial\t2.00\tMolhos\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

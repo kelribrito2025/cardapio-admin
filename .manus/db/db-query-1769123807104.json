@@ -1,0 +1,130 @@
+{
+  "query": "SELECT * FROM complementItems WHERE groupId IN (SELECT id FROM complementGroups WHERE productId = 120090)",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM complementItems WHERE groupId IN (SELECT id FROM complementGroups WHERE productId = 120090)",
+  "rows": [
+    {
+      "id": "30001",
+      "groupId": "30001",
+      "name": "Pão Australiano",
+      "price": "2.00",
+      "isActive": "1",
+      "sortOrder": "2",
+      "createdAt": "2026-01-22 23:08:22",
+      "updatedAt": "2026-01-22 23:08:22"
+    },
+    {
+      "id": "30002",
+      "groupId": "30001",
+      "name": "Pão Tradicional",
+      "price": "0.00",
+      "isActive": "1",
+      "sortOrder": "1",
+      "createdAt": "2026-01-22 23:08:22",
+      "updatedAt": "2026-01-22 23:08:22"
+    },
+    {
+      "id": "30003",
+      "groupId": "30001",
+      "name": "Pão Brioche",
+      "price": "3.00",
+      "isActive": "1",
+      "sortOrder": "3",
+      "createdAt": "2026-01-22 23:08:22",
+      "updatedAt": "2026-01-22 23:08:22"
+    },
+    {
+      "id": "30004",
+      "groupId": "30002",
+      "name": "Ovo Extra",
+      "price": "2.50",
+      "isActive": "1",
+      "sortOrder": "3",
+      "createdAt": "2026-01-22 23:08:30",
+      "updatedAt": "2026-01-22 23:08:30"
+    },
+    {
+      "id": "30005",
+      "groupId": "30002",
+      "name": "Cebola Caramelizada",
+      "price": "3.50",
+      "isActive": "1",
+      "sortOrder": "5",
+      "createdAt": "2026-01-22 23:08:30",
+      "updatedAt": "2026-01-22 23:08:30"
+    },
+    {
+      "id": "30006",
+      "groupId": "30002",
+      "name": "Hambúrguer Extra",
+      "price": "8.00",
+      "isActive": "1",
+      "sortOrder": "4",
+      "createdAt": "2026-01-22 23:08:30",
+      "updatedAt": "2026-01-22 23:08:30"
+    },
+    {
+      "id": "30007",
+      "groupId": "30002",
+      "name": "Queijo Cheddar",
+      "price": "3.00",
+      "isActive": "1",
+      "sortOrder": "2",
+      "createdAt": "2026-01-22 23:08:30",
+      "updatedAt": "2026-01-22 23:08:30"
+    },
+    {
+      "id": "30008",
+      "groupId": "30002",
+      "name": "Bacon Extra",
+      "price": "4.00",
+      "isActive": "1",
+      "sortOrder": "1",
+      "createdAt": "2026-01-22 23:08:30",
+      "updatedAt": "2026-01-22 23:08:30"
+    },
+    {
+      "id": "30009",
+      "groupId": "30003",
+      "name": "Mostarda e Mel",
+      "price": "1.50",
+      "isActive": "1",
+      "sortOrder": "3",
+      "createdAt": "2026-01-22 23:08:37",
+      "updatedAt": "2026-01-22 23:08:37"
+    },
+    {
+      "id": "30010",
+      "groupId": "30003",
+      "name": "Barbecue",
+      "price": "0.00",
+      "isActive": "1",
+      "sortOrder": "2",
+      "createdAt": "2026-01-22 23:08:37",
+      "updatedAt": "2026-01-22 23:08:37"
+    },
+    {
+      "id": "30011",
+      "groupId": "30003",
+      "name": "Maionese da Casa",
+      "price": "0.00",
+      "isActive": "1",
+      "sortOrder": "1",
+      "createdAt": "2026-01-22 23:08:37",
+      "updatedAt": "2026-01-22 23:08:37"
+    },
+    {
+      "id": "30012",
+      "groupId": "30003",
+      "name": "Molho Especial",
+      "price": "2.00",
+      "isActive": "1",
+      "sortOrder": "4",
+      "createdAt": "2026-01-22 23:08:37",
+      "updatedAt": "2026-01-22 23:08:37"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tgroupId\tname\tprice\tisActive\tsortOrder\tcreatedAt\tupdatedAt\n30001\t30001\tPão Australiano\t2.00\t1\t2\t2026-01-22 23:08:22\t2026-01-22 23:08:22\n30002\t30001\tPão Tradicional\t0.00\t1\t1\t2026-01-22 23:08:22\t2026-01-22 23:08:22\n30003\t30001\tPão Brioche\t3.00\t1\t3\t2026-01-22 23:08:22\t2026-01-22 23:08:22\n30004\t30002\tOvo Extra\t2.50\t1\t3\t2026-01-22 23:08:30\t2026-01-22 23:08:30\n30005\t30002\tCebola Caramelizada\t3.50\t1\t5\t2026-01-22 23:08:30\t2026-01-22 23:08:30\n30006\t30002\tHambúrguer Extra\t8.00\t1\t4\t2026-01-22 23:08:30\t2026-01-22 23:08:30\n30007\t30002\tQueijo Cheddar\t3.00\t1\t2\t2026-01-22 23:08:30\t2026-01-22 23:08:30\n30008\t30002\tBacon Extra\t4.00\t1\t1\t2026-01-22 23:08:30\t2026-01-22 23:08:30\n30009\t30003\tMostarda e Mel\t1.50\t1\t3\t2026-01-22 23:08:37\t2026-01-22 23:08:37\n30010\t30003\tBarbecue\t0.00\t1\t2\t2026-01-22 23:08:37\t2026-01-22 23:08:37\n30011\t30003\tMaionese da Casa\t0.00\t1\t1\t2026-01-22 23:08:37\t2026-01-22 23:08:37\n30012\t30003\tMolho Especial\t2.00\t1\t4\t2026-01-22 23:08:37\t2026-01-22 23:08:37\n",
+  "stderr": "",
+  "execution_time_ms": 74
+}

@@ -1,0 +1,60 @@
+{
+  "query": "SELECT * FROM categories LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM categories LIMIT 5;",
+  "rows": [
+    {
+      "id": "60001",
+      "establishmentId": "30001",
+      "name": "Sashimis",
+      "description": "NULL",
+      "sortOrder": "0",
+      "isActive": "1",
+      "createdAt": "2026-01-22 20:02:29",
+      "updatedAt": "2026-01-22 20:02:29"
+    },
+    {
+      "id": "60002",
+      "establishmentId": "30001",
+      "name": "URAMAKE",
+      "description": "NULL",
+      "sortOrder": "0",
+      "isActive": "1",
+      "createdAt": "2026-01-22 20:50:33",
+      "updatedAt": "2026-01-22 20:50:33"
+    },
+    {
+      "id": "60003",
+      "establishmentId": "30001",
+      "name": "Hossomaki",
+      "description": "NULL",
+      "sortOrder": "0",
+      "isActive": "1",
+      "createdAt": "2026-01-22 21:01:35",
+      "updatedAt": "2026-01-22 21:01:35"
+    },
+    {
+      "id": "60004",
+      "establishmentId": "30001",
+      "name": "Hot's",
+      "description": "NULL",
+      "sortOrder": "0",
+      "isActive": "1",
+      "createdAt": "2026-01-22 21:03:51",
+      "updatedAt": "2026-01-22 21:03:51"
+    },
+    {
+      "id": "60005",
+      "establishmentId": "30001",
+      "name": "Temaki",
+      "description": "NULL",
+      "sortOrder": "0",
+      "isActive": "1",
+      "createdAt": "2026-01-22 21:08:20",
+      "updatedAt": "2026-01-22 21:08:20"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\tname\tdescription\tsortOrder\tisActive\tcreatedAt\tupdatedAt\n60001\t30001\tSashimis\tNULL\t0\t1\t2026-01-22 20:02:29\t2026-01-22 20:02:29\n60002\t30001\tURAMAKE\tNULL\t0\t1\t2026-01-22 20:50:33\t2026-01-22 20:50:33\n60003\t30001\tHossomaki\tNULL\t0\t1\t2026-01-22 21:01:35\t2026-01-22 21:01:35\n60004\t30001\tHot's\tNULL\t0\t1\t2026-01-22 21:03:51\t2026-01-22 21:03:51\n60005\t30001\tTemaki\tNULL\t0\t1\t2026-01-22 21:08:20\t2026-01-22 21:08:20\n",
+  "stderr": "",
+  "execution_time_ms": 81
+}

@@ -134,6 +134,25 @@ export default function ProductForm() {
     }
   }, [product]);
 
+  // Load existing complement groups when editing
+  useEffect(() => {
+    if (existingGroups && existingGroups.length > 0) {
+      const formattedGroups = existingGroups.map((group: any) => ({
+        id: group.id,
+        name: group.name,
+        minQuantity: group.minQuantity,
+        maxQuantity: group.maxQuantity,
+        isRequired: group.isRequired,
+        items: group.items?.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          price: String(item.price),
+        })) || [],
+      }));
+      setComplementGroups(formattedGroups);
+    }
+  }, [existingGroups]);
+
   // Se não há estabelecimento, redirecionar para configurações
   if (!establishmentLoading && !establishment) {
     return (

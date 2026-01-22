@@ -1,0 +1,28 @@
+{
+  "query": "SELECT cg.id, cg.name, cg.productId, p.name as productName \nFROM complementGroups cg \nINNER JOIN products p ON cg.productId = p.id \nWHERE p.name = 'X-TUDO' AND p.establishmentId = 30001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.id, cg.name, cg.productId, p.name as productName \nFROM complementGroups cg \nINNER JOIN products p ON cg.productId = p.id \nWHERE p.name = 'X-TUDO' AND p.establishmentId = 30001;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Tipo de Pão",
+      "productId": "120090",
+      "productName": "X-TUDO"
+    },
+    {
+      "id": "30002",
+      "name": "Adicionais",
+      "productId": "120090",
+      "productName": "X-TUDO"
+    },
+    {
+      "id": "30003",
+      "name": "Molhos",
+      "productId": "120090",
+      "productName": "X-TUDO"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tproductId\tproductName\n30001\tTipo de Pão\t120090\tX-TUDO\n30002\tAdicionais\t120090\tX-TUDO\n30003\tMolhos\t120090\tX-TUDO\n",
+  "stderr": "",
+  "execution_time_ms": 65
+}
