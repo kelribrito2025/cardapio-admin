@@ -419,6 +419,32 @@ export default function ProductForm() {
     }).format(Number(value) || 0);
   };
 
+  // Formata preço em centavos (500 -> 5,00)
+  const formatPriceInput = (value: string): string => {
+    // Remove tudo que não é número
+    const numbers = value.replace(/\D/g, "");
+    // Converte para centavos e formata
+    const cents = parseInt(numbers || "0", 10);
+    const reais = (cents / 100).toFixed(2);
+    return reais;
+  };
+
+  // Formata para exibição no input (5.00 -> 5,00)
+  const displayPrice = (value: string): string => {
+    const num = parseFloat(value || "0");
+    return num.toFixed(2).replace(".", ",");
+  };
+
+  // Handler para input de preço com formatação em centavos
+  const handlePriceChange = (
+    groupIndex: number,
+    itemIndex: number,
+    inputValue: string
+  ) => {
+    const formatted = formatPriceInput(inputValue);
+    updateComplementItem(groupIndex, itemIndex, { price: formatted });
+  };
+
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   if (isEditing && productLoading) {
@@ -762,17 +788,14 @@ export default function ProductForm() {
                               className="flex-1 h-8 text-sm rounded-md border-border/50"
                             />
                             <Input
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              value={item.price}
+                              type="text"
+                              inputMode="numeric"
+                              value={displayPrice(item.price)}
                               onChange={(e) =>
-                                updateComplementItem(groupIndex, itemIndex, {
-                                  price: e.target.value,
-                                })
+                                handlePriceChange(groupIndex, itemIndex, e.target.value)
                               }
-                              placeholder="Preço"
-                              className="w-24 h-8 text-sm rounded-md border-border/50"
+                              placeholder="0,00"
+                              className="w-24 h-8 text-sm rounded-md border-border/50 text-right"
                             />
                             <Button
                               type="button"

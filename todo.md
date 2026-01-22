@@ -1911,3 +1911,4 @@
 - [x] Calcular total dinâmico no preview conforme itens são selecionados
 - [x] Adicionar scroll automático no preview quando o conteúdo for muito longo
 - [x] Corrigir preço do produto no preview mostrando R$ 0,00 em vez do valor digitado
+- [x] Implementar formatação automática de preço em centavos no campo de preço dos itens de complemento (500 → 5,00)
