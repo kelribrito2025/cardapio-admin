@@ -233,7 +233,11 @@ export default function PublicMenu() {
       let errorMessage = 'Erro ao enviar pedido. Por favor, tente novamente.';
       
       if (error?.message) {
-        if (error.message.includes('Network')) {
+        if (error.message.includes('fechado')) {
+          errorMessage = 'O estabelecimento está fechado no momento. Não é possível realizar pedidos.';
+          // Recarregar dados do estabelecimento para atualizar o status
+          trpcUtils.publicMenu.getBySlug.invalidate({ slug: slug || "" });
+        } else if (error.message.includes('Network')) {
           errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
         } else if (error.message.includes('timeout')) {
           errorMessage = 'O servidor demorou muito para responder. Tente novamente.';

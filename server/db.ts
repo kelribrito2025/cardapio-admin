@@ -149,6 +149,14 @@ export async function getEstablishmentByUserId(userId: number) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+export async function getEstablishmentById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(establishments).where(eq(establishments.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
 export async function createEstablishment(data: InsertEstablishment) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");

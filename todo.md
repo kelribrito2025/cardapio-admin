@@ -1874,3 +1874,10 @@
 - [x] Seção Forma de pagamento
 - [x] Seção Cliente com nome e telefone
 - [x] Footer com nome do sistema (manus.space)
+
+## Bug: Cliente consegue fazer pedido com restaurante fechado
+- [x] Adicionar validação no backend (orders.create) para verificar se restaurante está aberto
+- [x] Adicionar validação no frontend para bloquear botão de finalizar quando fechado (já existia)
+- [x] Mostrar mensagem clara para o cliente quando restaurante está fechado
+- [x] Criar função getEstablishmentById no db.ts
+- [x] Invalidar cache do estabelecimento quando erro de "fechado" ocorrer

@@ -775,6 +775,22 @@ export const appRouter = router({
           total: orderData.total,
         });
         
+        // Verificar se o estabelecimento está aberto
+        const establishment = await db.getEstablishmentById(orderData.establishmentId);
+        if (!establishment) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Estabelecimento não encontrado',
+          });
+        }
+        
+        if (!establishment.isOpen) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'O estabelecimento está fechado no momento. Não é possível realizar pedidos.',
+          });
+        }
+        
         try {
           const result = await db.createPublicOrder(
           {
