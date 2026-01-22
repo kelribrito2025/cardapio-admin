@@ -4,11 +4,150 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
 
+// Singleton para gerenciar o áudio de notificação
+class NotificationAudioManager {
+  private static instance: NotificationAudioManager;
+  private audio: HTMLAudioElement | null = null;
+  private isUnlocked = false;
+  private pendingPlay = false;
+
+  private constructor() {
+    this.initAudio();
+  }
+
+  static getInstance(): NotificationAudioManager {
+    if (!NotificationAudioManager.instance) {
+      NotificationAudioManager.instance = new NotificationAudioManager();
+    }
+    return NotificationAudioManager.instance;
+  }
+
+  private initAudio() {
+    if (typeof window === "undefined") return;
+    
+    this.audio = new Audio("/notification.mp3");
+    this.audio.volume = 0.7;
+    this.audio.preload = "auto";
+    
+    // Tentar desbloquear o áudio em qualquer interação do usuário
+    const unlockAudio = () => {
+      if (this.isUnlocked) return;
+      
+      if (this.audio) {
+        // Tocar e pausar imediatamente para desbloquear
+        const playPromise = this.audio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              this.audio?.pause();
+              this.audio!.currentTime = 0;
+              this.isUnlocked = true;
+              console.log("[NotificationAudio] Áudio desbloqueado com sucesso!");
+              
+              // Se tinha um play pendente, executar agora
+              if (this.pendingPlay) {
+                this.pendingPlay = false;
+                this.play();
+              }
+            })
+            .catch(() => {
+              // Ainda não conseguiu desbloquear, tentar novamente na próxima interação
+            });
+        }
+      }
+    };
+
+    // Adicionar listeners para desbloquear o áudio
+    const events = ["click", "touchstart", "touchend", "keydown", "scroll"];
+    events.forEach(event => {
+      document.addEventListener(event, unlockAudio, { once: false, passive: true });
+    });
+  }
+
+  play() {
+    // Verificar se o som está habilitado nas configurações
+    const soundEnabled = localStorage.getItem("notificationSoundEnabled");
+    if (soundEnabled === "false") return;
+
+    if (!this.audio) {
+      this.initAudio();
+    }
+
+    if (this.audio) {
+      // Resetar o áudio para o início
+      this.audio.currentTime = 0;
+      
+      const playPromise = this.audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log("[NotificationAudio] Som tocado com sucesso!");
+            this.isUnlocked = true;
+          })
+          .catch((err) => {
+            console.log("[NotificationAudio] Não foi possível tocar o som:", err.message);
+            // Marcar como pendente para tocar quando desbloquear
+            if (!this.isUnlocked) {
+              this.pendingPlay = true;
+            }
+          });
+      }
+    }
+  }
+
+  // Método para verificar se o áudio está desbloqueado
+  getIsUnlocked(): boolean {
+    return this.isUnlocked;
+  }
+
+  // Método para forçar desbloqueio (chamado em interação do usuário)
+  unlock(): Promise<boolean> {
+    return new Promise((resolve) => {
+      if (this.isUnlocked) {
+        resolve(true);
+        return;
+      }
+
+      if (this.audio) {
+        const playPromise = this.audio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              this.audio?.pause();
+              this.audio!.currentTime = 0;
+              this.isUnlocked = true;
+              console.log("[NotificationAudio] Áudio desbloqueado manualmente!");
+              resolve(true);
+            })
+            .catch(() => {
+              resolve(false);
+            });
+        } else {
+          resolve(false);
+        }
+      } else {
+        resolve(false);
+      }
+    });
+  }
+}
+
+// Função para tocar som de notificação
+const playNotificationSound = () => {
+  try {
+    NotificationAudioManager.getInstance().play();
+  } catch (err) {
+    console.log("[NewOrders] Erro ao tocar áudio:", err);
+  }
+};
+
 interface NewOrdersContextType {
   newOrdersCount: number;
   markOrdersAsSeen: () => void;
   incrementCount: () => void;
   decrementCount: () => void;
+  unlockAudio: () => Promise<boolean>;
+  isAudioUnlocked: boolean;
 }
 
 const NewOrdersContext = createContext<NewOrdersContextType | undefined>(undefined);
@@ -17,6 +156,7 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [location] = useLocation();
   const [newOrdersCount, setNewOrdersCount] = useState(0);
+  const [isAudioUnlocked, setIsAudioUnlocked] = useState(false);
   const [lastSeenTimestamp, setLastSeenTimestamp] = useState<number>(() => {
     const saved = localStorage.getItem("lastSeenOrdersTimestamp");
     return saved ? parseInt(saved, 10) : 0;
@@ -26,6 +166,20 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
   const initializedRef = useRef(false);
   // Ref para a contagem atual (para evitar closure stale)
   const countRef = useRef(0);
+
+  // Verificar estado do áudio periodicamente
+  useEffect(() => {
+    const checkAudioState = () => {
+      const unlocked = NotificationAudioManager.getInstance().getIsUnlocked();
+      if (unlocked !== isAudioUnlocked) {
+        setIsAudioUnlocked(unlocked);
+      }
+    };
+
+    // Verificar a cada segundo
+    const interval = setInterval(checkAudioState, 1000);
+    return () => clearInterval(interval);
+  }, [isAudioUnlocked]);
 
   // Query para buscar o estabelecimento do usuário
   const { data: establishment } = trpc.establishment.get.useQuery(
@@ -50,6 +204,9 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     setNewOrdersCount(countRef.current);
     console.log("[NewOrders] Novo pedido recebido via SSE:", order);
     console.log("[NewOrders] Nova contagem:", countRef.current);
+    
+    // Tocar som de notificação
+    playNotificationSound();
   }, []);
 
   // Callback para update de pedido
@@ -116,8 +273,21 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     setNewOrdersCount(countRef.current);
   }, []);
 
+  const unlockAudio = useCallback(async () => {
+    const result = await NotificationAudioManager.getInstance().unlock();
+    setIsAudioUnlocked(result);
+    return result;
+  }, []);
+
   return (
-    <NewOrdersContext.Provider value={{ newOrdersCount, markOrdersAsSeen, incrementCount, decrementCount }}>
+    <NewOrdersContext.Provider value={{ 
+      newOrdersCount, 
+      markOrdersAsSeen, 
+      incrementCount, 
+      decrementCount,
+      unlockAudio,
+      isAudioUnlocked
+    }}>
       {children}
     </NewOrdersContext.Provider>
   );

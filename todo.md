@@ -1764,3 +1764,11 @@
 - [x] Corrigir parsing da resposta para formato tRPC com superjson
 - [x] Buscar reviews tanto por telefone normalizado quanto original (compatibilidade)
 - [x] Corrigir frontend para enviar telefone original (não normalizado) para API canReview
+
+## Feature: Notificação sonora para novos pedidos
+- [x] Adicionar arquivo de áudio de notificação
+- [x] Implementar lógica para tocar som quando novo pedido chegar
+- [x] Integrar com sistema SSE de novos pedidos
+- [x] Adicionar opção para ativar/desativar som nas configurações
+- [x] Corrigir notificação sonora no mobile (autoplay bloqueado)
+- [x] Adicionar botão de ativação de som no header do admin

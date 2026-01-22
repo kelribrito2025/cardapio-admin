@@ -21,6 +21,8 @@ import {
   ExternalLink,
   Crown,
   Ticket,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -60,7 +62,7 @@ interface AdminLayoutProps {
 export function AdminLayout({ children }: AdminLayoutProps) {
   const { user, loading: authLoading, logout } = useAuth();
   const [location] = useLocation();
-  const { newOrdersCount } = useNewOrders();
+  const { newOrdersCount, unlockAudio, isAudioUnlocked } = useNewOrders();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -384,11 +386,64 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 </a>
               )}
 
-              {/* Notifications */}
-              <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-lg hover:bg-accent">
-                <Bell className="h-4 w-4" />
-                <span className="absolute top-2 right-2 h-2 w-2 bg-primary rounded-full ring-2 ring-card" />
-              </Button>
+              {/* Botão de Som de Notificação */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className={cn(
+                      "relative h-9 w-9 rounded-lg hover:bg-accent transition-colors",
+                      !isAudioUnlocked && "animate-pulse"
+                    )}
+                    onClick={async () => {
+                      if (!isAudioUnlocked) {
+                        const unlocked = await unlockAudio();
+                        if (unlocked) {
+                          toast.success("Som ativado!", {
+                            description: "Você receberá notificações sonoras para novos pedidos.",
+                          });
+                        }
+                      } else {
+                        // Toggle som
+                        const currentState = localStorage.getItem("notificationSoundEnabled");
+                        if (currentState === "false") {
+                          localStorage.setItem("notificationSoundEnabled", "true");
+                          toast.success("Som ativado!");
+                        } else {
+                          localStorage.setItem("notificationSoundEnabled", "false");
+                          toast.info("Som desativado");
+                        }
+                        // Forçar re-render
+                        window.dispatchEvent(new Event('storage'));
+                      }
+                    }}
+                  >
+                    {isAudioUnlocked ? (
+                      localStorage.getItem("notificationSoundEnabled") === "false" ? (
+                        <VolumeX className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <Volume2 className="h-4 w-4 text-green-500" />
+                      )
+                    ) : (
+                      <VolumeX className="h-4 w-4 text-amber-500" />
+                    )}
+                    {!isAudioUnlocked && (
+                      <span className="absolute -top-1 -right-1 h-3 w-3 bg-amber-500 rounded-full ring-2 ring-card flex items-center justify-center">
+                        <span className="text-[8px] text-white font-bold">!</span>
+                      </span>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  {!isAudioUnlocked 
+                    ? "Clique para ativar som de notificação" 
+                    : localStorage.getItem("notificationSoundEnabled") === "false"
+                      ? "Som desativado - clique para ativar"
+                      : "Som ativado - clique para desativar"
+                  }
+                </TooltipContent>
+              </Tooltip>
 
               {/* User menu */}
               <DropdownMenu>
