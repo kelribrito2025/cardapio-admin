@@ -151,6 +151,127 @@ const playNotificationSound = () => {
   }
 };
 
+// Gerenciador de notificações push do navegador
+class BrowserNotificationManager {
+  private static instance: BrowserNotificationManager;
+  private permission: NotificationPermission = "default";
+
+  private constructor() {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      this.permission = Notification.permission;
+    }
+  }
+
+  static getInstance(): BrowserNotificationManager {
+    if (!BrowserNotificationManager.instance) {
+      BrowserNotificationManager.instance = new BrowserNotificationManager();
+    }
+    return BrowserNotificationManager.instance;
+  }
+
+  // Verificar se notificações push estão habilitadas nas configurações
+  private isPushEnabled(): boolean {
+    const pushEnabled = localStorage.getItem("pushNotificationsEnabled");
+    return pushEnabled === "true";
+  }
+
+  // Solicitar permissão para notificações
+  async requestPermission(): Promise<boolean> {
+    if (typeof window === "undefined" || !("Notification" in window)) {
+      console.log("[PushNotification] Navegador não suporta notificações");
+      return false;
+    }
+
+    if (this.permission === "granted") {
+      localStorage.setItem("pushNotificationsEnabled", "true");
+      return true;
+    }
+
+    if (this.permission === "denied") {
+      console.log("[PushNotification] Permissão negada pelo usuário");
+      return false;
+    }
+
+    try {
+      const result = await Notification.requestPermission();
+      this.permission = result;
+      if (result === "granted") {
+        localStorage.setItem("pushNotificationsEnabled", "true");
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.log("[PushNotification] Erro ao solicitar permissão:", err);
+      return false;
+    }
+  }
+
+  // Desabilitar notificações (apenas no localStorage, não revoga permissão do navegador)
+  disable(): void {
+    localStorage.setItem("pushNotificationsEnabled", "false");
+  }
+
+  // Verificar se tem permissão e está habilitado
+  isEnabled(): boolean {
+    return this.permission === "granted" && this.isPushEnabled();
+  }
+
+  // Verificar se tem permissão do navegador
+  hasPermission(): boolean {
+    return this.permission === "granted";
+  }
+
+  // Verificar status da permissão
+  getPermissionStatus(): NotificationPermission {
+    return this.permission;
+  }
+
+  // Enviar notificação
+  notify(title: string, options?: NotificationOptions): void {
+    if (!this.isEnabled()) {
+      console.log("[PushNotification] Notificações desabilitadas ou sem permissão");
+      return;
+    }
+
+    try {
+      const notification = new Notification(title, {
+        icon: "/favicon.ico",
+        badge: "/favicon.ico",
+        tag: "new-order",
+        ...options,
+      });
+
+      // Fechar automaticamente após 10 segundos
+      setTimeout(() => notification.close(), 10000);
+
+      // Focar na aba quando clicar na notificação
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+
+      console.log("[PushNotification] Notificação enviada:", title);
+    } catch (err) {
+      console.log("[PushNotification] Erro ao enviar notificação:", err);
+    }
+  }
+}
+
+// Função para enviar notificação push de novo pedido
+const sendPushNotification = (orderNumber?: string) => {
+  try {
+    const manager = BrowserNotificationManager.getInstance();
+    const title = "Novo Pedido!";
+    const body = orderNumber 
+      ? `Pedido #${orderNumber} acabou de chegar!`
+      : "Um novo pedido acabou de chegar!";
+    
+    manager.notify(title, { body });
+  } catch (err) {
+    console.log("[NewOrders] Erro ao enviar notificação push:", err);
+  }
+};
+
 interface NewOrdersContextType {
   newOrdersCount: number;
   markOrdersAsSeen: () => void;
@@ -158,6 +279,11 @@ interface NewOrdersContextType {
   decrementCount: () => void;
   unlockAudio: () => Promise<boolean>;
   isAudioUnlocked: boolean;
+  // Notificações push
+  requestPushPermission: () => Promise<boolean>;
+  disablePushNotifications: () => void;
+  isPushEnabled: boolean;
+  pushPermissionStatus: NotificationPermission;
 }
 
 const NewOrdersContext = createContext<NewOrdersContextType | undefined>(undefined);
@@ -167,10 +293,19 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const [newOrdersCount, setNewOrdersCount] = useState(0);
   const [isAudioUnlocked, setIsAudioUnlocked] = useState(false);
+  const [isPushEnabled, setIsPushEnabled] = useState(false);
+  const [pushPermissionStatus, setPushPermissionStatus] = useState<NotificationPermission>("default");
   const [lastSeenTimestamp, setLastSeenTimestamp] = useState<number>(() => {
     const saved = localStorage.getItem("lastSeenOrdersTimestamp");
     return saved ? parseInt(saved, 10) : 0;
   });
+
+  // Verificar estado das notificações push na inicialização
+  useEffect(() => {
+    const manager = BrowserNotificationManager.getInstance();
+    setIsPushEnabled(manager.isEnabled());
+    setPushPermissionStatus(manager.getPermissionStatus());
+  }, []);
   
   // Ref para rastrear se já inicializamos
   const initializedRef = useRef(false);
@@ -227,6 +362,12 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     // O menu público usa a rota /menu/:slug
     if (!locationRef.current.startsWith('/menu/')) {
       playNotificationSound();
+      
+      // Enviar notificação push se a aba não estiver em foco
+      if (document.hidden) {
+        const orderData = order as { orderNumber?: string };
+        sendPushNotification(orderData?.orderNumber);
+      }
     } else {
       console.log("[NewOrders] Som não tocado - usuário está no menu público");
     }
@@ -302,6 +443,21 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     return result;
   }, []);
 
+  // Funções para gerenciar notificações push
+  const requestPushPermission = useCallback(async () => {
+    const manager = BrowserNotificationManager.getInstance();
+    const result = await manager.requestPermission();
+    setIsPushEnabled(result);
+    setPushPermissionStatus(manager.getPermissionStatus());
+    return result;
+  }, []);
+
+  const disablePushNotifications = useCallback(() => {
+    const manager = BrowserNotificationManager.getInstance();
+    manager.disable();
+    setIsPushEnabled(false);
+  }, []);
+
   return (
     <NewOrdersContext.Provider value={{ 
       newOrdersCount, 
@@ -309,7 +465,11 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
       incrementCount, 
       decrementCount,
       unlockAudio,
-      isAudioUnlocked
+      isAudioUnlocked,
+      requestPushPermission,
+      disablePushNotifications,
+      isPushEnabled,
+      pushPermissionStatus
     }}>
       {children}
     </NewOrdersContext.Provider>

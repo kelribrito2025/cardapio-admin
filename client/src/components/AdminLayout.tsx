@@ -10,6 +10,8 @@ import {
   Settings,
   Search,
   Bell,
+  BellOff,
+  BellRing,
   Menu,
   X,
   LogOut,
@@ -62,7 +64,15 @@ interface AdminLayoutProps {
 export function AdminLayout({ children }: AdminLayoutProps) {
   const { user, loading: authLoading, logout } = useAuth();
   const [location] = useLocation();
-  const { newOrdersCount, unlockAudio, isAudioUnlocked } = useNewOrders();
+  const { 
+    newOrdersCount, 
+    unlockAudio, 
+    isAudioUnlocked,
+    requestPushPermission,
+    disablePushNotifications,
+    isPushEnabled,
+    pushPermissionStatus
+  } = useNewOrders();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -450,6 +460,57 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     : isSoundEnabled
                       ? "Som ativado - clique para desativar"
                       : "Som desativado - clique para ativar"
+                  }
+                </TooltipContent>
+              </Tooltip>
+
+              {/* Push notifications button */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative h-9 w-9 rounded-lg hover:bg-accent"
+                    onClick={async () => {
+                      if (pushPermissionStatus === "denied") {
+                        toast.error("Notificações bloqueadas", {
+                          description: "Você bloqueou as notificações. Para ativá-las, acesse as configurações do navegador.",
+                        });
+                        return;
+                      }
+                      
+                      if (isPushEnabled) {
+                        disablePushNotifications();
+                        toast.info("Notificações desativadas");
+                      } else {
+                        const granted = await requestPushPermission();
+                        if (granted) {
+                          toast.success("Notificações ativadas!", {
+                            description: "Você receberá alertas mesmo quando a aba não estiver em foco.",
+                          });
+                        } else {
+                          toast.error("Não foi possível ativar notificações", {
+                            description: "Seu navegador pode não suportar notificações ou você negou a permissão.",
+                          });
+                        }
+                      }
+                    }}
+                  >
+                    {isPushEnabled ? (
+                      <BellRing className="h-4 w-4 text-green-500" />
+                    ) : pushPermissionStatus === "denied" ? (
+                      <BellOff className="h-4 w-4 text-red-500" />
+                    ) : (
+                      <Bell className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  {pushPermissionStatus === "denied"
+                    ? "Notificações bloqueadas - acesse configurações do navegador"
+                    : isPushEnabled
+                      ? "Notificações ativadas - clique para desativar"
+                      : "Clique para ativar notificações push"
                   }
                 </TooltipContent>
               </Tooltip>
