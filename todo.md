@@ -1881,3 +1881,6 @@
 - [x] Mostrar mensagem clara para o cliente quando restaurante está fechado
 - [x] Criar função getEstablishmentById no db.ts
 - [x] Invalidar cache do estabelecimento quando erro de "fechado" ocorrer
+
+## Ajuste: Nome do restaurante no topo do recibo
+- [x] Substituir "Cardápio" pelo nome do estabelecimento no recibo de impressão

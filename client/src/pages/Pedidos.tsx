@@ -347,7 +347,7 @@ export default function Pedidos() {
       <body>
         <div class="receipt">
           <div class="logo">
-            <h1>Cardápio</h1>
+            <h1>${establishment?.name || 'Cardápio'}</h1>
             <p>Sistema de Pedidos</p>
           </div>
           
