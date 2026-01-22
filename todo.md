@@ -1763,3 +1763,4 @@
 - [x] Corrigir formato do input para tRPC (wrapper json)
 - [x] Corrigir parsing da resposta para formato tRPC com superjson
 - [x] Buscar reviews tanto por telefone normalizado quanto original (compatibilidade)
+- [x] Corrigir frontend para enviar telefone original (não normalizado) para API canReview

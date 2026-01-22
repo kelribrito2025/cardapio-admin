@@ -444,19 +444,17 @@ export default function PublicMenu() {
     setCanReviewChecked(false);
     setCanReview(true); // Mostrar botão enquanto verifica (otimista)
     
-    // Normalizar telefone removendo caracteres especiais
-    const normalizedPhone = selectedOrder.customerPhone.replace(/[^0-9]/g, '');
-    
+    // Enviar telefone original para a API - a normalização é feita no backend
     // Verificar no backend se pode avaliar
     // tRPC espera o input no formato { json: { ... } }
     const url = `/api/trpc/publicMenu.canReview?input=${encodeURIComponent(JSON.stringify({
       json: {
         establishmentId: data.establishment.id,
-        customerPhone: normalizedPhone
+        customerPhone: selectedOrder.customerPhone
       }
     }))}`;
     
-    console.log('[canReview] Verificando se pode avaliar:', { establishmentId: data.establishment.id, customerPhone: normalizedPhone, originalPhone: selectedOrder.customerPhone });
+    console.log('[canReview] Verificando se pode avaliar:', { establishmentId: data.establishment.id, customerPhone: selectedOrder.customerPhone });
     
     fetch(url)
       .then(res => res.json())
