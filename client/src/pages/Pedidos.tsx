@@ -42,6 +42,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
+import { useNewOrders } from "@/contexts/NewOrdersContext";
 import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
@@ -179,11 +180,21 @@ export default function Pedidos() {
     { enabled: !!selectedOrder }
   );
 
+  // Hook para gerenciar contagem de pedidos novos na sidebar
+  const { decrementCount } = useNewOrders();
+
   const updateStatusMutation = trpc.orders.updateStatus.useMutation({
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       refetch();
       refetchAll();
       toast.success("Status atualizado");
+      
+      // Se o pedido estava como "new" e foi atualizado para outro status, decrementar o badge
+      // Verificamos se o status anterior era "new" buscando nos dados atuais
+      const order = allOrdersData?.orders?.find(o => o.id === variables.id);
+      if (order?.status === "new" && variables.status !== "new") {
+        decrementCount();
+      }
     },
     onError: () => toast.error("Erro ao atualizar status"),
   });

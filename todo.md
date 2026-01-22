@@ -1740,3 +1740,11 @@
 - [x] Garantir cleanup correto de listeners antigos quando modal fecha
 - [x] Garantir que callbacks sejam associados ao pedido correto
 - [x] Testar com múltiplos pedidos sequenciais
+
+## Bug: Badge de pedidos novos não atualiza na sidebar
+- [x] Badge não atualiza quando status do pedido muda de "Novo" para "Em preparo"
+- [x] Invalidar query de contagem quando status do pedido é atualizado
+
+## Bug: Regressão no SSE do modal de acompanhar pedido
+- [ ] Modal de acompanhar pedido parou de atualizar em tempo real após correção do badge
+- [ ] Investigar causa da regressão
