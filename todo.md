@@ -1798,3 +1798,10 @@
 - [x] Abrir modal de resumo do pedido automaticamente
 - [x] Botão adicionado em pedidos em andamento (ao lado de "Acompanhar")
 - [x] Botão adicionado no histórico (exceto pedidos cancelados)
+
+## Melhoria: Preencher dados do pedido anterior ao clicar em "Pedir novamente"
+- [x] Preencher tipo de entrega (pickup/delivery)
+- [x] Preencher forma de pagamento (cash/card/pix)
+- [x] Preencher nome e telefone do cliente
+- [x] Preencher endereço de entrega (se delivery)
+- [x] Preencher observação do pedido

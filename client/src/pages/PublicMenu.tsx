@@ -3260,7 +3260,7 @@ export default function PublicMenu() {
                                     onClick={() => {
                                       // Adicionar itens do pedido à sacola
                                       const newCartItems = order.items.map(item => ({
-                                        productId: 0, // ID genérico pois não temos o ID original
+                                        productId: 0,
                                         name: item.name,
                                         price: item.price,
                                         quantity: item.quantity,
@@ -3273,6 +3273,27 @@ export default function PublicMenu() {
                                         }))
                                       }));
                                       setCart(newCartItems);
+                                      
+                                      // Preencher dados do pedido anterior
+                                      setDeliveryType(order.deliveryType);
+                                      setPaymentMethod(order.paymentMethod);
+                                      setCustomerInfo({
+                                        name: order.customerName,
+                                        phone: order.customerPhone
+                                      });
+                                      setOrderObservation(order.observation || "");
+                                      
+                                      // Preencher endereço se for delivery
+                                      if (order.deliveryType === 'delivery' && order.address) {
+                                        setDeliveryAddress({
+                                          street: order.address.street || "",
+                                          number: order.address.number || "",
+                                          neighborhood: order.address.neighborhood || "",
+                                          complement: order.address.complement || "",
+                                          reference: order.address.reference || ""
+                                        });
+                                      }
+                                      
                                       setShowOrdersModal(false);
                                       // Abrir modal de resumo (checkout step 1)
                                       setCheckoutStep(1);
@@ -3372,6 +3393,27 @@ export default function PublicMenu() {
                                         }))
                                       }));
                                       setCart(newCartItems);
+                                      
+                                      // Preencher dados do pedido anterior
+                                      setDeliveryType(order.deliveryType);
+                                      setPaymentMethod(order.paymentMethod);
+                                      setCustomerInfo({
+                                        name: order.customerName,
+                                        phone: order.customerPhone
+                                      });
+                                      setOrderObservation(order.observation || "");
+                                      
+                                      // Preencher endereço se for delivery
+                                      if (order.deliveryType === 'delivery' && order.address) {
+                                        setDeliveryAddress({
+                                          street: order.address.street || "",
+                                          number: order.address.number || "",
+                                          neighborhood: order.address.neighborhood || "",
+                                          complement: order.address.complement || "",
+                                          reference: order.address.reference || ""
+                                        });
+                                      }
+                                      
                                       setShowOrdersModal(false);
                                       // Abrir modal de resumo (checkout step 1)
                                       setCheckoutStep(1);
