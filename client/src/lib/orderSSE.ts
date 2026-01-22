@@ -6,7 +6,7 @@
  * 2. Conexão só é aberta APÓS o pedido ser criado
  * 3. Reutiliza conexão existente se já estiver aberta
  * 4. Tratamento silencioso de erro 429 com reconexão após delay
- * 5. NÃO reconecta quando adiciona novo pedido se já conectado
+ * 5. Reconecta automaticamente quando novos pedidos são adicionados
  */
 
 type OrderStatus = "sent" | "accepted" | "delivering" | "delivered" | "cancelled";
@@ -26,13 +26,13 @@ class OrderSSEManager {
   private static instance: OrderSSEManager | null = null;
   private eventSource: EventSource | null = null;
   private connectedOrders: Set<string> = new Set();
-  private pendingOrders: Set<string> = new Set(); // Pedidos aguardando para serem adicionados
   private callbacks: Map<string, StatusUpdateCallback[]> = new Map();
   private reconnectTimeout: NodeJS.Timeout | null = null;
   private reconnectAttempts: number = 0;
   private maxReconnectAttempts: number = 5;
   private isConnecting: boolean = false;
   private lastConnectedOrdersHash: string = "";
+  private reconnectDebounceTimeout: NodeJS.Timeout | null = null;
 
   private constructor() {}
 
@@ -66,19 +66,21 @@ class OrderSSEManager {
 
   /**
    * Adiciona um pedido para ser monitorado
-   * Se já existe conexão ABERTA, apenas registra o callback (não reconecta)
+   * Se já existe conexão ABERTA, reconecta para incluir o novo pedido
    * Se não existe conexão, cria nova
    */
   trackOrder(orderNumber: string, callback: StatusUpdateCallback): void {
+    console.log(`[SSE-Public] trackOrder chamado para: ${orderNumber}`);
+    
     // Registrar callback para este pedido
     if (!this.callbacks.has(orderNumber)) {
       this.callbacks.set(orderNumber, []);
     }
     this.callbacks.get(orderNumber)!.push(callback);
     
-    // Se o pedido já está sendo monitorado, não precisa fazer nada
-    if (this.connectedOrders.has(orderNumber)) {
-      console.log(`[SSE-Public] Pedido ${orderNumber} já está sendo monitorado`);
+    // Se o pedido já está sendo monitorado na conexão atual, não precisa reconectar
+    if (this.connectedOrders.has(orderNumber) && this.lastConnectedOrdersHash.includes(orderNumber)) {
+      console.log(`[SSE-Public] Pedido ${orderNumber} já está sendo monitorado na conexão atual`);
       return;
     }
     
@@ -86,23 +88,34 @@ class OrderSSEManager {
     this.connectedOrders.add(orderNumber);
     console.log(`[SSE-Public] Adicionando pedido: ${orderNumber}. Total: ${this.connectedOrders.size}`);
     
-    // Se já está conectado e funcionando, NÃO reconectar
-    // O servidor pode não suportar atualização dinâmica de pedidos
-    // Mas registramos o callback para quando reconectar
-    if (this.isConnected()) {
-      console.log(`[SSE-Public] Conexão já ativa. Pedido ${orderNumber} será monitorado na próxima reconexão.`);
-      this.pendingOrders.add(orderNumber);
-      return;
+    // Agendar reconexão com debounce para evitar múltiplas reconexões
+    this.scheduleReconnect();
+  }
+
+  /**
+   * Agenda uma reconexão com debounce
+   * Isso evita múltiplas reconexões quando vários pedidos são adicionados em sequência
+   */
+  private scheduleReconnect(): void {
+    // Limpar timeout anterior se existir
+    if (this.reconnectDebounceTimeout) {
+      clearTimeout(this.reconnectDebounceTimeout);
     }
     
-    // Se está conectando, aguardar
-    if (this.isConnecting) {
-      console.log(`[SSE-Public] Já está conectando. Pedido ${orderNumber} será incluído.`);
-      return;
-    }
-    
-    // Conectar
-    this.connect();
+    // Agendar reconexão após 100ms
+    this.reconnectDebounceTimeout = setTimeout(() => {
+      this.reconnectDebounceTimeout = null;
+      
+      // Verificar se precisa reconectar
+      const currentHash = this.getOrdersHash();
+      if (currentHash !== this.lastConnectedOrdersHash) {
+        console.log(`[SSE-Public] Hash mudou, reconectando... (${this.lastConnectedOrdersHash} -> ${currentHash})`);
+        this.forceReconnect();
+      } else if (!this.isConnected() && !this.isConnecting) {
+        console.log(`[SSE-Public] Não conectado, iniciando conexão...`);
+        this.connect();
+      }
+    }, 100);
   }
 
   /**
@@ -110,10 +123,15 @@ class OrderSSEManager {
    * Usado para garantir que o callback sempre use os valores mais recentes das refs
    */
   updateCallback(orderNumber: string, callback: StatusUpdateCallback): void {
-    if (this.connectedOrders.has(orderNumber)) {
-      // Substituir todos os callbacks por um novo
-      this.callbacks.set(orderNumber, [callback]);
-      console.log(`[SSE-Public] Callback atualizado para pedido: ${orderNumber}`);
+    // Sempre registrar o callback, mesmo que o pedido não esteja em connectedOrders ainda
+    this.callbacks.set(orderNumber, [callback]);
+    console.log(`[SSE-Public] Callback atualizado para pedido: ${orderNumber}`);
+    
+    // Se o pedido não está sendo monitorado, adicionar
+    if (!this.connectedOrders.has(orderNumber)) {
+      this.connectedOrders.add(orderNumber);
+      console.log(`[SSE-Public] Pedido ${orderNumber} adicionado via updateCallback. Total: ${this.connectedOrders.size}`);
+      this.scheduleReconnect();
     }
   }
 
@@ -125,6 +143,8 @@ class OrderSSEManager {
   addCallback(orderNumber: string, callback: StatusUpdateCallback): () => void {
     console.log(`[SSE-Public] addCallback chamado para: ${orderNumber}`);
     console.log(`[SSE-Public] Estado atual - isConnected: ${this.isConnected()}, isConnecting: ${this.isConnecting}, connectedOrders: ${this.connectedOrders.size}`);
+    console.log(`[SSE-Public] Pedidos conectados: ${Array.from(this.connectedOrders).join(', ')}`);
+    console.log(`[SSE-Public] Hash atual: ${this.lastConnectedOrdersHash}`);
     
     if (!this.callbacks.has(orderNumber)) {
       this.callbacks.set(orderNumber, []);
@@ -140,14 +160,16 @@ class OrderSSEManager {
       console.log(`[SSE-Public] Pedido ${orderNumber} adicionado via addCallback. Total: ${this.connectedOrders.size}`);
     }
     
-    // SEMPRE verificar se precisa conectar/reconectar
-    // Isso é importante quando o usuário atualiza a página e abre o modal diretamente
-    // Mesmo que o pedido já esteja em connectedOrders, a conexão pode ter sido perdida
+    // Verificar se precisa conectar/reconectar
+    const currentHash = this.getOrdersHash();
     if (!this.isConnected() && !this.isConnecting) {
       console.log(`[SSE-Public] Conexão não ativa - iniciando conexão SSE via addCallback`);
       this.connect();
+    } else if (currentHash !== this.lastConnectedOrdersHash) {
+      console.log(`[SSE-Public] Hash diferente - reconectando para incluir pedido ${orderNumber}`);
+      this.scheduleReconnect();
     } else {
-      console.log(`[SSE-Public] Conexão já ativa ou em andamento`);
+      console.log(`[SSE-Public] Conexão já ativa com pedido ${orderNumber} incluído`);
     }
     
     // Retornar função de cleanup que remove apenas este callback específico
@@ -168,7 +190,6 @@ class OrderSSEManager {
    */
   untrackOrder(orderNumber: string): void {
     this.connectedOrders.delete(orderNumber);
-    this.pendingOrders.delete(orderNumber);
     this.callbacks.delete(orderNumber);
     console.log(`[SSE-Public] Removendo pedido: ${orderNumber}. Restantes: ${this.connectedOrders.size}`);
     
@@ -179,25 +200,16 @@ class OrderSSEManager {
   }
 
   /**
-   * Força reconexão com todos os pedidos (incluindo pendentes)
-   */
-  reconnectWithAllOrders(): void {
-    if (this.pendingOrders.size > 0) {
-      console.log(`[SSE-Public] Reconectando com ${this.pendingOrders.size} pedidos pendentes`);
-      this.pendingOrders.clear();
-      this.forceReconnect();
-    }
-  }
-
-  /**
    * Força reconexão
    */
   private forceReconnect(): void {
+    console.log('[SSE-Public] Forçando reconexão...');
     if (this.eventSource) {
       this.eventSource.close();
       this.eventSource = null;
     }
     this.isConnecting = false;
+    this.lastConnectedOrdersHash = "";
     this.connect();
   }
 
@@ -243,7 +255,7 @@ class OrderSSEManager {
     const orderNumbers = Array.from(this.connectedOrders).join(',');
     const url = `/api/orders/track/stream?orders=${encodeURIComponent(orderNumbers)}`;
     
-    console.log(`[SSE-Public] Conectando com ${this.connectedOrders.size} pedidos`);
+    console.log(`[SSE-Public] Conectando com ${this.connectedOrders.size} pedidos: ${orderNumbers}`);
     
     try {
       this.eventSource = new EventSource(url);
@@ -253,6 +265,7 @@ class OrderSSEManager {
         this.isConnecting = false;
         this.reconnectAttempts = 0;
         this.lastConnectedOrdersHash = this.getOrdersHash();
+        console.log(`[SSE-Public] Hash atualizado para: ${this.lastConnectedOrdersHash}`);
       });
 
       this.eventSource.addEventListener('order_status_update', (event) => {
@@ -298,6 +311,7 @@ class OrderSSEManager {
         this.isConnecting = false;
         this.reconnectAttempts = 0;
         this.lastConnectedOrdersHash = this.getOrdersHash();
+        console.log(`[SSE-Public] Hash atualizado para: ${this.lastConnectedOrdersHash}`);
       };
 
     } catch (error) {
@@ -347,6 +361,11 @@ class OrderSSEManager {
       clearTimeout(this.reconnectTimeout);
       this.reconnectTimeout = null;
     }
+    
+    if (this.reconnectDebounceTimeout) {
+      clearTimeout(this.reconnectDebounceTimeout);
+      this.reconnectDebounceTimeout = null;
+    }
 
     if (this.eventSource) {
       this.eventSource.close();
@@ -364,7 +383,6 @@ class OrderSSEManager {
   reset(): void {
     this.disconnect();
     this.connectedOrders.clear();
-    this.pendingOrders.clear();
     this.callbacks.clear();
   }
 
@@ -378,12 +396,13 @@ class OrderSSEManager {
   /**
    * Retorna status da conexão
    */
-  getStatus(): { connected: boolean; connecting: boolean; orders: number; attempts: number } {
+  getStatus(): { connected: boolean; connecting: boolean; orders: number; attempts: number; hash: string } {
     return {
       connected: this.isConnected(),
       connecting: this.isConnecting,
       orders: this.connectedOrders.size,
       attempts: this.reconnectAttempts,
+      hash: this.lastConnectedOrdersHash,
     };
   }
 }

@@ -1733,4 +1733,10 @@
 ## Correção SSE - Modal Aberto Depois (Atualização em Tempo Real)
 - [x] Servidor envia status atual de cada pedido quando cliente se conecta ao SSE
 - [x] Modal mostra status correto mesmo quando aberto muito tempo depois do pedido
-- [ ] Atualização em tempo real quando status muda enquanto modal está aberto
+- [x] Atualização em tempo real quando status muda enquanto modal está aberto
+
+## Bug: SSE para de funcionar após primeiros pedidos
+- [x] Corrigir acúmulo de callbacks no orderSSE.ts
+- [x] Garantir cleanup correto de listeners antigos quando modal fecha
+- [x] Garantir que callbacks sejam associados ao pedido correto
+- [x] Testar com múltiplos pedidos sequenciais
