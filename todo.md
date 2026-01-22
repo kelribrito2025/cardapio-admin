@@ -1696,3 +1696,7 @@
 ## Correção Final do Badge de Novos Pedidos
 - [ ] Investigar por que o badge não aparece após correções do modal
 - [ ] Garantir que ambas funcionalidades (badge e modal) funcionem simultaneamente
+
+## Correção do Modal Acompanhar Pedido (Atualização em Tempo Real)
+- [ ] Investigar por que o modal não atualiza quando status muda via página de pedidos
+- [ ] Corrigir lógica de atualização do modal via SSE

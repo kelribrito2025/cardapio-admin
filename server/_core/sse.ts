@@ -63,6 +63,8 @@ export function sendEvent(establishmentId: number, eventType: string, data: unkn
  * Envia evento de novo pedido
  */
 export function notifyNewOrder(establishmentId: number, order: unknown): void {
+  console.log(`[SSE] notifyNewOrder chamado para establishmentId: ${establishmentId}`);
+  console.log(`[SSE] Conexões ativas para este estabelecimento: ${connections.get(establishmentId)?.size || 0}`);
   sendEvent(establishmentId, "new_order", order);
 }
 
@@ -186,6 +188,8 @@ export function notifyOrderStatusUpdate(orderNumber: string, data: {
   updatedAt: Date;
   cancellationReason?: string | null;
 }): void {
+  console.log(`[SSE-Order] notifyOrderStatusUpdate chamado para orderNumber: ${orderNumber}, novo status: ${data.status}`);
+  console.log(`[SSE-Order] Conexões ativas para este pedido: ${orderConnections.get(orderNumber)?.size || 0}`);
   sendOrderEvent(orderNumber, "order_status_update", data);
 }
 

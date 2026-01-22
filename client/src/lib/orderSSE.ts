@@ -213,11 +213,16 @@ class OrderSSEManager {
         try {
           const data: OrderStatusUpdate = JSON.parse(event.data);
           console.log('[SSE-Public] Atualização recebida:', data.orderNumber, '->', data.status);
+          console.log('[SSE-Public] Callbacks registrados para este pedido:', this.callbacks.get(data.orderNumber)?.length || 0);
+          console.log('[SSE-Public] Todos os pedidos com callbacks:', Array.from(this.callbacks.keys()));
           
           // Notificar todos os callbacks registrados para este pedido
           const callbacks = this.callbacks.get(data.orderNumber);
           if (callbacks) {
+            console.log('[SSE-Public] Chamando', callbacks.length, 'callbacks para', data.orderNumber);
             callbacks.forEach(cb => cb(data));
+          } else {
+            console.log('[SSE-Public] NENHUM callback encontrado para', data.orderNumber);
           }
         } catch (e) {
           console.error('[SSE-Public] Erro ao processar evento:', e);
