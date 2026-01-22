@@ -918,11 +918,14 @@ export const appRouter = router({
           }
         }
         
+        // Normalizar telefone removendo caracteres especiais
+        const normalizedPhone = input.customerPhone.replace(/[^0-9]/g, '');
+        
         const reviewId = await db.createReview({
           establishmentId: input.establishmentId,
           orderId: input.orderId || null,
           customerName: input.customerName,
-          customerPhone: input.customerPhone,
+          customerPhone: normalizedPhone,
           rating: input.rating,
           comment: input.comment || null,
         });

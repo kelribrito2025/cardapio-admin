@@ -1757,3 +1757,9 @@
 - [x] Botão "Avaliar restaurante" não aparece quando pedido é entregue para novos clientes
 - [x] Investigar lógica de canReview e canReviewChecked
 - [x] Melhorar tratamento de resposta da API canReview com fallback para permitir avaliar
+
+## Bug: Erro 400 na API canReview por caracteres especiais no telefone
+- [x] Normalizar telefone removendo caracteres especiais antes de enviar para API canReview
+- [x] Corrigir formato do input para tRPC (wrapper json)
+- [x] Corrigir parsing da resposta para formato tRPC com superjson
+- [x] Buscar reviews tanto por telefone normalizado quanto original (compatibilidade)

@@ -444,13 +444,19 @@ export default function PublicMenu() {
     setCanReviewChecked(false);
     setCanReview(true); // Mostrar botão enquanto verifica (otimista)
     
+    // Normalizar telefone removendo caracteres especiais
+    const normalizedPhone = selectedOrder.customerPhone.replace(/[^0-9]/g, '');
+    
     // Verificar no backend se pode avaliar
+    // tRPC espera o input no formato { json: { ... } }
     const url = `/api/trpc/publicMenu.canReview?input=${encodeURIComponent(JSON.stringify({
-      establishmentId: data.establishment.id,
-      customerPhone: selectedOrder.customerPhone
+      json: {
+        establishmentId: data.establishment.id,
+        customerPhone: normalizedPhone
+      }
     }))}`;
     
-    console.log('[canReview] Verificando se pode avaliar:', { establishmentId: data.establishment.id, customerPhone: selectedOrder.customerPhone });
+    console.log('[canReview] Verificando se pode avaliar:', { establishmentId: data.establishment.id, customerPhone: normalizedPhone, originalPhone: selectedOrder.customerPhone });
     
     fetch(url)
       .then(res => res.json())
@@ -466,12 +472,22 @@ export default function PublicMenu() {
         // Tentar extrair canReview de diferentes estruturas de resposta
         let canReviewValue = true; // Default: permitir avaliar
         
-        if (result?.result?.data?.canReview !== undefined) {
+        // tRPC com superjson retorna: result.result.data.json.canReview
+        if (result?.result?.data?.json?.canReview !== undefined) {
+          canReviewValue = result.result.data.json.canReview;
+          console.log('[canReview] Encontrado em result.result.data.json.canReview');
+        } else if (result?.result?.data?.canReview !== undefined) {
           canReviewValue = result.result.data.canReview;
+          console.log('[canReview] Encontrado em result.result.data.canReview');
+        } else if (result?.data?.json?.canReview !== undefined) {
+          canReviewValue = result.data.json.canReview;
+          console.log('[canReview] Encontrado em result.data.json.canReview');
         } else if (result?.data?.canReview !== undefined) {
           canReviewValue = result.data.canReview;
+          console.log('[canReview] Encontrado em result.data.canReview');
         } else if (result?.canReview !== undefined) {
           canReviewValue = result.canReview;
+          console.log('[canReview] Encontrado em result.canReview');
         } else {
           console.log('[canReview] Estrutura de resposta não reconhecida, permitindo avaliar');
         }

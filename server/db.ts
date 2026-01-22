@@ -1,4 +1,4 @@
-import { eq, desc, asc, and, like, sql, gte, lte } from "drizzle-orm";
+import { eq, desc, asc, and, like, sql, gte, lte, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate } from "./_core/sse";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
@@ -1479,11 +1479,18 @@ export async function getLastReviewByCustomer(establishmentId: number, customerP
   const db = await getDb();
   if (!db) return null;
   
+  // Normalizar telefone removendo caracteres especiais
+  const normalizedPhone = customerPhone.replace(/[^0-9]/g, '');
+  
+  // Buscar tanto pelo telefone normalizado quanto pelo original (para compatibilidade com dados antigos)
   const result = await db.select().from(reviews)
     .where(
       and(
         eq(reviews.establishmentId, establishmentId),
-        eq(reviews.customerPhone, customerPhone)
+        or(
+          eq(reviews.customerPhone, normalizedPhone),
+          eq(reviews.customerPhone, customerPhone)
+        )
       )
     )
     .orderBy(desc(reviews.createdAt))
