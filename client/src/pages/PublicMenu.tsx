@@ -2697,18 +2697,9 @@ export default function PublicMenu() {
                     <h3 className="text-2xl font-bold text-red-600 mb-4">
                       Não foi possível enviar o pedido
                     </h3>
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-gray-600">
                       {orderError}
                     </p>
-                    <button
-                      onClick={() => {
-                        setOrderError(null);
-                        setCheckoutStep(1);
-                      }}
-                      className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors"
-                    >
-                      Voltar ao carrinho
-                    </button>
                   </div>
                 ) : !orderSent ? (
                   <div className="text-center py-8">
