@@ -2,7 +2,7 @@ import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, Bike, Copy, Loader2, Eye } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, Bike, Copy, Loader2, Eye, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -3243,18 +3243,46 @@ export default function PublicMenu() {
                                     </div>
                                   ))}
                                 </div>
-                                <button
-                                  onClick={() => {
-                                    setSelectedOrderId(order.id);
-                                    setCurrentOrderNumber(order.id);
-                                    setShowOrdersModal(false);
-                                    setShowTrackingModal(true);
-                                  }}
-                                  className="mt-3 w-full py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
-                                >
-                                  <Clock className="h-4 w-4" />
-                                  Acompanhar pedido
-                                </button>
+                                <div className="flex gap-2 mt-3">
+                                  <button
+                                    onClick={() => {
+                                      setSelectedOrderId(order.id);
+                                      setCurrentOrderNumber(order.id);
+                                      setShowOrdersModal(false);
+                                      setShowTrackingModal(true);
+                                    }}
+                                    className="flex-1 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+                                  >
+                                    <Clock className="h-4 w-4" />
+                                    Acompanhar
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      // Adicionar itens do pedido à sacola
+                                      const newCartItems = order.items.map(item => ({
+                                        productId: 0, // ID genérico pois não temos o ID original
+                                        name: item.name,
+                                        price: item.price,
+                                        quantity: item.quantity,
+                                        observation: "",
+                                        image: null,
+                                        complements: item.complements.map((c, idx) => ({
+                                          id: idx,
+                                          name: c.name,
+                                          price: c.price
+                                        }))
+                                      }));
+                                      setCart(newCartItems);
+                                      setShowOrdersModal(false);
+                                      // Abrir modal de resumo (checkout step 1)
+                                      setCheckoutStep(1);
+                                    }}
+                                    className="flex-1 py-2 bg-green-500 text-white text-sm font-medium rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+                                  >
+                                    <RefreshCw className="h-4 w-4" />
+                                    Pedir novamente
+                                  </button>
+                                </div>
                               </div>
                             )}
                           </div>
@@ -3325,6 +3353,35 @@ export default function PublicMenu() {
                                     </div>
                                   ))}
                                 </div>
+                                {/* Botão Pedir novamente - apenas para pedidos não cancelados */}
+                                {order.status !== 'cancelled' && (
+                                  <button
+                                    onClick={() => {
+                                      // Adicionar itens do pedido à sacola
+                                      const newCartItems = order.items.map(item => ({
+                                        productId: 0,
+                                        name: item.name,
+                                        price: item.price,
+                                        quantity: item.quantity,
+                                        observation: "",
+                                        image: null,
+                                        complements: item.complements.map((c, idx) => ({
+                                          id: idx,
+                                          name: c.name,
+                                          price: c.price
+                                        }))
+                                      }));
+                                      setCart(newCartItems);
+                                      setShowOrdersModal(false);
+                                      // Abrir modal de resumo (checkout step 1)
+                                      setCheckoutStep(1);
+                                    }}
+                                    className="mt-3 w-full py-2 bg-green-500 text-white text-sm font-medium rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+                                  >
+                                    <RefreshCw className="h-4 w-4" />
+                                    Pedir novamente
+                                  </button>
+                                )}
                               </div>
                             )}
                           </div>

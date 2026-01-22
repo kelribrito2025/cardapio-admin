@@ -1791,3 +1791,10 @@
 ## Bug: Modal de cupom aparece atrás do modal da sacola
 - [x] Aumentar z-index do modal de cupom para aparecer na frente da sacola
 - [x] Solução: Alterado z-index de z-[100] para z-[110]
+
+## Feature: Botão "Pedir novamente" no modal de pedidos
+- [x] Adicionar botão "Pedir novamente" no modal de detalhes do pedido
+- [x] Ao clicar, adicionar itens do pedido à sacola
+- [x] Abrir modal de resumo do pedido automaticamente
+- [x] Botão adicionado em pedidos em andamento (ao lado de "Acompanhar")
+- [x] Botão adicionado no histórico (exceto pedidos cancelados)
