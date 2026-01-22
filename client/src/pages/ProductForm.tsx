@@ -838,7 +838,7 @@ export default function ProductForm() {
                       </p>
                     )}
                     <p className="text-lg font-bold text-primary">
-                      {formatCurrency(price)}
+                      {formatCurrency(parseFloat(price.replace(',', '.')) || 0)}
                     </p>
 
                     {/* Preview dos Complementos com Interação */}
@@ -940,7 +940,7 @@ export default function ProductForm() {
                           <span className="text-sm font-medium text-muted-foreground">Total estimado:</span>
                           <span className="text-lg font-bold text-primary">
                             {formatCurrency(
-                              price + 
+                              (parseFloat(price.replace(',', '.')) || 0) + 
                               Object.entries(previewSelections).reduce((total, [groupIdx, itemIndices]) => {
                                 const group = complementGroups[parseInt(groupIdx)];
                                 if (!group) return total;

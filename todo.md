@@ -1910,3 +1910,4 @@
 - [x] Implementar interação no preview para simular seleção de itens como o cliente
 - [x] Calcular total dinâmico no preview conforme itens são selecionados
 - [x] Adicionar scroll automático no preview quando o conteúdo for muito longo
+- [x] Corrigir preço do produto no preview mostrando R$ 0,00 em vez do valor digitado
