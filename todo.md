@@ -1822,3 +1822,9 @@
 - [x] Garantir que área de clique para fechar fique visível
 - [x] Solução: Adicionado padding p-4 pt-16 no container para deixar espaço no topo
 - [x] Backdrop agora fecha o modal ao clicar
+
+## Ajuste: Modal de Meus Pedidos como bottom sheet
+- [x] Manter modal ancorado na parte inferior (bottom sheet)
+- [x] Adicionar espaço no topo para área clicável de fechar (max-h-[80vh])
+- [x] Manter altura máxima para não ocupar tela toda
+- [x] Cantos arredondados apenas no topo no mobile (rounded-t-2xl)
