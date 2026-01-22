@@ -67,12 +67,32 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [searchQuery, setSearchQuery] = useState("");
   
   // Estado local para controlar se o som está habilitado (sincronizado com localStorage)
+  // IMPORTANTE: O padrão é FALSE (desativado) até o usuário clicar para ativar
   const [isSoundEnabled, setIsSoundEnabled] = useState(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("notificationSoundEnabled") !== "false";
+      // Só retorna true se explicitamente definido como "true"
+      return localStorage.getItem("notificationSoundEnabled") === "true";
     }
-    return true;
+    return false;
   });
+  
+  // Sincronizar estado com localStorage quando o componente monta ou navega
+  useEffect(() => {
+    const syncSoundState = () => {
+      const storedValue = localStorage.getItem("notificationSoundEnabled");
+      const shouldBeEnabled = storedValue === "true";
+      if (isSoundEnabled !== shouldBeEnabled) {
+        setIsSoundEnabled(shouldBeEnabled);
+      }
+    };
+    
+    // Sincronizar imediatamente
+    syncSoundState();
+    
+    // Ouvir mudanças no localStorage (para sincronizar entre abas)
+    window.addEventListener("storage", syncSoundState);
+    return () => window.removeEventListener("storage", syncSoundState);
+  }, []);
   
   // Sidebar collapsed state with localStorage persistence
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {

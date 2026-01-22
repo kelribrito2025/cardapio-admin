@@ -16,9 +16,11 @@ class NotificationAudioManager {
   }
 
   // Verificar se o som está habilitado nas configurações
+  // IMPORTANTE: O padrão é FALSE (desativado) até o usuário clicar para ativar
   private isSoundEnabled(): boolean {
     const soundEnabled = localStorage.getItem("notificationSoundEnabled");
-    return soundEnabled !== "false";
+    // Só retorna true se explicitamente definido como "true"
+    return soundEnabled === "true";
   }
 
   static getInstance(): NotificationAudioManager {
