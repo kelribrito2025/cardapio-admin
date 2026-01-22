@@ -1841,3 +1841,10 @@
 - [x] Solução: Adicionado método isSoundEnabled() no NotificationAudioManager
 - [x] Verificação do localStorage antes de tocar pendingPlay
 - [x] Limpa pendingPlay mesmo quando som está desabilitado
+
+## Bug persistente: Som ainda toca quando desativado
+- [x] Investigar todos os pontos onde playNotificationSound é chamado
+- [x] Verificar se há outro lugar tocando o som além do NotificationAudioManager
+- [x] Corrigir definitivamente
+- [x] Causa: Pedidos.tsx tinha código duplicado tocando som diretamente sem verificar preferência
+- [x] Solução: Removido código duplicado em Pedidos.tsx, som agora é gerenciado apenas pelo NewOrdersContext

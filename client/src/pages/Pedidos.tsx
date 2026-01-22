@@ -119,12 +119,8 @@ export default function Pedidos() {
     // Atualizar cache do tRPC quando novo pedido chegar
     refetch();
     refetchAll();
-    // Tocar som de notificação
-    try {
-      const audio = new Audio('/notification.mp3');
-      audio.volume = 0.5;
-      audio.play().catch(() => {});
-    } catch {}
+    // Som de notificação é gerenciado pelo NewOrdersContext
+    // Não tocar som aqui para evitar duplicação e respeitar preferência do usuário
     toast.success("Novo pedido recebido!", {
       description: "Um novo pedido acabou de chegar.",
       duration: 5000,
