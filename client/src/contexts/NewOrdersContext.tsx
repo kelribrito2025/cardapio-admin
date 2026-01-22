@@ -33,11 +33,6 @@ class NotificationAudioManager {
     const unlockAudio = () => {
       if (this.isUnlocked) return;
       
-      // Não desbloquear áudio no menu público
-      if (window.location.pathname.startsWith('/menu/')) {
-        return;
-      }
-      
       if (this.audio) {
         // Tocar e pausar imediatamente para desbloquear
         const playPromise = this.audio.play();
@@ -50,12 +45,9 @@ class NotificationAudioManager {
               console.log("[NotificationAudio] Áudio desbloqueado com sucesso!");
               
               // Se tinha um play pendente, executar agora
-              // Mas só se não estiver no menu público
-              if (this.pendingPlay && !window.location.pathname.startsWith('/menu/')) {
+              if (this.pendingPlay) {
                 this.pendingPlay = false;
                 this.play();
-              } else {
-                this.pendingPlay = false; // Limpar pendingPlay mesmo no menu público
               }
             })
             .catch(() => {
@@ -73,12 +65,6 @@ class NotificationAudioManager {
   }
 
   play() {
-    // Não tocar som no menu público
-    if (window.location.pathname.startsWith('/menu/')) {
-      console.log("[NotificationAudio] Som bloqueado - usuário no menu público");
-      return;
-    }
-    
     // Verificar se o som está habilitado nas configurações
     const soundEnabled = localStorage.getItem("notificationSoundEnabled");
     if (soundEnabled === "false") return;

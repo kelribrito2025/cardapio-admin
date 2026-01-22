@@ -1791,11 +1791,3 @@
 ## Bug: Modal de cupom aparece atrás do modal da sacola
 - [x] Aumentar z-index do modal de cupom para aparecer na frente da sacola
 - [x] Solução: Alterado z-index de z-[100] para z-[110]
-
-## Bug: Som toca ao atualizar página do menu público
-- [x] Investigar por que o som toca ao dar refresh no menu público
-- [x] Corrigir para não tocar som no menu público em nenhuma situação
-- [x] Solução: Adicionada verificação de rota em 3 pontos do NotificationAudioManager:
-  - unlockAudio(): não desbloqueia áudio no menu público
-  - pendingPlay: não toca som pendente no menu público
-  - play(): bloqueia qualquer tentativa de tocar som no menu público
