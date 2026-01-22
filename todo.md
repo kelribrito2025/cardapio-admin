@@ -1897,3 +1897,4 @@
 - [x] Adicionar ícone de lápis ao lado direito do nome das categorias na página de Catálogo
 - [x] Adicionar funcionalidade de excluir categorias na página de Catálogo
 - [x] Usar imagem placeholder igual à do perfil do restaurante para itens do catálogo sem foto
+- [x] Aplicar mesmo estilo de placeholder de imagem do catálogo aos produtos sem foto no cardápio público

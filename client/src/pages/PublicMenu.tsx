@@ -2,7 +2,7 @@ import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -3976,8 +3976,8 @@ function ProductCard({
             )}
           </div>
         </div>
-        {mainImage && (
-          <div className="w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
+        <div className="w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
+          {mainImage ? (
             <img
               src={mainImage}
               alt={product.name}
@@ -3985,8 +3985,12 @@ function ProductCard({
               decoding="async"
               className="w-full h-full object-cover rounded-r-lg"
             />
-          </div>
-        )}
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center rounded-r-lg">
+              <UtensilsCrossed className="h-6 w-6 md:h-8 md:w-8 text-white" />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
