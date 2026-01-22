@@ -205,13 +205,22 @@ export default function Pedidos() {
       return;
     }
     
-    const itemsHtml = orderDetails.items?.map(item => `
-      <tr>
-        <td style="padding: 4px 0; border-bottom: 1px dashed #ccc;">${item.quantity}x ${item.productName}</td>
-        <td style="padding: 4px 0; border-bottom: 1px dashed #ccc; text-align: right;">R$ ${Number(item.totalPrice).toFixed(2).replace('.', ',')}</td>
-      </tr>
-      ${item.notes ? `<tr><td colspan="2" style="padding: 2px 0 4px 16px; font-size: 11px; color: #666;">Obs: ${item.notes}</td></tr>` : ''}
-    `).join('') || '';
+    // Gerar HTML dos itens com adicionais e observações
+    const itemsHtml = orderDetails.items?.map(item => {
+      const unitPrice = Number(item.totalPrice) / item.quantity;
+      return `
+        <div class="item">
+          <div class="item-header">
+            <span class="item-qty">${item.quantity}x ${item.productName}</span>
+            <span class="item-price">R$ ${Number(item.totalPrice).toFixed(2).replace('.', ',')}</span>
+          </div>
+          ${item.notes ? `<div class="item-obs">Obs: ${item.notes}</div>` : ''}
+        </div>
+      `;
+    }).join('') || '';
+    
+    // Calcular desconto se houver cupom
+    const discount = orderDetails.discount ? Number(orderDetails.discount) : 0;
     
     const printContent = `
       <!DOCTYPE html>
@@ -220,63 +229,205 @@ export default function Pedidos() {
         <title>Pedido #${orderDetails.orderNumber}</title>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: 'Courier New', monospace; font-size: 12px; padding: 10px; max-width: 300px; margin: 0 auto; }
-          .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 10px; }
-          .header h1 { font-size: 16px; margin-bottom: 4px; }
-          .header p { font-size: 11px; color: #666; }
-          .section { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #ccc; }
-          .section-title { font-weight: bold; font-size: 11px; text-transform: uppercase; margin-bottom: 6px; }
-          .info-row { display: flex; justify-content: space-between; margin-bottom: 2px; }
-          .info-label { color: #666; }
-          table { width: 100%; border-collapse: collapse; }
-          .total-row { font-weight: bold; font-size: 14px; border-top: 2px solid #000; padding-top: 6px; margin-top: 6px; }
-          .footer { text-align: center; margin-top: 15px; font-size: 10px; color: #666; }
-          @media print { body { padding: 0; } }
+          body { 
+            font-family: Arial, sans-serif; 
+            font-size: 13px; 
+            padding: 20px; 
+            max-width: 320px; 
+            margin: 0 auto; 
+            background: #f5f5f0;
+            color: #333;
+          }
+          .receipt {
+            background: #f5f5f0;
+            padding: 10px;
+          }
+          .logo {
+            text-align: center;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+          }
+          .logo h1 {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;
+            letter-spacing: 1px;
+          }
+          .logo p {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 2px;
+          }
+          .order-info {
+            margin-bottom: 15px;
+          }
+          .order-info h2 {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 2px;
+          }
+          .order-info p {
+            font-size: 12px;
+            color: #666;
+          }
+          .divider {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 12px 0;
+          }
+          .divider-dashed {
+            border: none;
+            border-top: 1px dashed #bbb;
+            margin: 10px 0;
+          }
+          .item {
+            margin-bottom: 10px;
+          }
+          .item-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 500;
+          }
+          .item-obs {
+            font-size: 11px;
+            color: #666;
+            margin-top: 2px;
+            padding-left: 5px;
+          }
+          .totals {
+            margin: 15px 0;
+          }
+          .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 13px;
+          }
+          .total-row.final {
+            font-weight: bold;
+            font-size: 15px;
+            margin-top: 8px;
+          }
+          .section {
+            margin: 15px 0;
+          }
+          .section-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 6px;
+          }
+          .section-content {
+            font-size: 13px;
+            color: #444;
+            line-height: 1.4;
+          }
+          .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ccc;
+          }
+          .footer p {
+            font-size: 11px;
+            color: #666;
+          }
+          @media print { 
+            body { 
+              padding: 0; 
+              background: white;
+            }
+            .receipt {
+              background: white;
+            }
+          }
         </style>
       </head>
       <body>
-        <div class="header">
-          <h1>PEDIDO #${orderDetails.orderNumber}</h1>
-          <p>${format(new Date(orderDetails.createdAt), "dd/MM/yyyy HH:mm")}</p>
-        </div>
-        
-        <div class="section">
-          <div class="section-title">Cliente</div>
-          <div class="info-row"><span class="info-label">Nome:</span><span>${orderDetails.customerName || 'Não informado'}</span></div>
-          ${orderDetails.customerPhone ? `<div class="info-row"><span class="info-label">Tel:</span><span>${orderDetails.customerPhone}</span></div>` : ''}
-        </div>
-        
-        <div class="section">
-          <div class="section-title">Entrega</div>
-          <div class="info-row"><span class="info-label">Tipo:</span><span>${orderDetails.deliveryType === 'delivery' ? 'Entrega' : 'Retirada'}</span></div>
-          ${orderDetails.customerAddress ? `<div class="info-row"><span class="info-label">End:</span><span style="text-align: right; max-width: 180px;">${orderDetails.customerAddress}</span></div>` : ''}
-        </div>
-        
-        <div class="section">
-          <div class="section-title">Itens</div>
-          <table>${itemsHtml}</table>
-        </div>
-        
-        <div class="section">
-          <div class="info-row"><span>Subtotal:</span><span>R$ ${Number(orderDetails.subtotal).toFixed(2).replace('.', ',')}</span></div>
-          ${Number(orderDetails.deliveryFee) > 0 ? `<div class="info-row"><span>Taxa Entrega:</span><span>R$ ${Number(orderDetails.deliveryFee).toFixed(2).replace('.', ',')}</span></div>` : ''}
-          <div class="info-row total-row"><span>TOTAL:</span><span>R$ ${Number(orderDetails.total).toFixed(2).replace('.', ',')}</span></div>
-        </div>
-        
-        <div class="section">
-          <div class="section-title">Pagamento</div>
-          <div class="info-row"><span class="info-label">Método:</span><span>${paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</span></div>
-        </div>
-        
-        ${orderDetails.notes ? `
-        <div class="section">
-          <div class="section-title">Observações</div>
-          <p>${orderDetails.notes}</p>
-        </div>
-        ` : ''}
-        
-        <div class="footer">
-          <p>Obrigado pela preferência!</p>
+        <div class="receipt">
+          <div class="logo">
+            <h1>Cardápio</h1>
+            <p>Sistema de Pedidos</p>
+          </div>
+          
+          <div class="order-info">
+            <h2>Pedido #${orderDetails.orderNumber}</h2>
+            <p>Realizado em: ${format(new Date(orderDetails.createdAt), "dd/MM/yyyy")} - ${format(new Date(orderDetails.createdAt), "HH:mm")}</p>
+          </div>
+          
+          <hr class="divider">
+          
+          <div class="items">
+            ${itemsHtml}
+          </div>
+          
+          <hr class="divider-dashed">
+          
+          <div class="totals">
+            <div class="total-row">
+              <span>Valor dos produtos</span>
+              <span>R$ ${Number(orderDetails.subtotal).toFixed(2).replace('.', ',')}</span>
+            </div>
+            ${discount > 0 ? `
+            <div class="total-row">
+              <span>Descontos</span>
+              <span>- R$ ${discount.toFixed(2).replace('.', ',')}</span>
+            </div>
+            ` : ''}
+            ${Number(orderDetails.deliveryFee) > 0 ? `
+            <div class="total-row">
+              <span>Taxa de entrega</span>
+              <span>R$ ${Number(orderDetails.deliveryFee).toFixed(2).replace('.', ',')}</span>
+            </div>
+            ` : ''}
+            <div class="total-row final">
+              <span>Total</span>
+              <span>R$ ${Number(orderDetails.total).toFixed(2).replace('.', ',')}</span>
+            </div>
+          </div>
+          
+          ${orderDetails.notes ? `
+          <hr class="divider">
+          <div class="section">
+            <div class="section-title">Observações:</div>
+            <div class="section-content">${orderDetails.notes}</div>
+          </div>
+          ` : ''}
+          
+          <hr class="divider">
+          
+          <div class="section">
+            <div class="section-title">Entrega</div>
+            <div class="section-content">
+              ${orderDetails.deliveryType === 'delivery' ? 
+                (orderDetails.customerAddress || 'Endereço não informado') : 
+                'Retirada no local'
+              }
+            </div>
+          </div>
+          
+          <hr class="divider">
+          
+          <div class="section">
+            <div class="section-title">Forma de pagamento</div>
+            <div class="section-content">${paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</div>
+          </div>
+          
+          <hr class="divider">
+          
+          <div class="section">
+            <div class="section-title">Cliente</div>
+            <div class="section-content">
+              ${orderDetails.customerName || 'Não informado'}<br>
+              ${orderDetails.customerPhone || ''}
+            </div>
+          </div>
+          
+          <div class="footer">
+            <p>Pedido realizado via Cardápio Admin</p>
+            <p>manus.space</p>
+          </div>
         </div>
         
         <script>

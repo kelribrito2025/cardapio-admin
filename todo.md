@@ -1863,3 +1863,14 @@
 - [x] Criar função de impressão específica para o pedido
 - [x] Imprimir apenas: número do pedido, itens, preços, total, dados do cliente
 - [x] Formato de cupom/recibo para impressora térmica (300px largura, fonte Courier)
+
+## Melhoria: Novo layout do recibo de impressão
+- [x] Logo do estabelecimento no topo (Cardápio - Sistema de Pedidos)
+- [x] Pedido # com data/hora
+- [x] Itens com adicionais e observações individuais
+- [x] Valores: subtotal, desconto, taxa entrega, total
+- [x] Seção Observações gerais
+- [x] Seção Entrega com endereço completo
+- [x] Seção Forma de pagamento
+- [x] Seção Cliente com nome e telefone
+- [x] Footer com nome do sistema (manus.space)
