@@ -196,47 +196,58 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           "flex items-center h-[58px] border-b border-sidebar-border transition-all duration-300",
           sidebarCollapsed ? "justify-center px-2" : "justify-between px-4"
         )}>
-          <Link href="/" className="flex items-center gap-3">
-            {establishment?.logo ? (
-              <img 
-                src={establishment.logo} 
-                alt={establishment.name || "Logo"}
-                className="h-8 w-8 rounded-lg object-cover flex-shrink-0"
-              />
-            ) : (
-              <div className="p-1.5 bg-primary rounded-lg flex-shrink-0">
-                <Store className="h-4 w-4 text-primary-foreground" />
+          {/* Quando colapsado, mostrar apenas o botão de expandir */}
+          {sidebarCollapsed ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={toggleSidebarCollapsed}
+                  className="p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500 hover:text-gray-700"
+                >
+                  <PanelLeft className="h-5 w-5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>Abrir barra lateral</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <>
+              <Link href="/" className="flex items-center gap-3">
+                {establishment?.logo ? (
+                  <img 
+                    src={establishment.logo} 
+                    alt={establishment.name || "Logo"}
+                    className="h-8 w-8 rounded-lg object-cover flex-shrink-0"
+                  />
+                ) : (
+                  <div className="p-1.5 bg-primary rounded-lg flex-shrink-0">
+                    <Store className="h-4 w-4 text-primary-foreground" />
+                  </div>
+                )}
+                <span className="font-semibold text-base text-gray-800 whitespace-nowrap truncate max-w-[140px]">
+                  {establishment?.name || "Cardápio"}
+                </span>
+              </Link>
+              <div className="flex items-center gap-1">
+                {/* Toggle button - Desktop only */}
+                <button
+                  onClick={toggleSidebarCollapsed}
+                  className="hidden lg:flex p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500 hover:text-gray-700"
+                  title="Minimizar menu"
+                >
+                  <PanelLeftClose className="h-5 w-5" />
+                </button>
+                {/* Close button - Mobile only */}
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                >
+                  <X className="h-5 w-5 text-gray-600" />
+                </button>
               </div>
-            )}
-            {!sidebarCollapsed && (
-              <span className="font-semibold text-base text-gray-800 whitespace-nowrap truncate max-w-[140px]">
-                {establishment?.name || "Cardápio"}
-              </span>
-            )}
-          </Link>
-          <div className="flex items-center gap-1">
-            {/* Toggle button - Desktop only */}
-            <button
-              onClick={toggleSidebarCollapsed}
-              className="hidden lg:flex p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500 hover:text-gray-700"
-              title={sidebarCollapsed ? "Expandir menu" : "Minimizar menu"}
-            >
-              {sidebarCollapsed ? (
-                <ChevronRight className="h-4 w-4" />
-              ) : (
-                <PanelLeftClose className="h-5 w-5" />
-              )}
-            </button>
-            {/* Close button - Mobile only */}
-            {!sidebarCollapsed && (
-              <button
-                onClick={() => setSidebarOpen(false)}
-                className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors"
-              >
-                <X className="h-5 w-5 text-gray-600" />
-              </button>
-            )}
-          </div>
+            </>
+          )}
         </div>
 
 
