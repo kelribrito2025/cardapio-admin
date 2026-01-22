@@ -181,7 +181,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border transition-all duration-300 ease-in-out lg:translate-x-0 flex flex-col",
+          "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col",
           sidebarWidth,
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
           "lg:translate-x-0"
@@ -193,7 +193,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       >
         {/* Logo + Toggle button na mesma linha */}
         <div className={cn(
-          "flex items-center h-[58px] border-b border-sidebar-border transition-all duration-300",
+          "flex items-center h-[58px] border-b border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
           sidebarCollapsed ? "justify-center px-2" : "justify-between px-4"
         )}>
           {/* Quando colapsado, mostrar apenas o botão de expandir */}
@@ -254,7 +254,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Navigation */}
         <nav className={cn(
-          "flex-1 py-1.5 space-y-1 overflow-y-auto",
+          "flex-1 py-1.5 space-y-1 overflow-y-auto transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
           sidebarCollapsed ? "px-1.5" : "px-3"
         )}>
           {navItems.map((item) => {
@@ -294,7 +294,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             );
 
             const navClassName = cn(
-              "flex items-center gap-2.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+              "flex items-center gap-2.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
               sidebarCollapsed ? "px-0 justify-center" : "px-3",
               isActive
                 ? "bg-primary text-white shadow-md shadow-primary/20"
@@ -384,7 +384,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       </aside>
 
       {/* Main content */}
-      <div className={cn("transition-all duration-300 ease-in-out", mainPadding)}>
+      <div className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]", mainPadding)}>
         {/* Topbar */}
         <header className="sticky top-0 z-30 h-[58px] bg-card/80 backdrop-blur-md border-b border-border/50">
           <div className="flex items-center justify-between h-full px-3 lg:px-6">

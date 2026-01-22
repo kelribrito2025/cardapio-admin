@@ -1902,3 +1902,4 @@
 - [x] Aplicar placeholder de imagem no modal de detalhes do produto no cardápio público
 - [x] Adicionar animação de pulso suave ao ícone do placeholder de produtos sem foto
 - [x] Corrigir barra lateral minimizada para mostrar apenas ícone de abrir, sem a foto do restaurante
+- [x] Adicionar animação de transição suave ao expandir e recolher a barra lateral
