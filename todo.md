@@ -1772,3 +1772,8 @@
 - [x] Adicionar opção para ativar/desativar som nas configurações
 - [x] Corrigir notificação sonora no mobile (autoplay bloqueado)
 - [x] Adicionar botão de ativação de som no header do admin
+
+## Bug: Ícone de som não atualiza corretamente
+- [x] Mobile: ícone permanece o mesmo ao ativar/desativar
+- [x] Desktop: ícone de som ligado permanece após desativar
+- [x] Solução: Adicionado estado local isSoundEnabled sincronizado com localStorage

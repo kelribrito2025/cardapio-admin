@@ -66,6 +66,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   
+  // Estado local para controlar se o som está habilitado (sincronizado com localStorage)
+  const [isSoundEnabled, setIsSoundEnabled] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("notificationSoundEnabled") !== "false";
+    }
+    return true;
+  });
+  
   // Sidebar collapsed state with localStorage persistence
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window !== "undefined") {
@@ -400,30 +408,31 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       if (!isAudioUnlocked) {
                         const unlocked = await unlockAudio();
                         if (unlocked) {
+                          setIsSoundEnabled(true);
+                          localStorage.setItem("notificationSoundEnabled", "true");
                           toast.success("Som ativado!", {
                             description: "Você receberá notificações sonoras para novos pedidos.",
                           });
                         }
                       } else {
                         // Toggle som
-                        const currentState = localStorage.getItem("notificationSoundEnabled");
-                        if (currentState === "false") {
+                        if (!isSoundEnabled) {
+                          setIsSoundEnabled(true);
                           localStorage.setItem("notificationSoundEnabled", "true");
                           toast.success("Som ativado!");
                         } else {
+                          setIsSoundEnabled(false);
                           localStorage.setItem("notificationSoundEnabled", "false");
                           toast.info("Som desativado");
                         }
-                        // Forçar re-render
-                        window.dispatchEvent(new Event('storage'));
                       }
                     }}
                   >
                     {isAudioUnlocked ? (
-                      localStorage.getItem("notificationSoundEnabled") === "false" ? (
-                        <VolumeX className="h-4 w-4 text-muted-foreground" />
-                      ) : (
+                      isSoundEnabled ? (
                         <Volume2 className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <VolumeX className="h-4 w-4 text-muted-foreground" />
                       )
                     ) : (
                       <VolumeX className="h-4 w-4 text-amber-500" />
@@ -438,9 +447,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 <TooltipContent side="bottom">
                   {!isAudioUnlocked 
                     ? "Clique para ativar som de notificação" 
-                    : localStorage.getItem("notificationSoundEnabled") === "false"
-                      ? "Som desativado - clique para ativar"
-                      : "Som ativado - clique para desativar"
+                    : isSoundEnabled
+                      ? "Som ativado - clique para desativar"
+                      : "Som desativado - clique para ativar"
                   }
                 </TooltipContent>
               </Tooltip>
