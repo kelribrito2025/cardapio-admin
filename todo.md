@@ -1894,3 +1894,4 @@
 - [x] Corrigir bug do ícone de som que ativa automaticamente ao navegar entre páginas no painel administrativo
 - [x] Corrigir exibição do número do pedido com dois ## (##P235 → #P235) no card e modal de detalhes
 - [x] Ocultar card de pedidos cancelados na versão mobile (exibir apenas no desktop)
+- [x] Adicionar ícone de lápis ao lado direito do nome das categorias na página de Catálogo

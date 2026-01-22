@@ -912,7 +912,7 @@ export default function Catalogo() {
                       <h3 className="font-bold text-base group-hover:text-primary transition-colors">
                         {category.name}
                       </h3>
-                      <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                      <Pencil className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-primary transition-colors duration-200" />
                     </div>
                   )}
                   <span className="text-xs text-muted-foreground font-medium">
