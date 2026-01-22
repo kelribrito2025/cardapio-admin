@@ -1718,3 +1718,8 @@
 - [x] O listener atualiza o estado interno do modal sem depender de navegação
 - [x] Cleanup só roda ao fechar o modal (não ao atualizar estado)
 - [x] Testado com sucesso: modal atualiza em tempo real quando status muda em outra máquina
+
+## Correção SSE após Refresh da Página (Em Progresso)
+- [x] Identificado problema: addCallback não iniciava conexão SSE após refresh
+- [x] Corrigido addCallback para sempre verificar e reconectar se necessário
+- [ ] Testar correção com usuário

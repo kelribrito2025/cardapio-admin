@@ -123,6 +123,9 @@ class OrderSSEManager {
    * Usado pelo modal de tracking para receber atualizações em tempo real
    */
   addCallback(orderNumber: string, callback: StatusUpdateCallback): () => void {
+    console.log(`[SSE-Public] addCallback chamado para: ${orderNumber}`);
+    console.log(`[SSE-Public] Estado atual - isConnected: ${this.isConnected()}, isConnecting: ${this.isConnecting}, connectedOrders: ${this.connectedOrders.size}`);
+    
     if (!this.callbacks.has(orderNumber)) {
       this.callbacks.set(orderNumber, []);
     }
@@ -130,6 +133,22 @@ class OrderSSEManager {
     // Adicionar o callback à lista
     this.callbacks.get(orderNumber)!.push(callback);
     console.log(`[SSE-Public] Callback adicional registrado para pedido: ${orderNumber}. Total callbacks: ${this.callbacks.get(orderNumber)!.length}`);
+    
+    // Se o pedido não está sendo monitorado, adicionar
+    if (!this.connectedOrders.has(orderNumber)) {
+      this.connectedOrders.add(orderNumber);
+      console.log(`[SSE-Public] Pedido ${orderNumber} adicionado via addCallback. Total: ${this.connectedOrders.size}`);
+    }
+    
+    // SEMPRE verificar se precisa conectar/reconectar
+    // Isso é importante quando o usuário atualiza a página e abre o modal diretamente
+    // Mesmo que o pedido já esteja em connectedOrders, a conexão pode ter sido perdida
+    if (!this.isConnected() && !this.isConnecting) {
+      console.log(`[SSE-Public] Conexão não ativa - iniciando conexão SSE via addCallback`);
+      this.connect();
+    } else {
+      console.log(`[SSE-Public] Conexão já ativa ou em andamento`);
+    }
     
     // Retornar função de cleanup que remove apenas este callback específico
     return () => {
