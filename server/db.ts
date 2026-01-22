@@ -1216,6 +1216,19 @@ export async function getActiveOrdersByEstablishment(establishmentId: number) {
 }
 
 
+// ============ GET ORDERS BY ORDER NUMBERS ============
+export async function getOrdersByOrderNumbers(orderNumbers: string[]) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  if (orderNumbers.length === 0) return [];
+  
+  const result = await db.select().from(orders)
+    .where(sql`${orders.orderNumber} IN (${sql.join(orderNumbers.map(n => sql`${n}`), sql`, `)})`);
+  
+  return result;
+}
+
 // ============ COUPON FUNCTIONS ============
 export async function getCouponsByEstablishment(
   establishmentId: number,

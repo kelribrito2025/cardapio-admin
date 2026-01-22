@@ -9,7 +9,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, sendAllOrdersHeartbeat } from "./sse";
-import { getUserByOpenId, getEstablishmentByUserId } from "../db";
+import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers } from "../db";
 import { sdk } from "./sdk";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -145,6 +145,25 @@ async function startServer() {
       
       // Enviar evento de conexão estabelecida
       res.write(`event: connected\ndata: ${JSON.stringify({ orders: orderNumbers })}\n\n`);
+      
+      // Buscar e enviar o status atual de cada pedido
+      // Isso garante que o cliente receba o status correto mesmo que tenha se conectado depois de mudanças
+      try {
+        const currentOrders = await getOrdersByOrderNumbers(orderNumbers);
+        console.log(`[SSE-Order] Enviando status atual de ${currentOrders.length} pedidos`);
+        
+        for (const order of currentOrders) {
+          const statusUpdate = {
+            orderNumber: order.orderNumber,
+            status: order.status,
+            cancellationReason: order.cancellationReason || undefined
+          };
+          res.write(`event: order_status_update\ndata: ${JSON.stringify(statusUpdate)}\n\n`);
+          console.log(`[SSE-Order] Enviado status inicial: ${order.orderNumber} -> ${order.status}`);
+        }
+      } catch (error) {
+        console.error('[SSE-Order] Erro ao buscar status inicial dos pedidos:', error);
+      }
       
       // Adicionar conexão ao pool para cada pedido
       addOrderConnectionForMultiple(orderNumbers, res);

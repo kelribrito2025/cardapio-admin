@@ -1723,3 +1723,14 @@
 - [x] Identificado problema: addCallback não iniciava conexão SSE após refresh
 - [x] Corrigido addCallback para sempre verificar e reconectar se necessário
 - [ ] Testar correção com usuário
+
+## Correção SSE - Modal Aberto Depois do Envio do Pedido
+- [ ] Buscar status atual do pedido no backend ao abrir o modal
+- [ ] Registrar listener SSE dedicado sempre que o modal abrir
+- [ ] Garantir que SSE funcione independente de quando o pedido foi criado
+- [ ] Testar fluxo: enviar pedido → não abrir modal → restaurante muda status → abrir modal depois
+
+## Correção SSE - Modal Aberto Depois (Atualização em Tempo Real)
+- [x] Servidor envia status atual de cada pedido quando cliente se conecta ao SSE
+- [x] Modal mostra status correto mesmo quando aberto muito tempo depois do pedido
+- [ ] Atualização em tempo real quando status muda enquanto modal está aberto

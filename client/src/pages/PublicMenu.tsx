@@ -675,7 +675,7 @@ export default function PublicMenu() {
         orderSSE.untrackOrder(order.id);
       });
     };
-  }, []); // Executar apenas uma vez na montagem do componente
+  }, [userOrders.length, sseInitialized]); // Executar quando pedidos forem carregados do localStorage
 
   // Efeito separado para adicionar novos pedidos ao SSE quando userOrders muda
   useEffect(() => {
