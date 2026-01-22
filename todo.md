@@ -1853,3 +1853,8 @@
 - [x] Reduzir largura do modal no desktop (sm:max-w-md)
 - [x] Reorganizar cards em layout vertical (um abaixo do outro)
 - [x] Ordem: Info Cliente > Detalhes Pagamento > Info Entrega > Itens > Preço > Status
+
+## Ajuste: Botões Imprimir e WhatsApp no modal de Detalhes do Pedido
+- [x] Fixar footer na parte inferior do modal
+- [x] Botões devem ficar sempre visíveis na parte de baixo
+- [x] Solução: flex flex-col no SheetContent, flex-1 no conteúdo, mt-auto no footer

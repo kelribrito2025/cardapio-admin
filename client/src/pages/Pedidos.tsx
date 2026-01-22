@@ -508,7 +508,7 @@ export default function Pedidos() {
 
       {/* Order Details Sidebar */}
       <Sheet open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-md p-0 overflow-hidden">
+        <SheetContent side="right" className="w-full sm:max-w-md p-0 overflow-hidden flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
             <div className="flex items-center gap-3">
@@ -520,7 +520,7 @@ export default function Pedidos() {
           </div>
 
           {orderDetails && (
-            <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
+            <div className="overflow-y-auto flex-1">
               {/* Order ID and Actions */}
               <div className="px-6 py-4 bg-muted/20 flex items-center justify-between">
                 <div>
@@ -730,7 +730,7 @@ export default function Pedidos() {
           )}
 
           {/* Footer */}
-          <div className="px-6 py-4 border-t border-border/50 flex items-center justify-between">
+          <div className="px-6 py-4 border-t border-border/50 flex items-center justify-between mt-auto">
             <Button variant="outline" onClick={() => window.print()} className="gap-2">
               <Printer className="h-4 w-4" />
               Imprimir Pedido
