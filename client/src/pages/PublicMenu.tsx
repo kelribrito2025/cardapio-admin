@@ -632,7 +632,51 @@ export default function PublicMenu() {
         orderSSE.untrackOrder(order.id);
       });
     };
-  }, [userOrders, sseInitialized]); // Executar quando userOrders mudar (após carregar do localStorage)
+  }, []); // Executar apenas uma vez na montagem do componente
+
+  // Efeito separado para adicionar novos pedidos ao SSE quando userOrders muda
+  useEffect(() => {
+    if (!sseInitialized) return;
+    
+    const activeOrders = userOrders.filter(o => 
+      o.status !== 'delivered' && o.status !== 'cancelled'
+    );
+    
+    // Callback para atualizações de status
+    const handleStatusUpdate = (update: { orderNumber: string; status: string; cancellationReason?: string }) => {
+      console.log('[PublicMenu] Atualização SSE recebida:', update);
+      const newStatus = statusMap[update.status] || 'sent';
+      
+      // Atualizar o pedido no estado local
+      setUserOrders(prevOrders => {
+        const newOrders = prevOrders.map(order => {
+          if (order.id === update.orderNumber) {
+            return { ...order, status: newStatus };
+          }
+          return order;
+        });
+        localStorage.setItem('userOrders', JSON.stringify(newOrders));
+        return newOrders;
+      });
+      
+      // Se o modal de tracking está aberto para este pedido, atualizar diretamente
+      if (showTrackingModalRef.current && currentOrderNumberRef.current === update.orderNumber) {
+        console.log('[PublicMenu] Atualizando orderStatus no modal para:', newStatus);
+        setOrderStatus(newStatus);
+        if (update.cancellationReason) {
+          setCancellationReasonDisplay(update.cancellationReason);
+        }
+      }
+    };
+    
+    // Registrar cada pedido ativo no SSE singleton (o singleton evita duplicatas)
+    activeOrders.forEach(order => {
+      // Atualizar callback para garantir que use os valores mais recentes
+      orderSSE.updateCallback(order.id, handleStatusUpdate);
+    });
+    
+    // NÃO fazer cleanup aqui - o cleanup só deve acontecer quando o componente desmontar
+  }, [userOrders, sseInitialized]);
 
   // Carregar endereço salvo do localStorage
   useEffect(() => {

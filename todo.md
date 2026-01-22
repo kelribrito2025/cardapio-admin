@@ -1698,5 +1698,8 @@
 - [ ] Garantir que ambas funcionalidades (badge e modal) funcionem simultaneamente
 
 ## Correção do Modal Acompanhar Pedido (Atualização em Tempo Real)
-- [ ] Investigar por que o modal não atualiza quando status muda via página de pedidos
-- [ ] Corrigir lógica de atualização do modal via SSE
+- [x] Investigar por que o modal não atualiza quando status muda via página de pedidos
+- [x] Corrigir lógica de atualização do modal via SSE
+- [x] Separar useEffect de inicialização SSE do useEffect de atualização de callbacks
+- [x] Garantir que cleanup só ocorra quando componente desmonta, não quando userOrders muda
+- [x] Testado e verificado: SSE mantém conexão ativa e atualiza status em tempo real
