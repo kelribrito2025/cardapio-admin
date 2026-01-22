@@ -1752,3 +1752,8 @@
 ## Ajuste visual: Cores do modal de acompanhar pedido
 - [x] Status "Pedido Finalizado" deve ser verde (não roxo)
 - [x] Ícone de check do "Pedido Finalizado" deve ser verde (não cinza)
+
+## Bug: Sistema de avaliação não aparece para novos clientes
+- [x] Botão "Avaliar restaurante" não aparece quando pedido é entregue para novos clientes
+- [x] Investigar lógica de canReview e canReviewChecked
+- [x] Melhorar tratamento de resposta da API canReview com fallback para permitir avaliar

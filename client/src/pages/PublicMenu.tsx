@@ -450,17 +450,38 @@ export default function PublicMenu() {
       customerPhone: selectedOrder.customerPhone
     }))}`;
     
+    console.log('[canReview] Verificando se pode avaliar:', { establishmentId: data.establishment.id, customerPhone: selectedOrder.customerPhone });
+    
     fetch(url)
       .then(res => res.json())
       .then(result => {
+        console.log('[canReview] Resposta da API:', result);
+        
         // Verificar se ainda é o mesmo pedido
-        if (canReviewCheckingRef.current === checkKey && result?.result?.data) {
-          setCanReview(result.result.data.canReview);
-          setCanReviewChecked(true);
+        if (canReviewCheckingRef.current !== checkKey) {
+          console.log('[canReview] Pedido mudou, ignorando resposta');
+          return;
         }
+        
+        // Tentar extrair canReview de diferentes estruturas de resposta
+        let canReviewValue = true; // Default: permitir avaliar
+        
+        if (result?.result?.data?.canReview !== undefined) {
+          canReviewValue = result.result.data.canReview;
+        } else if (result?.data?.canReview !== undefined) {
+          canReviewValue = result.data.canReview;
+        } else if (result?.canReview !== undefined) {
+          canReviewValue = result.canReview;
+        } else {
+          console.log('[canReview] Estrutura de resposta não reconhecida, permitindo avaliar');
+        }
+        
+        console.log('[canReview] Valor final canReview:', canReviewValue);
+        setCanReview(canReviewValue);
+        setCanReviewChecked(true);
       })
       .catch(err => {
-        console.error('Erro ao verificar se pode avaliar:', err);
+        console.error('[canReview] Erro ao verificar se pode avaliar:', err);
         if (canReviewCheckingRef.current === checkKey) {
           setCanReviewChecked(true);
           setCanReview(true); // Em caso de erro, permitir avaliar
