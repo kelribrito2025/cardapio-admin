@@ -612,10 +612,10 @@ export default function Pedidos() {
             </div>
           </div>
         </div>
-        {/* Cancelados */}
+        {/* Cancelados - Oculto no mobile */}
         <div 
           className={cn(
-            "bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer border-red-200/50 bg-red-50/30",
+            "hidden md:block bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer border-red-200/50 bg-red-50/30",
             activeTab === "cancelled" && "ring-2 ring-red-500"
           )}
           onClick={() => setActiveTab("cancelled")}
