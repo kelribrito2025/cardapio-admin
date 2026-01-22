@@ -2,7 +2,7 @@ import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, Bike, Copy, Loader2, Eye, RefreshCw } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -67,6 +67,7 @@ export default function PublicMenu() {
   });
   const [isSendingOrder, setIsSendingOrder] = useState(false);
   const [orderSent, setOrderSent] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
   const [showMobileBag, setShowMobileBag] = useState(false);
   const [bagAutoOpenEnabled, setBagAutoOpenEnabled] = useState(true); // Controla se a sacola deve abrir automaticamente
@@ -256,7 +257,8 @@ export default function PublicMenu() {
         path: error?.data?.path,
       });
       
-      alert(errorMessage);
+      // Exibir erro no modal em vez de alert
+      setOrderError(errorMessage);
     }
   });
 
@@ -2687,7 +2689,28 @@ export default function PublicMenu() {
 
               {/* Body */}
               <div className={`overflow-y-auto overscroll-contain p-6 ${!orderSent ? 'flex-1' : ''}`}>
-                {!orderSent ? (
+                {orderError ? (
+                  <div className="text-center py-8">
+                    <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <XCircle className="h-10 w-10 text-red-500" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-red-600 mb-4">
+                      Não foi possível enviar o pedido
+                    </h3>
+                    <p className="text-gray-600 mb-4">
+                      {orderError}
+                    </p>
+                    <button
+                      onClick={() => {
+                        setOrderError(null);
+                        setCheckoutStep(1);
+                      }}
+                      className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors"
+                    >
+                      Voltar ao carrinho
+                    </button>
+                  </div>
+                ) : !orderSent ? (
                   <div className="text-center py-8">
                     <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                       <CheckCircle className="h-10 w-10 text-green-500" />

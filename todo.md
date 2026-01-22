@@ -1884,3 +1884,9 @@
 
 ## Ajuste: Nome do restaurante no topo do recibo
 - [x] Substituir "Cardápio" pelo nome do estabelecimento no recibo de impressão
+
+## Melhoria: Mensagem de restaurante fechado no modal
+- [x] Substituir alert() por estado de erro no modal de confirmação
+- [x] Exibir mensagem de "restaurante fechado" dentro do modal
+- [x] Mostrar botão para voltar ao carrinho
+- [x] Ícone XCircle vermelho para indicar erro
