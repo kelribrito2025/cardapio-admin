@@ -1833,3 +1833,11 @@
 - [x] Exibir observação do item (item.observation) na seção Itens do checkoutStep 3
 - [x] Mostrar abaixo do nome do item, como no modal de Resumo
 - [x] Adicionado "Obs: {item.observation}" em texto cinza claro
+
+## Bug: Som toca mesmo quando ícone está desativado
+- [x] Investigar sincronização entre estado visual e lógica de reprodução
+- [x] Verificar se localStorage está sendo lido corretamente
+- [x] Corrigir para respeitar a preferência do usuário
+- [x] Solução: Adicionado método isSoundEnabled() no NotificationAudioManager
+- [x] Verificação do localStorage antes de tocar pendingPlay
+- [x] Limpa pendingPlay mesmo quando som está desabilitado

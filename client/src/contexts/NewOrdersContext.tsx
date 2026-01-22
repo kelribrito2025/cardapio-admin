@@ -15,6 +15,12 @@ class NotificationAudioManager {
     this.initAudio();
   }
 
+  // Verificar se o som está habilitado nas configurações
+  private isSoundEnabled(): boolean {
+    const soundEnabled = localStorage.getItem("notificationSoundEnabled");
+    return soundEnabled !== "false";
+  }
+
   static getInstance(): NotificationAudioManager {
     if (!NotificationAudioManager.instance) {
       NotificationAudioManager.instance = new NotificationAudioManager();
@@ -44,10 +50,12 @@ class NotificationAudioManager {
               this.isUnlocked = true;
               console.log("[NotificationAudio] Áudio desbloqueado com sucesso!");
               
-              // Se tinha um play pendente, executar agora
-              if (this.pendingPlay) {
+              // Se tinha um play pendente, executar agora APENAS se o som estiver habilitado
+              if (this.pendingPlay && this.isSoundEnabled()) {
                 this.pendingPlay = false;
                 this.play();
+              } else {
+                this.pendingPlay = false; // Limpar pendingPlay mesmo se som desabilitado
               }
             })
             .catch(() => {
@@ -66,8 +74,10 @@ class NotificationAudioManager {
 
   play() {
     // Verificar se o som está habilitado nas configurações
-    const soundEnabled = localStorage.getItem("notificationSoundEnabled");
-    if (soundEnabled === "false") return;
+    if (!this.isSoundEnabled()) {
+      console.log("[NotificationAudio] Som desabilitado, não tocando");
+      return;
+    }
 
     if (!this.audio) {
       this.initAudio();
