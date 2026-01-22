@@ -3019,26 +3019,81 @@ export default function PublicMenu() {
             {/* Footer */}
             {cart.length > 0 && (
               <div className="flex-shrink-0 border-t p-4 space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Subtotal</span>
-                  <span className="font-medium">R$ {cart.reduce((sum, item) => {
+                {(() => {
+                  const subtotal = cart.reduce((sum, item) => {
                     const itemTotal = parseFloat(item.price) * item.quantity;
                     const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
                     return sum + itemTotal + complementsTotal;
-                  }, 0).toFixed(2).replace('.', ',')}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Taxa de entrega</span>
-                  <span className="text-gray-500">R$ 0,00</span>
-                </div>
-                <div className="flex justify-between font-bold text-lg pt-2 border-t">
-                  <span>Total</span>
-                  <span className="text-red-500">R$ {cart.reduce((sum, item) => {
-                    const itemTotal = parseFloat(item.price) * item.quantity;
-                    const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
-                    return sum + itemTotal + complementsTotal;
-                  }, 0).toFixed(2).replace('.', ',')}</span>
-                </div>
+                  }, 0);
+                  const discount = appliedCoupon?.discount || 0;
+                  const total = Math.max(0, subtotal - discount);
+                  return (
+                    <>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Subtotal</span>
+                        <span className="font-medium">R$ {subtotal.toFixed(2).replace('.', ',')}</span>
+                      </div>
+                      {appliedCoupon && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-green-600 flex items-center gap-1">
+                            <Ticket className="h-3.5 w-3.5" />
+                            Cupom {appliedCoupon.code}
+                          </span>
+                          <span className="text-green-600">-R$ {discount.toFixed(2).replace('.', ',')}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Taxa de entrega</span>
+                        <span className="text-gray-500">R$ 0,00</span>
+                      </div>
+                      <div className="flex justify-between font-bold text-lg pt-2 border-t">
+                        <span>Total</span>
+                        <span className="text-red-500">R$ {total.toFixed(2).replace('.', ',')}</span>
+                      </div>
+                    </>
+                  );
+                })()}
+                
+                {/* Cupom */}
+                {appliedCoupon ? (
+                  <div className="w-full flex items-center justify-between py-3 border-t border-gray-100">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-100 rounded-lg">
+                        <Ticket className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium text-green-700 text-sm">Cupom aplicado!</p>
+                        <p className="text-xs text-green-600">{appliedCoupon.code} - {appliedCoupon.type === 'percentage' ? `${appliedCoupon.value}% de desconto` : `R$ ${appliedCoupon.value.toFixed(2).replace('.', ',')} de desconto`}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setAppliedCoupon(null);
+                        setCouponCode("");
+                      }}
+                      className="p-2 hover:bg-red-50 rounded-full transition-colors"
+                    >
+                      <X className="h-4 w-4 text-red-500" />
+                    </button>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={() => {
+                      setShowCouponModal(true);
+                      setCouponError("");
+                    }}
+                    className="w-full flex items-center justify-between py-3 border-t border-gray-100 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <Ticket className="h-5 w-5 text-gray-500" />
+                      <div className="text-left">
+                        <p className="font-medium text-gray-800 text-sm">Tem um cupom?</p>
+                        <p className="text-xs text-gray-400">Clique e insira o código</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-gray-400" />
+                  </button>
+                )}
+                
                 {/* Botão Adicionar mais itens */}
                 <button
                   onClick={() => {

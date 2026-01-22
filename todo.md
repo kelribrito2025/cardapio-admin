@@ -1777,3 +1777,8 @@
 - [x] Mobile: ícone permanece o mesmo ao ativar/desativar
 - [x] Desktop: ícone de som ligado permanece após desativar
 - [x] Solução: Adicionado estado local isSoundEnabled sincronizado com localStorage
+
+## Bug: Container "Tem um cupom?" não aparece no mobile
+- [x] Verificar classes de visibilidade do container de cupom
+- [x] Corrigir para aparecer em todas as resoluções
+- [x] Adicionar seção de cupom no modal da sacola mobile (showMobileBag)
