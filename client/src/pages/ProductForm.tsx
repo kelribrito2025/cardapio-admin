@@ -102,7 +102,9 @@ export default function ProductForm() {
   });
 
   const updateMutation = trpc.product.update.useMutation({
-    onSuccess: () => {
+    onSuccess: async (_, variables) => {
+      // Salvar complementos após atualizar o produto
+      await saveComplementGroups(variables.id);
       toast.success("Produto atualizado com sucesso");
       navigate("/catalogo");
     },
@@ -111,6 +113,90 @@ export default function ProductForm() {
       console.error(error);
     },
   });
+
+  // Mutations para complementos
+  const createGroupMutation = trpc.complement.createGroup.useMutation();
+  const updateGroupMutation = trpc.complement.updateGroup.useMutation();
+  const deleteGroupMutation = trpc.complement.deleteGroup.useMutation();
+  const createItemMutation = trpc.complement.createItem.useMutation();
+  const updateItemMutation = trpc.complement.updateItem.useMutation();
+  const deleteItemMutation = trpc.complement.deleteItem.useMutation();
+
+  // Função para salvar todos os grupos de complementos
+  const saveComplementGroups = async (productId: number) => {
+    try {
+      // Obter grupos existentes do servidor
+      const existingGroupIds = existingGroups?.map((g: any) => g.id) || [];
+      const currentGroupIds = complementGroups.filter(g => g.id).map(g => g.id!);
+      
+      // Deletar grupos que foram removidos
+      const groupsToDelete = existingGroupIds.filter((id: number) => !currentGroupIds.includes(id));
+      for (const groupId of groupsToDelete) {
+        await deleteGroupMutation.mutateAsync({ id: groupId });
+      }
+
+      // Criar ou atualizar grupos
+      for (const group of complementGroups) {
+        let groupId = group.id;
+        
+        if (group.id) {
+          // Atualizar grupo existente
+          await updateGroupMutation.mutateAsync({
+            id: group.id,
+            name: group.name,
+            minQuantity: group.minQuantity,
+            maxQuantity: group.maxQuantity,
+            isRequired: group.isRequired,
+          });
+        } else {
+          // Criar novo grupo
+          const result = await createGroupMutation.mutateAsync({
+            productId,
+            name: group.name,
+            minQuantity: group.minQuantity,
+            maxQuantity: group.maxQuantity,
+            isRequired: group.isRequired,
+          });
+          groupId = result.id;
+        }
+
+        if (groupId) {
+          // Obter itens existentes do grupo
+          const existingGroup = existingGroups?.find((g: any) => g.id === group.id);
+          const existingItemIds = existingGroup?.items?.map((i: any) => i.id) || [];
+          const currentItemIds = group.items.filter(i => i.id).map(i => i.id!);
+          
+          // Deletar itens que foram removidos
+          const itemsToDelete = existingItemIds.filter((id: number) => !currentItemIds.includes(id));
+          for (const itemId of itemsToDelete) {
+            await deleteItemMutation.mutateAsync({ id: itemId });
+          }
+
+          // Criar ou atualizar itens
+          for (const item of group.items) {
+            if (item.id) {
+              // Atualizar item existente
+              await updateItemMutation.mutateAsync({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+              });
+            } else {
+              // Criar novo item
+              await createItemMutation.mutateAsync({
+                groupId,
+                name: item.name,
+                price: item.price,
+              });
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao salvar complementos:", error);
+      toast.error("Erro ao salvar complementos");
+    }
+  };
 
   // Load product data when editing
   useEffect(() => {
