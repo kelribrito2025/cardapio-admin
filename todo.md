@@ -1848,3 +1848,8 @@
 - [x] Corrigir definitivamente
 - [x] Causa: Pedidos.tsx tinha código duplicado tocando som diretamente sem verificar preferência
 - [x] Solução: Removido código duplicado em Pedidos.tsx, som agora é gerenciado apenas pelo NewOrdersContext
+
+## Ajuste: Modal de Detalhes do Pedido desktop igual ao mobile
+- [x] Reduzir largura do modal no desktop (sm:max-w-md)
+- [x] Reorganizar cards em layout vertical (um abaixo do outro)
+- [x] Ordem: Info Cliente > Detalhes Pagamento > Info Entrega > Itens > Preço > Status

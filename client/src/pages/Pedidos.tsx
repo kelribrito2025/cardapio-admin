@@ -508,7 +508,7 @@ export default function Pedidos() {
 
       {/* Order Details Sidebar */}
       <Sheet open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-xl md:max-w-2xl p-0 overflow-hidden">
+        <SheetContent side="right" className="w-full sm:max-w-md p-0 overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
             <div className="flex items-center gap-3">
@@ -536,8 +536,8 @@ export default function Pedidos() {
                 </div>
               </div>
 
-              {/* Info Cards Grid */}
-              <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Info Cards - Layout Vertical */}
+              <div className="px-6 py-4 space-y-4">
                 {/* Customer Info */}
                 <div className="border border-border/50 rounded-xl p-4">
                   <h4 className="font-semibold text-base mb-4">Informações do Cliente</h4>
@@ -603,8 +603,8 @@ export default function Pedidos() {
                 </div>
               </div>
 
-              {/* Order Items and Status */}
-              <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Order Items and Status - Layout Vertical */}
+              <div className="px-6 py-4 space-y-4">
                 {/* Order Items */}
                 <div className="border border-border/50 rounded-xl p-4">
                   <h4 className="font-semibold text-base mb-4">Itens do Pedido</h4>
