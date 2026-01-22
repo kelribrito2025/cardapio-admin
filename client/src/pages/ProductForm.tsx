@@ -839,6 +839,54 @@ export default function ProductForm() {
                       {formatCurrency(price)}
                     </p>
 
+                    {/* Preview dos Complementos */}
+                    {complementGroups.length > 0 && (
+                      <div className="mt-4 pt-4 border-t border-border/50 space-y-4">
+                        {complementGroups.map((group, groupIndex) => (
+                          <div key={groupIndex} className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <h5 className="font-semibold text-sm">
+                                {group.name || "Grupo sem nome"}
+                              </h5>
+                              {group.isRequired && (
+                                <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">
+                                  Obrigatório
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[10px] text-muted-foreground">
+                              {group.isRequired 
+                                ? `Escolha ${group.minQuantity === group.maxQuantity ? group.minQuantity : `${group.minQuantity} a ${group.maxQuantity}`}` 
+                                : `Máx: ${group.maxQuantity}`}
+                            </p>
+                            <div className="space-y-1">
+                              {group.items.map((item, itemIndex) => (
+                                <div
+                                  key={itemIndex}
+                                  className="flex items-center justify-between py-1.5 px-2 bg-muted/30 rounded-md"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <div className={`w-4 h-4 rounded-${group.maxQuantity === 1 ? 'full' : 'sm'} border-2 border-muted-foreground/30`} />
+                                    <span className="text-xs">{item.name || "Item sem nome"}</span>
+                                  </div>
+                                  {parseFloat(item.price || "0") > 0 && (
+                                    <span className="text-xs text-muted-foreground">
+                                      + R$ {parseFloat(item.price).toFixed(2).replace('.', ',')}
+                                    </span>
+                                  )}
+                                </div>
+                              ))}
+                              {group.items.length === 0 && (
+                                <p className="text-[10px] text-muted-foreground/50 italic py-1">
+                                  Nenhum item adicionado
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                   </div>
                 </div>
               </SectionCard>

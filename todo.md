@@ -1905,3 +1905,4 @@
 - [x] Adicionar animação de transição suave ao expandir e recolher a barra lateral
 - [x] Corrigir exibição dos itens de complementos na página de edição do produto (itens não aparecem dentro dos grupos)
 - [x] Corrigir salvamento de novos grupos de complementos ao editar produto (complementos não são persistidos)
+- [x] Adicionar visualização dos grupos de complementos no container de Preview do ProductForm em tempo real
