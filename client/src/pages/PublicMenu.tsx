@@ -290,6 +290,49 @@ export default function PublicMenu() {
     }
   }, [showTrackingModal, currentOrderNumber]);
 
+  // *** LISTENER SSE DEDICADO PARA O MODAL DE TRACKING ***
+  // Este useEffect registra um callback específico quando o modal está aberto
+  // O callback atualiza diretamente o orderStatus sem depender de refs ou closures
+  // O cleanup remove o callback quando o modal fecha
+  useEffect(() => {
+    // Só registrar listener se o modal estiver aberto e tiver um pedido selecionado
+    if (!showTrackingModal || !currentOrderNumber) {
+      return;
+    }
+    
+    console.log('[PublicMenu] Modal aberto - registrando listener SSE dedicado para:', currentOrderNumber);
+    
+    // Callback dedicado para o modal de tracking
+    // Este callback é criado DENTRO do useEffect, então sempre terá acesso aos valores atuais
+    const modalStatusCallback = (update: { orderNumber: string; status: string; cancellationReason?: string }) => {
+      console.log('[PublicMenu] [Modal Listener] Atualização SSE recebida:', update);
+      
+      // Verificar se a atualização é para o pedido que está sendo visualizado
+      if (update.orderNumber === currentOrderNumber) {
+        const newStatus = statusMap[update.status] || 'sent';
+        console.log('[PublicMenu] [Modal Listener] Atualizando orderStatus para:', newStatus);
+        
+        // Atualizar o status do modal diretamente
+        setOrderStatus(newStatus);
+        
+        // Atualizar motivo de cancelamento se houver
+        if (update.cancellationReason) {
+          setCancellationReasonDisplay(update.cancellationReason);
+        }
+      }
+    };
+    
+    // Registrar o callback usando o novo método addCallback
+    // Isso adiciona o callback SEM substituir os existentes
+    const removeCallback = orderSSE.addCallback(currentOrderNumber, modalStatusCallback);
+    
+    // Cleanup: remover o callback quando o modal fechar ou o pedido mudar
+    return () => {
+      console.log('[PublicMenu] Modal fechado - removendo listener SSE dedicado para:', currentOrderNumber);
+      removeCallback();
+    };
+  }, [showTrackingModal, currentOrderNumber]); // Dependências mínimas para evitar re-registros desnecessários
+
   // Sincronizar orderStatus quando userOrders muda e o modal está aberto
   // Isso garante que atualizações SSE reflitam no modal imediatamente
   // Usa setOrderStatus com callback para evitar problemas de closure com orderStatus

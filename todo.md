@@ -1703,3 +1703,18 @@
 - [x] Separar useEffect de inicialização SSE do useEffect de atualização de callbacks
 - [x] Garantir que cleanup só ocorra quando componente desmonta, não quando userOrders muda
 - [x] Testado e verificado: SSE mantém conexão ativa e atualiza status em tempo real
+
+## Correção Definitiva do SSE no Modal Acompanhar Pedido
+- [ ] Analisar implementação atual do listener SSE no modal
+- [ ] Garantir que o modal registre seu próprio listener no SSE
+- [ ] Manter listener ativo enquanto modal está aberto
+- [ ] Atualizar estado interno do modal sem depender de navegação
+- [ ] Cleanup só deve rodar ao fechar o modal, não ao atualizar estado
+- [ ] Testar com modal aberto enquanto status muda em outra máquina/aba
+
+## Correção Definitiva do SSE no Modal Acompanhar Pedido (CONCLUÍDO)
+- [x] O modal registra seu próprio listener no SSE via addCallback
+- [x] O modal mantém o listener ativo enquanto está aberto
+- [x] O listener atualiza o estado interno do modal sem depender de navegação
+- [x] Cleanup só roda ao fechar o modal (não ao atualizar estado)
+- [x] Testado com sucesso: modal atualiza em tempo real quando status muda em outra máquina

@@ -118,6 +118,33 @@ class OrderSSEManager {
   }
 
   /**
+   * Adiciona um callback adicional para um pedido (sem substituir os existentes)
+   * Retorna uma função para remover o callback
+   * Usado pelo modal de tracking para receber atualizações em tempo real
+   */
+  addCallback(orderNumber: string, callback: StatusUpdateCallback): () => void {
+    if (!this.callbacks.has(orderNumber)) {
+      this.callbacks.set(orderNumber, []);
+    }
+    
+    // Adicionar o callback à lista
+    this.callbacks.get(orderNumber)!.push(callback);
+    console.log(`[SSE-Public] Callback adicional registrado para pedido: ${orderNumber}. Total callbacks: ${this.callbacks.get(orderNumber)!.length}`);
+    
+    // Retornar função de cleanup que remove apenas este callback específico
+    return () => {
+      const callbacks = this.callbacks.get(orderNumber);
+      if (callbacks) {
+        const index = callbacks.indexOf(callback);
+        if (index > -1) {
+          callbacks.splice(index, 1);
+          console.log(`[SSE-Public] Callback removido para pedido: ${orderNumber}. Callbacks restantes: ${callbacks.length}`);
+        }
+      }
+    };
+  }
+
+  /**
    * Remove um pedido do monitoramento
    */
   untrackOrder(orderNumber: string): void {
@@ -218,9 +245,16 @@ class OrderSSEManager {
           
           // Notificar todos os callbacks registrados para este pedido
           const callbacks = this.callbacks.get(data.orderNumber);
-          if (callbacks) {
+          if (callbacks && callbacks.length > 0) {
             console.log('[SSE-Public] Chamando', callbacks.length, 'callbacks para', data.orderNumber);
-            callbacks.forEach(cb => cb(data));
+            // Fazer uma cópia do array para evitar problemas se um callback se remover durante a iteração
+            [...callbacks].forEach(cb => {
+              try {
+                cb(data);
+              } catch (e) {
+                console.error('[SSE-Public] Erro ao executar callback:', e);
+              }
+            });
           } else {
             console.log('[SSE-Public] NENHUM callback encontrado para', data.orderNumber);
           }
