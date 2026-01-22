@@ -3337,9 +3337,11 @@ export default function PublicMenu() {
                 {(() => {
                   const selectedOrder = userOrders.find(o => o.id === selectedOrderId);
                   const isPickup = selectedOrder?.deliveryType === 'pickup';
+                  // Para retirada: quando status é 'delivering' (ready no backend), mostrar como finalizado em verde
+                  const isPickupReady = isPickup && (orderStatus === 'delivering' || orderStatus === 'delivered');
                   return (
                     <div className="relative flex items-start gap-4 pb-8">
-                      {/* Ícone com animação especial para status 'delivering' (Saiu para entrega) */}
+                      {/* Ícone com animação especial para status 'delivering' (Saiu para entrega) - apenas para delivery */}
                       {orderStatus === 'delivering' && !isPickup ? (
                         <div className="relative z-10 w-10 h-10 flex items-center justify-center flex-shrink-0">
                           <Bike className="w-8 h-8 text-violet-600 animate-bounce" />
@@ -3349,7 +3351,7 @@ export default function PublicMenu() {
                         </div>
                       ) : (
                         <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                          orderStatus === 'delivered' ? 'bg-green-500 text-white' :
+                          isPickupReady || orderStatus === 'delivered' ? 'bg-green-500 text-white' :
                           'bg-gray-200 text-gray-400'
                         }`}>
                           {isPickup ? <CheckCircle className="h-5 w-5" /> : <Bike className="h-5 w-5" />}
@@ -3357,6 +3359,7 @@ export default function PublicMenu() {
                       )}
                       <div className="pt-2">
                         <h4 className={`font-semibold ${
+                          isPickupReady ? 'text-green-600' :
                           orderStatus === 'delivering' ? 'text-violet-600' :
                           orderStatus === 'delivered' ? 'text-green-600' :
                           'text-gray-400'

@@ -1748,3 +1748,7 @@
 ## Bug: Regressão no SSE do modal de acompanhar pedido
 - [ ] Modal de acompanhar pedido parou de atualizar em tempo real após correção do badge
 - [ ] Investigar causa da regressão
+
+## Ajuste visual: Cores do modal de acompanhar pedido
+- [x] Status "Pedido Finalizado" deve ser verde (não roxo)
+- [x] Ícone de check do "Pedido Finalizado" deve ser verde (não cinza)
