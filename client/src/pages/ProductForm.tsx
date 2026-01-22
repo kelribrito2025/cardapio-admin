@@ -804,9 +804,8 @@ export default function ProductForm() {
           <div className="lg:col-span-1">
             <div className="sticky top-20">
               <SectionCard title="Preview">
-                <div className="border border-border/50 rounded-xl overflow-hidden shadow-soft">
-                  {/* Product Image */}
-                  <div className="aspect-video bg-muted/50 flex items-center justify-center">
+                {/* Product Image */}
+                <div className="aspect-video bg-muted/50 flex items-center justify-center rounded-xl overflow-hidden -mx-4 -mt-2">
                     {images.length > 0 ? (
                       <img
                         src={images[0]}
@@ -818,10 +817,10 @@ export default function ProductForm() {
                         <ImagePlus className="h-8 w-8 text-muted-foreground/50" />
                       </div>
                     )}
-                  </div>
+                </div>
 
-                  {/* Product Info */}
-                  <div className="p-4">
+                {/* Product Info */}
+                <div className="mt-4">
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <h4 className="font-bold text-base">
                         {name || "Nome do produto"}
@@ -887,7 +886,6 @@ export default function ProductForm() {
                       </div>
                     )}
 
-                  </div>
                 </div>
               </SectionCard>
 
