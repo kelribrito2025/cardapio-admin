@@ -319,6 +319,8 @@ export default function Catalogo() {
   const [productToDelete, setProductToDelete] = useState<number | null>(null);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [deleteCategoryDialogOpen, setDeleteCategoryDialogOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<{ id: number; name: string; productCount: number } | null>(null);
   
   // Reorder mode
   const [reorderCategoriesMode, setReorderCategoriesMode] = useState(false);
@@ -467,6 +469,17 @@ export default function Catalogo() {
       toast.success("Categoria atualizada");
     },
     onError: () => toast.error("Erro ao atualizar categoria"),
+  });
+
+  const deleteCategoryMutation = trpc.category.delete.useMutation({
+    onSuccess: () => {
+      refetchCategories();
+      refetchProducts();
+      setCategoryToDelete(null);
+      setDeleteCategoryDialogOpen(false);
+      toast.success("Categoria excluída com sucesso");
+    },
+    onError: () => toast.error("Erro ao excluir categoria"),
   });
 
   // Mutation para mover produto entre categorias
@@ -915,9 +928,32 @@ export default function Catalogo() {
                       <Pencil className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-primary transition-colors duration-200" />
                     </div>
                   )}
-                  <span className="text-xs text-muted-foreground font-medium">
-                    {categoryProducts.length} {categoryProducts.length === 1 ? "ítem" : "ítens"}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground font-medium">
+                      {categoryProducts.length} {categoryProducts.length === 1 ? "ítem" : "ítens"}
+                    </span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCategoryToDelete({
+                              id: category.id,
+                              name: category.name,
+                              productCount: categoryProducts.length
+                            });
+                            setDeleteCategoryDialogOpen(true);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Excluir categoria</TooltipContent>
+                    </Tooltip>
+                  </div>
                 </div>
                 <SortableContext
                   items={categoryProducts.map((p) => p.id)}
@@ -1045,6 +1081,42 @@ export default function Catalogo() {
               className="rounded-xl"
             >
               {createCategoryMutation.isPending ? "Criando..." : "Criar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Category Dialog */}
+      <Dialog open={deleteCategoryDialogOpen} onOpenChange={setDeleteCategoryDialogOpen}>
+        <DialogContent className="rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Excluir categoria</DialogTitle>
+            <DialogDescription>
+              {categoryToDelete?.productCount && categoryToDelete.productCount > 0 ? (
+                <>
+                  A categoria <strong>"{categoryToDelete?.name}"</strong> possui <strong>{categoryToDelete?.productCount} {categoryToDelete?.productCount === 1 ? 'produto' : 'produtos'}</strong>. 
+                  Ao excluir, os produtos serão movidos para "Sem categoria".
+                </>
+              ) : (
+                <>Tem certeza que deseja excluir a categoria <strong>"{categoryToDelete?.name}"</strong>?</>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setDeleteCategoryDialogOpen(false)} className="rounded-xl">
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (categoryToDelete) {
+                  deleteCategoryMutation.mutate({ id: categoryToDelete.id });
+                }
+              }}
+              disabled={deleteCategoryMutation.isPending}
+              className="rounded-xl"
+            >
+              {deleteCategoryMutation.isPending ? "Excluindo..." : "Excluir"}
             </Button>
           </DialogFooter>
         </DialogContent>
