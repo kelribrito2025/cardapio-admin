@@ -1815,3 +1815,10 @@
 - [x] Verificar condição que oculta o botão em pedidos cancelados
 - [x] Corrigir para exibir botão em pedidos cancelados também
 - [x] Removida condição order.status !== 'cancelled' do histórico
+
+## Bug: Modal de Meus Pedidos ocupa tela toda no mobile
+- [x] Adicionar altura máxima ao modal (max-h-[85vh])
+- [x] Adicionar botão de fechar (X) no header do modal (já existia)
+- [x] Garantir que área de clique para fechar fique visível
+- [x] Solução: Adicionado padding p-4 pt-16 no container para deixar espaço no topo
+- [x] Backdrop agora fecha o modal ao clicar
