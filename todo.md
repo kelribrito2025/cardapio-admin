@@ -1896,3 +1896,4 @@
 - [x] Ocultar card de pedidos cancelados na versão mobile (exibir apenas no desktop)
 - [x] Adicionar ícone de lápis ao lado direito do nome das categorias na página de Catálogo
 - [x] Adicionar funcionalidade de excluir categorias na página de Catálogo
+- [x] Usar imagem placeholder igual à do perfil do restaurante para itens do catálogo sem foto
