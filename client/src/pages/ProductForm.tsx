@@ -61,6 +61,9 @@ export default function ProductForm() {
   const [stockQuantity, setStockQuantity] = useState<string>("");
   const [complementGroups, setComplementGroups] = useState<ComplementGroup[]>([]);
 
+  // Preview selections state - para simular seleção do cliente
+  const [previewSelections, setPreviewSelections] = useState<Record<number, number[]>>({});
+
   // Validation
   const [errors, setErrors] = useState<Record<string, string>>({});
   
@@ -838,51 +841,126 @@ export default function ProductForm() {
                       {formatCurrency(price)}
                     </p>
 
-                    {/* Preview dos Complementos */}
+                    {/* Preview dos Complementos com Interação */}
                     {complementGroups.length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-border/50 space-y-4">
-                        {complementGroups.map((group, groupIndex) => (
-                          <div key={groupIndex} className="space-y-2">
-                            <div className="flex items-center justify-between">
-                              <h5 className="font-semibold text-sm">
-                                {group.name || "Grupo sem nome"}
-                              </h5>
-                              {group.isRequired && (
-                                <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">
-                                  Obrigatório
-                                </span>
-                              )}
+                      <div className="mt-4 pt-4 border-t border-border/50 space-y-4 max-h-[400px] overflow-y-auto pr-1">
+                        {complementGroups.map((group, groupIndex) => {
+                          const selectedItems = previewSelections[groupIndex] || [];
+                          const isRadio = group.maxQuantity === 1;
+                          
+                          const handleItemClick = (itemIndex: number) => {
+                            setPreviewSelections(prev => {
+                              const current = prev[groupIndex] || [];
+                              if (isRadio) {
+                                // Radio: seleciona apenas um
+                                return { ...prev, [groupIndex]: [itemIndex] };
+                              } else {
+                                // Checkbox: toggle
+                                if (current.includes(itemIndex)) {
+                                  return { ...prev, [groupIndex]: current.filter(i => i !== itemIndex) };
+                                } else if (current.length < group.maxQuantity) {
+                                  return { ...prev, [groupIndex]: [...current, itemIndex] };
+                                }
+                                return prev;
+                              }
+                            });
+                          };
+                          
+                          return (
+                            <div key={groupIndex} className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <h5 className="font-semibold text-sm">
+                                  {group.name || "Grupo sem nome"}
+                                </h5>
+                                {group.isRequired && (
+                                  <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">
+                                    Obrigatório
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-[10px] text-muted-foreground">
+                                {group.isRequired 
+                                  ? `Escolha ${group.minQuantity === group.maxQuantity ? group.minQuantity : `${group.minQuantity} a ${group.maxQuantity}`}` 
+                                  : `Máx: ${group.maxQuantity}`}
+                                {selectedItems.length > 0 && ` • ${selectedItems.length} selecionado(s)`}
+                              </p>
+                              <div className="space-y-1">
+                                {group.items.map((item, itemIndex) => {
+                                  const isSelected = selectedItems.includes(itemIndex);
+                                  return (
+                                    <div
+                                      key={itemIndex}
+                                      onClick={() => handleItemClick(itemIndex)}
+                                      className={`flex items-center justify-between py-1.5 px-2 rounded-md cursor-pointer transition-all ${
+                                        isSelected 
+                                          ? 'bg-primary/10 border border-primary/30' 
+                                          : 'bg-muted/30 hover:bg-muted/50 border border-transparent'
+                                      }`}
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        <div className={`w-4 h-4 rounded-${isRadio ? 'full' : 'sm'} border-2 flex items-center justify-center transition-colors ${
+                                          isSelected 
+                                            ? 'border-primary bg-primary' 
+                                            : 'border-muted-foreground/30'
+                                        }`}>
+                                          {isSelected && (
+                                            <div className={`${isRadio ? 'w-2 h-2 rounded-full' : 'w-2.5 h-2.5'} bg-white`} 
+                                              style={!isRadio ? { clipPath: 'polygon(20% 50%, 40% 70%, 80% 30%, 85% 35%, 40% 80%, 15% 55%)' } : {}}
+                                            />
+                                          )}
+                                        </div>
+                                        <span className={`text-xs ${isSelected ? 'font-medium' : ''}`}>
+                                          {item.name || "Item sem nome"}
+                                        </span>
+                                      </div>
+                                      {parseFloat(item.price || "0") > 0 && (
+                                        <span className={`text-xs ${isSelected ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+                                          + R$ {parseFloat(item.price).toFixed(2).replace('.', ',')}
+                                        </span>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                                {group.items.length === 0 && (
+                                  <p className="text-[10px] text-muted-foreground/50 italic py-1">
+                                    Nenhum item adicionado
+                                  </p>
+                                )}
+                              </div>
                             </div>
-                            <p className="text-[10px] text-muted-foreground">
-                              {group.isRequired 
-                                ? `Escolha ${group.minQuantity === group.maxQuantity ? group.minQuantity : `${group.minQuantity} a ${group.maxQuantity}`}` 
-                                : `Máx: ${group.maxQuantity}`}
-                            </p>
-                            <div className="space-y-1">
-                              {group.items.map((item, itemIndex) => (
-                                <div
-                                  key={itemIndex}
-                                  className="flex items-center justify-between py-1.5 px-2 bg-muted/30 rounded-md"
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <div className={`w-4 h-4 rounded-${group.maxQuantity === 1 ? 'full' : 'sm'} border-2 border-muted-foreground/30`} />
-                                    <span className="text-xs">{item.name || "Item sem nome"}</span>
-                                  </div>
-                                  {parseFloat(item.price || "0") > 0 && (
-                                    <span className="text-xs text-muted-foreground">
-                                      + R$ {parseFloat(item.price).toFixed(2).replace('.', ',')}
-                                    </span>
-                                  )}
-                                </div>
-                              ))}
-                              {group.items.length === 0 && (
-                                <p className="text-[10px] text-muted-foreground/50 italic py-1">
-                                  Nenhum item adicionado
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Total Dinâmico */}
+                    {complementGroups.length > 0 && (
+                      <div className="mt-4 pt-3 border-t border-border/50">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Total estimado:</span>
+                          <span className="text-lg font-bold text-primary">
+                            {formatCurrency(
+                              price + 
+                              Object.entries(previewSelections).reduce((total, [groupIdx, itemIndices]) => {
+                                const group = complementGroups[parseInt(groupIdx)];
+                                if (!group) return total;
+                                return total + itemIndices.reduce((sum, itemIdx) => {
+                                  const item = group.items[itemIdx];
+                                  return sum + (item ? parseFloat(item.price || "0") : 0);
+                                }, 0);
+                              }, 0)
+                            )}
+                          </span>
+                        </div>
+                        {Object.keys(previewSelections).length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => setPreviewSelections({})}
+                            className="text-[10px] text-muted-foreground hover:text-primary mt-1 underline"
+                          >
+                            Limpar seleções
+                          </button>
+                        )}
                       </div>
                     )}
 

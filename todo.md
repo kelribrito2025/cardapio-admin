@@ -1907,3 +1907,6 @@
 - [x] Corrigir salvamento de novos grupos de complementos ao editar produto (complementos não são persistidos)
 - [x] Adicionar visualização dos grupos de complementos no container de Preview do ProductForm em tempo real
 - [x] Remover container extra do preview do item para ocupar toda a largura
+- [x] Implementar interação no preview para simular seleção de itens como o cliente
+- [x] Calcular total dinâmico no preview conforme itens são selecionados
+- [x] Adicionar scroll automático no preview quando o conteúdo for muito longo
