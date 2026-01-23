@@ -1922,3 +1922,7 @@
 ## Ocultar preço R$ 0,00
 - [x] Ocultar preço quando for R$ 0,00 na lista de produtos do catálogo administrativo
 - [x] Ocultar preço quando for R$ 0,00 no cardápio público
+
+
+## Ocultar preço R$ 0,00 na sacola
+- [x] Ocultar preço quando for R$ 0,00 na lista de itens da sacola do cardápio público

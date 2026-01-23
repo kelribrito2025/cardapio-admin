@@ -1472,9 +1472,11 @@ export default function PublicMenu() {
                                 )}
                               </div>
                               <div className="flex items-center gap-2 flex-shrink-0">
-                                <span className="text-sm font-semibold text-gray-900">
-                                  {formatPrice(itemTotal)}
-                                </span>
+                                {itemTotal > 0 && (
+                                  <span className="text-sm font-semibold text-gray-900">
+                                    {formatPrice(itemTotal)}
+                                  </span>
+                                )}
                                 <button
                                   onClick={() => {
                                     setCart(prev => prev.filter((_, i) => i !== index));
@@ -3025,9 +3027,11 @@ export default function PublicMenu() {
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <span className="font-medium text-gray-900">{item.quantity}x {item.name}</span>
-                          <span className="text-red-500 font-semibold ml-2">
-                            R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}
-                          </span>
+                          {parseFloat(item.price) * item.quantity > 0 && (
+                            <span className="text-red-500 font-semibold ml-2">
+                              R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}
+                            </span>
+                          )}
                         </div>
                         {item.complements.length > 0 && (
                           <div className="mt-1 text-xs text-gray-500">
