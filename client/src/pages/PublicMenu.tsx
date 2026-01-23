@@ -803,7 +803,7 @@ export default function PublicMenu() {
 
   // Bloquear scroll do body quando modais estão abertos
   useEffect(() => {
-    const isAnyModalOpen = showOrdersModal || showTrackingModal || showMobileBag || checkoutStep > 0 || showInfoModal || showCouponModal || showReviewsModal || showRatingModal || selectedProduct !== null || showFullscreenImage;
+    const isAnyModalOpen = showOrdersModal || showTrackingModal || showMobileBag || checkoutStep > 0 || showInfoModal || showCouponModal || showReviewsModal || showRatingModal || selectedProduct !== null || showFullscreenImage || showNavigationModal;
     
     if (isAnyModalOpen) {
       document.body.style.overflow = 'hidden';
@@ -814,7 +814,7 @@ export default function PublicMenu() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [showOrdersModal, showTrackingModal, showMobileBag, checkoutStep, showInfoModal, showCouponModal, showReviewsModal, showRatingModal, selectedProduct, showFullscreenImage]);
+  }, [showOrdersModal, showTrackingModal, showMobileBag, checkoutStep, showInfoModal, showCouponModal, showReviewsModal, showRatingModal, selectedProduct, showFullscreenImage, showNavigationModal]);
 
   // Scroll the category nav to show the active category button
   const scrollCategoryNavToActive = useCallback((categoryId: number) => {
@@ -4154,7 +4154,10 @@ export default function PublicMenu() {
 
       {/* Modal de Navegação - Bottom Sheet */}
       {showNavigationModal && establishment && (
-        <div className="fixed inset-0 z-[110] flex items-end md:items-center md:justify-center">
+        <div 
+          className="fixed inset-0 z-[110] flex items-end md:items-center md:justify-center"
+          onTouchMove={(e) => e.stopPropagation()}
+        >
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"

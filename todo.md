@@ -2085,3 +2085,8 @@
 - [x] Preencher campos de endereço automaticamente ao selecionar no mapa
 - [x] Salvar coordenadas para navegação precisa
 - [x] Atualizar modal de navegação no menu público para usar coordenadas
+
+
+## Bug: Scroll do modal de navegação afeta conteúdo de fundo
+- [x] Bloquear scroll do body quando modal de navegação estiver aberto
+- [x] Permitir scroll apenas dentro do modal
