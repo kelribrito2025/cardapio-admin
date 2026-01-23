@@ -1912,3 +1912,9 @@
 - [x] Adicionar scroll automático no preview quando o conteúdo for muito longo
 - [x] Corrigir preço do produto no preview mostrando R$ 0,00 em vez do valor digitado
 - [x] Implementar formatação automática de preço em centavos no campo de preço dos itens de complemento (500 → 5,00)
+
+## Bug - Complementos não aparecem nos detalhes do pedido
+- [x] Investigar estrutura de dados do pedido e complementos
+- [x] Verificar salvamento dos complementos ao criar pedido no cardápio público
+- [x] Corrigir exibição dos complementos nos detalhes do pedido (modal/sheet)
+- [x] Confirmado: Novos pedidos exibem complementos corretamente (pedidos antigos não tinham dados salvos)

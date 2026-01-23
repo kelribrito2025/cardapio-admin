@@ -864,6 +864,19 @@ export default function Pedidos() {
                           <span className="font-medium text-sm">{item.productName}</span>
                           <span className="font-semibold text-sm">{formatCurrency(item.totalPrice)}</span>
                         </div>
+                        {/* Complementos do item */}
+                        {item.complements && item.complements.length > 0 && (
+                          <div className="mt-1.5 pl-2 border-l-2 border-primary/30">
+                            {item.complements.map((complement: { name: string; price: number }, compIndex: number) => (
+                              <div key={compIndex} className="flex justify-between text-xs text-muted-foreground">
+                                <span className="text-foreground/70">+ {complement.name}</span>
+                                {complement.price > 0 && (
+                                  <span className="text-foreground/70">+ {formatCurrency(complement.price)}</span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                         <div className="flex justify-between text-xs text-muted-foreground mt-1">
                           <span>{item.notes || ""}</span>
                           <span>{formatCurrency(item.unitPrice)} x {item.quantity}</span>

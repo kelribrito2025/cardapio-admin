@@ -1,0 +1,65 @@
+{
+  "query": "SELECT \n  o.id, o.orderNumber, o.total, o.customerName,\n  oi.productName, oi.quantity, oi.unitPrice, oi.totalPrice, oi.complements\nFROM orders o\nJOIN orderItems oi ON o.id = oi.orderId\nWHERE o.establishmentId = 30001\nORDER BY o.id DESC\nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT \n  o.id, o.orderNumber, o.total, o.customerName,\n  oi.productName, oi.quantity, oi.unitPrice, oi.totalPrice, oi.complements\nFROM orders o\nJOIN orderItems oi ON o.id = oi.orderId\nWHERE o.establishmentId = 30001\nORDER BY o.id DESC\nLIMIT 5;",
+  "rows": [
+    {
+      "id": "90235",
+      "orderNumber": "#P240",
+      "total": "10.00",
+      "customerName": "Kelrioo",
+      "productName": "Sucos da fruta",
+      "quantity": "1",
+      "unitPrice": "5.00",
+      "totalPrice": "10.00",
+      "complements": "[{\"name\": \"Manga\", \"price\": 5}]"
+    },
+    {
+      "id": "90234",
+      "orderNumber": "#P239",
+      "total": "17.00",
+      "customerName": "Kelrioo",
+      "productName": "SALMÃO ESPECIAL",
+      "quantity": "1",
+      "unitPrice": "17.00",
+      "totalPrice": "17.00",
+      "complements": "[]"
+    },
+    {
+      "id": "90233",
+      "orderNumber": "#P238",
+      "total": "17.00",
+      "customerName": "Kelrioo",
+      "productName": "EBITEN",
+      "quantity": "1",
+      "unitPrice": "17.00",
+      "totalPrice": "17.00",
+      "complements": "[]"
+    },
+    {
+      "id": "90232",
+      "orderNumber": "#P237",
+      "total": "60.00",
+      "customerName": "Kelrioo",
+      "productName": "DUPLA DE CAMARÃO",
+      "quantity": "1",
+      "unitPrice": "7.00",
+      "totalPrice": "7.00",
+      "complements": "[]"
+    },
+    {
+      "id": "90232",
+      "orderNumber": "#P237",
+      "total": "60.00",
+      "customerName": "Kelrioo",
+      "productName": "DUPLA DE SKIN",
+      "quantity": "1",
+      "unitPrice": "5.00",
+      "totalPrice": "5.00",
+      "complements": "[]"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\ttotal\tcustomerName\tproductName\tquantity\tunitPrice\ttotalPrice\tcomplements\n90235\t#P240\t10.00\tKelrioo\tSucos da fruta\t1\t5.00\t10.00\t[{\"name\": \"Manga\", \"price\": 5}]\n90234\t#P239\t17.00\tKelrioo\tSALMÃO ESPECIAL\t1\t17.00\t17.00\t[]\n90233\t#P238\t17.00\tKelrioo\tEBITEN\t1\t17.00\t17.00\t[]\n90232\t#P237\t60.00\tKelrioo\tDUPLA DE CAMARÃO\t1\t7.00\t7.00\t[]\n90232\t#P237\t60.00\tKelrioo\tDUPLA DE SKIN\t1\t5.00\t5.00\t[]\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

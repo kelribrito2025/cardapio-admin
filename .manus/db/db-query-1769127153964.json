@@ -1,0 +1,120 @@
+{
+  "query": "SELECT \n  o.id, o.orderNumber, o.total,\n  oi.id as item_id, oi.productName, oi.quantity, oi.unitPrice, oi.totalPrice, oi.complements\nFROM orders o\nJOIN orderItems oi ON o.id = oi.orderId\nWHERE o.establishmentId = 30001\nORDER BY o.id DESC\nLIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT \n  o.id, o.orderNumber, o.total,\n  oi.id as item_id, oi.productName, oi.quantity, oi.unitPrice, oi.totalPrice, oi.complements\nFROM orders o\nJOIN orderItems oi ON o.id = oi.orderId\nWHERE o.establishmentId = 30001\nORDER BY o.id DESC\nLIMIT 10;",
+  "rows": [
+    {
+      "id": "90235",
+      "orderNumber": "#P240",
+      "total": "10.00",
+      "item_id": "60261",
+      "productName": "Sucos da fruta",
+      "quantity": "1",
+      "unitPrice": "5.00",
+      "totalPrice": "10.00",
+      "complements": "[{\"name\": \"Manga\", \"price\": 5}]"
+    },
+    {
+      "id": "90234",
+      "orderNumber": "#P239",
+      "total": "17.00",
+      "item_id": "60260",
+      "productName": "SALMÃO ESPECIAL",
+      "quantity": "1",
+      "unitPrice": "17.00",
+      "totalPrice": "17.00",
+      "complements": "[]"
+    },
+    {
+      "id": "90233",
+      "orderNumber": "#P238",
+      "total": "17.00",
+      "item_id": "60259",
+      "productName": "EBITEN",
+      "quantity": "1",
+      "unitPrice": "17.00",
+      "totalPrice": "17.00",
+      "complements": "[]"
+    },
+    {
+      "id": "90232",
+      "orderNumber": "#P237",
+      "total": "60.00",
+      "item_id": "60253",
+      "productName": "SHASHIMI - TEMPURÁ",
+      "quantity": "1",
+      "unitPrice": "16.00",
+      "totalPrice": "16.00",
+      "complements": "[]"
+    },
+    {
+      "id": "90232",
+      "orderNumber": "#P237",
+      "total": "60.00",
+      "item_id": "60254",
+      "productName": "DUPLA DE SKIN",
+      "quantity": "1",
+      "unitPrice": "5.00",
+      "totalPrice": "5.00",
+      "complements": "[]"
+    },
+    {
+      "id": "90232",
+      "orderNumber": "#P237",
+      "total": "60.00",
+      "item_id": "60257",
+      "productName": "DUPLA DE SALMÃO C/ CAMARÃO",
+      "quantity": "1",
+      "unitPrice": "8.00",
+      "totalPrice": "8.00",
+      "complements": "[]"
+    },
+    {
+      "id": "90232",
+      "orderNumber": "#P237",
+      "total": "60.00",
+      "item_id": "60255",
+      "productName": "DUPLA DE CAMARÃO",
+      "quantity": "1",
+      "unitPrice": "7.00",
+      "totalPrice": "7.00",
+      "complements": "[]"
+    },
+    {
+      "id": "90232",
+      "orderNumber": "#P237",
+      "total": "60.00",
+      "item_id": "60258",
+      "productName": "SALMÃO ESPECIAL",
+      "quantity": "1",
+      "unitPrice": "17.00",
+      "totalPrice": "17.00",
+      "complements": "[]"
+    },
+    {
+      "id": "90232",
+      "orderNumber": "#P237",
+      "total": "60.00",
+      "item_id": "60256",
+      "productName": "Dupla de gunda tomate seco",
+      "quantity": "1",
+      "unitPrice": "7.00",
+      "totalPrice": "7.00",
+      "complements": "[]"
+    },
+    {
+      "id": "90231",
+      "orderNumber": "#P236",
+      "total": "39.90",
+      "item_id": "60252",
+      "productName": "Costela Desfiada",
+      "quantity": "1",
+      "unitPrice": "39.90",
+      "totalPrice": "39.90",
+      "complements": "[]"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\ttotal\titem_id\tproductName\tquantity\tunitPrice\ttotalPrice\tcomplements\n90235\t#P240\t10.00\t60261\tSucos da fruta\t1\t5.00\t10.00\t[{\"name\": \"Manga\", \"price\": 5}]\n90234\t#P239\t17.00\t60260\tSALMÃO ESPECIAL\t1\t17.00\t17.00\t[]\n90233\t#P238\t17.00\t60259\tEBITEN\t1\t17.00\t17.00\t[]\n90232\t#P237\t60.00\t60253\tSHASHIMI - TEMPURÁ\t1\t16.00\t16.00\t[]\n90232\t#P237\t60.00\t60254\tDUPLA DE SKIN\t1\t5.00\t5.00\t[]\n90232\t#P237\t60.00\t60257\tDUPLA DE SALMÃO C/ CAMARÃO\t1\t8.00\t8.00\t[]\n90232\t#P237\t60.00\t60255\tDUPLA DE CAMARÃO\t1\t7.00\t7.00\t[]\n90232\t#P237\t60.00\t60258\tSALMÃO ESPECIAL\t1\t17.00\t17.00\t[]\n90232\t#P237\t60.00\t60256\tDupla de gunda tomate seco\t1\t7.00\t7.00\t[]\n90231\t#P236\t39.90\t60252\tCostela Desfiada\t1\t39.90\t39.90\t[]\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}
