@@ -4682,7 +4682,7 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-gray-100 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative bg-gray-100 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[75vh] md:max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
             <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
               <div className="flex items-center gap-3">
@@ -5237,7 +5237,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
     <div className="space-y-4">
       {/* Card Principal com Flip */}
       <div 
-        className="relative h-[280px]"
+        className="relative h-[220px] md:h-[260px]"
         style={{ perspective: '1000px' }}
       >
         <div 
@@ -5254,13 +5254,13 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden]"
           >
             {/* Conteúdo do Card */}
-            <div className="p-5 text-white">
-          <div className="flex items-start gap-3 mb-4">
-            <div className="p-2 bg-white/20 rounded-xl">
-              <Gift className="h-6 w-6" />
+            <div className="p-3 md:p-5 text-white">
+          <div className="flex items-start gap-2 md:gap-3 mb-3 md:mb-4">
+            <div className="p-1.5 md:p-2 bg-white/20 rounded-xl">
+              <Gift className="h-5 w-5 md:h-6 md:w-6" />
             </div>
             <div>
-              <h3 className="font-bold text-lg">{establishmentName}</h3>
+              <h3 className="font-bold text-base md:text-lg">{establishmentName}</h3>
               {cardData?.card?.customerName && (
                 <p className="text-white/80 text-sm">{cardData.card.customerName} <span className="text-white/60">• Fidelidade ativa</span></p>
               )}
@@ -5268,7 +5268,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
           </div>
           
           {/* Progresso */}
-          <div className="mb-4">
+          <div className="mb-3 md:mb-4">
             <div className="flex items-center justify-between text-sm mb-2">
               <span className="text-white/80">Progresso</span>
               <span className="font-bold">{stamps} / {required} carimbos</span>
@@ -5309,7 +5309,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               <div
                 key={i}
                 className={cn(
-                  "w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all duration-500",
+                  "w-6 h-6 md:w-7 md:h-7 rounded-full border-2 flex items-center justify-center transition-all duration-500",
                   i < stamps
                     ? "bg-emerald-500 border-emerald-400 shadow-md shadow-emerald-500/50"
                     : "border-white/40 bg-white/10",
@@ -5326,7 +5326,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                 {i < stamps ? (
                   <svg 
                     className={cn(
-                      "h-3.5 w-3.5 text-white transition-all duration-300",
+                      "h-3 w-3 md:h-3.5 md:w-3.5 text-white transition-all duration-300",
                       animatingStamp === i && "animate-pulse scale-110"
                     )}
                     fill="none" 
@@ -5337,7 +5337,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 ) : (
-                  <Clock className="h-3.5 w-3.5 text-white/50" />
+                  <Clock className="h-3 w-3 md:h-3.5 md:w-3.5 text-white/50" />
                 )}
               </div>
             ))}
@@ -5346,20 +5346,20 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
         
             {/* Mensagem de progresso ou Botão Ver Cupom - Dentro do card */}
             <div className={cn(
-              "bg-gray-100 px-5 py-4 text-center transition-all duration-300",
+              "bg-gray-100 px-3 py-2.5 md:px-5 md:py-4 text-center transition-all duration-300",
               showConfetti && "bg-emerald-50"
             )}>
               {isCardComplete && hasCouponAvailable ? (
                 <button
                   onClick={() => setIsFlipped(true)}
-                  className="w-full py-2 px-4 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-bold rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 animate-pulse"
+                  className="w-full py-1.5 md:py-2 px-3 md:px-4 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-bold text-sm md:text-base rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 animate-pulse"
                 >
-                  <Gift className="h-5 w-5" />
+                  <Gift className="h-4 w-4 md:h-5 md:w-5" />
                   Ver cupom ganho
                 </button>
               ) : (
                 <p className={cn(
-                  "text-gray-700 transition-all duration-300",
+                  "text-gray-700 text-sm md:text-base transition-all duration-300",
                   showConfetti && "text-emerald-700 font-semibold scale-105"
                 )}>
                   {showConfetti ? (
@@ -5405,10 +5405,10 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             </div>
             
             {/* Header do cupom */}
-            <div className="bg-gradient-to-r from-orange-400 to-amber-500 px-4 py-3 text-center relative">
+            <div className="bg-gradient-to-r from-orange-400 to-amber-500 px-3 py-2 md:px-4 md:py-3 text-center relative">
               <div className="flex items-center justify-center gap-2">
-                <span className="text-xl">🎉</span>
-                <h3 className="text-white font-bold text-base">Cupom desbloqueado!</h3>
+                <span className="text-base md:text-xl">🎉</span>
+                <h3 className="text-white font-bold text-sm md:text-base">Cupom desbloqueado!</h3>
               </div>
               {/* Botão para virar de volta */}
               <button
@@ -5421,16 +5421,16 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             </div>
             
             {/* Corpo do cupom */}
-            <div className="bg-gradient-to-b from-amber-50 to-orange-50 p-4 relative h-[calc(100%-52px)] flex flex-col">
+            <div className="bg-gradient-to-b from-amber-50 to-orange-50 p-3 md:p-4 relative h-[calc(100%-40px)] md:h-[calc(100%-52px)] flex flex-col">
               {cardData?.activeCoupon && (
                 <>
-                  <p className="text-gray-600 text-center text-sm mb-2">Seu código de desconto:</p>
+                  <p className="text-gray-600 text-center text-xs md:text-sm mb-1.5 md:mb-2">Seu código de desconto:</p>
                   
                   {/* Código do cupom com borda tracejada */}
-                  <div className="relative mx-auto max-w-xs mb-3">
-                    <div className="bg-white border-2 border-dashed border-amber-400 rounded-lg px-4 py-2 flex items-center justify-center gap-2">
-                      <span className="text-lg">🎫</span>
-                      <span className="text-lg font-bold text-gray-800 tracking-wider">
+                  <div className="relative mx-auto max-w-xs mb-2 md:mb-3">
+                    <div className="bg-white border-2 border-dashed border-amber-400 rounded-lg px-3 py-1.5 md:px-4 md:py-2 flex items-center justify-center gap-2">
+                      <span className="text-base md:text-lg">🎫</span>
+                      <span className="text-base md:text-lg font-bold text-gray-800 tracking-wider">
                         {cardData.activeCoupon.code}
                       </span>
                     </div>
@@ -5441,7 +5441,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   </div>
                   
                   {/* Descrição do cupom */}
-                  <p className="text-center text-gray-700 text-sm mb-1">
+                  <p className="text-center text-gray-700 text-xs md:text-sm mb-0.5 md:mb-1">
                     {cardData.activeCoupon.type === 'percentage' 
                       ? `${cardData.activeCoupon.value}% de desconto`
                       : cardData.activeCoupon.type === 'free_delivery'
@@ -5452,7 +5452,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   
                   {/* Validade */}
                   {cardData.activeCoupon.expiresAt && (
-                    <p className="text-center text-gray-500 text-xs mb-3">
+                    <p className="text-center text-gray-500 text-[10px] md:text-xs mb-2 md:mb-3">
                       Válido até: {new Date(cardData.activeCoupon.expiresAt).toLocaleDateString('pt-BR')}
                     </p>
                   )}
@@ -5469,9 +5469,9 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                         }
                       }}
                       id="flip-copy-btn"
-                      className="flex-1 py-2.5 px-3 bg-white border border-gray-200 hover:border-gray-300 text-gray-700 font-medium text-sm rounded-lg transition-all flex items-center justify-center gap-1.5"
+                      className="flex-1 py-2 px-2 md:py-2.5 md:px-3 bg-white border border-gray-200 hover:border-gray-300 text-gray-700 font-medium text-xs md:text-sm rounded-lg transition-all flex items-center justify-center gap-1 md:gap-1.5"
                     >
-                      <Copy className="h-4 w-4" />
+                      <Copy className="h-3.5 w-3.5 md:h-4 md:w-4" />
                       Copiar código
                     </button>
                     <button
@@ -5480,9 +5480,9 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                         navigator.clipboard.writeText(cardData.activeCoupon?.code || '');
                         onLogout?.();
                       }}
-                      className="flex-1 py-2.5 px-3 bg-gradient-to-r from-orange-400 to-amber-500 hover:from-orange-500 hover:to-amber-600 text-white font-medium text-sm rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-md"
+                      className="flex-1 py-2 px-2 md:py-2.5 md:px-3 bg-gradient-to-r from-orange-400 to-amber-500 hover:from-orange-500 hover:to-amber-600 text-white font-medium text-xs md:text-sm rounded-lg transition-all flex items-center justify-center gap-1 md:gap-1.5 shadow-md"
                     >
-                      <ShoppingBag className="h-4 w-4" />
+                      <ShoppingBag className="h-3.5 w-3.5 md:h-4 md:w-4" />
                       Usar agora
                     </button>
                   </div>
@@ -5494,10 +5494,10 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
       </div>
       
       {/* Histórico */}
-      <div className="bg-white rounded-xl p-4">
-        <h4 className="font-bold text-gray-900 mb-3">Histórico</h4>
+      <div className="bg-white rounded-xl p-3 md:p-4">
+        <h4 className="font-bold text-gray-900 text-sm md:text-base mb-2 md:mb-3">Histórico</h4>
         {cardData?.stamps && cardData.stamps.length > 0 ? (
-          <div className="space-y-2 max-h-48 overflow-y-auto">
+          <div className="space-y-1.5 md:space-y-2 max-h-32 md:max-h-48 overflow-y-auto">
             {cardData.stamps.slice(0, 10).map((stamp) => (
               <div key={stamp.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                 <div>
@@ -5530,7 +5530,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
       {/* Botão Sair */}
       <button
         onClick={onLogout}
-        className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
+        className="w-full py-2.5 md:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-sm md:text-base rounded-xl transition-colors"
       >
         Sair do cartão
       </button>

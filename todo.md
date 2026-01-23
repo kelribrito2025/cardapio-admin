@@ -2331,3 +2331,8 @@
 - [x] Adicionar botão para voltar à face dos carimbos
 - [x] Remover card laranja separado (cupom integrado no flip)
 - [x] Animação suave de 300-400ms
+
+## Ajuste de Altura do Modal de Fidelidade (Mobile)
+- [x] Reduzir altura do cartão de fidelidade na versão mobile
+- [x] Garantir que o modal não ocupe toda a altura da tela
+- [x] Permitir que o usuário consiga fechar o modal facilmente
