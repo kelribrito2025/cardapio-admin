@@ -2130,3 +2130,4 @@
 ## Bug: establishmentId undefined ao salvar horários
 - [x] Corrigir erro de establishmentId undefined ao salvar horários de funcionamento na página de configurações
 - [x] Corrigir erro de query de horários de funcionamento (Invalid input: expected object, received undefined)
+- [x] Corrigir lógica de verificação de status aberto/fechado no menu público (tabela business_hours não existia no banco de dados)
