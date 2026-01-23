@@ -3305,7 +3305,12 @@ export default function PublicMenu() {
                                       {item.complements && item.complements.length > 0 && (
                                         <div className="mt-0.5 ml-4">
                                           {item.complements.map((c: any, cIdx: number) => (
-                                            <p key={cIdx} className="text-xs text-gray-500">+ {c.name}</p>
+                                            <div key={cIdx} className="flex justify-between text-xs text-gray-500">
+                                              <span>+ {c.name}</span>
+                                              {parseFloat(c.price) > 0 && (
+                                                <span>+ R$ {parseFloat(c.price).toFixed(2).replace('.', ',')}</span>
+                                              )}
+                                            </div>
                                           ))}
                                         </div>
                                       )}
@@ -3398,7 +3403,12 @@ export default function PublicMenu() {
                                       {item.complements && item.complements.length > 0 && (
                                         <div className="mt-0.5 ml-4">
                                           {item.complements.map((c: any, cIdx: number) => (
-                                            <p key={cIdx} className="text-xs text-gray-500">+ {c.name}</p>
+                                            <div key={cIdx} className="flex justify-between text-xs text-gray-500">
+                                              <span>+ {c.name}</span>
+                                              {parseFloat(c.price) > 0 && (
+                                                <span>+ R$ {parseFloat(c.price).toFixed(2).replace('.', ',')}</span>
+                                              )}
+                                            </div>
                                           ))}
                                         </div>
                                       )}

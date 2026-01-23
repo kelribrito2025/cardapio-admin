@@ -1973,3 +1973,7 @@
 - [x] Informações de Entrega - cor verde clara (bg-emerald-50/50)
 - [x] Detalhes do Pagamento - cor roxa clara (bg-purple-50/50)
 - [x] Status do Pedido - manter neutro
+
+
+## Adicionar preços dos complementos no modal Meus Pedidos
+- [x] Exibir valor unitário de cada complemento no modal Meus Pedidos do cardápio público (em andamento e histórico)
