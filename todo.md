@@ -2262,3 +2262,19 @@
 - [x] Animações só aparecem no primeiro login
 - [x] Corrigir para aparecer sempre que o modal for aberto
 - [x] Resetar estado de animação ao abrir modal
+
+
+## Melhorias Visuais do Cartão Fidelidade
+- [ ] Carimbos ativos com verde brilhante e check minimalista
+- [ ] Animação de expansão + fade nos carimbos
+- [ ] Layout especial de CUPOM LIBERADO com confetti
+- [ ] Botões "Copiar código" e "Usar agora"
+- [ ] Exibir validade do cupom
+
+
+## Melhorias Visuais do Cartão Fidelidade (Carimbos)
+- [x] Carimbos ativos com verde brilhante e check minimalista
+- [x] Animação de expansão + fade nos carimbos
+- [x] Confetti colorido ao redor dos carimbos ativos
+- [x] Layout de CUPOM LIBERADO com confetti animado
+- [x] Botões "Copiar código" e "Usar agora" no cupom

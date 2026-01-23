@@ -5162,6 +5162,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
       code: string;
       type: string;
       value: string;
+      expiresAt?: string | null;
     } | null;
   } | null | undefined;
   stampsRequired: number;
@@ -5281,23 +5282,36 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               <div
                 key={i}
                 className={cn(
-                  "w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-300",
+                  "w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-500",
                   i < stamps
-                    ? "bg-white border-white"
+                    ? "bg-emerald-500 border-emerald-400 shadow-lg shadow-emerald-500/50"
                     : "border-white/40 bg-white/10",
                   // Animação de pop no carimbo recém-ganho
-                  animatingStamp === i && "animate-bounce scale-125 shadow-lg shadow-white/50"
+                  animatingStamp === i && "animate-bounce scale-125"
                 )}
                 style={{
                   // Efeito de entrada escalonado para carimbos existentes
-                  transitionDelay: `${i * 50}ms`
+                  transitionDelay: `${i * 50}ms`,
+                  // Glow verde brilhante nos carimbos ativos
+                  ...(i < stamps ? { boxShadow: '0 0 15px rgba(16, 185, 129, 0.6)' } : {})
                 }}
               >
-                <Clock className={cn(
-                  "h-5 w-5 transition-all duration-300",
-                  i < stamps ? "text-emerald-600" : "text-white/50",
-                  animatingStamp === i && "animate-pulse"
-                )} />
+                {i < stamps ? (
+                  <svg 
+                    className={cn(
+                      "h-5 w-5 text-white transition-all duration-300",
+                      animatingStamp === i && "animate-pulse scale-110"
+                    )}
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor" 
+                    strokeWidth={3}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <Clock className="h-5 w-5 text-white/50" />
+                )}
               </div>
             ))}
           </div>
@@ -5306,8 +5320,31 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
         {/* Mensagem de progresso - Dentro do card */}
         <div className={cn(
           "bg-gray-100 px-5 py-4 text-center transition-all duration-300",
-          showConfetti && "bg-emerald-50"
+          showConfetti && "bg-emerald-50",
+          remaining === 0 && "bg-gradient-to-br from-emerald-50 to-teal-50 relative overflow-hidden"
         )}>
+          {/* Confetti de fundo quando cupom liberado */}
+          {remaining === 0 && (
+            <div className="absolute inset-0 pointer-events-none">
+              {[...Array(20)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute animate-bounce"
+                  style={{
+                    left: `${5 + (i * 5)}%`,
+                    top: `${Math.random() * 100}%`,
+                    animationDelay: `${i * 0.15}s`,
+                    animationDuration: `${1.5 + Math.random()}s`,
+                    fontSize: '12px',
+                    opacity: 0.7
+                  }}
+                >
+                  {['🎉', '✨', '🎊', '🌟', '💫'][i % 5]}
+                </div>
+              ))}
+            </div>
+          )}
+          
           {remaining > 0 ? (
             <p className={cn(
               "text-gray-700 transition-all duration-300",
@@ -5327,21 +5364,62 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               )}
             </p>
           ) : (
-            <div className="space-y-2">
-              <p className="text-emerald-600 font-bold text-lg">🎉 Parabéns!</p>
-              <p className="text-gray-700">Você ganhou um cupom de desconto!</p>
+            <div className="space-y-3 relative z-10">
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-2xl animate-bounce">🎉</span>
+                <p className="text-emerald-700 font-bold text-lg">Parabéns, {cardData?.card?.customerName || 'Cliente'}!</p>
+                <span className="text-2xl animate-bounce" style={{ animationDelay: '0.2s' }}>🎉</span>
+              </div>
+              <p className="text-gray-600 text-sm">Você completou seu cartão de fidelidade.</p>
+              <p className="text-gray-700 font-medium">Seu cupom especial está disponível:</p>
+              
               {cardData?.activeCoupon && (
-                <div className="mt-3 p-3 bg-emerald-50 rounded-xl">
-                  <p className="text-sm text-gray-600">Seu cupom:</p>
-                  <p className="text-xl font-bold text-emerald-600">{cardData.activeCoupon.code}</p>
-                  <p className="text-sm text-gray-500">
+                <div className="mt-4 p-4 bg-white rounded-xl border-2 border-emerald-200 shadow-lg">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <span className="text-2xl">🧧</span>
+                    <p className="text-2xl font-bold text-emerald-600 tracking-wider">{cardData.activeCoupon.code}</p>
+                  </div>
+                  <p className="text-emerald-700 font-semibold">
                     {cardData.activeCoupon.type === 'percentage' 
-                      ? `${cardData.activeCoupon.value}% de desconto`
+                      ? `${cardData.activeCoupon.value}% OFF no seu próximo pedido`
                       : cardData.activeCoupon.type === 'free_delivery'
-                      ? 'Frete grátis'
-                      : `R$ ${Number(cardData.activeCoupon.value).toFixed(2)} de desconto`
+                      ? 'Frete GRÁTIS no seu próximo pedido'
+                      : `R$ ${Number(cardData.activeCoupon.value).toFixed(2)} OFF no seu próximo pedido`
                     }
                   </p>
+                  {cardData.activeCoupon.expiresAt && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Válido até: {new Date(cardData.activeCoupon.expiresAt).toLocaleDateString('pt-BR')}
+                    </p>
+                  )}
+                  
+                  <div className="flex gap-2 mt-4">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(cardData.activeCoupon?.code || '');
+                        // Feedback visual
+                        const btn = document.getElementById('copy-coupon-btn');
+                        if (btn) {
+                          btn.textContent = 'Copiado!';
+                          setTimeout(() => { btn.textContent = 'Copiar código'; }, 2000);
+                        }
+                      }}
+                      id="copy-coupon-btn"
+                      className="flex-1 py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Copy className="h-4 w-4" />
+                      Copiar código
+                    </button>
+                    <button
+                      onClick={() => {
+                        // Fechar modal e ir para o cardápio
+                        onLogout?.();
+                      }}
+                      className="flex-1 py-2 px-4 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-lg transition-colors"
+                    >
+                      Usar agora
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
