@@ -1953,3 +1953,7 @@
 
 ## Exibir preço dos complementos na impressão
 - [x] Mostrar preço individual de cada complemento no recibo impresso
+
+
+## Reorganizar modal de detalhes do pedido
+- [x] Mover container "Itens do Pedido" para cima do container "Detalhes do Pagamento"

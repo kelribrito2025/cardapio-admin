@@ -834,21 +834,6 @@ export default function Pedidos() {
                   )}
                 </div>
 
-                {/* Payment Details */}
-                <div className="border border-border/50 rounded-xl p-4">
-                  <h4 className="font-semibold text-base mb-4">Detalhes do Pagamento</h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Data:</span>
-                      <span className="font-medium">{format(new Date(orderDetails.createdAt), "dd/MM/yyyy", { locale: ptBR })}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Método:</span>
-                      <span className="font-medium">{paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</span>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Delivery Info */}
                 <div className="border border-border/50 rounded-xl p-4">
                   <h4 className="font-semibold text-base mb-4">Informações de Entrega</h4>
@@ -865,10 +850,7 @@ export default function Pedidos() {
                     )}
                   </div>
                 </div>
-              </div>
 
-              {/* Order Items and Status - Layout Vertical */}
-              <div className="px-6 py-4 space-y-4">
                 {/* Order Items */}
                 <div className="border border-border/50 rounded-xl p-4">
                   <h4 className="font-semibold text-base mb-4">Itens do Pedido</h4>
@@ -920,6 +902,21 @@ export default function Pedidos() {
                     <div className="flex justify-between pt-2 border-t border-border/50">
                       <span className="font-bold text-primary">Total:</span>
                       <span className="font-bold text-primary">{formatCurrency(orderDetails.total)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment Details */}
+                <div className="border border-border/50 rounded-xl p-4">
+                  <h4 className="font-semibold text-base mb-4">Detalhes do Pagamento</h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Data:</span>
+                      <span className="font-medium">{format(new Date(orderDetails.createdAt), "dd/MM/yyyy", { locale: ptBR })}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Método:</span>
+                      <span className="font-medium">{paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</span>
                     </div>
                   </div>
                 </div>
