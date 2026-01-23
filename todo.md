@@ -2138,3 +2138,6 @@
 
 ## Efeito Visual no Container Delivery/Retirada
 - [x] Adicionar efeito pulsante no container de Delivery/Retirada no menu público (apenas versão mobile)
+
+## Padronização de Ícones
+- [x] Padronizar ícones de garfo e faca (UtensilsCrossed) em todo o menu público (header, placeholder de produtos, etc.)

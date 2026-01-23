@@ -1078,7 +1078,7 @@ export default function PublicMenu() {
           <div className="flex items-center gap-4">
             {/* Logo do Restaurante - usa placeholder até ter logo configurado */}
             <div className="rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center flex-shrink-0" style={{width: '37px', height: '37px'}}>
-              <Utensils className="h-5 w-5 text-white" />
+              <UtensilsCrossed className="h-5 w-5 text-white" />
             </div>
 
             {/* Search Bar */}
@@ -1208,7 +1208,7 @@ export default function PublicMenu() {
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-red-500/20 to-red-500/5 flex items-center justify-center">
-              <Utensils className="h-16 w-16 text-red-500/30" />
+              <UtensilsCrossed className="h-16 w-16 text-red-500/30" />
             </div>
           )}
         </div>
@@ -1307,7 +1307,7 @@ export default function PublicMenu() {
               />
             ) : (
               <div className="h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center border-4 border-white shadow-lg">
-                <Utensils className="h-12 w-12 md:h-16 md:w-16 text-white" />
+                <UtensilsCrossed className="h-12 w-12 md:h-16 md:w-16 text-white" />
               </div>
             )}
           </div>
@@ -1559,7 +1559,7 @@ export default function PublicMenu() {
 
             {filteredProducts.length === 0 && !searchQuery && (
               <div className="text-center py-12">
-                <Utensils className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                <UtensilsCrossed className="h-12 w-12 text-gray-300 mx-auto mb-3" />
                 <p className="text-gray-500">Nenhum produto disponível no momento.</p>
               </div>
             )}
