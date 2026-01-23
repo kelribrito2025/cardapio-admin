@@ -970,7 +970,7 @@ export default function PublicMenu() {
   // Get service types
   const getServiceTypes = () => {
     const types = [];
-    if (establishment.allowsDelivery) types.push("Entrega");
+    if (establishment.allowsDelivery) types.push("Delivery");
     if (establishment.allowsPickup) types.push("Retirada");
     return types.join(" e ");
   };
