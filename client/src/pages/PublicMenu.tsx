@@ -1133,7 +1133,7 @@ export default function PublicMenu() {
           {getServiceTypes() && (
             <div className="md:hidden absolute top-[116px] right-4 z-0" style={{marginTop: '-29px', marginRight: '-2px', paddingRight: '0px'}}>
               {/* Aba principal - fica atrás do card */}
-              <div className="bg-red-500 text-white font-bold rounded-t-xl shadow-md flex items-center gap-1.5" style={{fontSize: '11px', paddingTop: '3px', paddingRight: '14px', paddingBottom: '7px', paddingLeft: '10px', marginTop: '21px', height: '33px', borderRadius: '12px'}}>
+              <div className="bg-red-500 text-white font-bold rounded-t-xl shadow-md flex items-center gap-1.5" style={{fontSize: '11px', paddingTop: '0px', paddingRight: '14px', paddingBottom: '10px', paddingLeft: '10px', marginTop: '21px', height: '33px', borderRadius: '12px'}}>
                 <Bike className="h-3.5 w-3.5 animate-bike-ride" />
                 {getServiceTypes()}
               </div>

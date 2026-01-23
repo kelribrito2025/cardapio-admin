@@ -2114,3 +2114,4 @@
 - [x] Ajustes finos de posicionamento da aba (marginTop: -29px, marginRight: -2px) via editor visual
 - [x] Adicionar ícone de motocicleta ao lado esquerdo do texto "Delivery e Retirada" na aba do menu público
 - [x] Adicionar animação sutil no ícone de motocicleta para chamar mais atenção
+- [x] Ajustar posição do texto e ícone para ficarem mais para cima dentro do container da aba (paddingTop: 0px, paddingBottom: 10px)
