@@ -2054,3 +2054,8 @@
 ## Melhoria: Busca ignorando acentos no menu público
 - [x] Implementar normalização de acentos na busca de produtos
 - [x] Buscar "agua" deve encontrar "água" e vice-versa
+
+
+## Ajuste: Botão de adicionar responsivo em telas pequenas
+- [x] Ocultar texto "Adicionar" em telas pequenas (< 360px)
+- [x] Manter apenas símbolo "+" e preço em dispositivos móveis
