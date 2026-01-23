@@ -4758,6 +4758,7 @@ export default function PublicMenu() {
                   cardData={loyaltyCardQuery.data}
                   stampsRequired={loyaltyEnabled?.stampsRequired || 6}
                   isLoading={loyaltyCardQuery.isLoading}
+                  isModalOpen={showLoyaltyModal}
                   onLogout={() => {
                     setIsLoyaltyLoggedIn(false);
                     setLoyaltyPhone('');
@@ -5136,26 +5137,15 @@ function LoyaltyRegisterForm({
   );
 }
 
-function LoyaltyCardView({
-  establishmentName,
-  cardData,
-  stampsRequired,
-  isLoading,
-  onLogout,
-}: {
+function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoading, isModalOpen, onLogout }: {
   establishmentName: string;
   cardData: {
     card: {
       id: number;
-      customerName: string | null;
       stamps: number;
+      customerName: string | null;
       totalStampsEarned: number;
       couponsEarned: number;
-    };
-    settings: {
-      stampsRequired: number;
-      couponType: string | null;
-      couponValue: string | null;
     };
     stamps: Array<{
       id: number;
@@ -5163,6 +5153,11 @@ function LoyaltyCardView({
       orderTotal: string;
       createdAt: Date;
     }>;
+    settings: {
+      stampsRequired: number;
+      couponType: "percentage" | "fixed" | "free_delivery" | null;
+      couponValue: string | null;
+    };
     activeCoupon: {
       code: string;
       type: string;
@@ -5171,39 +5166,52 @@ function LoyaltyCardView({
   } | null | undefined;
   stampsRequired: number;
   isLoading: boolean;
+  isModalOpen?: boolean;
   onLogout: () => void;
 }) {
-  const [previousStamps, setPreviousStamps] = useState<number | null>(null);
   const [animatingStamp, setAnimatingStamp] = useState<number | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showRules, setShowRules] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(false);
   
   const stamps = cardData?.card?.stamps || 0;
   const required = cardData?.settings?.stampsRequired || stampsRequired;
   const remaining = Math.max(0, required - stamps);
   const progress = Math.min(100, (stamps / required) * 100);
   
-  // Detectar novo carimbo e disparar animação
+  // Disparar animação sempre que o modal for aberto e houver carimbos
   useEffect(() => {
-    if (previousStamps !== null && stamps > previousStamps) {
-      // Novo carimbo ganho!
-      const newStampIndex = stamps - 1;
-      setAnimatingStamp(newStampIndex);
-      setShowConfetti(true);
+    if (isModalOpen && stamps > 0 && !hasAnimated && !isLoading) {
+      // Animar o último carimbo ganho
+      const lastStampIndex = stamps - 1;
       
-      // Vibração no mobile (se suportado)
-      if ('vibrate' in navigator) {
-        navigator.vibrate([100, 50, 100]); // Padrão de vibração: vibra, pausa, vibra
-      }
-      
-      // Remover animação após 1 segundo
+      // Pequeno delay para a animação ser perceptível
       setTimeout(() => {
-        setAnimatingStamp(null);
-        setShowConfetti(false);
-      }, 1500);
+        setAnimatingStamp(lastStampIndex);
+        setShowConfetti(true);
+        
+        // Vibração no mobile (se suportado)
+        if ('vibrate' in navigator) {
+          navigator.vibrate([100, 50, 100]); // Padrão de vibração: vibra, pausa, vibra
+        }
+        
+        // Remover animação após 1.5 segundos
+        setTimeout(() => {
+          setAnimatingStamp(null);
+          setShowConfetti(false);
+        }, 1500);
+      }, 300);
+      
+      setHasAnimated(true);
     }
-    setPreviousStamps(stamps);
-  }, [stamps, previousStamps]);
+    
+    // Resetar quando o modal for fechado
+    if (!isModalOpen) {
+      setHasAnimated(false);
+      setAnimatingStamp(null);
+      setShowConfetti(false);
+    }
+  }, [isModalOpen, stamps, hasAnimated, isLoading]);
   
   if (isLoading) {
     return (
@@ -5349,7 +5357,7 @@ function LoyaltyCardView({
             {cardData.stamps.slice(0, 10).map((stamp) => (
               <div key={stamp.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Pedido #{stamp.orderNumber}</p>
+                  <p className="text-sm font-medium text-gray-900">Pedido {stamp.orderNumber}</p>
                   <p className="text-xs text-gray-500">
                     {new Date(stamp.createdAt).toLocaleDateString('pt-BR')}
                   </p>

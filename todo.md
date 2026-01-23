@@ -2256,3 +2256,9 @@
 - [x] Incluir: o que gera carimbo (pedidos concluídos)
 - [x] Incluir: pedidos cancelados não contam
 - [x] Incluir: validade do cupom
+
+
+## Bug: Animações do Cartão Fidelidade
+- [x] Animações só aparecem no primeiro login
+- [x] Corrigir para aparecer sempre que o modal for aberto
+- [x] Resetar estado de animação ao abrir modal
