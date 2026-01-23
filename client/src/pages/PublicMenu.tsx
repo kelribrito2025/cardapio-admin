@@ -1783,12 +1783,7 @@ export default function PublicMenu() {
                         </div>
                       </div>
                     )}
-                    {/* Indicador de foto do complemento */}
-                    {isComplementImage && (
-                      <div className="absolute bottom-3 left-3 bg-red-500 text-white px-2.5 py-1 rounded-full text-xs font-medium">
-                        Foto do complemento
-                      </div>
-                    )}
+
                     {/* Indicador de quantidade de fotos (apenas para imagem do produto) */}
                     {!isComplementImage && selectedProduct.images && selectedProduct.images.length > 1 && (
                       <div className="absolute bottom-3 right-3 bg-black/60 text-white px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5">
@@ -1936,16 +1931,7 @@ export default function PublicMenu() {
                                     }}
                                     className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500"
                                   />
-                                  {/* Indicador de foto no complemento */}
-                                  {hasImage && (
-                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
-                                      isSelected ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'
-                                    }`}>
-                                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                      </svg>
-                                    </div>
-                                  )}
+
                                   <span className="text-sm text-gray-900">{item.name}</span>
                                 </div>
                                 {Number(item.price) > 0 && (

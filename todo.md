@@ -2029,3 +2029,8 @@
 - [x] Adicionar indicador minimalista na lista de complementos (check se tem foto, placeholder se não)
 - [x] Exibir foto do complemento selecionado no modal do menu público
 - [x] Fallback para foto do produto quando complemento não tiver foto
+
+
+## Ajuste: Remover indicadores visuais de foto do complemento no menu público
+- [x] Remover badge "Foto do complemento" da imagem do produto
+- [x] Remover ícone de foto ao lado do item de complemento na seleção
