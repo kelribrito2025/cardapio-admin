@@ -1131,7 +1131,7 @@ export default function PublicMenu() {
         <div className="relative -mt-16 md:-mt-20 flex flex-col md:flex-row md:items-end gap-4 pb-4">
           {/* Badge de Entrega/Retirada - Aba de pasta atrás do card (mobile) */}
           {getServiceTypes() && (
-            <div className="md:hidden absolute top-[72px] right-4 z-0">
+            <div className="md:hidden absolute top-[116px] right-4 z-0">
               {/* Aba principal - fica atrás do card */}
               <div className="px-4 pt-2 pb-4 bg-red-500 text-white text-xs font-bold rounded-t-xl shadow-md">
                 {getServiceTypes()}
