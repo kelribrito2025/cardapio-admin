@@ -2109,3 +2109,4 @@
 - [x] Ajustar badge "Entrega e Retirada" para ficar como aba de pasta no topo direito do card (estilo folder tab)
 - [x] Ajustar z-index do badge para parecer estar atrás do card (efeito de aba de pasta saindo por trás)
 - [x] Ajustar posição vertical da aba para ficar perfeitamente alinhada com o topo do card
+- [x] Ajustes visuais finos na aba de Entrega/Retirada (tamanho, padding, posição) via editor visual
