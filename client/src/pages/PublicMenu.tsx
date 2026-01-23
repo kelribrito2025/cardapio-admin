@@ -1129,6 +1129,15 @@ export default function PublicMenu() {
       {/* Restaurant Info Block */}
       <div className="max-w-7xl mx-auto px-4">
         <div className="relative -mt-16 md:-mt-20 flex flex-col md:flex-row md:items-end gap-4 pb-4">
+          {/* Badge de Entrega/Retirada - Aba de pasta atrás do card (mobile) */}
+          {getServiceTypes() && (
+            <div className="md:hidden absolute top-[72px] right-4 z-0">
+              {/* Aba principal - fica atrás do card */}
+              <div className="px-4 pt-2 pb-4 bg-red-500 text-white text-xs font-bold rounded-t-xl shadow-md">
+                {getServiceTypes()}
+              </div>
+            </div>
+          )}
           {/* Profile Image with Note Balloon */}
           <div className="relative z-10 ml-4 md:ml-6">
             {/* Balão de Nota - exibe apenas se existir nota e não estiver expirada */}
@@ -1211,18 +1220,7 @@ export default function PublicMenu() {
           </div>
 
           {/* Info */}
-          <div className="flex-1 bg-white rounded-xl p-4 md:p-5 shadow-sm md:ml-4 relative" style={{paddingBottom: '4px'}}>
-            {/* Badge de Entrega/Retirada - Aba de pasta no topo direito (mobile) */}
-            {getServiceTypes() && (
-              <div className="md:hidden absolute -top-3 right-4 z-10">
-                {/* Sombra/fundo da aba */}
-                <div className="absolute inset-0 bg-gray-300 rounded-t-lg translate-y-0.5" style={{borderBottomLeftRadius: 0, borderBottomRightRadius: 0}}></div>
-                {/* Aba principal */}
-                <div className="relative px-4 py-2 bg-red-500 text-white text-xs font-bold rounded-t-lg shadow-lg" style={{borderBottomLeftRadius: 0, borderBottomRightRadius: 0}}>
-                  {getServiceTypes()}
-                </div>
-              </div>
-            )}
+          <div className="flex-1 bg-white rounded-xl p-4 md:p-5 shadow-sm md:ml-4 relative z-10" style={{paddingBottom: '4px'}}>
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
               <div className="flex-1">
                 {/* Restaurant Name, Rating and Share */}
