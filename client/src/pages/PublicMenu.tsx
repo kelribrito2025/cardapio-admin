@@ -5367,34 +5367,34 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
           </div>
           
           {/* Header laranja com degradê */}
-          <div className="bg-gradient-to-r from-orange-400 to-amber-500 px-5 py-4 text-center">
+          <div className="bg-gradient-to-r from-orange-400 to-amber-500 px-4 py-2.5 text-center">
             <div className="flex items-center justify-center gap-2">
-              <Gift className="h-6 w-6 text-white" />
-              <h3 className="text-white font-bold text-lg">Parabéns! Cupom Liberado</h3>
+              <Gift className="h-5 w-5 text-white" />
+              <h3 className="text-white font-bold text-base">Parabéns! Cupom Liberado</h3>
             </div>
           </div>
           
           {/* Corpo do cupom */}
-          <div className="bg-gradient-to-b from-amber-50 to-orange-50 p-6 relative">
-            <p className="text-gray-600 text-center mb-4">Seu código de desconto:</p>
+          <div className="bg-gradient-to-b from-amber-50 to-orange-50 p-4 relative">
+            <p className="text-gray-600 text-center text-sm mb-2">Seu código de desconto:</p>
             
             {/* Código do cupom com borda tracejada */}
             <div className="relative mx-auto max-w-xs">
-              <div className="bg-white border-2 border-dashed border-amber-400 rounded-xl px-6 py-4 flex items-center justify-center gap-3">
-                <span className="text-2xl">🎫</span>
-                <span className="text-xl md:text-2xl font-bold text-gray-800 tracking-wider">
+              <div className="bg-white border-2 border-dashed border-amber-400 rounded-lg px-4 py-2.5 flex items-center justify-center gap-2">
+                <span className="text-lg">🎫</span>
+                <span className="text-lg font-bold text-gray-800 tracking-wider">
                   {cardData.activeCoupon.code}
                 </span>
               </div>
               {/* Badge de presente no canto */}
-              <div className="absolute -top-3 -right-3 bg-amber-500 rounded-full p-2 shadow-lg">
-                <Gift className="h-5 w-5 text-white" />
+              <div className="absolute -top-2 -right-2 bg-amber-500 rounded-full p-1.5 shadow-lg">
+                <Gift className="h-4 w-4 text-white" />
               </div>
             </div>
             
             {/* Valor do desconto */}
-            <div className="mt-4 flex justify-center">
-              <div className="bg-amber-100 text-amber-800 font-bold text-lg px-6 py-2 rounded-full">
+            <div className="mt-3 flex justify-center">
+              <div className="bg-amber-100 text-amber-800 font-bold text-sm px-4 py-1.5 rounded-full">
                 {cardData.activeCoupon.type === 'percentage' 
                   ? `${cardData.activeCoupon.value}% OFF`
                   : cardData.activeCoupon.type === 'free_delivery'
@@ -5405,7 +5405,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             </div>
             
             {/* Botões */}
-            <div className="flex gap-3 mt-5">
+            <div className="flex gap-2 mt-3">
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(cardData.activeCoupon?.code || '');
@@ -5418,28 +5418,28 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   }
                 }}
                 id="copy-coupon-btn"
-                className="flex-1 py-3 px-4 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 font-medium rounded-xl transition-all flex items-center justify-center gap-2"
+                className="flex-1 py-2 px-3 bg-white border border-gray-200 hover:border-gray-300 text-gray-700 font-medium text-sm rounded-lg transition-all flex items-center justify-center gap-1.5"
               >
-                <Copy className="h-4 w-4" />
-                Copiar Código
+                <Copy className="h-3.5 w-3.5" />
+                Copiar
               </button>
               <button
                 onClick={() => {
                   onLogout?.();
                 }}
-                className="flex-1 py-3 px-4 bg-gradient-to-r from-orange-400 to-amber-500 hover:from-orange-500 hover:to-amber-600 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 shadow-md"
+                className="flex-1 py-2 px-3 bg-gradient-to-r from-orange-400 to-amber-500 hover:from-orange-500 hover:to-amber-600 text-white font-medium text-sm rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-md"
               >
-                <span className="text-lg">🎫</span>
+                <span className="text-sm">🎫</span>
                 Usar Agora
               </button>
             </div>
             
             {/* Texto de validade */}
-            <p className="text-gray-500 text-sm text-center mt-4">
+            <p className="text-gray-500 text-xs text-center mt-2">
               Válido para o seu próximo pedido
               {cardData.activeCoupon.expiresAt && (
-                <span className="block text-xs mt-1">
-                  Expira em: {new Date(cardData.activeCoupon.expiresAt).toLocaleDateString('pt-BR')}
+                <span className="ml-1">
+                  • Expira: {new Date(cardData.activeCoupon.expiresAt).toLocaleDateString('pt-BR')}
                 </span>
               )}
             </p>

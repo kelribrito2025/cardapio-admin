@@ -2301,3 +2301,8 @@
 - [x] Badge de presente no canto
 - [x] Botões "Copiar Código" e "Usar Agora" em laranja
 - [x] Texto "Válido para o seu próximo pedido"
+
+
+## Ajuste de Altura do Card de Cupom
+- [x] Reduzir altura do card de cupom liberado
+- [x] Deixar mesma altura do cartão de fidelidade
