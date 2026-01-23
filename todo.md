@@ -1940,3 +1940,8 @@
 
 ## Exibir complementos no modal Meus Pedidos
 - [x] Adicionar exibição dos complementos selecionados na lista de itens do modal Meus Pedidos (em andamento e histórico)
+
+
+## Bloquear adição à sacola quando item tem preço zero sem complemento
+- [x] Desabilitar botão "Adicionar" quando item tem preço zero e nenhum complemento foi selecionado
+- [x] Exibir mensagem "Selecione uma opção" no botão quando bloqueado

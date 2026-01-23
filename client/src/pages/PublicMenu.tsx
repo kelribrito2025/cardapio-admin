@@ -1986,7 +1986,13 @@ export default function PublicMenu() {
                 
                 // Verificar se a loja está aberta
                 const isStoreOpen = establishment.isOpen;
-                const canAddToCart = requiredGroupsMet && isStoreOpen;
+                
+                // Verificar se item tem preço zero e nenhum complemento selecionado
+                const hasZeroPrice = Number(selectedProduct.price) === 0;
+                const hasSelectedComplements = selectedComplementsList.length > 0;
+                const canAddZeroPriceItem = !hasZeroPrice || hasSelectedComplements;
+                
+                const canAddToCart = requiredGroupsMet && isStoreOpen && canAddZeroPriceItem;
                 
                 return (
                   <button
@@ -2045,15 +2051,20 @@ export default function PublicMenu() {
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                   >
-                    {isStoreOpen ? (
-                      <>
-                        <ShoppingBag className="h-5 w-5" />
-                        <span>Adicionar {formatPrice(totalPrice)}</span>
-                      </>
-                    ) : (
+                    {!isStoreOpen ? (
                       <>
                         <Clock className="h-5 w-5" />
                         <span>Restaurante Fechado</span>
+                      </>
+                    ) : hasZeroPrice && !hasSelectedComplements ? (
+                      <>
+                        <ShoppingBag className="h-5 w-5" />
+                        <span>Selecione uma opção</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingBag className="h-5 w-5" />
+                        <span>Adicionar {formatPrice(totalPrice)}</span>
                       </>
                     )}
                   </button>
