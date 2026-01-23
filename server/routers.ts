@@ -1196,6 +1196,177 @@ export const appRouter = router({
       }),
   }),
 
+  // ============ LOYALTY (FIDELIDADE) ============
+  loyalty: router({
+    // Configurações de fidelidade do estabelecimento (admin)
+    getSettings: protectedProcedure
+      .query(async ({ ctx }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) return null;
+        return {
+          loyaltyEnabled: establishment.loyaltyEnabled,
+          loyaltyStampsRequired: establishment.loyaltyStampsRequired,
+          loyaltyCouponType: establishment.loyaltyCouponType,
+          loyaltyCouponValue: establishment.loyaltyCouponValue,
+          loyaltyMinOrderValue: establishment.loyaltyMinOrderValue,
+        };
+      }),
+    
+    // Salvar configurações de fidelidade (admin)
+    saveSettings: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        loyaltyEnabled: z.boolean(),
+        loyaltyStampsRequired: z.number().min(1).max(20),
+        loyaltyCouponType: z.enum(["fixed", "percentage", "free_delivery"]),
+        loyaltyCouponValue: z.string(),
+        loyaltyMinOrderValue: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const { establishmentId, ...settings } = input;
+        await db.updateEstablishment(establishmentId, settings);
+        return { success: true };
+      }),
+    
+    // Login/Cadastro do cliente no cartão fidelidade (público)
+    customerLogin: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        phone: z.string().min(10),
+        password4: z.string().length(4),
+      }))
+      .mutation(async ({ input }) => {
+        const card = await db.getLoyaltyCardByPhone(input.establishmentId, input.phone);
+        
+        if (!card) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Cartão não encontrado. Cadastre-se primeiro.",
+          });
+        }
+        
+        // Verificar senha
+        const isValid = await bcrypt.compare(input.password4, card.password4Hash);
+        if (!isValid) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Senha incorreta.",
+          });
+        }
+        
+        return { success: true, cardId: card.id };
+      }),
+    
+    // Cadastro do cliente no cartão fidelidade (público)
+    customerRegister: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        phone: z.string().min(10),
+        password4: z.string().length(4),
+        name: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        // Verificar se já existe cartão
+        const existingCard = await db.getLoyaltyCardByPhone(input.establishmentId, input.phone);
+        
+        if (existingCard) {
+          // Se já existe mas não tem senha, atualizar com a senha
+          if (!existingCard.password4Hash) {
+            const hash = await bcrypt.hash(input.password4, 10);
+            await db.updateLoyaltyCard(existingCard.id, {
+              password4Hash: hash,
+              customerName: input.name || existingCard.customerName,
+            });
+            return { success: true, cardId: existingCard.id };
+          }
+          
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Este telefone já possui um cartão fidelidade.",
+          });
+        }
+        
+        // Criar novo cartão
+        const hash = await bcrypt.hash(input.password4, 10);
+        const cardId = await db.createLoyaltyCard({
+          establishmentId: input.establishmentId,
+          customerPhone: input.phone,
+          customerName: input.name,
+          password4Hash: hash,
+        });
+        
+        return { success: true, cardId };
+      }),
+    
+    // Buscar dados do cartão do cliente (público)
+    getCustomerCard: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        phone: z.string().min(10),
+      }))
+      .query(async ({ input }) => {
+        const card = await db.getLoyaltyCardByPhone(input.establishmentId, input.phone);
+        if (!card) return null;
+        
+        // Buscar configurações do estabelecimento
+        const establishment = await db.getEstablishmentById(input.establishmentId);
+        if (!establishment) return null;
+        
+        // Buscar histórico de carimbos
+        const stamps = await db.getLoyaltyStamps(card.id);
+        
+        // Buscar cupom ativo se houver
+        let activeCoupon = null;
+        if (card.activeCouponId) {
+          activeCoupon = await db.getCouponById(card.activeCouponId);
+        }
+        
+        return {
+          card: {
+            id: card.id,
+            customerName: card.customerName,
+            stamps: card.stamps,
+            totalStampsEarned: card.totalStampsEarned,
+            couponsEarned: card.couponsEarned,
+          },
+          settings: {
+            stampsRequired: establishment.loyaltyStampsRequired || 6,
+            couponType: establishment.loyaltyCouponType,
+            couponValue: establishment.loyaltyCouponValue,
+          },
+          stamps: stamps.map(s => ({
+            id: s.id,
+            orderNumber: s.orderNumber,
+            orderTotal: s.orderTotal,
+            createdAt: s.createdAt,
+          })),
+          activeCoupon: activeCoupon ? {
+            code: activeCoupon.code,
+            type: activeCoupon.type,
+            value: activeCoupon.value,
+          } : null,
+        };
+      }),
+    
+    // Verificar se fidelidade está ativa no estabelecimento (público)
+    isEnabled: publicProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        const establishment = await db.getEstablishmentById(input.establishmentId);
+        return {
+          enabled: establishment?.loyaltyEnabled || false,
+          stampsRequired: establishment?.loyaltyStampsRequired || 6,
+        };
+      }),
+    
+    // Listar todos os cartões do estabelecimento (admin)
+    listCards: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getLoyaltyCardsByEstablishment(input.establishmentId);
+      }),
+  }),
+
   // ============ UPLOAD ============
   upload: router({
     image: protectedProcedure

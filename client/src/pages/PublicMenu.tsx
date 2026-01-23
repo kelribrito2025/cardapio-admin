@@ -2,7 +2,7 @@ import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -104,6 +104,16 @@ export default function PublicMenu() {
   const [ratingSuccess, setRatingSuccess] = useState(false);
   const [canReviewChecked, setCanReviewChecked] = useState(false);
   const [canReview, setCanReview] = useState(true);
+  
+  // Estados do sistema de fidelidade
+  const [showLoyaltyModal, setShowLoyaltyModal] = useState(false);
+  const [loyaltyStep, setLoyaltyStep] = useState<'login' | 'register' | 'card'>('login');
+  const [loyaltyPhone, setLoyaltyPhone] = useState('');
+  const [loyaltyPassword, setLoyaltyPassword] = useState('');
+  const [loyaltyName, setLoyaltyName] = useState('');
+  const [loyaltyError, setLoyaltyError] = useState('');
+  const [isLoyaltyLoggedIn, setIsLoyaltyLoggedIn] = useState(false);
+  
   const userOrdersRef = useRef<typeof userOrders>([]);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const ratingTooltipRef = useRef<HTMLDivElement>(null);
@@ -146,11 +156,63 @@ export default function PublicMenu() {
     { establishmentId: data?.establishment?.id || 0 },
     { enabled: !!data?.establishment?.id }
   );
+  
+  // Query para verificar se fidelidade está ativa
+  const { data: loyaltyEnabled } = trpc.loyalty.isEnabled.useQuery(
+    { establishmentId: data?.establishment?.id || 0 },
+    { enabled: !!data?.establishment?.id }
+  );
+  
+  // Query para buscar cartão de fidelidade do cliente
+  const loyaltyCardQuery = trpc.loyalty.getCustomerCard.useQuery(
+    { establishmentId: data?.establishment?.id || 0, phone: loyaltyPhone },
+    { enabled: !!data?.establishment?.id && isLoyaltyLoggedIn && !!loyaltyPhone }
+  );
+  
+  // Mutation para login no cartão fidelidade
+  const loyaltyLoginMutation = trpc.loyalty.customerLogin.useMutation({
+    onSuccess: () => {
+      setIsLoyaltyLoggedIn(true);
+      setLoyaltyStep('card');
+      setLoyaltyError('');
+      // Salvar telefone no localStorage
+      localStorage.setItem('loyaltyPhone_' + data?.establishment?.id, loyaltyPhone);
+    },
+    onError: (error) => {
+      setLoyaltyError(error.message);
+    },
+  });
+  
+  // Mutation para cadastro no cartão fidelidade
+  const loyaltyRegisterMutation = trpc.loyalty.customerRegister.useMutation({
+    onSuccess: () => {
+      setIsLoyaltyLoggedIn(true);
+      setLoyaltyStep('card');
+      setLoyaltyError('');
+      // Salvar telefone no localStorage
+      localStorage.setItem('loyaltyPhone_' + data?.establishment?.id, loyaltyPhone);
+    },
+    onError: (error) => {
+      setLoyaltyError(error.message);
+    },
+  });
 
   // Manter ref de userOrders sincronizada
   useEffect(() => {
     userOrdersRef.current = userOrders;
   }, [userOrders]);
+  
+  // Carregar dados de fidelidade do localStorage
+  useEffect(() => {
+    if (data?.establishment?.id) {
+      const savedPhone = localStorage.getItem('loyaltyPhone_' + data.establishment.id);
+      if (savedPhone) {
+        setLoyaltyPhone(savedPhone);
+        setIsLoyaltyLoggedIn(true);
+        setLoyaltyStep('card');
+      }
+    }
+  }, [data?.establishment?.id]);
 
   // Mutation para criar pedido
   const createOrderMutation = trpc.publicMenu.createOrder.useMutation({
@@ -1223,10 +1285,22 @@ export default function PublicMenu() {
 
             {/* Navigation Menu - aligned to right edge of cover image */}
             <nav className="hidden md:flex items-center gap-6 pr-4">
-              <button className="flex items-center gap-1.5 text-red-500 font-medium text-sm hover:text-red-600 transition-colors">
-                <Home className="h-4 w-4" />
-                <span>Início</span>
-              </button>
+              {loyaltyEnabled?.enabled && (
+                <button 
+                  className="flex items-center gap-1.5 text-emerald-600 font-medium text-sm hover:text-emerald-700 transition-colors"
+                  onClick={() => {
+                    setShowLoyaltyModal(true);
+                    if (!isLoyaltyLoggedIn) {
+                      setLoyaltyStep('login');
+                    } else {
+                      setLoyaltyStep('card');
+                    }
+                  }}
+                >
+                  <Gift className="h-4 w-4" />
+                  <span>Fidelidade</span>
+                </button>
+              )}
               <button 
                 className="flex items-center gap-1.5 text-gray-600 font-medium text-sm hover:text-gray-900 transition-colors relative pr-3"
                 onClick={() => setShowOrdersModal(true)}
@@ -1897,10 +1971,22 @@ export default function PublicMenu() {
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50">
         <div className="flex items-center justify-around py-2">
-          <button className="flex flex-col items-center gap-0.5 px-4 py-2 text-red-500">
-            <Home className="h-5 w-5" />
-            <span className="text-xs font-medium">Início</span>
-          </button>
+          {loyaltyEnabled?.enabled && (
+            <button 
+              className="flex flex-col items-center gap-0.5 px-4 py-2 text-gray-500"
+              onClick={() => {
+                setShowLoyaltyModal(true);
+                if (!isLoyaltyLoggedIn) {
+                  setLoyaltyStep('login');
+                } else {
+                  setLoyaltyStep('card');
+                }
+              }}
+            >
+              <Gift className="h-5 w-5" />
+              <span className="text-xs font-medium">Fidelidade</span>
+            </button>
+          )}
           <button 
             className="flex flex-col items-center gap-0.5 px-4 py-2 text-gray-500 relative"
             onClick={() => setShowOrdersModal(true)}
@@ -4585,6 +4671,106 @@ export default function PublicMenu() {
           </div>
         </div>
       )}
+
+      {/* Modal de Fidelidade */}
+      {showLoyaltyModal && (
+        <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowLoyaltyModal(false)}
+          />
+          
+          {/* Modal Content - Bottom Sheet no mobile */}
+          <div className="relative bg-gray-100 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-100 rounded-xl">
+                  <Gift className="h-5 w-5 text-emerald-600" />
+                </div>
+                <h2 className="text-lg font-bold text-gray-900">Cartão Fidelidade</h2>
+              </div>
+              <button 
+                onClick={() => setShowLoyaltyModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-4 space-y-4">
+              {loyaltyStep === 'login' && (
+                <LoyaltyLoginForm
+                  phone={loyaltyPhone}
+                  setPhone={setLoyaltyPhone}
+                  password={loyaltyPassword}
+                  setPassword={setLoyaltyPassword}
+                  error={loyaltyError}
+                  isLoading={loyaltyLoginMutation.isPending}
+                  onLogin={() => {
+                    if (loyaltyPhone.length >= 10 && loyaltyPassword.length === 4) {
+                      loyaltyLoginMutation.mutate({
+                        establishmentId: data?.establishment?.id || 0,
+                        phone: loyaltyPhone,
+                        password4: loyaltyPassword,
+                      });
+                    }
+                  }}
+                  onRegister={() => {
+                    setLoyaltyStep('register');
+                    setLoyaltyError('');
+                  }}
+                />
+              )}
+              
+              {loyaltyStep === 'register' && (
+                <LoyaltyRegisterForm
+                  phone={loyaltyPhone}
+                  setPhone={setLoyaltyPhone}
+                  password={loyaltyPassword}
+                  setPassword={setLoyaltyPassword}
+                  name={loyaltyName}
+                  setName={setLoyaltyName}
+                  error={loyaltyError}
+                  isLoading={loyaltyRegisterMutation.isPending}
+                  onRegister={() => {
+                    if (loyaltyPhone.length >= 10 && loyaltyPassword.length === 4) {
+                      loyaltyRegisterMutation.mutate({
+                        establishmentId: data?.establishment?.id || 0,
+                        phone: loyaltyPhone,
+                        password4: loyaltyPassword,
+                        name: loyaltyName || undefined,
+                      });
+                    }
+                  }}
+                  onBack={() => {
+                    setLoyaltyStep('login');
+                    setLoyaltyError('');
+                  }}
+                />
+              )}
+              
+              {loyaltyStep === 'card' && isLoyaltyLoggedIn && (
+                <LoyaltyCardView
+                  establishmentName={data?.establishment?.name || ''}
+                  cardData={loyaltyCardQuery.data}
+                  stampsRequired={loyaltyEnabled?.stampsRequired || 6}
+                  isLoading={loyaltyCardQuery.isLoading}
+                  onLogout={() => {
+                    setIsLoyaltyLoggedIn(false);
+                    setLoyaltyPhone('');
+                    setLoyaltyPassword('');
+                    setLoyaltyStep('login');
+                    localStorage.removeItem('loyaltyPhone_' + data?.establishment?.id);
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -4740,6 +4926,374 @@ function MenuSkeleton() {
           </div>
         </div>
       </main>
+    </div>
+  );
+}
+
+
+// Componentes do Sistema de Fidelidade
+
+function LoyaltyLoginForm({
+  phone,
+  setPhone,
+  password,
+  setPassword,
+  error,
+  isLoading,
+  onLogin,
+  onRegister,
+}: {
+  phone: string;
+  setPhone: (v: string) => void;
+  password: string;
+  setPassword: (v: string) => void;
+  error: string;
+  isLoading: boolean;
+  onLogin: () => void;
+  onRegister: () => void;
+}) {
+  // Formatar telefone
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white rounded-xl p-4 space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Telefone
+          </label>
+          <input
+            type="tel"
+            value={formatPhone(phone)}
+            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+            placeholder="(00) 00000-0000"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            maxLength={15}
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Senha (4 dígitos)
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value.replace(/\D/g, '').slice(0, 4))}
+            placeholder="••••"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-center text-2xl tracking-[0.5em]"
+            maxLength={4}
+          />
+        </div>
+        
+        {error && (
+          <p className="text-sm text-red-500 text-center">{error}</p>
+        )}
+        
+        <button
+          onClick={onLogin}
+          disabled={isLoading || phone.length < 10 || password.length !== 4}
+          className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              Entrando...
+            </>
+          ) : (
+            'Entrar'
+          )}
+        </button>
+      </div>
+      
+      <div className="text-center">
+        <p className="text-sm text-gray-500 mb-2">Ainda não tem cartão?</p>
+        <button
+          onClick={onRegister}
+          className="text-emerald-600 font-semibold hover:underline"
+        >
+          Cadastre-se agora
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function LoyaltyRegisterForm({
+  phone,
+  setPhone,
+  password,
+  setPassword,
+  name,
+  setName,
+  error,
+  isLoading,
+  onRegister,
+  onBack,
+}: {
+  phone: string;
+  setPhone: (v: string) => void;
+  password: string;
+  setPassword: (v: string) => void;
+  name: string;
+  setName: (v: string) => void;
+  error: string;
+  isLoading: boolean;
+  onRegister: () => void;
+  onBack: () => void;
+}) {
+  // Formatar telefone
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white rounded-xl p-4 space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Nome (opcional)
+          </label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Seu nome"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Telefone
+          </label>
+          <input
+            type="tel"
+            value={formatPhone(phone)}
+            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+            placeholder="(00) 00000-0000"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            maxLength={15}
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Crie uma senha (4 dígitos)
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value.replace(/\D/g, '').slice(0, 4))}
+            placeholder="••••"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-center text-2xl tracking-[0.5em]"
+            maxLength={4}
+          />
+          <p className="text-xs text-gray-500 mt-1">Use apenas números</p>
+        </div>
+        
+        {error && (
+          <p className="text-sm text-red-500 text-center">{error}</p>
+        )}
+        
+        <button
+          onClick={onRegister}
+          disabled={isLoading || phone.length < 10 || password.length !== 4}
+          className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              Cadastrando...
+            </>
+          ) : (
+            'Criar Cartão'
+          )}
+        </button>
+      </div>
+      
+      <div className="text-center">
+        <button
+          onClick={onBack}
+          className="text-gray-500 hover:text-gray-700 font-medium"
+        >
+          ← Voltar para login
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function LoyaltyCardView({
+  establishmentName,
+  cardData,
+  stampsRequired,
+  isLoading,
+  onLogout,
+}: {
+  establishmentName: string;
+  cardData: {
+    card: {
+      id: number;
+      customerName: string | null;
+      stamps: number;
+      totalStampsEarned: number;
+      couponsEarned: number;
+    };
+    settings: {
+      stampsRequired: number;
+      couponType: string | null;
+      couponValue: string | null;
+    };
+    stamps: Array<{
+      id: number;
+      orderNumber: string;
+      orderTotal: string;
+      createdAt: Date;
+    }>;
+    activeCoupon: {
+      code: string;
+      type: string;
+      value: string;
+    } | null;
+  } | null | undefined;
+  stampsRequired: number;
+  isLoading: boolean;
+  onLogout: () => void;
+}) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+      </div>
+    );
+  }
+
+  const stamps = cardData?.card?.stamps || 0;
+  const required = cardData?.settings?.stampsRequired || stampsRequired;
+  const remaining = Math.max(0, required - stamps);
+  const progress = Math.min(100, (stamps / required) * 100);
+
+  return (
+    <div className="space-y-4">
+      {/* Card Principal */}
+      <div className="bg-emerald-600 rounded-2xl p-5 text-white">
+        <div className="flex items-start gap-3 mb-4">
+          <div className="p-2 bg-white/20 rounded-xl">
+            <Gift className="h-6 w-6" />
+          </div>
+          <div>
+            <h3 className="font-bold text-lg">{establishmentName}</h3>
+            {cardData?.card?.customerName && (
+              <p className="text-white/80 text-sm">{cardData.card.customerName}</p>
+            )}
+          </div>
+        </div>
+        
+        {/* Progresso */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between text-sm mb-2">
+            <span className="text-white/80">Progresso</span>
+            <span className="font-bold">{stamps} / {required} carimbos</span>
+          </div>
+          <div className="h-2 bg-white/30 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-white rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+        
+        {/* Carimbos visuais */}
+        <div className="flex justify-center gap-2 flex-wrap">
+          {Array.from({ length: required }).map((_, i) => (
+            <div
+              key={i}
+              className={cn(
+                "w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all",
+                i < stamps
+                  ? "bg-white border-white"
+                  : "border-white/50 bg-transparent"
+              )}
+            >
+              <Clock className={cn(
+                "h-5 w-5",
+                i < stamps ? "text-emerald-600" : "text-white/50"
+              )} />
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* Mensagem de progresso */}
+      <div className="bg-white rounded-xl p-4 text-center">
+        {remaining > 0 ? (
+          <p className="text-gray-700">
+            Faltam <span className="text-emerald-600 font-bold">{remaining}</span> pedidos para ganhar seu cupom!
+          </p>
+        ) : (
+          <div className="space-y-2">
+            <p className="text-emerald-600 font-bold text-lg">🎉 Parabéns!</p>
+            <p className="text-gray-700">Você ganhou um cupom de desconto!</p>
+            {cardData?.activeCoupon && (
+              <div className="mt-3 p-3 bg-emerald-50 rounded-xl">
+                <p className="text-sm text-gray-600">Seu cupom:</p>
+                <p className="text-xl font-bold text-emerald-600">{cardData.activeCoupon.code}</p>
+                <p className="text-sm text-gray-500">
+                  {cardData.activeCoupon.type === 'percentage' 
+                    ? `${cardData.activeCoupon.value}% de desconto`
+                    : cardData.activeCoupon.type === 'free_delivery'
+                    ? 'Frete grátis'
+                    : `R$ ${Number(cardData.activeCoupon.value).toFixed(2)} de desconto`
+                  }
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      
+      {/* Histórico */}
+      <div className="bg-white rounded-xl p-4">
+        <h4 className="font-bold text-gray-900 mb-3">Histórico</h4>
+        {cardData?.stamps && cardData.stamps.length > 0 ? (
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {cardData.stamps.slice(0, 10).map((stamp) => (
+              <div key={stamp.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Pedido #{stamp.orderNumber}</p>
+                  <p className="text-xs text-gray-500">
+                    {new Date(stamp.createdAt).toLocaleDateString('pt-BR')}
+                  </p>
+                </div>
+                <p className="text-sm font-semibold text-emerald-600">
+                  R$ {Number(stamp.orderTotal).toFixed(2)}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500 text-center py-4">
+            Nenhum carimbo ainda
+          </p>
+        )}
+      </div>
+      
+      {/* Botão Sair */}
+      <button
+        onClick={onLogout}
+        className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
+      >
+        Sair do cartão
+      </button>
     </div>
   );
 }

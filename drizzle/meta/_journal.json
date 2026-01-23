@@ -169,6 +169,13 @@
       "when": 1769198537198,
       "tag": "0023_friendly_loki",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "5",
+      "when": 1769201867525,
+      "tag": "0024_first_ares",
+      "breakpoints": true
     }
   ]
 }

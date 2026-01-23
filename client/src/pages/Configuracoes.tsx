@@ -28,12 +28,14 @@ import {
   Trash2,
   MessageSquare,
   Clock,
+  Gift,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { ImageCropModal } from "@/components/ImageCropModal";
 import { AddressMapPicker } from "@/components/AddressMapPicker";
+import { LoyaltySettingsCard } from "@/components/LoyaltySettingsCard";
 
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
@@ -1674,6 +1676,11 @@ export default function Configuracoes() {
                 {isPending ? "Salvando..." : "Salvar"}
               </Button>
             </div>
+          </SectionCard>
+
+          {/* Cartão Fidelidade */}
+          <SectionCard title="Cartão Fidelidade">
+            <LoyaltySettingsCard establishmentId={establishment?.id || 0} />
           </SectionCard>
 
           {/* Horários de Funcionamento */}

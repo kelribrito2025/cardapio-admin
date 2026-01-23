@@ -64,6 +64,12 @@ export const establishments = mysqlTable("establishments", {
   // Controle de fechamento manual
   manuallyClosed: boolean("manuallyClosed").default(false).notNull(),
   manuallyClosedAt: timestamp("manuallyClosedAt"),
+  // Cartão Fidelidade
+  loyaltyEnabled: boolean("loyaltyEnabled").default(false).notNull(),
+  loyaltyStampsRequired: int("loyaltyStampsRequired").default(6),
+  loyaltyCouponType: mysqlEnum("loyaltyCouponType", ["fixed", "percentage", "free_delivery"]).default("fixed"),
+  loyaltyCouponValue: decimal("loyaltyCouponValue", { precision: 10, scale: 2 }).default("10"),
+  loyaltyMinOrderValue: decimal("loyaltyMinOrderValue", { precision: 10, scale: 2 }).default("0"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -304,3 +310,38 @@ export const neighborhoodFees = mysqlTable("neighborhoodFees", {
 
 export type NeighborhoodFee = typeof neighborhoodFees.$inferSelect;
 export type InsertNeighborhoodFee = typeof neighborhoodFees.$inferInsert;
+
+
+// Cartão de Fidelidade - Configurações do estabelecimento
+// (campos adicionados na tabela establishments via migration)
+
+// Cartões de fidelidade dos clientes
+export const loyaltyCards = mysqlTable("loyaltyCards", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  customerPhone: varchar("customerPhone", { length: 30 }).notNull(),
+  customerName: varchar("customerName", { length: 255 }),
+  password4Hash: varchar("password4Hash", { length: 255 }).notNull(), // Hash da senha de 4 dígitos
+  stamps: int("stamps").default(0).notNull(), // Número atual de carimbos
+  totalStampsEarned: int("totalStampsEarned").default(0).notNull(), // Total de carimbos já ganhos (histórico)
+  couponsEarned: int("couponsEarned").default(0).notNull(), // Total de cupons já ganhos
+  activeCouponId: int("activeCouponId"), // Cupom ativo disponível para uso
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type LoyaltyCard = typeof loyaltyCards.$inferSelect;
+export type InsertLoyaltyCard = typeof loyaltyCards.$inferInsert;
+
+// Histórico de carimbos (stamps) do cartão fidelidade
+export const loyaltyStamps = mysqlTable("loyaltyStamps", {
+  id: int("id").autoincrement().primaryKey(),
+  loyaltyCardId: int("loyaltyCardId").notNull(),
+  orderId: int("orderId").notNull(),
+  orderNumber: varchar("orderNumber", { length: 50 }).notNull(),
+  orderTotal: decimal("orderTotal", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type LoyaltyStamp = typeof loyaltyStamps.$inferSelect;
+export type InsertLoyaltyStamp = typeof loyaltyStamps.$inferInsert;

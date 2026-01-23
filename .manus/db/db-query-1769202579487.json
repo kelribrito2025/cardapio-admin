@@ -1,0 +1,19 @@
+{
+  "query": "SELECT id, name, loyaltyEnabled, loyaltyStampsRequired, loyaltyCouponType, loyaltyCouponValue, loyaltyMinOrderValue FROM establishments WHERE menuSlug = 'kelri';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, loyaltyEnabled, loyaltyStampsRequired, loyaltyCouponType, loyaltyCouponValue, loyaltyMinOrderValue FROM establishments WHERE menuSlug = 'kelri';",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "loyaltyEnabled": "0",
+      "loyaltyStampsRequired": "6",
+      "loyaltyCouponType": "fixed",
+      "loyaltyCouponValue": "10.00",
+      "loyaltyMinOrderValue": "0.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tloyaltyEnabled\tloyaltyStampsRequired\tloyaltyCouponType\tloyaltyCouponValue\tloyaltyMinOrderValue\n30001\tSushi Haruno\t0\t6\tfixed\t10.00\t0.00\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

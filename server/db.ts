@@ -17,7 +17,9 @@ import {
   coupons, InsertCoupon, Coupon,
   reviews, InsertReview, Review,
   businessHours, InsertBusinessHours, BusinessHours,
-  neighborhoodFees, InsertNeighborhoodFee, NeighborhoodFee
+  neighborhoodFees, InsertNeighborhoodFee, NeighborhoodFee,
+  loyaltyCards, InsertLoyaltyCard, LoyaltyCard,
+  loyaltyStamps, InsertLoyaltyStamp, LoyaltyStamp
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -676,6 +678,106 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
         } else {
           console.log(`[SMS] SMS desativado nas configurações do estabelecimento. Pedido ${order.orderNumber} não notificado.`);
         }
+      }
+    }
+    
+    // Adicionar carimbo de fidelidade quando o pedido é completado
+    if (status === "completed" && order.customerPhone) {
+      try {
+        // Verificar se fidelidade está ativa para o estabelecimento
+        const estResult = await db.select({
+          loyaltyEnabled: establishments.loyaltyEnabled,
+          loyaltyMinOrderValue: establishments.loyaltyMinOrderValue,
+          loyaltyStampsRequired: establishments.loyaltyStampsRequired,
+        }).from(establishments).where(eq(establishments.id, order.establishmentId)).limit(1);
+        
+        if (estResult.length > 0 && estResult[0].loyaltyEnabled) {
+          const { loyaltyMinOrderValue, loyaltyStampsRequired } = estResult[0];
+          const minValue = loyaltyMinOrderValue ? Number(loyaltyMinOrderValue) : 0;
+          const orderTotal = Number(order.total);
+          
+          // Verificar se o pedido atinge o valor mínimo
+          if (orderTotal >= minValue) {
+            // Buscar ou criar cartão de fidelidade do cliente
+            const existingCard = await db.select().from(loyaltyCards)
+              .where(and(
+                eq(loyaltyCards.establishmentId, order.establishmentId),
+                eq(loyaltyCards.customerPhone, order.customerPhone)
+              ))
+              .limit(1);
+            
+            let cardId: number;
+            if (existingCard.length > 0) {
+              cardId = existingCard[0].id;
+            } else {
+              // Criar cartão de fidelidade para o cliente
+              // Gera uma senha temporária baseada nos últimos 4 dígitos do telefone
+              const tempPassword = order.customerPhone.slice(-4);
+              const bcrypt = await import('bcryptjs');
+              const password4Hash = await bcrypt.hash(tempPassword, 10);
+              
+              const newCard = await db.insert(loyaltyCards).values({
+                establishmentId: order.establishmentId,
+                customerPhone: order.customerPhone,
+                customerName: order.customerName,
+                password4Hash,
+                stamps: 0,
+                totalStampsEarned: 0,
+                couponsEarned: 0,
+              });
+              cardId = newCard[0].insertId;
+              console.log(`[Fidelidade] Cartão criado automaticamente para ${order.customerPhone}. Senha temporária: ${tempPassword}`);
+            }
+            
+            // Verificar se já existe carimbo para este pedido
+            const existingStamp = await db.select().from(loyaltyStamps)
+              .where(and(
+                eq(loyaltyStamps.loyaltyCardId, cardId),
+                eq(loyaltyStamps.orderNumber, order.orderNumber || '')
+              ))
+              .limit(1);
+            
+            if (existingStamp.length === 0) {
+              // Adicionar carimbo
+              await db.insert(loyaltyStamps).values({
+                loyaltyCardId: cardId,
+                orderId: id,
+                orderNumber: order.orderNumber || '',
+                orderTotal: order.total,
+              });
+              
+              // Atualizar contador de carimbos no cartão
+              const currentCard = await db.select().from(loyaltyCards).where(eq(loyaltyCards.id, cardId)).limit(1);
+              if (currentCard.length > 0) {
+                const newStamps = currentCard[0].stamps + 1;
+                const newTotalStampsEarned = currentCard[0].totalStampsEarned + 1;
+                
+                // Verificar se completou o cartão
+                const stampsRequired = loyaltyStampsRequired || 6;
+                if (newStamps >= stampsRequired) {
+                  // Resetar carimbos e incrementar cupons ganhos
+                  await db.update(loyaltyCards).set({
+                    stamps: 0,
+                    totalStampsEarned: newTotalStampsEarned,
+                    couponsEarned: currentCard[0].couponsEarned + 1,
+                  }).where(eq(loyaltyCards.id, cardId));
+                  
+                  console.log(`[Fidelidade] Cliente ${order.customerPhone} completou cartão e ganhou cupom!`);
+                } else {
+                  await db.update(loyaltyCards).set({
+                    stamps: newStamps,
+                    totalStampsEarned: newTotalStampsEarned,
+                  }).where(eq(loyaltyCards.id, cardId));
+                  
+                  console.log(`[Fidelidade] Carimbo adicionado para ${order.customerPhone}. Total: ${newStamps}/${stampsRequired}`);
+                }
+              }
+            }
+          }
+        }
+      } catch (loyaltyError) {
+        console.error('[Fidelidade] Erro ao processar carimbo:', loyaltyError);
+        // Não interrompe o fluxo principal
       }
     }
   }
@@ -1879,4 +1981,260 @@ export async function clearManualClose(establishmentId: number): Promise<void> {
       manuallyClosedAt: null 
     })
     .where(eq(establishments.id, establishmentId));
+}
+
+
+// ============ LOYALTY CARD FUNCTIONS ============
+
+/**
+ * Busca cartão de fidelidade por telefone e estabelecimento
+ */
+export async function getLoyaltyCardByPhone(establishmentId: number, phone: string): Promise<LoyaltyCard | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(loyaltyCards)
+    .where(and(
+      eq(loyaltyCards.establishmentId, establishmentId),
+      eq(loyaltyCards.customerPhone, phone)
+    ))
+    .limit(1);
+  
+  return result.length > 0 ? result[0] : undefined;
+}
+
+/**
+ * Cria um novo cartão de fidelidade
+ */
+export async function createLoyaltyCard(data: {
+  establishmentId: number;
+  customerPhone: string;
+  customerName?: string;
+  password4Hash: string;
+}): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(loyaltyCards).values({
+    establishmentId: data.establishmentId,
+    customerPhone: data.customerPhone,
+    customerName: data.customerName || null,
+    password4Hash: data.password4Hash,
+    stamps: 0,
+    totalStampsEarned: 0,
+    couponsEarned: 0,
+  });
+  
+  return result[0].insertId;
+}
+
+/**
+ * Atualiza o cartão de fidelidade
+ */
+export async function updateLoyaltyCard(id: number, data: Partial<InsertLoyaltyCard>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(loyaltyCards).set(data).where(eq(loyaltyCards.id, id));
+}
+
+/**
+ * Adiciona um carimbo ao cartão de fidelidade
+ */
+export async function addLoyaltyStamp(data: {
+  loyaltyCardId: number;
+  orderId: number;
+  orderNumber: string;
+  orderTotal: string;
+}): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Inserir registro do carimbo
+  await db.insert(loyaltyStamps).values({
+    loyaltyCardId: data.loyaltyCardId,
+    orderId: data.orderId,
+    orderNumber: data.orderNumber,
+    orderTotal: data.orderTotal,
+  });
+  
+  // Incrementar contador de carimbos no cartão
+  await db.update(loyaltyCards)
+    .set({
+      stamps: sql`${loyaltyCards.stamps} + 1`,
+      totalStampsEarned: sql`${loyaltyCards.totalStampsEarned} + 1`,
+    })
+    .where(eq(loyaltyCards.id, data.loyaltyCardId));
+}
+
+/**
+ * Busca histórico de carimbos do cartão
+ */
+export async function getLoyaltyStamps(loyaltyCardId: number): Promise<LoyaltyStamp[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(loyaltyStamps)
+    .where(eq(loyaltyStamps.loyaltyCardId, loyaltyCardId))
+    .orderBy(desc(loyaltyStamps.createdAt));
+}
+
+/**
+ * Reseta os carimbos do cartão quando cupom é liberado
+ */
+export async function resetLoyaltyStamps(loyaltyCardId: number, couponId?: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(loyaltyCards)
+    .set({
+      stamps: 0,
+      couponsEarned: sql`${loyaltyCards.couponsEarned} + 1`,
+      activeCouponId: couponId || null,
+    })
+    .where(eq(loyaltyCards.id, loyaltyCardId));
+}
+
+/**
+ * Limpa o cupom ativo do cartão (quando usado)
+ */
+export async function clearActiveCoupon(loyaltyCardId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(loyaltyCards)
+    .set({ activeCouponId: null })
+    .where(eq(loyaltyCards.id, loyaltyCardId));
+}
+
+/**
+ * Busca cartão de fidelidade por ID
+ */
+export async function getLoyaltyCardById(id: number): Promise<LoyaltyCard | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(loyaltyCards)
+    .where(eq(loyaltyCards.id, id))
+    .limit(1);
+  
+  return result.length > 0 ? result[0] : undefined;
+}
+
+/**
+ * Busca todos os cartões de fidelidade de um estabelecimento
+ */
+export async function getLoyaltyCardsByEstablishment(establishmentId: number): Promise<LoyaltyCard[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(loyaltyCards)
+    .where(eq(loyaltyCards.establishmentId, establishmentId))
+    .orderBy(desc(loyaltyCards.updatedAt));
+}
+
+/**
+ * Verifica se o pedido já gerou carimbo
+ */
+export async function hasStampForOrder(orderId: number): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+  
+  const result = await db.select({ count: sql<number>`count(*)` })
+    .from(loyaltyStamps)
+    .where(eq(loyaltyStamps.orderId, orderId));
+  
+  return (result[0]?.count ?? 0) > 0;
+}
+
+/**
+ * Processa carimbo de fidelidade para um pedido entregue
+ */
+export async function processLoyaltyStampForOrder(
+  establishmentId: number,
+  orderId: number,
+  orderNumber: string,
+  orderTotal: string,
+  customerPhone: string
+): Promise<{ stampAdded: boolean; couponUnlocked: boolean; message: string }> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Verificar se fidelidade está ativa no estabelecimento
+  const establishment = await getEstablishmentById(establishmentId);
+  if (!establishment || !establishment.loyaltyEnabled) {
+    return { stampAdded: false, couponUnlocked: false, message: "Fidelidade não está ativa" };
+  }
+  
+  // Verificar valor mínimo do pedido
+  const minOrderValue = Number(establishment.loyaltyMinOrderValue) || 0;
+  if (minOrderValue > 0 && Number(orderTotal) < minOrderValue) {
+    return { stampAdded: false, couponUnlocked: false, message: `Pedido abaixo do valor mínimo de R$ ${minOrderValue.toFixed(2)}` };
+  }
+  
+  // Verificar se já existe carimbo para este pedido
+  const alreadyHasStamp = await hasStampForOrder(orderId);
+  if (alreadyHasStamp) {
+    return { stampAdded: false, couponUnlocked: false, message: "Pedido já gerou carimbo" };
+  }
+  
+  // Buscar ou criar cartão de fidelidade
+  let loyaltyCard = await getLoyaltyCardByPhone(establishmentId, customerPhone);
+  if (!loyaltyCard) {
+    // Criar cartão automaticamente (sem senha por enquanto)
+    const cardId = await createLoyaltyCard({
+      establishmentId,
+      customerPhone,
+      password4Hash: "", // Será definido quando cliente acessar
+    });
+    loyaltyCard = await getLoyaltyCardById(cardId);
+  }
+  
+  if (!loyaltyCard) {
+    return { stampAdded: false, couponUnlocked: false, message: "Erro ao criar cartão de fidelidade" };
+  }
+  
+  // Adicionar carimbo
+  await addLoyaltyStamp({
+    loyaltyCardId: loyaltyCard.id,
+    orderId,
+    orderNumber,
+    orderTotal,
+  });
+  
+  // Verificar se atingiu a quantidade necessária para cupom
+  const requiredStamps = establishment.loyaltyStampsRequired || 6;
+  const newStampCount = loyaltyCard.stamps + 1;
+  
+  if (newStampCount >= requiredStamps) {
+    // Criar cupom de fidelidade
+    const couponCode = `FIDELIDADE${Date.now().toString(36).toUpperCase()}`;
+    const couponType = establishment.loyaltyCouponType === 'percentage' ? 'percentage' : 'fixed';
+    const couponValue = establishment.loyaltyCouponValue || "10";
+    
+    const couponResult = await db.insert(coupons).values({
+      establishmentId,
+      code: couponCode,
+      type: couponType,
+      value: couponValue,
+      quantity: 1,
+      usedCount: 0,
+      status: 'active',
+    });
+    
+    // Resetar carimbos e vincular cupom
+    await resetLoyaltyStamps(loyaltyCard.id, couponResult[0].insertId);
+    
+    return { 
+      stampAdded: true, 
+      couponUnlocked: true, 
+      message: `Parabéns! Você ganhou um cupom de ${couponType === 'percentage' ? `${couponValue}%` : `R$ ${Number(couponValue).toFixed(2)}`} de desconto!` 
+    };
+  }
+  
+  return { 
+    stampAdded: true, 
+    couponUnlocked: false, 
+    message: `Carimbo adicionado! Faltam ${requiredStamps - newStampCount} para ganhar seu cupom.` 
+  };
 }

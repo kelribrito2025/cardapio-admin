@@ -2205,3 +2205,18 @@
 - [x] Adicionar alerta vermelho de pedido mínimo na sacola desktop
 - [x] Mostrar apenas botão "Adicionar mais itens" vermelho vazado quando abaixo do mínimo
 - [x] Bloquear botão "Finalizar pedido" quando abaixo do mínimo
+
+
+## Sistema de Cartão Fidelidade
+- [x] Criar tabela loyalty_cards no banco de dados
+- [x] Criar tabela loyalty_stamps no banco de dados
+- [x] Adicionar campos de fidelidade na tabela establishments
+- [x] Criar endpoints tRPC para fidelidade (login, cadastro, progresso, histórico)
+- [x] Criar card de configuração do Cartão Fidelidade no painel admin (Configurações)
+- [x] Renomear menu "Início" para "Fidelidade" no menu público
+- [x] Implementar modal bottom sheet de login/cadastro de fidelidade
+- [x] Criar tela do Cartão Fidelidade com progresso visual (carimbos)
+- [x] Exibir histórico de tickets ganhos
+- [x] Exibir cupom disponível quando atingir meta
+- [x] Integrar contagem automática de tickets ao finalizar pedido (status entregue)
+- [x] Liberar cupom automaticamente ao atingir quantidade necessária
