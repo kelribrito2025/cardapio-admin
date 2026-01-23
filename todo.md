@@ -2311,3 +2311,23 @@
 ## Ajuste de Tamanho dos Carimbos
 - [x] Reduzir tamanho dos ícones de carimbo
 - [x] Garantir que 10 carimbos caibam na mesma linha horizontal
+
+
+## Efeito de Flip no Cartão de Fidelidade
+- [ ] Implementar estrutura CSS de flip card com duas faces
+- [ ] Adicionar botão "Ver cupom ganho" quando completar 100% dos carimbos
+- [ ] Criar face traseira do card com código, descrição e validade do cupom
+- [ ] Implementar animação de flip horizontal de 180° (300-400ms)
+- [ ] Adicionar botões "Copiar código" e "Usar agora" na face traseira
+- [ ] Adicionar botão/ícone para virar o cartão de volta
+- [ ] Remover modal separado de "Parabéns! Cupom Liberado"
+- [ ] Manter consistência visual (bordas arredondadas, sombras)
+
+## Efeito Flip no Cartão de Fidelidade
+- [x] Implementar animação de flip horizontal 180° (transform rotateY)
+- [x] Adicionar botão "Ver cupom ganho" quando carimbos completos
+- [x] Face frontal: carimbos e progresso
+- [x] Face traseira: cupom com código, descrição, validade, botões "Copiar código" e "Usar agora"
+- [x] Adicionar botão para voltar à face dos carimbos
+- [x] Remover card laranja separado (cupom integrado no flip)
+- [x] Animação suave de 300-400ms
