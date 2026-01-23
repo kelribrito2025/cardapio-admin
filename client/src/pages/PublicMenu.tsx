@@ -1767,6 +1767,30 @@ export default function PublicMenu() {
                   );
                 })()}
 
+                {/* Alerta de Pedido Mínimo - Desktop */}
+                {(() => {
+                  const subtotalDesktop = cart.reduce((sum, item) => {
+                    const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
+                    return sum + (Number(item.price) + complementsTotal) * item.quantity;
+                  }, 0);
+                  const minOrderValue = Number(establishment?.minimumOrderValue || 0);
+                  const minOrderEnabled = establishment?.minimumOrderEnabled || false;
+                  const isBelowMinimum = minOrderEnabled && subtotalDesktop < minOrderValue;
+                  const amountNeeded = minOrderValue - subtotalDesktop;
+                  
+                  return isBelowMinimum && cart.length > 0 ? (
+                    <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl">
+                      <div className="flex items-start gap-2">
+                        <ShoppingBag className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-semibold text-red-600 text-sm">Pedido mínimo: {formatPrice(minOrderValue)}</p>
+                          <p className="text-xs text-red-500 mt-0.5">Faltam {formatPrice(amountNeeded)} para atingir o mínimo</p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
+
                 {/* Cupom */}
                 {appliedCoupon ? (
                   <div className="w-full flex items-center justify-between mt-4 py-3 border-t border-gray-100 -mx-4 px-4">
@@ -1807,34 +1831,53 @@ export default function PublicMenu() {
                   </button>
                 )}
 
-                {/* Button */}
-                <button 
-                  disabled={cart.length === 0 || !isOpen}
-                  onClick={() => {
-                    if (cart.length > 0 && isOpen) {
-                      setOrderSent(false); // Resetar para permitir novo pedido
-                      setCheckoutStep(1);
-                    }
-                  }}
-                  className={`w-full mt-4 py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
-                    !isOpen
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : cart.length === 0 
-                        ? 'bg-red-400/80 text-white cursor-not-allowed' 
-                        : 'bg-red-500 hover:bg-red-600 text-white'
-                  }`}
-                >
-                  {!isOpen ? (
-                    <>
-                      <Clock className="h-5 w-5" />
-                      Restaurante Fechado
-                    </>
-                  ) : cart.length === 0 ? (
-                    'Sacola vazia'
-                  ) : (
-                    'Finalizar pedido'
-                  )}
-                </button>
+                {/* Button - Desktop */}
+                {(() => {
+                  const subtotalBtn = cart.reduce((sum, item) => {
+                    const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
+                    return sum + (Number(item.price) + complementsTotal) * item.quantity;
+                  }, 0);
+                  const minOrderValueBtn = Number(establishment?.minimumOrderValue || 0);
+                  const minOrderEnabledBtn = establishment?.minimumOrderEnabled || false;
+                  const isBelowMinBtn = minOrderEnabledBtn && subtotalBtn < minOrderValueBtn;
+                  
+                  return (
+                    <button 
+                      disabled={cart.length === 0 || !isOpen || isBelowMinBtn}
+                      onClick={() => {
+                        if (cart.length > 0 && isOpen && !isBelowMinBtn) {
+                          setOrderSent(false);
+                          setCheckoutStep(1);
+                        }
+                      }}
+                      className={`w-full mt-4 py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
+                        !isOpen
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : cart.length === 0 
+                            ? 'bg-red-400/80 text-white cursor-not-allowed'
+                            : isBelowMinBtn
+                              ? 'border-2 border-red-500 text-red-500 bg-white hover:bg-red-50'
+                              : 'bg-red-500 hover:bg-red-600 text-white'
+                      }`}
+                    >
+                      {!isOpen ? (
+                        <>
+                          <Clock className="h-5 w-5" />
+                          Restaurante Fechado
+                        </>
+                      ) : cart.length === 0 ? (
+                        'Sacola vazia'
+                      ) : isBelowMinBtn ? (
+                        <>
+                          <Plus className="h-5 w-5" />
+                          Adicionar mais itens
+                        </>
+                      ) : (
+                        'Finalizar pedido'
+                      )}
+                    </button>
+                  );
+                })()}
               </div>
             </div>
           </div>

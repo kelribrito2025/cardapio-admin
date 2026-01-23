@@ -29,3 +29,30 @@
 ### Conclusão
 
 A integração de pedidos está funcionando corretamente. Os pedidos feitos pelo cardápio público são salvos no banco de dados e aparecem imediatamente na página de pedidos do restaurante.
+
+
+---
+
+# Teste de Validação de Pedido Mínimo - Desktop
+
+## Data: 23/01/2026
+
+## Resultado: SUCESSO
+
+A validação de pedido mínimo na sacola desktop está funcionando corretamente:
+
+1. **Alerta vermelho de pedido mínimo**: Exibido corretamente com fundo vermelho claro e texto em vermelho
+   - Mostra "Pedido mínimo: R$ 30,00"
+   - Mostra "Faltam R$ 25,00 para atingir o mínimo"
+
+2. **Botão único**: Quando abaixo do mínimo, aparece apenas o botão "Adicionar mais itens" com borda vermelha
+
+3. **Consistência mobile/desktop**: Ambas as versões mostram o mesmo comportamento:
+   - Modal mobile: alerta vermelho + botão vermelho vazado
+   - Sacola desktop (sidebar): alerta vermelho + botão vermelho vazado
+
+## Itens implementados
+- [x] Alerta vermelho de pedido mínimo na sacola desktop
+- [x] Botão único "Adicionar mais itens" quando abaixo do mínimo
+- [x] Bloqueio do botão "Finalizar pedido" quando abaixo do mínimo
+- [x] Consistência visual entre mobile e desktop

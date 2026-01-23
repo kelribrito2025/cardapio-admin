@@ -2193,3 +2193,15 @@
 - [x] Esconder botão "Adicionar mais itens" (vermelho vazado) quando pedido mínimo não for atingido
 - [x] Mudar botão inferior para vermelho vazado quando pedido mínimo não for atingido
 - [x] Mudar container de alerta de pedido mínimo para cor vermelha (combinar com botão)
+
+
+## Validação de Pedido Mínimo na Sacola Desktop
+- [ ] Adicionar alerta vermelho de pedido mínimo na sacola desktop
+- [ ] Esconder botão "Adicionar mais itens" quando abaixo do mínimo
+- [ ] Mudar botão inferior para vermelho vazado quando abaixo do mínimo
+
+
+## Validação de Pedido Mínimo na Sacola Desktop
+- [x] Adicionar alerta vermelho de pedido mínimo na sacola desktop
+- [x] Mostrar apenas botão "Adicionar mais itens" vermelho vazado quando abaixo do mínimo
+- [x] Bloquear botão "Finalizar pedido" quando abaixo do mínimo
