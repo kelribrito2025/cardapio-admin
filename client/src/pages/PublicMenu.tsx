@@ -1305,7 +1305,7 @@ export default function PublicMenu() {
                   <>
                     <span className="mx-1 opacity-60">|</span>
                     <ShoppingBag className="h-3 w-3" />
-                    <span>Mín. R${Number(establishment.minimumOrderValue).toFixed(0)}</span>
+                    <span>R${Number(establishment.minimumOrderValue).toFixed(0)}</span>
                   </>
                 )}
               </div>
@@ -1398,23 +1398,23 @@ export default function PublicMenu() {
               <div className="flex-1">
                 {/* Restaurant Name, Rating and Share */}
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+                  <div className="flex items-center gap-1 min-w-0">
+                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate max-w-[180px] md:max-w-none">
                       {establishment.name}
                     </h1>
                     {/* Rating - clicável para abrir modal de avaliações */}
                     <div className="relative flex-shrink-0" ref={ratingTooltipRef}>
                       <button
                         onClick={() => setShowReviewsModal(true)}
-                        className="flex items-center gap-1 hover:bg-gray-100 rounded-lg px-2 py-1 transition-colors cursor-pointer" style={{marginLeft: '-5px'}}
+                        className="flex items-center gap-0.5 hover:bg-gray-100 rounded-lg px-1.5 py-0.5 transition-colors cursor-pointer"
                       >
                         {/* Ícone de estrela único */}
-                        <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                        <span className="text-sm font-semibold text-gray-800 ml-1">
+                        <Star className="h-3.5 w-3.5 md:h-4 md:w-4 text-yellow-400 fill-yellow-400" />
+                        <span className="text-xs md:text-sm font-semibold text-gray-800">
                           {establishment.rating ? Number(establishment.rating).toFixed(1) : '0.0'}
                         </span>
-                        <span className="text-sm text-gray-500" style={{marginLeft: '-2px'}}>
-                          ({establishment.reviewCount || 0} avaliações)
+                        <span className="text-xs md:text-sm text-gray-500 hidden sm:inline">
+                          ({establishment.reviewCount || 0})
                         </span>
                       </button>
                     </div>

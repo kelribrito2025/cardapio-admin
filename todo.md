@@ -2182,3 +2182,8 @@
 - [x] Atualizar AdminLayout com nova lógica do toggle
 - [x] Adicionar campos manuallyClosed e manuallyClosedAt no schema
 - [x] Criar mutation setManualClose no backend
+
+## Ajustes Layout Mobile do Menu Público
+- [x] Simplificar badge de pedido mínimo: remover texto "Min.", deixar só ícone + valor (ex: 🛒 R$30)
+- [x] Mover avaliações para mesma linha do nome do restaurante (só quebrar se nome for muito longo)
+- [x] Truncar nome do restaurante em telas pequenas (max-w-[180px])
