@@ -568,6 +568,15 @@ export default function ProductForm() {
     newGroups[groupIndex].items = newGroups[groupIndex].items.filter(
       (_, i) => i !== itemIndex
     );
+    // Ajustar maxQuantity se for maior que a quantidade de itens restantes
+    const remainingItems = newGroups[groupIndex].items.length;
+    if (newGroups[groupIndex].maxQuantity > remainingItems && remainingItems > 0) {
+      newGroups[groupIndex].maxQuantity = remainingItems;
+    }
+    // Ajustar minQuantity se for maior que maxQuantity
+    if (newGroups[groupIndex].minQuantity > newGroups[groupIndex].maxQuantity) {
+      newGroups[groupIndex].minQuantity = newGroups[groupIndex].maxQuantity;
+    }
     setComplementGroups(newGroups);
   };
 
@@ -908,12 +917,15 @@ export default function ProductForm() {
                               <Input
                                 type="number"
                                 min="1"
+                                max={group.items.length || 1}
                                 value={group.maxQuantity}
-                                onChange={(e) =>
+                                onChange={(e) => {
+                                  const value = Number(e.target.value);
+                                  const maxAllowed = group.items.length || 1;
                                   updateComplementGroup(groupIndex, {
-                                    maxQuantity: Number(e.target.value),
-                                  })
-                                }
+                                    maxQuantity: Math.min(value, maxAllowed),
+                                  });
+                                }}
                                 className="w-14 h-8 text-sm rounded-md border-border/50"
                               />
                             </div>

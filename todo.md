@@ -2011,3 +2011,6 @@
 ## Melhoria: Tooltip de informação no campo de Preço
 - [x] Adicionar ícone de informação (i) ao lado do campo de Preço
 - [x] Implementar tooltip com texto explicativo sobre itens com preço R$ 0,00
+
+## Melhoria: Validação do campo Máx em complementos
+- [x] Limitar campo Máx para não ser maior que a quantidade de itens no grupo
