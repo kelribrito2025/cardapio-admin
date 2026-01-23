@@ -168,9 +168,11 @@ function SortableProductItem({
             </p>
           )}
         </div>
-        <div className="text-right flex-shrink-0">
-          <p className="font-semibold text-base text-primary">{formatCurrency(product.price)}</p>
-        </div>
+        {Number(product.price) > 0 && (
+          <div className="text-right flex-shrink-0">
+            <p className="font-semibold text-base text-primary">{formatCurrency(product.price)}</p>
+          </div>
+        )}
       </div>
       {/* Botões de ação (toggle, duplicar, excluir) */}
       <div className="flex items-center gap-2 flex-shrink-0">

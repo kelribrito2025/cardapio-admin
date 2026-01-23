@@ -1918,3 +1918,7 @@
 - [x] Verificar salvamento dos complementos ao criar pedido no cardápio público
 - [x] Corrigir exibição dos complementos nos detalhes do pedido (modal/sheet)
 - [x] Confirmado: Novos pedidos exibem complementos corretamente (pedidos antigos não tinham dados salvos)
+
+## Ocultar preço R$ 0,00
+- [x] Ocultar preço quando for R$ 0,00 na lista de produtos do catálogo administrativo
+- [x] Ocultar preço quando for R$ 0,00 no cardápio público

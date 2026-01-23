@@ -1008,9 +1008,11 @@ export default function PublicMenu() {
                           <p className="text-xs text-gray-500 truncate mt-0.5">{product.description}</p>
                         )}
                       </div>
-                      <div className="flex-shrink-0 text-sm font-semibold text-red-600">
-                        R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
-                      </div>
+                      {Number(product.price) > 0 && (
+                        <div className="flex-shrink-0 text-sm font-semibold text-red-600">
+                          R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
+                        </div>
+                      )}
                     </button>
                   ))}
                   {filteredProducts.length > 6 && (
@@ -1804,9 +1806,11 @@ export default function PublicMenu() {
               {/* Título e Preço */}
               <div>
                 <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
-                <p className="text-lg font-semibold text-red-500 mt-1">
-                  {formatPrice(selectedProduct.price)}
-                </p>
+                {Number(selectedProduct.price) > 0 && (
+                  <p className="text-lg font-semibold text-red-500 mt-1">
+                    {formatPrice(selectedProduct.price)}
+                  </p>
+                )}
               </div>
 
               {/* Descrição */}
@@ -3981,7 +3985,9 @@ function ProductCard({
             </p>
           )}
           <div className="flex items-center gap-2 mt-1.5">
-            <span className="text-red-500 font-semibold text-sm">{formatPrice(product.price)}</span>
+            {Number(product.price) > 0 && (
+              <span className="text-red-500 font-semibold text-sm">{formatPrice(product.price)}</span>
+            )}
             {!product.hasStock && (
               <span className="text-[10px] text-red-500 font-medium bg-red-50 px-1.5 py-0.5 rounded">
                 Indisponível
