@@ -1977,3 +1977,7 @@
 
 ## Adicionar preços dos complementos no modal Meus Pedidos
 - [x] Exibir valor unitário de cada complemento no modal Meus Pedidos do cardápio público (em andamento e histórico)
+
+
+## Ocultar preço zero no modal de Preview da edição do item
+- [x] Ocultar preço quando for R$ 0,00 no modal de Preview da página de edição do item

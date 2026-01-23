@@ -860,9 +860,11 @@ export default function ProductForm() {
                         {description}
                       </p>
                     )}
-                    <p className="text-lg font-bold text-primary">
-                      {formatCurrency(parseFloat(price.replace(',', '.')) || 0)}
-                    </p>
+                    {(parseFloat(price.replace(',', '.')) || 0) > 0 && (
+                      <p className="text-lg font-bold text-primary">
+                        {formatCurrency(parseFloat(price.replace(',', '.')) || 0)}
+                      </p>
+                    )}
 
                     {/* Preview dos Complementos com Interação */}
                     {complementGroups.length > 0 && (
