@@ -964,7 +964,7 @@ export default function PublicMenu() {
   const getOpeningText = () => {
     if (establishment.isOpen) return null;
     // For now, show a generic message. In the future, this can be dynamic based on schedule
-    return "Loja fechada no momento";
+    return "Fechado no momento";
   };
 
   // Get service types
