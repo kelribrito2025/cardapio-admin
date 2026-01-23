@@ -1211,7 +1211,15 @@ export default function PublicMenu() {
           </div>
 
           {/* Info */}
-          <div className="flex-1 bg-white rounded-xl p-4 md:p-5 shadow-sm md:ml-4" style={{paddingBottom: '4px'}}>
+          <div className="flex-1 bg-white rounded-xl p-4 md:p-5 shadow-sm md:ml-4 relative" style={{paddingBottom: '4px'}}>
+            {/* Badge de Entrega/Retirada - Flutuante no canto superior direito (mobile) */}
+            {getServiceTypes() && (
+              <div className="md:hidden absolute -top-2 right-3 z-10">
+                <span className="px-3 py-1.5 bg-white text-gray-700 text-xs font-semibold rounded-full border border-gray-200 shadow-md">
+                  {getServiceTypes()}
+                </span>
+              </div>
+            )}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
               <div className="flex-1">
                 {/* Restaurant Name, Rating and Share */}
@@ -1308,9 +1316,9 @@ export default function PublicMenu() {
                     </span>
                   )}
 
-                  {/* Service Types Badge */}
+                  {/* Service Types Badge - apenas desktop (mobile usa badge flutuante) */}
                   {getServiceTypes() && (
-                    <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200" style={{paddingRight: '9px', paddingLeft: '9px', paddingTop: '3px', paddingBottom: '3px', height: '24px'}}>
+                    <span className="hidden md:inline-flex px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200" style={{paddingRight: '9px', paddingLeft: '9px', paddingTop: '3px', paddingBottom: '3px', height: '24px'}}>
                       {getServiceTypes()}
                     </span>
                   )}

@@ -2102,3 +2102,6 @@
 
 ## Layout do Cabeçalho do Menu Público
 - [x] Corrigir layout para que estrela/avaliações e ícone de compartilhar fiquem na mesma linha do nome do restaurante em telas menores (só quebrar linha quando nome for muito grande)
+
+## Badge de Entrega e Retirada
+- [x] Reposicionar badge "Entrega e Retirada" para o canto superior direito do card de informações no mobile, como destaque flutuante na borda
