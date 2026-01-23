@@ -1212,12 +1212,15 @@ export default function PublicMenu() {
 
           {/* Info */}
           <div className="flex-1 bg-white rounded-xl p-4 md:p-5 shadow-sm md:ml-4 relative" style={{paddingBottom: '4px'}}>
-            {/* Badge de Entrega/Retirada - Flutuante no canto superior direito (mobile) */}
+            {/* Badge de Entrega/Retirada - Etiqueta/Ribbon na borda direita (mobile) */}
             {getServiceTypes() && (
-              <div className="md:hidden absolute -top-2 right-3 z-10">
-                <span className="px-3 py-1.5 bg-white text-gray-700 text-xs font-semibold rounded-full border border-gray-200 shadow-md">
+              <div className="md:hidden absolute top-1/2 -translate-y-1/2 -right-1 z-10">
+                {/* Sombra/fundo da etiqueta */}
+                <div className="absolute inset-0 bg-gray-300 rounded-l-lg translate-x-1 translate-y-1" style={{borderTopRightRadius: 0, borderBottomRightRadius: 0}}></div>
+                {/* Etiqueta principal */}
+                <div className="relative px-3 py-2 bg-red-500 text-white text-xs font-bold rounded-l-lg shadow-lg" style={{borderTopRightRadius: 0, borderBottomRightRadius: 0}}>
                   {getServiceTypes()}
-                </span>
+                </div>
               </div>
             )}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
