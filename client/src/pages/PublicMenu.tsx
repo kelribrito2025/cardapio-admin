@@ -2537,7 +2537,9 @@ export default function PublicMenu() {
                             <p className="text-xs text-gray-400 mt-0.5">Obs: {item.observation}</p>
                           )}
                         </div>
-                        <span className="text-gray-700 font-medium ml-2">{formatPrice(Number(item.price) * item.quantity)}</span>
+                        {Number(item.price) * item.quantity > 0 && (
+                          <span className="text-gray-700 font-medium ml-2">{formatPrice(Number(item.price) * item.quantity)}</span>
+                        )}
                       </div>
                     ))}
                   </div>

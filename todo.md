@@ -1931,3 +1931,8 @@
 ## Ocultar preço R$ 0,00 no modal de resumo do pedido
 - [x] Ocultar preço quando for R$ 0,00 na lista de itens do modal de resumo do pedido
 - [x] Ocultar preço quando for R$ 0,00 na lista de pedidos ativos e histórico
+
+
+## Ocultar preço R$ 0,00 no modal Meus Pedidos
+- [x] Ocultar preço quando for R$ 0,00 na lista de itens do modal Meus Pedidos
+- [x] Ocultar preço quando for R$ 0,00 na etapa de confirmação do pedido (step 5)
