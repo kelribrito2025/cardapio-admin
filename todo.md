@@ -2004,3 +2004,6 @@
 
 ## Bug: Novos complementos adicionados no meio da lista
 - [x] Corrigir para que novos complementos sejam adicionados no final da lista
+
+## Melhoria: Permanecer na página de edição após salvar
+- [x] Remover redirecionamento para /catalogo após salvar alterações de um produto

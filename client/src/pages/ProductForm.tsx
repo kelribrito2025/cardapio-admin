@@ -254,7 +254,7 @@ export default function ProductForm() {
       // Salvar complementos após atualizar o produto
       await saveComplementGroups(variables.id);
       toast.success("Produto atualizado com sucesso");
-      navigate("/catalogo");
+      // Permanecer na página de edição em vez de redirecionar
     },
     onError: (error) => {
       toast.error("Erro ao atualizar produto");
