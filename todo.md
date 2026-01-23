@@ -2039,3 +2039,6 @@
 ## Bug: Nova categoria aparece no início da lista
 - [x] Corrigir para que novas categorias sejam adicionadas no final da lista
 - [x] Calcular sortOrder baseado na última categoria existente
+
+## Ajuste: Aumentar tamanho dos títulos das categorias no menu público
+- [x] Aumentar tamanho dos títulos das categorias na lista vertical em 20%

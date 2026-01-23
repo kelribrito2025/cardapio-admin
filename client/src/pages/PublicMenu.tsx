@@ -1399,7 +1399,7 @@ export default function PublicMenu() {
                     ref={(el) => { categoryRefs.current[category.id] = el; }}
                     className="mb-5 scroll-mt-32"
                   >
-                    <h2 className="text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">
+                    <h2 className="text-base font-bold text-gray-900 mb-2 uppercase tracking-wide">
                       {category.name}
                     </h2>
 
