@@ -2148,3 +2148,9 @@
 ## Correção do Toggle de Status no Perfil
 - [x] Modificar toggle de status no perfil para refletir automaticamente os horários de funcionamento configurados
 - [x] Remover o switch manual e substituir por indicação "Automático" com tooltip explicativo
+
+## Toggle de Fechamento Manual Forçado
+- [x] Manter toggle no menu do usuário para forçar fechamento manual mesmo dentro do horário de funcionamento
+- [x] Combinar lógica: se toggle desligado OU fora do horário = Fechado; se toggle ligado E dentro do horário = Aberto
+- [x] Adicionar indicação "Fechado manualmente" quando forçado
+- [x] Adicionar tooltip explicativo no toggle

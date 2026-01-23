@@ -154,8 +154,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     return currentTime >= openTimeMinutes && currentTime <= closeTimeMinutes;
   };
 
-  // Valor calculado de se está aberto (baseado nos horários configurados)
-  const calculatedIsOpen = isCurrentlyOpen();
+  // Valor calculado de se está aberto:
+  // - Se o toggle manual estiver desligado (establishment.isOpen = false), a loja está FECHADA (forçado)
+  // - Se o toggle manual estiver ligado E estiver dentro do horário, a loja está ABERTA
+  // - Se o toggle manual estiver ligado MAS estiver fora do horário, a loja está FECHADA
+  const isWithinBusinessHours = isCurrentlyOpen();
+  const calculatedIsOpen = establishment?.isOpen && isWithinBusinessHours;
+  
+  // Verifica se está fechado forçadamente (toggle desligado mas dentro do horário)
+  const isForcedClosed = !establishment?.isOpen && isWithinBusinessHours;
 
   // Toggle store open/closed
   const toggleOpenMutation = trpc.establishment.toggleOpen.useMutation({
@@ -551,7 +558,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <p className="text-sm font-semibold">{user.name || "Usuário"}</p>
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
-                  {/* Container Aberto/Fechado - Baseado nos horários configurados */}
+                  {/* Container Aberto/Fechado - Combina horários automáticos com fechamento manual */}
                   {establishment && (
                     <div className="px-3 py-2 border-b border-border/50">
                       <div className="flex items-center justify-between">
@@ -560,22 +567,37 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                             "h-2 w-2 rounded-full",
                             calculatedIsOpen ? "bg-emerald-500 animate-pulse" : "bg-gray-400"
                           )} />
-                          <span className={cn(
-                            "text-sm font-medium",
-                            calculatedIsOpen ? "text-emerald-600" : "text-muted-foreground"
-                          )}>
-                            {calculatedIsOpen ? "Aberto" : "Fechado"}
-                          </span>
+                          <div className="flex flex-col">
+                            <span className={cn(
+                              "text-sm font-medium",
+                              calculatedIsOpen ? "text-emerald-600" : "text-muted-foreground"
+                            )}>
+                              {calculatedIsOpen ? "Aberto" : "Fechado"}
+                            </span>
+                            {isForcedClosed && (
+                              <span className="text-[10px] text-amber-600">
+                                Fechado manualmente
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        {/* Status é automático baseado nos horários - sem toggle manual */}
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span className="text-xs text-muted-foreground cursor-help">
-                              Automático
-                            </span>
+                            <div>
+                              <Switch
+                                checked={establishment.isOpen}
+                                onCheckedChange={handleToggleOpen}
+                                disabled={toggleOpenMutation.isPending}
+                                className="data-[state=checked]:bg-emerald-500 scale-90"
+                              />
+                            </div>
                           </TooltipTrigger>
-                          <TooltipContent side="left" className="max-w-[200px]">
-                            <p className="text-xs">O status é calculado automaticamente com base nos horários de funcionamento configurados.</p>
+                          <TooltipContent side="left" className="max-w-[220px]">
+                            <p className="text-xs">
+                              {establishment.isOpen 
+                                ? "Desative para fechar a loja manualmente (imprevistos, força maior)" 
+                                : "Ative para permitir que a loja abra conforme os horários configurados"}
+                            </p>
                           </TooltipContent>
                         </Tooltip>
                       </div>
