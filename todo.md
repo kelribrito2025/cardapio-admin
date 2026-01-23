@@ -2064,3 +2064,9 @@
 ## Melhoria: Priorizar resultados de busca por início do nome
 - [x] Priorizar itens cujo nome começa com o termo buscado
 - [x] Ordenar: 1º nomes que começam com termo, 2º nomes que contém termo, 3º descrições que contém termo
+
+
+## Bug: Avaliações aparecem mesmo após exclusão + formato da nota
+- [x] Investigar por que nota e quantidade de avaliações continuam aparecendo após exclusão (dados cacheados na tabela establishments)
+- [x] Atualizar rating e reviewCount para 0 no estabelecimento 30001
+- [x] Mudar formato da nota de vírgula (5,0) para ponto (5.0)

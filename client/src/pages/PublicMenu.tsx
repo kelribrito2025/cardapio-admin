@@ -1228,7 +1228,7 @@ export default function PublicMenu() {
                         {/* Ícone de estrela único */}
                         <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
                         <span className="text-sm font-semibold text-gray-800 ml-1">
-                          {establishment.rating ? Number(establishment.rating).toFixed(1).replace('.', ',') : '0,0'}
+                          {establishment.rating ? Number(establishment.rating).toFixed(1) : '0.0'}
                         </span>
                         <span className="text-sm text-gray-500 hidden sm:inline" style={{marginLeft: '-2px'}}>
                           ({establishment.reviewCount || 0} avaliações)
@@ -4068,7 +4068,7 @@ export default function PublicMenu() {
                 <div>
                   <h2 className="text-lg font-bold text-gray-900">Avaliações</h2>
                   <p className="text-sm text-gray-500">
-                    {establishment.rating ? Number(establishment.rating).toFixed(1).replace('.', ',') : '0,0'} • {establishment.reviewCount || 0} avaliações
+                    {establishment.rating ? Number(establishment.rating).toFixed(1) : '0.0'} • {establishment.reviewCount || 0} avaliações
                   </p>
                 </div>
               </div>
