@@ -2234,3 +2234,9 @@
 - [x] Corrigir o bug (normalização de telefone e autocomplete)
 - [x] Unificar cartões de fidelidade duplicados no banco de dados
 - [x] Adicionar autocomplete="new-password" nos campos de senha
+
+
+## Ajuste Visual do Card de Fidelidade
+- [x] Mover texto "Faltam X pedidos" para dentro do card verde
+- [x] Aplicar degradê no fundo do card de fidelidade
+- [x] Unificar layout conforme imagem de referência

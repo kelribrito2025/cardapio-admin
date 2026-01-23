@@ -5188,81 +5188,84 @@ function LoyaltyCardView({
 
   return (
     <div className="space-y-4">
-      {/* Card Principal */}
-      <div className="bg-emerald-600 rounded-2xl p-5 text-white">
-        <div className="flex items-start gap-3 mb-4">
-          <div className="p-2 bg-white/20 rounded-xl">
-            <Gift className="h-6 w-6" />
-          </div>
-          <div>
-            <h3 className="font-bold text-lg">{establishmentName}</h3>
-            {cardData?.card?.customerName && (
-              <p className="text-white/80 text-sm">{cardData.card.customerName}</p>
-            )}
-          </div>
-        </div>
-        
-        {/* Progresso */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between text-sm mb-2">
-            <span className="text-white/80">Progresso</span>
-            <span className="font-bold">{stamps} / {required} carimbos</span>
-          </div>
-          <div className="h-2 bg-white/30 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-white rounded-full transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
-        
-        {/* Carimbos visuais */}
-        <div className="flex justify-center gap-2 flex-wrap">
-          {Array.from({ length: required }).map((_, i) => (
-            <div
-              key={i}
-              className={cn(
-                "w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all",
-                i < stamps
-                  ? "bg-white border-white"
-                  : "border-white/50 bg-transparent"
-              )}
-            >
-              <Clock className={cn(
-                "h-5 w-5",
-                i < stamps ? "text-emerald-600" : "text-white/50"
-              )} />
+      {/* Card Principal com Degradê */}
+      <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 rounded-2xl overflow-hidden shadow-lg">
+        {/* Conteúdo do Card */}
+        <div className="p-5 text-white">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="p-2 bg-white/20 rounded-xl">
+              <Gift className="h-6 w-6" />
             </div>
-          ))}
-        </div>
-      </div>
-      
-      {/* Mensagem de progresso */}
-      <div className="bg-white rounded-xl p-4 text-center">
-        {remaining > 0 ? (
-          <p className="text-gray-700">
-            Faltam <span className="text-emerald-600 font-bold">{remaining}</span> pedidos para ganhar seu cupom!
-          </p>
-        ) : (
-          <div className="space-y-2">
-            <p className="text-emerald-600 font-bold text-lg">🎉 Parabéns!</p>
-            <p className="text-gray-700">Você ganhou um cupom de desconto!</p>
-            {cardData?.activeCoupon && (
-              <div className="mt-3 p-3 bg-emerald-50 rounded-xl">
-                <p className="text-sm text-gray-600">Seu cupom:</p>
-                <p className="text-xl font-bold text-emerald-600">{cardData.activeCoupon.code}</p>
-                <p className="text-sm text-gray-500">
-                  {cardData.activeCoupon.type === 'percentage' 
-                    ? `${cardData.activeCoupon.value}% de desconto`
-                    : cardData.activeCoupon.type === 'free_delivery'
-                    ? 'Frete grátis'
-                    : `R$ ${Number(cardData.activeCoupon.value).toFixed(2)} de desconto`
-                  }
-                </p>
-              </div>
-            )}
+            <div>
+              <h3 className="font-bold text-lg">{establishmentName}</h3>
+              {cardData?.card?.customerName && (
+                <p className="text-white/80 text-sm">{cardData.card.customerName}</p>
+              )}
+            </div>
           </div>
-        )}
+          
+          {/* Progresso */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between text-sm mb-2">
+              <span className="text-white/80">Progresso</span>
+              <span className="font-bold">{stamps} / {required} carimbos</span>
+            </div>
+            <div className="h-2 bg-white/30 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-white rounded-full transition-all duration-500"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+          
+          {/* Carimbos visuais */}
+          <div className="flex justify-center gap-2 flex-wrap">
+            {Array.from({ length: required }).map((_, i) => (
+              <div
+                key={i}
+                className={cn(
+                  "w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all",
+                  i < stamps
+                    ? "bg-white border-white"
+                    : "border-white/40 bg-white/10"
+                )}
+              >
+                <Clock className={cn(
+                  "h-5 w-5",
+                  i < stamps ? "text-emerald-600" : "text-white/50"
+                )} />
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Mensagem de progresso - Dentro do card */}
+        <div className="bg-gray-100 px-5 py-4 text-center">
+          {remaining > 0 ? (
+            <p className="text-gray-700">
+              Faltam <span className="text-emerald-600 font-bold">{remaining}</span> pedidos para ganhar seu cupom!
+            </p>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-emerald-600 font-bold text-lg">🎉 Parabéns!</p>
+              <p className="text-gray-700">Você ganhou um cupom de desconto!</p>
+              {cardData?.activeCoupon && (
+                <div className="mt-3 p-3 bg-emerald-50 rounded-xl">
+                  <p className="text-sm text-gray-600">Seu cupom:</p>
+                  <p className="text-xl font-bold text-emerald-600">{cardData.activeCoupon.code}</p>
+                  <p className="text-sm text-gray-500">
+                    {cardData.activeCoupon.type === 'percentage' 
+                      ? `${cardData.activeCoupon.value}% de desconto`
+                      : cardData.activeCoupon.type === 'free_delivery'
+                      ? 'Frete grátis'
+                      : `R$ ${Number(cardData.activeCoupon.value).toFixed(2)} de desconto`
+                    }
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
       
       {/* Histórico */}
