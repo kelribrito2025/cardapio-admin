@@ -2131,3 +2131,7 @@
 - [x] Corrigir erro de establishmentId undefined ao salvar horários de funcionamento na página de configurações
 - [x] Corrigir erro de query de horários de funcionamento (Invalid input: expected object, received undefined)
 - [x] Corrigir lógica de verificação de status aberto/fechado no menu público (tabela business_hours não existia no banco de dados)
+
+## Correção: Sistema de horários de funcionamento
+- [x] Implementar lógica automática de verificação de horários no menu público (isCurrentlyOpen)
+- [x] Substituir uso de establishment.isOpen por cálculo dinâmico baseado nos horários configurados

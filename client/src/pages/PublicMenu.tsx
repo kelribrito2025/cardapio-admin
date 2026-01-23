@@ -966,9 +966,46 @@ export default function PublicMenu() {
     return filteredProducts.filter((p) => p.categoryId === categoryId);
   };
 
+  // Calcular se o restaurante está aberto baseado nos horários configurados
+  const isCurrentlyOpen = () => {
+    // Se não temos dados de horários, usar o valor do banco (isOpen)
+    if (!businessHoursData || businessHoursData.length === 0) {
+      return establishment.isOpen;
+    }
+    
+    const now = new Date();
+    const currentDay = now.getDay(); // 0 = Domingo, 1 = Segunda, etc.
+    const currentTime = now.getHours() * 60 + now.getMinutes(); // Minutos desde meia-noite
+    
+    // Buscar horário do dia atual
+    const todayHours = businessHoursData.find(h => h.dayOfWeek === currentDay);
+    
+    // Se hoje não está ativo, está fechado
+    if (!todayHours?.isActive) {
+      return false;
+    }
+    
+    // Se não tem horários definidos, considerar aberto o dia todo
+    if (!todayHours.openTime || !todayHours.closeTime) {
+      return true;
+    }
+    
+    // Converter horários para minutos
+    const [openHour, openMin] = todayHours.openTime.split(':').map(Number);
+    const [closeHour, closeMin] = todayHours.closeTime.split(':').map(Number);
+    const openTimeMinutes = openHour * 60 + openMin;
+    const closeTimeMinutes = closeHour * 60 + closeMin;
+    
+    // Verificar se está dentro do horário
+    return currentTime >= openTimeMinutes && currentTime <= closeTimeMinutes;
+  };
+  
+  // Valor calculado de se está aberto
+  const isOpen = isCurrentlyOpen();
+
   // Get opening hours text based on business hours
   const getOpeningText = () => {
-    if (establishment.isOpen) return null;
+    if (isOpen) return null;
     
     // Se não temos dados de horários, mostrar mensagem genérica
     if (!businessHoursData || businessHoursData.length === 0) {
@@ -1355,7 +1392,7 @@ export default function PublicMenu() {
                 {/* Status and Service Types */}
                 <div className="flex flex-wrap items-center gap-3 mt-2">
                   {/* Open/Closed Status */}
-                  {establishment.isOpen ? (
+                  {isOpen ? (
                     <span className="flex items-center gap-1.5 text-green-600 font-medium text-sm">
                       <span className="relative flex h-2.5 w-2.5">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -1676,22 +1713,22 @@ export default function PublicMenu() {
 
                 {/* Button */}
                 <button 
-                  disabled={cart.length === 0 || !establishment.isOpen}
+                  disabled={cart.length === 0 || !isOpen}
                   onClick={() => {
-                    if (cart.length > 0 && establishment.isOpen) {
+                    if (cart.length > 0 && isOpen) {
                       setOrderSent(false); // Resetar para permitir novo pedido
                       setCheckoutStep(1);
                     }
                   }}
                   className={`w-full mt-4 py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
-                    !establishment.isOpen
+                    !isOpen
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : cart.length === 0 
                         ? 'bg-red-400/80 text-white cursor-not-allowed' 
                         : 'bg-red-500 hover:bg-red-600 text-white'
                   }`}
                 >
-                  {!establishment.isOpen ? (
+                  {!isOpen ? (
                     <>
                       <Clock className="h-5 w-5" />
                       Restaurante Fechado
@@ -2124,7 +2161,7 @@ export default function PublicMenu() {
                 }
                 
                 // Verificar se a loja está aberta
-                const isStoreOpen = establishment.isOpen;
+                const isStoreOpen = isOpen;
                 
                 // Verificar se item tem preço zero e nenhum complemento selecionado
                 const hasZeroPrice = Number(selectedProduct.price) === 0;
@@ -2929,7 +2966,7 @@ export default function PublicMenu() {
               <div className="flex-shrink-0 border-t px-6 py-4">
                 <button
                   onClick={() => {
-                    if (isSendingOrder || !establishment || !establishment.isOpen) return;
+                    if (isSendingOrder || !establishment || !isOpen) return;
                     
                     // Validar valor do troco antes de enviar
                     if (paymentMethod === 'cash' && changeAmount) {
@@ -2994,18 +3031,18 @@ export default function PublicMenu() {
                     });
                     }, 3000); // Delay de 3 segundos
                   }}
-                  disabled={isSendingOrder || !establishment.isOpen || !!changeAmountError}
+                  disabled={isSendingOrder || !isOpen || !!changeAmountError}
                   className={`w-full py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
-                    !establishment.isOpen
+                    !isOpen
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : changeAmountError
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         : isSendingOrder 
                           ? 'bg-green-400 cursor-not-allowed' 
                           : 'bg-green-500 hover:bg-green-600'
-                  } ${establishment.isOpen && !changeAmountError ? 'text-white' : ''}`}
+                  } ${isOpen && !changeAmountError ? 'text-white' : ''}`}
                 >
-                  {!establishment.isOpen ? (
+                  {!isOpen ? (
                     <>
                       <Clock className="h-5 w-5" />
                       Restaurante Fechado
@@ -3307,19 +3344,19 @@ export default function PublicMenu() {
                 {/* Botão Finalizar pedido */}
                 <button
                   onClick={() => {
-                    if (!establishment.isOpen) return;
+                    if (!isOpen) return;
                     setShowMobileBag(false);
                     setOrderSent(false); // Resetar para permitir novo pedido
                     setCheckoutStep(1);
                   }}
-                  disabled={!establishment.isOpen}
+                  disabled={!isOpen}
                   className={`w-full py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
-                    !establishment.isOpen
+                    !isOpen
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : 'bg-red-500 hover:bg-red-600 text-white'
                   }`}
                 >
-                  {!establishment.isOpen ? (
+                  {!isOpen ? (
                     <>
                       <Clock className="h-5 w-5" />
                       Restaurante Fechado
