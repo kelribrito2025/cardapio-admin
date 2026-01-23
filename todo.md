@@ -2017,3 +2017,8 @@
 
 ## Melhoria: Prefixo R$ no campo de preço dos complementos
 - [x] Adicionar prefixo R$ ao campo de preço dos itens de complemento
+
+#### Melhoria: Modal de visualização de fotos do item
+- [x] Adicionar indicadores visuais de navegação (setas ou pontos) para mostrar que há mais fotos
+- [x] Adicionar contador de fotos no canto inferior direito (ex: "1/3")
+- [x] Adicionar suporte para arrastar/deslizar entre as fotos

@@ -98,6 +98,7 @@ export default function PublicMenu() {
   const [ratingComment, setRatingComment] = useState("");
   const [showReviewsModal, setShowReviewsModal] = useState(false);
   const [showFullscreenImage, setShowFullscreenImage] = useState(false);
+  const [fullscreenImageIndex, setFullscreenImageIndex] = useState(0);
   const [ratingSuccess, setRatingSuccess] = useState(false);
   const [canReviewChecked, setCanReviewChecked] = useState(false);
   const [canReview, setCanReview] = useState(true);
@@ -1757,17 +1758,24 @@ export default function PublicMenu() {
                   src={selectedProduct.images[0]}
                   alt={selectedProduct.name}
                   className="w-full h-full object-cover cursor-pointer"
-                  onClick={() => setShowFullscreenImage(true)}
+                  onClick={() => { setFullscreenImageIndex(0); setShowFullscreenImage(true); }}
                 />
                 {/* Ícone de olho para indicar que pode clicar */}
                 <div 
                   className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
-                  onClick={() => setShowFullscreenImage(true)}
+                  onClick={() => { setFullscreenImageIndex(0); setShowFullscreenImage(true); }}
                 >
                   <div className="bg-white/80 rounded-full p-3 shadow-lg">
                     <Eye className="h-6 w-6 text-gray-700" />
                   </div>
                 </div>
+                {/* Indicador de quantidade de fotos */}
+                {selectedProduct.images.length > 1 && (
+                  <div className="absolute bottom-3 right-3 bg-black/60 text-white px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5">
+                    <Eye className="h-3.5 w-3.5" />
+                    <span>1/{selectedProduct.images.length}</span>
+                  </div>
+                )}
                 <button 
                   onClick={() => setSelectedProduct(null)}
                   className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
@@ -3858,23 +3866,119 @@ export default function PublicMenu() {
 
       {/* Modal de Avaliações do Restaurante */}
       {/* Modal de Imagem em Tela Cheia */}
-      {showFullscreenImage && selectedProduct?.images?.[0] && (
+      {showFullscreenImage && selectedProduct?.images && selectedProduct.images.length > 0 && (
         <div 
           className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95"
           onClick={() => setShowFullscreenImage(false)}
         >
+          {/* Botão Fechar */}
           <button 
             onClick={() => setShowFullscreenImage(false)}
             className="absolute top-4 right-4 p-3 bg-white/20 hover:bg-white/30 rounded-full transition-colors z-10"
           >
             <X className="h-6 w-6 text-white" />
           </button>
-          <img
-            src={selectedProduct.images[0]}
-            alt={selectedProduct.name}
-            className="max-w-full max-h-full object-contain p-4"
+          
+          {/* Setas de Navegação - Esquerda */}
+          {selectedProduct.images.length > 1 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setFullscreenImageIndex((prev) => 
+                  prev === 0 ? selectedProduct.images!.length - 1 : prev - 1
+                );
+              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/20 hover:bg-white/30 rounded-full transition-colors z-10"
+            >
+              <ChevronLeft className="h-6 w-6 text-white" />
+            </button>
+          )}
+          
+          {/* Setas de Navegação - Direita */}
+          {selectedProduct.images.length > 1 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setFullscreenImageIndex((prev) => 
+                  prev === selectedProduct.images!.length - 1 ? 0 : prev + 1
+                );
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/20 hover:bg-white/30 rounded-full transition-colors z-10"
+            >
+              <ChevronRight className="h-6 w-6 text-white" />
+            </button>
+          )}
+          
+          {/* Imagem Principal com suporte a swipe */}
+          <div 
+            className="w-full h-full flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
-          />
+            onTouchStart={(e) => {
+              const touch = e.touches[0];
+              (e.currentTarget as HTMLElement).dataset.touchStartX = touch.clientX.toString();
+            }}
+            onTouchEnd={(e) => {
+              const touchStartX = parseFloat((e.currentTarget as HTMLElement).dataset.touchStartX || '0');
+              const touchEndX = e.changedTouches[0].clientX;
+              const diff = touchStartX - touchEndX;
+              
+              if (Math.abs(diff) > 50 && selectedProduct.images && selectedProduct.images.length > 1) {
+                if (diff > 0) {
+                  // Swipe para esquerda - próxima imagem
+                  setFullscreenImageIndex((prev) => 
+                    prev === selectedProduct.images!.length - 1 ? 0 : prev + 1
+                  );
+                } else {
+                  // Swipe para direita - imagem anterior
+                  setFullscreenImageIndex((prev) => 
+                    prev === 0 ? selectedProduct.images!.length - 1 : prev - 1
+                  );
+                }
+              }
+            }}
+          >
+            <img
+              src={selectedProduct.images[fullscreenImageIndex]}
+              alt={`${selectedProduct.name} - Foto ${fullscreenImageIndex + 1}`}
+              className="max-w-full max-h-full object-contain p-4 select-none"
+              draggable={false}
+            />
+          </div>
+          
+          {/* Contador de Fotos no canto inferior direito */}
+          {selectedProduct.images.length > 1 && (
+            <div className="absolute bottom-6 right-6 bg-black/60 text-white px-3 py-1.5 rounded-full text-sm font-medium">
+              {fullscreenImageIndex + 1} / {selectedProduct.images.length}
+            </div>
+          )}
+          
+          {/* Indicadores de Paginação (pontos) */}
+          {selectedProduct.images.length > 1 && (
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+              {selectedProduct.images.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFullscreenImageIndex(index);
+                  }}
+                  className={cn(
+                    "w-2 h-2 rounded-full transition-all",
+                    index === fullscreenImageIndex 
+                      ? "bg-white w-6" 
+                      : "bg-white/50 hover:bg-white/70"
+                  )}
+                />
+              ))}
+            </div>
+          )}
+          
+          {/* Dica de arrastar (apenas no mobile quando há múltiplas fotos) */}
+          {selectedProduct.images.length > 1 && (
+            <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-white/60 text-xs md:hidden">
+              Arraste para ver mais fotos
+            </div>
+          )}
         </div>
       )}
 
