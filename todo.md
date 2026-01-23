@@ -1957,3 +1957,7 @@
 
 ## Reorganizar modal de detalhes do pedido
 - [x] Mover container "Itens do Pedido" para cima do container "Detalhes do Pagamento"
+
+
+## Reorganizar modal de detalhes do pedido (v2)
+- [x] Mover container "Itens do Pedido" para cima do container "Informações de Entrega"

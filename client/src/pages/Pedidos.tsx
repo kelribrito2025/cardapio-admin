@@ -834,23 +834,6 @@ export default function Pedidos() {
                   )}
                 </div>
 
-                {/* Delivery Info */}
-                <div className="border border-border/50 rounded-xl p-4">
-                  <h4 className="font-semibold text-base mb-4">Informações de Entrega</h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Tipo:</span>
-                      <span className="font-medium">{orderDetails.deliveryType === "delivery" ? "Entrega" : "Retirada"}</span>
-                    </div>
-                    {orderDetails.customerAddress && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Endereço:</span>
-                        <span className="font-medium text-right max-w-[150px]">{orderDetails.customerAddress}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
                 {/* Order Items */}
                 <div className="border border-border/50 rounded-xl p-4">
                   <h4 className="font-semibold text-base mb-4">Itens do Pedido</h4>
@@ -903,6 +886,23 @@ export default function Pedidos() {
                       <span className="font-bold text-primary">Total:</span>
                       <span className="font-bold text-primary">{formatCurrency(orderDetails.total)}</span>
                     </div>
+                  </div>
+                </div>
+
+                {/* Delivery Info */}
+                <div className="border border-border/50 rounded-xl p-4">
+                  <h4 className="font-semibold text-base mb-4">Informações de Entrega</h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Tipo:</span>
+                      <span className="font-medium">{orderDetails.deliveryType === "delivery" ? "Entrega" : "Retirada"}</span>
+                    </div>
+                    {orderDetails.customerAddress && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Endereço:</span>
+                        <span className="font-medium text-right max-w-[150px]">{orderDetails.customerAddress}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
