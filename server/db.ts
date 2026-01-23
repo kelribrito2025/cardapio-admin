@@ -274,7 +274,20 @@ export async function createCategory(data: InsertCategory) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(categories).values(data);
+  // Buscar o maior sortOrder existente para este estabelecimento
+  const existingCategories = await db.select({ sortOrder: categories.sortOrder })
+    .from(categories)
+    .where(eq(categories.establishmentId, data.establishmentId))
+    .orderBy(desc(categories.sortOrder))
+    .limit(1);
+  
+  const maxSortOrder = existingCategories.length > 0 ? existingCategories[0].sortOrder : -1;
+  const newSortOrder = maxSortOrder + 1;
+  
+  const result = await db.insert(categories).values({
+    ...data,
+    sortOrder: newSortOrder,
+  });
   return result[0].insertId;
 }
 

@@ -2034,3 +2034,8 @@
 ## Ajuste: Remover indicadores visuais de foto do complemento no menu público
 - [x] Remover badge "Foto do complemento" da imagem do produto
 - [x] Remover ícone de foto ao lado do item de complemento na seleção
+
+
+## Bug: Nova categoria aparece no início da lista
+- [x] Corrigir para que novas categorias sejam adicionadas no final da lista
+- [x] Calcular sortOrder baseado na última categoria existente
