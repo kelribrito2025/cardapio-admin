@@ -2106,3 +2106,4 @@
 ## Badge de Entrega e Retirada
 - [x] Reposicionar badge "Entrega e Retirada" para o canto superior direito do card de informações no mobile, como destaque flutuante na borda
 - [x] Redesenhar badge "Entrega e Retirada" como etiqueta/ribbon encaixada na borda direita do card no mobile (estilo tag parcialmente para fora)
+- [x] Ajustar badge "Entrega e Retirada" para ficar como aba de pasta no topo direito do card (estilo folder tab)

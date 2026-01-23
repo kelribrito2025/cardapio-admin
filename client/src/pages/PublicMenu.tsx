@@ -1212,13 +1212,13 @@ export default function PublicMenu() {
 
           {/* Info */}
           <div className="flex-1 bg-white rounded-xl p-4 md:p-5 shadow-sm md:ml-4 relative" style={{paddingBottom: '4px'}}>
-            {/* Badge de Entrega/Retirada - Etiqueta/Ribbon na borda direita (mobile) */}
+            {/* Badge de Entrega/Retirada - Aba de pasta no topo direito (mobile) */}
             {getServiceTypes() && (
-              <div className="md:hidden absolute top-1/2 -translate-y-1/2 -right-1 z-10">
-                {/* Sombra/fundo da etiqueta */}
-                <div className="absolute inset-0 bg-gray-300 rounded-l-lg translate-x-1 translate-y-1" style={{borderTopRightRadius: 0, borderBottomRightRadius: 0}}></div>
-                {/* Etiqueta principal */}
-                <div className="relative px-3 py-2 bg-red-500 text-white text-xs font-bold rounded-l-lg shadow-lg" style={{borderTopRightRadius: 0, borderBottomRightRadius: 0}}>
+              <div className="md:hidden absolute -top-3 right-4 z-10">
+                {/* Sombra/fundo da aba */}
+                <div className="absolute inset-0 bg-gray-300 rounded-t-lg translate-y-0.5" style={{borderBottomLeftRadius: 0, borderBottomRightRadius: 0}}></div>
+                {/* Aba principal */}
+                <div className="relative px-4 py-2 bg-red-500 text-white text-xs font-bold rounded-t-lg shadow-lg" style={{borderBottomLeftRadius: 0, borderBottomRightRadius: 0}}>
                   {getServiceTypes()}
                 </div>
               </div>
