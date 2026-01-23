@@ -118,6 +118,12 @@ export default function PublicMenu() {
     { slug: slug || "" },
     { enabled: !!slug }
   );
+  
+  // Query para buscar horários de funcionamento
+  const { data: businessHoursData } = trpc.publicMenu.getBusinessHours.useQuery(
+    { establishmentId: data?.establishment?.id || 0 },
+    { enabled: !!data?.establishment?.id }
+  );
 
   // Query para buscar complementos do produto selecionado
   const { data: productComplements } = trpc.publicMenu.getProductComplements.useQuery(
@@ -960,10 +966,51 @@ export default function PublicMenu() {
     return filteredProducts.filter((p) => p.categoryId === categoryId);
   };
 
-  // Get opening hours text
+  // Get opening hours text based on business hours
   const getOpeningText = () => {
     if (establishment.isOpen) return null;
-    // For now, show a generic message. In the future, this can be dynamic based on schedule
+    
+    // Se não temos dados de horários, mostrar mensagem genérica
+    if (!businessHoursData || businessHoursData.length === 0) {
+      return "Fechado no momento";
+    }
+    
+    const now = new Date();
+    const currentDay = now.getDay(); // 0 = Domingo, 1 = Segunda, etc.
+    const currentTime = now.getHours() * 60 + now.getMinutes(); // Minutos desde meia-noite
+    
+    // Buscar horário do dia atual
+    const todayHours = businessHoursData.find(h => h.dayOfWeek === currentDay);
+    
+    // Se hoje está ativo, verificar se ainda vai abrir hoje
+    if (todayHours?.isActive && todayHours.openTime) {
+      const [openHour, openMin] = todayHours.openTime.split(':').map(Number);
+      const openTimeMinutes = openHour * 60 + openMin;
+      
+      // Se ainda não chegou o horário de abertura, mostrar "Abriremos hoje às X"
+      if (currentTime < openTimeMinutes) {
+        return `Fechado \u2013 Abriremos hoje às ${todayHours.openTime}`;
+      }
+    }
+    
+    // Buscar o próximo dia ativo
+    for (let i = 1; i <= 7; i++) {
+      const nextDay = (currentDay + i) % 7;
+      const nextDayHours = businessHoursData.find(h => h.dayOfWeek === nextDay);
+      
+      if (nextDayHours?.isActive && nextDayHours.openTime) {
+        // Se é amanhã (i === 1)
+        if (i === 1) {
+          return `Fechado hoje \u2013 Abriremos amanhã às ${nextDayHours.openTime}`;
+        }
+        
+        // Se é outro dia, mostrar o nome do dia
+        const dayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+        return `Fechado \u2013 Abriremos ${dayNames[nextDay]} às ${nextDayHours.openTime}`;
+      }
+    }
+    
+    // Se não encontrou nenhum dia ativo
     return "Fechado no momento";
   };
 

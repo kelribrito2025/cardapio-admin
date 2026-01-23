@@ -27,6 +27,7 @@ import {
   MessageCircle,
   Trash2,
   MessageSquare,
+  Clock,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -36,6 +37,10 @@ import { AddressMapPicker } from "@/components/AddressMapPicker";
 
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
+  const { data: businessHoursData, refetch: refetchBusinessHours } = trpc.establishment.getBusinessHours.useQuery(
+    undefined,
+    { enabled: !!establishment }
+  );
   const [activeTab, setActiveTab] = useState("estabelecimento");
 
   // Establishment form state
@@ -75,6 +80,23 @@ export default function Configuracoes() {
   
   // Note style state
   const [noteStyle, setNoteStyle] = useState("default");
+  
+  // Business hours state
+  type BusinessHourDay = {
+    dayOfWeek: number;
+    isActive: boolean;
+    openTime: string;
+    closeTime: string;
+  };
+  const [businessHours, setBusinessHours] = useState<BusinessHourDay[]>([
+    { dayOfWeek: 0, isActive: false, openTime: "18:00", closeTime: "23:00" }, // Domingo
+    { dayOfWeek: 1, isActive: true, openTime: "18:00", closeTime: "23:00" }, // Segunda
+    { dayOfWeek: 2, isActive: true, openTime: "18:00", closeTime: "23:00" }, // Terça
+    { dayOfWeek: 3, isActive: true, openTime: "18:00", closeTime: "23:00" }, // Quarta
+    { dayOfWeek: 4, isActive: true, openTime: "18:00", closeTime: "23:00" }, // Quinta
+    { dayOfWeek: 5, isActive: true, openTime: "18:00", closeTime: "23:00" }, // Sexta
+    { dayOfWeek: 6, isActive: true, openTime: "18:00", closeTime: "23:00" }, // Sábado
+  ]);
 
   // Image crop modal state
   const [cropModalOpen, setCropModalOpen] = useState(false);
@@ -143,6 +165,25 @@ export default function Configuracoes() {
       setNoteStyle(establishment.noteStyle || "default");
     }
   }, [establishment]);
+  
+  // Load business hours when data is available
+  useEffect(() => {
+    if (businessHoursData && businessHoursData.length > 0) {
+      const hoursMap = new Map(businessHoursData.map(h => [h.dayOfWeek, h]));
+      setBusinessHours(prev => prev.map(day => {
+        const savedHour = hoursMap.get(day.dayOfWeek);
+        if (savedHour) {
+          return {
+            dayOfWeek: day.dayOfWeek,
+            isActive: savedHour.isActive,
+            openTime: savedHour.openTime || "18:00",
+            closeTime: savedHour.closeTime || "23:00",
+          };
+        }
+        return day;
+      }));
+    }
+  }, [businessHoursData]);
 
   // Upload mutation
   const uploadMutation = trpc.upload.image.useMutation();
@@ -186,6 +227,14 @@ export default function Configuracoes() {
       toast.success("Nota removida com sucesso");
     },
     onError: () => toast.error("Erro ao remover nota"),
+  });
+  
+  const saveBusinessHoursMutation = trpc.establishment.saveBusinessHours.useMutation({
+    onSuccess: () => {
+      refetchBusinessHours();
+      toast.success("Horários de funcionamento salvos com sucesso");
+    },
+    onError: () => toast.error("Erro ao salvar horários de funcionamento"),
   });
 
   const handleSaveEstablishment = () => {
@@ -1286,6 +1335,115 @@ export default function Configuracoes() {
               <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
                 <Save className="h-4 w-4 mr-2" />
                 {isPending ? "Salvando..." : "Salvar"}
+              </Button>
+            </div>
+          </SectionCard>
+          
+          {/* Horários de Funcionamento */}
+          <SectionCard title="Horários de funcionamento">
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Configure os horários de funcionamento do seu estabelecimento. O menu público exibirá automaticamente se o restaurante está aberto ou fechado.
+              </p>
+              
+              <div className="space-y-3">
+                {[
+                  { day: 0, name: "Domingo" },
+                  { day: 1, name: "Segunda-feira" },
+                  { day: 2, name: "Terça-feira" },
+                  { day: 3, name: "Quarta-feira" },
+                  { day: 4, name: "Quinta-feira" },
+                  { day: 5, name: "Sexta-feira" },
+                  { day: 6, name: "Sábado" },
+                ].map(({ day, name }) => {
+                  const hourData = businessHours.find(h => h.dayOfWeek === day);
+                  return (
+                    <div
+                      key={day}
+                      className={cn(
+                        "flex items-center gap-4 p-4 rounded-xl border transition-all",
+                        hourData?.isActive
+                          ? "border-primary/30 bg-primary/5"
+                          : "border-border/50 bg-muted/30"
+                      )}
+                    >
+                      {/* Toggle */}
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={hourData?.isActive || false}
+                          onChange={(e) => {
+                            setBusinessHours(prev => prev.map(h =>
+                              h.dayOfWeek === day ? { ...h, isActive: e.target.checked } : h
+                            ));
+                          }}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      </label>
+                      
+                      {/* Day name */}
+                      <span className={cn(
+                        "font-medium min-w-[120px]",
+                        hourData?.isActive ? "text-foreground" : "text-muted-foreground"
+                      )}>
+                        {name}
+                      </span>
+                      
+                      {/* Time inputs */}
+                      {hourData?.isActive && (
+                        <div className="flex items-center gap-2 ml-auto">
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-muted-foreground" />
+                            <Input
+                              type="time"
+                              value={hourData.openTime}
+                              onChange={(e) => {
+                                setBusinessHours(prev => prev.map(h =>
+                                  h.dayOfWeek === day ? { ...h, openTime: e.target.value } : h
+                                ));
+                              }}
+                              className="w-[100px] h-9 rounded-lg text-sm"
+                            />
+                          </div>
+                          <span className="text-muted-foreground">até</span>
+                          <Input
+                            type="time"
+                            value={hourData.closeTime}
+                            onChange={(e) => {
+                              setBusinessHours(prev => prev.map(h =>
+                                h.dayOfWeek === day ? { ...h, closeTime: e.target.value } : h
+                              ));
+                            }}
+                            className="w-[100px] h-9 rounded-lg text-sm"
+                          />
+                        </div>
+                      )}
+                      
+                      {!hourData?.isActive && (
+                        <span className="text-sm text-muted-foreground ml-auto">Fechado</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              
+              <Button
+                onClick={() => {
+                  saveBusinessHoursMutation.mutate({
+                    hours: businessHours.map(h => ({
+                      dayOfWeek: h.dayOfWeek,
+                      isActive: h.isActive,
+                      openTime: h.openTime,
+                      closeTime: h.closeTime,
+                    })),
+                  });
+                }}
+                disabled={saveBusinessHoursMutation.isPending}
+                className="rounded-xl shadow-sm"
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {saveBusinessHoursMutation.isPending ? "Salvando..." : "Salvar Horários"}
               </Button>
             </div>
           </SectionCard>

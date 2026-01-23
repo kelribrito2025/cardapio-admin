@@ -15,7 +15,8 @@ import {
   stockItems, InsertStockItem, StockItem,
   stockMovements, InsertStockMovement, StockMovement,
   coupons, InsertCoupon, Coupon,
-  reviews, InsertReview, Review
+  reviews, InsertReview, Review,
+  businessHours, InsertBusinessHours, BusinessHours
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -1592,4 +1593,44 @@ export async function updateEstablishmentRating(establishmentId: number) {
     console.error('Error updating establishment rating:', error);
     // Don't throw - let the review creation succeed even if rating update fails
   }
+}
+
+
+
+// ============ BUSINESS HOURS FUNCTIONS ============
+export async function getBusinessHoursByEstablishment(establishmentId: number): Promise<BusinessHours[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(businessHours)
+    .where(eq(businessHours.establishmentId, establishmentId))
+    .orderBy(asc(businessHours.dayOfWeek));
+}
+
+export async function saveBusinessHours(establishmentId: number, hours: { dayOfWeek: number; isActive: boolean; openTime: string | null; closeTime: string | null }[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Delete existing hours for this establishment
+  await db.delete(businessHours).where(eq(businessHours.establishmentId, establishmentId));
+  
+  // Insert new hours
+  for (const hour of hours) {
+    await db.insert(businessHours).values({
+      establishmentId,
+      dayOfWeek: hour.dayOfWeek,
+      isActive: hour.isActive,
+      openTime: hour.openTime,
+      closeTime: hour.closeTime,
+    });
+  }
+}
+
+export async function getBusinessHoursForPublicMenu(establishmentId: number): Promise<BusinessHours[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(businessHours)
+    .where(eq(businessHours.establishmentId, establishmentId))
+    .orderBy(asc(businessHours.dayOfWeek));
 }

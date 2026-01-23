@@ -261,3 +261,19 @@ export const reviews = mysqlTable("reviews", {
 
 export type Review = typeof reviews.$inferSelect;
 export type InsertReview = typeof reviews.$inferInsert;
+
+
+// Business hours (horários de funcionamento)
+export const businessHours = mysqlTable("businessHours", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  dayOfWeek: int("dayOfWeek").notNull(), // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+  isActive: boolean("isActive").default(true).notNull(), // Toggle ON/OFF
+  openTime: varchar("openTime", { length: 5 }), // Formato HH:MM (ex: "18:00")
+  closeTime: varchar("closeTime", { length: 5 }), // Formato HH:MM (ex: "23:00")
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BusinessHours = typeof businessHours.$inferSelect;
+export type InsertBusinessHours = typeof businessHours.$inferInsert;

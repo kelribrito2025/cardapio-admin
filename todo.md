@@ -2120,3 +2120,9 @@
 - [x] Alterar a foto ao lado do campo de busca para usar placeholder padrão (reservado para logo do restaurante)
 - [x] Ajustes visuais no header: logo placeholder 37x37px e input de busca altura 37px via editor visual
 - [x] Alterar texto "Loja fechada no momento" para "Fechado no momento" via editor visual
+
+## Sistema de Horários de Funcionamento
+- [x] Criar tabela no banco de dados para horários de funcionamento por dia da semana (businessHours)
+- [x] Criar procedures no backend para salvar e buscar horários
+- [x] Adicionar seção de horários na página de Configurações (aba Atendimento) com toggles e campos de horário
+- [x] Implementar lógica dinâmica de mensagem no menu público (Aberto agora / Fechado - Abriremos hoje às X / Fechado hoje - Abriremos amanhã às X)

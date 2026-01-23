@@ -235,6 +235,29 @@ export const appRouter = router({
         await db.removePublicNote(input.id);
         return { success: true };
       }),
+    
+    // Buscar horários de funcionamento
+    getBusinessHours: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getBusinessHoursByEstablishment(input.establishmentId);
+      }),
+    
+    // Salvar horários de funcionamento
+    saveBusinessHours: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        hours: z.array(z.object({
+          dayOfWeek: z.number().min(0).max(6),
+          isActive: z.boolean(),
+          openTime: z.string().nullable(),
+          closeTime: z.string().nullable(),
+        })),
+      }))
+      .mutation(async ({ input }) => {
+        await db.saveBusinessHours(input.establishmentId, input.hours);
+        return { success: true };
+      }),
   }),
 
   // ============ CATEGORIES ============
@@ -732,6 +755,13 @@ export const appRouter = router({
       .input(z.object({ slug: z.string().min(1) }))
       .query(async ({ input }) => {
         return db.getPublicMenuData(input.slug);
+      }),
+    
+    // Buscar horários de funcionamento públicos
+    getBusinessHours: publicProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getBusinessHoursForPublicMenu(input.establishmentId);
       }),
     
     getProductComplements: publicProcedure
