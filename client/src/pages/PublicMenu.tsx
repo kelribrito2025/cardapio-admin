@@ -97,6 +97,7 @@ export default function PublicMenu() {
   const [ratingHover, setRatingHover] = useState(0);
   const [ratingComment, setRatingComment] = useState("");
   const [showReviewsModal, setShowReviewsModal] = useState(false);
+  const [showNavigationModal, setShowNavigationModal] = useState(false);
   const [showFullscreenImage, setShowFullscreenImage] = useState(false);
   const [fullscreenImageIndex, setFullscreenImageIndex] = useState(0);
   const [selectedComplementImage, setSelectedComplementImage] = useState<string | null>(null);
@@ -1264,14 +1265,10 @@ export default function PublicMenu() {
                 <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
                   {establishment.street && (
                     <>
-                      <a 
-                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                          [establishment.street, establishment.number, establishment.neighborhood, establishment.city, establishment.state].filter(Boolean).join(", ")
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button 
+                        onClick={() => setShowNavigationModal(true)}
                         className="flex items-center gap-1 min-w-0 flex-shrink hover:text-red-500 transition-colors cursor-pointer group"
-                        title="Abrir no Google Maps"
+                        title="Ver opções de navegação"
                       >
                         <MapPin className="h-3.5 w-3.5 text-gray-500 flex-shrink-0 group-hover:text-red-500" />
                         <span className="truncate max-w-[180px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-none underline-offset-2 group-hover:underline">
@@ -1280,7 +1277,7 @@ export default function PublicMenu() {
                           {establishment.neighborhood && ` - ${establishment.neighborhood}`}
                           {establishment.city && ` - ${establishment.city}`}
                         </span>
-                      </a>
+                      </button>
                       <span className="text-gray-400 flex-shrink-0">•</span>
                     </>
                   )}
@@ -4150,6 +4147,144 @@ export default function PublicMenu() {
                   <p className="text-sm text-gray-400 mt-1">Seja o primeiro a avaliar!</p>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Navegação - Bottom Sheet */}
+      {showNavigationModal && establishment && (
+        <div className="fixed inset-0 z-[110] flex items-end md:items-center md:justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowNavigationModal(false)}
+          />
+          
+          {/* Modal Content - Bottom Sheet Style */}
+          <div className="relative bg-white w-full md:w-[400px] md:rounded-2xl rounded-t-2xl shadow-2xl max-h-[70vh] overflow-hidden animate-in slide-in-from-bottom duration-300">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <MapPin className="h-5 w-5 text-red-500" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-gray-900">Como chegar</h2>
+                  <p className="text-sm text-gray-500 truncate max-w-[250px]">
+                    {establishment.street}
+                    {establishment.number && `, ${establishment.number}`}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowNavigationModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Endereço Completo */}
+            <div className="p-4 bg-gray-50 border-b">
+              <p className="text-sm text-gray-700">
+                {establishment.street}
+                {establishment.number && `, ${establishment.number}`}
+                {establishment.neighborhood && ` - ${establishment.neighborhood}`}
+                {establishment.city && `, ${establishment.city}`}
+                {establishment.state && ` - ${establishment.state}`}
+              </p>
+            </div>
+
+            {/* Opções de Navegação */}
+            <div className="p-4 space-y-3">
+              <p className="text-sm font-medium text-gray-500 mb-3">Abrir com:</p>
+              
+              {/* Google Maps */}
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                  [establishment.street, establishment.number, establishment.neighborhood, establishment.city, establishment.state].filter(Boolean).join(", ")
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all"
+                onClick={() => setShowNavigationModal(false)}
+              >
+                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border">
+                  <svg viewBox="0 0 24 24" className="w-7 h-7">
+                    <path fill="#4285F4" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                    <circle fill="#34A853" cx="12" cy="9" r="2.5"/>
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-gray-900">Google Maps</p>
+                  <p className="text-sm text-gray-500">Navegar com rotas</p>
+                </div>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
+              </a>
+
+              {/* Waze */}
+              <a
+                href={`https://waze.com/ul?q=${encodeURIComponent(
+                  [establishment.street, establishment.number, establishment.neighborhood, establishment.city, establishment.state].filter(Boolean).join(", ")
+                )}&navigate=yes`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all"
+                onClick={() => setShowNavigationModal(false)}
+              >
+                <div className="w-12 h-12 bg-[#33CCFF] rounded-xl flex items-center justify-center shadow-sm">
+                  <svg viewBox="0 0 24 24" className="w-7 h-7" fill="white">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-gray-900">Waze</p>
+                  <p className="text-sm text-gray-500">Navegar com trânsito em tempo real</p>
+                </div>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
+              </a>
+
+              {/* Apple Maps (apenas iOS) */}
+              <a
+                href={`maps://maps.apple.com/?daddr=${encodeURIComponent(
+                  [establishment.street, establishment.number, establishment.neighborhood, establishment.city, establishment.state].filter(Boolean).join(", ")
+                )}`}
+                className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all"
+                onClick={() => setShowNavigationModal(false)}
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center shadow-sm">
+                  <MapPin className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-gray-900">Apple Maps</p>
+                  <p className="text-sm text-gray-500">Disponível em dispositivos Apple</p>
+                </div>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
+              </a>
+            </div>
+
+            {/* Botão Copiar Endereço */}
+            <div className="p-4 border-t">
+              <button
+                onClick={() => {
+                  const fullAddress = [establishment.street, establishment.number, establishment.neighborhood, establishment.city, establishment.state].filter(Boolean).join(", ");
+                  navigator.clipboard.writeText(fullAddress);
+                  // Feedback visual
+                  const btn = document.getElementById('copy-address-btn');
+                  if (btn) {
+                    btn.textContent = 'Endereço copiado!';
+                    setTimeout(() => {
+                      btn.textContent = 'Copiar endereço';
+                    }, 2000);
+                  }
+                }}
+                id="copy-address-btn"
+                className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                <Copy className="h-4 w-4" />
+                Copiar endereço
+              </button>
             </div>
           </div>
         </div>

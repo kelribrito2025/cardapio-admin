@@ -2070,3 +2070,9 @@
 - [x] Investigar por que nota e quantidade de avaliações continuam aparecendo após exclusão (dados cacheados na tabela establishments)
 - [x] Atualizar rating e reviewCount para 0 no estabelecimento 30001
 - [x] Mudar formato da nota de vírgula (5,0) para ponto (5.0)
+
+
+## Restaurar modal bottom sheet ao clicar no endereço
+- [x] Restaurar comportamento anterior com modal estilo bottom sheet
+- [x] Exibir opções de navegação (Google Maps, Waze, Apple Maps) no modal
+- [x] Adicionar botão para copiar endereço
