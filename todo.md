@@ -1981,3 +1981,8 @@
 
 ## Ocultar preço zero no modal de Preview da edição do item
 - [x] Ocultar preço quando for R$ 0,00 no modal de Preview da página de edição do item
+
+
+## Duplicar item com grupos e complementos
+- [x] Modificar função de duplicação para copiar grupos de complementos
+- [x] Modificar função de duplicação para copiar itens dos complementos

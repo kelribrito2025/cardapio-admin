@@ -431,7 +431,30 @@ export async function duplicateProduct(id: number) {
   };
   
   const result = await db.insert(products).values(newProduct);
-  return result[0].insertId;
+  const newProductId = result[0].insertId;
+  
+  // Duplicar grupos de complementos
+  const groups = await getComplementGroupsByProduct(id);
+  for (const group of groups) {
+    const { id: groupId, productId: _, createdAt: __, ...groupData } = group;
+    const newGroupResult = await db.insert(complementGroups).values({
+      ...groupData,
+      productId: newProductId,
+    });
+    const newGroupId = newGroupResult[0].insertId;
+    
+    // Duplicar itens do grupo
+    const items = await getComplementItemsByGroup(groupId);
+    for (const item of items) {
+      const { id: itemId, groupId: _, createdAt: __, ...itemData } = item;
+      await db.insert(complementItems).values({
+        ...itemData,
+        groupId: newGroupId,
+      });
+    }
+  }
+  
+  return newProductId;
 }
 
 export async function getLowStockProducts(establishmentId: number, threshold: number = 5) {
