@@ -51,6 +51,16 @@ export const establishments = mysqlTable("establishments", {
   noteStyle: varchar("noteStyle", { length: 50 }).default("default"),
   noteExpiresAt: timestamp("noteExpiresAt"),
   smsEnabled: boolean("smsEnabled").default(false).notNull(),
+  // Tempo de entrega
+  deliveryTimeEnabled: boolean("deliveryTimeEnabled").default(false).notNull(),
+  deliveryTimeMin: int("deliveryTimeMin").default(20),
+  deliveryTimeMax: int("deliveryTimeMax").default(60),
+  // Pedido mínimo
+  minimumOrderEnabled: boolean("minimumOrderEnabled").default(false).notNull(),
+  minimumOrderValue: decimal("minimumOrderValue", { precision: 10, scale: 2 }).default("0"),
+  // Taxa de entrega
+  deliveryFeeType: mysqlEnum("deliveryFeeType", ["free", "fixed", "byNeighborhood"]).default("free").notNull(),
+  deliveryFeeFixed: decimal("deliveryFeeFixed", { precision: 10, scale: 2 }).default("0"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -277,3 +287,17 @@ export const businessHours = mysqlTable("businessHours", {
 
 export type BusinessHours = typeof businessHours.$inferSelect;
 export type InsertBusinessHours = typeof businessHours.$inferInsert;
+
+
+// Taxas de entrega por bairro
+export const neighborhoodFees = mysqlTable("neighborhoodFees", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  neighborhood: varchar("neighborhood", { length: 255 }).notNull(),
+  fee: decimal("fee", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type NeighborhoodFee = typeof neighborhoodFees.$inferSelect;
+export type InsertNeighborhoodFee = typeof neighborhoodFees.$inferInsert;

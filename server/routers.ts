@@ -174,6 +174,13 @@ export const appRouter = router({
         allowsDelivery: z.boolean().optional(),
         allowsPickup: z.boolean().optional(),
         smsEnabled: z.boolean().optional(),
+        deliveryTimeEnabled: z.boolean().optional(),
+        deliveryTimeMin: z.number().optional(),
+        deliveryTimeMax: z.number().optional(),
+        minimumOrderEnabled: z.boolean().optional(),
+        minimumOrderValue: z.string().optional(),
+        deliveryFeeType: z.enum(["free", "fixed", "byNeighborhood"]).optional(),
+        deliveryFeeFixed: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;

@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE establishments \nADD COLUMN deliveryTimeEnabled BOOLEAN DEFAULT FALSE NOT NULL,\nADD COLUMN deliveryTimeMin INT DEFAULT 20,\nADD COLUMN deliveryTimeMax INT DEFAULT 60,\nADD COLUMN minimumOrderEnabled BOOLEAN DEFAULT FALSE NOT NULL,\nADD COLUMN minimumOrderValue DECIMAL(10,2) DEFAULT 0,\nADD COLUMN deliveryFeeType ENUM('free', 'fixed', 'byNeighborhood') DEFAULT 'free' NOT NULL,\nADD COLUMN deliveryFeeFixed DECIMAL(10,2) DEFAULT 0;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute ALTER TABLE establishments \nADD COLUMN deliveryTimeEnabled BOOLEAN DEFAULT FALSE NOT NULL,\nADD COLUMN deliveryTimeMin INT DEFAULT 20,\nADD COLUMN deliveryTimeMax INT DEFAULT 60,\nADD COLUMN minimumOrderEnabled BOOLEAN DEFAULT FALSE NOT NULL,\nADD COLUMN minimumOrderValue DECIMAL(10,2) DEFAULT 0,\nADD COLUMN deliveryFeeType ENUM('free', 'fixed', 'byNeighborhood') DEFAULT 'free' NOT NULL,\nADD COLUMN deliveryFeeFixed DECIMAL(10,2) DEFAULT 0;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2370
+}

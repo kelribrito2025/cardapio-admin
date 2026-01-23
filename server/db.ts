@@ -16,7 +16,8 @@ import {
   stockMovements, InsertStockMovement, StockMovement,
   coupons, InsertCoupon, Coupon,
   reviews, InsertReview, Review,
-  businessHours, InsertBusinessHours, BusinessHours
+  businessHours, InsertBusinessHours, BusinessHours,
+  neighborhoodFees, InsertNeighborhoodFee, NeighborhoodFee
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -1633,4 +1634,44 @@ export async function getBusinessHoursForPublicMenu(establishmentId: number): Pr
   return db.select().from(businessHours)
     .where(eq(businessHours.establishmentId, establishmentId))
     .orderBy(asc(businessHours.dayOfWeek));
+}
+
+
+// ============ NEIGHBORHOOD FEES FUNCTIONS ============
+export async function getNeighborhoodFeesByEstablishment(establishmentId: number): Promise<NeighborhoodFee[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(neighborhoodFees)
+    .where(eq(neighborhoodFees.establishmentId, establishmentId))
+    .orderBy(asc(neighborhoodFees.neighborhood));
+}
+
+export async function createNeighborhoodFee(data: InsertNeighborhoodFee) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(neighborhoodFees).values(data);
+  return result[0].insertId;
+}
+
+export async function updateNeighborhoodFee(id: number, data: Partial<InsertNeighborhoodFee>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(neighborhoodFees).set(data).where(eq(neighborhoodFees.id, id));
+}
+
+export async function deleteNeighborhoodFee(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(neighborhoodFees).where(eq(neighborhoodFees.id, id));
+}
+
+export async function deleteAllNeighborhoodFees(establishmentId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(neighborhoodFees).where(eq(neighborhoodFees.establishmentId, establishmentId));
 }

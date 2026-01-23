@@ -2154,3 +2154,18 @@
 - [x] Combinar lógica: se toggle desligado OU fora do horário = Fechado; se toggle ligado E dentro do horário = Aberto
 - [x] Adicionar indicação "Fechado manualmente" quando forçado
 - [x] Adicionar tooltip explicativo no toggle
+
+## Card Tempo de Entrega (Configurações → Atendimento)
+- [x] Adicionar campos no schema: deliveryTimeEnabled, deliveryTimeMin, deliveryTimeMax, minOrderEnabled, minOrderValue
+- [x] Criar card com toggle ON/OFF e campos "De" e "Até" em minutos
+- [x] Criar toggle de Pedido mínimo com campo de valor
+- [x] Exibir no menu público: ícone relógio + tempo (ex: 20 - 60min) ao lado de "Aberto agora"
+- [x] Exibir no menu público: ícone + "Pedi. Mínimo R$ X" ao lado do tempo de entrega
+
+## Card Taxa de Entrega (Configurações → Atendimento)
+- [x] Adicionar campos no schema: deliveryFeeType (free/fixed/byNeighborhood), deliveryFeeFixed
+- [x] Criar tabela para bairros com taxas: neighborhoodFees (establishmentId, neighborhood, fee)
+- [x] Criar card com 3 opções: Grátis, Fixa, Por Bairros
+- [x] Opção Grátis: apenas exibir "Entrega grátis" no menu público
+- [x] Opção Fixa: campo para digitar valor único
+- [x] Opção Por Bairros: permitir adicionar vários bairros com preços

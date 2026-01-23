@@ -1228,6 +1228,22 @@ export default function PublicMenu() {
                   <Bike className="h-3.5 w-3.5 animate-bike-ride" />
                 )}
                 {getServiceTypes()}
+                {/* Separador e Tempo de Entrega */}
+                {establishment.showDeliveryTime && establishment.deliveryTimeMin && establishment.deliveryTimeMax && (
+                  <>
+                    <span className="mx-1 opacity-60">|</span>
+                    <Clock className="h-3 w-3" />
+                    <span>{establishment.deliveryTimeMin}-{establishment.deliveryTimeMax}min</span>
+                  </>
+                )}
+                {/* Separador e Pedido Mínimo */}
+                {establishment.showMinOrder && establishment.minOrderValue && Number(establishment.minOrderValue) > 0 && (
+                  <>
+                    <span className="mx-1 opacity-60">|</span>
+                    <ShoppingBag className="h-3 w-3" />
+                    <span>Mín. R${Number(establishment.minOrderValue).toFixed(0)}</span>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -1407,6 +1423,22 @@ export default function PublicMenu() {
                         <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
                       </span>
                       {getOpeningText()}
+                    </span>
+                  )}
+
+                  {/* Tempo de Entrega - apenas desktop */}
+                  {establishment.showDeliveryTime && establishment.deliveryTimeMin && establishment.deliveryTimeMax && (
+                    <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full border border-blue-200" style={{paddingRight: '9px', paddingLeft: '8px', paddingTop: '3px', paddingBottom: '3px', height: '21px', borderRadius: '8px'}}>
+                      <Clock className="h-3 w-3" />
+                      {establishment.deliveryTimeMin} - {establishment.deliveryTimeMax} min
+                    </span>
+                  )}
+
+                  {/* Pedido Mínimo - apenas desktop */}
+                  {establishment.showMinOrder && establishment.minOrderValue && Number(establishment.minOrderValue) > 0 && (
+                    <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded-full border border-amber-200" style={{paddingRight: '9px', paddingLeft: '8px', paddingTop: '3px', paddingBottom: '3px', height: '21px', borderRadius: '8px'}}>
+                      <ShoppingBag className="h-3 w-3" />
+                      Ped. Mín. R$ {Number(establishment.minOrderValue).toFixed(2).replace('.', ',')}
                     </span>
                   )}
 

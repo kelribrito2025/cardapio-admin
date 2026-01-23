@@ -81,6 +81,20 @@ export default function Configuracoes() {
   // Note style state
   const [noteStyle, setNoteStyle] = useState("default");
   
+  // Delivery time state
+  const [deliveryTimeEnabled, setDeliveryTimeEnabled] = useState(false);
+  const [deliveryTimeMin, setDeliveryTimeMin] = useState(20);
+  const [deliveryTimeMax, setDeliveryTimeMax] = useState(60);
+  
+  // Minimum order state
+  const [minimumOrderEnabled, setMinimumOrderEnabled] = useState(false);
+  const [minimumOrderValue, setMinimumOrderValue] = useState("0");
+  
+  // Delivery fee state
+  const [deliveryFeeType, setDeliveryFeeType] = useState<"free" | "fixed" | "byNeighborhood">("free");
+  const [deliveryFeeFixed, setDeliveryFeeFixed] = useState("0");
+  const [neighborhoodFees, setNeighborhoodFees] = useState<{id?: number; neighborhood: string; fee: string}[]>([]);
+  
   // Business hours state
   type BusinessHourDay = {
     dayOfWeek: number;
@@ -163,6 +177,16 @@ export default function Configuracoes() {
       }
       setSmsEnabled(establishment.smsEnabled || false);
       setNoteStyle(establishment.noteStyle || "default");
+      // Delivery time settings
+      setDeliveryTimeEnabled(establishment.deliveryTimeEnabled || false);
+      setDeliveryTimeMin(establishment.deliveryTimeMin || 20);
+      setDeliveryTimeMax(establishment.deliveryTimeMax || 60);
+      // Minimum order settings
+      setMinimumOrderEnabled(establishment.minimumOrderEnabled || false);
+      setMinimumOrderValue(establishment.minimumOrderValue || "0");
+      // Delivery fee settings
+      setDeliveryFeeType(establishment.deliveryFeeType || "free");
+      setDeliveryFeeFixed(establishment.deliveryFeeFixed || "0");
     }
   }, [establishment]);
   
@@ -298,6 +322,13 @@ export default function Configuracoes() {
       allowsDelivery,
       allowsPickup,
       smsEnabled,
+      deliveryTimeEnabled,
+      deliveryTimeMin,
+      deliveryTimeMax,
+      minimumOrderEnabled,
+      minimumOrderValue,
+      deliveryFeeType,
+      deliveryFeeFixed,
     });
   };
 
@@ -1339,6 +1370,312 @@ export default function Configuracoes() {
             </div>
           </SectionCard>
           
+          {/* Tempo de Entrega */}
+          <SectionCard title="Tempo de entrega">
+            <div className="space-y-5">
+              <div className="flex items-start gap-4 p-4 bg-muted/30 rounded-xl border border-border/30">
+                <div className={cn(
+                  "p-3 rounded-xl",
+                  deliveryTimeEnabled ? "bg-primary/10" : "bg-muted/50"
+                )}>
+                  <Clock className={cn("h-6 w-6", deliveryTimeEnabled ? "text-primary" : "text-muted-foreground")} />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold text-sm">Exibir tempo de entrega</h4>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Quando ativado, o tempo de entrega será exibido no menu público ao lado do status "Aberto agora".
+                      </p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={deliveryTimeEnabled}
+                        onChange={(e) => setDeliveryTimeEnabled(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                  </div>
+                  {deliveryTimeEnabled && (
+                    <div className="mt-4 flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm">De:</Label>
+                        <Input
+                          type="number"
+                          value={deliveryTimeMin}
+                          onChange={(e) => setDeliveryTimeMin(parseInt(e.target.value) || 0)}
+                          className="w-20 h-9 rounded-lg text-sm"
+                          min={0}
+                        />
+                        <span className="text-sm text-muted-foreground">min</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm">Até:</Label>
+                        <Input
+                          type="number"
+                          value={deliveryTimeMax}
+                          onChange={(e) => setDeliveryTimeMax(parseInt(e.target.value) || 0)}
+                          className="w-20 h-9 rounded-lg text-sm"
+                          min={0}
+                        />
+                        <span className="text-sm text-muted-foreground">min</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Pedido Mínimo */}
+              <div className="flex items-start gap-4 p-4 bg-muted/30 rounded-xl border border-border/30">
+                <div className={cn(
+                  "p-3 rounded-xl",
+                  minimumOrderEnabled ? "bg-primary/10" : "bg-muted/50"
+                )}>
+                  <CreditCard className={cn("h-6 w-6", minimumOrderEnabled ? "text-primary" : "text-muted-foreground")} />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold text-sm">Pedido mínimo</h4>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Quando ativado, o valor mínimo do pedido será exibido no menu público.
+                      </p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={minimumOrderEnabled}
+                        onChange={(e) => setMinimumOrderEnabled(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                  </div>
+                  {minimumOrderEnabled && (
+                    <div className="mt-4 flex items-center gap-2">
+                      <Label className="text-sm">Valor:</Label>
+                      <div className="flex items-center">
+                        <span className="text-sm text-muted-foreground mr-1">R$</span>
+                        <Input
+                          type="number"
+                          value={minimumOrderValue}
+                          onChange={(e) => setMinimumOrderValue(e.target.value)}
+                          className="w-24 h-9 rounded-lg text-sm"
+                          min={0}
+                          step="0.01"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
+                <Save className="h-4 w-4 mr-2" />
+                {isPending ? "Salvando..." : "Salvar"}
+              </Button>
+            </div>
+          </SectionCard>
+
+          {/* Taxa de Entrega */}
+          <SectionCard title="Taxa de entrega">
+            <div className="space-y-5">
+              <p className="text-sm text-muted-foreground">
+                Configure como a taxa de entrega será calculada para seus clientes.
+              </p>
+              
+              <div className="flex gap-3 flex-wrap">
+                {/* Opção Grátis */}
+                <label
+                  className={cn(
+                    "relative flex flex-col items-center gap-3 p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200 min-w-[120px]  flex-1",
+                    deliveryFeeType === "free"
+                      ? "border-emerald-500 bg-emerald-50"
+                      : "border-border/50 hover:border-muted-foreground/30 hover:bg-muted/30"
+                  )}
+                >
+                  <div className={cn(
+                    "p-3 rounded-xl",
+                    deliveryFeeType === "free" ? "bg-emerald-100" : "bg-muted/50"
+                  )}>
+                    <Truck className={cn("h-6 w-6", deliveryFeeType === "free" ? "text-emerald-600" : "text-muted-foreground")} />
+                  </div>
+                  <span className={cn("font-semibold text-sm", deliveryFeeType === "free" ? "text-emerald-700" : "text-muted-foreground")}>
+                    Grátis
+                  </span>
+                  <input
+                    type="radio"
+                    name="deliveryFeeType"
+                    value="free"
+                    checked={deliveryFeeType === "free"}
+                    onChange={() => setDeliveryFeeType("free")}
+                    className="sr-only"
+                  />
+                  {deliveryFeeType === "free" && (
+                    <span className="absolute top-2 right-2 h-3 w-3 bg-emerald-500 rounded-full ring-2 ring-white" />
+                  )}
+                </label>
+
+                {/* Opção Fixa */}
+                <label
+                  className={cn(
+                    "relative flex flex-col items-center gap-3 p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200 min-w-[120px] flex-1",
+                    deliveryFeeType === "fixed"
+                      ? "border-primary bg-primary/5"
+                      : "border-border/50 hover:border-muted-foreground/30 hover:bg-muted/30"
+                  )}
+                >
+                  <div className={cn(
+                    "p-3 rounded-xl",
+                    deliveryFeeType === "fixed" ? "bg-primary/10" : "bg-muted/50"
+                  )}>
+                    <CreditCard className={cn("h-6 w-6", deliveryFeeType === "fixed" ? "text-primary" : "text-muted-foreground")} />
+                  </div>
+                  <span className={cn("font-semibold text-sm", deliveryFeeType === "fixed" ? "text-primary" : "text-muted-foreground")}>
+                    Fixa
+                  </span>
+                  <input
+                    type="radio"
+                    name="deliveryFeeType"
+                    value="fixed"
+                    checked={deliveryFeeType === "fixed"}
+                    onChange={() => setDeliveryFeeType("fixed")}
+                    className="sr-only"
+                  />
+                  {deliveryFeeType === "fixed" && (
+                    <span className="absolute top-2 right-2 h-3 w-3 bg-primary rounded-full ring-2 ring-white" />
+                  )}
+                </label>
+
+                {/* Opção Por Bairros */}
+                <label
+                  className={cn(
+                    "relative flex flex-col items-center gap-3 p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200 min-w-[120px] flex-1",
+                    deliveryFeeType === "byNeighborhood"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-border/50 hover:border-muted-foreground/30 hover:bg-muted/30"
+                  )}
+                >
+                  <div className={cn(
+                    "p-3 rounded-xl",
+                    deliveryFeeType === "byNeighborhood" ? "bg-blue-100" : "bg-muted/50"
+                  )}>
+                    <MapPin className={cn("h-6 w-6", deliveryFeeType === "byNeighborhood" ? "text-blue-600" : "text-muted-foreground")} />
+                  </div>
+                  <span className={cn("font-semibold text-sm", deliveryFeeType === "byNeighborhood" ? "text-blue-700" : "text-muted-foreground")}>
+                    Por Bairros
+                  </span>
+                  <input
+                    type="radio"
+                    name="deliveryFeeType"
+                    value="byNeighborhood"
+                    checked={deliveryFeeType === "byNeighborhood"}
+                    onChange={() => setDeliveryFeeType("byNeighborhood")}
+                    className="sr-only"
+                  />
+                  {deliveryFeeType === "byNeighborhood" && (
+                    <span className="absolute top-2 right-2 h-3 w-3 bg-blue-500 rounded-full ring-2 ring-white" />
+                  )}
+                </label>
+              </div>
+
+              {/* Campo de valor fixo */}
+              {deliveryFeeType === "fixed" && (
+                <div className="p-4 bg-muted/30 rounded-xl border border-border/30">
+                  <div className="flex items-center gap-2">
+                    <Label className="text-sm font-medium">Valor da taxa:</Label>
+                    <div className="flex items-center">
+                      <span className="text-sm text-muted-foreground mr-1">R$</span>
+                      <Input
+                        type="number"
+                        value={deliveryFeeFixed}
+                        onChange={(e) => setDeliveryFeeFixed(e.target.value)}
+                        className="w-24 h-9 rounded-lg text-sm"
+                        min={0}
+                        step="0.01"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Lista de bairros */}
+              {deliveryFeeType === "byNeighborhood" && (
+                <div className="p-4 bg-muted/30 rounded-xl border border-border/30 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Bairros e taxas</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setNeighborhoodFees([...neighborhoodFees, { neighborhood: "", fee: "0" }])}
+                      className="rounded-lg"
+                    >
+                      + Adicionar bairro
+                    </Button>
+                  </div>
+                  
+                  {neighborhoodFees.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      Nenhum bairro cadastrado. Clique em "Adicionar bairro" para começar.
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      {neighborhoodFees.map((item, index) => (
+                        <div key={index} className="flex items-center gap-3">
+                          <Input
+                            placeholder="Nome do bairro"
+                            value={item.neighborhood}
+                            onChange={(e) => {
+                              const updated = [...neighborhoodFees];
+                              updated[index].neighborhood = e.target.value;
+                              setNeighborhoodFees(updated);
+                            }}
+                            className="flex-1 h-9 rounded-lg text-sm"
+                          />
+                          <div className="flex items-center gap-1">
+                            <span className="text-sm text-muted-foreground">R$</span>
+                            <Input
+                              type="number"
+                              placeholder="0,00"
+                              value={item.fee}
+                              onChange={(e) => {
+                                const updated = [...neighborhoodFees];
+                                updated[index].fee = e.target.value;
+                                setNeighborhoodFees(updated);
+                              }}
+                              className="w-20 h-9 rounded-lg text-sm"
+                              min={0}
+                              step="0.01"
+                            />
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setNeighborhoodFees(neighborhoodFees.filter((_, i) => i !== index));
+                            }}
+                            className="h-9 w-9 text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
+                <Save className="h-4 w-4 mr-2" />
+                {isPending ? "Salvando..." : "Salvar"}
+              </Button>
+            </div>
+          </SectionCard>
+
           {/* Horários de Funcionamento */}
           <SectionCard title="Horários de funcionamento">
             <div className="space-y-4">
