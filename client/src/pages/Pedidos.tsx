@@ -803,7 +803,7 @@ export default function Pedidos() {
               {/* Info Cards - Layout Vertical */}
               <div className="px-6 py-4 space-y-4">
                 {/* Customer Info */}
-                <div className="border border-border/50 rounded-xl p-4">
+                <div className="border border-blue-200 bg-blue-50/50 rounded-xl p-4">
                   <h4 className="font-semibold text-base mb-4">Informações do Cliente</h4>
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
@@ -835,7 +835,7 @@ export default function Pedidos() {
                 </div>
 
                 {/* Order Items */}
-                <div className="border border-border/50 rounded-xl p-4">
+                <div className="border border-amber-200 bg-amber-50/50 rounded-xl p-4">
                   <h4 className="font-semibold text-base mb-4">Itens do Pedido</h4>
                   <div className="space-y-3">
                     {orderDetails.items?.map((item, index) => (
@@ -894,7 +894,7 @@ export default function Pedidos() {
                 </div>
 
                 {/* Delivery Info */}
-                <div className="border border-border/50 rounded-xl p-4">
+                <div className="border border-emerald-200 bg-emerald-50/50 rounded-xl p-4">
                   <h4 className="font-semibold text-base mb-4">Informações de Entrega</h4>
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
@@ -911,7 +911,7 @@ export default function Pedidos() {
                 </div>
 
                 {/* Payment Details */}
-                <div className="border border-border/50 rounded-xl p-4">
+                <div className="border border-purple-200 bg-purple-50/50 rounded-xl p-4">
                   <h4 className="font-semibold text-base mb-4">Detalhes do Pagamento</h4>
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">

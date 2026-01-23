@@ -1965,3 +1965,11 @@
 
 ## Ocultar preço unitário zero no modal de detalhes do pedido
 - [x] Ocultar linha "R$ 0,00 x 1" quando o preço unitário do item for zero
+
+
+## Adicionar cores aos containers do modal de detalhes do pedido
+- [x] Informações do Cliente - cor azul clara (bg-blue-50/50)
+- [x] Itens do Pedido - cor amarela/laranja clara (bg-amber-50/50)
+- [x] Informações de Entrega - cor verde clara (bg-emerald-50/50)
+- [x] Detalhes do Pagamento - cor roxa clara (bg-purple-50/50)
+- [x] Status do Pedido - manter neutro
