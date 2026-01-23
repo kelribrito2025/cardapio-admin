@@ -141,6 +141,13 @@
       "when": 1769171452394,
       "tag": "0019_many_molten_man",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1769184093471,
+      "tag": "0020_curious_frightful_four",
+      "breakpoints": true
     }
   ]
 }

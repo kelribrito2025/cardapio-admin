@@ -4202,9 +4202,12 @@ export default function PublicMenu() {
               
               {/* Google Maps */}
               <a
-                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-                  [establishment.street, establishment.number, establishment.neighborhood, establishment.city, establishment.state].filter(Boolean).join(", ")
-                )}`}
+                href={establishment.latitude && establishment.longitude
+                  ? `https://www.google.com/maps/dir/?api=1&destination=${establishment.latitude},${establishment.longitude}`
+                  : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                      [establishment.street, establishment.number, establishment.neighborhood, establishment.city, establishment.state].filter(Boolean).join(", ")
+                    )}`
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all"
@@ -4225,9 +4228,12 @@ export default function PublicMenu() {
 
               {/* Waze */}
               <a
-                href={`https://waze.com/ul?q=${encodeURIComponent(
-                  [establishment.street, establishment.number, establishment.neighborhood, establishment.city, establishment.state].filter(Boolean).join(", ")
-                )}&navigate=yes`}
+                href={establishment.latitude && establishment.longitude
+                  ? `https://waze.com/ul?ll=${establishment.latitude},${establishment.longitude}&navigate=yes`
+                  : `https://waze.com/ul?q=${encodeURIComponent(
+                      [establishment.street, establishment.number, establishment.neighborhood, establishment.city, establishment.state].filter(Boolean).join(", ")
+                    )}&navigate=yes`
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all"
@@ -4247,9 +4253,12 @@ export default function PublicMenu() {
 
               {/* Apple Maps (apenas iOS) */}
               <a
-                href={`maps://maps.apple.com/?daddr=${encodeURIComponent(
-                  [establishment.street, establishment.number, establishment.neighborhood, establishment.city, establishment.state].filter(Boolean).join(", ")
-                )}`}
+                href={establishment.latitude && establishment.longitude
+                  ? `maps://maps.apple.com/?daddr=${establishment.latitude},${establishment.longitude}`
+                  : `maps://maps.apple.com/?daddr=${encodeURIComponent(
+                      [establishment.street, establishment.number, establishment.neighborhood, establishment.city, establishment.state].filter(Boolean).join(", ")
+                    )}`
+                }
                 className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all"
                 onClick={() => setShowNavigationModal(false)}
               >

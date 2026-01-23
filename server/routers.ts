@@ -135,6 +135,8 @@ export const appRouter = router({
         city: z.string().optional(),
         state: z.string().optional(),
         zipCode: z.string().optional(),
+        latitude: z.string().optional(),
+        longitude: z.string().optional(),
         menuSlug: z.string().optional(),
         whatsapp: z.string().optional(),
       }))
@@ -159,6 +161,8 @@ export const appRouter = router({
         city: z.string().nullable().optional(),
         state: z.string().nullable().optional(),
         zipCode: z.string().nullable().optional(),
+        latitude: z.string().nullable().optional(),
+        longitude: z.string().nullable().optional(),
         menuSlug: z.string().nullable().optional(),
         whatsapp: z.string().nullable().optional(),
         instagram: z.string().nullable().optional(),

@@ -31,6 +31,8 @@ export const establishments = mysqlTable("establishments", {
   city: varchar("city", { length: 255 }),
   state: varchar("state", { length: 100 }),
   zipCode: varchar("zipCode", { length: 20 }),
+  latitude: decimal("latitude", { precision: 10, scale: 7 }),
+  longitude: decimal("longitude", { precision: 10, scale: 7 }),
   isOpen: boolean("isOpen").default(false).notNull(),
   menuSlug: varchar("menuSlug", { length: 100 }).unique(),
   whatsapp: varchar("whatsapp", { length: 30 }),

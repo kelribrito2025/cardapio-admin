@@ -32,6 +32,7 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { ImageCropModal } from "@/components/ImageCropModal";
+import { AddressMapPicker } from "@/components/AddressMapPicker";
 
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
@@ -48,6 +49,9 @@ export default function Configuracoes() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [zipCode, setZipCode] = useState("");
+  const [latitude, setLatitude] = useState<string | null>(null);
+  const [longitude, setLongitude] = useState<string | null>(null);
+  const [showMapPicker, setShowMapPicker] = useState(false);
 
   // Service settings form state
   const [menuSlug, setMenuSlug] = useState("");
@@ -114,6 +118,8 @@ export default function Configuracoes() {
       setCity(establishment.city || "");
       setState(establishment.state || "");
       setZipCode(establishment.zipCode || "");
+      setLatitude(establishment.latitude || null);
+      setLongitude(establishment.longitude || null);
       setMenuSlug(establishment.menuSlug || "");
       setWhatsapp(establishment.whatsapp || "");
       setInstagram(establishment.instagram || "");
@@ -213,6 +219,8 @@ export default function Configuracoes() {
       city: city || undefined,
       state: state || undefined,
       zipCode: zipCode || undefined,
+      latitude: latitude || undefined,
+      longitude: longitude || undefined,
     };
 
     if (establishment) {
@@ -904,7 +912,26 @@ export default function Configuracoes() {
             title="Endereço do Estabelecimento"
           >
             <div className="space-y-5">
-              <p className="text-xs text-muted-foreground">Campos marcados com <span className="text-red-500">*</span> são obrigatórios</p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">Campos marcados com <span className="text-red-500">*</span> são obrigatórios</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowMapPicker(true)}
+                  className="rounded-xl gap-2"
+                >
+                  <MapPin className="h-4 w-4" />
+                  {latitude && longitude ? "Alterar no Mapa" : "Selecionar no Mapa"}
+                </Button>
+              </div>
+
+              {latitude && longitude && (
+                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl">
+                  <Check className="h-4 w-4 text-green-600" />
+                  <span className="text-sm text-green-700">Localização definida: {latitude}, {longitude}</span>
+                </div>
+              )}
               
               {/* Linha 1: Rua, Número, Bairro */}
               <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
@@ -1264,6 +1291,35 @@ export default function Configuracoes() {
           </SectionCard>
         </TabsContent>
       </Tabs>
+
+      {/* Modal de Seleção de Endereço no Mapa */}
+      {showMapPicker && (
+        <AddressMapPicker
+          initialAddress={{
+            street,
+            number,
+            neighborhood,
+            city,
+            state,
+            zipCode,
+            latitude: latitude || undefined,
+            longitude: longitude || undefined,
+          }}
+          onAddressSelect={(address) => {
+            setStreet(address.street);
+            setNumber(address.number);
+            setNeighborhood(address.neighborhood);
+            setCity(address.city);
+            setState(address.state);
+            setZipCode(address.zipCode);
+            setLatitude(address.latitude);
+            setLongitude(address.longitude);
+            setShowMapPicker(false);
+            toast.success("Endereço atualizado com sucesso!");
+          }}
+          onClose={() => setShowMapPicker(false)}
+        />
+      )}
 
       {/* Modal de Crop de Imagem */}
       <ImageCropModal

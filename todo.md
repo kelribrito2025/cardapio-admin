@@ -2076,3 +2076,12 @@
 - [x] Restaurar comportamento anterior com modal estilo bottom sheet
 - [x] Exibir opções de navegação (Google Maps, Waze, Apple Maps) no modal
 - [x] Adicionar botão para copiar endereço
+
+
+## Seleção de endereço via Google Maps nas configurações
+- [x] Adicionar campos latitude e longitude no schema de establishments
+- [x] Criar componente AddressMapPicker com Google Maps
+- [x] Integrar Places Autocomplete para busca de endereços
+- [x] Preencher campos de endereço automaticamente ao selecionar no mapa
+- [x] Salvar coordenadas para navegação precisa
+- [x] Atualizar modal de navegação no menu público para usar coordenadas
