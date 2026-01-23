@@ -5315,7 +5315,8 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             )}>
               {showConfetti ? (
                 <>
-                  Faltam{' '}
+                  <span className="inline-block animate-bounce">🎉</span>
+                  {' '}Faltam{' '}
                   <span className="text-emerald-600 font-bold">{remaining}</span>
                   {' '}pedidos para ganhar seu cupom!
                 </>
