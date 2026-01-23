@@ -2291,3 +2291,13 @@
 - [x] Corrigir bug para exibir modal com confetti quando completar carimbos
 - [x] Criar cupom automaticamente ao completar cartão
 - [x] Vincular cupom ao cartão via activeCouponId
+
+
+## Redesign do Card de Cupom Liberado
+- [x] Separar card de cupom do cartão de fidelidade
+- [x] Aplicar visual laranja/dourado conforme referência
+- [x] Header com "Parabéns! Cupom Liberado"
+- [x] Código em destaque com borda tracejada laranja
+- [x] Badge de presente no canto
+- [x] Botões "Copiar Código" e "Usar Agora" em laranja
+- [x] Texto "Válido para o seu próximo pedido"
