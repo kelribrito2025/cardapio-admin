@@ -114,6 +114,49 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { enabled: !!user }
   );
 
+  // Get business hours to calculate if store is currently open
+  const { data: businessHoursData } = trpc.establishment.getBusinessHours.useQuery(
+    { establishmentId: establishment?.id || 0 },
+    { enabled: !!establishment?.id }
+  );
+
+  // Calculate if store is currently open based on business hours
+  const isCurrentlyOpen = () => {
+    // Se não temos dados de horários, usar o valor do banco (isOpen)
+    if (!businessHoursData || businessHoursData.length === 0) {
+      return establishment?.isOpen ?? false;
+    }
+    
+    const now = new Date();
+    const currentDay = now.getDay(); // 0 = Domingo, 1 = Segunda, etc.
+    const currentTime = now.getHours() * 60 + now.getMinutes(); // Minutos desde meia-noite
+    
+    // Buscar horário do dia atual
+    const todayHours = businessHoursData.find((h: { dayOfWeek: number; isActive: boolean; openTime: string | null; closeTime: string | null }) => h.dayOfWeek === currentDay);
+    
+    // Se o dia não está ativo, está fechado
+    if (!todayHours?.isActive) {
+      return false;
+    }
+    
+    // Se não tem horários definidos, considerar fechado
+    if (!todayHours.openTime || !todayHours.closeTime) {
+      return false;
+    }
+    
+    // Converter horários para minutos
+    const [openHour, openMin] = todayHours.openTime.split(':').map(Number);
+    const [closeHour, closeMin] = todayHours.closeTime.split(':').map(Number);
+    const openTimeMinutes = openHour * 60 + openMin;
+    const closeTimeMinutes = closeHour * 60 + closeMin;
+    
+    // Verificar se está dentro do horário
+    return currentTime >= openTimeMinutes && currentTime <= closeTimeMinutes;
+  };
+
+  // Valor calculado de se está aberto (baseado nos horários configurados)
+  const calculatedIsOpen = isCurrentlyOpen();
+
   // Toggle store open/closed
   const toggleOpenMutation = trpc.establishment.toggleOpen.useMutation({
     onSuccess: () => {
@@ -508,28 +551,33 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <p className="text-sm font-semibold">{user.name || "Usuário"}</p>
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
-                  {/* Container Aberto/Fechado */}
+                  {/* Container Aberto/Fechado - Baseado nos horários configurados */}
                   {establishment && (
                     <div className="px-3 py-2 border-b border-border/50">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className={cn(
                             "h-2 w-2 rounded-full",
-                            establishment.isOpen ? "bg-emerald-500 animate-pulse" : "bg-gray-400"
+                            calculatedIsOpen ? "bg-emerald-500 animate-pulse" : "bg-gray-400"
                           )} />
                           <span className={cn(
                             "text-sm font-medium",
-                            establishment.isOpen ? "text-emerald-600" : "text-muted-foreground"
+                            calculatedIsOpen ? "text-emerald-600" : "text-muted-foreground"
                           )}>
-                            {establishment.isOpen ? "Aberto" : "Fechado"}
+                            {calculatedIsOpen ? "Aberto" : "Fechado"}
                           </span>
                         </div>
-                        <Switch
-                          checked={establishment.isOpen}
-                          onCheckedChange={handleToggleOpen}
-                          disabled={toggleOpenMutation.isPending}
-                          className="data-[state=checked]:bg-emerald-500 scale-90"
-                        />
+                        {/* Status é automático baseado nos horários - sem toggle manual */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="text-xs text-muted-foreground cursor-help">
+                              Automático
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="left" className="max-w-[200px]">
+                            <p className="text-xs">O status é calculado automaticamente com base nos horários de funcionamento configurados.</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   )}

@@ -2144,3 +2144,7 @@
 
 ## Correção de Z-Index
 - [x] Corrigir z-index do dropdown de Redes Sociais para aparecer na frente do menu de categorias (mobile)
+
+## Correção do Toggle de Status no Perfil
+- [x] Modificar toggle de status no perfil para refletir automaticamente os horários de funcionamento configurados
+- [x] Remover o switch manual e substituir por indicação "Automático" com tooltip explicativo
