@@ -1215,9 +1215,9 @@ export default function PublicMenu() {
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
               <div className="flex-1">
                 {/* Restaurant Name, Rating and Share */}
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
-                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate max-w-[200px] md:max-w-none">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2 flex-wrap min-w-0">
+                    <h1 className="text-xl md:text-2xl font-bold text-gray-900">
                       {establishment.name}
                     </h1>
                     {/* Rating - clicável para abrir modal de avaliações */}
@@ -1231,10 +1231,7 @@ export default function PublicMenu() {
                         <span className="text-sm font-semibold text-gray-800 ml-1">
                           {establishment.rating ? Number(establishment.rating).toFixed(1) : '0.0'}
                         </span>
-                        <span className="text-sm text-gray-500 hidden sm:inline" style={{marginLeft: '-2px'}}>
-                          ({establishment.reviewCount || 0} avaliações)
-                        </span>
-                        <span className="text-sm text-gray-500 sm:hidden">
+                        <span className="text-sm text-gray-500" style={{marginLeft: '-2px'}}>
                           ({establishment.reviewCount || 0} avaliações)
                         </span>
                       </button>

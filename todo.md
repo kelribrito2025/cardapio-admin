@@ -2099,3 +2099,6 @@
 
 ## Ícones do Modal de Navegação
 - [x] Substituir ícones genéricos pelos ícones oficiais do Google Maps, Waze e Apple Maps no modal de navegação
+
+## Layout do Cabeçalho do Menu Público
+- [x] Corrigir layout para que estrela/avaliações e ícone de compartilhar fiquem na mesma linha do nome do restaurante em telas menores (só quebrar linha quando nome for muito grande)
