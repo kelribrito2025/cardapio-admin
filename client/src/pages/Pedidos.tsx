@@ -208,9 +208,13 @@ export default function Pedidos() {
     // Gerar HTML dos itens com adicionais e observações
     const itemsHtml = orderDetails.items?.map(item => {
       const unitPrice = Number(item.totalPrice) / item.quantity;
-      // Gerar HTML dos complementos
+      // Gerar HTML dos complementos com preço
       const complementsHtml = item.complements && item.complements.length > 0
-        ? item.complements.map((c: any) => `<div class="item-complement">+ ${c.name}</div>`).join('')
+        ? item.complements.map((c: any) => {
+            const price = Number(c.price || 0);
+            const priceStr = price > 0 ? ` (R$ ${price.toFixed(2).replace('.', ',')})` : '';
+            return `<div class="item-complement">+ ${c.name}${priceStr}</div>`;
+          }).join('')
         : '';
       return `
         <div class="item">

@@ -1949,3 +1949,7 @@
 
 ## Incluir complementos na impressão do pedido
 - [x] Adicionar complementos selecionados no recibo impresso do pedido
+
+
+## Exibir preço dos complementos na impressão
+- [x] Mostrar preço individual de cada complemento no recibo impresso
