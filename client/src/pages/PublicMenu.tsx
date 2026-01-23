@@ -1502,7 +1502,7 @@ export default function PublicMenu() {
                   {establishment.minimumOrderEnabled && establishment.minimumOrderValue && Number(establishment.minimumOrderValue) > 0 && (
                     <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded-full border border-amber-200" style={{paddingRight: '9px', paddingLeft: '8px', paddingTop: '3px', paddingBottom: '3px', height: '21px', borderRadius: '8px'}}>
                       <ShoppingBag className="h-3 w-3" />
-                      Ped. Mín. R$ {Number(establishment.minimumOrderValue).toFixed(2).replace('.', ',')}
+                      Mín. R$ {Number(establishment.minimumOrderValue).toFixed(2).replace('.', ',')}
                     </span>
                   )}
 
