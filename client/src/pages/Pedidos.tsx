@@ -857,10 +857,14 @@ export default function Pedidos() {
                             ))}
                           </div>
                         )}
-                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                          <span>{item.notes || ""}</span>
-                          <span>{formatCurrency(item.unitPrice)} x {item.quantity}</span>
-                        </div>
+                        {(Number(item.unitPrice) > 0 || item.notes) && (
+                          <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                            <span>{item.notes || ""}</span>
+                            {Number(item.unitPrice) > 0 && (
+                              <span>{formatCurrency(item.unitPrice)} x {item.quantity}</span>
+                            )}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

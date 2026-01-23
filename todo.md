@@ -1961,3 +1961,7 @@
 
 ## Reorganizar modal de detalhes do pedido (v2)
 - [x] Mover container "Itens do Pedido" para cima do container "Informações de Entrega"
+
+
+## Ocultar preço unitário zero no modal de detalhes do pedido
+- [x] Ocultar linha "R$ 0,00 x 1" quando o preço unitário do item for zero
