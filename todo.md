@@ -2278,3 +2278,8 @@
 - [x] Confetti colorido ao redor dos carimbos ativos
 - [x] Layout de CUPOM LIBERADO com confetti animado
 - [x] Botões "Copiar código" e "Usar agora" no cupom
+
+
+## Badge Verde Pulsante no Cartão Fidelidade
+- [x] Adicionar ícone verde pulsante antes de "Fidelidade ativa"
+- [x] Usar animação pulse do Tailwind
