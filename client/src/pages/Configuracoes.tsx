@@ -38,8 +38,8 @@ import { AddressMapPicker } from "@/components/AddressMapPicker";
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
   const { data: businessHoursData, refetch: refetchBusinessHours } = trpc.establishment.getBusinessHours.useQuery(
-    undefined,
-    { enabled: !!establishment }
+    { establishmentId: establishment?.id || 0 },
+    { enabled: !!establishment?.id }
   );
   const [activeTab, setActiveTab] = useState("estabelecimento");
 

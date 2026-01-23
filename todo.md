@@ -2129,3 +2129,4 @@
 
 ## Bug: establishmentId undefined ao salvar horários
 - [x] Corrigir erro de establishmentId undefined ao salvar horários de funcionamento na página de configurações
+- [x] Corrigir erro de query de horários de funcionamento (Invalid input: expected object, received undefined)
