@@ -21,7 +21,13 @@ import {
   Plus,
   Trash2,
   GripVertical,
+  Info,
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   DndContext,
@@ -662,7 +668,19 @@ export default function ProductForm() {
                   </div>
 
                   <div className="lg:col-span-3">
-                    <Label htmlFor="price" className="text-sm font-semibold">Preço *</Label>
+                    <div className="flex items-center gap-1.5">
+                      <Label htmlFor="price" className="text-sm font-semibold">Preço *</Label>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
+                            <Info className="h-4 w-4" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-xs text-center">
+                          <p>Se este item não for vendido individualmente e servir apenas como uma opção dentro de outro item, deixe o preço como R$ 0,00. Assim, o valor deste item não será somado ao preço final junto com os complementos.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
                     <div className="relative mt-1.5">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">R$</span>
                       <Input

@@ -2007,3 +2007,7 @@
 
 ## Melhoria: Permanecer na página de edição após salvar
 - [x] Remover redirecionamento para /catalogo após salvar alterações de um produto
+
+## Melhoria: Tooltip de informação no campo de Preço
+- [x] Adicionar ícone de informação (i) ao lado do campo de Preço
+- [x] Implementar tooltip com texto explicativo sobre itens com preço R$ 0,00
