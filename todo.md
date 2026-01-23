@@ -2014,3 +2014,6 @@
 
 ## Melhoria: Validação do campo Máx em complementos
 - [x] Limitar campo Máx para não ser maior que a quantidade de itens no grupo
+
+## Melhoria: Prefixo R$ no campo de preço dos complementos
+- [x] Adicionar prefixo R$ ao campo de preço dos itens de complemento

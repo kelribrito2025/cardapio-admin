@@ -128,16 +128,19 @@ function SortableComplementItem({
         placeholder="Nome do item"
         className="flex-1 h-8 text-sm rounded-md border-border/50"
       />
-      <Input
-        type="text"
-        inputMode="numeric"
-        value={displayPrice(item.price)}
-        onChange={(e) =>
-          handlePriceChange(groupIndex, itemIndex, e.target.value)
-        }
-        placeholder="0,00"
-        className="w-24 h-8 text-sm rounded-md border-border/50 text-right"
-      />
+      <div className="relative">
+        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">R$</span>
+        <Input
+          type="text"
+          inputMode="numeric"
+          value={displayPrice(item.price)}
+          onChange={(e) =>
+            handlePriceChange(groupIndex, itemIndex, e.target.value)
+          }
+          placeholder="0,00"
+          className="w-24 h-8 text-sm rounded-md border-border/50 text-right pl-7"
+        />
+      </div>
       <Button
         type="button"
         variant="ghost"
