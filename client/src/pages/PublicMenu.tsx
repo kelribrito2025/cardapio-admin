@@ -5235,17 +5235,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             <div>
               <h3 className="font-bold text-lg">{establishmentName}</h3>
               {cardData?.card?.customerName && (
-                <p className="text-white/80 text-sm flex items-center gap-1">
-                  {cardData.card.customerName} 
-                  <span className="text-white/60 flex items-center gap-1">
-                    • 
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                    </span>
-                    Fidelidade ativa
-                  </span>
-                </p>
+                <p className="text-white/80 text-sm">{cardData.card.customerName} <span className="text-white/60">• Fidelidade ativa</span></p>
               )}
             </div>
           </div>
