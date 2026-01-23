@@ -212,6 +212,7 @@ export default function ProductForm() {
   const [, navigate] = useLocation();
   const params = useParams<{ id: string }>();
   const isEditing = !!params.id;
+  const utils = trpc.useUtils();
 
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
@@ -349,8 +350,12 @@ export default function ProductForm() {
         await deleteGroupMutation.mutateAsync({ id: groupId });
       }
 
+      // Mapa para armazenar os novos IDs dos grupos criados
+      const newGroupIds: Map<number, number> = new Map();
+
       // Criar ou atualizar grupos
-      for (const group of complementGroups) {
+      for (let groupIndex = 0; groupIndex < complementGroups.length; groupIndex++) {
+        const group = complementGroups[groupIndex];
         let groupId = group.id;
         
         if (group.id) {
@@ -372,6 +377,8 @@ export default function ProductForm() {
             isRequired: group.isRequired,
           });
           groupId = result.id;
+          // Armazenar o novo ID para atualizar o estado local depois
+          newGroupIds.set(groupIndex, groupId);
         }
 
         if (groupId) {
@@ -411,6 +418,22 @@ export default function ProductForm() {
           }
         }
       }
+
+      // Atualizar o estado local com os novos IDs dos grupos criados
+      if (newGroupIds.size > 0) {
+        setComplementGroups(prevGroups => 
+          prevGroups.map((group, index) => {
+            const newId = newGroupIds.get(index);
+            if (newId) {
+              return { ...group, id: newId };
+            }
+            return group;
+          })
+        );
+      }
+
+      // Invalidar a query para recarregar os dados do servidor
+      await utils.complement.listGroups.invalidate({ productId });
     } catch (error) {
       console.error("Erro ao salvar complementos:", error);
       toast.error("Erro ao salvar complementos");

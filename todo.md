@@ -2042,3 +2042,10 @@
 
 ## Ajuste: Aumentar tamanho dos títulos das categorias no menu público
 - [x] Aumentar tamanho dos títulos das categorias na lista vertical em 20%
+
+## Bug: Grupos de complementos duplicados ao salvar produto
+- [x] Investigar duplicação de grupos no produto 120102
+- [x] Corrigir lógica de salvamento para evitar duplicação
+- [x] Atualizar estado local com IDs dos novos grupos após criação
+- [x] Invalidar query para recarregar dados do servidor
+- [x] Remover grupos duplicados do banco de dados
