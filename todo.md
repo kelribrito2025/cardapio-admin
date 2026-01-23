@@ -1945,3 +1945,7 @@
 ## Bloquear adição à sacola quando item tem preço zero sem complemento
 - [x] Desabilitar botão "Adicionar" quando item tem preço zero e nenhum complemento foi selecionado
 - [x] Exibir mensagem "Selecione uma opção" no botão quando bloqueado
+
+
+## Incluir complementos na impressão do pedido
+- [x] Adicionar complementos selecionados no recibo impresso do pedido

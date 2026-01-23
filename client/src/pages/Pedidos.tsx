@@ -208,12 +208,17 @@ export default function Pedidos() {
     // Gerar HTML dos itens com adicionais e observações
     const itemsHtml = orderDetails.items?.map(item => {
       const unitPrice = Number(item.totalPrice) / item.quantity;
+      // Gerar HTML dos complementos
+      const complementsHtml = item.complements && item.complements.length > 0
+        ? item.complements.map((c: any) => `<div class="item-complement">+ ${c.name}</div>`).join('')
+        : '';
       return `
         <div class="item">
           <div class="item-header">
             <span class="item-qty">${item.quantity}x ${item.productName}</span>
             <span class="item-price">R$ ${Number(item.totalPrice).toFixed(2).replace('.', ',')}</span>
           </div>
+          ${complementsHtml}
           ${item.notes ? `<div class="item-obs">Obs: ${item.notes}</div>` : ''}
         </div>
       `;
@@ -295,6 +300,12 @@ export default function Pedidos() {
             color: #666;
             margin-top: 2px;
             padding-left: 5px;
+          }
+          .item-complement {
+            font-size: 11px;
+            color: #555;
+            margin-top: 2px;
+            padding-left: 10px;
           }
           .totals {
             margin: 15px 0;
