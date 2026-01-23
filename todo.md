@@ -2059,3 +2059,7 @@
 ## Ajuste: Botão de adicionar responsivo em telas pequenas
 - [x] Ocultar texto "Adicionar" em telas pequenas (< 360px)
 - [x] Manter apenas símbolo "+" e preço em dispositivos móveis
+
+
+## Ajuste: Remover símbolo + do botão de adicionar
+- [x] Remover ícone Plus do botão, manter apenas texto e preço
