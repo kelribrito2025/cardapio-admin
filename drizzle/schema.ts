@@ -61,6 +61,9 @@ export const establishments = mysqlTable("establishments", {
   // Taxa de entrega
   deliveryFeeType: mysqlEnum("deliveryFeeType", ["free", "fixed", "byNeighborhood"]).default("free").notNull(),
   deliveryFeeFixed: decimal("deliveryFeeFixed", { precision: 10, scale: 2 }).default("0"),
+  // Controle de fechamento manual
+  manuallyClosed: boolean("manuallyClosed").default(false).notNull(),
+  manuallyClosedAt: timestamp("manuallyClosedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

@@ -220,6 +220,17 @@ export const appRouter = router({
         return { success: true };
       }),
     
+    // Nova mutation para fechamento manual com reabertura automática
+    setManualClose: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        close: z.boolean(), // true = fechar manualmente, false = abrir
+      }))
+      .mutation(async ({ input }) => {
+        await db.setManualClose(input.id, input.close);
+        return { success: true };
+      }),
+    
     // Salvar nota pública temporária
     savePublicNote: protectedProcedure
       .input(z.object({

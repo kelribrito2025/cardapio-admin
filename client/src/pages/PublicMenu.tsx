@@ -967,7 +967,7 @@ export default function PublicMenu() {
   };
 
   // Calcular se o restaurante está aberto baseado nos horários configurados
-  const isCurrentlyOpen = () => {
+  const isWithinBusinessHours = () => {
     // Se não temos dados de horários, usar o valor do banco (isOpen)
     if (!businessHoursData || businessHoursData.length === 0) {
       return establishment.isOpen;
@@ -980,14 +980,14 @@ export default function PublicMenu() {
     // Buscar horário do dia atual
     const todayHours = businessHoursData.find(h => h.dayOfWeek === currentDay);
     
-    // Se hoje não está ativo, está fechado
+    // Se o dia não está ativo, está fechado
     if (!todayHours?.isActive) {
       return false;
     }
     
-    // Se não tem horários definidos, considerar aberto o dia todo
+    // Se não tem horários definidos, considerar fechado
     if (!todayHours.openTime || !todayHours.closeTime) {
-      return true;
+      return false;
     }
     
     // Converter horários para minutos
@@ -999,9 +999,73 @@ export default function PublicMenu() {
     // Verificar se está dentro do horário
     return currentTime >= openTimeMinutes && currentTime <= closeTimeMinutes;
   };
+
+  // Verifica se deve reabrir automaticamente (fechamento manual expirou)
+  const shouldAutoReopen = (): boolean => {
+    if (!establishment.manuallyClosed || !establishment.manuallyClosedAt) return false;
+    if (!businessHoursData || businessHoursData.length === 0) return false;
+    
+    const now = new Date();
+    const currentDay = now.getDay();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const closedAt = new Date(establishment.manuallyClosedAt);
+    
+    // Encontrar o horário de hoje
+    const todayHours = businessHoursData.find(h => h.dayOfWeek === currentDay);
+    
+    if (!todayHours?.isActive || !todayHours.openTime) return false;
+    
+    const [openHour, openMin] = todayHours.openTime.split(':').map(Number);
+    const openTimeMinutes = openHour * 60 + openMin;
+    
+    // Se o fechamento foi em um dia anterior e hoje tem horário de abertura que já passou
+    const closedDate = new Date(closedAt);
+    closedDate.setHours(0, 0, 0, 0);
+    const today = new Date(now);
+    today.setHours(0, 0, 0, 0);
+    
+    if (closedDate.getTime() < today.getTime() && currentTime >= openTimeMinutes) {
+      return true;
+    }
+    
+    // Se o fechamento foi antes do horário de abertura de hoje e agora já passou o horário
+    const closedTimeMinutes = closedAt.getHours() * 60 + closedAt.getMinutes();
+    if (closedAt.toDateString() === now.toDateString() && closedTimeMinutes < openTimeMinutes && currentTime >= openTimeMinutes) {
+      return true;
+    }
+    
+    return false;
+  };
   
-  // Valor calculado de se está aberto
-  const isOpen = isCurrentlyOpen();
+  // Valor calculado de se está aberto:
+  // Lógica completa:
+  // 1. Se manuallyClosed E não deve reabrir automaticamente → Fechado
+  // 2. Se manuallyClosed E deve reabrir automaticamente → Aberto (se dentro do horário)
+  // 3. Se não manuallyClosed E isOpen (toggle ligado) → Segue horário normal
+  // 4. Se não manuallyClosed E !isOpen (toggle desligado) → Fechado manualmente
+  const withinHours = isWithinBusinessHours();
+  const autoReopen = shouldAutoReopen();
+  
+  let isOpen = false;
+  let isForcedClosed = false;
+  
+  if (establishment.manuallyClosed && !autoReopen) {
+    // Fechado manualmente e não deve reabrir ainda
+    isOpen = false;
+    isForcedClosed = true;
+  } else if (establishment.manuallyClosed && autoReopen) {
+    // Deve reabrir automaticamente
+    isOpen = withinHours;
+    isForcedClosed = false;
+  } else if (!establishment.isOpen) {
+    // Toggle desligado (fechado manualmente)
+    isOpen = false;
+    isForcedClosed = withinHours; // Só mostra "fechado manualmente" se estiver dentro do horário
+  } else {
+    // Toggle ligado - segue horário normal
+    isOpen = withinHours;
+    isForcedClosed = false;
+  }
 
   // Get opening hours text based on business hours
   const getOpeningText = () => {
@@ -1229,7 +1293,7 @@ export default function PublicMenu() {
                 )}
                 {getServiceTypes()}
                 {/* Separador e Tempo de Entrega */}
-                {establishment.showDeliveryTime && establishment.deliveryTimeMin && establishment.deliveryTimeMax && (
+                {establishment.deliveryTimeEnabled && establishment.deliveryTimeMin && establishment.deliveryTimeMax && (
                   <>
                     <span className="mx-1 opacity-60">|</span>
                     <Clock className="h-3 w-3" />
@@ -1237,11 +1301,11 @@ export default function PublicMenu() {
                   </>
                 )}
                 {/* Separador e Pedido Mínimo */}
-                {establishment.showMinOrder && establishment.minOrderValue && Number(establishment.minOrderValue) > 0 && (
+                {establishment.minimumOrderEnabled && establishment.minimumOrderValue && Number(establishment.minimumOrderValue) > 0 && (
                   <>
                     <span className="mx-1 opacity-60">|</span>
                     <ShoppingBag className="h-3 w-3" />
-                    <span>Mín. R${Number(establishment.minOrderValue).toFixed(0)}</span>
+                    <span>Mín. R${Number(establishment.minimumOrderValue).toFixed(0)}</span>
                   </>
                 )}
               </div>
@@ -1427,7 +1491,7 @@ export default function PublicMenu() {
                   )}
 
                   {/* Tempo de Entrega - apenas desktop */}
-                  {establishment.showDeliveryTime && establishment.deliveryTimeMin && establishment.deliveryTimeMax && (
+                  {establishment.deliveryTimeEnabled && establishment.deliveryTimeMin && establishment.deliveryTimeMax && (
                     <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full border border-blue-200" style={{paddingRight: '9px', paddingLeft: '8px', paddingTop: '3px', paddingBottom: '3px', height: '21px', borderRadius: '8px'}}>
                       <Clock className="h-3 w-3" />
                       {establishment.deliveryTimeMin} - {establishment.deliveryTimeMax} min
@@ -1435,10 +1499,10 @@ export default function PublicMenu() {
                   )}
 
                   {/* Pedido Mínimo - apenas desktop */}
-                  {establishment.showMinOrder && establishment.minOrderValue && Number(establishment.minOrderValue) > 0 && (
+                  {establishment.minimumOrderEnabled && establishment.minimumOrderValue && Number(establishment.minimumOrderValue) > 0 && (
                     <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded-full border border-amber-200" style={{paddingRight: '9px', paddingLeft: '8px', paddingTop: '3px', paddingBottom: '3px', height: '21px', borderRadius: '8px'}}>
                       <ShoppingBag className="h-3 w-3" />
-                      Ped. Mín. R$ {Number(establishment.minOrderValue).toFixed(2).replace('.', ',')}
+                      Ped. Mín. R$ {Number(establishment.minimumOrderValue).toFixed(2).replace('.', ',')}
                     </span>
                   )}
 

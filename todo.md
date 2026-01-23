@@ -2169,3 +2169,16 @@
 - [x] Opção Grátis: apenas exibir "Entrega grátis" no menu público
 - [x] Opção Fixa: campo para digitar valor único
 - [x] Opção Por Bairros: permitir adicionar vários bairros com preços
+
+
+## Lógica Completa do Toggle Aberto/Fechado
+- [ ] Adicionar campo manuallyClosed (boolean) no schema para indicar fechamento manual
+- [ ] Adicionar campo manuallyClosedAt (timestamp) para saber quando foi fechado manualmente
+- [ ] Implementar função para calcular próximo horário de abertura baseado nos horários conf## Lógica Completa do Toggle Aberto/Fechado
+- [x] Toggle tem prioridade sobre horário automático
+- [x] Fechado manualmente permanece até abrir manualmente OU até próximo horário de abertura
+- [x] Reabertura automática quando chegar o próximo horário de funcionamento
+- [x] Exibir mensagem "Fechado agora – Abriremos amanhã às XX:XX" no menu público
+- [x] Atualizar AdminLayout com nova lógica do toggle
+- [x] Adicionar campos manuallyClosed e manuallyClosedAt no schema
+- [x] Criar mutation setManualClose no backend

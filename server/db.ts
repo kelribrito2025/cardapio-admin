@@ -1675,3 +1675,208 @@ export async function deleteAllNeighborhoodFees(establishmentId: number) {
   
   await db.delete(neighborhoodFees).where(eq(neighborhoodFees.establishmentId, establishmentId));
 }
+
+
+// ============ ESTABLISHMENT STATUS FUNCTIONS ============
+
+/**
+ * Calcula o próximo horário de abertura baseado nos horários configurados
+ * Retorna null se não houver horário configurado
+ */
+export function getNextOpeningTime(businessHoursData: BusinessHours[], currentDate: Date = new Date()): { dayOfWeek: number; openTime: string; isToday: boolean; isTomorrow: boolean } | null {
+  if (!businessHoursData || businessHoursData.length === 0) return null;
+  
+  const currentDayOfWeek = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
+  const currentTime = currentDate.toTimeString().slice(0, 5); // HH:MM
+  
+  // Procurar nos próximos 7 dias
+  for (let i = 0; i < 7; i++) {
+    const checkDay = (currentDayOfWeek + i) % 7;
+    const dayHours = businessHoursData.find(h => h.dayOfWeek === checkDay);
+    
+    if (dayHours && dayHours.isActive && dayHours.openTime) {
+      // Se for hoje, verificar se o horário de abertura ainda não passou
+      if (i === 0) {
+        if (dayHours.openTime > currentTime) {
+          return {
+            dayOfWeek: checkDay,
+            openTime: dayHours.openTime,
+            isToday: true,
+            isTomorrow: false
+          };
+        }
+        // Se já passou o horário de abertura hoje, verificar se ainda está dentro do horário de funcionamento
+        if (dayHours.closeTime && currentTime < dayHours.closeTime) {
+          // Ainda está aberto, não precisa retornar próximo horário
+          continue;
+        }
+      } else {
+        return {
+          dayOfWeek: checkDay,
+          openTime: dayHours.openTime,
+          isToday: false,
+          isTomorrow: i === 1
+        };
+      }
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * Verifica se deve reabrir automaticamente baseado no fechamento manual e horários configurados
+ */
+export function shouldAutoReopen(manuallyClosedAt: Date | null, businessHoursData: BusinessHours[], currentDate: Date = new Date()): boolean {
+  if (!manuallyClosedAt) return false;
+  
+  const currentDayOfWeek = currentDate.getDay();
+  const currentTime = currentDate.toTimeString().slice(0, 5);
+  
+  // Encontrar o horário de hoje
+  const todayHours = businessHoursData.find(h => h.dayOfWeek === currentDayOfWeek);
+  
+  if (!todayHours || !todayHours.isActive || !todayHours.openTime) return false;
+  
+  // Verificar se o horário de abertura de hoje já passou desde o fechamento manual
+  const closedTime = manuallyClosedAt.getTime();
+  const openTimeToday = new Date(currentDate);
+  const [openHour, openMin] = todayHours.openTime.split(':').map(Number);
+  openTimeToday.setHours(openHour, openMin, 0, 0);
+  
+  // Se o fechamento foi antes do horário de abertura de hoje e agora já passou o horário de abertura
+  if (closedTime < openTimeToday.getTime() && currentDate.getTime() >= openTimeToday.getTime()) {
+    return true;
+  }
+  
+  // Se o fechamento foi em um dia anterior e hoje tem horário de abertura
+  const closedDate = new Date(manuallyClosedAt);
+  closedDate.setHours(0, 0, 0, 0);
+  const today = new Date(currentDate);
+  today.setHours(0, 0, 0, 0);
+  
+  if (closedDate.getTime() < today.getTime() && currentTime >= todayHours.openTime) {
+    return true;
+  }
+  
+  return false;
+}
+
+/**
+ * Calcula o status completo do estabelecimento considerando:
+ * 1. Fechamento manual (prioridade)
+ * 2. Reabertura automática no próximo horário configurado
+ * 3. Horários de funcionamento
+ */
+export async function getEstablishmentOpenStatus(establishmentId: number): Promise<{
+  isOpen: boolean;
+  manuallyClosed: boolean;
+  nextOpeningTime: { dayOfWeek: number; openTime: string; isToday: boolean; isTomorrow: boolean } | null;
+  shouldAutoReopen: boolean;
+}> {
+  const db = await getDb();
+  if (!db) {
+    return { isOpen: false, manuallyClosed: false, nextOpeningTime: null, shouldAutoReopen: false };
+  }
+  
+  // Buscar dados do estabelecimento
+  const [establishment] = await db.select().from(establishments).where(eq(establishments.id, establishmentId));
+  if (!establishment) {
+    return { isOpen: false, manuallyClosed: false, nextOpeningTime: null, shouldAutoReopen: false };
+  }
+  
+  // Buscar horários de funcionamento
+  const hours = await getBusinessHoursByEstablishment(establishmentId);
+  
+  const currentDate = new Date();
+  const currentDayOfWeek = currentDate.getDay();
+  const currentTime = currentDate.toTimeString().slice(0, 5);
+  
+  // Verificar se está dentro do horário de funcionamento
+  const todayHours = hours.find(h => h.dayOfWeek === currentDayOfWeek);
+  const isWithinSchedule = todayHours?.isActive && 
+    todayHours.openTime && 
+    todayHours.closeTime && 
+    currentTime >= todayHours.openTime && 
+    currentTime < todayHours.closeTime;
+  
+  // Calcular próximo horário de abertura
+  const nextOpening = getNextOpeningTime(hours, currentDate);
+  
+  // Verificar se deve reabrir automaticamente
+  const autoReopen = shouldAutoReopen(
+    establishment.manuallyClosedAt ? new Date(establishment.manuallyClosedAt) : null,
+    hours,
+    currentDate
+  );
+  
+  // Lógica de status:
+  // 1. Se manuallyClosed E não deve reabrir automaticamente → Fechado
+  // 2. Se manuallyClosed E deve reabrir automaticamente → Aberto (se dentro do horário)
+  // 3. Se não manuallyClosed → Segue horário normal
+  
+  let isOpen = false;
+  let manuallyClosed = establishment.manuallyClosed;
+  
+  if (manuallyClosed && autoReopen) {
+    // Deve reabrir automaticamente
+    manuallyClosed = false;
+    isOpen = isWithinSchedule || false;
+  } else if (manuallyClosed) {
+    // Permanece fechado manualmente
+    isOpen = false;
+  } else {
+    // Segue horário normal (isOpen do banco indica se o toggle está ligado)
+    isOpen = establishment.isOpen && (isWithinSchedule || false);
+  }
+  
+  return {
+    isOpen,
+    manuallyClosed,
+    nextOpeningTime: nextOpening,
+    shouldAutoReopen: autoReopen
+  };
+}
+
+/**
+ * Atualiza o status de fechamento manual do estabelecimento
+ */
+export async function setManualClose(establishmentId: number, close: boolean): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  if (close) {
+    // Fechar manualmente
+    await db.update(establishments)
+      .set({ 
+        manuallyClosed: true, 
+        manuallyClosedAt: new Date(),
+        isOpen: false 
+      })
+      .where(eq(establishments.id, establishmentId));
+  } else {
+    // Abrir manualmente
+    await db.update(establishments)
+      .set({ 
+        manuallyClosed: false, 
+        manuallyClosedAt: null,
+        isOpen: true 
+      })
+      .where(eq(establishments.id, establishmentId));
+  }
+}
+
+/**
+ * Limpa o status de fechamento manual (usado quando reabre automaticamente)
+ */
+export async function clearManualClose(establishmentId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(establishments)
+    .set({ 
+      manuallyClosed: false, 
+      manuallyClosedAt: null 
+    })
+    .where(eq(establishments.id, establishmentId));
+}

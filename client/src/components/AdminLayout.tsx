@@ -154,21 +154,160 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     return currentTime >= openTimeMinutes && currentTime <= closeTimeMinutes;
   };
 
-  // Valor calculado de se está aberto:
-  // - Se o toggle manual estiver desligado (establishment.isOpen = false), a loja está FECHADA (forçado)
-  // - Se o toggle manual estiver ligado E estiver dentro do horário, a loja está ABERTA
-  // - Se o toggle manual estiver ligado MAS estiver fora do horário, a loja está FECHADA
-  const isWithinBusinessHours = isCurrentlyOpen();
-  const calculatedIsOpen = establishment?.isOpen && isWithinBusinessHours;
-  
-  // Verifica se está fechado forçadamente (toggle desligado mas dentro do horário)
-  const isForcedClosed = !establishment?.isOpen && isWithinBusinessHours;
+  // Calcula o próximo horário de abertura
+  const getNextOpeningTime = (): { dayName: string; time: string; isToday: boolean; isTomorrow: boolean } | null => {
+    if (!businessHoursData || businessHoursData.length === 0) return null;
+    
+    const dayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+    const now = new Date();
+    const currentDay = now.getDay();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    
+    // Procurar nos próximos 7 dias
+    for (let i = 0; i < 7; i++) {
+      const checkDay = (currentDay + i) % 7;
+      const dayHours = businessHoursData.find((h: { dayOfWeek: number; isActive: boolean; openTime: string | null; closeTime: string | null }) => h.dayOfWeek === checkDay);
+      
+      if (dayHours?.isActive && dayHours.openTime) {
+        const [openHour, openMin] = dayHours.openTime.split(':').map(Number);
+        const openTimeMinutes = openHour * 60 + openMin;
+        
+        // Se for hoje, verificar se o horário de abertura ainda não passou
+        if (i === 0) {
+          if (openTimeMinutes > currentTime) {
+            return {
+              dayName: dayNames[checkDay],
+              time: dayHours.openTime,
+              isToday: true,
+              isTomorrow: false
+            };
+          }
+          // Se já passou o horário de abertura hoje, verificar se ainda está dentro do horário
+          if (dayHours.closeTime) {
+            const [closeHour, closeMin] = dayHours.closeTime.split(':').map(Number);
+            const closeTimeMinutes = closeHour * 60 + closeMin;
+            if (currentTime < closeTimeMinutes) {
+              // Ainda está aberto, não precisa retornar próximo horário
+              continue;
+            }
+          }
+        } else {
+          return {
+            dayName: dayNames[checkDay],
+            time: dayHours.openTime,
+            isToday: false,
+            isTomorrow: i === 1
+          };
+        }
+      }
+    }
+    
+    return null;
+  };
 
-  // Toggle store open/closed
-  const toggleOpenMutation = trpc.establishment.toggleOpen.useMutation({
+  // Verifica se deve reabrir automaticamente (fechamento manual expirou)
+  const shouldAutoReopen = (): boolean => {
+    if (!establishment?.manuallyClosed || !establishment?.manuallyClosedAt) return false;
+    if (!businessHoursData || businessHoursData.length === 0) return false;
+    
+    const now = new Date();
+    const currentDay = now.getDay();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const closedAt = new Date(establishment.manuallyClosedAt);
+    
+    // Encontrar o horário de hoje
+    const todayHours = businessHoursData.find((h: { dayOfWeek: number; isActive: boolean; openTime: string | null; closeTime: string | null }) => h.dayOfWeek === currentDay);
+    
+    if (!todayHours?.isActive || !todayHours.openTime) return false;
+    
+    const [openHour, openMin] = todayHours.openTime.split(':').map(Number);
+    const openTimeMinutes = openHour * 60 + openMin;
+    
+    // Se o fechamento foi em um dia anterior e hoje tem horário de abertura que já passou
+    const closedDate = new Date(closedAt);
+    closedDate.setHours(0, 0, 0, 0);
+    const today = new Date(now);
+    today.setHours(0, 0, 0, 0);
+    
+    if (closedDate.getTime() < today.getTime() && currentTime >= openTimeMinutes) {
+      return true;
+    }
+    
+    // Se o fechamento foi antes do horário de abertura de hoje e agora já passou o horário
+    const closedTimeMinutes = closedAt.getHours() * 60 + closedAt.getMinutes();
+    if (closedAt.toDateString() === now.toDateString() && closedTimeMinutes < openTimeMinutes && currentTime >= openTimeMinutes) {
+      return true;
+    }
+    
+    return false;
+  };
+
+  // Valor calculado de se está aberto:
+  // Lógica completa:
+  // 1. Se manuallyClosed E não deve reabrir automaticamente → Fechado
+  // 2. Se manuallyClosed E deve reabrir automaticamente → Aberto (se dentro do horário)
+  // 3. Se não manuallyClosed E isOpen (toggle ligado) → Segue horário normal
+  // 4. Se não manuallyClosed E !isOpen (toggle desligado) → Fechado manualmente
+  const isWithinBusinessHours = isCurrentlyOpen();
+  const autoReopen = shouldAutoReopen();
+  const nextOpening = getNextOpeningTime();
+  
+  // Determinar status final
+  let calculatedIsOpen = false;
+  let isForcedClosed = false;
+  let statusMessage = '';
+  
+  if (establishment?.manuallyClosed && !autoReopen) {
+    // Fechado manualmente e não deve reabrir ainda
+    calculatedIsOpen = false;
+    isForcedClosed = true;
+    if (nextOpening) {
+      if (nextOpening.isToday) {
+        statusMessage = `Abriremos hoje às ${nextOpening.time}`;
+      } else if (nextOpening.isTomorrow) {
+        statusMessage = `Abriremos amanhã às ${nextOpening.time}`;
+      } else {
+        statusMessage = `Abriremos ${nextOpening.dayName} às ${nextOpening.time}`;
+      }
+    }
+  } else if (establishment?.manuallyClosed && autoReopen) {
+    // Deve reabrir automaticamente
+    calculatedIsOpen = isWithinBusinessHours;
+    isForcedClosed = false;
+  } else if (!establishment?.isOpen) {
+    // Toggle desligado (fechado manualmente)
+    calculatedIsOpen = false;
+    isForcedClosed = isWithinBusinessHours; // Só mostra "fechado manualmente" se estiver dentro do horário
+    if (nextOpening) {
+      if (nextOpening.isToday) {
+        statusMessage = `Abriremos hoje às ${nextOpening.time}`;
+      } else if (nextOpening.isTomorrow) {
+        statusMessage = `Abriremos amanhã às ${nextOpening.time}`;
+      } else {
+        statusMessage = `Abriremos ${nextOpening.dayName} às ${nextOpening.time}`;
+      }
+    }
+  } else {
+    // Toggle ligado - segue horário normal
+    calculatedIsOpen = isWithinBusinessHours;
+    isForcedClosed = false;
+    if (!isWithinBusinessHours && nextOpening) {
+      if (nextOpening.isToday) {
+        statusMessage = `Abriremos hoje às ${nextOpening.time}`;
+      } else if (nextOpening.isTomorrow) {
+        statusMessage = `Abriremos amanhã às ${nextOpening.time}`;
+      } else {
+        statusMessage = `Abriremos ${nextOpening.dayName} às ${nextOpening.time}`;
+      }
+    }
+  }
+
+  // Toggle store open/closed - usa nova lógica de fechamento manual
+  const toggleOpenMutation = trpc.establishment.setManualClose.useMutation({
     onSuccess: () => {
       refetchEstablishment();
-      toast.success(establishment?.isOpen ? "Loja fechada" : "Loja aberta");
+      const isCurrentlyManuallyOpen = establishment?.isOpen && !establishment?.manuallyClosed;
+      toast.success(isCurrentlyManuallyOpen ? "Loja fechada manualmente" : "Loja aberta");
     },
     onError: () => {
       toast.error("Erro ao alterar status da loja");
@@ -177,9 +316,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   const handleToggleOpen = () => {
     if (establishment) {
+      // Se está aberto (toggle ligado e não fechado manualmente), fechar
+      // Se está fechado, abrir
+      const isCurrentlyManuallyOpen = establishment.isOpen && !establishment.manuallyClosed;
       toggleOpenMutation.mutate({
         id: establishment.id,
-        isOpen: !establishment.isOpen,
+        close: isCurrentlyManuallyOpen, // true = fechar, false = abrir
       });
     }
   };
@@ -572,11 +714,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                               "text-sm font-medium",
                               calculatedIsOpen ? "text-emerald-600" : "text-muted-foreground"
                             )}>
-                              {calculatedIsOpen ? "Aberto" : "Fechado"}
+                              {calculatedIsOpen ? "Aberto agora" : "Fechado agora"}
                             </span>
                             {isForcedClosed && (
                               <span className="text-[10px] text-amber-600">
                                 Fechado manualmente
+                              </span>
+                            )}
+                            {!calculatedIsOpen && statusMessage && (
+                              <span className="text-[10px] text-muted-foreground">
+                                {statusMessage}
                               </span>
                             )}
                           </div>
@@ -585,7 +732,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           <TooltipTrigger asChild>
                             <div>
                               <Switch
-                                checked={establishment.isOpen}
+                                checked={establishment.isOpen && !establishment.manuallyClosed}
                                 onCheckedChange={handleToggleOpen}
                                 disabled={toggleOpenMutation.isPending}
                                 className="data-[state=checked]:bg-emerald-500 scale-90"
@@ -594,9 +741,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           </TooltipTrigger>
                           <TooltipContent side="left" className="max-w-[220px]">
                             <p className="text-xs">
-                              {establishment.isOpen 
-                                ? "Desative para fechar a loja manualmente (imprevistos, força maior)" 
-                                : "Ative para permitir que a loja abra conforme os horários configurados"}
+                              {establishment.isOpen && !establishment.manuallyClosed
+                                ? "Desative para fechar a loja manualmente (imprevistos, força maior). A loja reabrirá automaticamente no próximo horário configurado." 
+                                : "Ative para abrir a loja manualmente agora."}
                             </p>
                           </TooltipContent>
                         </Tooltip>
