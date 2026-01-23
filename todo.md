@@ -2118,3 +2118,4 @@
 - [x] Implementar lógica para exibir texto e ícone corretos baseado nas opções de atendimento (Somente Delivery com moto, Somente Retirada com caixa, ou ambos com moto)
 - [x] Ajustes visuais no badge desktop (borderRadius: 8px, height: 21px) via editor visual
 - [x] Alterar a foto ao lado do campo de busca para usar placeholder padrão (reservado para logo do restaurante)
+- [x] Ajustes visuais no header: logo placeholder 37x37px e input de busca altura 37px via editor visual

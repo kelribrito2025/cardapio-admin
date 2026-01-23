@@ -993,7 +993,7 @@ export default function PublicMenu() {
         <div className="max-w-7xl mx-auto px-4 py-3 pr-0">
           <div className="flex items-center gap-4">
             {/* Logo do Restaurante - usa placeholder até ter logo configurado */}
-            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center flex-shrink-0">
+            <div className="rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center flex-shrink-0" style={{width: '37px', height: '37px'}}>
               <Utensils className="h-5 w-5 text-white" />
             </div>
 
@@ -1009,6 +1009,7 @@ export default function PublicMenu() {
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
                   className="w-full pl-10 pr-8 py-2 bg-gray-100 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white transition-colors placeholder:text-gray-400"
+                  style={{height: '37px'}}
                 />
                 {searchQuery && (
                   <button
