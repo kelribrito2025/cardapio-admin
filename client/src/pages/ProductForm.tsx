@@ -65,6 +65,7 @@ interface ComplementItem {
   uniqueId: string; // ID único para drag & drop
   name: string;
   price: string;
+  imageUrl?: string | null;
 }
 
 // Sortable Complement Item Component
@@ -76,6 +77,8 @@ function SortableComplementItem({
   onRemove,
   displayPrice,
   handlePriceChange,
+  onImageUpload,
+  uploadingImage,
 }: {
   item: ComplementItem;
   itemIndex: number;
@@ -84,6 +87,8 @@ function SortableComplementItem({
   onRemove: (groupIndex: number, itemIndex: number) => void;
   displayPrice: (value: string) => string;
   handlePriceChange: (groupIndex: number, itemIndex: number, value: string) => void;
+  onImageUpload: (groupIndex: number, itemIndex: number, file: File) => void;
+  uploadingImage: string | null;
 }) {
   const {
     attributes,
@@ -99,6 +104,16 @@ function SortableComplementItem({
     transition,
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1000 : 1,
+  };
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isUploading = uploadingImage === item.uniqueId;
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onImageUpload(groupIndex, itemIndex, file);
+    }
   };
 
   return (
@@ -118,6 +133,45 @@ function SortableComplementItem({
       >
         <GripVertical className="h-3.5 w-3.5 text-muted-foreground/50" />
       </button>
+      
+      {/* Indicador minimalista de foto */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            className={cn(
+              "h-8 w-8 rounded-md border border-dashed flex items-center justify-center transition-colors",
+              item.imageUrl 
+                ? "border-green-500 bg-green-50 text-green-600 hover:bg-green-100" 
+                : "border-border/50 bg-muted/30 text-muted-foreground hover:bg-muted/50",
+              isUploading && "opacity-50 cursor-wait"
+            )}
+          >
+            {isUploading ? (
+              <div className="h-3 w-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            ) : item.imageUrl ? (
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            ) : (
+              <ImagePlus className="h-3.5 w-3.5" />
+            )}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top">
+          {item.imageUrl ? "Foto adicionada - Clique para trocar" : "Adicionar foto"}
+        </TooltipContent>
+      </Tooltip>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+      
       <Input
         value={item.name}
         onChange={(e) =>
@@ -182,6 +236,9 @@ export default function ProductForm() {
   // Image upload
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Complement image upload
+  const [uploadingComplementImage, setUploadingComplementImage] = useState<string | null>(null);
 
   // Drag & Drop sensors for complement items
   const sensors = useSensors(
@@ -338,6 +395,7 @@ export default function ProductForm() {
                 id: item.id,
                 name: item.name,
                 price: item.price,
+                imageUrl: item.imageUrl,
                 sortOrder: itemIndex,
               });
             } else {
@@ -346,6 +404,7 @@ export default function ProductForm() {
                 groupId,
                 name: item.name,
                 price: item.price,
+                imageUrl: item.imageUrl,
                 sortOrder: itemIndex,
               });
             }
@@ -394,6 +453,7 @@ export default function ProductForm() {
           uniqueId: `existing-${item.id}`, // ID único para drag & drop
           name: item.name,
           price: String(item.price),
+          imageUrl: item.imageUrl || null,
         })) || [],
       }));
       setComplementGroups(formattedGroups);
@@ -518,6 +578,55 @@ export default function ProductForm() {
 
   const handleImageRemove = (index: number) => {
     setImages(images.filter((_, i) => i !== index));
+  };
+
+  // Upload de imagem de complemento
+  const handleComplementImageUpload = async (groupIndex: number, itemIndex: number, file: File) => {
+    const item = complementGroups[groupIndex]?.items[itemIndex];
+    if (!item) return;
+    
+    // Validar tipo de arquivo
+    if (!file.type.startsWith("image/")) {
+      toast.error("Por favor, selecione uma imagem");
+      return;
+    }
+    
+    // Validar tamanho (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Imagem muito grande. Máximo 5MB");
+      return;
+    }
+    
+    setUploadingComplementImage(item.uniqueId);
+    
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(",")[1];
+      uploadMutation.mutate(
+        {
+          base64,
+          mimeType: file.type,
+          folder: "complements",
+        },
+        {
+          onSuccess: (data) => {
+            updateComplementItem(groupIndex, itemIndex, { imageUrl: data.url });
+            toast.success("Foto do complemento adicionada");
+          },
+          onError: () => {
+            toast.error("Erro ao enviar foto do complemento");
+          },
+          onSettled: () => {
+            setUploadingComplementImage(null);
+          },
+        }
+      );
+    };
+    reader.onerror = () => {
+      toast.error("Erro ao ler arquivo");
+      setUploadingComplementImage(null);
+    };
+    reader.readAsDataURL(file);
   };
 
   const addComplementGroup = () => {
@@ -979,6 +1088,8 @@ export default function ProductForm() {
                                 onRemove={removeComplementItem}
                                 displayPrice={displayPrice}
                                 handlePriceChange={handlePriceChange}
+                                onImageUpload={handleComplementImageUpload}
+                                uploadingImage={uploadingComplementImage}
                               />
                             ))}
                           </div>

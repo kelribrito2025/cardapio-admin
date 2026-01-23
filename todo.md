@@ -2022,3 +2022,10 @@
 - [x] Adicionar indicadores visuais de navegação (setas ou pontos) para mostrar que há mais fotos
 - [x] Adicionar contador de fotos no canto inferior direito (ex: "1/3")
 - [x] Adicionar suporte para arrastar/deslizar entre as fotos
+
+## Foto nos Itens de Complemento
+- [x] Adicionar campo imageUrl no schema de complementItems
+- [x] Implementar upload de foto no formulário de complementos (admin)
+- [x] Adicionar indicador minimalista na lista de complementos (check se tem foto, placeholder se não)
+- [x] Exibir foto do complemento selecionado no modal do menu público
+- [x] Fallback para foto do produto quando complemento não tiver foto

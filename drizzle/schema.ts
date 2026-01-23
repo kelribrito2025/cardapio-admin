@@ -114,6 +114,7 @@ export const complementItems = mysqlTable("complementItems", {
   groupId: int("groupId").notNull(),
   name: varchar("name", { length: 255 }).notNull(),
   price: decimal("price", { precision: 10, scale: 2 }).default("0").notNull(),
+  imageUrl: text("imageUrl"),
   isActive: boolean("isActive").default(true).notNull(),
   sortOrder: int("sortOrder").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

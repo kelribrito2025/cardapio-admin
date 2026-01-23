@@ -441,6 +441,7 @@ export const appRouter = router({
         groupId: z.number(),
         name: z.string().min(1),
         price: z.string().default("0"),
+        imageUrl: z.string().nullable().optional(),
         sortOrder: z.number().default(0),
       }))
       .mutation(async ({ input }) => {
@@ -453,6 +454,7 @@ export const appRouter = router({
         id: z.number(),
         name: z.string().min(1).optional(),
         price: z.string().optional(),
+        imageUrl: z.string().nullable().optional(),
         isActive: z.boolean().optional(),
         sortOrder: z.number().optional(),
       }))

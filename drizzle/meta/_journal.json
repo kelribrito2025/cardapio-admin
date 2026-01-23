@@ -134,6 +134,13 @@
       "when": 1769013419113,
       "tag": "0018_bouncy_owl",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "5",
+      "when": 1769171452394,
+      "tag": "0019_many_molten_man",
+      "breakpoints": true
     }
   ]
 }

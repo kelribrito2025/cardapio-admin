@@ -99,6 +99,7 @@ export default function PublicMenu() {
   const [showReviewsModal, setShowReviewsModal] = useState(false);
   const [showFullscreenImage, setShowFullscreenImage] = useState(false);
   const [fullscreenImageIndex, setFullscreenImageIndex] = useState(0);
+  const [selectedComplementImage, setSelectedComplementImage] = useState<string | null>(null);
   const [ratingSuccess, setRatingSuccess] = useState(false);
   const [canReviewChecked, setCanReviewChecked] = useState(false);
   const [canReview, setCanReview] = useState(true);
@@ -1746,57 +1747,78 @@ export default function PublicMenu() {
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setSelectedProduct(null)}
+            onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); }}
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
           <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{ touchAction: 'pan-y' }}>
-            {/* Imagem do Produto */}
-            {selectedProduct.images?.[0] && (
-              <div className="relative w-full h-[268px] sm:h-60 md:h-72 flex-shrink-0">
-                <img
-                  src={selectedProduct.images[0]}
-                  alt={selectedProduct.name}
-                  className="w-full h-full object-cover cursor-pointer"
-                  onClick={() => { setFullscreenImageIndex(0); setShowFullscreenImage(true); }}
-                />
-                {/* Ícone de olho para indicar que pode clicar */}
-                <div 
-                  className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
-                  onClick={() => { setFullscreenImageIndex(0); setShowFullscreenImage(true); }}
-                >
-                  <div className="bg-white/80 rounded-full p-3 shadow-lg">
-                    <Eye className="h-6 w-6 text-gray-700" />
+            {/* Imagem do Produto ou Complemento Selecionado */}
+            {(() => {
+              // Determinar qual imagem exibir: complemento selecionado ou produto
+              const displayImage = selectedComplementImage || selectedProduct.images?.[0];
+              const isComplementImage = !!selectedComplementImage;
+              
+              if (displayImage) {
+                return (
+                  <div className="relative w-full h-[268px] sm:h-60 md:h-72 flex-shrink-0">
+                    <img
+                      src={displayImage}
+                      alt={selectedProduct.name}
+                      className="w-full h-full object-cover cursor-pointer transition-all duration-300"
+                      onClick={() => { 
+                        if (!isComplementImage) {
+                          setFullscreenImageIndex(0); 
+                          setShowFullscreenImage(true); 
+                        }
+                      }}
+                    />
+                    {/* Ícone de olho para indicar que pode clicar (apenas para imagem do produto) */}
+                    {!isComplementImage && (
+                      <div 
+                        className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
+                        onClick={() => { setFullscreenImageIndex(0); setShowFullscreenImage(true); }}
+                      >
+                        <div className="bg-white/80 rounded-full p-3 shadow-lg">
+                          <Eye className="h-6 w-6 text-gray-700" />
+                        </div>
+                      </div>
+                    )}
+                    {/* Indicador de foto do complemento */}
+                    {isComplementImage && (
+                      <div className="absolute bottom-3 left-3 bg-red-500 text-white px-2.5 py-1 rounded-full text-xs font-medium">
+                        Foto do complemento
+                      </div>
+                    )}
+                    {/* Indicador de quantidade de fotos (apenas para imagem do produto) */}
+                    {!isComplementImage && selectedProduct.images && selectedProduct.images.length > 1 && (
+                      <div className="absolute bottom-3 right-3 bg-black/60 text-white px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5">
+                        <Eye className="h-3.5 w-3.5" />
+                        <span>1/{selectedProduct.images.length}</span>
+                      </div>
+                    )}
+                    <button 
+                      onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); }}
+                      className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
+                    >
+                      <X className="h-5 w-5 text-gray-700" />
+                    </button>
                   </div>
+                );
+              }
+              
+              // Placeholder quando não há imagem
+              return (
+                <div className="relative w-full h-[180px] sm:h-48 md:h-56 flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                  <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80 animate-placeholder-pulse" />
+                  <button 
+                    onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); }}
+                    className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
+                  >
+                    <X className="h-5 w-5 text-gray-700" />
+                  </button>
                 </div>
-                {/* Indicador de quantidade de fotos */}
-                {selectedProduct.images.length > 1 && (
-                  <div className="absolute bottom-3 right-3 bg-black/60 text-white px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5">
-                    <Eye className="h-3.5 w-3.5" />
-                    <span>1/{selectedProduct.images.length}</span>
-                  </div>
-                )}
-                <button 
-                  onClick={() => setSelectedProduct(null)}
-                  className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
-                >
-                  <X className="h-5 w-5 text-gray-700" />
-                </button>
-              </div>
-            )}
-
-            {/* Placeholder quando não há imagem */}
-            {!selectedProduct.images?.[0] && (
-              <div className="relative w-full h-[180px] sm:h-48 md:h-56 flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
-                <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80 animate-placeholder-pulse" />
-                <button 
-                  onClick={() => setSelectedProduct(null)}
-                  className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
-                >
-                  <X className="h-5 w-5 text-gray-700" />
-                </button>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Header sem imagem - removido, agora usa placeholder */}
             {false && (
@@ -1861,6 +1883,7 @@ export default function PublicMenu() {
                         <div className="divide-y divide-gray-100">
                           {group.items.map((item) => {
                             const isSelected = selectedInGroup.has(item.id);
+                            const hasImage = !!(item as any).imageUrl;
                             
                             return (
                               <label
@@ -1875,6 +1898,8 @@ export default function PublicMenu() {
                                     name={`group-${group.id}`}
                                     checked={isSelected}
                                     onChange={() => {
+                                      const itemImageUrl = (item as any).imageUrl;
+                                      
                                       setSelectedComplements((prev) => {
                                         const newMap = new Map(prev);
                                         const currentSet = new Set(prev.get(group.id) || []);
@@ -1882,12 +1907,26 @@ export default function PublicMenu() {
                                         if (isRadio) {
                                           // Radio: substitui a seleção
                                           newMap.set(group.id, new Set([item.id]));
+                                          // Atualizar imagem do complemento se tiver
+                                          if (itemImageUrl) {
+                                            setSelectedComplementImage(itemImageUrl);
+                                          } else {
+                                            setSelectedComplementImage(null);
+                                          }
                                         } else {
                                           // Checkbox: toggle
                                           if (currentSet.has(item.id)) {
                                             currentSet.delete(item.id);
+                                            // Se desmarcar, voltar para imagem do produto
+                                            if (itemImageUrl && selectedComplementImage === itemImageUrl) {
+                                              setSelectedComplementImage(null);
+                                            }
                                           } else if (currentSet.size < group.maxQuantity) {
                                             currentSet.add(item.id);
+                                            // Atualizar imagem do complemento se tiver
+                                            if (itemImageUrl) {
+                                              setSelectedComplementImage(itemImageUrl);
+                                            }
                                           }
                                           newMap.set(group.id, currentSet);
                                         }
@@ -1897,6 +1936,16 @@ export default function PublicMenu() {
                                     }}
                                     className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500"
                                   />
+                                  {/* Indicador de foto no complemento */}
+                                  {hasImage && (
+                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                                      isSelected ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'
+                                    }`}>
+                                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                      </svg>
+                                    </div>
+                                  )}
                                   <span className="text-sm text-gray-900">{item.name}</span>
                                 </div>
                                 {Number(item.price) > 0 && (
@@ -2050,6 +2099,7 @@ export default function PublicMenu() {
                       setSelectedComplements(new Map());
                       setProductObservation("");
                       setProductQuantity(1);
+                      setSelectedComplementImage(null);
                       setSelectedProduct(null);
                     }}
                     disabled={!canAddToCart}
