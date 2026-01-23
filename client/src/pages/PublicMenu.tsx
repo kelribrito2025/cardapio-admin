@@ -2115,6 +2115,7 @@ export default function PublicMenu() {
                       </>
                     ) : (
                       <>
+                        <Plus className="h-5 w-5" />
                         <span className="hidden xs:inline">Adicionar</span>
                         <span>{formatPrice(totalPrice)}</span>
                       </>
