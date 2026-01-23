@@ -3385,82 +3385,128 @@ export default function PublicMenu() {
                   );
                 })()}
                 
-                {/* Cupom */}
-                {appliedCoupon ? (
-                  <div className="w-full flex items-center justify-between py-3 border-t border-gray-100">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-green-100 rounded-lg">
-                        <Ticket className="h-5 w-5 text-green-600" />
-                      </div>
-                      <div className="text-left">
-                        <p className="font-medium text-green-700 text-sm">Cupom aplicado!</p>
-                        <p className="text-xs text-green-600">{appliedCoupon.code} - {appliedCoupon.type === 'percentage' ? `${appliedCoupon.value}% de desconto` : `R$ ${appliedCoupon.value.toFixed(2).replace('.', ',')} de desconto`}</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setAppliedCoupon(null);
-                        setCouponCode("");
-                      }}
-                      className="p-2 hover:bg-red-50 rounded-full transition-colors"
-                    >
-                      <X className="h-4 w-4 text-red-500" />
-                    </button>
-                  </div>
-                ) : (
-                  <button 
-                    onClick={() => {
-                      setShowCouponModal(true);
-                      setCouponError("");
-                    }}
-                    className="w-full flex items-center justify-between py-3 border-t border-gray-100 hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <Ticket className="h-5 w-5 text-gray-500" />
-                      <div className="text-left">
-                        <p className="font-medium text-gray-800 text-sm">Tem um cupom?</p>
-                        <p className="text-xs text-gray-400">Clique e insira o código</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-gray-400" />
-                  </button>
-                )}
-                
-                {/* Botão Adicionar mais itens */}
-                <button
-                  onClick={() => {
-                    setShowMobileBag(false);
-                    setBagAutoOpenEnabled(false); // Desabilitar auto-open após clicar em "Adicionar mais itens"
-                  }}
-                  className="w-full py-3 font-semibold rounded-xl transition-colors border-2 border-red-500 text-red-500 hover:bg-red-50 flex items-center justify-center gap-2"
-                >
-                  <Plus className="h-5 w-5" />
-                  Adicionar mais itens
-                </button>
-                
-                {/* Botão Finalizar pedido */}
-                <button
-                  onClick={() => {
-                    if (!isOpen) return;
-                    setShowMobileBag(false);
-                    setOrderSent(false); // Resetar para permitir novo pedido
-                    setCheckoutStep(1);
-                  }}
-                  disabled={!isOpen}
-                  className={`w-full py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
-                    !isOpen
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-red-500 hover:bg-red-600 text-white'
-                  }`}
-                >
-                  {!isOpen ? (
+                {/* Alerta de Pedido Mínimo */}
+                {(() => {
+                  const subtotal = cart.reduce((sum, item) => {
+                    const itemTotal = parseFloat(item.price) * item.quantity;
+                    const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
+                    return sum + itemTotal + complementsTotal;
+                  }, 0);
+                  const discount = appliedCoupon?.discount || 0;
+                  const total = Math.max(0, subtotal - discount);
+                  const minOrderValue = establishment?.minimumOrderEnabled && establishment?.minimumOrderValue ? Number(establishment.minimumOrderValue) : 0;
+                  const isBelowMinOrder = minOrderValue > 0 && total < minOrderValue;
+                  const amountMissing = minOrderValue - total;
+                  
+                  return (
                     <>
-                      <Clock className="h-5 w-5" />
-                      Restaurante Fechado
+                      {/* Alerta de Pedido Mínimo - cor vermelha */}
+                      {isBelowMinOrder && (
+                        <div className="w-full p-3 bg-red-50 border border-red-200 rounded-xl">
+                          <div className="flex items-center gap-2 text-red-600">
+                            <ShoppingBag className="h-4 w-4" />
+                            <span className="font-semibold text-sm">Pedido mínimo: R$ {minOrderValue.toFixed(2).replace('.', ',')}</span>
+                          </div>
+                          <p className="text-xs text-red-500 mt-1 ml-6">
+                            Faltam R$ {amountMissing.toFixed(2).replace('.', ',')} para atingir o mínimo
+                          </p>
+                        </div>
+                      )}
+                      
+                      {/* Cupom */}
+                      {appliedCoupon ? (
+                        <div className="w-full flex items-center justify-between py-3 border-t border-gray-100">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-green-100 rounded-lg">
+                              <Ticket className="h-5 w-5 text-green-600" />
+                            </div>
+                            <div className="text-left">
+                              <p className="font-medium text-green-700 text-sm">Cupom aplicado!</p>
+                              <p className="text-xs text-green-600">{appliedCoupon.code} - {appliedCoupon.type === 'percentage' ? `${appliedCoupon.value}% de desconto` : `R$ ${appliedCoupon.value.toFixed(2).replace('.', ',')} de desconto`}</p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setAppliedCoupon(null);
+                              setCouponCode("");
+                            }}
+                            className="p-2 hover:bg-red-50 rounded-full transition-colors"
+                          >
+                            <X className="h-4 w-4 text-red-500" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button 
+                          onClick={() => {
+                            setShowCouponModal(true);
+                            setCouponError("");
+                          }}
+                          className="w-full flex items-center justify-between py-3 border-t border-gray-100 hover:bg-gray-50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <Ticket className="h-5 w-5 text-gray-500" />
+                            <div className="text-left">
+                              <p className="font-medium text-gray-800 text-sm">Tem um cupom?</p>
+                              <p className="text-xs text-gray-400">Clique e insira o código</p>
+                            </div>
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400" />
+                        </button>
+                      )}
+                      
+                      {/* Botão Adicionar mais itens - só mostra quando NÃO está abaixo do mínimo */}
+                      {!isBelowMinOrder && (
+                        <button
+                          onClick={() => {
+                            setShowMobileBag(false);
+                            setBagAutoOpenEnabled(false);
+                          }}
+                          className="w-full py-3 font-semibold rounded-xl transition-colors border-2 border-red-500 text-red-500 hover:bg-red-50 flex items-center justify-center gap-2"
+                        >
+                          <Plus className="h-5 w-5" />
+                          Adicionar mais itens
+                        </button>
+                      )}
+                      
+                      {/* Botão Finalizar pedido / Adicionar mais itens (quando abaixo do mínimo) */}
+                      {isBelowMinOrder ? (
+                        <button
+                          onClick={() => {
+                            setShowMobileBag(false);
+                            setBagAutoOpenEnabled(false);
+                          }}
+                          className="w-full py-3.5 font-semibold rounded-xl transition-colors border-2 border-red-500 text-red-500 hover:bg-red-50 flex items-center justify-center gap-2"
+                        >
+                          <Plus className="h-5 w-5" />
+                          Adicionar mais itens
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            if (!isOpen) return;
+                            setShowMobileBag(false);
+                            setOrderSent(false);
+                            setCheckoutStep(1);
+                          }}
+                          disabled={!isOpen}
+                          className={`w-full py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
+                            !isOpen
+                              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                              : 'bg-red-500 hover:bg-red-600 text-white'
+                          }`}
+                        >
+                          {!isOpen ? (
+                            <>
+                              <Clock className="h-5 w-5" />
+                              Restaurante Fechado
+                            </>
+                          ) : (
+                            'Finalizar pedido'
+                          )}
+                        </button>
+                      )}
                     </>
-                  ) : (
-                    'Finalizar pedido'
-                  )}
-                </button>
+                  );
+                })()}
               </div>
             )}
           </div>

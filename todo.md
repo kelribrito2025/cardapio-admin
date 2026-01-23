@@ -2187,3 +2187,9 @@
 - [x] Simplificar badge de pedido mínimo: remover texto "Min.", deixar só ícone + valor (ex: 🛒 R$30)
 - [x] Mover avaliações para mesma linha do nome do restaurante (só quebrar se nome for muito longo)
 - [x] Truncar nome do restaurante em telas pequenas (max-w-[180px])
+
+
+## Ajustes na Sacola - Pedido Mínimo
+- [x] Esconder botão "Adicionar mais itens" (vermelho vazado) quando pedido mínimo não for atingido
+- [x] Mudar botão inferior para vermelho vazado quando pedido mínimo não for atingido
+- [x] Mudar container de alerta de pedido mínimo para cor vermelha (combinar com botão)
