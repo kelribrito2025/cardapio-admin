@@ -2049,3 +2049,8 @@
 - [x] Atualizar estado local com IDs dos novos grupos após criação
 - [x] Invalidar query para recarregar dados do servidor
 - [x] Remover grupos duplicados do banco de dados
+
+
+## Melhoria: Busca ignorando acentos no menu público
+- [x] Implementar normalização de acentos na busca de produtos
+- [x] Buscar "agua" deve encontrar "água" e vice-versa

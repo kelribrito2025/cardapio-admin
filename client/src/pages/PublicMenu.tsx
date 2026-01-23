@@ -893,14 +893,22 @@ export default function PublicMenu() {
     });
   };
 
-  // Filter products by search query
+  // Função para normalizar texto removendo acentos
+  const normalizeText = (text: string) => {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  };
+
+  // Filter products by search query (ignoring accents)
   const filterProducts = (products: NonNullable<typeof data>['products']) => {
     if (!searchQuery.trim()) return products;
-    const query = searchQuery.toLowerCase();
+    const normalizedQuery = normalizeText(searchQuery);
     return products.filter(
       (p) =>
-        p.name.toLowerCase().includes(query) ||
-        (p.description && p.description.toLowerCase().includes(query))
+        normalizeText(p.name).includes(normalizedQuery) ||
+        (p.description && normalizeText(p.description).includes(normalizedQuery))
     );
   };
 
