@@ -1926,3 +1926,8 @@
 
 ## Ocultar preço R$ 0,00 na sacola
 - [x] Ocultar preço quando for R$ 0,00 na lista de itens da sacola do cardápio público
+
+
+## Ocultar preço R$ 0,00 no modal de resumo do pedido
+- [x] Ocultar preço quando for R$ 0,00 na lista de itens do modal de resumo do pedido
+- [x] Ocultar preço quando for R$ 0,00 na lista de pedidos ativos e histórico

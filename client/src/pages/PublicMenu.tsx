@@ -2153,7 +2153,9 @@ export default function PublicMenu() {
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
                           <p className="font-medium text-gray-900 text-sm">{item.quantity}x {item.name}</p>
-                          <p className="font-semibold text-red-500 text-sm">{formatPrice(Number(item.price) * item.quantity)}</p>
+                          {Number(item.price) * item.quantity > 0 && (
+                            <p className="font-semibold text-red-500 text-sm">{formatPrice(Number(item.price) * item.quantity)}</p>
+                          )}
                         </div>
                         {item.complements.length > 0 && (
                           <div className="mt-1">
@@ -3282,7 +3284,9 @@ export default function PublicMenu() {
                                   {order.items.map((item, idx) => (
                                     <div key={idx} className="flex justify-between text-sm">
                                       <span className="text-gray-700">{item.quantity}x {item.name}</span>
-                                      <span className="text-gray-600">R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}</span>
+                                      {parseFloat(item.price) * item.quantity > 0 && (
+                                        <span className="text-gray-600">R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}</span>
+                                      )}
                                     </div>
                                   ))}
                                 </div>
@@ -3364,7 +3368,9 @@ export default function PublicMenu() {
                                   {order.items.map((item, idx) => (
                                     <div key={idx} className="flex justify-between text-sm">
                                       <span className="text-gray-700">{item.quantity}x {item.name}</span>
-                                      <span className="text-gray-600">R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}</span>
+                                      {parseFloat(item.price) * item.quantity > 0 && (
+                                        <span className="text-gray-600">R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}</span>
+                                      )}
                                     </div>
                                   ))}
                                 </div>
