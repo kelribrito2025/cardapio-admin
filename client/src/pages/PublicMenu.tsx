@@ -1335,7 +1335,7 @@ export default function PublicMenu() {
 
                   {/* Service Types Badge - apenas desktop (mobile usa badge flutuante) */}
                   {getServiceTypes() && (
-                    <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200" style={{paddingRight: '9px', paddingLeft: '8px', paddingTop: '3px', paddingBottom: '3px', height: '24px'}}>
+                    <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200" style={{paddingRight: '9px', paddingLeft: '8px', paddingTop: '3px', paddingBottom: '3px', height: '21px', borderRadius: '8px'}}>
                       {isPickupOnly() ? (
                         <Package className="h-3 w-3" />
                       ) : (
