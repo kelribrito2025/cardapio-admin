@@ -3282,12 +3282,21 @@ export default function PublicMenu() {
                             {expandedOrderIds.has(order.id) && (
                               <div className="border-t border-gray-100 px-4 py-3 bg-gray-50">
                                 <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Itens do pedido</h4>
-                                <div className="space-y-1">
+                                <div className="space-y-2">
                                   {order.items.map((item, idx) => (
-                                    <div key={idx} className="flex justify-between text-sm">
-                                      <span className="text-gray-700">{item.quantity}x {item.name}</span>
-                                      {parseFloat(item.price) * item.quantity > 0 && (
-                                        <span className="text-gray-600">R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}</span>
+                                    <div key={idx} className="text-sm">
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-700">{item.quantity}x {item.name}</span>
+                                        {parseFloat(item.price) * item.quantity > 0 && (
+                                          <span className="text-gray-600">R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}</span>
+                                        )}
+                                      </div>
+                                      {item.complements && item.complements.length > 0 && (
+                                        <div className="mt-0.5 ml-4">
+                                          {item.complements.map((c: any, cIdx: number) => (
+                                            <p key={cIdx} className="text-xs text-gray-500">+ {c.name}</p>
+                                          ))}
+                                        </div>
                                       )}
                                     </div>
                                   ))}
@@ -3366,12 +3375,21 @@ export default function PublicMenu() {
                             {expandedOrderIds.has(order.id) && (
                               <div className="border-t border-gray-100 px-4 py-3 bg-gray-50">
                                 <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Itens do pedido</h4>
-                                <div className="space-y-1">
+                                <div className="space-y-2">
                                   {order.items.map((item, idx) => (
-                                    <div key={idx} className="flex justify-between text-sm">
-                                      <span className="text-gray-700">{item.quantity}x {item.name}</span>
-                                      {parseFloat(item.price) * item.quantity > 0 && (
-                                        <span className="text-gray-600">R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}</span>
+                                    <div key={idx} className="text-sm">
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-700">{item.quantity}x {item.name}</span>
+                                        {parseFloat(item.price) * item.quantity > 0 && (
+                                          <span className="text-gray-600">R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}</span>
+                                        )}
+                                      </div>
+                                      {item.complements && item.complements.length > 0 && (
+                                        <div className="mt-0.5 ml-4">
+                                          {item.complements.map((c: any, cIdx: number) => (
+                                            <p key={cIdx} className="text-xs text-gray-500">+ {c.name}</p>
+                                          ))}
+                                        </div>
                                       )}
                                     </div>
                                   ))}

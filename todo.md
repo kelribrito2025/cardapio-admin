@@ -1936,3 +1936,7 @@
 ## Ocultar preço R$ 0,00 no modal Meus Pedidos
 - [x] Ocultar preço quando for R$ 0,00 na lista de itens do modal Meus Pedidos
 - [x] Ocultar preço quando for R$ 0,00 na etapa de confirmação do pedido (step 5)
+
+
+## Exibir complementos no modal Meus Pedidos
+- [x] Adicionar exibição dos complementos selecionados na lista de itens do modal Meus Pedidos (em andamento e histórico)
