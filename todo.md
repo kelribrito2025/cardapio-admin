@@ -2306,3 +2306,8 @@
 ## Ajuste de Altura do Card de Cupom
 - [x] Reduzir altura do card de cupom liberado
 - [x] Deixar mesma altura do cartão de fidelidade
+
+
+## Ajuste de Tamanho dos Carimbos
+- [x] Reduzir tamanho dos ícones de carimbo
+- [x] Garantir que 10 carimbos caibam na mesma linha horizontal

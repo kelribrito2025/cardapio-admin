@@ -5259,7 +5259,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
           </div>
           
           {/* Carimbos visuais com animação */}
-          <div className="flex justify-center gap-2 flex-wrap relative">
+          <div className="flex justify-center gap-1.5 relative">
             {/* Confetti/Sparkles quando ganha carimbo */}
             {showConfetti && (
               <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -5283,9 +5283,9 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               <div
                 key={i}
                 className={cn(
-                  "w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-500",
+                  "w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all duration-500",
                   i < stamps
-                    ? "bg-emerald-500 border-emerald-400 shadow-lg shadow-emerald-500/50"
+                    ? "bg-emerald-500 border-emerald-400 shadow-md shadow-emerald-500/50"
                     : "border-white/40 bg-white/10",
                   // Animação de pop no carimbo recém-ganho
                   animatingStamp === i && "animate-bounce scale-125"
@@ -5294,13 +5294,13 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   // Efeito de entrada escalonado para carimbos existentes
                   transitionDelay: `${i * 50}ms`,
                   // Glow verde brilhante nos carimbos ativos
-                  ...(i < stamps ? { boxShadow: '0 0 15px rgba(16, 185, 129, 0.6)' } : {})
+                  ...(i < stamps ? { boxShadow: '0 0 10px rgba(16, 185, 129, 0.5)' } : {})
                 }}
               >
                 {i < stamps ? (
                   <svg 
                     className={cn(
-                      "h-5 w-5 text-white transition-all duration-300",
+                      "h-3.5 w-3.5 text-white transition-all duration-300",
                       animatingStamp === i && "animate-pulse scale-110"
                     )}
                     fill="none" 
@@ -5311,7 +5311,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 ) : (
-                  <Clock className="h-5 w-5 text-white/50" />
+                  <Clock className="h-3.5 w-3.5 text-white/50" />
                 )}
               </div>
             ))}
