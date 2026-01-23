@@ -2115,3 +2115,4 @@
 - [x] Adicionar ícone de motocicleta ao lado esquerdo do texto "Delivery e Retirada" na aba do menu público
 - [x] Adicionar animação sutil no ícone de motocicleta para chamar mais atenção
 - [x] Ajustar posição do texto e ícone para ficarem mais para cima dentro do container da aba (paddingTop: 0px, paddingBottom: 10px)
+- [x] Implementar lógica para exibir texto e ícone corretos baseado nas opções de atendimento (Somente Delivery com moto, Somente Retirada com caixa, ou ambos com moto)

@@ -969,11 +969,22 @@ export default function PublicMenu() {
 
   // Get service types
   const getServiceTypes = () => {
-    const types = [];
-    if (establishment.allowsDelivery) types.push("Delivery");
-    if (establishment.allowsPickup) types.push("Retirada");
-    return types.join(" e ");
+    const hasDelivery = establishment.allowsDelivery;
+    const hasPickup = establishment.allowsPickup;
+    
+    if (hasDelivery && hasPickup) {
+      return "Delivery e Retirada";
+    } else if (hasDelivery) {
+      return "Somente Delivery";
+    } else if (hasPickup) {
+      return "Somente Retirada";
+    }
+    return "";
   };
+
+  // Determina se deve mostrar ícone de moto ou caixa
+  const isDeliveryOnly = () => establishment.allowsDelivery;
+  const isPickupOnly = () => !establishment.allowsDelivery && establishment.allowsPickup;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -1134,7 +1145,11 @@ export default function PublicMenu() {
             <div className="md:hidden absolute top-[116px] right-4 z-0" style={{marginTop: '-29px', marginRight: '-2px', paddingRight: '0px'}}>
               {/* Aba principal - fica atrás do card */}
               <div className="bg-red-500 text-white font-bold rounded-t-xl shadow-md flex items-center gap-1.5" style={{fontSize: '11px', paddingTop: '0px', paddingRight: '14px', paddingBottom: '10px', paddingLeft: '10px', marginTop: '21px', height: '33px', borderRadius: '12px'}}>
-                <Bike className="h-3.5 w-3.5 animate-bike-ride" />
+                {isPickupOnly() ? (
+                  <Package className="h-3.5 w-3.5" />
+                ) : (
+                  <Bike className="h-3.5 w-3.5 animate-bike-ride" />
+                )}
                 {getServiceTypes()}
               </div>
             </div>
@@ -1321,7 +1336,11 @@ export default function PublicMenu() {
                   {/* Service Types Badge - apenas desktop (mobile usa badge flutuante) */}
                   {getServiceTypes() && (
                     <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200" style={{paddingRight: '9px', paddingLeft: '8px', paddingTop: '3px', paddingBottom: '3px', height: '24px'}}>
-                      <Bike className="h-3 w-3 animate-bike-ride" />
+                      {isPickupOnly() ? (
+                        <Package className="h-3 w-3" />
+                      ) : (
+                        <Bike className="h-3 w-3 animate-bike-ride" />
+                      )}
                       {getServiceTypes()}
                     </span>
                   )}
