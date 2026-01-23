@@ -4216,11 +4216,8 @@ export default function PublicMenu() {
                 className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all"
                 onClick={() => setShowNavigationModal(false)}
               >
-                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border">
-                  <svg viewBox="0 0 24 24" className="w-7 h-7">
-                    <path fill="#4285F4" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                    <circle fill="#34A853" cx="12" cy="9" r="2.5"/>
-                  </svg>
+                <div className="w-12 h-12 rounded-xl overflow-hidden shadow-sm">
+                  <img src="/google-maps-icon.png" alt="Google Maps" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold text-gray-900">Google Maps</p>
@@ -4242,10 +4239,8 @@ export default function PublicMenu() {
                 className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all"
                 onClick={() => setShowNavigationModal(false)}
               >
-                <div className="w-12 h-12 bg-[#33CCFF] rounded-xl flex items-center justify-center shadow-sm">
-                  <svg viewBox="0 0 24 24" className="w-7 h-7" fill="white">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                  </svg>
+                <div className="w-12 h-12 rounded-xl overflow-hidden shadow-sm">
+                  <img src="/waze-icon.png" alt="Waze" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold text-gray-900">Waze</p>
@@ -4265,8 +4260,8 @@ export default function PublicMenu() {
                 className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all"
                 onClick={() => setShowNavigationModal(false)}
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center shadow-sm">
-                  <MapPin className="h-6 w-6 text-white" />
+                <div className="w-12 h-12 rounded-xl overflow-hidden shadow-sm">
+                  <img src="/apple-maps-icon.png" alt="Apple Maps" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold text-gray-900">Apple Maps</p>

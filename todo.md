@@ -2090,3 +2090,12 @@
 ## Bug: Scroll do modal de navegação afeta conteúdo de fundo
 - [x] Bloquear scroll do body quando modal de navegação estiver aberto
 - [x] Permitir scroll apenas dentro do modal
+
+
+## Melhoria: Ícones oficiais no modal de navegação
+- [ ] Adicionar ícone oficial do Google Maps
+- [ ] Adicionar ícone oficial do Waze
+- [ ] Adicionar ícone oficial do Apple Maps
+
+## Ícones do Modal de Navegação
+- [x] Substituir ícones genéricos pelos ícones oficiais do Google Maps, Waze e Apple Maps no modal de navegação
