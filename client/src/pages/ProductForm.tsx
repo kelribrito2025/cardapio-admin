@@ -56,6 +56,7 @@ interface ComplementGroup {
 
 interface ComplementItem {
   id?: number;
+  uniqueId: string; // ID único para drag & drop
   name: string;
   price: string;
 }
@@ -85,7 +86,7 @@ function SortableComplementItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: `item-${groupIndex}-${itemIndex}` });
+  } = useSortable({ id: item.uniqueId });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -196,19 +197,20 @@ export default function ProductForm() {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const activeId = String(active.id);
-      const overId = String(over.id);
-      
-      // Extract item indices from IDs (format: "item-groupIndex-itemIndex")
-      const activeIndex = parseInt(activeId.split('-')[2]);
-      const overIndex = parseInt(overId.split('-')[2]);
-
       setComplementGroups((groups) => {
         const newGroups = [...groups];
-        newGroups[groupIndex] = {
-          ...newGroups[groupIndex],
-          items: arrayMove(newGroups[groupIndex].items, activeIndex, overIndex),
-        };
+        const items = newGroups[groupIndex].items;
+        
+        // Find indices by uniqueId
+        const activeIndex = items.findIndex(item => item.uniqueId === active.id);
+        const overIndex = items.findIndex(item => item.uniqueId === over.id);
+        
+        if (activeIndex !== -1 && overIndex !== -1) {
+          newGroups[groupIndex] = {
+            ...newGroups[groupIndex],
+            items: arrayMove(items, activeIndex, overIndex),
+          };
+        }
         return newGroups;
       });
     }
@@ -318,21 +320,24 @@ export default function ProductForm() {
             await deleteItemMutation.mutateAsync({ id: itemId });
           }
 
-          // Criar ou atualizar itens
-          for (const item of group.items) {
+          // Criar ou atualizar itens com sortOrder baseado na posição no array
+          for (let itemIndex = 0; itemIndex < group.items.length; itemIndex++) {
+            const item = group.items[itemIndex];
             if (item.id) {
-              // Atualizar item existente
+              // Atualizar item existente com sortOrder
               await updateItemMutation.mutateAsync({
                 id: item.id,
                 name: item.name,
                 price: item.price,
+                sortOrder: itemIndex,
               });
             } else {
-              // Criar novo item
+              // Criar novo item com sortOrder
               await createItemMutation.mutateAsync({
                 groupId,
                 name: item.name,
                 price: item.price,
+                sortOrder: itemIndex,
               });
             }
           }
@@ -377,6 +382,7 @@ export default function ProductForm() {
         isRequired: group.isRequired,
         items: group.items?.map((item: any) => ({
           id: item.id,
+          uniqueId: `existing-${item.id}`, // ID único para drag & drop
           name: item.name,
           price: String(item.price),
         })) || [],
@@ -530,7 +536,11 @@ export default function ProductForm() {
 
   const addComplementItem = (groupIndex: number) => {
     const newGroups = [...complementGroups];
-    newGroups[groupIndex].items.push({ name: "", price: "0" });
+    newGroups[groupIndex].items.push({ 
+      uniqueId: `new-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      name: "", 
+      price: "0" 
+    });
     setComplementGroups(newGroups);
   };
 
@@ -922,13 +932,13 @@ export default function ProductForm() {
                         onDragEnd={(event) => handleDragEnd(event, groupIndex)}
                       >
                         <SortableContext
-                          items={group.items.map((_, idx) => `item-${groupIndex}-${idx}`)}
+                          items={group.items.map((item) => item.uniqueId)}
                           strategy={verticalListSortingStrategy}
                         >
                           <div className="space-y-2">
                             {group.items.map((item, itemIndex) => (
                               <SortableComplementItem
-                                key={`item-${groupIndex}-${itemIndex}`}
+                                key={item.uniqueId}
                                 item={item}
                                 itemIndex={itemIndex}
                                 groupIndex={groupIndex}

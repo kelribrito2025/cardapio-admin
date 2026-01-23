@@ -441,6 +441,7 @@ export const appRouter = router({
         groupId: z.number(),
         name: z.string().min(1),
         price: z.string().default("0"),
+        sortOrder: z.number().default(0),
       }))
       .mutation(async ({ input }) => {
         const id = await db.createComplementItem(input);
@@ -453,6 +454,7 @@ export const appRouter = router({
         name: z.string().min(1).optional(),
         price: z.string().optional(),
         isActive: z.boolean().optional(),
+        sortOrder: z.number().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;

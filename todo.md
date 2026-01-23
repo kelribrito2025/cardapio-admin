@@ -1998,3 +1998,9 @@
 - [x] Implementar funcionalidade de arrastar e soltar para reordenar itens de complemento
 - [x] Adicionar campo sortOrder na tabela complementItems (ordem baseada na posição do array)
 - [x] Persistir ordem no banco de dados ao salvar
+
+## Bug: Drag & Drop não mantém nova posição
+- [x] Corrigir bug onde itens voltam para posição original após soltar
+
+## Bug: Novos complementos adicionados no meio da lista
+- [x] Corrigir para que novos complementos sejam adicionados no final da lista
