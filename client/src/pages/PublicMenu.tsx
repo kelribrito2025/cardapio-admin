@@ -901,15 +901,39 @@ export default function PublicMenu() {
       .replace(/[\u0300-\u036f]/g, '');
   };
 
-  // Filter products by search query (ignoring accents)
+  // Filter products by search query (ignoring accents) with priority sorting
   const filterProducts = (products: NonNullable<typeof data>['products']) => {
     if (!searchQuery.trim()) return products;
     const normalizedQuery = normalizeText(searchQuery);
-    return products.filter(
+    
+    // Filter products that match the query
+    const filtered = products.filter(
       (p) =>
         normalizeText(p.name).includes(normalizedQuery) ||
         (p.description && normalizeText(p.description).includes(normalizedQuery))
     );
+    
+    // Sort by relevance: 1º name starts with query, 2º name contains query, 3º description contains query
+    return filtered.sort((a, b) => {
+      const aNameNorm = normalizeText(a.name);
+      const bNameNorm = normalizeText(b.name);
+      
+      const aStartsWith = aNameNorm.startsWith(normalizedQuery);
+      const bStartsWith = bNameNorm.startsWith(normalizedQuery);
+      const aNameContains = aNameNorm.includes(normalizedQuery);
+      const bNameContains = bNameNorm.includes(normalizedQuery);
+      
+      // Priority 1: Name starts with query
+      if (aStartsWith && !bStartsWith) return -1;
+      if (!aStartsWith && bStartsWith) return 1;
+      
+      // Priority 2: Name contains query (but doesn't start with)
+      if (aNameContains && !bNameContains) return -1;
+      if (!aNameContains && bNameContains) return 1;
+      
+      // Priority 3: Only description contains query (keep original order)
+      return 0;
+    });
   };
 
   if (isLoading) {

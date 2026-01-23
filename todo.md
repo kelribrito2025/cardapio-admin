@@ -2059,3 +2059,8 @@
 ## Ajuste: Botão de adicionar responsivo em telas pequenas
 - [x] Ocultar texto "Adicionar" em telas pequenas (< 360px)
 - [x] Manter apenas símbolo "+" e preço em dispositivos móveis
+
+
+## Melhoria: Priorizar resultados de busca por início do nome
+- [x] Priorizar itens cujo nome começa com o termo buscado
+- [x] Ordenar: 1º nomes que começam com termo, 2º nomes que contém termo, 3º descrições que contém termo
