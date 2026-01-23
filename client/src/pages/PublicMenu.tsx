@@ -1220,14 +1220,19 @@ export default function PublicMenu() {
           {/* Badge de Entrega/Retirada - Aba de pasta atrás do card (mobile) */}
           {getServiceTypes() && (
             <div className="md:hidden absolute top-[116px] right-4 z-0" style={{marginTop: '-29px', marginRight: '-2px', paddingRight: '0px'}}>
-              {/* Aba principal - fica atrás do card */}
-              <div className="bg-red-500 text-white font-bold rounded-t-xl shadow-md flex items-center gap-1.5" style={{fontSize: '11px', paddingTop: '0px', paddingRight: '14px', paddingBottom: '10px', paddingLeft: '10px', marginTop: '21px', height: '33px', borderRadius: '12px'}}>
-                {isPickupOnly() ? (
-                  <Package className="h-3.5 w-3.5" />
-                ) : (
-                  <Bike className="h-3.5 w-3.5 animate-bike-ride" />
-                )}
-                {getServiceTypes()}
+              {/* Aba principal - fica atrás do card com efeito pulsante */}
+              <div className="relative">
+                {/* Camada de pulso */}
+                <div className="absolute inset-0 bg-red-400 rounded-xl animate-pulse" style={{borderRadius: '12px', marginTop: '21px', height: '33px'}}></div>
+                {/* Container principal */}
+                <div className="relative bg-red-500 text-white font-bold rounded-t-xl shadow-md flex items-center gap-1.5" style={{fontSize: '11px', paddingTop: '0px', paddingRight: '14px', paddingBottom: '10px', paddingLeft: '10px', marginTop: '21px', height: '33px', borderRadius: '12px'}}>
+                  {isPickupOnly() ? (
+                    <Package className="h-3.5 w-3.5" />
+                  ) : (
+                    <Bike className="h-3.5 w-3.5 animate-bike-ride" />
+                  )}
+                  {getServiceTypes()}
+                </div>
               </div>
             </div>
           )}

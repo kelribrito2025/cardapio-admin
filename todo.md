@@ -2135,3 +2135,9 @@
 ## Correção: Sistema de horários de funcionamento
 - [x] Implementar lógica automática de verificação de horários no menu público (isCurrentlyOpen)
 - [x] Substituir uso de establishment.isOpen por cálculo dinâmico baseado nos horários configurados
+
+## Efeito Visual no Container Delivery/Retirada
+- [x] Adicionar efeito pulsante no container de Delivery/Retirada no menu público (apenas versão mobile)
+
+## Efeito Visual no Container Delivery/Retirada
+- [ ] Adicionar efeito pulsante no container de Delivery/Retirada no menu público para maior destaque
