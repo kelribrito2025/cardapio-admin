@@ -2117,3 +2117,4 @@
 - [x] Ajustar posição do texto e ícone para ficarem mais para cima dentro do container da aba (paddingTop: 0px, paddingBottom: 10px)
 - [x] Implementar lógica para exibir texto e ícone corretos baseado nas opções de atendimento (Somente Delivery com moto, Somente Retirada com caixa, ou ambos com moto)
 - [x] Ajustes visuais no badge desktop (borderRadius: 8px, height: 21px) via editor visual
+- [x] Alterar a foto ao lado do campo de busca para usar placeholder padrão (reservado para logo do restaurante)

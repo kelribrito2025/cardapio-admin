@@ -992,18 +992,10 @@ export default function PublicMenu() {
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 pr-0">
           <div className="flex items-center gap-4">
-            {/* Logo */}
-            {establishment.logo ? (
-              <img
-                src={establishment.logo}
-                alt={establishment.name}
-                className="h-10 w-10 rounded-lg object-cover flex-shrink-0"
-              />
-            ) : (
-              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center flex-shrink-0">
-                <Utensils className="h-5 w-5 text-white" />
-              </div>
-            )}
+            {/* Logo do Restaurante - usa placeholder até ter logo configurado */}
+            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center flex-shrink-0">
+              <Utensils className="h-5 w-5 text-white" />
+            </div>
 
             {/* Search Bar */}
             <div className="flex-1 min-w-[180px] max-w-xl relative">
