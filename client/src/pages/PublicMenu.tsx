@@ -4988,6 +4988,8 @@ function LoyaltyLoginForm({
             placeholder="••••"
             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-center text-2xl tracking-[0.5em]"
             maxLength={4}
+            autoComplete="new-password"
+            name="loyalty-password-login"
           />
         </div>
         
@@ -5096,6 +5098,8 @@ function LoyaltyRegisterForm({
             placeholder="••••"
             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-center text-2xl tracking-[0.5em]"
             maxLength={4}
+            autoComplete="new-password"
+            name="loyalty-password-register"
           />
           <p className="text-xs text-gray-500 mt-1">Use apenas números</p>
         </div>

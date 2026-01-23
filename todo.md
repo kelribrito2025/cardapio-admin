@@ -2220,3 +2220,17 @@
 - [x] Exibir cupom disponível quando atingir meta
 - [x] Integrar contagem automática de tickets ao finalizar pedido (status entregue)
 - [x] Liberar cupom automaticamente ao atingir quantidade necessária
+
+
+## Bug: Carimbo de Fidelidade Não Adicionado
+- [ ] Investigar por que o carimbo não está sendo adicionado quando pedido é concluído
+- [ ] Verificar a lógica de integração no updateOrderStatus
+- [ ] Corrigir o bug e testar
+
+
+## Bug: Carimbo de Fidelidade Não Aparecendo
+- [x] Investigar por que o carimbo não estava sendo adicionado quando o pedido é concluído
+- [x] Verificar a lógica de updateOrderStatus
+- [x] Corrigir o bug (normalização de telefone e autocomplete)
+- [x] Unificar cartões de fidelidade duplicados no banco de dados
+- [x] Adicionar autocomplete="new-password" nos campos de senha

@@ -698,27 +698,36 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
           
           // Verificar se o pedido atinge o valor mínimo
           if (orderTotal >= minValue) {
+            // Normalizar telefone do pedido para busca
+            const customerPhoneNormalized = order.customerPhone.replace(/[^0-9]/g, '');
+            
             // Buscar ou criar cartão de fidelidade do cliente
+            // Busca tanto pelo telefone normalizado quanto pelo original para compatibilidade
             const existingCard = await db.select().from(loyaltyCards)
               .where(and(
                 eq(loyaltyCards.establishmentId, order.establishmentId),
-                eq(loyaltyCards.customerPhone, order.customerPhone)
+                or(
+                  eq(loyaltyCards.customerPhone, customerPhoneNormalized),
+                  eq(loyaltyCards.customerPhone, order.customerPhone)
+                )
               ))
               .limit(1);
             
             let cardId: number;
             if (existingCard.length > 0) {
               cardId = existingCard[0].id;
+              console.log(`[Fidelidade] Cartão encontrado para ${order.customerPhone} (ID: ${cardId})`);
             } else {
               // Criar cartão de fidelidade para o cliente
               // Gera uma senha temporária baseada nos últimos 4 dígitos do telefone
-              const tempPassword = order.customerPhone.slice(-4);
+              const tempPassword = customerPhoneNormalized.slice(-4);
               const bcrypt = await import('bcryptjs');
               const password4Hash = await bcrypt.hash(tempPassword, 10);
               
+              // Sempre salvar com telefone normalizado
               const newCard = await db.insert(loyaltyCards).values({
                 establishmentId: order.establishmentId,
-                customerPhone: order.customerPhone,
+                customerPhone: customerPhoneNormalized,
                 customerName: order.customerName,
                 password4Hash,
                 stamps: 0,
@@ -726,7 +735,7 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
                 couponsEarned: 0,
               });
               cardId = newCard[0].insertId;
-              console.log(`[Fidelidade] Cartão criado automaticamente para ${order.customerPhone}. Senha temporária: ${tempPassword}`);
+              console.log(`[Fidelidade] Cartão criado automaticamente para ${customerPhoneNormalized}. Senha temporária: ${tempPassword}`);
             }
             
             // Verificar se já existe carimbo para este pedido
@@ -1987,16 +1996,30 @@ export async function clearManualClose(establishmentId: number): Promise<void> {
 // ============ LOYALTY CARD FUNCTIONS ============
 
 /**
+ * Normaliza número de telefone removendo caracteres especiais
+ */
+function normalizePhone(phone: string): string {
+  return phone.replace(/[^0-9]/g, '');
+}
+
+/**
  * Busca cartão de fidelidade por telefone e estabelecimento
+ * Busca tanto pelo telefone normalizado quanto pelo original para compatibilidade
  */
 export async function getLoyaltyCardByPhone(establishmentId: number, phone: string): Promise<LoyaltyCard | undefined> {
   const db = await getDb();
   if (!db) return undefined;
   
+  const normalizedPhone = normalizePhone(phone);
+  
+  // Buscar pelo telefone normalizado OU pelo telefone original (para compatibilidade)
   const result = await db.select().from(loyaltyCards)
     .where(and(
       eq(loyaltyCards.establishmentId, establishmentId),
-      eq(loyaltyCards.customerPhone, phone)
+      or(
+        eq(loyaltyCards.customerPhone, normalizedPhone),
+        eq(loyaltyCards.customerPhone, phone)
+      )
     ))
     .limit(1);
   
@@ -2005,6 +2028,7 @@ export async function getLoyaltyCardByPhone(establishmentId: number, phone: stri
 
 /**
  * Cria um novo cartão de fidelidade
+ * Sempre salva o telefone normalizado (apenas números)
  */
 export async function createLoyaltyCard(data: {
   establishmentId: number;
@@ -2015,9 +2039,12 @@ export async function createLoyaltyCard(data: {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
+  // Normalizar telefone antes de salvar
+  const normalizedPhone = normalizePhone(data.customerPhone);
+  
   const result = await db.insert(loyaltyCards).values({
     establishmentId: data.establishmentId,
-    customerPhone: data.customerPhone,
+    customerPhone: normalizedPhone,
     customerName: data.customerName || null,
     password4Hash: data.password4Hash,
     stamps: 0,

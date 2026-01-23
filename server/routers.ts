@@ -1236,17 +1236,26 @@ export const appRouter = router({
         password4: z.string().length(4),
       }))
       .mutation(async ({ input }) => {
-        const card = await db.getLoyaltyCardByPhone(input.establishmentId, input.phone);
+        // Normalizar telefone para busca
+        const normalizedPhone = input.phone.replace(/[^0-9]/g, '');
+        console.log(`[Fidelidade Login] Tentando login: ${input.phone} -> ${normalizedPhone}`);
+        
+        const card = await db.getLoyaltyCardByPhone(input.establishmentId, normalizedPhone);
         
         if (!card) {
+          console.log(`[Fidelidade Login] Cartão não encontrado para ${normalizedPhone}`);
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Cartão não encontrado. Cadastre-se primeiro.",
           });
         }
         
+        console.log(`[Fidelidade Login] Cartão encontrado: ID ${card.id}, telefone ${card.customerPhone}`);
+        
         // Verificar senha
         const isValid = await bcrypt.compare(input.password4, card.password4Hash);
+        console.log(`[Fidelidade Login] Senha válida: ${isValid}`);
+        
         if (!isValid) {
           throw new TRPCError({
             code: "UNAUTHORIZED",

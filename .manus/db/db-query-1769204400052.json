@@ -1,0 +1,55 @@
+{
+  "query": "SELECT id, orderNumber, customerPhone, total, status, completedAt, createdAt FROM orders ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, customerPhone, total, status, completedAt, createdAt FROM orders ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "90250",
+      "orderNumber": "#P255",
+      "customerPhone": "(88) 99929-0000",
+      "total": "31.00",
+      "status": "completed",
+      "completedAt": "2026-01-23 21:37:18",
+      "createdAt": "2026-01-23 21:37:07"
+    },
+    {
+      "id": "90249",
+      "orderNumber": "#P254",
+      "customerPhone": "(88) 99929-0000",
+      "total": "5.00",
+      "status": "completed",
+      "completedAt": "2026-01-23 20:20:56",
+      "createdAt": "2026-01-23 20:20:39"
+    },
+    {
+      "id": "90248",
+      "orderNumber": "#P253",
+      "customerPhone": "(88) 99929-0002",
+      "total": "104.00",
+      "status": "completed",
+      "completedAt": "2026-01-23 19:48:57",
+      "createdAt": "2026-01-23 19:47:01"
+    },
+    {
+      "id": "90247",
+      "orderNumber": "#P252",
+      "customerPhone": "(88) 99929-0000",
+      "total": "45.00",
+      "status": "completed",
+      "completedAt": "2026-01-23 15:45:05",
+      "createdAt": "2026-01-23 15:44:35"
+    },
+    {
+      "id": "90246",
+      "orderNumber": "#P251",
+      "customerPhone": "(88) 99929-0002",
+      "total": "7.00",
+      "status": "completed",
+      "completedAt": "2026-01-23 15:45:02",
+      "createdAt": "2026-01-23 13:29:11"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tcustomerPhone\ttotal\tstatus\tcompletedAt\tcreatedAt\n90250\t#P255\t(88) 99929-0000\t31.00\tcompleted\t2026-01-23 21:37:18\t2026-01-23 21:37:07\n90249\t#P254\t(88) 99929-0000\t5.00\tcompleted\t2026-01-23 20:20:56\t2026-01-23 20:20:39\n90248\t#P253\t(88) 99929-0002\t104.00\tcompleted\t2026-01-23 19:48:57\t2026-01-23 19:47:01\n90247\t#P252\t(88) 99929-0000\t45.00\tcompleted\t2026-01-23 15:45:05\t2026-01-23 15:44:35\n90246\t#P251\t(88) 99929-0002\t7.00\tcompleted\t2026-01-23 15:45:02\t2026-01-23 13:29:11\n",
+  "stderr": "",
+  "execution_time_ms": 74
+}
