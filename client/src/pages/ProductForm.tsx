@@ -22,7 +22,25 @@ import {
   Trash2,
   GripVertical,
 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useLocation, useParams } from "wouter";
 import { toast } from "sonner";
 import { cn, capitalizeFirst, formatPriceInput, parsePriceInput } from "@/lib/utils";
@@ -40,6 +58,90 @@ interface ComplementItem {
   id?: number;
   name: string;
   price: string;
+}
+
+// Sortable Complement Item Component
+function SortableComplementItem({
+  item,
+  itemIndex,
+  groupIndex,
+  onUpdate,
+  onRemove,
+  displayPrice,
+  handlePriceChange,
+}: {
+  item: ComplementItem;
+  itemIndex: number;
+  groupIndex: number;
+  onUpdate: (groupIndex: number, itemIndex: number, updates: Partial<ComplementItem>) => void;
+  onRemove: (groupIndex: number, itemIndex: number) => void;
+  displayPrice: (value: string) => string;
+  handlePriceChange: (groupIndex: number, itemIndex: number, value: string) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: `item-${groupIndex}-${itemIndex}` });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "flex items-center gap-2 p-2 bg-card rounded-lg border border-border/50",
+        isDragging && "shadow-lg"
+      )}
+    >
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        className="cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded-md touch-none"
+      >
+        <GripVertical className="h-3.5 w-3.5 text-muted-foreground/50" />
+      </button>
+      <Input
+        value={item.name}
+        onChange={(e) =>
+          onUpdate(groupIndex, itemIndex, {
+            name: capitalizeFirst(e.target.value),
+          })
+        }
+        placeholder="Nome do item"
+        className="flex-1 h-8 text-sm rounded-md border-border/50"
+      />
+      <Input
+        type="text"
+        inputMode="numeric"
+        value={displayPrice(item.price)}
+        onChange={(e) =>
+          handlePriceChange(groupIndex, itemIndex, e.target.value)
+        }
+        placeholder="0,00"
+        className="w-24 h-8 text-sm rounded-md border-border/50 text-right"
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => onRemove(groupIndex, itemIndex)}
+        className="h-8 w-8 rounded-md hover:bg-destructive/10"
+      >
+        <X className="h-3.5 w-3.5 text-muted-foreground" />
+      </Button>
+    </div>
+  );
 }
 
 export default function ProductForm() {
@@ -70,6 +172,47 @@ export default function ProductForm() {
   // Image upload
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Drag & Drop sensors for complement items
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Handle drag end for complement items
+  const handleDragEnd = useCallback((event: DragEndEvent, groupIndex: number) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const activeId = String(active.id);
+      const overId = String(over.id);
+      
+      // Extract item indices from IDs (format: "item-groupIndex-itemIndex")
+      const activeIndex = parseInt(activeId.split('-')[2]);
+      const overIndex = parseInt(overId.split('-')[2]);
+
+      setComplementGroups((groups) => {
+        const newGroups = [...groups];
+        newGroups[groupIndex] = {
+          ...newGroups[groupIndex],
+          items: arrayMove(newGroups[groupIndex].items, activeIndex, overIndex),
+        };
+        return newGroups;
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (establishment) {
@@ -773,41 +916,32 @@ export default function ProductForm() {
                       </div>
 
                       {/* Items */}
-                      <div className="space-y-2">
-                        {group.items.map((item, itemIndex) => (
-                          <div key={itemIndex} className="flex items-center gap-2 p-2 bg-card rounded-lg border border-border/50">
-                            <GripVertical className="h-3.5 w-3.5 text-muted-foreground/50" />
-                            <Input
-                              value={item.name}
-                              onChange={(e) =>
-                                updateComplementItem(groupIndex, itemIndex, {
-                                  name: capitalizeFirst(e.target.value),
-                                })
-                              }
-                              placeholder="Nome do item"
-                              className="flex-1 h-8 text-sm rounded-md border-border/50"
-                            />
-                            <Input
-                              type="text"
-                              inputMode="numeric"
-                              value={displayPrice(item.price)}
-                              onChange={(e) =>
-                                handlePriceChange(groupIndex, itemIndex, e.target.value)
-                              }
-                              placeholder="0,00"
-                              className="w-24 h-8 text-sm rounded-md border-border/50 text-right"
-                            />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => removeComplementItem(groupIndex, itemIndex)}
-                              className="h-8 w-8 rounded-md hover:bg-destructive/10"
-                            >
-                              <X className="h-3.5 w-3.5 text-muted-foreground" />
-                            </Button>
+                      <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={(event) => handleDragEnd(event, groupIndex)}
+                      >
+                        <SortableContext
+                          items={group.items.map((_, idx) => `item-${groupIndex}-${idx}`)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          <div className="space-y-2">
+                            {group.items.map((item, itemIndex) => (
+                              <SortableComplementItem
+                                key={`item-${groupIndex}-${itemIndex}`}
+                                item={item}
+                                itemIndex={itemIndex}
+                                groupIndex={groupIndex}
+                                onUpdate={updateComplementItem}
+                                onRemove={removeComplementItem}
+                                displayPrice={displayPrice}
+                                handlePriceChange={handlePriceChange}
+                              />
+                            ))}
                           </div>
-                        ))}
+                        </SortableContext>
+                      </DndContext>
+                      <div className="mt-2">
                         <Button
                           type="button"
                           variant="ghost"

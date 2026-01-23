@@ -1992,3 +1992,9 @@
 - [x] Corrigir bug onde complementos desapareciam ao serem adicionados a um item
 - [x] Modificar função getComplementGroupsByProduct para incluir itens diretamente na resposta
 - [x] Resolver conflito de merge no ProductForm.tsx
+
+
+## Drag & Drop para Itens de Complemento
+- [x] Implementar funcionalidade de arrastar e soltar para reordenar itens de complemento
+- [x] Adicionar campo sortOrder na tabela complementItems (ordem baseada na posição do array)
+- [x] Persistir ordem no banco de dados ao salvar
