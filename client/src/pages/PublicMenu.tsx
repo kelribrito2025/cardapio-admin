@@ -5178,6 +5178,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
   const stamps = cardData?.card?.stamps || 0;
   const required = cardData?.settings?.stampsRequired || stampsRequired;
   const remaining = Math.max(0, required - stamps);
+  const hasCouponAvailable = !!cardData?.activeCoupon;
   const progress = Math.min(100, (stamps / required) * 100);
   
   // Disparar animação sempre que o modal for aberto e houver carimbos
@@ -5321,10 +5322,10 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
         <div className={cn(
           "bg-gray-100 px-5 py-4 text-center transition-all duration-300",
           showConfetti && "bg-emerald-50",
-          remaining === 0 && "bg-gradient-to-br from-emerald-50 to-teal-50 relative overflow-hidden"
+          hasCouponAvailable && "bg-gradient-to-br from-emerald-50 to-teal-50 relative overflow-hidden"
         )}>
           {/* Confetti de fundo quando cupom liberado */}
-          {remaining === 0 && (
+          {hasCouponAvailable && (
             <div className="absolute inset-0 pointer-events-none">
               {[...Array(20)].map((_, i) => (
                 <div
@@ -5345,7 +5346,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             </div>
           )}
           
-          {remaining > 0 ? (
+          {!hasCouponAvailable && remaining > 0 ? (
             <p className={cn(
               "text-gray-700 transition-all duration-300",
               showConfetti && "text-emerald-700 font-semibold scale-105"

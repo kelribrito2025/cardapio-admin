@@ -2283,3 +2283,11 @@
 ## Badge Verde Pulsante no Cartão Fidelidade
 - [x] Adicionar ícone verde pulsante antes de "Fidelidade ativa"
 - [x] Usar animação pulse do Tailwind
+
+
+## Bug: Modal de CUPOM LIBERADO Não Aparece
+- [x] Investigar estado do cartão e cupom no banco de dados
+- [x] Verificar lógica de exibição do modal de cupom liberado
+- [x] Corrigir bug para exibir modal com confetti quando completar carimbos
+- [x] Criar cupom automaticamente ao completar cartão
+- [x] Vincular cupom ao cartão via activeCouponId

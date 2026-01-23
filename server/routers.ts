@@ -1353,6 +1353,7 @@ export const appRouter = router({
             code: activeCoupon.code,
             type: activeCoupon.type,
             value: activeCoupon.value,
+            expiresAt: activeCoupon.endDate ? activeCoupon.endDate.toISOString() : null,
           } : null,
         };
       }),

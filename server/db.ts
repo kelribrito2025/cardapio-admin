@@ -764,14 +764,47 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
                 // Verificar se completou o cartão
                 const stampsRequired = loyaltyStampsRequired || 6;
                 if (newStamps >= stampsRequired) {
-                  // Resetar carimbos e incrementar cupons ganhos
+                  // Gerar código único para o cupom de fidelidade (max 15 chars)
+                  const couponCode = `FID${Date.now().toString(36).slice(-8).toUpperCase()}`;
+                  
+                  // Buscar configurações de fidelidade do estabelecimento
+                  const estSettings = await db.select({
+                    couponType: establishments.loyaltyCouponType,
+                    couponValue: establishments.loyaltyCouponValue,
+                    minOrderValue: establishments.loyaltyMinOrderValue,
+                  }).from(establishments).where(eq(establishments.id, order.establishmentId));
+                  
+                  const couponType = estSettings[0]?.couponType || 'fixed';
+                  const couponValue = estSettings[0]?.couponValue || '10';
+                  const minOrderValue = estSettings[0]?.minOrderValue || '0';
+                  
+                  // Criar cupom de fidelidade na tabela coupons
+                  const expiresAt = new Date();
+                  expiresAt.setDate(expiresAt.getDate() + 30); // Válido por 30 dias
+                  
+                  const newCoupon = await db.insert(coupons).values({
+                    establishmentId: order.establishmentId,
+                    code: couponCode,
+                    type: couponType === 'free_delivery' ? 'fixed' : couponType as 'percentage' | 'fixed',
+                    value: couponType === 'free_delivery' ? '0' : couponValue,
+                    minOrderValue: minOrderValue,
+                    quantity: 1,
+                    usedCount: 0,
+                    endDate: expiresAt,
+                    status: 'active',
+                  });
+                  
+                  const couponId = newCoupon[0].insertId;
+                  
+                  // Resetar carimbos, incrementar cupons ganhos e vincular cupom ativo
                   await db.update(loyaltyCards).set({
                     stamps: 0,
                     totalStampsEarned: newTotalStampsEarned,
                     couponsEarned: currentCard[0].couponsEarned + 1,
+                    activeCouponId: couponId,
                   }).where(eq(loyaltyCards.id, cardId));
                   
-                  console.log(`[Fidelidade] Cliente ${order.customerPhone} completou cartão e ganhou cupom!`);
+                  console.log(`[Fidelidade] Cliente ${order.customerPhone} completou cartão e ganhou cupom ${couponCode}!`);
                 } else {
                   await db.update(loyaltyCards).set({
                     stamps: newStamps,
