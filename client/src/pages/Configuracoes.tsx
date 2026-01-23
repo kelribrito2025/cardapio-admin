@@ -1431,6 +1431,7 @@ export default function Configuracoes() {
               <Button
                 onClick={() => {
                   saveBusinessHoursMutation.mutate({
+                    establishmentId: establishment?.id || 0,
                     hours: businessHours.map(h => ({
                       dayOfWeek: h.dayOfWeek,
                       isActive: h.isActive,

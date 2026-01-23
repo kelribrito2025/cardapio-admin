@@ -2126,3 +2126,6 @@
 - [x] Criar procedures no backend para salvar e buscar horários
 - [x] Adicionar seção de horários na página de Configurações (aba Atendimento) com toggles e campos de horário
 - [x] Implementar lógica dinâmica de mensagem no menu público (Aberto agora / Fechado - Abriremos hoje às X / Fechado hoje - Abriremos amanhã às X)
+
+## Bug: establishmentId undefined ao salvar horários
+- [x] Corrigir erro de establishmentId undefined ao salvar horários de funcionamento na página de configurações
