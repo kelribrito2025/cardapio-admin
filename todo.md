@@ -2141,3 +2141,6 @@
 
 ## Padronização de Ícones
 - [x] Padronizar ícones de garfo e faca (UtensilsCrossed) em todo o menu público (header, placeholder de produtos, etc.)
+
+## Correção de Z-Index
+- [x] Corrigir z-index do dropdown de Redes Sociais para aparecer na frente do menu de categorias (mobile)

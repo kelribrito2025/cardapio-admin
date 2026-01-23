@@ -1313,7 +1313,7 @@ export default function PublicMenu() {
           </div>
 
           {/* Info */}
-          <div className="flex-1 bg-white rounded-xl p-4 md:p-5 shadow-sm md:ml-4 relative z-10" style={{paddingBottom: '4px'}}>
+          <div className="flex-1 bg-white rounded-xl p-4 md:p-5 shadow-sm md:ml-4 relative z-[45]" style={{paddingBottom: '4px'}}>
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
               <div className="flex-1">
                 {/* Restaurant Name, Rating and Share */}
@@ -1436,7 +1436,7 @@ export default function PublicMenu() {
                   
                   {/* Dropdown Menu */}
                   {showSocialDropdown && (
-                    <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 min-w-[160px]">
+                    <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-[60] min-w-[160px]">
                       {establishment.whatsapp && (
                         <a 
                           href={`https://wa.me/${establishment.whatsapp.replace(/\D/g, '')}`}
