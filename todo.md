@@ -2113,3 +2113,4 @@
 - [x] Alterar texto "Entrega" para "Delivery" na aba de serviços
 - [x] Ajustes finos de posicionamento da aba (marginTop: -29px, marginRight: -2px) via editor visual
 - [x] Adicionar ícone de motocicleta ao lado esquerdo do texto "Delivery e Retirada" na aba do menu público
+- [x] Adicionar animação sutil no ícone de motocicleta para chamar mais atenção
