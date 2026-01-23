@@ -474,9 +474,25 @@ export async function getComplementGroupsByProduct(productId: number) {
   const db = await getDb();
   if (!db) return [];
   
-  return db.select().from(complementGroups)
+  // Buscar grupos
+  const groups = await db.select().from(complementGroups)
     .where(eq(complementGroups.productId, productId))
     .orderBy(asc(complementGroups.sortOrder));
+  
+  // Buscar itens de cada grupo
+  const groupsWithItems = await Promise.all(
+    groups.map(async (group) => {
+      const items = await db.select().from(complementItems)
+        .where(eq(complementItems.groupId, group.id))
+        .orderBy(asc(complementItems.sortOrder));
+      return {
+        ...group,
+        items,
+      };
+    })
+  );
+  
+  return groupsWithItems;
 }
 
 export async function getComplementItemsByGroup(groupId: number) {

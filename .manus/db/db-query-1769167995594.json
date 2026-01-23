@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, name, price FROM complementItems WHERE groupId IN (SELECT id FROM complementGroups WHERE productId = 120094) ORDER BY id",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, price FROM complementItems WHERE groupId IN (SELECT id FROM complementGroups WHERE productId = 120094) ORDER BY id",
+  "rows": [
+    {
+      "id": "30049",
+      "name": "1x Heineken long neck",
+      "price": "5.00"
+    },
+    {
+      "id": "30050",
+      "name": "Budweiser long neck",
+      "price": "5.00"
+    },
+    {
+      "id": "30058",
+      "name": "Bohemia long neck",
+      "price": "5.00"
+    },
+    {
+      "id": "30059",
+      "name": "Corona long neck",
+      "price": "5.00"
+    },
+    {
+      "id": "30060",
+      "name": "Brahma 600ml",
+      "price": "5.00"
+    },
+    {
+      "id": "30061",
+      "name": "Bohemia 600ml",
+      "price": "5.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tprice\n30049\t1x Heineken long neck\t5.00\n30050\tBudweiser long neck\t5.00\n30058\tBohemia long neck\t5.00\n30059\tCorona long neck\t5.00\n30060\tBrahma 600ml\t5.00\n30061\tBohemia 600ml\t5.00\n",
+  "stderr": "",
+  "execution_time_ms": 679
+}

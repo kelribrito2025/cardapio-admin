@@ -1986,3 +1986,9 @@
 ## Duplicar item com grupos e complementos
 - [x] Modificar função de duplicação para copiar grupos de complementos
 - [x] Modificar função de duplicação para copiar itens dos complementos
+
+
+## Bug: Complementos desaparecem ao serem adicionados a um item
+- [x] Corrigir bug onde complementos desapareciam ao serem adicionados a um item
+- [x] Modificar função getComplementGroupsByProduct para incluir itens diretamente na resposta
+- [x] Resolver conflito de merge no ProductForm.tsx
