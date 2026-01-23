@@ -2138,6 +2138,3 @@
 
 ## Efeito Visual no Container Delivery/Retirada
 - [x] Adicionar efeito pulsante no container de Delivery/Retirada no menu público (apenas versão mobile)
-
-## Efeito Visual no Container Delivery/Retirada
-- [ ] Adicionar efeito pulsante no container de Delivery/Retirada no menu público para maior destaque

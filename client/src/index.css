@@ -369,3 +369,19 @@
 .animate-bike-ride {
   animation: bike-ride 1.5s ease-in-out infinite;
 }
+
+/* Animação de pulso para container de Delivery/Retirada (mobile) */
+@keyframes delivery-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3), 0 2px 4px -1px rgba(239, 68, 68, 0.2);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 8px 15px -3px rgba(239, 68, 68, 0.4), 0 4px 6px -2px rgba(239, 68, 68, 0.3);
+  }
+}
+
+.animate-delivery-pulse {
+  animation: delivery-pulse 2s ease-in-out infinite;
+}
