@@ -2247,3 +2247,12 @@
 - [x] Animar barra de progresso preenchendo
 - [x] Implementar vibração suave no mobile
 - [x] Criar sensação de conquista/dopamina
+
+
+## Regulamento do Cartão Fidelidade
+- [x] Adicionar link "Ver regulamento" discreto no card
+- [x] Criar modal com regras do programa
+- [x] Incluir: quantidade de carimbos necessários
+- [x] Incluir: o que gera carimbo (pedidos concluídos)
+- [x] Incluir: pedidos cancelados não contam
+- [x] Incluir: validade do cupom

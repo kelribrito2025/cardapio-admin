@@ -5176,6 +5176,7 @@ function LoyaltyCardView({
   const [previousStamps, setPreviousStamps] = useState<number | null>(null);
   const [animatingStamp, setAnimatingStamp] = useState<number | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showRules, setShowRules] = useState(false);
   
   const stamps = cardData?.card?.stamps || 0;
   const required = cardData?.settings?.stampsRequired || stampsRequired;
@@ -5366,6 +5367,14 @@ function LoyaltyCardView({
         )}
       </div>
       
+      {/* Link Ver regulamento */}
+      <button
+        onClick={() => setShowRules(true)}
+        className="text-xs text-gray-400 hover:text-gray-600 underline transition-colors"
+      >
+        Ver regulamento
+      </button>
+      
       {/* Botão Sair */}
       <button
         onClick={onLogout}
@@ -5373,6 +5382,105 @@ function LoyaltyCardView({
       >
         Sair do cartão
       </button>
+      
+      {/* Modal Regulamento */}
+      {showRules && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowRules(false)}>
+          <div 
+            className="bg-white rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-5 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-lg text-gray-900">Regulamento</h3>
+                <button 
+                  onClick={() => setShowRules(false)}
+                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+            </div>
+            
+            <div className="p-5 space-y-4">
+              <div className="space-y-2">
+                <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <Gift className="h-4 w-4 text-emerald-600" />
+                  Como funciona
+                </h4>
+                <p className="text-sm text-gray-600">
+                  A cada pedido concluído, você ganha um carimbo no seu cartão fidelidade.
+                  Ao completar <span className="font-semibold text-emerald-600">{required} carimbos</span>, 
+                  você recebe um cupom de desconto exclusivo!
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-emerald-600" />
+                  O que gera carimbo
+                </h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-500 mt-0.5">✓</span>
+                    Pedidos com status "Concluído" ou "Entregue"
+                  </li>
+                  {cardData?.settings?.couponValue && Number(cardData.settings.couponValue) > 0 && (
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-500 mt-0.5">✓</span>
+                      Pedidos acima do valor mínimo (se configurado)
+                    </li>
+                  )}
+                </ul>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <X className="h-4 w-4 text-red-500" />
+                  O que não conta
+                </h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li className="flex items-start gap-2">
+                    <span className="text-red-500 mt-0.5">✗</span>
+                    Pedidos cancelados
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-red-500 mt-0.5">✗</span>
+                    Pedidos recusados pelo estabelecimento
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <Gift className="h-4 w-4 text-emerald-600" />
+                  Sobre o cupom
+                </h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-500 mt-0.5">✓</span>
+                    O cupom é gerado automaticamente ao completar o cartão
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-500 mt-0.5">✓</span>
+                    Válido por 30 dias após a geração
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-500 mt-0.5">✓</span>
+                    Uso único - após utilizar, um novo cartão é iniciado
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="pt-2 border-t border-gray-100">
+                <p className="text-xs text-gray-400 text-center">
+                  O estabelecimento reserva o direito de alterar as regras do programa a qualquer momento.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
