@@ -5173,6 +5173,37 @@ function LoyaltyCardView({
   isLoading: boolean;
   onLogout: () => void;
 }) {
+  const [previousStamps, setPreviousStamps] = useState<number | null>(null);
+  const [animatingStamp, setAnimatingStamp] = useState<number | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  
+  const stamps = cardData?.card?.stamps || 0;
+  const required = cardData?.settings?.stampsRequired || stampsRequired;
+  const remaining = Math.max(0, required - stamps);
+  const progress = Math.min(100, (stamps / required) * 100);
+  
+  // Detectar novo carimbo e disparar animação
+  useEffect(() => {
+    if (previousStamps !== null && stamps > previousStamps) {
+      // Novo carimbo ganho!
+      const newStampIndex = stamps - 1;
+      setAnimatingStamp(newStampIndex);
+      setShowConfetti(true);
+      
+      // Vibração no mobile (se suportado)
+      if ('vibrate' in navigator) {
+        navigator.vibrate([100, 50, 100]); // Padrão de vibração: vibra, pausa, vibra
+      }
+      
+      // Remover animação após 1 segundo
+      setTimeout(() => {
+        setAnimatingStamp(null);
+        setShowConfetti(false);
+      }, 1500);
+    }
+    setPreviousStamps(stamps);
+  }, [stamps, previousStamps]);
+  
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -5180,11 +5211,6 @@ function LoyaltyCardView({
       </div>
     );
   }
-
-  const stamps = cardData?.card?.stamps || 0;
-  const required = cardData?.settings?.stampsRequired || stampsRequired;
-  const remaining = Math.max(0, required - stamps);
-  const progress = Math.min(100, (stamps / required) * 100);
 
   return (
     <div className="space-y-4">
@@ -5212,27 +5238,56 @@ function LoyaltyCardView({
             </div>
             <div className="h-2 bg-white/30 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-white rounded-full transition-all duration-500"
-                style={{ width: `${progress}%` }}
+                className="h-full bg-white rounded-full transition-all duration-700 ease-out"
+                style={{ 
+                  width: `${progress}%`,
+                  boxShadow: showConfetti ? '0 0 10px rgba(255,255,255,0.8)' : 'none'
+                }}
               />
             </div>
           </div>
           
-          {/* Carimbos visuais */}
-          <div className="flex justify-center gap-2 flex-wrap">
+          {/* Carimbos visuais com animação */}
+          <div className="flex justify-center gap-2 flex-wrap relative">
+            {/* Confetti/Sparkles quando ganha carimbo */}
+            {showConfetti && (
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                {[...Array(12)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-2 h-2 rounded-full animate-ping"
+                    style={{
+                      backgroundColor: ['#fbbf24', '#34d399', '#60a5fa', '#f472b6', '#a78bfa'][i % 5],
+                      left: `${20 + Math.random() * 60}%`,
+                      top: `${20 + Math.random() * 60}%`,
+                      animationDelay: `${i * 0.1}s`,
+                      animationDuration: '1s'
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+            
             {Array.from({ length: required }).map((_, i) => (
               <div
                 key={i}
                 className={cn(
-                  "w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all",
+                  "w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-300",
                   i < stamps
                     ? "bg-white border-white"
-                    : "border-white/40 bg-white/10"
+                    : "border-white/40 bg-white/10",
+                  // Animação de pop no carimbo recém-ganho
+                  animatingStamp === i && "animate-bounce scale-125 shadow-lg shadow-white/50"
                 )}
+                style={{
+                  // Efeito de entrada escalonado para carimbos existentes
+                  transitionDelay: `${i * 50}ms`
+                }}
               >
                 <Clock className={cn(
-                  "h-5 w-5",
-                  i < stamps ? "text-emerald-600" : "text-white/50"
+                  "h-5 w-5 transition-all duration-300",
+                  i < stamps ? "text-emerald-600" : "text-white/50",
+                  animatingStamp === i && "animate-pulse"
                 )} />
               </div>
             ))}
@@ -5240,10 +5295,27 @@ function LoyaltyCardView({
         </div>
         
         {/* Mensagem de progresso - Dentro do card */}
-        <div className="bg-gray-100 px-5 py-4 text-center">
+        <div className={cn(
+          "bg-gray-100 px-5 py-4 text-center transition-all duration-300",
+          showConfetti && "bg-emerald-50"
+        )}>
           {remaining > 0 ? (
-            <p className="text-gray-700">
-              Faltam <span className="text-emerald-600 font-bold">{remaining}</span> pedidos para ganhar seu cupom!
+            <p className={cn(
+              "text-gray-700 transition-all duration-300",
+              showConfetti && "text-emerald-700 font-semibold scale-105"
+            )}>
+              {showConfetti ? (
+                <>
+                  <span className="inline-block animate-bounce">🎉</span>
+                  {' '}Mais um carimbo! Faltam{' '}
+                  <span className="text-emerald-600 font-bold">{remaining}</span>
+                  {' '}para o cupom!
+                </>
+              ) : (
+                <>
+                  Faltam <span className="text-emerald-600 font-bold">{remaining}</span> pedidos para ganhar seu cupom!
+                </>
+              )}
             </p>
           ) : (
             <div className="space-y-2">

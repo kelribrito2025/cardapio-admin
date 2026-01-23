@@ -2240,3 +2240,10 @@
 - [x] Mover texto "Faltam X pedidos" para dentro do card verde
 - [x] Aplicar degradê no fundo do card de fidelidade
 - [x] Unificar layout conforme imagem de referência
+
+
+## Animações de Gamificação no Cartão Fidelidade
+- [x] Adicionar efeito de pop no carimbo ao ganhar
+- [x] Animar barra de progresso preenchendo
+- [x] Implementar vibração suave no mobile
+- [x] Criar sensação de conquista/dopamina
