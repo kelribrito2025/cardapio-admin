@@ -2598,3 +2598,22 @@
 
 ## Correção Modal Meus Pedidos Desktop
 - [x] Corrigir modal "Meus Pedidos" para ter arredondamento completo (rounded-2xl) no desktop igual ao modal Cartão Fidelidade
+
+## Padronização Visual dos Modais
+- [x] Verificar modal Informações - OK (header branco, arredondamento, shadow-2xl)
+- [x] Verificar modal Cartão Fidelidade - OK (header branco, fundo cinza #f5f5f5)
+- [x] Verificar modal Meus Pedidos - OK (header branco, fundo cinza #f5f5f5)
+- [x] Verificar modal Aplicar Cupom - OK (header branco, arredondamento)
+- [x] Verificar modal Acompanhamento de Pedido - OK (sticky header, shadow-2xl)
+- [x] Verificar modal Avaliação - OK (fundo cinza #f5f5f5)
+
+## Padronização Visual dos Modais do Menu Público
+- [ ] Verificar modal Sacola
+- [ ] Verificar modal Detalhes do Pedido
+- [ ] Verificar modal Informações
+- [ ] Verificar modal Cartão Fidelidade
+- [ ] Verificar modal Cupom
+- [ ] Verificar modal Avaliações
+- [ ] Padronizar cabeçalhos (altura, cores, ícones)
+- [ ] Padronizar arredondamento (rounded-t-2xl mobile, rounded-2xl desktop)
+- [ ] Padronizar cor de fundo do body (#f5f5f5 ou bg-gray-200)

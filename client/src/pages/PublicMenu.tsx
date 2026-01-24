@@ -2048,7 +2048,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body */}
-            <div className="p-6 space-y-6">
+            <div className="p-6 space-y-6" style={{backgroundColor: '#f5f5f5'}}>
               {/* Horários de Funcionamento */}
               <div>
                 <div className="flex items-center gap-2 mb-4">
@@ -3311,9 +3311,9 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
-            <div className="bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
+            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-red-100 rounded-xl">
                   <Ticket className="h-5 w-5 text-red-500" />
@@ -3329,7 +3329,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body */}
-            <div className="p-6">
+            <div className="p-6" style={{backgroundColor: '#f5f5f5'}}>
               <div className="flex gap-3">
                 <input
                   type="text"
@@ -3949,9 +3949,9 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative w-full md:w-[480px] md:max-w-md bg-gray-200 rounded-t-2xl md:rounded-2xl max-h-[85vh] overflow-hidden animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative w-full md:w-[480px] md:max-w-md bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
-            <div className="bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
+            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-orange-100 rounded-xl">
                   <Package className="h-5 w-5 text-orange-600" />
@@ -3967,7 +3967,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body - Timeline ou Cancelado */}
-            <div className="p-6">
+            <div className="p-6" style={{backgroundColor: '#f5f5f5'}}>
               {orderStatus === 'cancelled' ? (
                 /* Exibição de Pedido Cancelado */
                 <div className="text-center py-8">
@@ -4201,7 +4201,7 @@ export default function PublicMenu() {
                 </div>
 
                 {/* Body */}
-                <div className="p-6">
+                <div className="p-6" style={{backgroundColor: '#f5f5f5'}}>
                   <div className="text-center">
                     <h3 className="text-xl font-bold text-gray-900 mb-2">
                       Como foi sua experiência?
@@ -4722,7 +4722,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body */}
-            <div className="p-4 space-y-4">
+            <div className="p-4 space-y-4" style={{backgroundColor: '#f5f5f5'}}>
               {loyaltyStep === 'login' && (
                 <LoyaltyLoginForm
                   phone={loyaltyPhone}
