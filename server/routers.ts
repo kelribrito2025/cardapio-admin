@@ -1499,6 +1499,63 @@ export const appRouter = router({
         return { url };
       }),
   }),
+
+  // ============ NEIGHBORHOOD FEES (TAXAS POR BAIRRO) ============
+  neighborhoodFees: router({
+    // Listar taxas por bairro de um estabelecimento
+    list: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+      }))
+      .query(async ({ input }) => {
+        return db.getNeighborhoodFeesByEstablishment(input.establishmentId);
+      }),
+    
+    // Criar nova taxa por bairro (admin)
+    create: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        neighborhood: z.string().min(1, "Nome do bairro é obrigatório"),
+        fee: z.string().min(0, "Taxa é obrigatória"),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createNeighborhoodFee(input);
+        return { id };
+      }),
+    
+    // Atualizar taxa por bairro (admin)
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        neighborhood: z.string().min(1).optional(),
+        fee: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await db.updateNeighborhoodFee(id, data);
+        return { success: true };
+      }),
+    
+    // Deletar taxa por bairro (admin)
+    delete: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.deleteNeighborhoodFee(input.id);
+        return { success: true };
+      }),
+    
+    // Deletar todas as taxas de um estabelecimento (admin)
+    deleteAll: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.deleteAllNeighborhoodFees(input.establishmentId);
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

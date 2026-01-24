@@ -43,6 +43,10 @@ export default function Configuracoes() {
     { establishmentId: establishment?.id || 0 },
     { enabled: !!establishment?.id }
   );
+  const { data: neighborhoodFeesData, refetch: refetchNeighborhoodFees } = trpc.neighborhoodFees.list.useQuery(
+    { establishmentId: establishment?.id || 0 },
+    { enabled: !!establishment?.id }
+  );
   const [activeTab, setActiveTab] = useState("estabelecimento");
 
   // Establishment form state
@@ -210,6 +214,17 @@ export default function Configuracoes() {
       }));
     }
   }, [businessHoursData]);
+  
+  // Load neighborhood fees when data is available
+  useEffect(() => {
+    if (neighborhoodFeesData) {
+      setNeighborhoodFees(neighborhoodFeesData.map(fee => ({
+        id: fee.id,
+        neighborhood: fee.neighborhood,
+        fee: fee.fee,
+      })));
+    }
+  }, [neighborhoodFeesData]);
 
   // Upload mutation
   const uploadMutation = trpc.upload.image.useMutation();
@@ -262,6 +277,28 @@ export default function Configuracoes() {
     },
     onError: () => toast.error("Erro ao salvar horários de funcionamento"),
   });
+  
+  // Neighborhood fees mutations
+  const createNeighborhoodFeeMutation = trpc.neighborhoodFees.create.useMutation({
+    onSuccess: () => {
+      refetchNeighborhoodFees();
+    },
+    onError: () => toast.error("Erro ao salvar taxa por bairro"),
+  });
+  
+  const updateNeighborhoodFeeMutation = trpc.neighborhoodFees.update.useMutation({
+    onSuccess: () => {
+      refetchNeighborhoodFees();
+    },
+    onError: () => toast.error("Erro ao atualizar taxa por bairro"),
+  });
+  
+  const deleteNeighborhoodFeeMutation = trpc.neighborhoodFees.delete.useMutation({
+    onSuccess: () => {
+      refetchNeighborhoodFees();
+    },
+    onError: () => toast.error("Erro ao remover taxa por bairro"),
+  });
 
   const handleSaveEstablishment = () => {
     if (!name.trim()) {
@@ -305,12 +342,13 @@ export default function Configuracoes() {
     }
   };
 
-  const handleSaveServiceSettings = () => {
+  const handleSaveServiceSettings = async () => {
     if (!establishment) {
       toast.error("Crie o estabelecimento primeiro");
       return;
     }
 
+    // Salvar configurações do estabelecimento
     updateMutation.mutate({
       id: establishment.id,
       menuSlug: menuSlug || null,
@@ -332,6 +370,41 @@ export default function Configuracoes() {
       deliveryFeeType,
       deliveryFeeFixed,
     });
+    
+    // Salvar taxas por bairro se o tipo for byNeighborhood
+    if (deliveryFeeType === "byNeighborhood") {
+      // Processar bairros: criar novos, atualizar existentes, deletar removidos
+      const existingIds = neighborhoodFeesData?.map(f => f.id) || [];
+      const currentIds = neighborhoodFees.filter(f => f.id).map(f => f.id!);
+      
+      // Deletar bairros removidos
+      for (const id of existingIds) {
+        if (!currentIds.includes(id)) {
+          deleteNeighborhoodFeeMutation.mutate({ id });
+        }
+      }
+      
+      // Criar ou atualizar bairros
+      for (const fee of neighborhoodFees) {
+        if (!fee.neighborhood.trim()) continue; // Ignorar bairros sem nome
+        
+        if (fee.id) {
+          // Atualizar existente
+          updateNeighborhoodFeeMutation.mutate({
+            id: fee.id,
+            neighborhood: fee.neighborhood,
+            fee: fee.fee,
+          });
+        } else {
+          // Criar novo
+          createNeighborhoodFeeMutation.mutate({
+            establishmentId: establishment.id,
+            neighborhood: fee.neighborhood,
+            fee: fee.fee,
+          });
+        }
+      }
+    }
   };
 
   // Abrir modal de crop ao selecionar arquivo

@@ -2695,3 +2695,8 @@
 - [x] Alterar cores do container de taxa de entrega de verde para vermelho (cor primária do sistema)
 - [x] Implementar botão Selecionar com dropdown para taxa por bairro
 - [x] Reduzir tamanho do botão Selecionar em 33%
+- [x] Corrigir salvamento das taxas por bairro no painel admin
+- [ ] Adicionar fechamento do dropdown ao clicar fora
+- [ ] Validar seleção de bairro antes de finalizar pedido
+- [ ] Aplicar seletor de bairro no checkout mobile
+- [ ] Adicionar estimativa de tempo de entrega
