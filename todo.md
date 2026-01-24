@@ -2655,3 +2655,7 @@
 - [x] Não resetar carimbos automaticamente ao completar o cartão
 - [x] Criar endpoint para resetar carimbos ao visualizar cupom (loyalty.viewCouponAndResetStamps)
 - [x] Atualizar frontend para chamar reset ao clicar em Ver cupom ganho
+
+
+## Bug - Reset de Carimbos não Funciona Corretamente
+- [x] Corrigir: carimbos não estão sendo resetados ao clicar em "Ver cupom ganho" - mostrando 3/2 em vez de 1/2 (corrigido: processLoyaltyStampOnDelivery não reseta mais automaticamente)

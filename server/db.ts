@@ -2306,8 +2306,14 @@ export async function processLoyaltyStampForOrder(
       status: 'active',
     });
     
-    // Resetar carimbos e vincular cupom
-    await resetLoyaltyStamps(loyaltyCard.id, couponResult[0].insertId);
+    // NÃO resetar carimbos automaticamente - apenas vincular o cupom ao cartão
+    // Os carimbos só serão resetados quando o usuário clicar em "Ver cupom ganho"
+    await db.update(loyaltyCards)
+      .set({
+        activeCouponId: couponResult[0].insertId,
+        couponsEarned: sql`${loyaltyCards.couponsEarned} + 1`,
+      })
+      .where(eq(loyaltyCards.id, loyaltyCard.id));
     
     return { 
       stampAdded: true, 
