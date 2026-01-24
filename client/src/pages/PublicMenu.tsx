@@ -4094,7 +4094,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Footer */}
-            <div className="border-t px-6 py-4 space-y-3">
+            <div className="border-t px-6 py-4 space-y-3" style={{backgroundColor: '#ffffff'}}>
               {/* Botão Avaliar restaurante - só aparece quando status for entregue E pode avaliar (30 dias) E verificação já terminou */}
               {orderStatus === 'delivered' && canReview && canReviewChecked && (
                 <button
