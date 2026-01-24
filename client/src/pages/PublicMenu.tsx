@@ -5593,24 +5593,24 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               >
             {currentCoupon && (
               <div className="h-full flex rounded-2xl shadow-lg relative overflow-hidden">
-                {/* Recortes circulares esquerdos - 10 recortes */}
-                {[...Array(10)].map((_, i) => (
+                {/* Recortes circulares esquerdos - 9 recortes */}
+                {[...Array(9)].map((_, i) => (
                   <div 
                     key={`left-${i}`}
                     className="absolute left-0 -translate-x-1/2 w-3 h-3 rounded-full bg-gray-200 z-10"
                     style={{ 
-                      top: `${5 + i * 10}%`,
+                      top: `${6 + i * 11}%`,
                       boxShadow: 'inset 2px 0 3px rgba(0,0,0,0.1)' 
                     }}
                   />
                 ))}
-                {/* Recortes circulares direitos - 10 recortes */}
-                {[...Array(10)].map((_, i) => (
+                {/* Recortes circulares direitos - 9 recortes */}
+                {[...Array(9)].map((_, i) => (
                   <div 
                     key={`right-${i}`}
                     className="absolute right-0 translate-x-1/2 w-3 h-3 rounded-full bg-gray-200 z-10"
                     style={{ 
-                      top: `${5 + i * 10}%`,
+                      top: `${6 + i * 11}%`,
                       boxShadow: 'inset -2px 0 3px rgba(0,0,0,0.1)' 
                     }}
                   />

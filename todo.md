@@ -2537,6 +2537,6 @@
 
 
 ## Adicionar Mais Recortes Circulares ao Cupom
-- [x] Aumentar de 1 para 10 recortes circulares de cada lado do cupom
-- [x] Distribuir os recortes verticalmente ao longo de toda a altura do cupom (5% a 95%)
+- [x] Aumentar de 1 para 9 recortes circulares de cada lado do cupom
+- [x] Distribuir os recortes verticalmente ao longo de toda a altura do cupom (6% a 94%)
 - [x] Criar efeito de borda serrilhada estilo ticket
