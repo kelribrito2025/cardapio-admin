@@ -2415,3 +2415,6 @@
 
 ## Correção das Bolinhas no Cupom
 - [x] Mover recortes circulares para o lado esquerdo da seção escura
+
+## Correção das Bolinhas no Cupom v2
+- [x] Mover recortes circulares para o lado esquerdo da seção AMARELA (não da seção escura)

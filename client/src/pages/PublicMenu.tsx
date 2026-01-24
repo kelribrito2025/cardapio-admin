@@ -5502,6 +5502,10 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               <div className="h-full flex">
                 {/* Lado Esquerdo - Amarelo/Dourado */}
                 <div className="flex-[1.3] bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-500 p-3 md:p-4 flex flex-col justify-between relative">
+                  {/* Recortes circulares no lado esquerdo */}
+                  <div className="absolute left-0 top-3 w-3 h-3 bg-gray-100 rounded-r-full -ml-1.5" />
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-5 h-10 bg-gray-100 rounded-r-full -ml-2.5" />
+                  <div className="absolute left-0 bottom-3 w-3 h-3 bg-gray-100 rounded-r-full -ml-1.5" />
                   
                   {/* Conteúdo superior - Nome do Restaurante */}
                   <div>
@@ -5583,10 +5587,6 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                 
                 {/* Lado Direito - Escuro */}
                 <div className="flex-1 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 p-3 md:p-4 flex flex-col items-center justify-center relative">
-                  {/* Recortes circulares no lado esquerdo */}
-                  <div className="absolute left-0 top-3 w-3 h-3 bg-gray-100 rounded-r-full -ml-1.5" />
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-5 h-10 bg-gray-100 rounded-r-full -ml-2.5" />
-                  <div className="absolute left-0 bottom-3 w-3 h-3 bg-gray-100 rounded-r-full -ml-1.5" />
                   
                   {/* Borda serrilhada direita */}
                   <div className="absolute right-0 top-0 bottom-0 w-2 flex flex-col justify-between py-1">
