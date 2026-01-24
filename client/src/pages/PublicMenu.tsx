@@ -3665,9 +3665,9 @@ export default function PublicMenu() {
           />
           
           {/* Modal - Bottom Sheet no mobile com altura máxima de 80% */}
-          <div className="relative w-full md:max-w-md md:mx-4 rounded-t-2xl md:rounded-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{backgroundColor: '#f5f5f5'}}>
+          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
-            <div className="flex-shrink-0 bg-white border-b border-gray-300 px-6 h-[68px] flex items-center justify-between rounded-t-2xl">
+            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-100 rounded-xl">
                   <ClipboardList className="h-5 w-5 text-purple-500" />
@@ -3683,7 +3683,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto overscroll-contain p-4" style={{backgroundColor: '#f5f5f5'}}>
+            <div className="p-4 space-y-4">
               {userOrders.length === 0 ? (
                 <div className="text-center py-12">
                   <ClipboardList className="h-16 w-16 text-gray-300 mx-auto mb-4" />

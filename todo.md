@@ -2595,3 +2595,6 @@
 
 ## Correção de Modal Desktop
 - [x] Corrigir modal "Meus Pedidos" para ter rounded-2xl completo no desktop (estava apenas rounded-t)
+
+## Correção Modal Meus Pedidos Desktop
+- [x] Corrigir modal "Meus Pedidos" para ter arredondamento completo (rounded-2xl) no desktop igual ao modal Cartão Fidelidade
