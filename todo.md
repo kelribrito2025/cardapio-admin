@@ -2701,3 +2701,4 @@
 - [ ] Aplicar seletor de bairro no checkout mobile
 - [ ] Adicionar estimativa de tempo de entrega
 - [x] Corrigir erro ao salvar taxas por bairro (bairros agora persistem corretamente)
+- [x] Corrigir dropdown de seleção de bairros no cardápio público (não mostra os bairros cadastrados)
