@@ -5384,7 +5384,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               {isCardComplete && hasCouponAvailable ? (
                 <button
                   onClick={() => setIsFlipped(true)}
-                  className="w-full py-1.5 md:py-2 px-3 md:px-4 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-bold text-sm md:text-base rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 animate-pulse"
+                  className="w-full py-1.5 md:py-2 px-3 md:px-4 bg-gradient-to-br from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold text-sm md:text-base rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 animate-pulse"
                 >
                   <Gift className="h-4 w-4 md:h-5 md:w-5" />
                   Ver cupom ganho
