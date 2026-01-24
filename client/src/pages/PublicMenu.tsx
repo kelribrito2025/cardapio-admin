@@ -5498,7 +5498,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
           
           {/* Face Traseira - Cupom (Estilo Voucher) */}
           <div 
-            className="absolute inset-0 rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden] bg-white"
+            className="absolute inset-0 rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden] bg-gray-100"
             style={{ transform: 'rotateY(180deg)' }}
           >
             {cardData?.activeCoupon && (

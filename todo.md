@@ -2459,3 +2459,6 @@
 
 ## Remover Efeito Verde do Cupom
 - [x] Identificar e remover o efeito verde que aparece atrás do cartão de cupom (adicionado bg-white na face traseira)
+
+## Cor das Bordas Serrilhadas do Cupom
+- [x] Ajustar bordas serrilhadas (parte amarela e escura) para ficarem com a mesma cor do fundo do modal (bg-gray-100)
