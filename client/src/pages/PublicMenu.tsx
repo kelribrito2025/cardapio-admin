@@ -5688,17 +5688,6 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   >
                     <RotateCcw className="h-3.5 w-3.5 text-gray-900" />
                   </button>
-                  
-                  {/* Seta para cupom anterior - só mostra se tiver múltiplos cupons */}
-                  {hasMultipleCoupons && (
-                    <button
-                      onClick={prevCoupon}
-                      className="absolute left-1 top-1/2 -translate-y-1/2 p-1.5 bg-gray-900/30 hover:bg-gray-900/50 rounded-full transition-colors"
-                      title="Cupom anterior"
-                    >
-                      <ChevronLeft className="h-4 w-4 text-gray-900" />
-                    </button>
-                  )}
                 </div>
                 
                 {/* Linha tracejada vertical */}

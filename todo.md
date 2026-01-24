@@ -2540,3 +2540,8 @@
 - [x] Aumentar de 1 para 9 recortes circulares de cada lado do cupom
 - [x] Distribuir os recortes verticalmente ao longo de toda a altura do cupom (6% a 94%)
 - [x] Criar efeito de borda serrilhada estilo ticket
+
+
+## Remover Botão de Voltar do Cupom
+- [x] Remover o botão de seta esquerda (voltar) do cupom
+- [x] Manter apenas o botão de próximo (seta direita) para navegação
