@@ -5453,41 +5453,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               </div>
             ))}
           </div>
-        </div>
-        
-            {/* Mensagem de progresso ou Botão Ver Cupom - Dentro do card */}
-            <div className={cn(
-              "bg-gray-100 px-3 py-2.5 md:px-5 md:py-4 text-center transition-all duration-300",
-              showConfetti && "bg-emerald-50"
-            )}>
-              {isCardComplete && hasCouponAvailable ? (
-                <button
-                  onClick={() => setIsFlipped(true)}
-                  className="w-full py-1.5 md:py-2 px-3 md:px-4 bg-gradient-to-br from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold text-sm md:text-base rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 animate-pulse"
-                >
-                  <Gift className="h-4 w-4 md:h-5 md:w-5" />
-                  Ver cupom ganho
-                </button>
-              ) : (
-                <p className={cn(
-                  "text-gray-700 text-sm md:text-base transition-all duration-300",
-                  showConfetti && "text-emerald-700 font-semibold scale-105"
-                )}>
-                  {showConfetti ? (
-                    <>
-                      <span className="inline-block animate-bounce">🎉</span>
-                      {' '}Faltam{' '}
-                      <span className="text-emerald-600 font-bold">{remaining}</span>
-                      {' '}pedidos para ganhar seu cupom!
-                    </>
-                  ) : (
-                    <>
-                      Faltam <span className="text-emerald-600 font-bold">{remaining}</span> pedidos para ganhar seu cupom!
-                    </>
-                  )}
-                </p>
-              )}
-            </div>
+          </div>
           </div>
           
           {/* Face Traseira - Cupom */}
@@ -5607,6 +5573,40 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             </div>
           </div>
         </div>
+      </div>
+      
+      {/* Mensagem de progresso ou Botão Ver Cupom - Fora do card */}
+      <div className={cn(
+        "bg-white rounded-xl px-3 py-2.5 md:px-5 md:py-4 text-center transition-all duration-300 shadow-sm",
+        showConfetti && "bg-emerald-50"
+      )}>
+        {isCardComplete && hasCouponAvailable ? (
+          <button
+            onClick={() => setIsFlipped(true)}
+            className="w-full py-1.5 md:py-2 px-3 md:px-4 bg-gradient-to-br from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold text-sm md:text-base rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 animate-pulse"
+          >
+            <Gift className="h-4 w-4 md:h-5 md:w-5" />
+            Ver cupom ganho
+          </button>
+        ) : (
+          <p className={cn(
+            "text-gray-700 text-sm md:text-base transition-all duration-300",
+            showConfetti && "text-emerald-700 font-semibold scale-105"
+          )}>
+            {showConfetti ? (
+              <>
+                <span className="inline-block animate-bounce">🎉</span>
+                {' '}Faltam{' '}
+                <span className="text-emerald-600 font-bold">{remaining}</span>
+                {' '}pedidos para ganhar seu cupom!
+              </>
+            ) : (
+              <>
+                Faltam <span className="text-emerald-600 font-bold">{remaining}</span> pedidos para ganhar seu cupom!
+              </>
+            )}
+          </p>
+        )}
       </div>
       
       {/* Histórico */}

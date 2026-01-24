@@ -2365,3 +2365,7 @@
 ## Correção do Scroll no Modal de Fidelidade
 - [x] Bloquear scroll da página quando o modal está aberto
 - [x] Evitar que a página de trás role ao rolar dentro do modal
+
+## Correção Visual do Cartão de Fidelidade
+- [x] Remover borda verde inferior do cartão
+- [x] Restaurar visual original do card (sem tarja verde embaixo)
