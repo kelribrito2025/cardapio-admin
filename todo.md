@@ -2440,3 +2440,9 @@
 
 ## Altura do Card do Cupom
 - [x] Reduzir a altura do card do cupom em 16% (243px -> 204px, 280px -> 235px)
+
+## Altura Separada para Cards de Fidelidade e Cupom
+- [x] Aumentar altura do card de fidelidade (carimbos) em 16% mantendo cupom com altura atual
+  - Card de carimbos: 237px/273px (mobile/desktop)
+  - Card de cupom: 204px/235px (mobile/desktop)
+  - Transição animada de 400ms entre os dois estados

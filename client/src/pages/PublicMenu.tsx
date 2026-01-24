@@ -5351,7 +5351,10 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
     <div className="space-y-2">
       {/* Card Principal com Flip */}
       <div 
-        className="relative h-[204px] md:h-[235px]"
+        className={cn(
+          "relative transition-all duration-[400ms] ease-in-out",
+          isFlipped ? "h-[204px] md:h-[235px]" : "h-[237px] md:h-[273px]"
+        )}
         style={{ perspective: '1000px' }}
       >
         <div 
