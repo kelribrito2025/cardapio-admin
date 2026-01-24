@@ -2425,3 +2425,6 @@
 
 ## Correção das Bolinhas no Cupom v3
 - [x] Ajustar cor das bolinhas para a mesma cor do fundo do modal (branco) para criar efeito de recorte real
+
+## Correção das Bolinhas no Cupom v4
+- [x] Ajustar bolinhas para cor branca (cor do fundo do modal) para criar efeito visual de recorte
