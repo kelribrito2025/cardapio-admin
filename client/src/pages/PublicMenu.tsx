@@ -1828,10 +1828,10 @@ export default function PublicMenu() {
                       <div className="relative">
                         <button 
                           onClick={() => setShowNeighborhoodDropdown(!showNeighborhoodDropdown)}
-                          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+                          className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all flex items-center gap-1.5"
                         >
                           {selectedNeighborhood ? selectedNeighborhood.name : "Selecionar"}
-                          <ChevronDown className={`h-4 w-4 transition-transform ${showNeighborhoodDropdown ? 'rotate-180' : ''}`} />
+                          <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showNeighborhoodDropdown ? 'rotate-180' : ''}`} />
                         </button>
                         {showNeighborhoodDropdown && neighborhoodFeesData && neighborhoodFeesData.length > 0 && (
                           <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50 max-h-60 overflow-y-auto">

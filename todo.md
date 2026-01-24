@@ -2694,3 +2694,4 @@
 - [x] Corrigir cor verde do container de entrega grátis que não está aparecendo
 - [x] Alterar cores do container de taxa de entrega de verde para vermelho (cor primária do sistema)
 - [x] Implementar botão Selecionar com dropdown para taxa por bairro
+- [x] Reduzir tamanho do botão Selecionar em 33%
