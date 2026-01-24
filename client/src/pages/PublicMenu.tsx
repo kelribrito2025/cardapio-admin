@@ -5620,8 +5620,9 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                 {[...Array(9)].map((_, i) => (
                   <div 
                     key={`left-${i}`}
-                    className="absolute left-0 -translate-x-1/2 rounded-full bg-gray-200 z-10"
+                    className="absolute left-0 -translate-x-1/2 rounded-full z-10"
                     style={{ 
+                      backgroundColor: '#ffffff',
                       top: `${6 + i * 11}%`,
                       width: '14px',
                       height: '14px',
@@ -5634,8 +5635,9 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                 {[...Array(9)].map((_, i) => (
                   <div 
                     key={`right-${i}`}
-                    className="absolute right-0 translate-x-1/2 rounded-full bg-gray-200 z-10"
+                    className="absolute right-0 translate-x-1/2 rounded-full z-10"
                     style={{ 
+                      backgroundColor: '#ffffff',
                       top: `${6 + i * 11}%`,
                       width: '14px',
                       height: '14px',

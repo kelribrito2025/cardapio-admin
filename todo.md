@@ -2636,3 +2636,7 @@
 
 ## Ajustes no Modal Cartão Fidelidade
 - [x] Ocultar botão "Sair do cartão" no modal de Cartão Fidelidade
+
+
+## Ajustes no Cupom de Desconto
+- [x] Ajustar cor das bolinhas (recortes circulares) do cupom para #ffffff (branco) igual ao fundo do modal
