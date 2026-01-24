@@ -2418,3 +2418,7 @@
 
 ## Correção das Bolinhas no Cupom v2
 - [x] Mover recortes circulares para o lado esquerdo da seção AMARELA (não da seção escura)
+
+## Ícone de Talheres no Cupom
+- [x] Substituir ícones de garfo e colher pelo ícone de talheres cruzados (garfo e faca) usado no placeholder de itens sem foto
+- [x] Aplicar efeito marca d'água (transparência 20%) com animação pulsante

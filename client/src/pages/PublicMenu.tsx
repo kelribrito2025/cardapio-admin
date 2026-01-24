@@ -5544,16 +5544,9 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                     <p className="text-gray-800 font-semibold text-xs md:text-sm uppercase tracking-wide">Voucher</p>
                   </div>
                   
-                  {/* Ícones de talheres no centro */}
-                  <div className="flex items-center justify-center gap-0 my-2">
-                    <svg className="w-8 h-16 md:w-10 md:h-20 text-gray-900/80" viewBox="0 0 24 48" fill="currentColor">
-                      {/* Garfo */}
-                      <path d="M6 2v14c0 2 1 3 3 3v27h2V19c2 0 3-1 3-3V2h-2v12h-1V2h-2v12h-1V2H6z" />
-                    </svg>
-                    <svg className="w-6 h-16 md:w-8 md:h-20 text-gray-900/80" viewBox="0 0 24 48" fill="currentColor">
-                      {/* Colher */}
-                      <path d="M12 2c-4 0-6 3-6 7 0 4 2 7 5 8v29h2V17c3-1 5-4 5-8 0-4-2-7-6-7z" />
-                    </svg>
+                  {/* Ícone de talheres cruzados no centro - efeito marca d'água com pulsação */}
+                  <div className="flex items-center justify-center my-2">
+                    <UtensilsCrossed className="h-20 w-20 md:h-24 md:w-24 text-gray-900/20 animate-pulse" />
                   </div>
                   
                   {/* Validade */}
