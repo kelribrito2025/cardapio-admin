@@ -2491,3 +2491,11 @@
 ## Bugs no Modal de Cartão Fidelidade
 - [x] Mover "Ver regulamento" para ficar abaixo do cartão de fidelidade (antes do histórico)
 - [x] Corrigir número do pedido duplicado (##P261 → #P261) - lógica para verificar se já começa com #
+
+## Stack Visual de Cupons v2 (Bordas Empilhadas)
+- [x] Exibir bordas dos cupons atrás quando houver 2+ cupons
+- [x] Deslocamento no eixo X (10px e 16px) para cada cupom atrás
+- [x] Z-index menor e opacity 0.7/0.5 para cupons de trás
+- [x] Mostrar 1-2 bordas atrás do cupom principal (2ª e 3ª camada)
+- [x] Com 1 cupom = sem bordas atrás (stack desativado)
+- [x] Com 2+ cupons = sempre mostrar bordas independente da posição atual

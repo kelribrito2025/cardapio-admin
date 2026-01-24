@@ -5577,25 +5577,43 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
           >
             {/* Container do Stack de Cupons */}
             <div className="relative h-full w-full">
-              {/* Cupom Secundário (atrás) - só mostra se tiver múltiplos cupons */}
+              {/* Camadas de cupons atrás (bordas empilhadas) - só mostra se tiver 2+ cupons */}
               {hasMultipleCoupons && (
-                <div 
-                  className="absolute inset-0 rounded-2xl overflow-hidden transition-all duration-[220ms] ease-in-out"
-                  style={{
-                    transform: isAnimating && animationDirection === 'next'
-                      ? 'scale(1) translateX(0)'
-                      : 'scale(0.92) translateX(8px)',
-                    opacity: isAnimating && animationDirection === 'next' ? 1 : 0.7,
-                    zIndex: isAnimating && animationDirection === 'next' ? 2 : 0,
-                  }}
-                >
-                  {/* Borda lateral indicando stack */}
-                  <div className="absolute right-0 top-2 bottom-2 w-1 bg-gradient-to-b from-amber-300 via-amber-400 to-gray-700 rounded-full opacity-60" />
-                  <div className="h-full flex bg-gradient-to-r from-amber-400 to-gray-800">
-                    <div className="flex-[1.3] bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-500" />
-                    <div className="flex-1 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800" />
+                <>
+                  {/* Terceira camada (mais atrás) - só mostra se tiver 3+ cupons */}
+                  {(cardData?.activeCoupons?.length || 0) >= 3 && (
+                    <div 
+                      className="absolute inset-0 rounded-2xl overflow-hidden"
+                      style={{
+                        transform: 'translateX(16px) scale(0.94)',
+                        opacity: 0.5,
+                        zIndex: 0,
+                      }}
+                    >
+                      <div className="h-full flex rounded-2xl shadow-md">
+                        <div className="flex-[1.3] bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-400 rounded-l-2xl" />
+                        <div className="flex-1 bg-gradient-to-br from-gray-700 via-gray-800 to-gray-700 rounded-r-2xl" />
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Segunda camada (atrás) */}
+                  <div 
+                    className="absolute inset-0 rounded-2xl overflow-hidden transition-all duration-[220ms] ease-in-out"
+                    style={{
+                      transform: isAnimating && animationDirection === 'next'
+                        ? 'translateX(8px) scale(0.96)'
+                        : 'translateX(10px) scale(0.96)',
+                      opacity: isAnimating && animationDirection === 'next' ? 0.9 : 0.7,
+                      zIndex: isAnimating && animationDirection === 'next' ? 1 : 1,
+                    }}
+                  >
+                    <div className="h-full flex rounded-2xl shadow-md">
+                      <div className="flex-[1.3] bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-500 rounded-l-2xl" />
+                      <div className="flex-1 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 rounded-r-2xl" />
+                    </div>
                   </div>
-                </div>
+                </>
               )}
               
               {/* Cupom Principal (frente) */}
