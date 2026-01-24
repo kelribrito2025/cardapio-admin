@@ -1785,7 +1785,7 @@ export default function PublicMenu() {
                       <div>
                         <span className="text-sm text-gray-500 block">
                           {establishment.deliveryFeeType === "free" 
-                            ? "Entrega grátis" 
+                            ? "Taxa de entrega" 
                             : establishment.deliveryFeeType === "fixed"
                               ? "Taxa de entrega"
                               : "Taxa por bairro"
