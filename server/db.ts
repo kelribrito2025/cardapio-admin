@@ -2278,6 +2278,17 @@ export async function processLoyaltyStampForOrder(
     return { stampAdded: false, couponUnlocked: false, message: "Erro ao criar cartão de fidelidade" };
   }
   
+  // Se o cartão já tem cupom ativo (usuário ainda não visualizou), não adicionar novo carimbo
+  // O carimbo só será adicionado após o usuário clicar em "Ver cupom ganho" e resetar os carimbos
+  if (loyaltyCard.activeCouponId) {
+    console.log(`[Fidelidade] Cartão ${loyaltyCard.id} já tem cupom ativo (${loyaltyCard.activeCouponId}). Carimbo não adicionado - usuário precisa visualizar o cupom primeiro.`);
+    return { 
+      stampAdded: false, 
+      couponUnlocked: false, 
+      message: "Você tem um cupom disponível! Visualize seu cupom no Cartão Fidelidade para começar a acumular novos carimbos." 
+    };
+  }
+  
   // Adicionar carimbo
   await addLoyaltyStamp({
     loyaltyCardId: loyaltyCard.id,

@@ -1432,8 +1432,12 @@ export const appRouter = router({
         password: z.string()
       }))
       .mutation(async ({ input }) => {
+        console.log(`[Fidelidade] viewCouponAndResetStamps chamado - phone: ${input.phone}, establishmentId: ${input.establishmentId}`);
+        
         // Verificar login do cliente
         const card = await db.getLoyaltyCardByPhone(input.establishmentId, input.phone);
+        console.log(`[Fidelidade] Cartão encontrado:`, card ? { id: card.id, stamps: card.stamps, activeCouponId: card.activeCouponId } : 'NÃO ENCONTRADO');
+        
         if (!card) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Cartão não encontrado' });
         }
@@ -1441,19 +1445,24 @@ export const appRouter = router({
         // Verificar senha
         const bcrypt = await import('bcryptjs');
         const isValid = await bcrypt.compare(input.password, card.password4Hash);
+        console.log(`[Fidelidade] Senha válida: ${isValid}`);
+        
         if (!isValid) {
           throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Senha incorreta' });
         }
         
         // Verificar se tem cupom ativo (cartão foi completado)
+        console.log(`[Fidelidade] activeCouponId: ${card.activeCouponId}`);
         if (!card.activeCouponId) {
+          console.log(`[Fidelidade] Nenhum cupom ativo - não vai resetar`);
           return { success: false, message: 'Nenhum cupom disponível para visualizar' };
         }
         
         // Resetar os carimbos e deletar histórico de carimbos
+        console.log(`[Fidelidade] Chamando resetLoyaltyStampsOnCouponView para cartão ${card.id}`);
         await db.resetLoyaltyStampsOnCouponView(card.id);
         
-        console.log(`[Fidelidade] Carimbos resetados para cliente ${input.phone} após visualizar cupom`);
+        console.log(`[Fidelidade] Carimbos resetados com sucesso para cliente ${input.phone}`);
         
         return { success: true, message: 'Carimbos resetados com sucesso' };
       }),
