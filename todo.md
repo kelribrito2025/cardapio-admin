@@ -2504,3 +2504,8 @@
 ## Bug: Container Externo Visível na Animação do Cupom
 - [x] Remover container externo (bg-gray-100) que aparece durante a animação de troca de cupons
 - [x] Deixar cupom renderizado diretamente sobre o fundo do modal bottom sheet (overflow-visible)
+
+
+## Remover Botões de Seta Externos do Modal de Cupons
+- [x] Remover botões de seta laterais externos (fora do cupom)
+- [x] Manter apenas as setas internas dentro do cupom (esquerda no lado amarelo, direita no lado escuro)

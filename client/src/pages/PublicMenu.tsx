@@ -5725,6 +5725,17 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   >
                     <RotateCcw className="h-3.5 w-3.5 text-gray-900" />
                   </button>
+                  
+                  {/* Seta para cupom anterior - só mostra se tiver múltiplos cupons */}
+                  {hasMultipleCoupons && (
+                    <button
+                      onClick={prevCoupon}
+                      className="absolute left-1 top-1/2 -translate-y-1/2 p-1.5 bg-gray-900/30 hover:bg-gray-900/50 rounded-full transition-colors"
+                      title="Cupom anterior"
+                    >
+                      <ChevronLeft className="h-4 w-4 text-gray-900" />
+                    </button>
+                  )}
                 </div>
                 
                 {/* Linha tracejada vertical */}
@@ -5836,29 +5847,9 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               </div>
             </div>
             
-            {/* Indicador de múltiplos cupons e seta para cupom anterior */}
+            {/* Indicador de múltiplos cupons */}
             {hasMultipleCoupons && currentCoupon && (
               <>
-                {/* Seta para cupom anterior */}
-                <button
-                  onClick={prevCoupon}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-colors z-10 mr-2"
-                  style={{ marginLeft: '-8px' }}
-                  title="Cupom anterior"
-                >
-                  <ChevronLeft className="h-5 w-5 text-gray-700" />
-                </button>
-                
-                {/* Seta para próximo cupom */}
-                <button
-                  onClick={nextCoupon}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-colors z-10 ml-2"
-                  style={{ marginRight: '-8px' }}
-                  title="Próximo cupom"
-                >
-                  <ChevronRight className="h-5 w-5 text-gray-700" />
-                </button>
-                
                 {/* Indicador de posição */}
                 <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
                   {activeCoupons.map((_, index) => (
