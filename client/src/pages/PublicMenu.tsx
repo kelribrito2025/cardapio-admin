@@ -1760,14 +1760,12 @@ export default function PublicMenu() {
           <div className="hidden lg:block w-80 flex-shrink-0">
             <div className="sticky top-[140px]">
               {/* Taxa de entrega - reflete configuração do restaurante */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-3 overflow-hidden" style={{height: '78px'}}>
+              <div className={cn(
+                "bg-white rounded-2xl shadow-sm border border-gray-100 mb-3 overflow-hidden border-l-[3px]",
+                establishment.deliveryFeeType === "free" ? "border-l-green-500" : 
+                establishment.deliveryFeeType === "fixed" ? "border-l-blue-500" : "border-l-amber-500"
+              )} style={{height: '78px'}}>
                 <div className="flex h-full">
-                  {/* Borda lateral esquerda */}
-                  <div className={cn(
-                    "w-1 flex-shrink-0 rounded-l-2xl",
-                    establishment.deliveryFeeType === "free" ? "bg-green-500" : 
-                    establishment.deliveryFeeType === "fixed" ? "bg-blue-500" : "bg-amber-500"
-                  )} />
                   {/* Conteúdo */}
                   <div className="flex-1 px-4 py-3 flex items-center justify-between">
                     {/* Ícone e texto */}

@@ -2689,3 +2689,4 @@
 - [x] Redesenhar container de taxa de entrega com borda lateral verde
 - [x] Atualizar container de taxa de entrega com ícone de caminhão e badge Grátis
 - [x] Adicionar borda lateral esquerda verde no container de entrega grátis
+- [x] Corrigir borda lateral do container de entrega grátis para ficar igual aos itens
