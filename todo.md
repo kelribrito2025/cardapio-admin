@@ -2449,3 +2449,7 @@
 
 ## Ocultar Código do Cupom
 - [x] Ocultar o código do cupom mantendo o espaço vazio no lugar (sem mover outros elementos)
+
+## Serrilhado Central do Cupom
+- [x] Aumentar quantidade de serrilhados na linha central do cupom (12 círculos brancos)
+- [x] Remover cor verde - substituída linha tracejada por círculos brancos sólidos
