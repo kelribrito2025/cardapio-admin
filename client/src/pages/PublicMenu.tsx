@@ -5653,24 +5653,43 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
       
       {/* Modal Regulamento */}
       {showRules && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowRules(false)}>
+        <div 
+          className="fixed inset-0 z-[60] flex items-end justify-center"
+          onClick={() => setShowRules(false)}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/40 animate-in fade-in duration-300" />
+          
+          {/* Bottom Sheet */}
           <div 
-            className="bg-white rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto shadow-xl"
+            className="relative w-full max-w-lg bg-white rounded-t-3xl shadow-2xl animate-in slide-in-from-bottom duration-400 ease-out max-h-[85vh] overflow-hidden flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-5 border-b border-gray-100">
+            {/* Handle bar */}
+            <div className="flex justify-center pt-3 pb-2 flex-shrink-0">
+              <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+            </div>
+            
+            {/* Header */}
+            <div className="px-6 pb-4 border-b border-gray-100 flex-shrink-0">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-lg text-gray-900">Regulamento</h3>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full flex items-center justify-center">
+                    <Gift className="h-5 w-5 text-white" />
+                  </div>
+                  <h3 className="font-bold text-lg text-gray-900">Regulamento</h3>
+                </div>
                 <button 
                   onClick={() => setShowRules(false)}
-                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 >
                   <X className="h-5 w-5 text-gray-500" />
                 </button>
               </div>
             </div>
             
-            <div className="p-5 space-y-4">
+            {/* Content - Scrollable */}
+            <div className="px-6 py-5 space-y-4 overflow-y-auto flex-1">
               <div className="space-y-2">
                 <h4 className="font-semibold text-gray-900 flex items-center gap-2">
                   <Gift className="h-4 w-4 text-emerald-600" />
@@ -5740,11 +5759,21 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                 </ul>
               </div>
               
-              <div className="pt-2 border-t border-gray-100">
+              <div className="pt-4 border-t border-gray-100">
                 <p className="text-xs text-gray-400 text-center">
                   O estabelecimento reserva o direito de alterar as regras do programa a qualquer momento.
                 </p>
               </div>
+            </div>
+            
+            {/* Footer Button */}
+            <div className="px-6 pb-6 pt-2 flex-shrink-0">
+              <button
+                onClick={() => setShowRules(false)}
+                className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg"
+              >
+                Entendi
+              </button>
             </div>
           </div>
         </div>

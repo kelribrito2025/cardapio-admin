@@ -2356,3 +2356,8 @@
 - [x] Exibir confirmação visual de cupom aplicado
 - [x] Adicionar animação de entrada do bottom sheet
 - [x] Fechar automaticamente após alguns segundos ou ao clicar
+
+## Modal de Regulamento como Bottom Sheet
+- [x] Converter modal de regulamento para estilo bottom sheet
+- [x] Adicionar animação de entrada suave
+- [x] Manter consistência visual com modal de cupom aplicado
