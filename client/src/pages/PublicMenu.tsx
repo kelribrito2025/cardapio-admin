@@ -1762,8 +1762,8 @@ export default function PublicMenu() {
               {/* Taxa de entrega - reflete configuração do restaurante */}
               <div className={cn(
                 "bg-white rounded-2xl shadow-sm border border-gray-100 mb-3 overflow-hidden border-l-[3px]",
-                establishment.deliveryFeeType === "free" ? "border-l-emerald-500" : 
-                establishment.deliveryFeeType === "fixed" ? "border-l-blue-500" : "border-l-amber-500"
+                establishment.deliveryFeeType === "free" ? "border-l-red-400" : 
+                establishment.deliveryFeeType === "fixed" ? "border-l-red-400" : "border-l-red-400"
               )} style={{height: '78px', borderRadius: '12px'}}>
                 <div className="flex h-full">
                   {/* Conteúdo */}
@@ -1772,11 +1772,11 @@ export default function PublicMenu() {
                     <div className="flex items-center gap-3">
                       {/* Ícone de caminhão com badge */}
                       <div className="relative">
-                        <div className="w-11 h-11 bg-emerald-100 rounded-full flex items-center justify-center">
-                          <Truck className="h-5 w-5 text-emerald-600" />
+                        <div className="w-11 h-11 bg-red-100 rounded-full flex items-center justify-center">
+                          <Truck className="h-5 w-5 text-red-500" />
                         </div>
                         {establishment.deliveryFeeType === "free" && (
-                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center">
+                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
                             <span className="text-white text-xs font-bold">0</span>
                           </div>
                         )}
@@ -1803,7 +1803,7 @@ export default function PublicMenu() {
                     </div>
                     {/* Badge Grátis */}
                     {establishment.deliveryFeeType === "free" && (
-                      <button className="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all">
+                      <button className="px-5 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all">
                         Grátis
                       </button>
                     )}
