@@ -2,7 +2,7 @@ import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -1760,45 +1760,40 @@ export default function PublicMenu() {
           <div className="hidden lg:block w-80 flex-shrink-0">
             <div className="sticky top-[140px]">
               {/* Taxa de entrega - reflete configuração do restaurante */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "p-2 rounded-lg",
-                      establishment.deliveryFeeType === "free" ? "bg-green-100" : "bg-gray-100"
-                    )}>
-                      <MapPin className={cn(
-                        "h-5 w-5",
-                        establishment.deliveryFeeType === "free" ? "text-green-600" : "text-gray-500"
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-3 overflow-hidden">
+                <div className="flex">
+                  {/* Borda lateral verde */}
+                  <div className={cn(
+                    "w-1.5 flex-shrink-0",
+                    establishment.deliveryFeeType === "free" ? "bg-green-500" : 
+                    establishment.deliveryFeeType === "fixed" ? "bg-blue-500" : "bg-amber-500"
+                  )} />
+                  {/* Conteúdo */}
+                  <div className="flex-1 p-4">
+                    <div className="flex items-center gap-2 text-gray-600 mb-1">
+                      <Zap className={cn(
+                        "h-4 w-4",
+                        establishment.deliveryFeeType === "free" ? "text-green-500" : 
+                        establishment.deliveryFeeType === "fixed" ? "text-blue-500" : "text-amber-500"
                       )} />
-                    </div>
-                    <div>
-                      <span className="font-medium text-gray-800 block">
+                      <span className="text-sm font-medium">
                         {establishment.deliveryFeeType === "free" 
-                          ? "Entrega grátis" 
+                          ? "Entrega Expressa" 
                           : establishment.deliveryFeeType === "fixed"
-                            ? "Taxa de entrega"
-                            : "Taxa por bairro"
+                            ? "Taxa de Entrega"
+                            : "Taxa por Bairro"
                         }
                       </span>
-                      {establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed && (
-                        <span className="text-sm text-green-600 font-semibold">
-                          R$ {Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}
-                        </span>
-                      )}
-                      {establishment.deliveryFeeType === "free" && (
-                        <span className="text-sm text-green-600 font-semibold">Grátis</span>
-                      )}
-                      {establishment.deliveryFeeType === "byNeighborhood" && (
-                        <span className="text-sm text-gray-500">Varia por localização</span>
-                      )}
+                    </div>
+                    <div className="text-xl font-bold text-gray-900">
+                      {establishment.deliveryFeeType === "free" 
+                        ? "Grátis" 
+                        : establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed
+                          ? `R$ ${Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}`
+                          : "A calcular"
+                      }
                     </div>
                   </div>
-                  {establishment.deliveryFeeType === "free" && (
-                    <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                      Grátis
-                    </span>
-                  )}
                 </div>
               </div>
 

@@ -2686,3 +2686,4 @@
 - [x] Ajustar espaçamento do container de taxa de entrega na versão desktop
 - [x] Exibir taxa de entrega configurada no container (grátis ou valor fixo)
 - [x] Exibir taxa de entrega configurada no modal de Resumo do Pedido
+- [x] Redesenhar container de taxa de entrega com borda lateral verde
