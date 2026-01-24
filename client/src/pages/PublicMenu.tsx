@@ -1760,7 +1760,7 @@ export default function PublicMenu() {
           <div className="hidden lg:block w-80 flex-shrink-0">
             <div className="sticky top-[140px]">
               {/* Taxa de entrega - reflete configuração do restaurante */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-3 p-4">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-3 px-4 py-3" style={{height: '78px'}}>
                 <div className="flex items-center justify-between">
                   {/* Ícone e texto */}
                   <div className="flex items-center gap-3">
