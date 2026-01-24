@@ -2550,3 +2550,8 @@
 ## Adicionar Borda no Cabeçalho do Modal de Fidelidade
 - [x] Adicionar borda inferior no cabeçalho do modal (abaixo de "Cartão Fidelidade")
 - [x] Separar visualmente o título do conteúdo do modal (border-gray-300)
+
+
+## Mover Botão de Voltar ao Cartão Fidelidade
+- [x] Mover o ícone de voltar (RotateCcw) do canto superior esquerdo para o lado esquerdo do cupom
+- [x] Posicionar centralizado verticalmente (top-1/2 -translate-y-1/2)

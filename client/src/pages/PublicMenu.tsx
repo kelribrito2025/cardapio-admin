@@ -5680,13 +5680,13 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                     </p>
                   </div>
                   
-                  {/* Botão voltar */}
+                  {/* Botão voltar - posicionado onde estava o botão de navegar */}
                   <button
                     onClick={() => setIsFlipped(false)}
-                    className="absolute left-2 top-2 p-1.5 bg-gray-900/20 hover:bg-gray-900/30 rounded-full transition-colors"
+                    className="absolute left-1 top-1/2 -translate-y-1/2 p-1.5 bg-gray-900/30 hover:bg-gray-900/50 rounded-full transition-colors"
                     title="Voltar para carimbos"
                   >
-                    <RotateCcw className="h-3.5 w-3.5 text-gray-900" />
+                    <RotateCcw className="h-4 w-4 text-gray-900" />
                   </button>
                 </div>
                 
