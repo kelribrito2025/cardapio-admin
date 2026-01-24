@@ -3683,7 +3683,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body */}
-            <div className="p-4 space-y-4" style={{backgroundColor: '#f5f5f5'}}>
+            <div className="p-4 space-y-4" style={{backgroundColor: '#ffffff'}}>
               {userOrders.length === 0 ? (
                 <div className="text-center py-12">
                   <ClipboardList className="h-16 w-16 text-gray-300 mx-auto mb-4" />
