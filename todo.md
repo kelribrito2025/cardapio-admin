@@ -2431,3 +2431,6 @@
 
 ## Correção das Bolinhas no Cupom v5
 - [x] Remover completamente as bolinhas brancas - cupom agora sem recortes circulares
+
+## Borda Serrilhada no Cupom
+- [x] Adicionar efeito de borda serrilhada ao voucher para simular cupom destacável (10 círculos brancos em cada lateral)

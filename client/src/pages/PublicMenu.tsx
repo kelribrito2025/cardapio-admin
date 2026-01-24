@@ -5502,6 +5502,12 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               <div className="h-full flex">
                 {/* Lado Esquerdo - Amarelo/Dourado */}
                 <div className="flex-[1.3] bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-500 p-3 md:p-4 flex flex-col justify-between relative">
+                  {/* Borda serrilhada esquerda */}
+                  <div className="absolute left-0 top-0 bottom-0 w-3 flex flex-col justify-around -ml-1.5">
+                    {[...Array(10)].map((_, i) => (
+                      <div key={i} className="w-3 h-3 bg-white rounded-full" />
+                    ))}
+                  </div>
                   
                   
                   {/* Conteúdo superior - Nome do Restaurante */}
@@ -5574,6 +5580,12 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                 
                 {/* Lado Direito - Escuro */}
                 <div className="flex-1 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 p-3 md:p-4 flex flex-col items-center justify-center relative">
+                  {/* Borda serrilhada direita */}
+                  <div className="absolute right-0 top-0 bottom-0 w-3 flex flex-col justify-around -mr-1.5">
+                    {[...Array(10)].map((_, i) => (
+                      <div key={i} className="w-3 h-3 bg-white rounded-full" />
+                    ))}
+                  </div>
                   
                   
                   
