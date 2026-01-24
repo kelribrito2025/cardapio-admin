@@ -5685,6 +5685,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                     onClick={() => setIsFlipped(false)}
                     className="absolute left-1 top-1/2 -translate-y-1/2 p-1.5 bg-gray-900/30 hover:bg-gray-900/50 rounded-full transition-colors"
                     title="Voltar para carimbos"
+                    style={{ marginLeft: '10px' }}
                   >
                     <RotateCcw className="h-4 w-4 text-gray-900" />
                   </button>
