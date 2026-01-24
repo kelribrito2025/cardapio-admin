@@ -2677,3 +2677,4 @@
 - [x] Corrigir: histórico de carimbos não deve ser deletado no reset automático
 - [x] Corrigir: exibir múltiplos cupons de fidelidade quando cliente completa cartão mais de uma vez
 - [x] Exibir numeração do voucher (Voucher 1, Voucher 2, etc) quando há múltiplos cupons
+- [x] Corrigir bug: cabeçalho do modal Cartão Fidelidade com fundo cinza e título sumindo
