@@ -5727,7 +5727,9 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                         );
                       }
                     })()}
-                    <p className="text-gray-800 font-semibold text-xs md:text-sm uppercase tracking-wide">Voucher</p>
+                    <p className="text-gray-800 font-semibold text-xs md:text-sm uppercase tracking-wide">
+                      {hasMultipleCoupons ? `Voucher ${currentCouponIndex + 1}` : 'Voucher'}
+                    </p>
                   </div>
                   
                   {/* Ícone de talheres cruzados no centro - efeito marca d'água com pulsação */}

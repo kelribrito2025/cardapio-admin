@@ -2676,3 +2676,4 @@
 - [x] Fluxo: 1/2 → 2/2 (cupom criado) → novo pedido entregue → reset + 1/2
 - [x] Corrigir: histórico de carimbos não deve ser deletado no reset automático
 - [x] Corrigir: exibir múltiplos cupons de fidelidade quando cliente completa cartão mais de uma vez
+- [x] Exibir numeração do voucher (Voucher 1, Voucher 2, etc) quando há múltiplos cupons

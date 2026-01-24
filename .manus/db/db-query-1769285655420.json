@@ -1,0 +1,13 @@
+{
+  "query": "\n-- Deletar histórico de carimbos do cliente\nDELETE FROM loyaltyStamps WHERE loyaltyCardId IN (\n  SELECT id FROM loyaltyCards WHERE customerPhone LIKE '%999290000%'\n);\n\n-- Verificar que foi deletado\nSELECT COUNT(*) as total FROM loyaltyStamps WHERE loyaltyCardId IN (\n  SELECT id FROM loyaltyCards WHERE customerPhone LIKE '%999290000%'\n);\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute \n-- Deletar histórico de carimbos do cliente\nDELETE FROM loyaltyStamps WHERE loyaltyCardId IN (\n  SELECT id FROM loyaltyCards WHERE customerPhone LIKE '%999290000%'\n);\n\n-- Verificar que foi deletado\nSELECT COUNT(*) as total FROM loyaltyStamps WHERE loyaltyCardId IN (\n  SELECT id FROM loyaltyCards WHERE customerPhone LIKE '%999290000%'\n);\n",
+  "rows": [
+    {
+      "total": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\n0\n",
+  "stderr": "",
+  "execution_time_ms": 393
+}
