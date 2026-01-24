@@ -882,6 +882,18 @@ export default function Pedidos() {
                         <span className="font-medium">{formatCurrency(orderDetails.deliveryFee)}</span>
                       </div>
                     )}
+                    {orderDetails.couponCode && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Cupom Aplicado:</span>
+                        <span className="font-medium text-emerald-600">{orderDetails.couponCode}</span>
+                      </div>
+                    )}
+                    {Number(orderDetails.discount) > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Desconto:</span>
+                        <span className="font-medium text-red-500">-{formatCurrency(orderDetails.discount)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Taxa da Plataforma:</span>
                       <span className="font-medium">Grátis</span>
