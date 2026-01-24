@@ -2626,3 +2626,9 @@
 - [x] Verificar modal Acompanhamento de Pedido - cor de fundo branca no body
 - [x] Verificar modal Avaliação - cor de fundo branca no body
 - [x] Verificar modal Meus Pedidos - cor de fundo branca no body (já estava correto)
+
+
+## Verificação de Modais Adicionais
+- [x] Verificar modal Sacola (sua sacola) - corrigido: bg branco, shadow-2xl, fundo body #ffffff
+- [x] Verificar modal Checkout - corrigido: ícone colorido no header, shadow-2xl, estrutura padronizada
+- [x] Verificar modal Acompanhar Pedido - já estava correto

@@ -2495,12 +2495,12 @@ export default function PublicMenu() {
           />
           
           {/* Modal de Checkout Unificado - Bottom Sheet no mobile */}
-          <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl max-h-[90vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[90vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header com Título */}
-            <div className="flex-shrink-0 px-6 pt-4 pb-2 border-b">
+            <div className="flex-shrink-0 bg-white border-b border-gray-300 px-6 py-4 rounded-t-2xl" style={{height: '68px'}}>
               {/* Título e Botão Fechar */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between h-full">
+                <div className="flex items-center gap-3">
                   {checkoutStep > 1 && (
                     <button
                       onClick={() => setCheckoutStep(checkoutStep - 1)}
@@ -2509,6 +2509,9 @@ export default function PublicMenu() {
                       <ChevronLeft className="h-5 w-5 text-gray-500" />
                     </button>
                   )}
+                  <div className="p-2 bg-red-100 rounded-xl">
+                    <ShoppingBag className="h-5 w-5 text-red-500" />
+                  </div>
                   <h2 className="text-lg font-bold text-gray-900">
                     {checkoutStep === 1 && 'Resumo do Pedido'}
                     {checkoutStep === 2 && 'Tipo de Entrega'}
@@ -2524,8 +2527,10 @@ export default function PublicMenu() {
                   <X className="h-5 w-5 text-gray-500" />
                 </button>
               </div>
-              
-              {/* Indicador de Progresso */}
+            </div>
+            
+            {/* Indicador de Progresso */}
+            <div className="flex-shrink-0 bg-white px-6 py-3 border-b border-gray-100">
               <div className="flex items-center justify-between mb-2">
                 {[1, 2, 3, 4, 5].map((step) => (
                   <div key={step} className="flex items-center">
@@ -3426,7 +3431,7 @@ export default function PublicMenu() {
           />
           
           {/* Modal */}
-          <div className="relative w-full md:w-[480px] md:max-w-lg rounded-t-2xl md:rounded-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{backgroundColor: '#f5f5f5'}}>
+          <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
             <div className="flex-shrink-0 bg-white border-b border-gray-300 px-6 h-[68px] flex items-center justify-between rounded-t-2xl">
               <div className="flex items-center gap-3">
@@ -3444,7 +3449,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto overscroll-contain p-4" style={{backgroundColor: '#f5f5f5'}}>
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4" style={{backgroundColor: '#ffffff'}}>
               {cart.length === 0 ? (
                 <div className="text-center py-8">
                   <ShoppingBag className="h-12 w-12 text-gray-300 mx-auto mb-3" />
