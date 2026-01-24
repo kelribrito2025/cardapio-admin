@@ -5453,10 +5453,11 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               </div>
             ))}
           </div>
+            </div>
             
-            {/* Mensagem de progresso ou Botão Ver Cupom - Dentro do card */}
+            {/* Mensagem de progresso ou Botão Ver Cupom - Parte inferior do card (cinza) */}
             <div className={cn(
-              "bg-gray-100 px-3 py-2.5 md:px-5 md:py-4 text-center transition-all duration-300 rounded-b-2xl",
+              "bg-gray-100 px-3 py-3 md:px-5 md:py-4 text-center transition-all duration-300",
               showConfetti && "bg-emerald-50"
             )}>
               {isCardComplete && hasCouponAvailable ? (
@@ -5487,7 +5488,6 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                 </p>
               )}
             </div>
-          </div>
           </div>
           
           {/* Face Traseira - Cupom */}

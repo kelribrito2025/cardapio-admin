@@ -2380,3 +2380,9 @@
 - [x] Substituir o preço por "+1" (carimbo) no lado direito
 - [x] Aplicar fundo cinza claro em cada item do histórico
 - [x] Manter layout igual à imagem de referência
+
+## Correção do Posicionamento da Área "Faltam X pedidos"
+- [x] Mover a área cinza "Faltam X pedidos" para a parte inferior do card
+- [x] Remover a área cinza de dentro do card verde
+- [x] Criar estrutura de card único com duas seções (verde em cima, cinza embaixo)
+- [x] Garantir que a área cinza fique colada aos carimbos, não no meio
