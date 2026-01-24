@@ -180,19 +180,87 @@ export default function Pedidos() {
   const { decrementCount } = useNewOrders();
 
   const updateStatusMutation = trpc.orders.updateStatus.useMutation({
-    onSuccess: (_data, variables) => {
-      refetch();
-      refetchAll();
-      toast.success("Status atualizado");
+    // Optimistic update: atualiza a UI instantaneamente antes da resposta do servidor
+    onMutate: async (variables) => {
+      console.log("[Pedidos] Optimistic update iniciado", { orderId: variables.id, newStatus: variables.status });
       
-      // Se o pedido estava como "new" e foi atualizado para outro status, decrementar o badge
-      // Verificamos se o status anterior era "new" buscando nos dados atuais
-      const order = allOrdersData?.orders?.find(o => o.id === variables.id);
+      // Cancelar queries em andamento para evitar sobrescrever o optimistic update
+      await utils.orders.list.cancel();
+      
+      // Salvar estado anterior para rollback em caso de erro
+      const previousAllOrders = utils.orders.list.getData({ establishmentId: establishmentId ?? 0 });
+      const previousFilteredOrders = utils.orders.list.getData({ 
+        establishmentId: establishmentId ?? 0,
+        status: activeTab !== "all" ? activeTab : undefined,
+      });
+      
+      // Atualizar cache otimisticamente para todas as queries de pedidos
+      utils.orders.list.setData(
+        { establishmentId: establishmentId ?? 0 },
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            orders: old.orders.map(order => 
+              order.id === variables.id 
+                ? { ...order, status: variables.status, cancellationReason: variables.cancellationReason || order.cancellationReason }
+                : order
+            ),
+          };
+        }
+      );
+      
+      // Atualizar cache para query filtrada também
+      utils.orders.list.setData(
+        { establishmentId: establishmentId ?? 0, status: activeTab !== "all" ? activeTab : undefined },
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            orders: old.orders.map(order => 
+              order.id === variables.id 
+                ? { ...order, status: variables.status, cancellationReason: variables.cancellationReason || order.cancellationReason }
+                : order
+            ),
+          };
+        }
+      );
+      
+      // Decrementar badge se estava como "new"
+      const order = previousAllOrders?.orders?.find(o => o.id === variables.id);
       if (order?.status === "new" && variables.status !== "new") {
         decrementCount();
       }
+      
+      console.log("[Pedidos] Optimistic update aplicado");
+      
+      return { previousAllOrders, previousFilteredOrders };
     },
-    onError: () => toast.error("Erro ao atualizar status"),
+    onSuccess: (_data, variables) => {
+      console.log("[Pedidos] Mutation sucesso - confirmando optimistic update");
+      toast.success("Status atualizado");
+      // Refetch para garantir sincronização com servidor
+      refetch();
+      refetchAll();
+    },
+    onError: (error, variables, context) => {
+      console.error("[Pedidos] Mutation erro - revertendo optimistic update", error);
+      toast.error("Erro ao atualizar status");
+      
+      // Rollback para estado anterior em caso de erro
+      if (context?.previousAllOrders) {
+        utils.orders.list.setData(
+          { establishmentId: establishmentId ?? 0 },
+          context.previousAllOrders
+        );
+      }
+      if (context?.previousFilteredOrders) {
+        utils.orders.list.setData(
+          { establishmentId: establishmentId ?? 0, status: activeTab !== "all" ? activeTab : undefined },
+          context.previousFilteredOrders
+        );
+      }
+    },
   });
 
   // Função para imprimir apenas o pedido

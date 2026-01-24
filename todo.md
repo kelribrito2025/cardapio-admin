@@ -2681,3 +2681,4 @@
 - [x] Exibir cupom aplicado no modal de detalhes do pedido
 - [x] Exibir cupom aplicado na versão de impressão do pedido
 - [x] Corrigir arredondamento do modal Sua Sacola na versão desktop
+- [x] Implementar optimistic update na mudança de status dos pedidos para atualização instantânea
