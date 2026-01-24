@@ -2700,3 +2700,4 @@
 - [ ] Validar seleção de bairro antes de finalizar pedido
 - [ ] Aplicar seletor de bairro no checkout mobile
 - [ ] Adicionar estimativa de tempo de entrega
+- [x] Corrigir erro ao salvar taxas por bairro (bairros agora persistem corretamente)
