@@ -2663,3 +2663,8 @@
 
 ## Bug Persistente - Reset de Carimbos
 - [x] Investigar: carimbos ainda mostram 3/2 após clicar em "Ver cupom ganho" - corrigido: não adicionar carimbo se cartão já tem cupom ativo
+
+
+## Alteração de Fluxo - Carimbos com Cupom Ativo
+- [x] Novos pedidos devem adicionar carimbos mesmo quando cliente tem cupom ativo
+- [x] Carimbos só resetam quando usuário clica em "Ver cupom ganho"
