@@ -5298,6 +5298,10 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
   const [hasAnimated, setHasAnimated] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [currentCouponIndex, setCurrentCouponIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [animationDirection, setAnimationDirection] = useState<'next' | 'prev' | null>(null);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
   
   const stamps = cardData?.card?.stamps || 0;
   const required = cardData?.settings?.stampsRequired || stampsRequired;
@@ -5316,14 +5320,54 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
   const progress = Math.min(100, (stamps / required) * 100);
   const isCardComplete = stamps >= required || hasCouponAvailable;
   
-  // Navegar para o próximo cupom
+  // Navegar para o próximo cupom com animação de stack
   const nextCoupon = () => {
-    setCurrentCouponIndex((prev) => (prev + 1) % activeCoupons.length);
+    if (isAnimating || activeCoupons.length <= 1) return;
+    setIsAnimating(true);
+    setAnimationDirection('next');
+    setTimeout(() => {
+      setCurrentCouponIndex((prev) => (prev + 1) % activeCoupons.length);
+      setIsAnimating(false);
+      setAnimationDirection(null);
+    }, 220);
   };
   
-  // Navegar para o cupom anterior
+  // Navegar para o cupom anterior com animação de stack
   const prevCoupon = () => {
-    setCurrentCouponIndex((prev) => (prev - 1 + activeCoupons.length) % activeCoupons.length);
+    if (isAnimating || activeCoupons.length <= 1) return;
+    setIsAnimating(true);
+    setAnimationDirection('prev');
+    setTimeout(() => {
+      setCurrentCouponIndex((prev) => (prev - 1 + activeCoupons.length) % activeCoupons.length);
+      setIsAnimating(false);
+      setAnimationDirection(null);
+    }, 220);
+  };
+  
+  // Handlers para swipe/touch navigation
+  const minSwipeDistance = 50;
+  
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+  
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe && hasMultipleCoupons) {
+      nextCoupon();
+    }
+    if (isRightSwipe && hasMultipleCoupons) {
+      prevCoupon();
+    }
   };
   
   // Disparar animação sempre que o modal for aberto e houver carimbos
@@ -5526,11 +5570,50 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             </div>
           </div>
           
-          {/* Face Traseira - Cupom (Estilo Voucher) */}
+          {/* Face Traseira - Cupom (Estilo Voucher) com Stack Visual */}
           <div 
             className="absolute inset-0 rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden] bg-gray-100"
             style={{ transform: 'rotateY(180deg)' }}
           >
+            {/* Container do Stack de Cupons */}
+            <div className="relative h-full w-full">
+              {/* Cupom Secundário (atrás) - só mostra se tiver múltiplos cupons */}
+              {hasMultipleCoupons && (
+                <div 
+                  className="absolute inset-0 rounded-2xl overflow-hidden transition-all duration-[220ms] ease-in-out"
+                  style={{
+                    transform: isAnimating && animationDirection === 'next'
+                      ? 'scale(1) translateX(0)'
+                      : 'scale(0.92) translateX(8px)',
+                    opacity: isAnimating && animationDirection === 'next' ? 1 : 0.7,
+                    zIndex: isAnimating && animationDirection === 'next' ? 2 : 0,
+                  }}
+                >
+                  {/* Borda lateral indicando stack */}
+                  <div className="absolute right-0 top-2 bottom-2 w-1 bg-gradient-to-b from-amber-300 via-amber-400 to-gray-700 rounded-full opacity-60" />
+                  <div className="h-full flex bg-gradient-to-r from-amber-400 to-gray-800">
+                    <div className="flex-[1.3] bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-500" />
+                    <div className="flex-1 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800" />
+                  </div>
+                </div>
+              )}
+              
+              {/* Cupom Principal (frente) */}
+              <div 
+                className="absolute inset-0 transition-all duration-[220ms] ease-in-out cursor-grab active:cursor-grabbing"
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+                style={{
+                  transform: isAnimating && animationDirection === 'next'
+                    ? 'scale(0.92) translateX(8px)'
+                    : isAnimating && animationDirection === 'prev'
+                    ? 'scale(0.92) translateX(-8px)'
+                    : 'scale(1) translateX(0)',
+                  opacity: isAnimating ? 0.7 : 1,
+                  zIndex: isAnimating ? 0 : 2,
+                }}
+              >
             {currentCoupon && (
               <div className="h-full flex">
                 {/* Lado Esquerdo - Amarelo/Dourado com máscara de recorte */}
@@ -5732,6 +5815,8 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                 </div>
               </div>
             )}
+              </div>
+            </div>
             
             {/* Indicador de múltiplos cupons e seta para cupom anterior */}
             {hasMultipleCoupons && currentCoupon && (

@@ -2476,3 +2476,13 @@
 - [x] Criar cupons adicionais para cliente de teste (88999290000) - 2 cupons: R$10 OFF e 15% OFF
 - [x] Implementar setas de navegação (esquerda/direita) no modal de cupom
 - [x] Mostrar indicador de quantidade de cupons (bolinhas de posição)
+
+## Stack Visual de Cupons (Estilo Apple Wallet/Tinder)
+- [x] Exibir "camadas" de cupons quando houver 2+ cupons (borda lateral direita discreta)
+- [x] Implementar estrutura CouponsStack com CupomAtivo (z-index maior) e CupomSecundário (z-index menor com offset)
+- [x] Animação de troca estilo card stack:
+  - Cupom atual vai para trás com scale (1 → 0.92) e fade (1 → 0.7)
+  - Próximo cupom vem para frente com animação inversa
+  - Duração 220ms com ease-in-out
+- [x] Suporte a swipe/arrastar para trocar cupons (touch events)
+- [x] Apenas 1 cupom = visual limpo sem bordas ou stack
