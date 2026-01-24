@@ -44,7 +44,6 @@ export default function PublicMenu() {
     discount: number;
     type: "percentage" | "fixed";
     value: number;
-    loyaltyCardId?: number;
   } | null>(null);
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   
@@ -3247,7 +3246,6 @@ export default function PublicMenu() {
                       changeAmount: paymentMethod === 'cash' && changeAmount ? changeAmount.replace(/\./g, '').replace(',', '.') : undefined,
                       couponCode: appliedCoupon?.code || undefined,
                       couponId: appliedCoupon?.id || undefined,
-                      loyaltyCardId: appliedCoupon?.loyaltyCardId || undefined,
                       items: cart.map(item => ({
                         productId: item.productId,
                         productName: item.name,
@@ -4796,7 +4794,6 @@ export default function PublicMenu() {
                       discount: discount,
                       type: couponType as 'percentage' | 'fixed',
                       value: value,
-                      loyaltyCardId: loyaltyCardQuery.data?.card?.id,
                     });
                     
                     // Salvar info do cupom para o modal de confirmação

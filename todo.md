@@ -2365,8 +2365,3 @@
 ## Correção do Scroll no Modal de Fidelidade
 - [x] Bloquear scroll da página quando o modal está aberto
 - [x] Evitar que a página de trás role ao rolar dentro do modal
-
-## Consumo Automático do Cupom de Fidelidade
-- [x] Adicionar parâmetro loyaltyCardId ao createOrder
-- [x] Limpar cupom ativo do cartão quando pedido é criado com cupom de fidelidade
-- [x] Cartão de fidelidade volta ao estado normal (carimbos) após cupom ser usado

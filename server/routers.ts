@@ -815,7 +815,6 @@ export const appRouter = router({
         changeAmount: z.string().optional(),
         couponCode: z.string().optional(),
         couponId: z.number().optional(),
-        loyaltyCardId: z.number().optional(),
         items: z.array(z.object({
           productId: z.number(),
           productName: z.string(),
@@ -830,7 +829,7 @@ export const appRouter = router({
         })),
       }))
       .mutation(async ({ input }) => {
-        const { items, couponId, loyaltyCardId, ...orderData } = input;
+        const { items, couponId, ...orderData } = input;
         
         console.log('[CreateOrder] Iniciando criação de pedido:', {
           establishmentId: orderData.establishmentId,
@@ -891,12 +890,6 @@ export const appRouter = router({
         // Increment coupon usage if coupon was used
         if (couponId && result) {
           await db.incrementCouponUsage(couponId);
-        }
-        
-        // Limpar cupom de fidelidade se foi usado
-        if (loyaltyCardId && result) {
-          await db.clearActiveCoupon(loyaltyCardId);
-          console.log('[CreateOrder] Cupom de fidelidade limpo do cartão:', loyaltyCardId);
         }
         
         console.log('[CreateOrder] Pedido criado com sucesso:', result);
