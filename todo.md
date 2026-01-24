@@ -2514,3 +2514,10 @@
 ## Bug: Botão 'Ver cupom ganho' Aparece Durante Troca de Cupons
 - [x] Ocultar botão 'Ver cupom ganho' quando já está visualizando os cupons (isFlipped=true)
 - [x] Botão só deve aparecer quando mostrando o cartão de carimbos
+
+
+## Ajuste na Pilha de Cupons - Stack Vertical
+- [x] Remover borda lateral direita dos cupons atrás
+- [x] Mostrar apenas borda superior (~8px) dos cupons atrás
+- [x] Criar efeito de "stack" vertical indicando cupons extras
+- [x] Manter animação de troca funcionando corretamente
