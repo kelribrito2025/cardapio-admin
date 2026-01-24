@@ -3681,7 +3681,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto overscroll-contain p-4 bg-gray-200">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4" style={{backgroundColor: '#f5f5f5'}}>
               {userOrders.length === 0 ? (
                 <div className="text-center py-12">
                   <ClipboardList className="h-16 w-16 text-gray-300 mx-auto mb-4" />
