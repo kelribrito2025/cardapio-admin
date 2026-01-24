@@ -5448,7 +5448,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 ) : (
-                  <Clock className="h-3 w-3 md:h-3.5 md:w-3.5 text-white/50" />
+                  <X className="h-3 w-3 md:h-3.5 md:w-3.5 text-red-400" />
                 )}
               </div>
             ))}
