@@ -2495,9 +2495,9 @@ export default function PublicMenu() {
           />
           
           {/* Modal de Checkout Unificado - Bottom Sheet no mobile */}
-          <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl max-h-[90vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative w-full md:w-[480px] md:max-w-lg bg-gray-200 rounded-t-2xl md:rounded-2xl max-h-[90vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header com Título */}
-            <div className="flex-shrink-0 px-6 pt-4 pb-2 border-b">
+            <div className="flex-shrink-0 bg-white px-6 pt-4 pb-2 border-b border-gray-300 rounded-t-2xl">
               {/* Título e Botão Fechar */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
@@ -2509,6 +2509,9 @@ export default function PublicMenu() {
                       <ChevronLeft className="h-5 w-5 text-gray-500" />
                     </button>
                   )}
+                  <div className="p-2 bg-red-100 rounded-xl">
+                    <ShoppingBag className="h-5 w-5 text-red-500" />
+                  </div>
                   <h2 className="text-lg font-bold text-gray-900">
                     {checkoutStep === 1 && 'Resumo do Pedido'}
                     {checkoutStep === 2 && 'Tipo de Entrega'}
