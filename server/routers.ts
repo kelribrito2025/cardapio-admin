@@ -798,6 +798,13 @@ export const appRouter = router({
         return groupsWithItems;
       }),
     
+    // Buscar taxas de entrega por bairro
+    getNeighborhoodFees: publicProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getNeighborhoodFeesByEstablishment(input.establishmentId);
+      }),
+    
     // Create order from public menu
     createOrder: publicProcedure
       .input(z.object({

@@ -106,6 +106,10 @@ export default function PublicMenu() {
   const [canReviewChecked, setCanReviewChecked] = useState(false);
   const [canReview, setCanReview] = useState(true);
   
+  // Estados para taxa por bairro
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState<{ name: string; fee: string } | null>(null);
+  const [showNeighborhoodDropdown, setShowNeighborhoodDropdown] = useState(false);
+  
   // Estados do sistema de fidelidade
   const [showLoyaltyModal, setShowLoyaltyModal] = useState(false);
   const [loyaltyStep, setLoyaltyStep] = useState<'login' | 'register' | 'card'>('login');
@@ -164,6 +168,12 @@ export default function PublicMenu() {
   const { data: loyaltyEnabled } = trpc.loyalty.isEnabled.useQuery(
     { establishmentId: data?.establishment?.id || 0 },
     { enabled: !!data?.establishment?.id }
+  );
+  
+  // Query para buscar taxas por bairro
+  const { data: neighborhoodFeesData } = trpc.publicMenu.getNeighborhoodFees.useQuery(
+    { establishmentId: data?.establishment?.id || 0 },
+    { enabled: !!data?.establishment?.id && data?.establishment?.deliveryFeeType === 'byNeighborhood' }
   );
   
   // Query para buscar cartão de fidelidade do cliente
@@ -1796,7 +1806,9 @@ export default function PublicMenu() {
                             ? "R$ 0,00" 
                             : establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed
                               ? `R$ ${Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}`
-                              : "A calcular"
+                              : selectedNeighborhood
+                                ? `R$ ${Number(selectedNeighborhood.fee).toFixed(2).replace('.', ',')}`
+                                : "A calcular"
                           }
                         </span>
                       </div>
@@ -1813,9 +1825,37 @@ export default function PublicMenu() {
                       </span>
                     )}
                     {establishment.deliveryFeeType === "byNeighborhood" && (
-                      <span className="px-4 py-2 bg-amber-100 text-amber-700 font-semibold rounded-xl">
-                        Varia
-                      </span>
+                      <div className="relative">
+                        <button 
+                          onClick={() => setShowNeighborhoodDropdown(!showNeighborhoodDropdown)}
+                          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+                        >
+                          {selectedNeighborhood ? selectedNeighborhood.name : "Selecionar"}
+                          <ChevronDown className={`h-4 w-4 transition-transform ${showNeighborhoodDropdown ? 'rotate-180' : ''}`} />
+                        </button>
+                        {showNeighborhoodDropdown && neighborhoodFeesData && neighborhoodFeesData.length > 0 && (
+                          <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50 max-h-60 overflow-y-auto">
+                            {neighborhoodFeesData.map((item) => (
+                              <button
+                                key={item.id}
+                                onClick={() => {
+                                  setSelectedNeighborhood({ name: item.neighborhood, fee: item.fee });
+                                  setShowNeighborhoodDropdown(false);
+                                  // Preencher o bairro no endereço de entrega
+                                  setDeliveryAddress(prev => ({ ...prev, neighborhood: item.neighborhood }));
+                                }}
+                                className={cn(
+                                  "w-full px-4 py-2.5 text-left hover:bg-gray-50 flex items-center justify-between transition-colors",
+                                  selectedNeighborhood?.name === item.neighborhood && "bg-red-50"
+                                )}
+                              >
+                                <span className="font-medium text-gray-800">{item.neighborhood}</span>
+                                <span className="text-red-500 font-semibold">R$ {Number(item.fee).toFixed(2).replace('.', ',')}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
