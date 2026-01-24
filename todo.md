@@ -2374,3 +2374,9 @@
 - [x] Mover mensagem "Faltam X pedidos" para dentro do card principal
 - [x] Remover card branco separado da mensagem
 - [x] Manter visual igual à imagem de referência (card único com área cinza na parte inferior)
+
+## Atualizar Estilo do Histórico no Cartão Fidelidade
+- [x] Adicionar ícone de check verde ao lado esquerdo de cada item
+- [x] Substituir o preço por "+1" (carimbo) no lado direito
+- [x] Aplicar fundo cinza claro em cada item do histórico
+- [x] Manter layout igual à imagem de referência

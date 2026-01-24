@@ -2,7 +2,7 @@ import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -5613,18 +5613,22 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
       <div className="bg-white rounded-xl p-3 md:p-4">
         <h4 className="font-bold text-gray-900 text-sm md:text-base mb-2 md:mb-3">Histórico</h4>
         {cardData?.stamps && cardData.stamps.length > 0 ? (
-          <div className="space-y-1.5 md:space-y-2 max-h-32 md:max-h-48 overflow-y-auto">
+          <div className="space-y-2 md:space-y-3 max-h-32 md:max-h-48 overflow-y-auto">
             {cardData.stamps.slice(0, 10).map((stamp) => (
-              <div key={stamp.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Pedido {stamp.orderNumber}</p>
+              <div key={stamp.id} className="flex items-center gap-3 bg-gray-100 rounded-xl p-3">
+                {/* Ícone de check verde */}
+                <div className="flex-shrink-0 w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                  <Check className="h-5 w-5 text-emerald-600" />
+                </div>
+                {/* Informações do pedido */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-900">Pedido #{stamp.orderNumber}</p>
                   <p className="text-xs text-gray-500">
-                    {new Date(stamp.createdAt).toLocaleDateString('pt-BR')}
+                    {new Date(stamp.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '')}
                   </p>
                 </div>
-                <p className="text-sm font-semibold text-emerald-600">
-                  R$ {Number(stamp.orderTotal).toFixed(2)}
-                </p>
+                {/* Carimbo +1 */}
+                <span className="text-lg font-bold text-emerald-600">+1</span>
               </div>
             ))}
           </div>
