@@ -2586,3 +2586,12 @@
 - [x] Modal já está centralizado corretamente no desktop (md:items-center md:justify-center)
 - [x] Aplicar rounded-2xl completo no desktop (md:rounded-2xl)
 - [x] Modal funcionando como modal normal no desktop com ícone e cabeçalho padronizado
+
+
+## Corrigir Modal Meus Pedidos Desktop (v3)
+- [ ] Modal ainda está com estilo bottom sheet no desktop (rounded apenas no topo)
+- [ ] Aplicar rounded-2xl completo em todos os cantos no desktop
+- [ ] Verificar se o header também precisa de rounded completo no desktop
+
+## Correção de Modal Desktop
+- [x] Corrigir modal "Meus Pedidos" para ter rounded-2xl completo no desktop (estava apenas rounded-t)

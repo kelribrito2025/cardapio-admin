@@ -3667,7 +3667,7 @@ export default function PublicMenu() {
           {/* Modal - Bottom Sheet no mobile com altura máxima de 80% */}
           <div className="relative w-full md:max-w-md md:mx-4 rounded-t-2xl md:rounded-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{backgroundColor: '#f5f5f5'}}>
             {/* Header */}
-            <div className="flex-shrink-0 bg-white border-b border-gray-300 px-6 h-[68px] flex items-center justify-between rounded-t-2xl md:rounded-t-2xl">
+            <div className="flex-shrink-0 bg-white border-b border-gray-300 px-6 h-[68px] flex items-center justify-between rounded-t-2xl">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-100 rounded-xl">
                   <ClipboardList className="h-5 w-5 text-purple-500" />
