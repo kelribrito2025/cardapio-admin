@@ -2574,3 +2574,9 @@
 - [x] Aplicar cabeçalho branco com borda inferior (border-gray-300)
 - [x] Adicionar ícone com container redondo vermelho (ShoppingBag red)
 - [x] Diferenciar background do body (#f5f5f5) do header (bg-white)
+
+
+## Corrigir Modal Meus Pedidos no Desktop
+- [x] Modal bottom sheet no mobile, centralizado no desktop (já estava correto com md:items-center md:justify-center)
+- [x] Aplicar background #f5f5f5 consistente com outros modais
+- [x] Ajustar rounded-t-2xl md:rounded-t-2xl no header
