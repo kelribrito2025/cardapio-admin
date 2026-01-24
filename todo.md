@@ -2545,3 +2545,8 @@
 ## Remover Botão de Voltar do Cupom
 - [x] Remover o botão de seta esquerda (voltar) do cupom
 - [x] Manter apenas o botão de próximo (seta direita) para navegação
+
+
+## Adicionar Borda no Cabeçalho do Modal de Fidelidade
+- [x] Adicionar borda inferior no cabeçalho do modal (abaixo de "Cartão Fidelidade")
+- [x] Separar visualmente o título do conteúdo do modal (border-gray-300)
