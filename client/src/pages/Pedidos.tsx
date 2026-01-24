@@ -384,9 +384,15 @@ export default function Pedidos() {
               <span>Valor dos produtos</span>
               <span>R$ ${Number(orderDetails.subtotal).toFixed(2).replace('.', ',')}</span>
             </div>
+            ${orderDetails.couponCode ? `
+            <div class="total-row">
+              <span>Cupom aplicado</span>
+              <span>${orderDetails.couponCode}</span>
+            </div>
+            ` : ''}
             ${discount > 0 ? `
             <div class="total-row">
-              <span>Descontos</span>
+              <span>Desconto</span>
               <span>- R$ ${discount.toFixed(2).replace('.', ',')}</span>
             </div>
             ` : ''}
