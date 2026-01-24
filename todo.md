@@ -2361,3 +2361,7 @@
 - [x] Converter modal de regulamento para estilo bottom sheet
 - [x] Adicionar animação de entrada suave
 - [x] Manter consistência visual com modal de cupom aplicado
+
+## Correção do Scroll no Modal de Fidelidade
+- [x] Bloquear scroll da página quando o modal está aberto
+- [x] Evitar que a página de trás role ao rolar dentro do modal
