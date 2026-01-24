@@ -2428,3 +2428,6 @@
 
 ## Correção das Bolinhas no Cupom v4
 - [x] Ajustar bolinhas para cor branca (cor do fundo do modal) para criar efeito visual de recorte
+
+## Correção das Bolinhas no Cupom v5
+- [x] Remover completamente as bolinhas brancas - cupom agora sem recortes circulares

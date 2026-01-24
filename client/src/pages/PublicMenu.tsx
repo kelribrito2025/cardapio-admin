@@ -5502,10 +5502,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               <div className="h-full flex">
                 {/* Lado Esquerdo - Amarelo/Dourado */}
                 <div className="flex-[1.3] bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-500 p-3 md:p-4 flex flex-col justify-between relative">
-                  {/* Recortes circulares no lado esquerdo - cor do fundo do modal */}
-                  <div className="absolute left-0 top-3 w-3 h-3 bg-white rounded-r-full -ml-1.5" />
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-5 h-10 bg-white rounded-r-full -ml-2.5" />
-                  <div className="absolute left-0 bottom-3 w-3 h-3 bg-white rounded-r-full -ml-1.5" />
+                  
                   
                   {/* Conteúdo superior - Nome do Restaurante */}
                   <div>
@@ -5572,21 +5569,13 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                 
                 {/* Linha tracejada vertical */}
                 <div className="w-0 border-l-2 border-dashed border-gray-400 relative">
-                  {/* Recorte superior - cor do fundo do modal */}
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rounded-full" />
-                  {/* Recorte inferior - cor do fundo do modal */}
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rounded-full" />
+                  
                 </div>
                 
                 {/* Lado Direito - Escuro */}
                 <div className="flex-1 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 p-3 md:p-4 flex flex-col items-center justify-center relative">
                   
-                  {/* Borda serrilhada direita */}
-                  <div className="absolute right-0 top-0 bottom-0 w-2 flex flex-col justify-between py-1">
-                    {[...Array(12)].map((_, i) => (
-                      <div key={i} className="w-2 h-2 bg-white rounded-full -mr-1" />
-                    ))}
-                  </div>
+                  
                   
                   {/* Porcentagem de desconto */}
                   <div className="text-center">
