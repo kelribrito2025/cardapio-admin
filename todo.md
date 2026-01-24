@@ -2486,3 +2486,8 @@
   - Duração 220ms com ease-in-out
 - [x] Suporte a swipe/arrastar para trocar cupons (touch events)
 - [x] Apenas 1 cupom = visual limpo sem bordas ou stack
+
+
+## Bugs no Modal de Cartão Fidelidade
+- [x] Mover "Ver regulamento" para ficar abaixo do cartão de fidelidade (antes do histórico)
+- [x] Corrigir número do pedido duplicado (##P261 → #P261) - lógica para verificar se já começa com #

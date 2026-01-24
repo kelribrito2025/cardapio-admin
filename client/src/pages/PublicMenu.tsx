@@ -5861,6 +5861,14 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
         </div>
       </div>
       
+      {/* Link Ver regulamento */}
+      <button
+        onClick={() => setShowRules(true)}
+        className="text-xs text-gray-400 hover:text-gray-600 underline transition-colors"
+      >
+        Ver regulamento
+      </button>
+      
       {/* Histórico */}
       <div className="bg-white rounded-xl p-3 md:p-4">
         <h4 className="font-bold text-gray-900 text-sm md:text-base mb-2 md:mb-3">Histórico</h4>
@@ -5874,7 +5882,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                 </div>
                 {/* Informações do pedido */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900">Pedido #{stamp.orderNumber}</p>
+                  <p className="text-sm font-semibold text-gray-900">Pedido {stamp.orderNumber?.startsWith('#') ? stamp.orderNumber : `#${stamp.orderNumber}`}</p>
                   <p className="text-xs text-gray-500">
                     {new Date(stamp.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '')}
                   </p>
@@ -5890,14 +5898,6 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
           </p>
         )}
       </div>
-      
-      {/* Link Ver regulamento */}
-      <button
-        onClick={() => setShowRules(true)}
-        className="text-xs text-gray-400 hover:text-gray-600 underline transition-colors"
-      >
-        Ver regulamento
-      </button>
       
       {/* Botão Sair */}
       <button
