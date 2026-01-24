@@ -5647,8 +5647,8 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                     </p>
                   </div>
                   
-                  {/* Código do cupom */}
-                  <div className="mt-2 md:mt-3 bg-amber-400/20 border border-amber-400/50 rounded px-2 py-1">
+                  {/* Código do cupom - oculto mas mantendo espaço */}
+                  <div className="mt-2 md:mt-3 bg-amber-400/20 border border-amber-400/50 rounded px-2 py-1 invisible">
                     <p className="text-amber-400 font-bold text-xs md:text-sm tracking-wider">
                       {cardData.activeCoupon.code}
                     </p>

@@ -2446,3 +2446,6 @@
   - Card de carimbos: 237px/273px (mobile/desktop)
   - Card de cupom: 204px/235px (mobile/desktop)
   - Transição animada de 400ms entre os dois estados
+
+## Ocultar Código do Cupom
+- [x] Ocultar o código do cupom mantendo o espaço vazio no lugar (sem mover outros elementos)
