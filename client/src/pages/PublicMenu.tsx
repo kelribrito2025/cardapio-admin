@@ -1759,15 +1759,47 @@ export default function PublicMenu() {
           {/* Cart Sidebar */}
           <div className="hidden lg:block w-80 flex-shrink-0">
             <div className="sticky top-[140px]">
-              {/* Calcular taxa de entrega */}
+              {/* Taxa de entrega - reflete configuração do restaurante */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-3">
-                <button className="w-full flex items-center justify-between text-left hover:bg-gray-50 -m-4 p-4 rounded-xl transition-colors">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <MapPin className="h-5 w-5 text-gray-400" />
-                    <span className="font-medium text-gray-800">Calcular taxa de entrega</span>
+                    <div className={cn(
+                      "p-2 rounded-lg",
+                      establishment.deliveryFeeType === "free" ? "bg-green-100" : "bg-gray-100"
+                    )}>
+                      <MapPin className={cn(
+                        "h-5 w-5",
+                        establishment.deliveryFeeType === "free" ? "text-green-600" : "text-gray-500"
+                      )} />
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-800 block">
+                        {establishment.deliveryFeeType === "free" 
+                          ? "Entrega grátis" 
+                          : establishment.deliveryFeeType === "fixed"
+                            ? "Taxa de entrega"
+                            : "Taxa por bairro"
+                        }
+                      </span>
+                      {establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed && (
+                        <span className="text-sm text-green-600 font-semibold">
+                          R$ {Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}
+                        </span>
+                      )}
+                      {establishment.deliveryFeeType === "free" && (
+                        <span className="text-sm text-green-600 font-semibold">Grátis</span>
+                      )}
+                      {establishment.deliveryFeeType === "byNeighborhood" && (
+                        <span className="text-sm text-gray-500">Varia por localização</span>
+                      )}
+                    </div>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-gray-400" />
-                </button>
+                  {establishment.deliveryFeeType === "free" && (
+                    <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                      Grátis
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Sua sacola */}

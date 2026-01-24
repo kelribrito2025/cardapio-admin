@@ -2684,3 +2684,4 @@
 - [x] Implementar optimistic update na mudança de status dos pedidos para atualização instantânea
 - [x] Mover pedido instantaneamente para o card correto após mudança de status
 - [x] Ajustar espaçamento do container de taxa de entrega na versão desktop
+- [x] Exibir taxa de entrega configurada no container (grátis ou valor fixo)
