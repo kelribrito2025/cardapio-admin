@@ -2386,3 +2386,10 @@
 - [x] Remover a área cinza de dentro do card verde
 - [x] Criar estrutura de card único com duas seções (verde em cima, cinza embaixo)
 - [x] Garantir que a área cinza fique colada aos carimbos, não no meio
+
+## Consumo Automático do Cupom de Fidelidade
+- [x] Adicionar parâmetro loyaltyCardId ao createOrder no backend
+- [x] Implementar lógica para limpar activeCouponId do cartão após uso
+- [x] Resetar os carimbos (stamps) do cartão para iniciar novo ciclo
+- [x] Atualizar frontend para passar loyaltyCardId ao criar pedido
+- [x] Testar fluxo completo de uso do cupom

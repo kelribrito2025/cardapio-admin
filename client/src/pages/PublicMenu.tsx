@@ -44,6 +44,7 @@ export default function PublicMenu() {
     discount: number;
     type: "percentage" | "fixed";
     value: number;
+    loyaltyCardId?: number;
   } | null>(null);
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   
@@ -3246,6 +3247,7 @@ export default function PublicMenu() {
                       changeAmount: paymentMethod === 'cash' && changeAmount ? changeAmount.replace(/\./g, '').replace(',', '.') : undefined,
                       couponCode: appliedCoupon?.code || undefined,
                       couponId: appliedCoupon?.id || undefined,
+                      loyaltyCardId: appliedCoupon?.loyaltyCardId || undefined,
                       items: cart.map(item => ({
                         productId: item.productId,
                         productName: item.name,
@@ -4768,7 +4770,7 @@ export default function PublicMenu() {
                     setLoyaltyStep('login');
                     localStorage.removeItem('loyaltyPhone_' + data?.establishment?.id);
                   }}
-                  onApplyCoupon={(couponCode, couponType, couponValue) => {
+                  onApplyCoupon={(couponCode, couponType, couponValue, loyaltyCardId) => {
                     // Calcular o desconto baseado no tipo de cupom
                     const subtotal = cart.reduce((sum, item) => {
                       const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
@@ -4787,13 +4789,14 @@ export default function PublicMenu() {
                       discount = 0; // Por enquanto, taxa de entrega é 0
                     }
                     
-                    // Aplicar o cupom
+                    // Aplicar o cupom com o loyaltyCardId para consumir após o pedido
                     setAppliedCoupon({
                       id: 0, // ID será validado no backend ao finalizar pedido
                       code: couponCode,
                       discount: discount,
                       type: couponType as 'percentage' | 'fixed',
                       value: value,
+                      loyaltyCardId: loyaltyCardId,
                     });
                     
                     // Salvar info do cupom para o modal de confirmação
@@ -5279,7 +5282,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
   isLoading: boolean;
   isModalOpen?: boolean;
   onLogout: () => void;
-  onApplyCoupon?: (couponCode: string, couponType: string, couponValue: string) => void;
+  onApplyCoupon?: (couponCode: string, couponType: string, couponValue: string, loyaltyCardId: number) => void;
 }) {
   const [animatingStamp, setAnimatingStamp] = useState<number | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -5588,11 +5591,12 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                     <button
                       onClick={() => {
                         // Aplicar cupom no checkout e fechar modal
-                        if (cardData?.activeCoupon && onApplyCoupon) {
+                        if (cardData?.activeCoupon && onApplyCoupon && cardData?.card?.id) {
                           onApplyCoupon(
                             cardData.activeCoupon.code,
                             cardData.activeCoupon.type,
-                            cardData.activeCoupon.value
+                            cardData.activeCoupon.value,
+                            cardData.card.id
                           );
                         }
                       }}

@@ -2298,3 +2298,47 @@ export async function processLoyaltyStampForOrder(
     message: `Carimbo adicionado! Faltam ${requiredStamps - newStampCount} para ganhar seu cupom.` 
   };
 }
+
+/**
+ * Consome o cupom de fidelidade e reseta o cartão ao estado inicial
+ * Chamado quando o cliente usa o cupom de fidelidade em um pedido
+ */
+export async function consumeLoyaltyCardCoupon(loyaltyCardId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Buscar o cartão para obter o cupom ativo
+  const card = await db.select().from(loyaltyCards)
+    .where(eq(loyaltyCards.id, loyaltyCardId))
+    .limit(1);
+  
+  if (card.length === 0) {
+    throw new Error("Cartão de fidelidade não encontrado");
+  }
+  
+  const activeCouponId = card[0].activeCouponId;
+  
+  // Marcar o cupom como usado (se existir)
+  if (activeCouponId) {
+    await db.update(coupons)
+      .set({ 
+        usedCount: sql`${coupons.usedCount} + 1`,
+        quantity: 1, // Garantir que não pode ser usado novamente
+      })
+      .where(eq(coupons.id, activeCouponId));
+  }
+  
+  // Limpar o cupom ativo do cartão (resetar para estado inicial)
+  // Os carimbos já foram zerados quando o cupom foi gerado
+  await db.update(loyaltyCards)
+    .set({ 
+      activeCouponId: null,
+    })
+    .where(eq(loyaltyCards.id, loyaltyCardId));
+  
+  // Deletar os carimbos antigos para limpar o histórico do ciclo anterior
+  await db.delete(loyaltyStamps)
+    .where(eq(loyaltyStamps.loyaltyCardId, loyaltyCardId));
+  
+  console.log(`[Fidelidade] Cupom consumido e cartão ${loyaltyCardId} resetado ao estado inicial`);
+}
