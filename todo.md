@@ -2336,3 +2336,17 @@
 - [x] Reduzir altura do cartão de fidelidade na versão mobile
 - [x] Garantir que o modal não ocupe toda a altura da tela
 - [x] Permitir que o usuário consiga fechar o modal facilmente
+
+## Integração do Cupom de Fidelidade no Checkout
+- [ ] Criar estado para armazenar cupom aplicado na sacola
+- [ ] Implementar funcionalidade do botão "Usar agora" para aplicar cupom
+- [ ] Calcular desconto baseado no tipo de cupom (percentual, fixo, frete grátis)
+- [ ] Exibir cupom aplicado na sacola com opção de remover
+- [ ] Validar cupom antes de aplicar (verificar se ainda é válido)
+- [ ] Atualizar total do pedido com desconto aplicado
+
+## Integração do Cupom de Fidelidade no Checkout
+- [x] Conectar botão "Usar agora" com o sistema de cupons
+- [x] Aplicar cupom automaticamente na sacola de compras
+- [x] Fechar modal de fidelidade após aplicar cupom
+- [x] Mostrar feedback visual de cupom aplicado

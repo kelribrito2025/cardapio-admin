@@ -4766,6 +4766,37 @@ export default function PublicMenu() {
                     setLoyaltyStep('login');
                     localStorage.removeItem('loyaltyPhone_' + data?.establishment?.id);
                   }}
+                  onApplyCoupon={(couponCode, couponType, couponValue) => {
+                    // Calcular o desconto baseado no tipo de cupom
+                    const subtotal = cart.reduce((sum, item) => {
+                      const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
+                      return sum + (Number(item.price) + complementsTotal) * item.quantity;
+                    }, 0);
+                    
+                    let discount = 0;
+                    const value = Number(couponValue);
+                    
+                    if (couponType === 'percentage') {
+                      discount = (subtotal * value) / 100;
+                    } else if (couponType === 'fixed') {
+                      discount = value;
+                    } else if (couponType === 'free_delivery') {
+                      // Frete grátis - desconto será aplicado na taxa de entrega
+                      discount = 0; // Por enquanto, taxa de entrega é 0
+                    }
+                    
+                    // Aplicar o cupom
+                    setAppliedCoupon({
+                      id: 0, // ID será validado no backend ao finalizar pedido
+                      code: couponCode,
+                      discount: discount,
+                      type: couponType as 'percentage' | 'fixed',
+                      value: value,
+                    });
+                    
+                    // Fechar modal de fidelidade
+                    setShowLoyaltyModal(false);
+                  }}
                 />
               )}
             </div>
@@ -5137,7 +5168,7 @@ function LoyaltyRegisterForm({
   );
 }
 
-function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoading, isModalOpen, onLogout }: {
+function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoading, isModalOpen, onLogout, onApplyCoupon }: {
   establishmentName: string;
   cardData: {
     card: {
@@ -5169,6 +5200,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
   isLoading: boolean;
   isModalOpen?: boolean;
   onLogout: () => void;
+  onApplyCoupon?: (couponCode: string, couponType: string, couponValue: string) => void;
 }) {
   const [animatingStamp, setAnimatingStamp] = useState<number | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -5476,9 +5508,14 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                     </button>
                     <button
                       onClick={() => {
-                        // Copiar e fechar modal para usar
-                        navigator.clipboard.writeText(cardData.activeCoupon?.code || '');
-                        onLogout?.();
+                        // Aplicar cupom no checkout e fechar modal
+                        if (cardData?.activeCoupon && onApplyCoupon) {
+                          onApplyCoupon(
+                            cardData.activeCoupon.code,
+                            cardData.activeCoupon.type,
+                            cardData.activeCoupon.value
+                          );
+                        }
                       }}
                       className="flex-1 py-2 px-2 md:py-2.5 md:px-3 bg-gradient-to-r from-orange-400 to-amber-500 hover:from-orange-500 hover:to-amber-600 text-white font-medium text-xs md:text-sm rounded-lg transition-all flex items-center justify-center gap-1 md:gap-1.5 shadow-md"
                     >
