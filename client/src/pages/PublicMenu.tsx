@@ -5577,59 +5577,18 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
           >
             {/* Container do Stack de Cupons */}
             <div className="relative h-full w-full">
-              {/* Camadas de cupons atrás (tabs superiores) - só mostra se tiver 2+ cupons */}
-              {hasMultipleCoupons && (
-                <>
-                  {/* Terceira camada (mais atrás) - só mostra se tiver 3+ cupons */}
-                  {(cardData?.activeCoupons?.length || 0) >= 3 && (
-                    <div 
-                      className="absolute left-0 right-0 rounded-t-2xl overflow-hidden"
-                      style={{
-                        top: '-16px',
-                        height: '8px',
-                        opacity: 0.5,
-                        zIndex: 0,
-                      }}
-                    >
-                      <div className="h-full flex rounded-t-2xl shadow-md">
-                        <div className="flex-[1.3] bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-400 rounded-tl-2xl" />
-                        <div className="flex-1 bg-gradient-to-br from-gray-700 via-gray-800 to-gray-700 rounded-tr-2xl" />
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Segunda camada (atrás) - tab superior */}
-                  <div 
-                    className="absolute left-0 right-0 rounded-t-2xl overflow-hidden transition-all duration-[220ms] ease-in-out"
-                    style={{
-                      top: isAnimating && animationDirection === 'next' ? '-6px' : '-10px',
-                      height: '8px',
-                      opacity: isAnimating && animationDirection === 'next' ? 0.9 : 0.7,
-                      zIndex: 1,
-                    }}
-                  >
-                    <div className="h-full flex rounded-t-2xl shadow-md">
-                      <div className="flex-[1.3] bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-500 rounded-tl-2xl" />
-                      <div className="flex-1 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 rounded-tr-2xl" />
-                    </div>
-                  </div>
-                </>
-              )}
-              
-              {/* Cupom Principal (frente) */}
+              {/* Cupom Principal */}
               <div 
                 className="absolute inset-0 transition-all duration-[220ms] ease-in-out cursor-grab active:cursor-grabbing"
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
                 style={{
-                  transform: isAnimating && animationDirection === 'next'
-                    ? 'scale(0.96) translateY(-8px)'
-                    : isAnimating && animationDirection === 'prev'
-                    ? 'scale(0.96) translateY(-8px)'
-                    : 'scale(1) translateY(0)',
-                  opacity: isAnimating ? 0.7 : 1,
-                  zIndex: isAnimating ? 0 : 2,
+                  transform: isAnimating 
+                    ? 'scale(0.98)'
+                    : 'scale(1)',
+                  opacity: isAnimating ? 0.8 : 1,
+                  zIndex: 2,
                 }}
               >
             {currentCoupon && (

@@ -2521,3 +2521,8 @@
 - [x] Mostrar apenas borda superior (~8px) dos cupons atrás
 - [x] Criar efeito de "stack" vertical indicando cupons extras
 - [x] Manter animação de troca funcionando corretamente
+
+
+## Remover Bordas dos Cupons Atrás
+- [x] Remover completamente as bordas/tabs dos cupons que estão atrás
+- [x] Manter apenas o cupom principal visível sem indicação de pilha
