@@ -5348,7 +5348,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
     <div className="space-y-4">
       {/* Card Principal com Flip */}
       <div 
-        className="relative h-[220px] md:h-[260px]"
+        className="relative h-[280px] md:h-[320px]"
         style={{ perspective: '1000px' }}
       >
         <div 
@@ -5362,10 +5362,10 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
         >
           {/* Face Frontal - Carimbos */}
           <div 
-            className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden]"
+            className="absolute inset-0 bg-white rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden] flex flex-col"
           >
-            {/* Conteúdo do Card */}
-            <div className="p-3 md:p-5 text-white">
+            {/* Parte verde do card */}
+            <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-3 md:p-5 text-white flex-1">
           <div className="flex items-start gap-2 md:gap-3 mb-3 md:mb-4">
             <div className="p-1.5 md:p-2 bg-white/20 rounded-xl">
               <Gift className="h-5 w-5 md:h-6 md:w-6" />
@@ -5453,6 +5453,40 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               </div>
             ))}
           </div>
+            
+            {/* Mensagem de progresso ou Botão Ver Cupom - Dentro do card */}
+            <div className={cn(
+              "bg-gray-100 px-3 py-2.5 md:px-5 md:py-4 text-center transition-all duration-300 rounded-b-2xl",
+              showConfetti && "bg-emerald-50"
+            )}>
+              {isCardComplete && hasCouponAvailable ? (
+                <button
+                  onClick={() => setIsFlipped(true)}
+                  className="w-full py-1.5 md:py-2 px-3 md:px-4 bg-gradient-to-br from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold text-sm md:text-base rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 animate-pulse"
+                >
+                  <Gift className="h-4 w-4 md:h-5 md:w-5" />
+                  Ver cupom ganho
+                </button>
+              ) : (
+                <p className={cn(
+                  "text-gray-700 text-sm md:text-base transition-all duration-300",
+                  showConfetti && "text-emerald-700 font-semibold scale-105"
+                )}>
+                  {showConfetti ? (
+                    <>
+                      <span className="inline-block animate-bounce">🎉</span>
+                      {' '}Faltam{' '}
+                      <span className="text-emerald-600 font-bold">{remaining}</span>
+                      {' '}pedidos para ganhar seu cupom!
+                    </>
+                  ) : (
+                    <>
+                      Faltam <span className="text-emerald-600 font-bold">{remaining}</span> pedidos para ganhar seu cupom!
+                    </>
+                  )}
+                </p>
+              )}
+            </div>
           </div>
           </div>
           
@@ -5573,40 +5607,6 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             </div>
           </div>
         </div>
-      </div>
-      
-      {/* Mensagem de progresso ou Botão Ver Cupom - Fora do card */}
-      <div className={cn(
-        "bg-white rounded-xl px-3 py-2.5 md:px-5 md:py-4 text-center transition-all duration-300 shadow-sm",
-        showConfetti && "bg-emerald-50"
-      )}>
-        {isCardComplete && hasCouponAvailable ? (
-          <button
-            onClick={() => setIsFlipped(true)}
-            className="w-full py-1.5 md:py-2 px-3 md:px-4 bg-gradient-to-br from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold text-sm md:text-base rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 animate-pulse"
-          >
-            <Gift className="h-4 w-4 md:h-5 md:w-5" />
-            Ver cupom ganho
-          </button>
-        ) : (
-          <p className={cn(
-            "text-gray-700 text-sm md:text-base transition-all duration-300",
-            showConfetti && "text-emerald-700 font-semibold scale-105"
-          )}>
-            {showConfetti ? (
-              <>
-                <span className="inline-block animate-bounce">🎉</span>
-                {' '}Faltam{' '}
-                <span className="text-emerald-600 font-bold">{remaining}</span>
-                {' '}pedidos para ganhar seu cupom!
-              </>
-            ) : (
-              <>
-                Faltam <span className="text-emerald-600 font-bold">{remaining}</span> pedidos para ganhar seu cupom!
-              </>
-            )}
-          </p>
-        )}
       </div>
       
       {/* Histórico */}

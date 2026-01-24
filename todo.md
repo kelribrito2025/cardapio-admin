@@ -2369,3 +2369,8 @@
 ## Correção Visual do Cartão de Fidelidade
 - [x] Remover borda verde inferior do cartão
 - [x] Restaurar visual original do card (sem tarja verde embaixo)
+
+## Unificar Card de Fidelidade
+- [x] Mover mensagem "Faltam X pedidos" para dentro do card principal
+- [x] Remover card branco separado da mensagem
+- [x] Manter visual igual à imagem de referência (card único com área cinza na parte inferior)
