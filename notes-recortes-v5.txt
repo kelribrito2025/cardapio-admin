@@ -1,0 +1,15 @@
+Observação do screenshot do cupom com fundo bg-gray-200:
+
+O fundo do modal agora é bg-gray-200 (cinza mais escuro), mas os recortes laterais do cupom ainda aparecem BRANCOS, não cinza. Isso confirma que há algum container intermediário com background branco entre o modal e o cupom.
+
+Estrutura identificada:
+1. Modal container: bg-gray-200 (cinza)
+2. Body do modal: p-4 space-y-4
+3. Card flip container
+4. Face traseira do cupom
+5. Container do cupom com mask-image
+
+O problema é que a máscara está sendo aplicada no container do cupom, mas o cupom em si tem dois lados com backgrounds sólidos (amarelo e escuro). A máscara recorta o cupom, mas o que aparece através do recorte é o background do container pai, que é branco.
+
+Solução necessária:
+Em vez de usar mask-image no cupom, precisamos criar círculos que tenham a mesma cor do fundo do modal e posicioná-los sobre o cupom nas laterais.

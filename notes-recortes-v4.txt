@@ -1,0 +1,15 @@
+Resultado dos recortes transparentes do cupom:
+
+Observação do screenshot:
+- O cupom está sendo exibido corretamente com o lado amarelo à esquerda e o lado escuro à direita
+- Os recortes laterais (círculos nas laterais) estão mostrando o fundo BRANCO do modal
+- O fundo do modal é bg-gray-100 (cinza claro), mas os recortes estão mostrando branco
+
+Problema identificado:
+- A máscara está funcionando, mas o fundo visível através dos recortes é branco, não cinza
+- Isso indica que há algum container com background branco entre o modal e o cupom
+- Ou a máscara não está sendo aplicada corretamente em todos os níveis
+
+Próximos passos:
+- Verificar se há containers intermediários com background branco
+- Garantir que a máscara seja aplicada no nível correto da hierarquia

@@ -2526,3 +2526,11 @@
 ## Remover Bordas dos Cupons Atrás
 - [x] Remover completamente as bordas/tabs dos cupons que estão atrás
 - [x] Manter apenas o cupom principal visível sem indicação de pilha
+
+
+## Corrigir Recortes Circulares Transparentes do Voucher (v2)
+- [x] Analisar toda a hierarquia de containers do cupom
+- [x] Alterar fundo do modal para bg-gray-200 para melhor contraste
+- [x] Implementar recortes usando círculos sobrepostos com cor do fundo (bg-gray-200)
+- [x] Adicionar sombra interna nos círculos para dar profundidade
+- [x] Testar e confirmar que os recortes funcionam corretamente

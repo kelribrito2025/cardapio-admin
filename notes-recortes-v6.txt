@@ -1,0 +1,11 @@
+Resultado dos recortes com círculos sobrepostos:
+
+O cupom agora mostra os recortes circulares nas laterais com a cor cinza (bg-gray-200) do fundo do modal. Os círculos estão posicionados corretamente nas laterais do cupom, criando o efeito visual de "recorte" do voucher.
+
+Observações:
+- Lado esquerdo: círculo cinza visível na borda esquerda do lado amarelo
+- Lado direito: círculo cinza visível na borda direita do lado escuro
+- Os círculos têm sombra interna para dar profundidade
+- O efeito visual está funcionando corretamente
+
+O fundo do modal é bg-gray-200 e os círculos de recorte também são bg-gray-200, criando a ilusão de transparência/recorte.
