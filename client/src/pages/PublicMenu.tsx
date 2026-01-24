@@ -3100,7 +3100,7 @@ export default function PublicMenu() {
               {/* Body */}
               <div className="flex-1 overflow-y-auto overscroll-contain p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Nome completo</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Nome</label>
                   <input
                     type="text"
                     value={customerInfo.name}
