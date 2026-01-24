@@ -1758,7 +1758,7 @@ export default function PublicMenu() {
 
           {/* Cart Sidebar */}
           <div className="hidden lg:block w-80 flex-shrink-0">
-            <div className="sticky top-[120px]">
+            <div className="sticky top-[140px]">
               {/* Calcular taxa de entrega */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-3">
                 <button className="w-full flex items-center justify-between text-left hover:bg-gray-50 -m-4 p-4 rounded-xl transition-colors">
