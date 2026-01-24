@@ -2644,3 +2644,7 @@
 
 ## Indicador de Paginação dos Cupons
 - [x] Adicionar números dentro dos dots de paginação dos cupons (revertido a pedido do usuário)
+
+
+## Bug - Atualização do Cartão Fidelidade
+- [x] Corrigir: cartão fidelidade não atualiza automaticamente quando pedido é entregue (adicionado refetch automático via SSE)

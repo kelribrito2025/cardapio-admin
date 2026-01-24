@@ -275,6 +275,12 @@ export default function PublicMenu() {
           return newOrders;
         });
         
+        // Se o pedido foi entregue (completed), atualizar o cartão fidelidade
+        if (update.status === 'completed' && isLoyaltyLoggedIn) {
+          console.log('[PublicMenu] Pedido entregue - atualizando cartão fidelidade');
+          loyaltyCardQuery.refetch();
+        }
+        
         // Se o modal de tracking está aberto para este pedido, atualizar diretamente
         // Usa refs para evitar problemas de closure
         console.log('[PublicMenu] Modal aberto:', showTrackingModalRef.current, 'Pedido atual:', currentOrderNumberRef.current, 'Pedido atualizado:', update.orderNumber);
@@ -766,6 +772,12 @@ export default function PublicMenu() {
         return newOrders;
       });
       
+      // Se o pedido foi entregue (completed), atualizar o cartão fidelidade
+      if (update.status === 'completed' && isLoyaltyLoggedIn) {
+        console.log('[PublicMenu] Pedido entregue - atualizando cartão fidelidade');
+        loyaltyCardQuery.refetch();
+      }
+      
       // Se o modal de tracking está aberto para este pedido, atualizar diretamente
       // Usa refs para evitar problemas de closure
       console.log('[PublicMenu] Modal aberto:', showTrackingModalRef.current, 'Pedido atual:', currentOrderNumberRef.current, 'Pedido atualizado:', update.orderNumber);
@@ -816,6 +828,12 @@ export default function PublicMenu() {
         localStorage.setItem('userOrders', JSON.stringify(newOrders));
         return newOrders;
       });
+      
+      // Se o pedido foi entregue (completed), atualizar o cartão fidelidade
+      if (update.status === 'completed' && isLoyaltyLoggedIn) {
+        console.log('[PublicMenu] Pedido entregue - atualizando cartão fidelidade');
+        loyaltyCardQuery.refetch();
+      }
       
       // Se o modal de tracking está aberto para este pedido, atualizar diretamente
       if (showTrackingModalRef.current && currentOrderNumberRef.current === update.orderNumber) {

@@ -1,0 +1,8 @@
+{
+  "query": "SELECT c.id, c.name, c.phone, lc.id as loyalty_card_id, lc.stamps, lc.completed_cards \nFROM customers c \nLEFT JOIN loyalty_cards lc ON c.id = lc.customer_id \nWHERE c.phone = '88999290000';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT c.id, c.name, c.phone, lc.id as loyalty_card_id, lc.stamps, lc.completed_cards \nFROM customers c \nLEFT JOIN loyalty_cards lc ON c.id = lc.customer_id \nWHERE c.phone = '88999290000';",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table 'enmwmxpat34diouyku4te2.customers' doesn't exist"
+  ]
+}
