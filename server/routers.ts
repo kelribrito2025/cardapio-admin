@@ -1337,10 +1337,41 @@ export const appRouter = router({
         // Buscar histórico de carimbos
         const stamps = await db.getLoyaltyStamps(card.id);
         
-        // Buscar cupom ativo se houver
-        let activeCoupon = null;
-        if (card.activeCouponId) {
-          activeCoupon = await db.getCouponById(card.activeCouponId);
+        // Buscar múltiplos cupons ativos se houver
+        let activeCoupons: Array<{
+          id: number;
+          code: string;
+          type: string;
+          value: string;
+          expiresAt: string | null;
+        }> = [];
+        
+        // Primeiro verificar o novo campo activeCouponIds (array)
+        if (card.activeCouponIds && Array.isArray(card.activeCouponIds) && card.activeCouponIds.length > 0) {
+          for (const couponId of card.activeCouponIds) {
+            const coupon = await db.getCouponById(couponId);
+            if (coupon && coupon.status === 'active') {
+              activeCoupons.push({
+                id: coupon.id,
+                code: coupon.code,
+                type: coupon.type,
+                value: coupon.value,
+                expiresAt: coupon.endDate ? coupon.endDate.toISOString() : null,
+              });
+            }
+          }
+        } else if (card.activeCouponId) {
+          // Fallback para o campo legado (single coupon)
+          const coupon = await db.getCouponById(card.activeCouponId);
+          if (coupon && coupon.status === 'active') {
+            activeCoupons.push({
+              id: coupon.id,
+              code: coupon.code,
+              type: coupon.type,
+              value: coupon.value,
+              expiresAt: coupon.endDate ? coupon.endDate.toISOString() : null,
+            });
+          }
         }
         
         return {
@@ -1362,12 +1393,16 @@ export const appRouter = router({
             orderTotal: s.orderTotal,
             createdAt: s.createdAt,
           })),
-          activeCoupon: activeCoupon ? {
-            code: activeCoupon.code,
-            type: activeCoupon.type,
-            value: activeCoupon.value,
-            expiresAt: activeCoupon.endDate ? activeCoupon.endDate.toISOString() : null,
+          // Manter compatibilidade com o campo antigo (primeiro cupom)
+          activeCoupon: activeCoupons.length > 0 ? {
+            id: activeCoupons[0].id,
+            code: activeCoupons[0].code,
+            type: activeCoupons[0].type,
+            value: activeCoupons[0].value,
+            expiresAt: activeCoupons[0].expiresAt,
           } : null,
+          // Novo campo com todos os cupons
+          activeCoupons: activeCoupons,
         };
       }),
     

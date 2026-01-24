@@ -2465,3 +2465,14 @@
 
 ## Tamanho do Texto OFF no Cupom
 - [x] Ajustar tamanho do texto OFF para ser igual ao tamanho do texto R$10 (text-3xl md:text-4xl)
+
+## Bug: Botão Ver Cupom Ganho
+- [x] Investigado: comportamento está CORRETO - o cliente tem 1/2 carimbos no ciclo ATUAL, mas possui um cupom ativo de um ciclo ANTERIOR que ainda não foi usado (activeCouponId = 60001)
+- [x] O botão aparece corretamente porque o cliente TEM um cupom disponível para usar
+
+## Navegação entre Múltiplos Cupons
+- [x] Modificar schema para suportar múltiplos cupons ativos por cliente (coluna activeCouponIds JSON array)
+- [x] Atualizar backend para retornar lista de cupons ativos (activeCoupons array)
+- [x] Criar cupons adicionais para cliente de teste (88999290000) - 2 cupons: R$10 OFF e 15% OFF
+- [x] Implementar setas de navegação (esquerda/direita) no modal de cupom
+- [x] Mostrar indicador de quantidade de cupons (bolinhas de posição)

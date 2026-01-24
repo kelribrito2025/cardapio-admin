@@ -1,0 +1,23 @@
+{
+  "query": "SELECT * FROM loyaltyCards WHERE customerPhone = '88999290000';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM loyaltyCards WHERE customerPhone = '88999290000';",
+  "rows": [
+    {
+      "id": "1",
+      "establishmentId": "30001",
+      "customerPhone": "88999290000",
+      "customerName": "Kelri",
+      "password4Hash": "$2b$10$1i5OJRDKuF69Bbvca9T1veVq6Ac24MZyAu2ltPaqzbbTI6eenHYcC",
+      "stamps": "1",
+      "totalStampsEarned": "10",
+      "couponsEarned": "3",
+      "activeCouponId": "60001",
+      "createdAt": "2026-01-23 21:36:25",
+      "updatedAt": "2026-01-24 12:06:52"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\tcustomerPhone\tcustomerName\tpassword4Hash\tstamps\ttotalStampsEarned\tcouponsEarned\tactiveCouponId\tcreatedAt\tupdatedAt\n1\t30001\t88999290000\tKelri\t$2b$10$1i5OJRDKuF69Bbvca9T1veVq6Ac24MZyAu2ltPaqzbbTI6eenHYcC\t1\t10\t3\t60001\t2026-01-23 21:36:25\t2026-01-24 12:06:52\n",
+  "stderr": "",
+  "execution_time_ms": 355
+}

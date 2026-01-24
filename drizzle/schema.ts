@@ -325,7 +325,8 @@ export const loyaltyCards = mysqlTable("loyaltyCards", {
   stamps: int("stamps").default(0).notNull(), // Número atual de carimbos
   totalStampsEarned: int("totalStampsEarned").default(0).notNull(), // Total de carimbos já ganhos (histórico)
   couponsEarned: int("couponsEarned").default(0).notNull(), // Total de cupons já ganhos
-  activeCouponId: int("activeCouponId"), // Cupom ativo disponível para uso
+  activeCouponId: int("activeCouponId"), // Cupom ativo disponível para uso (legado, manter para compatibilidade)
+  activeCouponIds: json("activeCouponIds").$type<number[]>(), // Array de IDs de cupons ativos disponíveis
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

@@ -5272,11 +5272,19 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
       couponValue: string | null;
     };
     activeCoupon: {
+      id?: number;
       code: string;
       type: string;
       value: string;
       expiresAt?: string | null;
     } | null;
+    activeCoupons?: Array<{
+      id: number;
+      code: string;
+      type: string;
+      value: string;
+      expiresAt?: string | null;
+    }>;
   } | null | undefined;
   stampsRequired: number;
   isLoading: boolean;
@@ -5289,13 +5297,34 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
   const [showRules, setShowRules] = useState(false);
   const [hasAnimated, setHasAnimated] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [currentCouponIndex, setCurrentCouponIndex] = useState(0);
   
   const stamps = cardData?.card?.stamps || 0;
   const required = cardData?.settings?.stampsRequired || stampsRequired;
   const remaining = Math.max(0, required - stamps);
-  const hasCouponAvailable = !!cardData?.activeCoupon;
+  
+  // Usar o array de cupons se disponível, senão fallback para o cupom único
+  const activeCoupons = cardData?.activeCoupons && cardData.activeCoupons.length > 0 
+    ? cardData.activeCoupons 
+    : cardData?.activeCoupon 
+      ? [cardData.activeCoupon] 
+      : [];
+  const hasCouponAvailable = activeCoupons.length > 0;
+  const currentCoupon = activeCoupons[currentCouponIndex] || null;
+  const hasMultipleCoupons = activeCoupons.length > 1;
+  
   const progress = Math.min(100, (stamps / required) * 100);
   const isCardComplete = stamps >= required || hasCouponAvailable;
+  
+  // Navegar para o próximo cupom
+  const nextCoupon = () => {
+    setCurrentCouponIndex((prev) => (prev + 1) % activeCoupons.length);
+  };
+  
+  // Navegar para o cupom anterior
+  const prevCoupon = () => {
+    setCurrentCouponIndex((prev) => (prev - 1 + activeCoupons.length) % activeCoupons.length);
+  };
   
   // Disparar animação sempre que o modal for aberto e houver carimbos
   useEffect(() => {
@@ -5329,6 +5358,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
       setAnimatingStamp(null);
       setShowConfetti(false);
       setIsFlipped(false);
+      setCurrentCouponIndex(0);
     }
   }, [isModalOpen, stamps, hasAnimated, isLoading]);
   
@@ -5501,7 +5531,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             className="absolute inset-0 rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden] bg-gray-100"
             style={{ transform: 'rotateY(180deg)' }}
           >
-            {cardData?.activeCoupon && (
+            {currentCoupon && (
               <div className="h-full flex">
                 {/* Lado Esquerdo - Amarelo/Dourado com máscara de recorte */}
                 <div 
@@ -5579,8 +5609,8 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   <div>
                     <p className="text-gray-800 font-bold text-[10px] md:text-xs uppercase">Validade</p>
                     <p className="text-gray-900 font-semibold text-xs md:text-sm">
-                      {cardData.activeCoupon.expiresAt 
-                        ? new Date(cardData.activeCoupon.expiresAt).toLocaleDateString('pt-BR')
+                      {currentCoupon.expiresAt 
+                        ? new Date(currentCoupon.expiresAt).toLocaleDateString('pt-BR')
                         : 'Sem validade'
                       }
                     </p>
@@ -5635,22 +5665,22 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   {/* Porcentagem de desconto */}
                   <div className="text-center">
                     <p className="text-amber-400 font-black text-3xl md:text-4xl leading-none">
-                      {cardData.activeCoupon.type === 'percentage' 
-                        ? `${cardData.activeCoupon.value}%`
-                        : cardData.activeCoupon.type === 'free_delivery'
+                      {currentCoupon.type === 'percentage' 
+                        ? `${currentCoupon.value}%`
+                        : currentCoupon.type === 'free_delivery'
                         ? 'FRETE'
-                        : `R$${Number(cardData.activeCoupon.value).toFixed(0)}`
+                        : `R$${Number(currentCoupon.value).toFixed(0)}`
                       }
                     </p>
                     <p className="text-amber-400 font-black text-3xl md:text-4xl">
-                      {cardData.activeCoupon.type === 'free_delivery' ? 'GRÁTIS' : 'OFF'}
+                      {currentCoupon.type === 'free_delivery' ? 'GRÁTIS' : 'OFF'}
                     </p>
                   </div>
                   
                   {/* Código do cupom - oculto mas mantendo espaço */}
                   <div className="mt-2 md:mt-3 bg-amber-400/20 border border-amber-400/50 rounded px-2 py-1 invisible">
                     <p className="text-amber-400 font-bold text-xs md:text-sm tracking-wider">
-                      {cardData.activeCoupon.code}
+                      {currentCoupon.code}
                     </p>
                   </div>
                   
@@ -5658,7 +5688,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   <div className="flex flex-col gap-1.5 mt-2 md:mt-3 w-full px-1">
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(cardData.activeCoupon?.code || '');
+                        navigator.clipboard.writeText(currentCoupon?.code || '');
                         const btn = document.getElementById('voucher-copy-btn');
                         if (btn) {
                           btn.textContent = '✓ Copiado!';
@@ -5673,11 +5703,11 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                     </button>
                     <button
                       onClick={() => {
-                        if (cardData?.activeCoupon && onApplyCoupon && cardData?.card?.id) {
+                        if (currentCoupon && onApplyCoupon && cardData?.card?.id) {
                           onApplyCoupon(
-                            cardData.activeCoupon.code,
-                            cardData.activeCoupon.type,
-                            cardData.activeCoupon.value,
+                            currentCoupon.code,
+                            currentCoupon.type,
+                            currentCoupon.value,
                             cardData.card.id
                           );
                         }
@@ -5688,8 +5718,59 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                       Usar agora
                     </button>
                   </div>
+                  
+                  {/* Seta para próximo cupom - só mostra se tiver múltiplos cupons */}
+                  {hasMultipleCoupons && (
+                    <button
+                      onClick={nextCoupon}
+                      className="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-amber-400/30 hover:bg-amber-400/50 rounded-full transition-colors"
+                      title="Próximo cupom"
+                    >
+                      <ChevronRight className="h-4 w-4 text-amber-400" />
+                    </button>
+                  )}
                 </div>
               </div>
+            )}
+            
+            {/* Indicador de múltiplos cupons e seta para cupom anterior */}
+            {hasMultipleCoupons && currentCoupon && (
+              <>
+                {/* Seta para cupom anterior */}
+                <button
+                  onClick={prevCoupon}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-colors z-10 mr-2"
+                  style={{ marginLeft: '-8px' }}
+                  title="Cupom anterior"
+                >
+                  <ChevronLeft className="h-5 w-5 text-gray-700" />
+                </button>
+                
+                {/* Seta para próximo cupom */}
+                <button
+                  onClick={nextCoupon}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-colors z-10 ml-2"
+                  style={{ marginRight: '-8px' }}
+                  title="Próximo cupom"
+                >
+                  <ChevronRight className="h-5 w-5 text-gray-700" />
+                </button>
+                
+                {/* Indicador de posição */}
+                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+                  {activeCoupons.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentCouponIndex(index)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        index === currentCouponIndex 
+                          ? 'bg-emerald-500 w-4' 
+                          : 'bg-gray-300 hover:bg-gray-400'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
             )}
           </div>
         </div>
