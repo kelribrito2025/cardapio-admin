@@ -1762,7 +1762,7 @@ export default function PublicMenu() {
               {/* Taxa de entrega - reflete configuração do restaurante */}
               <div className={cn(
                 "bg-white rounded-2xl shadow-sm border border-gray-100 mb-3 overflow-hidden border-l-[3px]",
-                establishment.deliveryFeeType === "free" ? "border-l-green-500" : 
+                establishment.deliveryFeeType === "free" ? "border-l-success" : 
                 establishment.deliveryFeeType === "fixed" ? "border-l-blue-500" : "border-l-amber-500"
               )} style={{height: '78px', borderRadius: '12px'}}>
                 <div className="flex h-full">
@@ -1772,11 +1772,11 @@ export default function PublicMenu() {
                     <div className="flex items-center gap-3">
                       {/* Ícone de caminhão com badge */}
                       <div className="relative">
-                        <div className="w-11 h-11 bg-green-100 rounded-full flex items-center justify-center">
-                          <Truck className="h-5 w-5 text-green-600" />
+                        <div className="w-11 h-11 bg-success/20 rounded-full flex items-center justify-center">
+                          <Truck className="h-5 w-5 text-success" />
                         </div>
                         {establishment.deliveryFeeType === "free" && (
-                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-success rounded-full flex items-center justify-center">
                             <span className="text-white text-xs font-bold">0</span>
                           </div>
                         )}
@@ -1803,7 +1803,7 @@ export default function PublicMenu() {
                     </div>
                     {/* Badge Grátis */}
                     {establishment.deliveryFeeType === "free" && (
-                      <button className="px-5 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                      <button className="px-5 py-2 bg-success text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-shadow">
                         Grátis
                       </button>
                     )}
