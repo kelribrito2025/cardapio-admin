@@ -2509,3 +2509,8 @@
 ## Remover Botões de Seta Externos do Modal de Cupons
 - [x] Remover botões de seta laterais externos (fora do cupom)
 - [x] Manter apenas as setas internas dentro do cupom (esquerda no lado amarelo, direita no lado escuro)
+
+
+## Bug: Botão 'Ver cupom ganho' Aparece Durante Troca de Cupons
+- [x] Ocultar botão 'Ver cupom ganho' quando já está visualizando os cupons (isFlipped=true)
+- [x] Botão só deve aparecer quando mostrando o cartão de carimbos

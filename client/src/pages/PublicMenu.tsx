@@ -5540,7 +5540,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               "bg-gray-100 px-3 py-3 md:px-5 md:py-4 text-center transition-all duration-300",
               showConfetti && "bg-emerald-50"
             )}>
-              {isCardComplete && hasCouponAvailable ? (
+              {isCardComplete && hasCouponAvailable && !isFlipped ? (
                 <button
                   onClick={() => setIsFlipped(true)}
                   className="w-full py-1.5 md:py-2 px-3 md:px-4 bg-gradient-to-br from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold text-sm md:text-base rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 animate-pulse"
