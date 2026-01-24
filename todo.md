@@ -2643,4 +2643,4 @@
 
 
 ## Indicador de Paginação dos Cupons
-- [x] Adicionar números dentro dos dots de paginação dos cupons
+- [x] Adicionar números dentro dos dots de paginação dos cupons (revertido a pedido do usuário)
