@@ -1,0 +1,8 @@
+Modal Meus Pedidos no Desktop:
+- O modal está aparecendo centralizado corretamente
+- Tem o ícone com container redondo roxo
+- Tem o cabeçalho com borda inferior
+- Está com rounded-2xl completo (não apenas rounded-t-2xl)
+- O modal está funcionando corretamente como modal centralizado no desktop
+
+O problema pode ser que o usuário estava vendo uma versão em cache ou o modal de sacola que tem estilo diferente.

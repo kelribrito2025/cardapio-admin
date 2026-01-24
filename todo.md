@@ -2580,3 +2580,9 @@
 - [x] Modal bottom sheet no mobile, centralizado no desktop (já estava correto com md:items-center md:justify-center)
 - [x] Aplicar background #f5f5f5 consistente com outros modais
 - [x] Ajustar rounded-t-2xl md:rounded-t-2xl no header
+
+
+## Corrigir Modal Meus Pedidos Desktop (v2)
+- [x] Modal já está centralizado corretamente no desktop (md:items-center md:justify-center)
+- [x] Aplicar rounded-2xl completo no desktop (md:rounded-2xl)
+- [x] Modal funcionando como modal normal no desktop com ícone e cabeçalho padronizado
