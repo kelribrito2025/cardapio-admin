@@ -2396,3 +2396,7 @@
 
 ## Ajuste de Espaçamento no Modal de Fidelidade
 - [x] Reduzir espaço entre o card de fidelidade e o card de histórico
+
+## Ajuste de Altura do Container do Card de Fidelidade
+- [x] Reduzir altura fixa do container do card para eliminar espaço vazio
+- [x] Garantir que o histórico fique próximo ao card de fidelidade
