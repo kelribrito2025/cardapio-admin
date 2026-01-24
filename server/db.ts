@@ -747,22 +747,38 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
               .limit(1);
             
             if (existingStamp.length === 0) {
-              // Adicionar carimbo
-              await db.insert(loyaltyStamps).values({
-                loyaltyCardId: cardId,
-                orderId: id,
-                orderNumber: order.orderNumber || '',
-                orderTotal: order.total,
-              });
-              
-              // Atualizar contador de carimbos no cartão
+              // Buscar cartão atual para verificar se precisa resetar
               const currentCard = await db.select().from(loyaltyCards).where(eq(loyaltyCards.id, cardId)).limit(1);
               if (currentCard.length > 0) {
-                const newStamps = currentCard[0].stamps + 1;
+                const stampsRequired = loyaltyStampsRequired || 6;
+                let currentStamps = currentCard[0].stamps;
+                
+                // Se o cartão já foi completado (stamps >= required), resetar antes de adicionar novo carimbo
+                if (currentStamps >= stampsRequired) {
+                  console.log(`[Fidelidade] Cartão ${cardId} já completado (${currentStamps}/${stampsRequired}). Resetando para novo ciclo.`);
+                  
+                  // Resetar carimbos para 0
+                  await db.update(loyaltyCards)
+                    .set({ stamps: 0 })
+                    .where(eq(loyaltyCards.id, cardId));
+                  
+                  // Histórico de carimbos é preservado - não deletar
+                  
+                  currentStamps = 0;
+                }
+                
+                // Adicionar carimbo
+                await db.insert(loyaltyStamps).values({
+                  loyaltyCardId: cardId,
+                  orderId: id,
+                  orderNumber: order.orderNumber || '',
+                  orderTotal: order.total,
+                });
+                
+                const newStamps = currentStamps + 1;
                 const newTotalStampsEarned = currentCard[0].totalStampsEarned + 1;
                 
                 // Verificar se completou o cartão
-                const stampsRequired = loyaltyStampsRequired || 6;
                 if (newStamps >= stampsRequired) {
                   // Gerar código único para o cupom de fidelidade (max 15 chars)
                   const couponCode = `FID${Date.now().toString(36).slice(-8).toUpperCase()}`;
@@ -2172,11 +2188,9 @@ export async function resetLoyaltyStampsOnCouponView(loyaltyCardId: number): Pro
     })
     .where(eq(loyaltyCards.id, loyaltyCardId));
   
-  // Deletar o histórico de carimbos do ciclo anterior
-  await db.delete(loyaltyStamps)
-    .where(eq(loyaltyStamps.loyaltyCardId, loyaltyCardId));
+  // Histórico de carimbos é preservado - não deletar
   
-  console.log(`[Fidelidade] Carimbos resetados para cartão ${loyaltyCardId} após visualização do cupom`);
+  console.log(`[Fidelidade] Carimbos resetados para cartão ${loyaltyCardId} após visualização do cupom (histórico preservado)`);
 }
 
 /**
@@ -2278,10 +2292,12 @@ export async function processLoyaltyStampForOrder(
     return { stampAdded: false, couponUnlocked: false, message: "Erro ao criar cartão de fidelidade" };
   }
   
-  // Verificar se o cartão já foi completado (tem cupom ativo)
+  // Verificar se o cartão já foi completado
   // Se sim, resetar os carimbos antes de adicionar o novo
   const requiredStamps = establishment.loyaltyStampsRequired || 6;
   let currentStamps = loyaltyCard.stamps;
+  
+  console.log(`[Fidelidade] Verificando cartão ${loyaltyCard.id}: stamps=${currentStamps}, required=${requiredStamps}, activeCouponId=${loyaltyCard.activeCouponId}`);
   
   if (currentStamps >= requiredStamps) {
     // Cartão já foi completado - resetar carimbos para começar novo ciclo
@@ -2292,9 +2308,7 @@ export async function processLoyaltyStampForOrder(
       .set({ stamps: 0 })
       .where(eq(loyaltyCards.id, loyaltyCard.id));
     
-    // Deletar histórico de carimbos do ciclo anterior
-    await db.delete(loyaltyStamps)
-      .where(eq(loyaltyStamps.loyaltyCardId, loyaltyCard.id));
+    // Histórico de carimbos é preservado - não deletar
     
     currentStamps = 0;
   }
@@ -2384,9 +2398,7 @@ export async function consumeLoyaltyCardCoupon(loyaltyCardId: number): Promise<v
     })
     .where(eq(loyaltyCards.id, loyaltyCardId));
   
-  // Deletar os carimbos antigos para limpar o histórico do ciclo anterior
-  await db.delete(loyaltyStamps)
-    .where(eq(loyaltyStamps.loyaltyCardId, loyaltyCardId));
+  // Histórico de carimbos é preservado - não deletar
   
-  console.log(`[Fidelidade] Cupom consumido e cartão ${loyaltyCardId} resetado ao estado inicial`);
+  console.log(`[Fidelidade] Cupom consumido e cartão ${loyaltyCardId} resetado ao estado inicial (histórico preservado)`);
 }

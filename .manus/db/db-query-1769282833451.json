@@ -1,0 +1,18 @@
+{
+  "query": "\nSELECT id, customerPhone, stamps, totalStampsEarned, couponsEarned, activeCouponId \nFROM loyaltyCards \nWHERE customerPhone LIKE '%999290000%';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute \nSELECT id, customerPhone, stamps, totalStampsEarned, couponsEarned, activeCouponId \nFROM loyaltyCards \nWHERE customerPhone LIKE '%999290000%';\n",
+  "rows": [
+    {
+      "id": "1",
+      "customerPhone": "88999290000",
+      "stamps": "3",
+      "totalStampsEarned": "3",
+      "couponsEarned": "2",
+      "activeCouponId": "60016"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcustomerPhone\tstamps\ttotalStampsEarned\tcouponsEarned\tactiveCouponId\n1\t88999290000\t3\t3\t2\t60016\n",
+  "stderr": "",
+  "execution_time_ms": 349
+}

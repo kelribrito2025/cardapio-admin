@@ -2674,3 +2674,4 @@
 - [x] Carimbos resetam automaticamente quando novo pedido é entregue após completar o cartão
 - [x] "Ver cupom ganho" apenas mostra o cupom, não reseta carimbos
 - [x] Fluxo: 1/2 → 2/2 (cupom criado) → novo pedido entregue → reset + 1/2
+- [x] Corrigir: histórico de carimbos não deve ser deletado no reset automático
