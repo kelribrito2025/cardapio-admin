@@ -5775,7 +5775,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                     <button
                       onClick={nextCoupon}
                       className="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-amber-400/30 hover:bg-amber-400/50 rounded-full transition-colors"
-                      title="Próximo cupom"
+                      title="Próximo cupom" style={{marginRight: '10px'}}
                     >
                       <ChevronRight className="h-4 w-4 text-amber-400" />
                     </button>
