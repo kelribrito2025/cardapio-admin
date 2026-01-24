@@ -5357,7 +5357,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             "[transform-style:preserve-3d]"
           )}
           style={{ 
-            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)', height: '243px'
           }}
         >
           {/* Face Frontal - Carimbos */}
