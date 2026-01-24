@@ -1,0 +1,28 @@
+{
+  "query": "SELECT id, establishmentId, neighborhood, fee FROM neighborhoodFees WHERE establishmentId = 30001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, establishmentId, neighborhood, fee FROM neighborhoodFees WHERE establishmentId = 30001;",
+  "rows": [
+    {
+      "id": "1",
+      "establishmentId": "30001",
+      "neighborhood": "cardere",
+      "fee": "3.00"
+    },
+    {
+      "id": "2",
+      "establishmentId": "30001",
+      "neighborhood": "dsfsfdsfsfsdf",
+      "fee": "3.00"
+    },
+    {
+      "id": "3",
+      "establishmentId": "30001",
+      "neighborhood": "Centro",
+      "fee": "5.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\tneighborhood\tfee\n1\t30001\tcardere\t3.00\n2\t30001\tdsfsfdsfsfsdf\t3.00\n3\t30001\tCentro\t5.00\n",
+  "stderr": "",
+  "execution_time_ms": 352
+}

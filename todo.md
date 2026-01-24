@@ -2702,3 +2702,4 @@
 - [ ] Adicionar estimativa de tempo de entrega
 - [x] Corrigir erro ao salvar taxas por bairro (bairros agora persistem corretamente)
 - [x] Corrigir dropdown de seleção de bairros no cardápio público (não mostra os bairros cadastrados)
+- [x] Bug: Bairros não aparecem no dropdown do menu público para cliente 30001 (tabela criada no banco)
