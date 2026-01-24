@@ -5860,13 +5860,13 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
         )}
       </div>
       
-      {/* Botão Sair */}
-      <button
+      {/* Botão Sair - Oculto conforme solicitação */}
+      {/* <button
         onClick={onLogout}
         className="w-full py-2.5 md:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-sm md:text-base rounded-xl transition-colors"
       >
         Sair do cartão
-      </button>
+      </button> */}
       
       {/* Modal Regulamento */}
       {showRules && (

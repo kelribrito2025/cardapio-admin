@@ -2632,3 +2632,7 @@
 - [x] Verificar modal Sacola (sua sacola) - corrigido: bg branco, shadow-2xl, fundo body #ffffff
 - [x] Verificar modal Checkout - corrigido: ícone colorido no header, shadow-2xl, estrutura padronizada
 - [x] Verificar modal Acompanhar Pedido - já estava correto
+
+
+## Ajustes no Modal Cartão Fidelidade
+- [x] Ocultar botão "Sair do cartão" no modal de Cartão Fidelidade
