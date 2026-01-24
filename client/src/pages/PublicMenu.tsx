@@ -5348,7 +5348,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {/* Card Principal com Flip */}
       <div 
         className="relative h-[280px] md:h-[320px]"

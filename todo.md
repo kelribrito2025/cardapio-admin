@@ -2393,3 +2393,6 @@
 - [x] Resetar os carimbos (stamps) do cartão para iniciar novo ciclo
 - [x] Atualizar frontend para passar loyaltyCardId ao criar pedido
 - [x] Testar fluxo completo de uso do cupom
+
+## Ajuste de Espaçamento no Modal de Fidelidade
+- [x] Reduzir espaço entre o card de fidelidade e o card de histórico
