@@ -2680,3 +2680,4 @@
 - [x] Corrigir bug: cabeçalho do modal Cartão Fidelidade com fundo cinza e título sumindo
 - [x] Exibir cupom aplicado no modal de detalhes do pedido
 - [x] Exibir cupom aplicado na versão de impressão do pedido
+- [x] Corrigir arredondamento do modal Sua Sacola na versão desktop
