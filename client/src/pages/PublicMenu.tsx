@@ -5804,18 +5804,20 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             {/* Indicador de múltiplos cupons */}
             {hasMultipleCoupons && currentCoupon && (
               <>
-                {/* Indicador de posição */}
+                {/* Indicador de posição com números */}
                 <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
                   {activeCoupons.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentCouponIndex(index)}
-                      className={`w-2 h-2 rounded-full transition-all ${
+                      className={`w-5 h-5 rounded-full transition-all flex items-center justify-center text-[10px] font-bold ${
                         index === currentCouponIndex 
-                          ? 'bg-emerald-500 w-4' 
-                          : 'bg-gray-300 hover:bg-gray-400'
+                          ? 'bg-emerald-500 text-white' 
+                          : 'bg-gray-300 text-gray-600 hover:bg-gray-400'
                       }`}
-                    />
+                    >
+                      {index + 1}
+                    </button>
                   ))}
                 </div>
               </>

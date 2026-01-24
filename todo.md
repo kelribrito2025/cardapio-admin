@@ -2640,3 +2640,7 @@
 
 ## Ajustes no Cupom de Desconto
 - [x] Ajustar cor das bolinhas (recortes circulares) do cupom para #ffffff (branco) igual ao fundo do modal
+
+
+## Indicador de Paginação dos Cupons
+- [x] Adicionar números dentro dos dots de paginação dos cupons
