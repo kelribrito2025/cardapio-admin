@@ -5493,104 +5493,115 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             </div>
           </div>
           
-          {/* Face Traseira - Cupom */}
+          {/* Face Traseira - Cupom (Estilo Voucher) */}
           <div 
-            className="absolute inset-0 bg-white rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden]"
+            className="absolute inset-0 rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden]"
             style={{ transform: 'rotateY(180deg)' }}
           >
-            {/* Confetti de fundo animado */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-              {[...Array(12)].map((_, i) => (
-                <div
-                  key={i}
-                  className="absolute animate-bounce"
-                  style={{
-                    left: `${5 + (i * 8)}%`,
-                    top: `${15 + Math.random() * 70}%`,
-                    animationDelay: `${i * 0.15}s`,
-                    animationDuration: `${2 + Math.random()}s`,
-                    fontSize: '12px',
-                    opacity: 0.5
-                  }}
-                >
-                  {['🎉', '✨', '🎊', '🌟', '💫', '🎁'][i % 6]}
-                </div>
-              ))}
-            </div>
-            
-            {/* Header do cupom */}
-            <div className="bg-gradient-to-r from-orange-400 to-amber-500 px-3 py-2 md:px-4 md:py-3 text-center relative">
-              <div className="flex items-center justify-center gap-2">
-                <span className="text-base md:text-xl">🎉</span>
-                <h3 className="text-white font-bold text-sm md:text-base">Cupom desbloqueado!</h3>
-              </div>
-              {/* Botão para virar de volta */}
-              <button
-                onClick={() => setIsFlipped(false)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
-                title="Voltar para carimbos"
-              >
-                <RotateCcw className="h-4 w-4 text-white" />
-              </button>
-            </div>
-            
-            {/* Corpo do cupom */}
-            <div className="bg-gradient-to-b from-amber-50 to-orange-50 p-3 md:p-4 relative h-[calc(100%-40px)] md:h-[calc(100%-52px)] flex flex-col">
-              {cardData?.activeCoupon && (
-                <>
-                  <p className="text-gray-600 text-center text-xs md:text-sm mb-1.5 md:mb-2">Seu código de desconto:</p>
+            {cardData?.activeCoupon && (
+              <div className="h-full flex">
+                {/* Lado Esquerdo - Amarelo/Dourado */}
+                <div className="flex-[1.3] bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-500 p-3 md:p-4 flex flex-col justify-between relative">
+                  {/* Recorte circular no lado direito */}
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-5 h-10 bg-gray-100 rounded-l-full" />
                   
-                  {/* Código do cupom com borda tracejada */}
-                  <div className="relative mx-auto max-w-xs mb-2 md:mb-3">
-                    <div className="bg-white border-2 border-dashed border-amber-400 rounded-lg px-3 py-1.5 md:px-4 md:py-2 flex items-center justify-center gap-2">
-                      <span className="text-base md:text-lg">🎫</span>
-                      <span className="text-base md:text-lg font-bold text-gray-800 tracking-wider">
-                        {cardData.activeCoupon.code}
-                      </span>
-                    </div>
-                    {/* Badge de presente no canto */}
-                    <div className="absolute -top-2 -right-2 bg-amber-500 rounded-full p-1.5 shadow-lg">
-                      <Gift className="h-3.5 w-3.5 text-white" />
-                    </div>
+                  {/* Conteúdo superior */}
+                  <div>
+                    <h3 className="text-gray-900 font-black text-lg md:text-xl uppercase tracking-tight">Desconto</h3>
+                    <p className="text-gray-800 font-semibold text-xs md:text-sm uppercase tracking-wide">Voucher</p>
                   </div>
                   
-                  {/* Descrição do cupom */}
-                  <p className="text-center text-gray-700 text-xs md:text-sm mb-0.5 md:mb-1">
-                    {cardData.activeCoupon.type === 'percentage' 
-                      ? `${cardData.activeCoupon.value}% de desconto`
-                      : cardData.activeCoupon.type === 'free_delivery'
-                      ? 'Frete grátis'
-                      : `R$ ${Number(cardData.activeCoupon.value).toFixed(2)} de desconto`
-                    } no próximo pedido
-                  </p>
+                  {/* Ícones de talheres no centro */}
+                  <div className="flex items-center justify-center gap-0 my-2">
+                    <svg className="w-8 h-16 md:w-10 md:h-20 text-gray-900/80" viewBox="0 0 24 48" fill="currentColor">
+                      {/* Garfo */}
+                      <path d="M6 2v14c0 2 1 3 3 3v27h2V19c2 0 3-1 3-3V2h-2v12h-1V2h-2v12h-1V2H6z" />
+                    </svg>
+                    <svg className="w-6 h-16 md:w-8 md:h-20 text-gray-900/80" viewBox="0 0 24 48" fill="currentColor">
+                      {/* Colher */}
+                      <path d="M12 2c-4 0-6 3-6 7 0 4 2 7 5 8v29h2V17c3-1 5-4 5-8 0-4-2-7-6-7z" />
+                    </svg>
+                  </div>
                   
                   {/* Validade */}
-                  {cardData.activeCoupon.expiresAt && (
-                    <p className="text-center text-gray-500 text-[10px] md:text-xs mb-2 md:mb-3">
-                      Válido até: {new Date(cardData.activeCoupon.expiresAt).toLocaleDateString('pt-BR')}
+                  <div>
+                    <p className="text-gray-800 font-bold text-[10px] md:text-xs uppercase">Validade</p>
+                    <p className="text-gray-900 font-semibold text-xs md:text-sm">
+                      {cardData.activeCoupon.expiresAt 
+                        ? new Date(cardData.activeCoupon.expiresAt).toLocaleDateString('pt-BR')
+                        : 'Sem validade'
+                      }
                     </p>
-                  )}
+                  </div>
+                  
+                  {/* Botão voltar */}
+                  <button
+                    onClick={() => setIsFlipped(false)}
+                    className="absolute left-2 top-2 p-1.5 bg-gray-900/20 hover:bg-gray-900/30 rounded-full transition-colors"
+                    title="Voltar para carimbos"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5 text-gray-900" />
+                  </button>
+                </div>
+                
+                {/* Linha tracejada vertical */}
+                <div className="w-0 border-l-2 border-dashed border-gray-400 relative">
+                  {/* Recorte superior */}
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-4 h-4 bg-gray-100 rounded-full" />
+                  {/* Recorte inferior */}
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-4 bg-gray-100 rounded-full" />
+                </div>
+                
+                {/* Lado Direito - Escuro */}
+                <div className="flex-1 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 p-3 md:p-4 flex flex-col items-center justify-center relative">
+                  {/* Borda serrilhada direita */}
+                  <div className="absolute right-0 top-0 bottom-0 w-2 flex flex-col justify-between py-1">
+                    {[...Array(12)].map((_, i) => (
+                      <div key={i} className="w-2 h-2 bg-gray-100 rounded-full -mr-1" />
+                    ))}
+                  </div>
+                  
+                  {/* Porcentagem de desconto */}
+                  <div className="text-center">
+                    <p className="text-amber-400 font-black text-3xl md:text-4xl leading-none">
+                      {cardData.activeCoupon.type === 'percentage' 
+                        ? `${cardData.activeCoupon.value}%`
+                        : cardData.activeCoupon.type === 'free_delivery'
+                        ? 'FRETE'
+                        : `R$${Number(cardData.activeCoupon.value).toFixed(0)}`
+                      }
+                    </p>
+                    <p className="text-amber-400 font-black text-xl md:text-2xl">
+                      {cardData.activeCoupon.type === 'free_delivery' ? 'GRÁTIS' : 'OFF'}
+                    </p>
+                  </div>
+                  
+                  {/* Código do cupom */}
+                  <div className="mt-2 md:mt-3 bg-amber-400/20 border border-amber-400/50 rounded px-2 py-1">
+                    <p className="text-amber-400 font-bold text-xs md:text-sm tracking-wider">
+                      {cardData.activeCoupon.code}
+                    </p>
+                  </div>
                   
                   {/* Botões */}
-                  <div className="flex gap-2 mt-auto">
+                  <div className="flex flex-col gap-1.5 mt-2 md:mt-3 w-full px-1">
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(cardData.activeCoupon?.code || '');
-                        const btn = document.getElementById('flip-copy-btn');
+                        const btn = document.getElementById('voucher-copy-btn');
                         if (btn) {
                           btn.textContent = '✓ Copiado!';
-                          setTimeout(() => { btn.textContent = 'Copiar código'; }, 2000);
+                          setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
                         }
                       }}
-                      id="flip-copy-btn"
-                      className="flex-1 py-2 px-2 md:py-2.5 md:px-3 bg-white border border-gray-200 hover:border-gray-300 text-gray-700 font-medium text-xs md:text-sm rounded-lg transition-all flex items-center justify-center gap-1 md:gap-1.5"
+                      id="voucher-copy-btn"
+                      className="w-full py-1.5 px-2 bg-transparent border border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-gray-900 font-semibold text-[10px] md:text-xs rounded transition-all flex items-center justify-center gap-1"
                     >
-                      <Copy className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                      Copiar código
+                      <Copy className="h-3 w-3" />
+                      Copiar
                     </button>
                     <button
                       onClick={() => {
-                        // Aplicar cupom no checkout e fechar modal
                         if (cardData?.activeCoupon && onApplyCoupon && cardData?.card?.id) {
                           onApplyCoupon(
                             cardData.activeCoupon.code,
@@ -5600,15 +5611,15 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                           );
                         }
                       }}
-                      className="flex-1 py-2 px-2 md:py-2.5 md:px-3 bg-gradient-to-r from-orange-400 to-amber-500 hover:from-orange-500 hover:to-amber-600 text-white font-medium text-xs md:text-sm rounded-lg transition-all flex items-center justify-center gap-1 md:gap-1.5 shadow-md"
+                      className="w-full py-1.5 px-2 bg-amber-400 hover:bg-amber-500 text-gray-900 font-semibold text-[10px] md:text-xs rounded transition-all flex items-center justify-center gap-1"
                     >
-                      <ShoppingBag className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                      <ShoppingBag className="h-3 w-3" />
                       Usar agora
                     </button>
                   </div>
-                </>
-              )}
-            </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

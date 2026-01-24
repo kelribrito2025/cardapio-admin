@@ -2400,3 +2400,10 @@
 ## Ajuste de Altura do Container do Card de Fidelidade
 - [x] Reduzir altura fixa do container do card para eliminar espaço vazio
 - [x] Garantir que o histórico fique próximo ao card de fidelidade
+
+## Redesign do Cupom de Desconto (Estilo Voucher)
+- [ ] Criar visual de voucher com duas seções (amarelo e escuro)
+- [ ] Adicionar bordas serrilhadas estilo ticket
+- [ ] Incluir ícones de talheres no centro
+- [ ] Exibir porcentagem de desconto em destaque
+- [ ] Mostrar data de validade
