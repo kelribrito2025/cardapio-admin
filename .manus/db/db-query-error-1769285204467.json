@@ -1,0 +1,10 @@
+{
+  "query": "\n-- Verificar cartão de fidelidade do cliente\nSELECT lc.id, lc.customerPhone, lc.stamps, lc.totalStampsEarned, lc.couponsEarned, lc.activeCouponId\nFROM loyaltyCards lc\nWHERE lc.customerPhone LIKE '%999290000%';\n\n-- Verificar todos os cupons de fidelidade criados para este cliente\nSELECT c.id, c.code, c.type, c.value, c.quantity, c.usedCount, c.isActive, c.loyaltyCardId, c.createdAt\nFROM coupons c\nWHERE c.loyaltyCardId IN (\n  SELECT id FROM loyaltyCards WHERE customerPhone LIKE '%999290000%'\n)\nORDER BY c.createdAt DESC;\n\n-- Verificar histórico de carimbos\nSELECT ls.id, ls.loyaltyCardId, ls.orderId, ls.orderNumber, ls.orderTotal, ls.createdAt\nFROM loyaltyStamps ls\nWHERE ls.loyaltyCardId IN (\n  SELECT id FROM loyaltyCards WHERE customerPhone LIKE '%999290000%'\n)\nORDER BY ls.createdAt DESC;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute \n-- Verificar cartão de fidelidade do cliente\nSELECT lc.id, lc.customerPhone, lc.stamps, lc.totalStampsEarned, lc.couponsEarned, lc.activeCouponId\nFROM loyaltyCards lc\nWHERE lc.customerPhone LIKE '%999290000%';\n\n-- Verificar todos os cupons de fidelidade criados para este cliente\nSELECT c.id, c.code, c.type, c.value, c.quantity, c.usedCount, c.isActive, c.loyaltyCardId, c.createdAt\nFROM coupons c\nWHERE c.loyaltyCardId IN (\n  SELECT id FROM loyaltyCards WHERE customerPhone LIKE '%999290000%'\n)\nORDER BY c.createdAt DESC;\n\n-- Verificar histórico de carimbos\nSELECT ls.id, ls.loyaltyCardId, ls.orderId, ls.orderNumber, ls.orderTotal, ls.createdAt\nFROM loyaltyStamps ls\nWHERE ls.loyaltyCardId IN (\n  SELECT id FROM loyaltyCards WHERE customerPhone LIKE '%999290000%'\n)\nORDER BY ls.createdAt DESC;\n",
+  "returncode": 1,
+  "logs": [
+    "id\tcustomerPhone\tstamps\ttotalStampsEarned\tcouponsEarned\tactiveCouponId",
+    "1\t88999290000\t1\t11\t5\t60023",
+    "ERROR 1054 (42S22) at line 8: Unknown column 'c.loyaltycardid' in 'where clause'"
+  ]
+}

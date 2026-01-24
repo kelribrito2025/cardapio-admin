@@ -814,11 +814,17 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
                   
                   // NÃO resetar carimbos automaticamente - apenas vincular cupom ativo
                   // Os carimbos serão resetados quando o usuário clicar em "Ver cupom ganho"
+                  
+                  // Adicionar novo cupom ao array de cupons ativos
+                  const currentActiveCouponIds = currentCard[0].activeCouponIds || [];
+                  const newActiveCouponIds = [...currentActiveCouponIds, couponId];
+                  
                   await db.update(loyaltyCards).set({
                     stamps: newStamps, // Manter os carimbos até o usuário visualizar o cupom
                     totalStampsEarned: newTotalStampsEarned,
                     couponsEarned: currentCard[0].couponsEarned + 1,
-                    activeCouponId: couponId,
+                    activeCouponId: couponId, // Manter para compatibilidade
+                    activeCouponIds: newActiveCouponIds, // Array com todos os cupons
                   }).where(eq(loyaltyCards.id, cardId));
                   
                   console.log(`[Fidelidade] Cliente ${order.customerPhone} completou cartão e ganhou cupom ${couponCode}! Carimbos serão resetados ao visualizar cupom.`);
@@ -2340,9 +2346,14 @@ export async function processLoyaltyStampForOrder(
     });
     
     // Vincular o cupom ao cartão (não resetar carimbos aqui - será resetado no próximo pedido)
+    // Adicionar ao array de cupons ativos
+    const currentActiveCouponIds = loyaltyCard.activeCouponIds || [];
+    const newActiveCouponIds = [...currentActiveCouponIds, couponResult[0].insertId];
+    
     await db.update(loyaltyCards)
       .set({
-        activeCouponId: couponResult[0].insertId,
+        activeCouponId: couponResult[0].insertId, // Manter para compatibilidade
+        activeCouponIds: newActiveCouponIds, // Array com todos os cupons
         couponsEarned: sql`${loyaltyCards.couponsEarned} + 1`,
       })
       .where(eq(loyaltyCards.id, loyaltyCard.id));
@@ -2362,14 +2373,14 @@ export async function processLoyaltyStampForOrder(
 }
 
 /**
- * Consome o cupom de fidelidade e reseta o cartão ao estado inicial
+ * Consome um cupom de fidelidade específico
  * Chamado quando o cliente usa o cupom de fidelidade em um pedido
  */
-export async function consumeLoyaltyCardCoupon(loyaltyCardId: number): Promise<void> {
+export async function consumeLoyaltyCardCoupon(loyaltyCardId: number, couponIdToConsume?: number): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  // Buscar o cartão para obter o cupom ativo
+  // Buscar o cartão para obter os cupons ativos
   const card = await db.select().from(loyaltyCards)
     .where(eq(loyaltyCards.id, loyaltyCardId))
     .limit(1);
@@ -2378,27 +2389,34 @@ export async function consumeLoyaltyCardCoupon(loyaltyCardId: number): Promise<v
     throw new Error("Cartão de fidelidade não encontrado");
   }
   
-  const activeCouponId = card[0].activeCouponId;
+  // Usar o cupom especificado ou o primeiro do array/legado
+  const activeCouponIds = card[0].activeCouponIds || [];
+  const couponIdToUse = couponIdToConsume || card[0].activeCouponId || (activeCouponIds.length > 0 ? activeCouponIds[0] : null);
   
   // Marcar o cupom como usado (se existir)
-  if (activeCouponId) {
+  if (couponIdToUse) {
     await db.update(coupons)
       .set({ 
         usedCount: sql`${coupons.usedCount} + 1`,
         quantity: 1, // Garantir que não pode ser usado novamente
       })
-      .where(eq(coupons.id, activeCouponId));
+      .where(eq(coupons.id, couponIdToUse));
   }
   
-  // Limpar o cupom ativo do cartão (resetar para estado inicial)
-  // Os carimbos já foram zerados quando o cupom foi gerado
+  // Remover o cupom usado do array
+  const newActiveCouponIds = activeCouponIds.filter(id => id !== couponIdToUse);
+  
+  // Atualizar o cartão - definir o próximo cupom como ativo (se houver)
+  const nextActiveCouponId = newActiveCouponIds.length > 0 ? newActiveCouponIds[0] : null;
+  
   await db.update(loyaltyCards)
     .set({ 
-      activeCouponId: null,
+      activeCouponId: nextActiveCouponId, // Próximo cupom ou null
+      activeCouponIds: newActiveCouponIds.length > 0 ? newActiveCouponIds : null, // Array atualizado ou null
     })
     .where(eq(loyaltyCards.id, loyaltyCardId));
   
   // Histórico de carimbos é preservado - não deletar
   
-  console.log(`[Fidelidade] Cupom consumido e cartão ${loyaltyCardId} resetado ao estado inicial (histórico preservado)`);
+  console.log(`[Fidelidade] Cupom ${couponIdToUse} consumido. Cupons restantes: ${newActiveCouponIds.length}`);
 }

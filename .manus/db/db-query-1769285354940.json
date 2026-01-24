@@ -1,0 +1,148 @@
+{
+  "query": "\n-- Verificar os cupons de fidelidade ativos (não usados) do cliente\nSELECT id, code, status, usedCount FROM coupons \nWHERE code LIKE 'FID%' AND status = 'active' AND usedCount = 0\nORDER BY createdAt DESC;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute \n-- Verificar os cupons de fidelidade ativos (não usados) do cliente\nSELECT id, code, status, usedCount FROM coupons \nWHERE code LIKE 'FID%' AND status = 'active' AND usedCount = 0\nORDER BY createdAt DESC;\n",
+  "rows": [
+    {
+      "id": "60023",
+      "code": "FIDMKSQKSZA",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60022",
+      "code": "FIDMKSQH9YH",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60021",
+      "code": "FIDMKSQ71RJ",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60020",
+      "code": "FIDMKSQ2PYS",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60019",
+      "code": "FIDMKSPZ8AS",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60018",
+      "code": "FIDMKSPM7K8",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60017",
+      "code": "FIDMKSPLY0Q",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60016",
+      "code": "FIDMKSP5M3J",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60015",
+      "code": "FIDMKSP39OZ",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60014",
+      "code": "FIDMKSOMEIH",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60013",
+      "code": "FIDMKSOKEJA",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60012",
+      "code": "FIDMKSO6CO8",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60011",
+      "code": "FIDMKSO4ZIO",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60010",
+      "code": "FIDMKSNSLN9",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60009",
+      "code": "FIDMKSNR4FC",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60008",
+      "code": "FIDMKSLKG9T",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60007",
+      "code": "FIDMKSLI7FV",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60006",
+      "code": "FIDMKSKTOHY",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60005",
+      "code": "FIDMKSJDOHF",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60004",
+      "code": "FIDKXPCUSZZ",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60003",
+      "code": "FID1E31FGOB",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "60002",
+      "code": "FIDMKSDQWIY",
+      "status": "active",
+      "usedCount": "0"
+    },
+    {
+      "id": "30001",
+      "code": "FIDELID1",
+      "status": "active",
+      "usedCount": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcode\tstatus\tusedCount\n60023\tFIDMKSQKSZA\tactive\t0\n60022\tFIDMKSQH9YH\tactive\t0\n60021\tFIDMKSQ71RJ\tactive\t0\n60020\tFIDMKSQ2PYS\tactive\t0\n60019\tFIDMKSPZ8AS\tactive\t0\n60018\tFIDMKSPM7K8\tactive\t0\n60017\tFIDMKSPLY0Q\tactive\t0\n60016\tFIDMKSP5M3J\tactive\t0\n60015\tFIDMKSP39OZ\tactive\t0\n60014\tFIDMKSOMEIH\tactive\t0\n60013\tFIDMKSOKEJA\tactive\t0\n60012\tFIDMKSO6CO8\tactive\t0\n60011\tFIDMKSO4ZIO\tactive\t0\n60010\tFIDMKSNSLN9\tactive\t0\n60009\tFIDMKSNR4FC\tactive\t0\n60008\tFIDMKSLKG9T\tactive\t0\n60007\tFIDMKSLI7FV\tactive\t0\n60006\tFIDMKSKTOHY\tactive\t0\n60005\tFIDMKSJDOHF\tactive\t0\n60004\tFIDKXPCUSZZ\tactive\t0\n60003\tFID1E31FGOB\tactive\t0\n60002\tFIDMKSDQWIY\tactive\t0\n30001\tFIDELID1\tactive\t0\n",
+  "stderr": "",
+  "execution_time_ms": 348
+}

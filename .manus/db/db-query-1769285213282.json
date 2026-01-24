@@ -1,0 +1,18 @@
+{
+  "query": "\n-- Verificar cartão de fidelidade do cliente\nSELECT id, customerPhone, stamps, totalStampsEarned, couponsEarned, activeCouponId\nFROM loyaltyCards\nWHERE customerPhone LIKE '%999290000%';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute \n-- Verificar cartão de fidelidade do cliente\nSELECT id, customerPhone, stamps, totalStampsEarned, couponsEarned, activeCouponId\nFROM loyaltyCards\nWHERE customerPhone LIKE '%999290000%';\n",
+  "rows": [
+    {
+      "id": "1",
+      "customerPhone": "88999290000",
+      "stamps": "1",
+      "totalStampsEarned": "11",
+      "couponsEarned": "5",
+      "activeCouponId": "60023"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcustomerPhone\tstamps\ttotalStampsEarned\tcouponsEarned\tactiveCouponId\n1\t88999290000\t1\t11\t5\t60023\n",
+  "stderr": "",
+  "execution_time_ms": 351
+}
