@@ -5498,7 +5498,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
           
           {/* Face Traseira - Cupom (Estilo Voucher) */}
           <div 
-            className="absolute inset-0 rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden]"
+            className="absolute inset-0 rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden] bg-white"
             style={{ transform: 'rotateY(180deg)' }}
           >
             {cardData?.activeCoupon && (
@@ -5596,11 +5596,9 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   </button>
                 </div>
                 
-                {/* Linha serrilhada vertical com círculos */}
-                <div className="w-4 relative flex flex-col items-center justify-between py-1">
-                  {Array.from({ length: 12 }).map((_, i) => (
-                    <div key={i} className="w-3 h-3 rounded-full bg-white shadow-sm" />
-                  ))}
+                {/* Linha tracejada vertical */}
+                <div className="w-0 border-l-2 border-dashed border-gray-400 relative">
+                  
                 </div>
                 
                 {/* Lado Direito - Escuro com máscara de recorte */}

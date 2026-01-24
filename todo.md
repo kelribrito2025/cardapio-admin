@@ -2453,3 +2453,9 @@
 ## Serrilhado Central do Cupom
 - [x] Aumentar quantidade de serrilhados na linha central do cupom (12 círculos brancos)
 - [x] Remover cor verde - substituída linha tracejada por círculos brancos sólidos
+
+## Reverter Linha Central do Cupom
+- [x] Reverter para linha tracejada original (remover círculos brancos)
+
+## Remover Efeito Verde do Cupom
+- [x] Identificar e remover o efeito verde que aparece atrás do cartão de cupom (adicionado bg-white na face traseira)
