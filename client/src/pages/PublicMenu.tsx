@@ -5761,16 +5761,6 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               
 
             </div>
-            
-            {/* Footer Button */}
-            <div className="px-6 pb-6 pt-2 flex-shrink-0">
-              <button
-                onClick={() => setShowRules(false)}
-                className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg"
-              >
-                Entendi
-              </button>
-            </div>
           </div>
         </div>
       )}
