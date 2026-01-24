@@ -1423,6 +1423,40 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.getLoyaltyCardsByEstablishment(input.establishmentId);
       }),
+    
+    // Resetar carimbos quando usuário visualiza o cupom ganho (público)
+    viewCouponAndResetStamps: publicProcedure
+      .input(z.object({ 
+        establishmentId: z.number(), 
+        phone: z.string(),
+        password: z.string()
+      }))
+      .mutation(async ({ input }) => {
+        // Verificar login do cliente
+        const card = await db.getLoyaltyCardByPhone(input.establishmentId, input.phone);
+        if (!card) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Cartão não encontrado' });
+        }
+        
+        // Verificar senha
+        const bcrypt = await import('bcryptjs');
+        const isValid = await bcrypt.compare(input.password, card.password4Hash);
+        if (!isValid) {
+          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Senha incorreta' });
+        }
+        
+        // Verificar se tem cupom ativo (cartão foi completado)
+        if (!card.activeCouponId) {
+          return { success: false, message: 'Nenhum cupom disponível para visualizar' };
+        }
+        
+        // Resetar os carimbos e deletar histórico de carimbos
+        await db.resetLoyaltyStampsOnCouponView(card.id);
+        
+        console.log(`[Fidelidade] Carimbos resetados para cliente ${input.phone} após visualizar cupom`);
+        
+        return { success: true, message: 'Carimbos resetados com sucesso' };
+      }),
   }),
 
   // ============ UPLOAD ============

@@ -796,15 +796,16 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
                   
                   const couponId = newCoupon[0].insertId;
                   
-                  // Resetar carimbos, incrementar cupons ganhos e vincular cupom ativo
+                  // NÃO resetar carimbos automaticamente - apenas vincular cupom ativo
+                  // Os carimbos serão resetados quando o usuário clicar em "Ver cupom ganho"
                   await db.update(loyaltyCards).set({
-                    stamps: 0,
+                    stamps: newStamps, // Manter os carimbos até o usuário visualizar o cupom
                     totalStampsEarned: newTotalStampsEarned,
                     couponsEarned: currentCard[0].couponsEarned + 1,
                     activeCouponId: couponId,
                   }).where(eq(loyaltyCards.id, cardId));
                   
-                  console.log(`[Fidelidade] Cliente ${order.customerPhone} completou cartão e ganhou cupom ${couponCode}!`);
+                  console.log(`[Fidelidade] Cliente ${order.customerPhone} completou cartão e ganhou cupom ${couponCode}! Carimbos serão resetados ao visualizar cupom.`);
                 } else {
                   await db.update(loyaltyCards).set({
                     stamps: newStamps,
@@ -2153,6 +2154,29 @@ export async function resetLoyaltyStamps(loyaltyCardId: number, couponId?: numbe
       activeCouponId: couponId || null,
     })
     .where(eq(loyaltyCards.id, loyaltyCardId));
+}
+
+/**
+ * Reseta os carimbos do cartão quando usuário visualiza o cupom ganho
+ * Não incrementa couponsEarned pois já foi incrementado ao completar o cartão
+ * Mantém o activeCouponId para o usuário poder usar o cupom
+ */
+export async function resetLoyaltyStampsOnCouponView(loyaltyCardId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Apenas resetar os carimbos, manter o cupom ativo
+  await db.update(loyaltyCards)
+    .set({
+      stamps: 0,
+    })
+    .where(eq(loyaltyCards.id, loyaltyCardId));
+  
+  // Deletar o histórico de carimbos do ciclo anterior
+  await db.delete(loyaltyStamps)
+    .where(eq(loyaltyStamps.loyaltyCardId, loyaltyCardId));
+  
+  console.log(`[Fidelidade] Carimbos resetados para cartão ${loyaltyCardId} após visualização do cupom`);
 }
 
 /**

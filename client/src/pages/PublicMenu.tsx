@@ -4800,10 +4800,17 @@ export default function PublicMenu() {
               {loyaltyStep === 'card' && isLoyaltyLoggedIn && (
                 <LoyaltyCardView
                   establishmentName={data?.establishment?.name || ''}
+                  establishmentId={data?.establishment?.id || 0}
+                  customerPhone={loyaltyPhone}
+                  customerPassword={loyaltyPassword}
                   cardData={loyaltyCardQuery.data}
                   stampsRequired={loyaltyEnabled?.stampsRequired || 6}
                   isLoading={loyaltyCardQuery.isLoading}
                   isModalOpen={showLoyaltyModal}
+                  onCouponViewed={() => {
+                    // Recarregar dados do cartão após resetar carimbos
+                    loyaltyCardQuery.refetch();
+                  }}
                   onLogout={() => {
                     setIsLoyaltyLoggedIn(false);
                     setLoyaltyPhone('');
@@ -5291,8 +5298,12 @@ function LoyaltyRegisterForm({
   );
 }
 
-function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoading, isModalOpen, onLogout, onApplyCoupon }: {
+function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoading, isModalOpen, onLogout, onApplyCoupon, establishmentId, customerPhone, customerPassword, onCouponViewed }: {
   establishmentName: string;
+  establishmentId: number;
+  customerPhone: string;
+  customerPassword: string;
+  onCouponViewed?: () => void;
   cardData: {
     card: {
       id: number;
@@ -5343,6 +5354,36 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
   const [animationDirection, setAnimationDirection] = useState<'next' | 'prev' | null>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isResettingStamps, setIsResettingStamps] = useState(false);
+  
+  // Mutation para resetar carimbos quando usuário visualiza o cupom
+  const resetStampsMutation = trpc.loyalty.viewCouponAndResetStamps.useMutation({
+    onSuccess: () => {
+      console.log('[LoyaltyCardView] Carimbos resetados com sucesso');
+      onCouponViewed?.();
+    },
+    onError: (error) => {
+      console.error('[LoyaltyCardView] Erro ao resetar carimbos:', error);
+    },
+  });
+  
+  // Função para virar o card e resetar carimbos
+  const handleViewCoupon = async () => {
+    setIsFlipped(true);
+    setIsResettingStamps(true);
+    
+    try {
+      await resetStampsMutation.mutateAsync({
+        establishmentId,
+        phone: customerPhone,
+        password: customerPassword,
+      });
+    } catch (error) {
+      console.error('[LoyaltyCardView] Erro ao resetar carimbos:', error);
+    } finally {
+      setIsResettingStamps(false);
+    }
+  };
   
   const stamps = cardData?.card?.stamps || 0;
   const required = cardData?.settings?.stampsRequired || stampsRequired;
@@ -5583,10 +5624,15 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             )}>
               {isCardComplete && hasCouponAvailable && !isFlipped ? (
                 <button
-                  onClick={() => setIsFlipped(true)}
-                  className="w-full py-1.5 md:py-2 px-3 md:px-4 bg-gradient-to-br from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold text-sm md:text-base rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 animate-pulse"
+                  onClick={handleViewCoupon}
+                  disabled={isResettingStamps}
+                  className="w-full py-1.5 md:py-2 px-3 md:px-4 bg-gradient-to-br from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold text-sm md:text-base rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 animate-pulse disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Gift className="h-4 w-4 md:h-5 md:w-5" />
+                  {isResettingStamps ? (
+                    <Loader2 className="h-4 w-4 md:h-5 md:w-5 animate-spin" />
+                  ) : (
+                    <Gift className="h-4 w-4 md:h-5 md:w-5" />
+                  )}
                   Ver cupom ganho
                 </button>
               ) : (

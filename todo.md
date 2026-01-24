@@ -2648,3 +2648,10 @@
 
 ## Bug - Atualização do Cartão Fidelidade
 - [x] Corrigir: cartão fidelidade não atualiza automaticamente quando pedido é entregue (adicionado refetch automático via SSE)
+
+
+## Alteração do Fluxo de Reset de Carimbos
+- [x] Carimbos só devem ser resetados quando usuário clicar em "Ver cupom ganho"
+- [x] Não resetar carimbos automaticamente ao completar o cartão
+- [x] Criar endpoint para resetar carimbos ao visualizar cupom (loyalty.viewCouponAndResetStamps)
+- [x] Atualizar frontend para chamar reset ao clicar em Ver cupom ganho
