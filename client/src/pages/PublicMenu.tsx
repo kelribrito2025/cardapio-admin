@@ -1760,57 +1760,66 @@ export default function PublicMenu() {
           <div className="hidden lg:block w-80 flex-shrink-0">
             <div className="sticky top-[140px]">
               {/* Taxa de entrega - reflete configuração do restaurante */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-3 px-4 py-3" style={{height: '78px'}}>
-                <div className="flex items-center justify-between">
-                  {/* Ícone e texto */}
-                  <div className="flex items-center gap-3">
-                    {/* Ícone de caminhão com badge */}
-                    <div className="relative">
-                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                        <Truck className="h-6 w-6 text-green-600" />
-                      </div>
-                      {establishment.deliveryFeeType === "free" && (
-                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">0</span>
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-3 overflow-hidden" style={{height: '78px'}}>
+                <div className="flex h-full">
+                  {/* Borda lateral esquerda */}
+                  <div className={cn(
+                    "w-1 flex-shrink-0 rounded-l-2xl",
+                    establishment.deliveryFeeType === "free" ? "bg-green-500" : 
+                    establishment.deliveryFeeType === "fixed" ? "bg-blue-500" : "bg-amber-500"
+                  )} />
+                  {/* Conteúdo */}
+                  <div className="flex-1 px-4 py-3 flex items-center justify-between">
+                    {/* Ícone e texto */}
+                    <div className="flex items-center gap-3">
+                      {/* Ícone de caminhão com badge */}
+                      <div className="relative">
+                        <div className="w-11 h-11 bg-green-100 rounded-full flex items-center justify-center">
+                          <Truck className="h-5 w-5 text-green-600" />
                         </div>
-                      )}
+                        {establishment.deliveryFeeType === "free" && (
+                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">0</span>
+                          </div>
+                        )}
+                      </div>
+                      {/* Texto */}
+                      <div>
+                        <span className="text-sm text-gray-500 block">
+                          {establishment.deliveryFeeType === "free" 
+                            ? "Entrega grátis" 
+                            : establishment.deliveryFeeType === "fixed"
+                              ? "Taxa de entrega"
+                              : "Taxa por bairro"
+                          }
+                        </span>
+                        <span className="text-lg font-bold text-gray-900">
+                          {establishment.deliveryFeeType === "free" 
+                            ? "R$ 0,00" 
+                            : establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed
+                              ? `R$ ${Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}`
+                              : "A calcular"
+                          }
+                        </span>
+                      </div>
                     </div>
-                    {/* Texto */}
-                    <div>
-                      <span className="text-sm text-gray-500 block">
-                        {establishment.deliveryFeeType === "free" 
-                          ? "Entrega grátis" 
-                          : establishment.deliveryFeeType === "fixed"
-                            ? "Taxa de entrega"
-                            : "Taxa por bairro"
-                        }
+                    {/* Badge Grátis */}
+                    {establishment.deliveryFeeType === "free" && (
+                      <button className="px-5 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        Grátis
+                      </button>
+                    )}
+                    {establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed && (
+                      <span className="px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded-xl">
+                        Fixo
                       </span>
-                      <span className="text-lg font-bold text-gray-900">
-                        {establishment.deliveryFeeType === "free" 
-                          ? "R$ 0,00" 
-                          : establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed
-                            ? `R$ ${Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}`
-                            : "A calcular"
-                        }
+                    )}
+                    {establishment.deliveryFeeType === "byNeighborhood" && (
+                      <span className="px-4 py-2 bg-amber-100 text-amber-700 font-semibold rounded-xl">
+                        Varia
                       </span>
-                    </div>
+                    )}
                   </div>
-                  {/* Badge Grátis */}
-                  {establishment.deliveryFeeType === "free" && (
-                    <button className="px-5 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                      Grátis
-                    </button>
-                  )}
-                  {establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed && (
-                    <span className="px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded-xl">
-                      Fixo
-                    </span>
-                  )}
-                  {establishment.deliveryFeeType === "byNeighborhood" && (
-                    <span className="px-4 py-2 bg-amber-100 text-amber-700 font-semibold rounded-xl">
-                      Varia
-                    </span>
-                  )}
                 </div>
               </div>
 
