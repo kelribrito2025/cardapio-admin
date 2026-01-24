@@ -2534,3 +2534,9 @@
 - [x] Implementar recortes usando círculos sobrepostos com cor do fundo (bg-gray-200)
 - [x] Adicionar sombra interna nos círculos para dar profundidade
 - [x] Testar e confirmar que os recortes funcionam corretamente
+
+
+## Adicionar Mais Recortes Circulares ao Cupom
+- [x] Aumentar de 1 para 10 recortes circulares de cada lado do cupom
+- [x] Distribuir os recortes verticalmente ao longo de toda a altura do cupom (5% a 95%)
+- [x] Criar efeito de borda serrilhada estilo ticket

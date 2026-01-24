@@ -5593,16 +5593,28 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               >
             {currentCoupon && (
               <div className="h-full flex rounded-2xl shadow-lg relative overflow-hidden">
-                {/* Recorte circular esquerdo */}
-                <div 
-                  className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-200 z-10"
-                  style={{ boxShadow: 'inset 2px 0 4px rgba(0,0,0,0.1)' }}
-                />
-                {/* Recorte circular direito */}
-                <div 
-                  className="absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-200 z-10"
-                  style={{ boxShadow: 'inset -2px 0 4px rgba(0,0,0,0.1)' }}
-                />
+                {/* Recortes circulares esquerdos - 10 recortes */}
+                {[...Array(10)].map((_, i) => (
+                  <div 
+                    key={`left-${i}`}
+                    className="absolute left-0 -translate-x-1/2 w-3 h-3 rounded-full bg-gray-200 z-10"
+                    style={{ 
+                      top: `${5 + i * 10}%`,
+                      boxShadow: 'inset 2px 0 3px rgba(0,0,0,0.1)' 
+                    }}
+                  />
+                ))}
+                {/* Recortes circulares direitos - 10 recortes */}
+                {[...Array(10)].map((_, i) => (
+                  <div 
+                    key={`right-${i}`}
+                    className="absolute right-0 translate-x-1/2 w-3 h-3 rounded-full bg-gray-200 z-10"
+                    style={{ 
+                      top: `${5 + i * 10}%`,
+                      boxShadow: 'inset -2px 0 3px rgba(0,0,0,0.1)' 
+                    }}
+                  />
+                ))}
                 {/* Lado Esquerdo - Amarelo/Dourado */}
                 <div 
                   className="flex-[1.3] bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-500 p-3 md:p-4 flex flex-col justify-between relative"

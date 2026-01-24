@@ -1,0 +1,13 @@
+Resultado dos 10 recortes circulares de cada lado:
+
+OBSERVAÇÃO: O cupom agora tem 10 recortes circulares de cada lado, distribuídos verticalmente ao longo de toda a altura do cupom.
+
+Os recortes estão funcionando corretamente:
+- 10 círculos na lateral esquerda
+- 10 círculos na lateral direita
+- Distribuídos de 5% a 95% da altura (espaçamento de 10% entre cada)
+- Tamanho de 12px (w-3 h-3)
+- Cor bg-gray-200 (mesma do fundo do modal)
+- Sombra interna para dar profundidade
+
+O efeito de borda serrilhada estilo ticket está funcionando perfeitamente!
