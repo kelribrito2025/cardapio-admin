@@ -2562,9 +2562,3 @@
 - [x] Adicionar ícone com container redondo em todos os modais (estilo do Cartão Fidelidade)
 - [x] Diferenciar background do body (bg-gray-200) do header (bg-white)
 - [x] Aplicar em: Informações, Cupom, Acompanhar Pedido, Avaliações, Como Chegar, Fidelidade
-
-
-## Padronizar Modal do Carrinho de Compras (Checkout)
-- [x] Aplicar cabeçalho branco com borda inferior (border-gray-300)
-- [x] Adicionar ícone com container redondo colorido (ShoppingBag vermelho)
-- [x] Diferenciar background do body (bg-gray-200) do header (bg-white)
