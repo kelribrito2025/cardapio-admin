@@ -1764,7 +1764,7 @@ export default function PublicMenu() {
                 "bg-white rounded-2xl shadow-sm border border-gray-100 mb-3 overflow-hidden border-l-[3px]",
                 establishment.deliveryFeeType === "free" ? "border-l-green-500" : 
                 establishment.deliveryFeeType === "fixed" ? "border-l-blue-500" : "border-l-amber-500"
-              )} style={{height: '78px'}}>
+              )} style={{height: '78px', borderRadius: '12px'}}>
                 <div className="flex h-full">
                   {/* Conteúdo */}
                   <div className="flex-1 px-4 py-3 flex items-center justify-between">
