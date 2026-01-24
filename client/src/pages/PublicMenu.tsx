@@ -1884,7 +1884,14 @@ export default function PublicMenu() {
                       )}
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-400">Taxa de entrega</span>
-                        <span className="text-gray-400">R$ 0,00</span>
+                        <span className={establishment.deliveryFeeType === "free" ? "text-green-600 font-medium" : "text-gray-400"}>
+                          {establishment.deliveryFeeType === "free" 
+                            ? "Grátis" 
+                            : establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed
+                              ? `R$ ${Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}`
+                              : "A calcular"
+                          }
+                        </span>
                       </div>
                       <div className="flex justify-between font-bold text-base pt-2">
                         <span className="text-gray-900">Total</span>
@@ -2675,7 +2682,14 @@ export default function PublicMenu() {
                         )}
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-400">Taxa de entrega</span>
-                          <span className="text-gray-400">A calcular</span>
+                          <span className={establishment.deliveryFeeType === "free" ? "text-green-600 font-medium" : "text-gray-400"}>
+                            {establishment.deliveryFeeType === "free" 
+                              ? "Grátis" 
+                              : establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed
+                                ? `R$ ${Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}`
+                                : "A calcular"
+                            }
+                          </span>
                         </div>
                         <div className="flex justify-between font-bold text-base pt-2 border-t border-gray-100">
                           <span className="text-gray-900">Total</span>
@@ -3572,7 +3586,14 @@ export default function PublicMenu() {
                       )}
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Taxa de entrega</span>
-                        <span className="text-gray-500">R$ 0,00</span>
+                        <span className={establishment.deliveryFeeType === "free" ? "text-green-600 font-medium" : "text-gray-500"}>
+                          {establishment.deliveryFeeType === "free" 
+                            ? "Grátis" 
+                            : establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed
+                              ? `R$ ${Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}`
+                              : "A calcular"
+                          }
+                        </span>
                       </div>
                       <div className="flex justify-between font-bold text-lg pt-2 border-t">
                         <span>Total</span>
