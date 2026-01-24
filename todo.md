@@ -2668,3 +2668,9 @@
 ## Alteração de Fluxo - Carimbos com Cupom Ativo
 - [x] Novos pedidos devem adicionar carimbos mesmo quando cliente tem cupom ativo
 - [x] Carimbos só resetam quando usuário clica em "Ver cupom ganho"
+
+
+## Novo Fluxo - Reset Automático de Carimbos
+- [x] Carimbos resetam automaticamente quando novo pedido é entregue após completar o cartão
+- [x] "Ver cupom ganho" apenas mostra o cupom, não reseta carimbos
+- [x] Fluxo: 1/2 → 2/2 (cupom criado) → novo pedido entregue → reset + 1/2

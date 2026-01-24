@@ -2278,7 +2278,28 @@ export async function processLoyaltyStampForOrder(
     return { stampAdded: false, couponUnlocked: false, message: "Erro ao criar cartão de fidelidade" };
   }
   
-  // Adicionar carimbo (mesmo se tiver cupom ativo - carimbos continuam acumulando)
+  // Verificar se o cartão já foi completado (tem cupom ativo)
+  // Se sim, resetar os carimbos antes de adicionar o novo
+  const requiredStamps = establishment.loyaltyStampsRequired || 6;
+  let currentStamps = loyaltyCard.stamps;
+  
+  if (currentStamps >= requiredStamps) {
+    // Cartão já foi completado - resetar carimbos para começar novo ciclo
+    console.log(`[Fidelidade] Cartão ${loyaltyCard.id} já completado (${currentStamps}/${requiredStamps}). Resetando para novo ciclo.`);
+    
+    // Resetar carimbos para 0
+    await db.update(loyaltyCards)
+      .set({ stamps: 0 })
+      .where(eq(loyaltyCards.id, loyaltyCard.id));
+    
+    // Deletar histórico de carimbos do ciclo anterior
+    await db.delete(loyaltyStamps)
+      .where(eq(loyaltyStamps.loyaltyCardId, loyaltyCard.id));
+    
+    currentStamps = 0;
+  }
+  
+  // Adicionar carimbo
   await addLoyaltyStamp({
     loyaltyCardId: loyaltyCard.id,
     orderId,
@@ -2286,13 +2307,10 @@ export async function processLoyaltyStampForOrder(
     orderTotal,
   });
   
-  // Verificar se atingiu a quantidade necessária para cupom
-  const requiredStamps = establishment.loyaltyStampsRequired || 6;
-  const newStampCount = loyaltyCard.stamps + 1;
+  const newStampCount = currentStamps + 1;
   
-  if (newStampCount >= requiredStamps && !loyaltyCard.activeCouponId) {
-    // Criar cupom de fidelidade SOMENTE se não tiver cupom ativo
-    // Se já tem cupom ativo, carimbos continuam acumulando mas não cria novo cupom
+  if (newStampCount >= requiredStamps) {
+    // Completou o cartão - criar cupom de fidelidade
     const couponCode = `FIDELIDADE${Date.now().toString(36).toUpperCase()}`;
     const couponType = establishment.loyaltyCouponType === 'percentage' ? 'percentage' : 'fixed';
     const couponValue = establishment.loyaltyCouponValue || "10";
@@ -2307,8 +2325,7 @@ export async function processLoyaltyStampForOrder(
       status: 'active',
     });
     
-    // NÃO resetar carimbos automaticamente - apenas vincular o cupom ao cartão
-    // Os carimbos só serão resetados quando o usuário clicar em "Ver cupom ganho"
+    // Vincular o cupom ao cartão (não resetar carimbos aqui - será resetado no próximo pedido)
     await db.update(loyaltyCards)
       .set({
         activeCouponId: couponResult[0].insertId,

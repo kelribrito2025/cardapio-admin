@@ -5357,32 +5357,9 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
   const [isResettingStamps, setIsResettingStamps] = useState(false);
   
   // Mutation para resetar carimbos quando usuário visualiza o cupom
-  const resetStampsMutation = trpc.loyalty.viewCouponAndResetStamps.useMutation({
-    onSuccess: () => {
-      console.log('[LoyaltyCardView] Carimbos resetados com sucesso');
-      onCouponViewed?.();
-    },
-    onError: (error) => {
-      console.error('[LoyaltyCardView] Erro ao resetar carimbos:', error);
-    },
-  });
-  
-  // Função para virar o card e resetar carimbos
-  const handleViewCoupon = async () => {
+  // Função para virar o card e mostrar o cupom (sem resetar carimbos - reset é automático no próximo pedido)
+  const handleViewCoupon = () => {
     setIsFlipped(true);
-    setIsResettingStamps(true);
-    
-    try {
-      await resetStampsMutation.mutateAsync({
-        establishmentId,
-        phone: customerPhone,
-        password: customerPassword,
-      });
-    } catch (error) {
-      console.error('[LoyaltyCardView] Erro ao resetar carimbos:', error);
-    } finally {
-      setIsResettingStamps(false);
-    }
   };
   
   const stamps = cardData?.card?.stamps || 0;

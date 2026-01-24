@@ -1,0 +1,50 @@
+{
+  "query": "\n-- Ver cartão de fidelidade\nSELECT id, customerPhone, stamps, totalStampsEarned, couponsEarned, activeCouponId \nFROM loyaltyCards \nWHERE customerPhone LIKE '%999290000%';\n\n-- Ver histórico de carimbos\nSELECT ls.* FROM loyaltyStamps ls\nJOIN loyaltyCards lc ON ls.loyaltyCardId = lc.id\nWHERE lc.customerPhone LIKE '%999290000%'\nORDER BY ls.createdAt DESC;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute \n-- Ver cartão de fidelidade\nSELECT id, customerPhone, stamps, totalStampsEarned, couponsEarned, activeCouponId \nFROM loyaltyCards \nWHERE customerPhone LIKE '%999290000%';\n\n-- Ver histórico de carimbos\nSELECT ls.* FROM loyaltyStamps ls\nJOIN loyaltyCards lc ON ls.loyaltyCardId = lc.id\nWHERE lc.customerPhone LIKE '%999290000%'\nORDER BY ls.createdAt DESC;\n",
+  "rows": [
+    {
+      "id": "1",
+      "customerPhone": "88999290000",
+      "stamps": "3",
+      "totalStampsEarned": "3",
+      "couponsEarned": "2",
+      "activeCouponId": "60014"
+    },
+    {
+      "id": "id",
+      "customerPhone": "loyaltyCardId",
+      "stamps": "orderId",
+      "totalStampsEarned": "orderNumber",
+      "couponsEarned": "orderTotal",
+      "activeCouponId": "createdAt"
+    },
+    {
+      "id": "30020",
+      "customerPhone": "1",
+      "stamps": "120020",
+      "totalStampsEarned": "#P284",
+      "couponsEarned": "45.00",
+      "activeCouponId": "2026-01-24 19:07:45"
+    },
+    {
+      "id": "30019",
+      "customerPhone": "1",
+      "stamps": "120019",
+      "totalStampsEarned": "#P283",
+      "couponsEarned": "60.00",
+      "activeCouponId": "2026-01-24 19:06:12"
+    },
+    {
+      "id": "30018",
+      "customerPhone": "1",
+      "stamps": "120018",
+      "totalStampsEarned": "#P282",
+      "couponsEarned": "60.00",
+      "activeCouponId": "2026-01-24 19:06:03"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcustomerPhone\tstamps\ttotalStampsEarned\tcouponsEarned\tactiveCouponId\n1\t88999290000\t3\t3\t2\t60014\nid\tloyaltyCardId\torderId\torderNumber\torderTotal\tcreatedAt\n30020\t1\t120020\t#P284\t45.00\t2026-01-24 19:07:45\n30019\t1\t120019\t#P283\t60.00\t2026-01-24 19:06:12\n30018\t1\t120018\t#P282\t60.00\t2026-01-24 19:06:03\n",
+  "stderr": "",
+  "execution_time_ms": 396
+}
