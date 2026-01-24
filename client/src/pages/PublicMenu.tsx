@@ -2030,10 +2030,15 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
             <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
-              <h2 className="text-lg font-bold text-gray-900">Informações</h2>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 rounded-xl">
+                  <Info className="h-5 w-5 text-blue-600" />
+                </div>
+                <h2 className="text-lg font-bold text-gray-900">Informações</h2>
+              </div>
               <button 
                 onClick={() => setShowInfoModal(false)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -3306,11 +3311,13 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
-            <div className="border-b px-6 py-4 flex items-center justify-between rounded-t-2xl">
+            <div className="bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
               <div className="flex items-center gap-3">
-                <Ticket className="h-5 w-5 text-red-500" />
+                <div className="p-2 bg-red-100 rounded-xl">
+                  <Ticket className="h-5 w-5 text-red-500" />
+                </div>
                 <h2 className="text-lg font-bold text-gray-900">Aplicar cupom</h2>
               </div>
               <button 
@@ -3938,10 +3945,15 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative w-full md:w-[480px] md:max-w-md bg-white rounded-t-2xl md:rounded-2xl max-h-[85vh] overflow-hidden animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative w-full md:w-[480px] md:max-w-md bg-gray-200 rounded-t-2xl md:rounded-2xl max-h-[85vh] overflow-hidden animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
-            <div className="border-b px-6 py-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">Acompanhar Pedido</h2>
+            <div className="bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-orange-100 rounded-xl">
+                  <Package className="h-5 w-5 text-orange-600" />
+                </div>
+                <h2 className="text-lg font-bold text-gray-900">Acompanhar Pedido</h2>
+              </div>
               <button 
                 onClick={() => setShowTrackingModal(false)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -4436,11 +4448,13 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-lg md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-lg md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
-            <div className="border-b px-6 py-4 flex items-center justify-between flex-shrink-0">
+            <div className="bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between flex-shrink-0 rounded-t-2xl" style={{height: '68px'}}>
               <div className="flex items-center gap-3">
-                <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                <div className="p-2 bg-yellow-100 rounded-xl">
+                  <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+                </div>
                 <div>
                   <h2 className="text-lg font-bold text-gray-900">Avaliações</h2>
                   <p className="text-sm text-gray-500">
@@ -4544,11 +4558,11 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet Style */}
-          <div className="relative bg-white w-full md:w-[400px] md:rounded-2xl rounded-t-2xl shadow-2xl max-h-[70vh] overflow-hidden animate-in slide-in-from-bottom duration-300">
+          <div className="relative bg-gray-200 w-full md:w-[400px] md:rounded-2xl rounded-t-2xl shadow-2xl max-h-[70vh] overflow-hidden animate-in slide-in-from-bottom duration-300">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b">
+            <div className="bg-white flex items-center justify-between px-6 py-4 border-b border-gray-300 rounded-t-2xl" style={{height: '68px'}}>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <div className="p-2 bg-red-100 rounded-xl">
                   <MapPin className="h-5 w-5 text-red-500" />
                 </div>
                 <div>

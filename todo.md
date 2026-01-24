@@ -2555,3 +2555,10 @@
 ## Mover Botão de Voltar ao Cartão Fidelidade
 - [x] Mover o ícone de voltar (RotateCcw) do canto superior esquerdo para o lado esquerdo do cupom
 - [x] Posicionar centralizado verticalmente (top-1/2 -translate-y-1/2)
+
+
+## Padronizar Modais Bottom Sheet do Sistema
+- [x] Adicionar borda inferior (border-gray-300) no cabeçalho de todos os modais
+- [x] Adicionar ícone com container redondo em todos os modais (estilo do Cartão Fidelidade)
+- [x] Diferenciar background do body (bg-gray-200) do header (bg-white)
+- [x] Aplicar em: Informações, Cupom, Acompanhar Pedido, Avaliações, Como Chegar, Fidelidade
