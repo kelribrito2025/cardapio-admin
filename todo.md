@@ -2499,3 +2499,8 @@
 - [x] Mostrar 1-2 bordas atrás do cupom principal (2ª e 3ª camada)
 - [x] Com 1 cupom = sem bordas atrás (stack desativado)
 - [x] Com 2+ cupons = sempre mostrar bordas independente da posição atual
+
+
+## Bug: Container Externo Visível na Animação do Cupom
+- [x] Remover container externo (bg-gray-100) que aparece durante a animação de troca de cupons
+- [x] Deixar cupom renderizado diretamente sobre o fundo do modal bottom sheet (overflow-visible)
