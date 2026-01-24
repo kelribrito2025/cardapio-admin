@@ -5504,7 +5504,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             className="absolute inset-0 bg-white rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden] flex flex-col"
           >
             {/* Parte verde do card */}
-            <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-3 md:p-5 text-white flex-1">
+            <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-3 md:p-5 text-white flex-1" style={{height: '215px'}}>
           <div className="flex items-start gap-2 md:gap-3 mb-3 md:mb-4">
             <div className="p-1.5 md:p-2 bg-white/20 rounded-xl">
               <Gift className="h-5 w-5 md:h-6 md:w-6" />
@@ -5570,7 +5570,9 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   // Efeito de entrada escalonado para carimbos existentes
                   transitionDelay: `${i * 50}ms`,
                   // Glow verde brilhante nos carimbos ativos
-                  ...(i < stamps ? { boxShadow: '0 0 10px rgba(16, 185, 129, 0.5)' } : {})
+                  ...(i < stamps ? { boxShadow: '0 0 10px rgba(16, 185, 129, 0.5)' } : {}),
+                  width: '36px',
+                  height: '36px'
                 }}
               >
                 {i < stamps ? (
