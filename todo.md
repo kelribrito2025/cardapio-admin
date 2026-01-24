@@ -2568,3 +2568,9 @@
 - [x] Aplicar cabeçalho branco com borda inferior (border-gray-300)
 - [x] Adicionar ícone com container redondo roxo (ClipboardList purple)
 - [x] Diferenciar background do body (bg-gray-200) do header (bg-white)
+
+
+## Padronizar Modal de Sacola
+- [x] Aplicar cabeçalho branco com borda inferior (border-gray-300)
+- [x] Adicionar ícone com container redondo vermelho (ShoppingBag red)
+- [x] Diferenciar background do body (#f5f5f5) do header (bg-white)

@@ -3426,12 +3426,14 @@ export default function PublicMenu() {
           />
           
           {/* Modal */}
-          <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative w-full md:w-[480px] md:max-w-lg rounded-t-2xl md:rounded-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{backgroundColor: '#f5f5f5'}}>
             {/* Header */}
-            <div className="flex-shrink-0 border-b px-4 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <ShoppingBag className="h-5 w-5 text-red-500" />
-                <h2 className="text-lg font-bold text-gray-900">Sua sacola</h2>
+            <div className="flex-shrink-0 bg-white border-b border-gray-300 px-6 h-[68px] flex items-center justify-between rounded-t-2xl">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-100 rounded-xl">
+                  <ShoppingBag className="h-5 w-5 text-red-500" />
+                </div>
+                <h2 className="text-lg font-bold text-gray-900">Sua Sacola</h2>
               </div>
               <button 
                 onClick={() => setShowMobileBag(false)}
@@ -3442,7 +3444,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4" style={{backgroundColor: '#f5f5f5'}}>
               {cart.length === 0 ? (
                 <div className="text-center py-8">
                   <ShoppingBag className="h-12 w-12 text-gray-300 mx-auto mb-3" />
