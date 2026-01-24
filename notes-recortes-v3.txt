@@ -1,0 +1,10 @@
+Resultado dos recortes com pseudo-elementos:
+
+Os recortes circulares laterais agora estão funcionando corretamente usando pseudo-elementos com a cor branca do fundo do modal. Os círculos brancos estão posicionados nas laterais do cupom, criando o efeito visual de recorte típico de vouchers.
+
+Implementação:
+- Dois divs circulares absolutos posicionados no centro vertical das laterais
+- Cor branca (bg-white) para combinar com o fundo do modal
+- Posicionados com translate para ficarem metade dentro e metade fora do cupom
+
+O efeito está funcionando conforme esperado - os recortes mostram a cor do fundo do modal (branco).

@@ -4686,7 +4686,7 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-gray-100 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[75vh] md:max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[75vh] md:max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
             <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
               <div className="flex items-center gap-3">
@@ -5592,34 +5592,20 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                 }}
               >
             {currentCoupon && (
-              <div className="h-full flex rounded-2xl overflow-hidden shadow-lg">
-                {/* Lado Esquerdo - Amarelo/Dourado com máscara de recorte */}
+              <div className="h-full flex rounded-2xl shadow-lg relative overflow-visible">
+                {/* Recorte circular esquerdo */}
+                <div 
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white z-10"
+                  style={{ boxShadow: '0 0 0 4px white' }}
+                />
+                {/* Recorte circular direito */}
+                <div 
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 rounded-full bg-white z-10"
+                  style={{ boxShadow: '0 0 0 4px white' }}
+                />
+                {/* Lado Esquerdo - Amarelo/Dourado */}
                 <div 
                   className="flex-[1.3] bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-500 p-3 md:p-4 flex flex-col justify-between relative"
-                  style={{
-                    maskImage: `radial-gradient(circle at 0% 5%, transparent 6px, black 6px),
-                                radial-gradient(circle at 0% 15%, transparent 6px, black 6px),
-                                radial-gradient(circle at 0% 25%, transparent 6px, black 6px),
-                                radial-gradient(circle at 0% 35%, transparent 6px, black 6px),
-                                radial-gradient(circle at 0% 45%, transparent 6px, black 6px),
-                                radial-gradient(circle at 0% 55%, transparent 6px, black 6px),
-                                radial-gradient(circle at 0% 65%, transparent 6px, black 6px),
-                                radial-gradient(circle at 0% 75%, transparent 6px, black 6px),
-                                radial-gradient(circle at 0% 85%, transparent 6px, black 6px),
-                                radial-gradient(circle at 0% 95%, transparent 6px, black 6px)`,
-                    maskComposite: 'intersect',
-                    WebkitMaskImage: `radial-gradient(circle at 0% 5%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 0% 15%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 0% 25%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 0% 35%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 0% 45%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 0% 55%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 0% 65%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 0% 75%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 0% 85%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 0% 95%, transparent 6px, black 6px)`,
-                    WebkitMaskComposite: 'source-in'
-                  }}
                 >
                   
                   
@@ -5702,33 +5688,9 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   
                 </div>
                 
-                {/* Lado Direito - Escuro com máscara de recorte */}
+                {/* Lado Direito - Escuro */}
                 <div 
                   className="flex-1 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 p-3 md:p-4 flex flex-col items-center justify-center relative"
-                  style={{
-                    maskImage: `radial-gradient(circle at 100% 5%, transparent 6px, black 6px),
-                                radial-gradient(circle at 100% 15%, transparent 6px, black 6px),
-                                radial-gradient(circle at 100% 25%, transparent 6px, black 6px),
-                                radial-gradient(circle at 100% 35%, transparent 6px, black 6px),
-                                radial-gradient(circle at 100% 45%, transparent 6px, black 6px),
-                                radial-gradient(circle at 100% 55%, transparent 6px, black 6px),
-                                radial-gradient(circle at 100% 65%, transparent 6px, black 6px),
-                                radial-gradient(circle at 100% 75%, transparent 6px, black 6px),
-                                radial-gradient(circle at 100% 85%, transparent 6px, black 6px),
-                                radial-gradient(circle at 100% 95%, transparent 6px, black 6px)`,
-                    maskComposite: 'intersect',
-                    WebkitMaskImage: `radial-gradient(circle at 100% 5%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 100% 15%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 100% 25%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 100% 35%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 100% 45%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 100% 55%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 100% 65%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 100% 75%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 100% 85%, transparent 6px, black 6px),
-                                      radial-gradient(circle at 100% 95%, transparent 6px, black 6px)`,
-                    WebkitMaskComposite: 'source-in'
-                  }}
                 >
                   
                   
