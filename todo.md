@@ -2350,3 +2350,9 @@
 - [x] Aplicar cupom automaticamente na sacola de compras
 - [x] Fechar modal de fidelidade após aplicar cupom
 - [x] Mostrar feedback visual de cupom aplicado
+
+## Modal Bottom Sheet de Confirmação de Cupom Aplicado
+- [x] Criar modal bottom sheet ao clicar em "Usar agora"
+- [x] Exibir confirmação visual de cupom aplicado
+- [x] Adicionar animação de entrada do bottom sheet
+- [x] Fechar automaticamente após alguns segundos ou ao clicar

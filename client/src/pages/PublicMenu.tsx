@@ -113,6 +113,8 @@ export default function PublicMenu() {
   const [loyaltyName, setLoyaltyName] = useState('');
   const [loyaltyError, setLoyaltyError] = useState('');
   const [isLoyaltyLoggedIn, setIsLoyaltyLoggedIn] = useState(false);
+  const [showCouponAppliedModal, setShowCouponAppliedModal] = useState(false);
+  const [appliedCouponInfo, setAppliedCouponInfo] = useState<{ code: string; type: string; value: number } | null>(null);
   
   const userOrdersRef = useRef<typeof userOrders>([]);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
@@ -4794,11 +4796,88 @@ export default function PublicMenu() {
                       value: value,
                     });
                     
-                    // Fechar modal de fidelidade
+                    // Salvar info do cupom para o modal de confirmação
+                    setAppliedCouponInfo({
+                      code: couponCode,
+                      type: couponType,
+                      value: value,
+                    });
+                    
+                    // Fechar modal de fidelidade e mostrar confirmação
                     setShowLoyaltyModal(false);
+                    setShowCouponAppliedModal(true);
                   }}
                 />
               )}
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Modal Bottom Sheet de Confirmação de Cupom Aplicado */}
+      {showCouponAppliedModal && appliedCouponInfo && (
+        <div 
+          className="fixed inset-0 z-[60] flex items-end justify-center"
+          onClick={() => setShowCouponAppliedModal(false)}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/40 animate-in fade-in duration-300" />
+          
+          {/* Bottom Sheet */}
+          <div 
+            className="relative w-full max-w-lg bg-white rounded-t-3xl shadow-2xl animate-in slide-in-from-bottom duration-400 ease-out"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Handle bar */}
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+            </div>
+            
+            {/* Content */}
+            <div className="px-6 pb-8 pt-2">
+              {/* Success Icon */}
+              <div className="flex justify-center mb-4">
+                <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full flex items-center justify-center shadow-lg animate-in zoom-in duration-300">
+                  <CheckCircle className="h-10 w-10 text-white" />
+                </div>
+              </div>
+              
+              {/* Title */}
+              <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
+                Cupom aplicado!
+              </h3>
+              
+              {/* Coupon Info */}
+              <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-xl p-4 mb-4">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Gift className="h-5 w-5 text-emerald-600" />
+                  <span className="font-mono font-bold text-lg text-emerald-700">
+                    {appliedCouponInfo.code}
+                  </span>
+                </div>
+                <p className="text-center text-emerald-600 font-medium">
+                  {appliedCouponInfo.type === 'percentage' 
+                    ? `${appliedCouponInfo.value}% de desconto`
+                    : appliedCouponInfo.type === 'fixed'
+                    ? `R$ ${appliedCouponInfo.value.toFixed(2)} de desconto`
+                    : 'Frete grátis'
+                  }
+                </p>
+              </div>
+              
+              {/* Description */}
+              <p className="text-gray-500 text-center text-sm mb-6">
+                Seu desconto foi adicionado à sacola. Adicione itens e finalize seu pedido para aproveitar!
+              </p>
+              
+              {/* Button */}
+              <button
+                onClick={() => setShowCouponAppliedModal(false)}
+                className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+              >
+                <ShoppingBag className="h-5 w-5" />
+                Continuar comprando
+              </button>
             </div>
           </div>
         </div>
