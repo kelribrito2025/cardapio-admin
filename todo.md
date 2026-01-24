@@ -2407,3 +2407,8 @@
 - [ ] Incluir ícones de talheres no centro
 - [ ] Exibir porcentagem de desconto em destaque
 - [ ] Mostrar data de validade
+
+## Nome do Restaurante no Cupom de Desconto
+- [x] Substituir "DESCONTO" pelo nome do restaurante no cupom
+- [x] Dividir nome em duas linhas se for muito grande
+- [x] Reduzir tamanho da fonte para nomes muito longos

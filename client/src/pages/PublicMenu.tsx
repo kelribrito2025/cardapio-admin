@@ -5505,9 +5505,40 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   {/* Recorte circular no lado direito */}
                   <div className="absolute right-0 top-1/2 -translate-y-1/2 w-5 h-10 bg-gray-100 rounded-l-full" />
                   
-                  {/* Conteúdo superior */}
+                  {/* Conteúdo superior - Nome do Restaurante */}
                   <div>
-                    <h3 className="text-gray-900 font-black text-lg md:text-xl uppercase tracking-tight">Desconto</h3>
+                    {(() => {
+                      const words = establishmentName.split(' ');
+                      const isLongName = establishmentName.length > 15;
+                      const isVeryLongName = establishmentName.length > 25;
+                      
+                      if (words.length >= 2 && isLongName) {
+                        // Dividir em duas linhas
+                        const midPoint = Math.ceil(words.length / 2);
+                        const firstLine = words.slice(0, midPoint).join(' ');
+                        const secondLine = words.slice(midPoint).join(' ');
+                        const fontSize = isVeryLongName ? 'text-sm md:text-base' : 'text-base md:text-lg';
+                        
+                        return (
+                          <>
+                            <h3 className={`text-gray-900 font-black ${fontSize} uppercase tracking-tight leading-tight`}>
+                              {firstLine}
+                            </h3>
+                            <h3 className={`text-gray-900 font-black ${fontSize} uppercase tracking-tight leading-tight -mt-0.5`}>
+                              {secondLine}
+                            </h3>
+                          </>
+                        );
+                      } else {
+                        // Nome curto - uma linha só
+                        const fontSize = isLongName ? 'text-sm md:text-base' : 'text-lg md:text-xl';
+                        return (
+                          <h3 className={`text-gray-900 font-black ${fontSize} uppercase tracking-tight`}>
+                            {establishmentName}
+                          </h3>
+                        );
+                      }
+                    })()}
                     <p className="text-gray-800 font-semibold text-xs md:text-sm uppercase tracking-wide">Voucher</p>
                   </div>
                   
