@@ -2412,3 +2412,6 @@
 - [x] Substituir "DESCONTO" pelo nome do restaurante no cupom
 - [x] Dividir nome em duas linhas se for muito grande
 - [x] Reduzir tamanho da fonte para nomes muito longos
+
+## Correção das Bolinhas no Cupom
+- [x] Mover recortes circulares para o lado esquerdo da seção escura
