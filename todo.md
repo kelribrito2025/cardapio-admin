@@ -2462,3 +2462,6 @@
 
 ## Cor das Bordas Serrilhadas do Cupom
 - [x] Ajustar bordas serrilhadas (parte amarela e escura) para ficarem com a mesma cor do fundo do modal (bg-gray-100)
+
+## Tamanho do Texto OFF no Cupom
+- [x] Ajustar tamanho do texto OFF para ser igual ao tamanho do texto R$10 (text-3xl md:text-4xl)

@@ -5642,7 +5642,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                         : `R$${Number(cardData.activeCoupon.value).toFixed(0)}`
                       }
                     </p>
-                    <p className="text-amber-400 font-black text-xl md:text-2xl">
+                    <p className="text-amber-400 font-black text-3xl md:text-4xl">
                       {cardData.activeCoupon.type === 'free_delivery' ? 'GRÁTIS' : 'OFF'}
                     </p>
                   </div>
