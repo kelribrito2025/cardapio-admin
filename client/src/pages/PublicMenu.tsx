@@ -5759,11 +5759,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                 </ul>
               </div>
               
-              <div className="pt-4 border-t border-gray-100">
-                <p className="text-xs text-gray-400 text-center">
-                  O estabelecimento reserva o direito de alterar as regras do programa a qualquer momento.
-                </p>
-              </div>
+
             </div>
             
             {/* Footer Button */}
