@@ -2048,7 +2048,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body */}
-            <div className="p-6 space-y-6" style={{backgroundColor: '#f5f5f5'}}>
+            <div className="p-6 space-y-6" style={{backgroundColor: '#ffffff'}}>
               {/* Horários de Funcionamento */}
               <div>
                 <div className="flex items-center gap-2 mb-4">
@@ -3329,7 +3329,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body */}
-            <div className="p-6" style={{backgroundColor: '#f5f5f5'}}>
+            <div className="p-6" style={{backgroundColor: '#ffffff'}}>
               <div className="flex gap-3">
                 <input
                   type="text"
@@ -3967,7 +3967,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body - Timeline ou Cancelado */}
-            <div className="p-6" style={{backgroundColor: '#f5f5f5'}}>
+            <div className="p-6" style={{backgroundColor: '#ffffff'}}>
               {orderStatus === 'cancelled' ? (
                 /* Exibição de Pedido Cancelado */
                 <div className="text-center py-8">
@@ -4201,7 +4201,7 @@ export default function PublicMenu() {
                 </div>
 
                 {/* Body */}
-                <div className="p-6" style={{backgroundColor: '#f5f5f5'}}>
+                <div className="p-6" style={{backgroundColor: '#ffffff'}}>
                   <div className="text-center">
                     <h3 className="text-xl font-bold text-gray-900 mb-2">
                       Como foi sua experiência?
@@ -4722,7 +4722,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body */}
-            <div className="p-4 space-y-4" style={{backgroundColor: '#f5f5f5'}}>
+            <div className="p-4 space-y-4" style={{backgroundColor: '#ffffff'}}>
               {loyaltyStep === 'login' && (
                 <LoyaltyLoginForm
                   phone={loyaltyPhone}

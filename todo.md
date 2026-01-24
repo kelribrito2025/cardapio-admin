@@ -2617,3 +2617,12 @@
 - [ ] Padronizar cabeçalhos (altura, cores, ícones)
 - [ ] Padronizar arredondamento (rounded-t-2xl mobile, rounded-2xl desktop)
 - [ ] Padronizar cor de fundo do body (#f5f5f5 ou bg-gray-200)
+
+
+## Padronização Final dos Modais do Menu Público
+- [x] Verificar modal Informações - cor de fundo branca no body
+- [x] Verificar modal Cartão Fidelidade - cor de fundo branca no body
+- [x] Verificar modal Aplicar Cupom - cor de fundo branca no body
+- [x] Verificar modal Acompanhamento de Pedido - cor de fundo branca no body
+- [x] Verificar modal Avaliação - cor de fundo branca no body
+- [x] Verificar modal Meus Pedidos - cor de fundo branca no body (já estava correto)
