@@ -210,21 +210,56 @@ export default function Pedidos() {
         }
       );
       
-      // Atualizar cache para query filtrada também
-      utils.orders.list.setData(
-        { establishmentId: establishmentId ?? 0, status: activeTab !== "all" ? activeTab : undefined },
-        (old) => {
-          if (!old) return old;
-          return {
-            ...old,
-            orders: old.orders.map(order => 
-              order.id === variables.id 
-                ? { ...order, status: variables.status, cancellationReason: variables.cancellationReason || order.cancellationReason }
-                : order
-            ),
-          };
-        }
-      );
+      // Atualizar cache para TODAS as queries de status específico
+      // Isso garante que o pedido seja removido do card antigo e apareça no novo instantaneamente
+      const allStatuses: (OrderStatus | undefined)[] = ["new", "preparing", "ready", "completed", "cancelled", undefined];
+      
+      for (const status of allStatuses) {
+        utils.orders.list.setData(
+          { establishmentId: establishmentId ?? 0, status },
+          (old) => {
+            if (!old) return old;
+            
+            // Se este é o status ANTIGO do pedido, filtrar o pedido para removê-lo
+            // Se este é o status NOVO do pedido, adicionar o pedido
+            const orderInList = old.orders.find(o => o.id === variables.id);
+            
+            if (orderInList) {
+              // O pedido está nesta lista - atualizar seu status
+              // Se o novo status não corresponde ao filtro desta query, o pedido será filtrado naturalmente
+              return {
+                ...old,
+                orders: old.orders.map(order => 
+                  order.id === variables.id 
+                    ? { ...order, status: variables.status, cancellationReason: variables.cancellationReason || order.cancellationReason }
+                    : order
+                ).filter(order => {
+                  // Se a query tem filtro de status, filtrar pedidos que não correspondem
+                  if (status === undefined) return true; // Query sem filtro mostra todos
+                  return order.status === status;
+                }),
+              };
+            }
+            
+            // Se o pedido não está nesta lista mas o novo status corresponde ao filtro,
+            // precisamos buscar o pedido de outra lista e adicioná-lo
+            if (status === variables.status || status === undefined) {
+              // Buscar o pedido da lista principal
+              const mainList = utils.orders.list.getData({ establishmentId: establishmentId ?? 0 });
+              const orderToAdd = mainList?.orders.find(o => o.id === variables.id);
+              
+              if (orderToAdd && !old.orders.find(o => o.id === variables.id)) {
+                return {
+                  ...old,
+                  orders: [...old.orders, { ...orderToAdd, status: variables.status }],
+                };
+              }
+            }
+            
+            return old;
+          }
+        );
+      }
       
       // Decrementar badge se estava como "new"
       const order = previousAllOrders?.orders?.find(o => o.id === variables.id);
