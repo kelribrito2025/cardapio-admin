@@ -2434,3 +2434,9 @@
 
 ## Borda Serrilhada no Cupom
 - [x] Adicionar efeito de borda serrilhada ao voucher para simular cupom destacável (10 círculos brancos em cada lateral)
+
+## Bolinhas Serrilhadas Transparentes
+- [x] Ajustar bolinhas serrilhadas para serem transparentes usando técnica de máscara CSS (radial-gradient)
+
+## Altura do Card do Cupom
+- [x] Reduzir a altura do card do cupom em 16% (243px -> 204px, 280px -> 235px)

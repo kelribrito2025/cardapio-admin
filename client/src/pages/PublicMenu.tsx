@@ -5351,7 +5351,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
     <div className="space-y-2">
       {/* Card Principal com Flip */}
       <div 
-        className="relative h-[243px] md:h-[280px]"
+        className="relative h-[204px] md:h-[235px]"
         style={{ perspective: '1000px' }}
       >
         <div 
@@ -5500,14 +5500,34 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
           >
             {cardData?.activeCoupon && (
               <div className="h-full flex">
-                {/* Lado Esquerdo - Amarelo/Dourado */}
-                <div className="flex-[1.3] bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-500 p-3 md:p-4 flex flex-col justify-between relative">
-                  {/* Borda serrilhada esquerda */}
-                  <div className="absolute left-0 top-0 bottom-0 w-3 flex flex-col justify-around -ml-1.5">
-                    {[...Array(10)].map((_, i) => (
-                      <div key={i} className="w-3 h-3 bg-white rounded-full" />
-                    ))}
-                  </div>
+                {/* Lado Esquerdo - Amarelo/Dourado com máscara de recorte */}
+                <div 
+                  className="flex-[1.3] bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-500 p-3 md:p-4 flex flex-col justify-between relative"
+                  style={{
+                    maskImage: `radial-gradient(circle at 0% 5%, transparent 6px, black 6px),
+                                radial-gradient(circle at 0% 15%, transparent 6px, black 6px),
+                                radial-gradient(circle at 0% 25%, transparent 6px, black 6px),
+                                radial-gradient(circle at 0% 35%, transparent 6px, black 6px),
+                                radial-gradient(circle at 0% 45%, transparent 6px, black 6px),
+                                radial-gradient(circle at 0% 55%, transparent 6px, black 6px),
+                                radial-gradient(circle at 0% 65%, transparent 6px, black 6px),
+                                radial-gradient(circle at 0% 75%, transparent 6px, black 6px),
+                                radial-gradient(circle at 0% 85%, transparent 6px, black 6px),
+                                radial-gradient(circle at 0% 95%, transparent 6px, black 6px)`,
+                    maskComposite: 'intersect',
+                    WebkitMaskImage: `radial-gradient(circle at 0% 5%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 0% 15%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 0% 25%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 0% 35%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 0% 45%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 0% 55%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 0% 65%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 0% 75%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 0% 85%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 0% 95%, transparent 6px, black 6px)`,
+                    WebkitMaskComposite: 'source-in'
+                  }}
+                >
                   
                   
                   {/* Conteúdo superior - Nome do Restaurante */}
@@ -5578,14 +5598,34 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   
                 </div>
                 
-                {/* Lado Direito - Escuro */}
-                <div className="flex-1 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 p-3 md:p-4 flex flex-col items-center justify-center relative">
-                  {/* Borda serrilhada direita */}
-                  <div className="absolute right-0 top-0 bottom-0 w-3 flex flex-col justify-around -mr-1.5">
-                    {[...Array(10)].map((_, i) => (
-                      <div key={i} className="w-3 h-3 bg-white rounded-full" />
-                    ))}
-                  </div>
+                {/* Lado Direito - Escuro com máscara de recorte */}
+                <div 
+                  className="flex-1 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 p-3 md:p-4 flex flex-col items-center justify-center relative"
+                  style={{
+                    maskImage: `radial-gradient(circle at 100% 5%, transparent 6px, black 6px),
+                                radial-gradient(circle at 100% 15%, transparent 6px, black 6px),
+                                radial-gradient(circle at 100% 25%, transparent 6px, black 6px),
+                                radial-gradient(circle at 100% 35%, transparent 6px, black 6px),
+                                radial-gradient(circle at 100% 45%, transparent 6px, black 6px),
+                                radial-gradient(circle at 100% 55%, transparent 6px, black 6px),
+                                radial-gradient(circle at 100% 65%, transparent 6px, black 6px),
+                                radial-gradient(circle at 100% 75%, transparent 6px, black 6px),
+                                radial-gradient(circle at 100% 85%, transparent 6px, black 6px),
+                                radial-gradient(circle at 100% 95%, transparent 6px, black 6px)`,
+                    maskComposite: 'intersect',
+                    WebkitMaskImage: `radial-gradient(circle at 100% 5%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 100% 15%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 100% 25%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 100% 35%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 100% 45%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 100% 55%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 100% 65%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 100% 75%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 100% 85%, transparent 6px, black 6px),
+                                      radial-gradient(circle at 100% 95%, transparent 6px, black 6px)`,
+                    WebkitMaskComposite: 'source-in'
+                  }}
+                >
                   
                   
                   
