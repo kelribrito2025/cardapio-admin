@@ -2687,3 +2687,4 @@
 - [x] Exibir taxa de entrega configurada no container (grátis ou valor fixo)
 - [x] Exibir taxa de entrega configurada no modal de Resumo do Pedido
 - [x] Redesenhar container de taxa de entrega com borda lateral verde
+- [x] Atualizar container de taxa de entrega com ícone de caminhão e badge Grátis
