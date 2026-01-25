@@ -1616,7 +1616,21 @@ export const appRouter = router({
     getSettings: protectedProcedure
       .input(z.object({ establishmentId: z.number() }))
       .query(async ({ input }) => {
-        return db.getPrinterSettings(input.establishmentId);
+        const settings = await db.getPrinterSettings(input.establishmentId);
+        // Retornar objeto padrão se não houver configurações salvas
+        return settings || {
+          id: 0,
+          establishmentId: input.establishmentId,
+          autoPrintEnabled: false,
+          printOnNewOrder: true,
+          printOnStatusChange: false,
+          copies: 1,
+          showLogo: true,
+          showQrCode: false,
+          footerMessage: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
       }),
     
     // Salvar configurações de impressão

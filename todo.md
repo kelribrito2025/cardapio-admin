@@ -2935,3 +2935,7 @@
 - [x] Criar rota no backend para testar conexão TCP com a impressora (printer.testConnection)
 - [x] Adicionar botão "Testar Conexão" no modal de adicionar/editar impressora
 - [x] Mostrar feedback visual do resultado do teste (sucesso/falha) com cores verde/vermelho
+
+
+## Bug: printer.getSettings retorna undefined
+- [x] Corrigir rota para retornar objeto padrão quando não há configurações salvas
