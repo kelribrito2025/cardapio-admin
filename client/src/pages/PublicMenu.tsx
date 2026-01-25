@@ -5108,18 +5108,18 @@ export default function PublicMenu() {
           {/* Modal - Bottom Sheet no mobile, aumentado 20% no desktop */}
           <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-[520px] md:mx-4 max-h-[85vh] overflow-hidden overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 flex flex-col">
             {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-5 flex items-center justify-between rounded-t-2xl" style={{height: '82px'}}>
+            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-red-100 rounded-xl">
-                  <MapPin className="h-6 w-6 text-red-500" />
+                <div className="p-2 bg-red-100 rounded-xl">
+                  <MapPin className="h-5 w-5 text-red-500" />
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">Selecione seu bairro</h2>
+                <h2 className="text-lg font-bold text-gray-900">Selecione seu bairro</h2>
               </div>
               <button 
                 onClick={() => setShowNeighborhoodModal(false)}
-                className="p-2.5 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <X className="h-6 w-6 text-gray-500" />
+                <X className="h-5 w-5 text-gray-500" />
               </button>
             </div>
 

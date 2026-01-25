@@ -2767,3 +2767,9 @@
 - [x] Mudar cor do botão Copiar para corresponder ao lado esquerdo
 - [x] Mudar cor do botão Usar agora para corresponder ao lado esquerdo
 - [x] Mudar cor do botão próximo para corresponder ao lado esquerdo
+
+## Padronização dos Modais Mobile
+- [x] Igualar altura do cabeçalho do modal de seleção de bairro com o de Meus Pedidos (68px)
+- [x] Igualar tamanho do ícone e padding do modal de seleção de bairro (h-5 w-5, p-2)
+- [x] Igualar tamanho do título do modal de seleção de bairro (text-lg)
+- [x] Igualar tamanho do botão X de fechar (h-5 w-5, p-2)
