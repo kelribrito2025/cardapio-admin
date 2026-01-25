@@ -3101,3 +3101,4 @@
 - [x] Corrigir exibição do status de conexão (mostrava desconectado mesmo conectado)
 - [ ] Testar envio de notificações automáticas ao mudar status do pedido
 - [x] Preencher templates de mensagem com valores padrão (sem precisar preencher manualmente)
+- [x] Bug: ao aceitar pedido deve enviar mensagem de "Novo Pedido", não "Preparando" - Corrigido: agora envia notificação de novo pedido quando o pedido é criado

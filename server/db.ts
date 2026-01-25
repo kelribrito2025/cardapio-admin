@@ -1396,6 +1396,31 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
       // Não falhar o pedido por causa de erro de impressão
     }
     
+    // Enviar notificação WhatsApp para o cliente sobre novo pedido
+    try {
+      const whatsappConfig = await getWhatsappConfig(data.establishmentId);
+      if (whatsappConfig && whatsappConfig.status === 'connected' && whatsappConfig.notifyOnNewOrder && whatsappConfig.instanceToken) {
+        const { sendOrderStatusNotification } = await import('./_core/uazapi');
+        const establishment = await getEstablishmentById(data.establishmentId);
+        
+        await sendOrderStatusNotification(
+          whatsappConfig.instanceToken,
+          data.customerPhone || '',
+          'new',
+          {
+            customerName: data.customerName || 'Cliente',
+            orderNumber,
+            establishmentName: establishment?.name || 'Restaurante',
+            template: whatsappConfig.templateNewOrder,
+          }
+        );
+        console.log('[DB:createPublicOrder] Notificação WhatsApp enviada para novo pedido:', orderNumber);
+      }
+    } catch (whatsappError) {
+      console.error('[DB:createPublicOrder] Erro ao enviar notificação WhatsApp:', whatsappError);
+      // Não falhar o pedido por causa de erro no WhatsApp
+    }
+    
     // Enviar push notification para dispositivos inscritos
     try {
       const { sendNewOrderNotification } = await import('./_core/webPush');
