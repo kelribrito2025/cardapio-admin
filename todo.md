@@ -2807,3 +2807,10 @@
 - [x] Permitir apenas números no campo "Número" (regex remove caracteres não numéricos)
 - [x] Limitar a 6 caracteres máximo
 - [x] Adicionado inputMode="numeric" para teclado numérico no mobile
+
+## Persistência da Sacola no LocalStorage
+- [x] Salvar sacola no localStorage ao adicionar/remover itens
+- [x] Carregar sacola do localStorage ao iniciar a página
+- [x] Manter sacola ao atualizar página, fechar navegador ou navegar para outra página
+- [x] Limpar sacola apenas ao finalizar pedido ou limpar manualmente
+- [x] Associar sacola ao estabelecimento (slug) para não misturar itens de diferentes lojas

@@ -6,6 +6,54 @@ import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, C
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
+// Tipo do item do carrinho
+type CartItem = {
+  productId: number;
+  name: string;
+  price: string;
+  quantity: number;
+  observation: string;
+  image: string | null;
+  complements: Array<{ id: number; name: string; price: string }>;
+};
+
+// Função para obter a chave do localStorage baseada no slug
+const getCartStorageKey = (slug: string) => `cart_${slug}`;
+
+// Função para carregar o carrinho do localStorage
+const loadCartFromStorage = (slug: string): CartItem[] => {
+  try {
+    const stored = localStorage.getItem(getCartStorageKey(slug));
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.error('Erro ao carregar carrinho do localStorage:', e);
+  }
+  return [];
+};
+
+// Função para salvar o carrinho no localStorage
+const saveCartToStorage = (slug: string, cart: CartItem[]) => {
+  try {
+    localStorage.setItem(getCartStorageKey(slug), JSON.stringify(cart));
+  } catch (e) {
+    console.error('Erro ao salvar carrinho no localStorage:', e);
+  }
+};
+
+// Função para limpar o carrinho do localStorage
+const clearCartFromStorage = (slug: string) => {
+  try {
+    localStorage.removeItem(getCartStorageKey(slug));
+  } catch (e) {
+    console.error('Erro ao limpar carrinho do localStorage:', e);
+  }
+};
+
 export default function PublicMenu() {
   const { slug } = useParams<{ slug: string }>();
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
@@ -25,15 +73,13 @@ export default function PublicMenu() {
   } | null>(null);
   const [productQuantity, setProductQuantity] = useState(1);
   const [productObservation, setProductObservation] = useState("");
-  const [cart, setCart] = useState<Array<{
-    productId: number;
-    name: string;
-    price: string;
-    quantity: number;
-    observation: string;
-    image: string | null;
-    complements: Array<{ id: number; name: string; price: string }>;
-  }>>([]);
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    // Inicializar do localStorage se houver dados salvos
+    if (slug) {
+      return loadCartFromStorage(slug);
+    }
+    return [];
+  });
   const [selectedComplements, setSelectedComplements] = useState<Map<number, Set<number>>>(new Map());
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [couponCode, setCouponCode] = useState("");
@@ -218,6 +264,16 @@ export default function PublicMenu() {
   useEffect(() => {
     userOrdersRef.current = userOrders;
   }, [userOrders]);
+  
+  // Sincronizar carrinho com localStorage sempre que mudar
+  useEffect(() => {
+    if (slug && cart.length > 0) {
+      saveCartToStorage(slug, cart);
+    } else if (slug && cart.length === 0) {
+      // Se o carrinho está vazio, remover do localStorage
+      clearCartFromStorage(slug);
+    }
+  }, [cart, slug]);
   
   // Carregar dados de fidelidade do localStorage
   useEffect(() => {
