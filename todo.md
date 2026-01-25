@@ -3097,5 +3097,5 @@
 - [x] Criar instância automaticamente ao clicar em Conectar
 - [x] Atualizar rotas tRPC para usar credenciais centralizadas
 - [x] Manter configurações de notificações e templates personalizáveis
-- [ ] Testar fluxo completo de conexão via QR Code
+- [x] Testar fluxo completo de conexão via QR Code
 - [ ] Testar envio de notificações automáticas ao mudar status do pedido

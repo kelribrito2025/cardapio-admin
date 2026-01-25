@@ -36,6 +36,7 @@ interface InstanceInfo {
   id: string;
   name: string;
   status: 'disconnected' | 'connecting' | 'connected';
+  token?: string;
   phone?: string;
   profileName?: string;
 }
@@ -148,20 +149,26 @@ export async function createInstance(establishmentId: number, establishmentName:
     const instanceName = `cardapio_${establishmentId}`;
     
     const response = await makeAdminRequest<{
-      id?: string;
+      instance?: { id?: string; token?: string };
       token?: string;
-      message?: string;
+      response?: string;
     }>('/instance/create', 'POST', {
       name: instanceName,
       // Optional: set webhook URL for receiving messages
       // webhook: `${process.env.VITE_APP_URL}/api/webhook/whatsapp/${establishmentId}`,
     });
     
+    // A API retorna o token tanto no root quanto em instance.token
+    const instanceToken = response.token || response.instance?.token;
+    const instanceId = response.instance?.id || instanceName;
+    
+    console.log('[UAZAPI] Instance created:', { instanceId, hasToken: !!instanceToken });
+    
     return {
       success: true,
-      instanceId: response.id || instanceName,
-      instanceToken: response.token,
-      message: response.message,
+      instanceId,
+      instanceToken,
+      message: response.response,
     };
   } catch (error) {
     // If instance already exists, try to get its token
@@ -226,11 +233,12 @@ export async function getOrCreateInstance(establishmentId: number, establishment
   const existing = instances.find(i => i.name === instanceName);
   
   if (existing) {
-    // Instance exists, we need to get its token
-    // Note: The token is only returned on creation, so we may need to store it
+    // Instance exists, return its token
+    console.log('[UAZAPI] Instance already exists:', { instanceId: existing.id, hasToken: !!existing.token });
     return {
       success: true,
       instanceId: existing.id,
+      instanceToken: existing.token, // Token vem da lista de instâncias
       message: 'Instance already exists',
     };
   }
@@ -245,18 +253,27 @@ export async function getOrCreateInstance(establishmentId: number, establishment
 export async function connectInstance(instanceToken: string): Promise<ConnectResponse> {
   try {
     const response = await makeInstanceRequest<{
-      status?: string;
+      status?: { connected?: boolean };
+      instance?: { status?: string; qrcode?: string; paircode?: string };
       qrcode?: string;
       pairingCode?: string;
+      response?: string;
       message?: string;
     }>(instanceToken, '/instance/connect', 'POST', {});
     
+    // A API pode retornar qrcode em diferentes lugares
+    const qrcode = response.qrcode || response.instance?.qrcode;
+    const pairingCode = response.pairingCode || response.instance?.paircode;
+    const status = response.instance?.status || (response.status?.connected ? 'connected' : 'connecting');
+    
+    console.log('[UAZAPI] Connect response:', { hasQrcode: !!qrcode, status });
+    
     return {
       success: true,
-      status: (response.status as 'disconnected' | 'connecting' | 'connected') || 'connecting',
-      qrcode: response.qrcode,
-      pairingCode: response.pairingCode,
-      message: response.message,
+      status: (status as 'disconnected' | 'connecting' | 'connected') || 'connecting',
+      qrcode,
+      pairingCode,
+      message: response.response || response.message,
     };
   } catch (error) {
     return {
