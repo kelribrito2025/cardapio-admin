@@ -3030,3 +3030,8 @@
 - [x] Remover card "Detalhes do Pagamento" separado
 - [x] Adicionar método de pagamento no card de "Informações de Entrega"
 - [x] Renomear para apenas "Entrega" com Tipo e Método
+
+
+## Bug: Erro ao imprimir direto do card no PWA
+- [x] Corrigir erro ao abrir janela de impressão quando clica no botão de imprimir do card do pedido
+- [x] Abrir janela ANTES do fetch para manter contexto de evento do usuário

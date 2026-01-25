@@ -306,17 +306,24 @@ export default function Pedidos() {
 
   // Função para imprimir pedido diretamente do card (sem precisar abrir detalhes)
   const handlePrintOrderDirect = async (orderId: number) => {
+    // IMPORTANTE: Em PWA, window.open() só funciona em resposta direta a evento de usuário
+    // Se houver um await antes, o contexto de evento se perde e o popup é bloqueado
+    // Solução: abrir a janela ANTES de fazer o fetch
+    const printWindow = window.open('about:blank', '_blank');
+    if (!printWindow) {
+      toast.error("Erro ao abrir janela de impressão. Verifique se popups estão permitidos.");
+      return;
+    }
+    
+    // Mostrar loading na janela enquanto carrega
+    printWindow.document.write('<html><body style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:Arial;"><p>Carregando pedido...</p></body></html>');
+    
     try {
       // Buscar detalhes do pedido
       const orderData = await utils.orders.get.fetch({ id: orderId });
       if (!orderData) {
+        printWindow.close();
         toast.error("Erro ao carregar pedido para impressão");
-        return;
-      }
-      
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) {
-        toast.error("Erro ao abrir janela de impressão");
         return;
       }
       
