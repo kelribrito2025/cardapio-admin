@@ -3052,3 +3052,8 @@
 
 ## Melhoria: Ocultar badge de tempo real no mobile (Pedidos)
 - [x] Ocultar o badge de tempo real na versão mobile da página de Pedidos
+
+
+## Melhoria: Layout horizontal no card de pedido (desktop)
+- [x] Mostrar nome, forma de pagamento e tipo de entrega na mesma linha no desktop (igual mobile)
+- [x] Aumentar tamanhos de fonte e espaçamentos para desktop

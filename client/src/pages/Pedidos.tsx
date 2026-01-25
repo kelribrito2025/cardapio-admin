@@ -934,12 +934,12 @@ export default function Pedidos() {
 
                     {/* Content */}
                     <div className="p-4">
-                      {/* Mobile: Linha compacta com todas as informações */}
+                      {/* Linha compacta com todas as informações (mobile e desktop) */}
                       <div className="flex items-center justify-between gap-2 flex-wrap">
                         <div className="flex items-center gap-2 min-w-0 flex-1">
                           {/* Nome do cliente */}
                           {order.customerName && (
-                            <span className="font-semibold text-sm truncate max-w-[100px]">
+                            <span className="font-semibold text-sm truncate max-w-[100px] sm:max-w-[150px] md:max-w-[200px]">
                               {order.customerName}
                             </span>
                           )}
@@ -950,19 +950,19 @@ export default function Pedidos() {
                           )}
                           
                           {/* Ícone e método de pagamento */}
-                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <PaymentIcon className="h-3.5 w-3.5" />
+                          <span className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground">
+                            <PaymentIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             {paymentMethodLabels[order.paymentMethod]?.label}
                           </span>
                           
                           {/* Tag de entrega/retirada */}
-                          <span className="px-1.5 py-0.5 bg-muted/50 rounded text-[10px] font-medium capitalize whitespace-nowrap">
+                          <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-muted/50 rounded text-[10px] sm:text-xs font-medium capitalize whitespace-nowrap">
                             {order.deliveryType === "delivery" ? "Entrega" : "Retirada"}
                           </span>
                         </div>
                         
                         {/* Valor total */}
-                        <span className="text-base font-bold text-primary whitespace-nowrap">
+                        <span className="text-base sm:text-lg font-bold text-primary whitespace-nowrap">
                           {formatCurrency(order.total)}
                         </span>
                       </div>
