@@ -5673,7 +5673,21 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             className="absolute inset-0 bg-white rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden] flex flex-col"
           >
             {/* Parte verde do card */}
-            <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-3 md:p-5 text-white flex-1" style={{height: '215px'}}>
+            <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-3 md:p-5 text-white flex-1 relative overflow-hidden" style={{height: '215px'}}>
+              {/* Coração vazado como marca d'água */}
+              <div className="absolute -right-12 -bottom-12 opacity-[0.15] pointer-events-none">
+                <svg 
+                  width="280" 
+                  height="280" 
+                  viewBox="0 0 24 24" 
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                  className="text-white"
+                >
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </div>
           <div className="flex items-start gap-2 md:gap-3 mb-3 md:mb-4">
             <div className="p-1.5 md:p-2 bg-white/20 rounded-xl">
               <Gift className="h-5 w-5 md:h-6 md:w-6" />

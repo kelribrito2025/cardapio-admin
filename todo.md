@@ -2707,3 +2707,5 @@
 - [x] Bug: Dropdown de bairros não abre ao clicar em Selecionar (corrigido removendo overflow-hidden)
 - [x] Fechar dropdown de bairros ao clicar fora dele
 - [x] Criar modal estilizado para seleção de bairros no desktop (mesmo estilo do modal de Meus Pedidos)
+- [ ] Adicionar coração como marca d'água no cartão de fidelidade
+- [x] Adicionar coração vazado como marca d'água no cartão de fidelidade
