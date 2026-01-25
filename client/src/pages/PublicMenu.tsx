@@ -6114,7 +6114,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                         }
                       }}
                       id="voucher-copy-btn"
-                      className="w-full py-2 md:py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg font-semibold text-[10px] md:text-xs flex items-center justify-center gap-1.5 transition-colors border border-slate-700"
+                      className="w-full py-2 md:py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg font-semibold text-[10px] md:text-xs flex items-center justify-center gap-1.5 transition-colors border border-slate-700" style={{width: '149px', height: '32px'}}
                     >
                       <Copy className="h-3.5 w-3.5" />
                       Copiar
@@ -6130,7 +6130,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                           );
                         }
                       }}
-                      className="w-full py-2 md:py-2.5 px-3 bg-amber-500 hover:bg-amber-600 text-slate-900 rounded-lg font-bold text-[10px] md:text-xs flex items-center justify-center gap-1.5 transition-colors"
+                      className="w-full py-2 md:py-2.5 px-3 bg-amber-500 hover:bg-amber-600 text-slate-900 rounded-lg font-bold text-[10px] md:text-xs flex items-center justify-center gap-1.5 transition-colors" style={{width: '149px', height: '31px'}}
                     >
                       <ShoppingBag className="h-3.5 w-3.5" />
                       Usar agora
