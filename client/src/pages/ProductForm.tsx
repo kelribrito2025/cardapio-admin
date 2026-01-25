@@ -1021,7 +1021,7 @@ export default function ProductForm() {
               ) : (
                 <div className="space-y-3">
                   {complementGroups.map((group, groupIndex) => (
-                    <div key={groupIndex} className="border border-border/50 rounded-xl p-4 bg-muted/20">
+                    <div key={groupIndex} className="border border-border/50 rounded-xl p-4 bg-muted/20 overflow-x-auto">
                       <div className="flex items-start justify-between gap-3 mb-4">
                         <div className="flex-1 space-y-3">
                           <Input
@@ -1100,7 +1100,7 @@ export default function ProductForm() {
                           items={group.items.map((item) => item.uniqueId)}
                           strategy={verticalListSortingStrategy}
                         >
-                          <div className="space-y-2">
+                          <div className="space-y-2 min-w-[400px]">
                             {group.items.map((item, itemIndex) => (
                               <SortableComplementItem
                                 key={item.uniqueId}

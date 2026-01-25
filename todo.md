@@ -3043,3 +3043,8 @@
 
 ## Melhoria: Scroll horizontal nos campos de complementos (mobile)
 - [x] Adicionar scroll horizontal nos itens de complemento para ver texto completo no mobile
+
+
+## Melhoria: Scroll horizontal no card de Complementos/Adicionais
+- [x] Adicionar scroll horizontal no card inteiro para ver nomes completos dos complementos
+- [x] Adicionar min-width de 400px nos itens para garantir espaço
