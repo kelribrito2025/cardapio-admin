@@ -3061,3 +3061,23 @@
 
 ## Melhoria: Botão de cancelar vermelho por padrão
 - [x] Deixar o botão de cancelar já vermelho (sem precisar de hover)
+
+
+## Feature: Integração com WhatsApp via UAZAPI
+### Fase 1: Análise da documentação
+- [x] Ler documentação da UAZAPI
+- [x] Identificar endpoints necessários (criar instância, QR code, enviar mensagem)
+
+### Fase 2: Backend
+- [x] Criar tabela para armazenar configuração do WhatsApp por estabelecimento
+- [x] Implementar rotas tRPC para gerenciar conexão WhatsApp
+- [x] Implementar função de envio de mensagens
+
+### Fase 3: Frontend
+- [x] Criar interface de conexão WhatsApp na página de Configurações
+- [x] Mostrar QR Code para conexão
+- [x] Mostrar status da conexão
+
+### Fase 4: Integração
+- [x] Enviar mensagem automática quando status do pedido mudar
+- [x] Personalizar mensagens por tipo de status

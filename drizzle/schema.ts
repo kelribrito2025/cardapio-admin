@@ -398,3 +398,33 @@ export const pushSubscriptions = mysqlTable("pushSubscriptions", {
 
 export type PushSubscription = typeof pushSubscriptions.$inferSelect;
 export type InsertPushSubscription = typeof pushSubscriptions.$inferInsert;
+
+
+// Configuração de integração com WhatsApp via UAZAPI
+export const whatsappConfig = mysqlTable("whatsappConfig", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull().unique(),
+  subdomain: varchar("subdomain", { length: 100 }).notNull(), // Subdomínio da instância UAZAPI (ex: 'free')
+  token: varchar("token", { length: 500 }).notNull(), // Token de autenticação da instância
+  status: mysqlEnum("status", ["disconnected", "connecting", "connected"]).default("disconnected").notNull(),
+  connectedPhone: varchar("connectedPhone", { length: 30 }), // Número conectado
+  lastQrCode: text("lastQrCode"), // Último QR code gerado (base64)
+  qrCodeExpiresAt: timestamp("qrCodeExpiresAt"), // Quando o QR code expira
+  // Configurações de notificação
+  notifyOnNewOrder: boolean("notifyOnNewOrder").default(true).notNull(), // Notificar cliente quando pedido é criado
+  notifyOnPreparing: boolean("notifyOnPreparing").default(true).notNull(), // Notificar quando pedido está sendo preparado
+  notifyOnReady: boolean("notifyOnReady").default(true).notNull(), // Notificar quando pedido está pronto
+  notifyOnCompleted: boolean("notifyOnCompleted").default(false).notNull(), // Notificar quando pedido é finalizado
+  notifyOnCancelled: boolean("notifyOnCancelled").default(true).notNull(), // Notificar quando pedido é cancelado
+  // Templates de mensagem personalizados
+  templateNewOrder: text("templateNewOrder"), // Template para novo pedido
+  templatePreparing: text("templatePreparing"), // Template para preparando
+  templateReady: text("templateReady"), // Template para pronto
+  templateCompleted: text("templateCompleted"), // Template para finalizado
+  templateCancelled: text("templateCancelled"), // Template para cancelado
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type WhatsappConfig = typeof whatsappConfig.$inferSelect;
+export type InsertWhatsappConfig = typeof whatsappConfig.$inferInsert;

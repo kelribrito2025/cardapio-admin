@@ -22,7 +22,8 @@ import {
   loyaltyStamps, InsertLoyaltyStamp, LoyaltyStamp,
   printers, InsertPrinter, Printer,
   printerSettings, InsertPrinterSettings, PrinterSettings,
-  pushSubscriptions, InsertPushSubscription, PushSubscription
+  pushSubscriptions, InsertPushSubscription, PushSubscription,
+  whatsappConfig, InsertWhatsappConfig, WhatsappConfig
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -2842,4 +2843,134 @@ export async function deletePushSubscriptionById(id: number): Promise<void> {
   if (!db) throw new Error("Database not available");
   
   await db.delete(pushSubscriptions).where(eq(pushSubscriptions.id, id));
+}
+
+
+
+// ============ WHATSAPP CONFIG FUNCTIONS ============
+
+/**
+ * Busca configuração do WhatsApp de um estabelecimento
+ */
+export async function getWhatsappConfig(establishmentId: number): Promise<WhatsappConfig | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(whatsappConfig)
+    .where(eq(whatsappConfig.establishmentId, establishmentId))
+    .limit(1);
+  
+  return result[0];
+}
+
+/**
+ * Cria ou atualiza configuração do WhatsApp
+ */
+export async function upsertWhatsappConfig(data: {
+  establishmentId: number;
+  subdomain: string;
+  token: string;
+  status?: 'disconnected' | 'connecting' | 'connected';
+  connectedPhone?: string | null;
+  lastQrCode?: string | null;
+  qrCodeExpiresAt?: Date | null;
+  notifyOnNewOrder?: boolean;
+  notifyOnPreparing?: boolean;
+  notifyOnReady?: boolean;
+  notifyOnCompleted?: boolean;
+  notifyOnCancelled?: boolean;
+  templateNewOrder?: string | null;
+  templatePreparing?: string | null;
+  templateReady?: string | null;
+  templateCompleted?: string | null;
+  templateCancelled?: string | null;
+}): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const existing = await getWhatsappConfig(data.establishmentId);
+  
+  if (existing) {
+    await db.update(whatsappConfig)
+      .set({
+        subdomain: data.subdomain,
+        token: data.token,
+        status: data.status ?? existing.status,
+        connectedPhone: data.connectedPhone !== undefined ? data.connectedPhone : existing.connectedPhone,
+        lastQrCode: data.lastQrCode !== undefined ? data.lastQrCode : existing.lastQrCode,
+        qrCodeExpiresAt: data.qrCodeExpiresAt !== undefined ? data.qrCodeExpiresAt : existing.qrCodeExpiresAt,
+        notifyOnNewOrder: data.notifyOnNewOrder ?? existing.notifyOnNewOrder,
+        notifyOnPreparing: data.notifyOnPreparing ?? existing.notifyOnPreparing,
+        notifyOnReady: data.notifyOnReady ?? existing.notifyOnReady,
+        notifyOnCompleted: data.notifyOnCompleted ?? existing.notifyOnCompleted,
+        notifyOnCancelled: data.notifyOnCancelled ?? existing.notifyOnCancelled,
+        templateNewOrder: data.templateNewOrder !== undefined ? data.templateNewOrder : existing.templateNewOrder,
+        templatePreparing: data.templatePreparing !== undefined ? data.templatePreparing : existing.templatePreparing,
+        templateReady: data.templateReady !== undefined ? data.templateReady : existing.templateReady,
+        templateCompleted: data.templateCompleted !== undefined ? data.templateCompleted : existing.templateCompleted,
+        templateCancelled: data.templateCancelled !== undefined ? data.templateCancelled : existing.templateCancelled,
+      })
+      .where(eq(whatsappConfig.establishmentId, data.establishmentId));
+    return existing.id;
+  }
+  
+  const result = await db.insert(whatsappConfig).values({
+    establishmentId: data.establishmentId,
+    subdomain: data.subdomain,
+    token: data.token,
+    status: data.status || 'disconnected',
+    connectedPhone: data.connectedPhone || null,
+    lastQrCode: data.lastQrCode || null,
+    qrCodeExpiresAt: data.qrCodeExpiresAt || null,
+    notifyOnNewOrder: data.notifyOnNewOrder ?? true,
+    notifyOnPreparing: data.notifyOnPreparing ?? true,
+    notifyOnReady: data.notifyOnReady ?? true,
+    notifyOnCompleted: data.notifyOnCompleted ?? false,
+    notifyOnCancelled: data.notifyOnCancelled ?? true,
+    templateNewOrder: data.templateNewOrder || null,
+    templatePreparing: data.templatePreparing || null,
+    templateReady: data.templateReady || null,
+    templateCompleted: data.templateCompleted || null,
+    templateCancelled: data.templateCancelled || null,
+  });
+  
+  return result[0].insertId;
+}
+
+/**
+ * Atualiza status da conexão WhatsApp
+ */
+export async function updateWhatsappStatus(
+  establishmentId: number, 
+  status: 'disconnected' | 'connecting' | 'connected',
+  connectedPhone?: string | null,
+  qrCode?: string | null
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const updateData: Partial<InsertWhatsappConfig> = { status };
+  
+  if (connectedPhone !== undefined) {
+    updateData.connectedPhone = connectedPhone;
+  }
+  
+  if (qrCode !== undefined) {
+    updateData.lastQrCode = qrCode;
+    updateData.qrCodeExpiresAt = qrCode ? new Date(Date.now() + 60000) : null; // QR code expires in 60 seconds
+  }
+  
+  await db.update(whatsappConfig)
+    .set(updateData)
+    .where(eq(whatsappConfig.establishmentId, establishmentId));
+}
+
+/**
+ * Deleta configuração do WhatsApp
+ */
+export async function deleteWhatsappConfig(establishmentId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(whatsappConfig).where(eq(whatsappConfig.establishmentId, establishmentId));
 }

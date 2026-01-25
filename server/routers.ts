@@ -1089,6 +1089,46 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         await db.updateOrderStatus(input.id, input.status, input.cancellationReason);
+        
+        // Enviar notificação via WhatsApp
+        try {
+          const order = await db.getOrderById(input.id);
+          if (order && order.customerPhone) {
+            const config = await db.getWhatsappConfig(order.establishmentId);
+            if (config && config.status === 'connected') {
+              // Verificar se deve notificar para este status
+              const shouldNotify = 
+                (input.status === 'preparing' && config.notifyOnPreparing) ||
+                (input.status === 'ready' && config.notifyOnReady) ||
+                (input.status === 'completed' && config.notifyOnCompleted) ||
+                (input.status === 'cancelled' && config.notifyOnCancelled);
+              
+              if (shouldNotify) {
+                const { sendOrderStatusNotification } = await import('./_core/uazapi');
+                const establishment = await db.getEstablishmentById(order.establishmentId);
+                
+                await sendOrderStatusNotification(
+                  { subdomain: config.subdomain, token: config.token },
+                  order.customerPhone,
+                  input.status,
+                  {
+                    customerName: order.customerName || 'Cliente',
+                    orderNumber: order.orderNumber,
+                    establishmentName: establishment?.name || 'Restaurante',
+                    template: input.status === 'preparing' ? config.templatePreparing :
+                              input.status === 'ready' ? config.templateReady :
+                              input.status === 'completed' ? config.templateCompleted :
+                              input.status === 'cancelled' ? config.templateCancelled : null,
+                  }
+                );
+              }
+            }
+          }
+        } catch (error) {
+          console.error('[WhatsApp] Erro ao enviar notificação:', error);
+          // Não falhar a mutação por erro no WhatsApp
+        }
+        
         return { success: true };
       }),
   }),
@@ -1921,6 +1961,181 @@ export const appRouter = router({
           sent,
           failed,
         };
+      }),
+  }),
+  
+  // ============ WHATSAPP INTEGRATION ============
+  whatsapp: router({
+    // Obter configuração do WhatsApp
+    getConfig: protectedProcedure
+      .query(async ({ ctx }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) return null;
+        
+        const config = await db.getWhatsappConfig(establishment.id);
+        if (!config) return null;
+        
+        // Não retornar o token completo por segurança
+        return {
+          ...config,
+          token: config.token ? '***' + config.token.slice(-4) : null,
+        };
+      }),
+    
+    // Salvar configuração do WhatsApp (subdomain e token)
+    saveConfig: protectedProcedure
+      .input(z.object({
+        subdomain: z.string().min(1, "Subdomínio é obrigatório"),
+        token: z.string().min(1, "Token é obrigatório"),
+        notifyOnNewOrder: z.boolean().optional(),
+        notifyOnPreparing: z.boolean().optional(),
+        notifyOnReady: z.boolean().optional(),
+        notifyOnCompleted: z.boolean().optional(),
+        notifyOnCancelled: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        await db.upsertWhatsappConfig({
+          establishmentId: establishment.id,
+          subdomain: input.subdomain,
+          token: input.token,
+          notifyOnNewOrder: input.notifyOnNewOrder,
+          notifyOnPreparing: input.notifyOnPreparing,
+          notifyOnReady: input.notifyOnReady,
+          notifyOnCompleted: input.notifyOnCompleted,
+          notifyOnCancelled: input.notifyOnCancelled,
+        });
+        
+        return { success: true };
+      }),
+    
+    // Conectar instância ao WhatsApp (gera QR code)
+    connect: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        const config = await db.getWhatsappConfig(establishment.id);
+        if (!config) throw new TRPCError({ code: 'NOT_FOUND', message: 'Configure o WhatsApp primeiro' });
+        
+        const { connectInstance } = await import('./_core/uazapi');
+        const result = await connectInstance({ subdomain: config.subdomain, token: config.token });
+        
+        // Atualizar status no banco
+        await db.updateWhatsappStatus(
+          establishment.id, 
+          result.status,
+          null,
+          result.qrcode || null
+        );
+        
+        return result;
+      }),
+    
+    // Verificar status da conexão
+    getStatus: protectedProcedure
+      .query(async ({ ctx }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        const config = await db.getWhatsappConfig(establishment.id);
+        if (!config) return { success: false, status: 'disconnected' as const, message: 'Não configurado' };
+        
+        const { getInstanceStatus } = await import('./_core/uazapi');
+        const result = await getInstanceStatus({ subdomain: config.subdomain, token: config.token });
+        
+        // Atualizar status no banco
+        if (result.status !== config.status || result.phone !== config.connectedPhone) {
+          await db.updateWhatsappStatus(
+            establishment.id,
+            result.status,
+            result.phone || null,
+            result.qrcode || null
+          );
+        }
+        
+        return result;
+      }),
+    
+    // Desconectar instância
+    disconnect: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        const config = await db.getWhatsappConfig(establishment.id);
+        if (!config) throw new TRPCError({ code: 'NOT_FOUND', message: 'WhatsApp não configurado' });
+        
+        const { disconnectInstance } = await import('./_core/uazapi');
+        const result = await disconnectInstance({ subdomain: config.subdomain, token: config.token });
+        
+        // Atualizar status no banco
+        await db.updateWhatsappStatus(establishment.id, 'disconnected', null, null);
+        
+        return result;
+      }),
+    
+    // Enviar mensagem de teste
+    sendTest: protectedProcedure
+      .input(z.object({
+        phone: z.string().min(10, "Telefone inválido"),
+        message: z.string().min(1, "Mensagem é obrigatória"),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        const config = await db.getWhatsappConfig(establishment.id);
+        if (!config) throw new TRPCError({ code: 'NOT_FOUND', message: 'WhatsApp não configurado' });
+        
+        const { sendTextMessage } = await import('./_core/uazapi');
+        return await sendTextMessage({ subdomain: config.subdomain, token: config.token }, input.phone, input.message);
+      }),
+    
+    // Salvar templates de mensagem
+    saveTemplates: protectedProcedure
+      .input(z.object({
+        templateNewOrder: z.string().nullable().optional(),
+        templatePreparing: z.string().nullable().optional(),
+        templateReady: z.string().nullable().optional(),
+        templateCompleted: z.string().nullable().optional(),
+        templateCancelled: z.string().nullable().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        const config = await db.getWhatsappConfig(establishment.id);
+        if (!config) throw new TRPCError({ code: 'NOT_FOUND', message: 'WhatsApp não configurado' });
+        
+        await db.upsertWhatsappConfig({
+          establishmentId: establishment.id,
+          subdomain: config.subdomain,
+          token: config.token,
+          templateNewOrder: input.templateNewOrder,
+          templatePreparing: input.templatePreparing,
+          templateReady: input.templateReady,
+          templateCompleted: input.templateCompleted,
+          templateCancelled: input.templateCancelled,
+        });
+        
+        return { success: true };
       }),
   }),
 });
