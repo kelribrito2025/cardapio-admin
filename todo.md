@@ -3108,3 +3108,4 @@
 - [x] Adicionar máscara visual (DDD) 9 9999-9999 no campo de telefone com formatação automática
 - [x] Criar variável {{greeting}} para saudação automática baseada no horário (Bom dia/Boa tarde/Boa noite)
 - [x] Permitir underscore (_), ponto (.) e números no campo "Link do Cardápio"
+- [x] Bug: ao avançar de "Seus Dados" para "Confirmação" mostra mensagem de erro "Não foi possível enviar o pedido" incorretamente - Corrigido: agora limpa o erro anterior ao iniciar novo checkout

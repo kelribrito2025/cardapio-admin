@@ -2110,6 +2110,7 @@ export default function PublicMenu() {
                             return;
                           }
                           setOrderSent(false);
+                          setOrderError(null); // Limpar erro anterior
                           setCheckoutStep(1);
                         }
                       }}
@@ -3378,7 +3379,10 @@ export default function PublicMenu() {
               {/* Footer */}
               <div className="flex-shrink-0 border-t px-6 py-4">
                 <button
-                  onClick={() => setCheckoutStep(5)}
+                  onClick={() => {
+                    setOrderError(null); // Limpar erro anterior ao avançar
+                    setCheckoutStep(5);
+                  }}
                   disabled={!customerInfo.name || !customerInfo.phone}
                   className={`w-full py-3.5 font-semibold rounded-xl transition-colors ${
                     customerInfo.name && customerInfo.phone
@@ -3949,6 +3953,7 @@ export default function PublicMenu() {
                             }
                             setShowMobileBag(false);
                             setOrderSent(false);
+                            setOrderError(null); // Limpar erro anterior
                             setCheckoutStep(1);
                           }}
                           disabled={!isOpen}
@@ -4242,6 +4247,7 @@ export default function PublicMenu() {
                                       
                                       setShowOrdersModal(false);
                                       // Abrir modal de resumo (checkout step 1)
+                                      setOrderError(null); // Limpar erro anterior
                                       setCheckoutStep(1);
                                     }}
                                     className="mt-3 w-full py-2 bg-green-500 text-white text-sm font-medium rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
