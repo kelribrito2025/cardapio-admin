@@ -2745,3 +2745,12 @@
 - [x] Regenerar código automaticamente em caso de colisão
 - [x] Limitar tentativas de geração para evitar loop infinito (max 10 tentativas)
 - [x] Fallback com timestamp caso todas as tentativas falhem
+
+## Novo Visual do Card de Cupom
+- [x] Implementar novo design do card de cupom com efeito de voucher
+- [x] Manter as mesmas proporções (altura e largura)
+- [x] Adicionar efeito de recorte nas bordas (perfurado) usando CSS mask
+- [x] Lado esquerdo amarelo/dourado com nome do estabelecimento e validade
+- [x] Lado direito azul escuro (slate-900) com valor do desconto e botões
+- [x] Ícone de talheres como marca d'água no lado esquerdo
+- [x] Sombra drop-shadow para efeito de profundidade

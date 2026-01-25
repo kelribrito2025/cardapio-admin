@@ -5957,55 +5957,68 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                     : 'scale(1)',
                   opacity: isAnimating ? 0.8 : 1,
                   zIndex: 2,
+                  filter: 'drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.05))',
                 }}
               >
             {currentCoupon && (
-              <div className="h-full flex rounded-2xl shadow-lg relative overflow-hidden">
-                {/* Recortes circulares esquerdos - 9 recortes */}
-                {[...Array(9)].map((_, i) => (
-                  <div 
-                    key={`left-${i}`}
-                    className="absolute left-0 -translate-x-1/2 rounded-full z-10"
-                    style={{ 
-                      backgroundColor: '#ffffff',
-                      top: `${6 + i * 11}%`,
-                      width: '14px',
-                      height: '14px',
-                      marginTop: '-4px',
-                      boxShadow: 'inset 2px 0 3px rgba(0,0,0,0.1)'
-                    }}
-                  />
-                ))}
-                {/* Recortes circulares direitos - 9 recortes */}
-                {[...Array(9)].map((_, i) => (
-                  <div 
-                    key={`right-${i}`}
-                    className="absolute right-0 translate-x-1/2 rounded-full z-10"
-                    style={{ 
-                      backgroundColor: '#ffffff',
-                      top: `${6 + i * 11}%`,
-                      width: '14px',
-                      height: '14px',
-                      marginTop: '-4px',
-                      boxShadow: 'inset -2px 0 3px rgba(0,0,0,0.1)'
-                    }}
-                  />
-                ))}
+              <div 
+                className="h-full flex relative"
+                style={{
+                  maskImage: `
+                    radial-gradient(circle 8px at 0% 8%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 0% 20%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 0% 32%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 0% 44%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 0% 56%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 0% 68%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 0% 80%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 0% 92%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 8%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 20%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 32%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 44%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 56%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 68%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 80%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 92%, transparent 0, transparent 8px, black 8.5px)
+                  `,
+                  maskComposite: 'intersect',
+                  WebkitMaskImage: `
+                    radial-gradient(circle 8px at 0% 8%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 0% 20%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 0% 32%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 0% 44%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 0% 56%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 0% 68%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 0% 80%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 0% 92%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 8%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 20%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 32%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 44%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 56%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 68%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 80%, transparent 0, transparent 8px, black 8.5px),
+                    radial-gradient(circle 8px at 100% 92%, transparent 0, transparent 8px, black 8.5px)
+                  `,
+                  WebkitMaskComposite: 'source-in',
+                }}
+              >
                 {/* Lado Esquerdo - Amarelo/Dourado */}
-                <div 
-                  className="flex-[1.3] bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-500 p-3 md:p-4 flex flex-col justify-between relative"
-                >
-                  
-                  
-                  {/* Conteúdo superior - Nome do Restaurante */}
-                  <div>
+                <div className="w-[55%] bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 p-3 md:p-4 flex flex-col justify-between relative overflow-hidden">
+                  {/* Ícone decorativo de talheres */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.15]">
+                    <UtensilsCrossed className="h-32 w-32 md:h-40 md:w-40 text-amber-800" strokeWidth={1} />
+                  </div>
+
+                  {/* Informações do Voucher */}
+                  <div className="relative z-10">
                     {(() => {
                       const words = establishmentName.split(' ');
                       const isLongName = establishmentName.length > 15;
                       const isVeryLongName = establishmentName.length > 25;
                       
                       if (words.length >= 2 && isLongName) {
-                        // Dividir em duas linhas
                         const midPoint = Math.ceil(words.length / 2);
                         const firstLine = words.slice(0, midPoint).join(' ');
                         const secondLine = words.slice(midPoint).join(' ');
@@ -6013,92 +6026,83 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                         
                         return (
                           <>
-                            <h3 className={`text-gray-900 font-black ${fontSize} uppercase tracking-tight leading-tight`}>
+                            <h3 className={`font-black ${fontSize} text-gray-900 uppercase tracking-wide leading-tight`}>
                               {firstLine}
                             </h3>
-                            <h3 className={`text-gray-900 font-black ${fontSize} uppercase tracking-tight leading-tight -mt-0.5`}>
+                            <h3 className={`font-black ${fontSize} text-gray-900 uppercase tracking-wide leading-tight -mt-0.5`}>
                               {secondLine}
                             </h3>
                           </>
                         );
                       } else {
-                        // Nome curto - uma linha só
                         const fontSize = isLongName ? 'text-sm md:text-base' : 'text-lg md:text-xl';
                         return (
-                          <h3 className={`text-gray-900 font-black ${fontSize} uppercase tracking-tight`}>
+                          <h3 className={`font-black ${fontSize} text-gray-900 uppercase tracking-wide`}>
                             {establishmentName}
                           </h3>
                         );
                       }
                     })()}
-                    <p className="text-gray-800 font-semibold text-xs md:text-sm uppercase tracking-wide">
-                      {hasMultipleCoupons ? `Voucher ${currentCouponIndex + 1}` : 'Voucher'}
+                    <p className="text-gray-700 font-semibold text-xs md:text-sm mt-1">
+                      VOUCHER {hasMultipleCoupons ? currentCouponIndex + 1 : ''}
                     </p>
                   </div>
-                  
-                  {/* Ícone de talheres cruzados no centro - efeito marca d'água com pulsação */}
-                  <div className="flex items-center justify-center my-2">
-                    <UtensilsCrossed className="h-20 w-20 md:h-24 md:w-24 text-gray-900/20 animate-pulse" />
-                  </div>
-                  
+
                   {/* Validade */}
-                  <div>
-                    <p className="text-gray-800 font-bold text-[10px] md:text-xs uppercase">Validade</p>
-                    <p className="text-gray-900 font-semibold text-xs md:text-sm">
-                      {currentCoupon.expiresAt 
+                  <div className="relative z-10">
+                    <p className="text-amber-700/60 text-[10px] md:text-xs font-bold uppercase tracking-wider" style={{
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+                      letterSpacing: '0.15em'
+                    }}>VALIDADE</p>
+                    <p className="text-amber-800/70 font-black text-xs md:text-sm" style={{
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+                      letterSpacing: '0.05em'
+                    }}>
+                      {currentCoupon.expiresAt
                         ? new Date(currentCoupon.expiresAt).toLocaleDateString('pt-BR')
-                        : 'Sem validade'
-                      }
+                        : 'Sem validade'}
                     </p>
                   </div>
                   
-                  {/* Botão voltar - posicionado onde estava o botão de navegar */}
+                  {/* Botão voltar */}
                   <button
                     onClick={() => setIsFlipped(false)}
-                    className="absolute left-1 top-1/2 -translate-y-1/2 p-1.5 bg-gray-900/30 hover:bg-gray-900/50 rounded-full transition-colors"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-gray-900/20 hover:bg-gray-900/40 rounded-full transition-colors z-20"
                     title="Voltar para carimbos"
-                    style={{ marginLeft: '10px' }}
                   >
                     <RotateCcw className="h-4 w-4 text-gray-900" />
                   </button>
                 </div>
-                
-                {/* Linha tracejada vertical */}
-                <div className="w-0 border-l-2 border-dashed border-gray-400 relative">
-                  
-                </div>
-                
-                {/* Lado Direito - Escuro */}
-                <div 
-                  className="flex-1 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 p-3 md:p-4 flex flex-col items-center justify-center relative"
-                >
-                  
-                  
-                  
-                  {/* Porcentagem de desconto */}
-                  <div className="text-center">
+
+                {/* Lado Direito - Azul Escuro */}
+                <div className="w-[45%] bg-slate-900 p-3 md:p-4 flex flex-col justify-between relative">
+                  {/* Botão Próximo Cupom */}
+                  {hasMultipleCoupons && (
+                    <button
+                      onClick={nextCoupon}
+                      className="absolute top-1/2 -translate-y-1/2 -right-3 p-2 rounded-full bg-amber-500 hover:bg-amber-600 transition-colors shadow-lg z-20"
+                      title="Próximo cupom"
+                    >
+                      <ChevronRight className="h-4 w-4 text-white" />
+                    </button>
+                  )}
+
+                  {/* Valor do Desconto */}
+                  <div className="text-center flex-1 flex flex-col justify-center">
                     <p className="text-amber-400 font-black text-3xl md:text-4xl leading-none">
-                      {currentCoupon.type === 'percentage' 
+                      {currentCoupon.type === 'percentage'
                         ? `${currentCoupon.value}%`
                         : currentCoupon.type === 'free_delivery'
                         ? 'FRETE'
-                        : `R$${Number(currentCoupon.value).toFixed(0)}`
-                      }
+                        : `R$${Number(currentCoupon.value).toFixed(0)}`}
                     </p>
-                    <p className="text-amber-400 font-black text-3xl md:text-4xl">
+                    <p className="text-amber-400 font-black text-2xl md:text-3xl">
                       {currentCoupon.type === 'free_delivery' ? 'GRÁTIS' : 'OFF'}
                     </p>
                   </div>
-                  
-                  {/* Código do cupom - oculto mas mantendo espaço */}
-                  <div className="mt-2 md:mt-3 bg-amber-400/20 border border-amber-400/50 rounded px-2 py-1 invisible">
-                    <p className="text-amber-400 font-bold text-xs md:text-sm tracking-wider">
-                      {currentCoupon.code}
-                    </p>
-                  </div>
-                  
-                  {/* Botões */}
-                  <div className="flex flex-col gap-1.5 mt-2 md:mt-3 w-full px-1">
+
+                  {/* Botões de Ação */}
+                  <div className="space-y-1.5">
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(currentCoupon?.code || '');
@@ -6109,9 +6113,9 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                         }
                       }}
                       id="voucher-copy-btn"
-                      className="w-full py-1.5 px-2 bg-transparent border border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-gray-900 font-semibold text-[10px] md:text-xs rounded transition-all flex items-center justify-center gap-1"
+                      className="w-full py-2 md:py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg font-semibold text-[10px] md:text-xs flex items-center justify-center gap-1.5 transition-colors border border-slate-700"
                     >
-                      <Copy className="h-3 w-3" />
+                      <Copy className="h-3.5 w-3.5" />
                       Copiar
                     </button>
                     <button
@@ -6125,23 +6129,12 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                           );
                         }
                       }}
-                      className="w-full py-1.5 px-2 bg-amber-400 hover:bg-amber-500 text-gray-900 font-semibold text-[10px] md:text-xs rounded transition-all flex items-center justify-center gap-1"
+                      className="w-full py-2 md:py-2.5 px-3 bg-amber-500 hover:bg-amber-600 text-slate-900 rounded-lg font-bold text-[10px] md:text-xs flex items-center justify-center gap-1.5 transition-colors"
                     >
-                      <ShoppingBag className="h-3 w-3" />
+                      <ShoppingBag className="h-3.5 w-3.5" />
                       Usar agora
                     </button>
                   </div>
-                  
-                  {/* Seta para próximo cupom - só mostra se tiver múltiplos cupons */}
-                  {hasMultipleCoupons && (
-                    <button
-                      onClick={nextCoupon}
-                      className="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-amber-400/30 hover:bg-amber-400/50 rounded-full transition-colors"
-                      title="Próximo cupom" style={{marginRight: '10px'}}
-                    >
-                      <ChevronRight className="h-4 w-4 text-amber-400" />
-                    </button>
-                  )}
                 </div>
               </div>
             )}
@@ -6150,22 +6143,19 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
             
             {/* Indicador de múltiplos cupons */}
             {hasMultipleCoupons && currentCoupon && (
-              <>
-                {/* Indicador de posição */}
-                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
-                  {activeCoupons.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentCouponIndex(index)}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        index === currentCouponIndex 
-                          ? 'bg-emerald-500 w-4' 
-                          : 'bg-gray-300 hover:bg-gray-400'
-                      }`}
-                    />
-                  ))}
-                </div>
-              </>
+              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+                {activeCoupons.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentCouponIndex(index)}
+                    className={`h-2 rounded-full transition-all ${
+                      index === currentCouponIndex
+                        ? 'bg-emerald-500 w-6'
+                        : 'bg-gray-300 hover:bg-gray-400 w-2'
+                    }`}
+                  />
+                ))}
+              </div>
             )}
           </div>
         </div>
