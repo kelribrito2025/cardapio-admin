@@ -1771,7 +1771,7 @@ export default function PublicMenu() {
             <div className="sticky top-[140px]">
               {/* Taxa de entrega - reflete configuração do restaurante */}
               <div className={cn(
-                "bg-white rounded-2xl shadow-sm border border-gray-100 mb-3 overflow-hidden border-l-[3px]",
+                "bg-white rounded-2xl shadow-sm border border-gray-100 mb-3 border-l-[3px]",
                 establishment.deliveryFeeType === "free" ? "border-l-red-400" : 
                 establishment.deliveryFeeType === "fixed" ? "border-l-red-400" : "border-l-red-400"
               )} style={{height: '78px', borderRadius: '12px'}}>

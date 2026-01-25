@@ -2704,3 +2704,4 @@
 - [x] Corrigir dropdown de seleção de bairros no cardápio público (não mostra os bairros cadastrados)
 - [x] Bug: Bairros não aparecem no dropdown do menu público para cliente 30001 (tabela criada no banco)
 - [x] Bug persistente: Bairros não aparecem no dropdown do menu público para o usuário (verificado - funciona corretamente)
+- [x] Bug: Dropdown de bairros não abre ao clicar em Selecionar (corrigido removendo overflow-hidden)
