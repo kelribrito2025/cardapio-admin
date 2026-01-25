@@ -2876,3 +2876,30 @@
 - [x] Preço dos complementos em vermelho (igual ao preço do item)
 - [x] Preço alinhado à direita do container
 - [x] Aplicar em todos os modais (sacola desktop/mobile, resumo, confirmação)
+
+
+## Bug: Responsividade dos Modais no Menu Público
+- [ ] Revisar modal da sacola para telas pequenas (360px-412px)
+- [ ] Aplicar flex-wrap: wrap onde necessário
+- [ ] Reduzir font-size em breakpoints menores
+- [ ] Ajustar paddings e margins para não estourar container
+- [ ] Aplicar min-width: 0 em containers flex para evitar overflow
+- [ ] Garantir que textos, valores e complementos se adaptem
+- [ ] Testar em breakpoints: 360px, 375px, 390px, 412px
+
+
+## Bug: Responsividade dos Modais no Menu Público (CORRIGIDO)
+- [x] Revisar responsividade dos modais (especialmente o modal da sacola)
+- [x] Garantir que textos, títulos, valores e complementos se adaptem a telas pequenas
+- [x] Aplicar flex-wrap, redução de font-size, ajuste de paddings/margins
+- [x] Verificar breakpoints: 360px, 375px, 390px, 412px
+- [x] Evitar overflow e scrollbar lateral
+
+Correções aplicadas:
+- Modal de checkout: header, indicador de progresso, body e footer
+- Modal 1 (Resumo): itens do pedido, complementos, observação, valores
+- Modal 2 (Entrega): opções de entrega, campos de endereço, pagamento
+- Modal 3 (Confirmação): resumo final, valores, footer
+- Modal 4 (Identificação): campos de nome e telefone
+- Modal 5 (Envio): mensagens de sucesso/erro, botões
+- Modal da Sacola: header, itens, complementos, footer, botões
