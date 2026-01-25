@@ -5214,7 +5214,17 @@ export default function PublicMenu() {
 
       {/* Modal de Seleção de Bairro */}
       {showNeighborhoodModal && neighborhoodFeesData && neighborhoodFeesData.length > 0 && (
-        <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
+        <div 
+          className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center"
+          onTouchMove={(e) => {
+            // Permitir scroll apenas dentro da lista de bairros
+            const target = e.target as HTMLElement;
+            const scrollableParent = target.closest('[data-neighborhood-scrollable="true"]');
+            if (!scrollableParent) {
+              e.preventDefault();
+            }
+          }}
+        >
           {/* Backdrop - clique para fechar */}
           <div 
             className="absolute inset-0 bg-black/50"
@@ -5262,7 +5272,11 @@ export default function PublicMenu() {
             </div>
 
             {/* Body - Lista de Bairros */}
-            <div className="p-5 space-y-2.5 overflow-y-auto flex-1" style={{backgroundColor: '#ffffff', maxHeight: '400px'}}>
+            <div 
+              className="p-5 space-y-2.5 overflow-y-auto flex-1 overscroll-contain" 
+              style={{backgroundColor: '#ffffff', maxHeight: '400px', WebkitOverflowScrolling: 'touch'}}
+              data-neighborhood-scrollable="true"
+            >
               {(() => {
                 const filteredNeighborhoods = neighborhoodFeesData
                   .filter(item =>

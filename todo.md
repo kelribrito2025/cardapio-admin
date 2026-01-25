@@ -2845,3 +2845,8 @@
 - [x] Verificar se há BroadcastChannel ou listener global de eventos (NÃO - problema era o provider)
 - [x] Isolar o módulo de áudio para carregar apenas no painel admin (reestruturado App.tsx)
 - [x] Garantir que o NotificationAudioManager não seja instanciado no menu público (NewOrdersProvider agora só envolve rotas admin)
+
+## Bug: Scroll do Modal de Seleção de Bairro (v2)
+- [x] Impedir que a página de fundo role quando o modal está aberto (onTouchMove com preventDefault)
+- [x] Garantir que apenas o conteúdo do modal seja rolável (data-neighborhood-scrollable)
+- [x] Adicionado overscroll-contain e WebkitOverflowScrolling para melhor suporte mobile
