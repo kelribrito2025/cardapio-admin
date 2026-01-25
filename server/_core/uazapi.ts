@@ -395,7 +395,8 @@ export function generateStatusMessage(
   customerName: string,
   establishmentName: string,
   template?: string | null,
-  deliveryType?: 'delivery' | 'pickup' | null
+  deliveryType?: 'delivery' | 'pickup' | null,
+  cancellationReason?: string | null
 ): string {
   // Default templates
   const defaultTemplates: Record<string, string> = {
@@ -403,7 +404,7 @@ export function generateStatusMessage(
     preparing: `Olá {{customerName}}! 👨‍🍳\n\nSeu pedido {{orderNumber}} está sendo preparado!\n\nEm breve estará pronto.\n\n{{establishmentName}}`,
     ready: `Olá {{customerName}}! ✅\n\nSeu pedido {{orderNumber}} está pronto!\n\nVocê já pode retirar ou aguardar a entrega.\n\n{{establishmentName}}`,
     completed: `Olá {{customerName}}! 🙏\n\nSeu pedido {{orderNumber}} foi finalizado!\n\nObrigado pela preferência!\n\n{{establishmentName}}`,
-    cancelled: `Olá {{customerName}}! ❌\n\nInfelizmente seu pedido {{orderNumber}} foi cancelado.\n\nEntre em contato conosco para mais informações.\n\n{{establishmentName}}`,
+    cancelled: `Olá {{customerName}}! ❌\n\nInfelizmente seu pedido {{orderNumber}} foi cancelado.\n\nMotivo: {{cancellationReason}}\n\n{{establishmentName}}`,
   };
   
   let messageTemplate = template || defaultTemplates[status] || defaultTemplates.new;
@@ -429,6 +430,12 @@ export function generateStatusMessage(
     }
   }
   
+  // Substituir variável de motivo de cancelamento
+  if (status === 'cancelled') {
+    const reason = cancellationReason || 'Não informado';
+    messageTemplate = messageTemplate.replace(/{{cancellationReason}}/g, reason);
+  }
+  
   return messageTemplate
     .replace(/{{customerName}}/g, customerName)
     .replace(/{{orderNumber}}/g, orderNumber)
@@ -448,6 +455,7 @@ export async function sendOrderStatusNotification(
     establishmentName: string;
     template?: string | null;
     deliveryType?: 'delivery' | 'pickup' | null;
+    cancellationReason?: string | null;
   }
 ): Promise<SendTextResponse> {
   const message = generateStatusMessage(
@@ -456,7 +464,8 @@ export async function sendOrderStatusNotification(
     data.customerName,
     data.establishmentName,
     data.template,
-    data.deliveryType
+    data.deliveryType,
+    data.cancellationReason
   );
   
   return sendTextMessage(instanceToken, phone, message);

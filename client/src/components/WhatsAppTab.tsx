@@ -39,7 +39,7 @@ export function WhatsAppTab() {
     preparing: `Olá {{customerName}}! 👨‍🍳\n\nSeu pedido {{orderNumber}} está sendo preparado!\n\nEm breve estará pronto.\n\n{{establishmentName}}`,
     ready: `Olá {{customerName}}! ✅\n\nSeu pedido {{orderNumber}} está pronto!\n\n{{deliveryMessage}}\n\n{{establishmentName}}`,
     completed: `Olá {{customerName}}! 🙏\n\nSeu pedido {{orderNumber}} foi finalizado!\n\nObrigado pela preferência!\n\n{{establishmentName}}`,
-    cancelled: `Olá {{customerName}}! ❌\n\nInfelizmente seu pedido {{orderNumber}} foi cancelado.\n\nEntre em contato conosco para mais informações.\n\n{{establishmentName}}`,
+    cancelled: `Olá {{customerName}}! ❌\n\nInfelizmente seu pedido {{orderNumber}} foi cancelado.\n\nMotivo: {{cancellationReason}}\n\n{{establishmentName}}`,
   };
   
   // Templates
@@ -401,9 +401,11 @@ export function WhatsAppTab() {
                 <code className="mx-1 px-1 bg-muted rounded">{"{{customerName}}"}</code>,
                 <code className="mx-1 px-1 bg-muted rounded">{"{{orderNumber}}"}</code>,
                 <code className="mx-1 px-1 bg-muted rounded">{"{{establishmentName}}"}</code>,
-                <code className="mx-1 px-1 bg-muted rounded">{"{{deliveryMessage}}"}</code>
+                <code className="mx-1 px-1 bg-muted rounded">{"{{deliveryMessage}}"}</code>,
+                <code className="mx-1 px-1 bg-muted rounded">{"{{cancellationReason}}"}</code>
                 <span className="text-xs block mt-1 text-muted-foreground">
-                  A variável {"{{deliveryMessage}}"} é substituída automaticamente pela mensagem de retirada ou entrega.
+                  • {"{{deliveryMessage}}"} - mensagem automática de retirada ou entrega (apenas no status Pronto)
+                  <br />• {"{{cancellationReason}}"} - motivo do cancelamento (apenas no status Cancelado)
                 </span>
               </CardDescription>
             </CardHeader>
@@ -457,6 +459,9 @@ export function WhatsAppTab() {
                     onChange={(e) => setTemplateCancelled(e.target.value)}
                     rows={4}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Use <code className="px-1 bg-muted rounded">{"{{cancellationReason}}"}</code> para incluir o motivo do cancelamento informado no modal.
+                  </p>
                 </div>
               </div>
               

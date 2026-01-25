@@ -1120,6 +1120,7 @@ export const appRouter = router({
                               input.status === 'completed' ? config.templateCompleted :
                               input.status === 'cancelled' ? config.templateCancelled : null,
                     deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
+                    cancellationReason: input.cancellationReason || order.cancellationReason,
                   }
                 );
               }
