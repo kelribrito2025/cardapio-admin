@@ -5094,9 +5094,11 @@ export default function PublicMenu() {
             {/* Body - Lista de Bairros */}
             <div className="p-5 space-y-2.5 overflow-y-auto flex-1" style={{backgroundColor: '#ffffff', maxHeight: '400px'}}>
               {(() => {
-                const filteredNeighborhoods = neighborhoodFeesData.filter(item =>
-                  item.neighborhood.toLowerCase().includes((neighborhoodSearch || '').toLowerCase())
-                );
+                const filteredNeighborhoods = neighborhoodFeesData
+                  .filter(item =>
+                    item.neighborhood.toLowerCase().includes((neighborhoodSearch || '').toLowerCase())
+                  )
+                  .sort((a, b) => a.neighborhood.localeCompare(b.neighborhood, 'pt-BR'));
                 
                 if (filteredNeighborhoods.length === 0) {
                   return (

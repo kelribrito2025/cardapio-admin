@@ -2717,3 +2717,4 @@
 - [x] Aumentar modal de seleção de bairro em 20% no desktop
 - [x] Adicionar campo de busca para filtrar bairros por nome
 - [x] Validar seleção de bairro no checkout (impede finalizar sem selecionar bairro quando taxa é por bairro)
+- [x] Ordenar lista de bairros em ordem alfabética no modal de seleção
