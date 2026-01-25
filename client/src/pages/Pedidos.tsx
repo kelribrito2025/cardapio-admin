@@ -1161,35 +1161,24 @@ export default function Pedidos() {
                   </div>
                 </div>
 
-                {/* Delivery Info */}
+                {/* Delivery & Payment Info - Unified Card */}
                 <div className="border border-emerald-200 bg-emerald-50/50 rounded-xl p-4">
-                  <h4 className="font-semibold text-base mb-4">Informações de Entrega</h4>
-                  <div className="space-y-3">
+                  <h4 className="font-semibold text-base mb-3">Entrega</h4>
+                  <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Tipo:</span>
                       <span className="font-medium">{orderDetails.deliveryType === "delivery" ? "Entrega" : "Retirada"}</span>
-                    </div>
-                    {orderDetails.customerAddress && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Endereço:</span>
-                        <span className="font-medium text-right max-w-[150px]">{orderDetails.customerAddress}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Payment Details */}
-                <div className="border border-purple-200 bg-purple-50/50 rounded-xl p-4">
-                  <h4 className="font-semibold text-base mb-4">Detalhes do Pagamento</h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Data:</span>
-                      <span className="font-medium">{format(new Date(orderDetails.createdAt), "dd/MM/yyyy", { locale: ptBR })}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Método:</span>
                       <span className="font-medium">{paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</span>
                     </div>
+                    {orderDetails.customerAddress && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Endereço:</span>
+                        <span className="font-medium text-right max-w-[180px]">{orderDetails.customerAddress}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 

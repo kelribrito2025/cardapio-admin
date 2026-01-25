@@ -3024,3 +3024,9 @@
 
 ## Melhoria: Layout horizontal para informações do cliente no modal de pedido
 - [x] Colocar Nome e Telefone na mesma linha horizontal no card de informações do cliente
+
+
+## Melhoria: Unificar cards de entrega e pagamento no modal de pedido
+- [x] Remover card "Detalhes do Pagamento" separado
+- [x] Adicionar método de pagamento no card de "Informações de Entrega"
+- [x] Renomear para apenas "Entrega" com Tipo e Método
