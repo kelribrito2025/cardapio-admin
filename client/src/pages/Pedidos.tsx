@@ -927,25 +927,35 @@ export default function Pedidos() {
 
                     {/* Content */}
                     <div className="p-4">
-                      {/* Customer info */}
-                      {order.customerName && (
-                        <p className="font-semibold text-sm mb-1.5">{order.customerName}</p>
-                      )}
-                      
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
-                        <span className="flex items-center gap-1">
-                          <PaymentIcon className="h-3.5 w-3.5" />
-                          {paymentMethodLabels[order.paymentMethod]?.label}
-                        </span>
-                        <span className="px-1.5 py-0.5 bg-muted/50 rounded text-[10px] font-medium capitalize">
-                          {order.deliveryType === "delivery" ? "Entrega" : "Retirada"}
-                        </span>
-                      </div>
-
-                      {/* Total */}
-                      <div className="flex items-center justify-between py-2.5 border-t border-border/50">
-                        <span className="text-xs text-muted-foreground font-medium">Total</span>
-                        <span className="text-lg font-bold text-primary">
+                      {/* Mobile: Linha compacta com todas as informações */}
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          {/* Nome do cliente */}
+                          {order.customerName && (
+                            <span className="font-semibold text-sm truncate max-w-[100px]">
+                              {order.customerName}
+                            </span>
+                          )}
+                          
+                          {/* Separador */}
+                          {order.customerName && (
+                            <span className="text-muted-foreground/50">•</span>
+                          )}
+                          
+                          {/* Ícone e método de pagamento */}
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <PaymentIcon className="h-3.5 w-3.5" />
+                            {paymentMethodLabels[order.paymentMethod]?.label}
+                          </span>
+                          
+                          {/* Tag de entrega/retirada */}
+                          <span className="px-1.5 py-0.5 bg-muted/50 rounded text-[10px] font-medium capitalize whitespace-nowrap">
+                            {order.deliveryType === "delivery" ? "Entrega" : "Retirada"}
+                          </span>
+                        </div>
+                        
+                        {/* Valor total */}
+                        <span className="text-base font-bold text-primary whitespace-nowrap">
                           {formatCurrency(order.total)}
                         </span>
                       </div>

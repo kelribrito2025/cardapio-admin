@@ -2998,3 +2998,10 @@
 - [x] Mostrar lista de dispositivos cadastrados
 - [x] Permitir enviar notificação de teste
 - [x] Mostrar instruções de instalação do PWA
+
+
+## Layout Compacto do Card de Pedido (Mobile)
+- [x] Reorganizar informações do card de pedido em uma única linha no mobile
+- [x] Formato: Nome - Ícone pagamento - Método - Tag entrega - Valor
+- [x] Remover linha separada de "Total" no mobile
+- [x] Manter layout atual no desktop
