@@ -5,6 +5,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Store,
@@ -29,6 +49,12 @@ import {
   MessageSquare,
   Clock,
   Gift,
+  Printer,
+  Plus,
+  Wifi,
+  WifiOff,
+  Star,
+  TestTube,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -47,6 +73,17 @@ export default function Configuracoes() {
     { establishmentId: establishment?.id || 0 },
     { enabled: !!establishment?.id }
   );
+  
+  // Printer queries
+  const { data: printers, refetch: refetchPrinters } = trpc.printer.list.useQuery(
+    { establishmentId: establishment?.id || 0 },
+    { enabled: !!establishment?.id }
+  );
+  const { data: printerSettings, refetch: refetchPrinterSettings } = trpc.printer.getSettings.useQuery(
+    { establishmentId: establishment?.id || 0 },
+    { enabled: !!establishment?.id }
+  );
+  
   const [activeTab, setActiveTab] = useState("estabelecimento");
 
   // Establishment form state
@@ -117,6 +154,36 @@ export default function Configuracoes() {
     { dayOfWeek: 5, isActive: true, openTime: "18:00", closeTime: "23:00" }, // Sexta
     { dayOfWeek: 6, isActive: true, openTime: "18:00", closeTime: "23:00" }, // Sábado
   ]);
+  
+  // Printer state
+  type PrinterData = {
+    id: number;
+    name: string;
+    ipAddress: string;
+    port: number;
+    isActive: boolean;
+    isDefault: boolean;
+  };
+  const [isPrinterModalOpen, setIsPrinterModalOpen] = useState(false);
+  const [editingPrinter, setEditingPrinter] = useState<PrinterData | null>(null);
+  const [printerDeleteConfirmOpen, setPrinterDeleteConfirmOpen] = useState(false);
+  const [printerToDelete, setPrinterToDelete] = useState<PrinterData | null>(null);
+  const [printerName, setPrinterName] = useState("");
+  const [printerIpAddress, setPrinterIpAddress] = useState("");
+  const [printerPort, setPrinterPort] = useState(9100);
+  const [printerIsActive, setPrinterIsActive] = useState(true);
+  const [printerIsDefault, setPrinterIsDefault] = useState(false);
+  const [isTestingConnection, setIsTestingConnection] = useState(false);
+  const [testConnectionResult, setTestConnectionResult] = useState<{ success: boolean; message: string } | null>(null);
+  
+  // Printer settings state
+  const [autoPrintEnabled, setAutoPrintEnabled] = useState(false);
+  const [printOnNewOrder, setPrintOnNewOrder] = useState(true);
+  const [printOnStatusChange, setPrintOnStatusChange] = useState(false);
+  const [printCopies, setPrintCopies] = useState(1);
+  const [printShowLogo, setPrintShowLogo] = useState(true);
+  const [printShowQrCode, setPrintShowQrCode] = useState(false);
+  const [printFooterMessage, setPrintFooterMessage] = useState("");
 
   // Image crop modal state
   const [cropModalOpen, setCropModalOpen] = useState(false);
@@ -225,6 +292,19 @@ export default function Configuracoes() {
       })));
     }
   }, [neighborhoodFeesData]);
+  
+  // Load printer settings when data is available
+  useEffect(() => {
+    if (printerSettings) {
+      setAutoPrintEnabled(printerSettings.autoPrintEnabled);
+      setPrintOnNewOrder(printerSettings.printOnNewOrder);
+      setPrintOnStatusChange(printerSettings.printOnStatusChange);
+      setPrintCopies(printerSettings.copies);
+      setPrintShowLogo(printerSettings.showLogo);
+      setPrintShowQrCode(printerSettings.showQrCode);
+      setPrintFooterMessage(printerSettings.footerMessage || "");
+    }
+  }, [printerSettings]);
 
   // Upload mutation
   const uploadMutation = trpc.upload.image.useMutation();
@@ -299,6 +379,153 @@ export default function Configuracoes() {
     },
     onError: () => toast.error("Erro ao remover taxa por bairro"),
   });
+  
+  // Printer mutations
+  const createPrinterMutation = trpc.printer.create.useMutation({
+    onSuccess: () => {
+      refetchPrinters();
+      setIsPrinterModalOpen(false);
+      resetPrinterForm();
+      toast.success("Impressora adicionada com sucesso");
+    },
+    onError: () => toast.error("Erro ao adicionar impressora"),
+  });
+
+  const updatePrinterMutation = trpc.printer.update.useMutation({
+    onSuccess: () => {
+      refetchPrinters();
+      setIsPrinterModalOpen(false);
+      resetPrinterForm();
+      toast.success("Impressora atualizada com sucesso");
+    },
+    onError: () => toast.error("Erro ao atualizar impressora"),
+  });
+
+  const deletePrinterMutation = trpc.printer.delete.useMutation({
+    onSuccess: () => {
+      refetchPrinters();
+      setPrinterDeleteConfirmOpen(false);
+      setPrinterToDelete(null);
+      toast.success("Impressora removida com sucesso");
+    },
+    onError: () => toast.error("Erro ao remover impressora"),
+  });
+
+  const savePrinterSettingsMutation = trpc.printer.saveSettings.useMutation({
+    onSuccess: () => {
+      refetchPrinterSettings();
+      toast.success("Configurações de impressão salvas com sucesso");
+    },
+    onError: () => toast.error("Erro ao salvar configurações de impressão"),
+  });
+
+  const testConnectionMutation = trpc.printer.testConnection.useMutation({
+    onSuccess: (result) => {
+      setTestConnectionResult(result);
+      setIsTestingConnection(false);
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    },
+    onError: () => {
+      setIsTestingConnection(false);
+      setTestConnectionResult({ success: false, message: "Erro ao testar conexão" });
+      toast.error("Erro ao testar conexão");
+    },
+  });
+
+  // Printer helper functions
+  const resetPrinterForm = () => {
+    setPrinterName("");
+    setPrinterIpAddress("");
+    setPrinterPort(9100);
+    setPrinterIsActive(true);
+    setPrinterIsDefault(false);
+    setEditingPrinter(null);
+    setTestConnectionResult(null);
+  };
+
+  const handleTestConnection = () => {
+    if (!printerIpAddress.trim()) {
+      toast.error("Informe o endereço IP para testar a conexão");
+      return;
+    }
+    setIsTestingConnection(true);
+    setTestConnectionResult(null);
+    testConnectionMutation.mutate({ ipAddress: printerIpAddress, port: printerPort });
+  };
+
+  const openAddPrinterModal = () => {
+    resetPrinterForm();
+    setIsPrinterModalOpen(true);
+  };
+
+  const openEditPrinterModal = (printer: PrinterData) => {
+    setEditingPrinter(printer);
+    setPrinterName(printer.name);
+    setPrinterIpAddress(printer.ipAddress);
+    setPrinterPort(printer.port);
+    setPrinterIsActive(printer.isActive);
+    setPrinterIsDefault(printer.isDefault);
+    setIsPrinterModalOpen(true);
+  };
+
+  const handleSavePrinter = () => {
+    if (!printerName.trim()) {
+      toast.error("Nome da impressora é obrigatório");
+      return;
+    }
+    if (!printerIpAddress.trim()) {
+      toast.error("Endereço IP é obrigatório");
+      return;
+    }
+
+    if (editingPrinter) {
+      updatePrinterMutation.mutate({
+        id: editingPrinter.id,
+        name: printerName,
+        ipAddress: printerIpAddress,
+        port: printerPort,
+        isActive: printerIsActive,
+        isDefault: printerIsDefault,
+      });
+    } else {
+      createPrinterMutation.mutate({
+        establishmentId: establishment?.id || 0,
+        name: printerName,
+        ipAddress: printerIpAddress,
+        port: printerPort,
+        isActive: printerIsActive,
+        isDefault: printerIsDefault,
+      });
+    }
+  };
+
+  const handleDeletePrinter = (printer: PrinterData) => {
+    setPrinterToDelete(printer);
+    setPrinterDeleteConfirmOpen(true);
+  };
+
+  const confirmDeletePrinter = () => {
+    if (printerToDelete) {
+      deletePrinterMutation.mutate({ id: printerToDelete.id });
+    }
+  };
+
+  const handleSavePrinterSettings = () => {
+    savePrinterSettingsMutation.mutate({
+      establishmentId: establishment?.id || 0,
+      autoPrintEnabled,
+      printOnNewOrder,
+      printOnStatusChange,
+      copies: printCopies,
+      showLogo: printShowLogo,
+      showQrCode: printShowQrCode,
+      footerMessage: printFooterMessage || null,
+    });
+  };
 
   const handleSaveEstablishment = () => {
     if (!name.trim()) {
@@ -536,6 +763,10 @@ export default function Configuracoes() {
           <TabsTrigger value="atendimento" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
             <Settings2 className="h-4 w-4" />
             Atendimento
+          </TabsTrigger>
+          <TabsTrigger value="impressoras" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
+            <Printer className="h-4 w-4" />
+            Impressoras
           </TabsTrigger>
         </TabsList>
 
@@ -1866,7 +2097,365 @@ export default function Configuracoes() {
             </div>
           </SectionCard>
         </TabsContent>
+
+        {/* Impressoras Tab */}
+        <TabsContent value="impressoras" className="space-y-5">
+          {/* Configurações de Impressão */}
+          <SectionCard
+            title="Configurações de Impressão"
+            description="Configure como os pedidos serão impressos automaticamente"
+          >
+            <div className="space-y-6">
+              {/* Toggle de Impressão Automática */}
+              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl">
+                <div className="space-y-1">
+                  <Label className="text-base font-medium">Impressão Automática</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Imprimir pedidos automaticamente quando recebidos
+                  </p>
+                </div>
+                <Switch
+                  checked={autoPrintEnabled}
+                  onCheckedChange={setAutoPrintEnabled}
+                />
+              </div>
+
+              {autoPrintEnabled && (
+                <div className="space-y-4 pl-4 border-l-2 border-primary/20">
+                  {/* Quando Imprimir */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-muted-foreground">Quando imprimir:</Label>
+                    
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm">Ao receber novo pedido</Label>
+                      <Switch
+                        checked={printOnNewOrder}
+                        onCheckedChange={setPrintOnNewOrder}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm">Ao mudar status do pedido</Label>
+                      <Switch
+                        checked={printOnStatusChange}
+                        onCheckedChange={setPrintOnStatusChange}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Número de Cópias */}
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm">Número de cópias</Label>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPrintCopies(Math.max(1, printCopies - 1))}
+                        disabled={printCopies <= 1}
+                      >
+                        -
+                      </Button>
+                      <span className="w-8 text-center">{printCopies}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPrintCopies(Math.min(5, printCopies + 1))}
+                        disabled={printCopies >= 5}
+                      >
+                        +
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Opções de Layout */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-muted-foreground">Layout do cupom:</Label>
+                    
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm">Mostrar logo</Label>
+                      <Switch
+                        checked={printShowLogo}
+                        onCheckedChange={setPrintShowLogo}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm">Mostrar QR Code</Label>
+                      <Switch
+                        checked={printShowQrCode}
+                        onCheckedChange={setPrintShowQrCode}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Mensagem do Rodapé */}
+                  <div className="space-y-2">
+                    <Label className="text-sm">Mensagem do rodapé</Label>
+                    <Textarea
+                      value={printFooterMessage}
+                      onChange={(e) => setPrintFooterMessage(e.target.value)}
+                      placeholder="Ex: Obrigado pela preferência!"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Botão Salvar Configurações */}
+              <div className="flex justify-end pt-4 border-t">
+                <Button
+                  onClick={handleSavePrinterSettings}
+                  disabled={savePrinterSettingsMutation.isPending}
+                  className="rounded-xl shadow-sm"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {savePrinterSettingsMutation.isPending ? "Salvando..." : "Salvar Configurações"}
+                </Button>
+              </div>
+            </div>
+          </SectionCard>
+
+          {/* Lista de Impressoras */}
+          <SectionCard
+            title="Impressoras Cadastradas"
+            description="Gerencie suas impressoras térmicas"
+            actions={
+              <Button onClick={openAddPrinterModal} size="sm" className="rounded-xl">
+                <Plus className="h-4 w-4 mr-2" />
+                Adicionar Impressora
+              </Button>
+            }
+          >
+            <div className="space-y-3">
+              {!printers || printers.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Printer className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p>Nenhuma impressora cadastrada</p>
+                  <p className="text-sm">Clique em "Adicionar Impressora" para começar</p>
+                </div>
+              ) : (
+                printers.map((printer) => (
+                  <div
+                    key={printer.id}
+                    className="flex items-center justify-between p-4 bg-muted/30 rounded-xl"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "p-2 rounded-lg",
+                        printer.isActive ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"
+                      )}>
+                        <Printer className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{printer.name}</span>
+                          {printer.isDefault && (
+                            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <Star className="h-3 w-3" />
+                              Padrão
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {printer.ipAddress}:{printer.port}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => openEditPrinterModal(printer)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeletePrinter(printer)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </SectionCard>
+
+          {/* Informações sobre Impressão */}
+          <SectionCard
+            title="Como funciona a impressão"
+            description="Entenda como configurar sua impressora térmica"
+          >
+            <div className="space-y-4 text-sm text-muted-foreground">
+              <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <Info className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-blue-700 mb-1">Requisitos</p>
+                  <p className="text-blue-600">
+                    Para impressão automática funcionar, você precisa de uma impressora térmica 
+                    conectada à mesma rede Wi-Fi e um aplicativo de impressão rodando no computador 
+                    ou dispositivo que receberá os pedidos.
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p><strong>Impressoras compatíveis:</strong> Epson TM-T20, Elgin i9, Bematech MP-4200, e outras com suporte ESC/POS.</p>
+                <p><strong>Porta padrão:</strong> A maioria das impressoras térmicas usa a porta 9100 para comunicação de rede.</p>
+              </div>
+            </div>
+          </SectionCard>
+        </TabsContent>
       </Tabs>
+
+      {/* Modal de Adicionar/Editar Impressora */}
+      <Dialog open={isPrinterModalOpen} onOpenChange={setIsPrinterModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>
+              {editingPrinter ? "Editar Impressora" : "Adicionar Impressora"}
+            </DialogTitle>
+            <DialogDescription>
+              {editingPrinter
+                ? "Atualize as informações da impressora"
+                : "Cadastre uma nova impressora térmica"}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="printerName">Nome da Impressora</Label>
+              <Input
+                id="printerName"
+                value={printerName}
+                onChange={(e) => setPrinterName(e.target.value)}
+                placeholder="Ex: Cozinha, Caixa, Bar"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="ipAddress">Endereço IP</Label>
+              <Input
+                id="ipAddress"
+                value={printerIpAddress}
+                onChange={(e) => setPrinterIpAddress(e.target.value)}
+                placeholder="Ex: 192.168.1.100"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="port">Porta</Label>
+              <Input
+                id="port"
+                type="number"
+                value={printerPort}
+                onChange={(e) => setPrinterPort(parseInt(e.target.value) || 9100)}
+                placeholder="9100"
+              />
+              <p className="text-xs text-muted-foreground">
+                A porta padrão para impressoras ESC/POS é 9100
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <Label htmlFor="printerIsActive">Impressora Ativa</Label>
+              <Switch
+                id="printerIsActive"
+                checked={printerIsActive}
+                onCheckedChange={setPrinterIsActive}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <Label htmlFor="printerIsDefault">Impressora Padrão</Label>
+              <Switch
+                id="printerIsDefault"
+                checked={printerIsDefault}
+                onCheckedChange={setPrinterIsDefault}
+              />
+            </div>
+
+            {/* Botão de Teste de Conexão */}
+            <div className="pt-2 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleTestConnection}
+                disabled={isTestingConnection || !printerIpAddress.trim()}
+              >
+                {isTestingConnection ? (
+                  <>
+                    <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    Testando conexão...
+                  </>
+                ) : (
+                  <>
+                    <Wifi className="h-4 w-4 mr-2" />
+                    Testar Conexão
+                  </>
+                )}
+              </Button>
+              
+              {/* Resultado do Teste */}
+              {testConnectionResult && (
+                <div className={`mt-3 p-3 rounded-lg text-sm ${
+                  testConnectionResult.success 
+                    ? 'bg-green-50 text-green-700 border border-green-200' 
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                }`}>
+                  <div className="flex items-start gap-2">
+                    {testConnectionResult.success ? (
+                      <Wifi className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                    ) : (
+                      <WifiOff className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                    )}
+                    <span>{testConnectionResult.message}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsPrinterModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSavePrinter}
+              disabled={createPrinterMutation.isPending || updatePrinterMutation.isPending}
+            >
+              {createPrinterMutation.isPending || updatePrinterMutation.isPending
+                ? "Salvando..."
+                : "Salvar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de Confirmação de Exclusão de Impressora */}
+      <AlertDialog open={printerDeleteConfirmOpen} onOpenChange={setPrinterDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remover Impressora</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja remover a impressora "{printerToDelete?.name}"?
+              Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeletePrinter}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Remover
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Modal de Seleção de Endereço no Mapa */}
       {showMapPicker && (

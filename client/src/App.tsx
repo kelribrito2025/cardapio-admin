@@ -17,7 +17,7 @@ import Planos from "./pages/Planos";
 import PublicMenu from "./pages/PublicMenu";
 import Cupons from "./pages/Cupons";
 import CouponForm from "./pages/CouponForm";
-import Impressoras from "./pages/Impressoras";
+
 
 // Auth Pages
 import Login from "./pages/Login";
@@ -41,7 +41,7 @@ function AdminRoutes() {
         <Route path="/cupons" component={Cupons} />
         <Route path="/cupons/novo" component={CouponForm} />
         <Route path="/cupons/:id" component={CouponForm} />
-        <Route path="/impressoras" component={Impressoras} />
+        
         
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />

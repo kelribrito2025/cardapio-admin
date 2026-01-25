@@ -2939,3 +2939,11 @@
 
 ## Bug: printer.getSettings retorna undefined
 - [x] Corrigir rota para retornar objeto padrão quando não há configurações salvas
+
+
+## Ajuste: Mover Impressoras para Configurações
+- [x] Adicionar aba "Impressoras" na página de Configurações
+- [x] Mover conteúdo da página Impressoras.tsx para a nova aba
+- [x] Remover item "Impressoras" do menu lateral
+- [x] Remover rota /impressoras do App.tsx
+- [x] Deletar arquivo Impressoras.tsx
