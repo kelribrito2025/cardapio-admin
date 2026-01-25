@@ -109,6 +109,7 @@ export default function PublicMenu() {
   // Estados para taxa por bairro
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<{ name: string; fee: string } | null>(null);
   const [showNeighborhoodModal, setShowNeighborhoodModal] = useState(false);
+  const [neighborhoodSearch, setNeighborhoodSearch] = useState('');
   
   // Estados do sistema de fidelidade
   const [showLoyaltyModal, setShowLoyaltyModal] = useState(false);
@@ -2015,11 +2016,19 @@ export default function PublicMenu() {
                   const minOrderEnabledBtn = establishment?.minimumOrderEnabled || false;
                   const isBelowMinBtn = minOrderEnabledBtn && subtotalBtn < minOrderValueBtn;
                   
+                  // Verificar se precisa selecionar bairro
+                  const needsNeighborhoodSelection = establishment?.deliveryFeeType === 'byNeighborhood' && !selectedNeighborhood;
+                  
                   return (
                     <button 
                       disabled={cart.length === 0 || !isOpen || isBelowMinBtn}
                       onClick={() => {
                         if (cart.length > 0 && isOpen && !isBelowMinBtn) {
+                          // Validar seleção de bairro se necessário
+                          if (needsNeighborhoodSelection) {
+                            setShowNeighborhoodModal(true);
+                            return;
+                          }
                           setOrderSent(false);
                           setCheckoutStep(1);
                         }
@@ -3741,6 +3750,12 @@ export default function PublicMenu() {
                         <button
                           onClick={() => {
                             if (!isOpen) return;
+                            // Validar seleção de bairro se necessário
+                            if (establishment?.deliveryFeeType === 'byNeighborhood' && !selectedNeighborhood) {
+                              setShowMobileBag(false);
+                              setShowNeighborhoodModal(true);
+                              return;
+                            }
                             setShowMobileBag(false);
                             setOrderSent(false);
                             setCheckoutStep(1);
@@ -5036,65 +5051,107 @@ export default function PublicMenu() {
             onClick={() => setShowNeighborhoodModal(false)}
           />
           
-          {/* Modal - Bottom Sheet no mobile */}
-          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          {/* Modal - Bottom Sheet no mobile, aumentado 20% no desktop */}
+          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-[520px] md:mx-4 max-h-[85vh] overflow-hidden overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 flex flex-col">
             {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
+            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-5 flex items-center justify-between rounded-t-2xl" style={{height: '82px'}}>
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 rounded-xl">
-                  <MapPin className="h-5 w-5 text-red-500" />
+                <div className="p-2.5 bg-red-100 rounded-xl">
+                  <MapPin className="h-6 w-6 text-red-500" />
                 </div>
-                <h2 className="text-lg font-bold text-gray-900">Selecione seu bairro</h2>
+                <h2 className="text-xl font-bold text-gray-900">Selecione seu bairro</h2>
               </div>
               <button 
                 onClick={() => setShowNeighborhoodModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-2.5 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <X className="h-5 w-5 text-gray-500" />
+                <X className="h-6 w-6 text-gray-500" />
               </button>
             </div>
 
-            {/* Body */}
-            <div className="p-4 space-y-2" style={{backgroundColor: '#ffffff'}}>
-              {neighborhoodFeesData.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setSelectedNeighborhood({ name: item.neighborhood, fee: item.fee });
-                    setShowNeighborhoodModal(false);
-                    // Preencher o bairro no endereço de entrega
-                    setDeliveryAddress(prev => ({ ...prev, neighborhood: item.neighborhood }));
-                  }}
-                  className={cn(
-                    "w-full px-4 py-3.5 text-left rounded-xl flex items-center justify-between transition-all border",
-                    selectedNeighborhood?.name === item.neighborhood 
-                      ? "bg-red-50 border-red-300 shadow-sm" 
-                      : "bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300"
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors",
-                      selectedNeighborhood?.name === item.neighborhood 
-                        ? "border-red-500 bg-red-500" 
-                        : "border-gray-300"
-                    )}>
-                      {selectedNeighborhood?.name === item.neighborhood && (
-                        <Check className="h-3 w-3 text-white" />
-                      )}
+            {/* Campo de Busca */}
+            <div className="px-5 py-4 bg-white border-b border-gray-200">
+              <div className="relative">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Buscar bairro..."
+                  value={neighborhoodSearch || ''}
+                  onChange={(e) => setNeighborhoodSearch(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 bg-gray-100 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent placeholder:text-gray-400"
+                />
+                {neighborhoodSearch && (
+                  <button
+                    onClick={() => setNeighborhoodSearch('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded-full transition-colors"
+                  >
+                    <X className="h-4 w-4 text-gray-500" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Body - Lista de Bairros */}
+            <div className="p-5 space-y-2.5 overflow-y-auto flex-1" style={{backgroundColor: '#ffffff', maxHeight: '400px'}}>
+              {(() => {
+                const filteredNeighborhoods = neighborhoodFeesData.filter(item =>
+                  item.neighborhood.toLowerCase().includes((neighborhoodSearch || '').toLowerCase())
+                );
+                
+                if (filteredNeighborhoods.length === 0) {
+                  return (
+                    <div className="text-center py-8">
+                      <MapPin className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                      <p className="text-gray-500 font-medium">Nenhum bairro encontrado</p>
+                      <p className="text-gray-400 text-sm mt-1">Tente buscar por outro nome</p>
                     </div>
-                    <span className="font-medium text-gray-800">{item.neighborhood}</span>
-                  </div>
-                  <span className="text-red-500 font-semibold">R$ {Number(item.fee).toFixed(2).replace('.', ',')}</span>
-                </button>
-              ))}
+                  );
+                }
+                
+                return filteredNeighborhoods.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setSelectedNeighborhood({ name: item.neighborhood, fee: item.fee });
+                      setShowNeighborhoodModal(false);
+                      setNeighborhoodSearch('');
+                      // Preencher o bairro no endereço de entrega
+                      setDeliveryAddress(prev => ({ ...prev, neighborhood: item.neighborhood }));
+                    }}
+                    className={cn(
+                      "w-full px-5 py-4 text-left rounded-xl flex items-center justify-between transition-all border",
+                      selectedNeighborhood?.name === item.neighborhood 
+                        ? "bg-red-50 border-red-300 shadow-sm" 
+                        : "bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                    )}
+                  >
+                    <div className="flex items-center gap-3.5">
+                      <div className={cn(
+                        "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors",
+                        selectedNeighborhood?.name === item.neighborhood 
+                          ? "border-red-500 bg-red-500" 
+                          : "border-gray-300"
+                      )}>
+                        {selectedNeighborhood?.name === item.neighborhood && (
+                          <Check className="h-3.5 w-3.5 text-white" />
+                        )}
+                      </div>
+                      <span className="font-medium text-gray-800 text-base">{item.neighborhood}</span>
+                    </div>
+                    <span className="text-red-500 font-semibold text-base">R$ {Number(item.fee).toFixed(2).replace('.', ',')}</span>
+                  </button>
+                ));
+              })()}
             </div>
 
             {/* Footer */}
-            <div className="border-t px-6 py-4" style={{backgroundColor: '#ffffff'}}>
+            <div className="border-t px-6 py-5" style={{backgroundColor: '#ffffff'}}>
               <button
-                onClick={() => setShowNeighborhoodModal(false)}
-                className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors"
+                onClick={() => {
+                  setShowNeighborhoodModal(false);
+                  setNeighborhoodSearch('');
+                }}
+                className="w-full py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors text-base"
               >
                 Fechar
               </button>

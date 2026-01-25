@@ -2709,3 +2709,11 @@
 - [x] Criar modal estilizado para seleção de bairros no desktop (mesmo estilo do modal de Meus Pedidos)
 - [ ] Adicionar coração como marca d'água no cartão de fidelidade
 - [x] Adicionar coração vazado como marca d'água no cartão de fidelidade
+- [ ] Aumentar modal de seleção de bairro em 20% no desktop
+- [ ] Adicionar campo de busca no modal de seleção de bairro
+- [ ] Validar seleção de bairro no checkout (impedir finalização sem selecionar bairro)
+
+## Modal de Seleção de Bairro (Melhorias)
+- [x] Aumentar modal de seleção de bairro em 20% no desktop
+- [x] Adicionar campo de busca para filtrar bairros por nome
+- [x] Validar seleção de bairro no checkout (impede finalizar sem selecionar bairro quando taxa é por bairro)
