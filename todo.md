@@ -2870,3 +2870,9 @@
 - [x] Adicionar preço dos complementos no modal de resumo do pedido (checkout)
 - [x] Adicionar preço dos complementos no modal de confirmação de endereço
 - [x] Formato: "+ Complemento (R$ X,XX)"
+
+
+## Ajuste: Estilo do preço dos complementos
+- [x] Preço dos complementos em vermelho (igual ao preço do item)
+- [x] Preço alinhado à direita do container
+- [x] Aplicar em todos os modais (sacola desktop/mobile, resumo, confirmação)

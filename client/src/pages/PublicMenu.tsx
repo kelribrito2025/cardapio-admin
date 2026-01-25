@@ -1929,17 +1929,10 @@ export default function PublicMenu() {
                         <div key={index} className="flex gap-3 pb-3 border-b border-gray-100 last:border-0 group">
                           <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start gap-2">
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-gray-900 text-sm truncate">{item.quantity}x {item.name}</p>
-                                {item.complements.length > 0 && (
-                                  <p className="text-xs text-gray-500 truncate">
-                                    {item.complements.map(c => `+ ${c.name} (${formatPrice(c.price)})`).join(', ')}
-                                  </p>
-                                )}
-                              </div>
+                              <p className="font-medium text-gray-900 text-sm truncate flex-1">{item.quantity}x {item.name}</p>
                               <div className="flex items-center gap-2 flex-shrink-0">
                                 {itemTotal > 0 && (
-                                  <span className="text-sm font-semibold text-gray-900">
+                                  <span className="text-sm font-semibold text-red-500">
                                     {formatPrice(itemTotal)}
                                   </span>
                                 )}
@@ -1954,6 +1947,16 @@ export default function PublicMenu() {
                                 </button>
                               </div>
                             </div>
+                            {item.complements.length > 0 && (
+                              <div className="mt-1">
+                                {item.complements.map((c) => (
+                                  <div key={c.id} className="flex justify-between items-center text-xs">
+                                    <span className="text-gray-500">+ {c.name}</span>
+                                    <span className="text-red-500 font-medium mr-7">{formatPrice(c.price)}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                             {item.observation && (
                               <p className="text-xs text-gray-400 mt-0.5 truncate">Obs: {item.observation}</p>
                             )}
@@ -2772,7 +2775,10 @@ export default function PublicMenu() {
                         {item.complements.length > 0 && (
                           <div className="mt-1">
                             {item.complements.map((c) => (
-                              <p key={c.id} className="text-xs text-gray-500">+ {c.name} ({formatPrice(c.price)})</p>
+                              <div key={c.id} className="flex justify-between items-center text-xs">
+                                <span className="text-gray-500">+ {c.name}</span>
+                                <span className="text-red-500 font-medium">{formatPrice(c.price)}</span>
+                              </div>
                             ))}
                           </div>
                         )}
@@ -3178,22 +3184,25 @@ export default function PublicMenu() {
                   </div>
                   <div className="bg-gray-50 rounded-xl p-4 space-y-2">
                     {cart.map((item, index) => (
-                      <div key={index} className="flex justify-between text-sm">
-                        <div className="flex-1 min-w-0">
+                      <div key={index} className="text-sm">
+                        <div className="flex justify-between items-start">
                           <span className="text-gray-800 font-medium">{item.quantity}x {item.name}</span>
-                          {item.complements.length > 0 && (
-                            <div className="text-xs text-gray-500 mt-0.5">
-                              {item.complements.map((c, cIdx) => (
-                                <p key={cIdx}>+ {c.name} ({formatPrice(c.price)})</p>
-                              ))}
-                            </div>
-                          )}
-                          {item.observation && (
-                            <p className="text-xs text-gray-400 mt-0.5">Obs: {item.observation}</p>
+                          {Number(item.price) * item.quantity > 0 && (
+                            <span className="text-red-500 font-semibold ml-2">{formatPrice(Number(item.price) * item.quantity)}</span>
                           )}
                         </div>
-                        {Number(item.price) * item.quantity > 0 && (
-                          <span className="text-gray-700 font-medium ml-2">{formatPrice(Number(item.price) * item.quantity)}</span>
+                        {item.complements.length > 0 && (
+                          <div className="mt-1">
+                            {item.complements.map((c, cIdx) => (
+                              <div key={cIdx} className="flex justify-between items-center text-xs">
+                                <span className="text-gray-500">+ {c.name}</span>
+                                <span className="text-red-500 font-medium">{formatPrice(c.price)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {item.observation && (
+                          <p className="text-xs text-gray-400 mt-0.5">Obs: {item.observation}</p>
                         )}
                       </div>
                     ))}
@@ -3724,9 +3733,12 @@ export default function PublicMenu() {
                           )}
                         </div>
                         {item.complements.length > 0 && (
-                          <div className="mt-1 text-xs text-gray-500">
+                          <div className="mt-1">
                             {item.complements.map((c, cIdx) => (
-                              <p key={cIdx}>+ {c.name} ({formatPrice(c.price)})</p>
+                              <div key={cIdx} className="flex justify-between items-center text-xs">
+                                <span className="text-gray-500">+ {c.name}</span>
+                                <span className="text-red-500 font-medium">{formatPrice(c.price)}</span>
+                              </div>
                             ))}
                           </div>
                         )}
