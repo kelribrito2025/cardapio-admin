@@ -72,6 +72,10 @@ export default function Impressoras() {
   const [isActive, setIsActive] = useState(true);
   const [isDefault, setIsDefault] = useState(false);
 
+  // Test connection state
+  const [isTestingConnection, setIsTestingConnection] = useState(false);
+  const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+
   // Settings state
   const [autoPrintEnabled, setAutoPrintEnabled] = useState(false);
   const [printOnNewOrder, setPrintOnNewOrder] = useState(true);
@@ -133,6 +137,23 @@ export default function Impressoras() {
     onError: () => toast.error("Erro ao salvar configurações"),
   });
 
+  const testConnectionMutation = trpc.printer.testConnection.useMutation({
+    onSuccess: (result) => {
+      setTestResult(result);
+      setIsTestingConnection(false);
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    },
+    onError: () => {
+      setIsTestingConnection(false);
+      setTestResult({ success: false, message: "Erro ao testar conexão" });
+      toast.error("Erro ao testar conexão");
+    },
+  });
+
   const resetForm = () => {
     setPrinterName("");
     setIpAddress("");
@@ -140,6 +161,17 @@ export default function Impressoras() {
     setIsActive(true);
     setIsDefault(false);
     setEditingPrinter(null);
+    setTestResult(null);
+  };
+
+  const handleTestConnection = () => {
+    if (!ipAddress.trim()) {
+      toast.error("Informe o endereço IP para testar a conexão");
+      return;
+    }
+    setIsTestingConnection(true);
+    setTestResult(null);
+    testConnectionMutation.mutate({ ipAddress, port });
   };
 
   const openAddModal = () => {
@@ -490,6 +522,47 @@ export default function Impressoras() {
                 checked={isDefault}
                 onCheckedChange={setIsDefault}
               />
+            </div>
+
+            {/* Botão de Teste de Conexão */}
+            <div className="pt-2 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleTestConnection}
+                disabled={isTestingConnection || !ipAddress.trim()}
+              >
+                {isTestingConnection ? (
+                  <>
+                    <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    Testando conexão...
+                  </>
+                ) : (
+                  <>
+                    <Wifi className="h-4 w-4 mr-2" />
+                    Testar Conexão
+                  </>
+                )}
+              </Button>
+              
+              {/* Resultado do Teste */}
+              {testResult && (
+                <div className={`mt-3 p-3 rounded-lg text-sm ${
+                  testResult.success 
+                    ? 'bg-green-50 text-green-700 border border-green-200' 
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                }`}>
+                  <div className="flex items-start gap-2">
+                    {testResult.success ? (
+                      <Wifi className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                    ) : (
+                      <WifiOff className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                    )}
+                    <span>{testResult.message}</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

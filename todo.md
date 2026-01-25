@@ -2929,3 +2929,9 @@
 ### Próximos Passos (Cliente de Impressão)
 - [ ] Cliente local (app desktop) para receber eventos SSE e enviar para impressora térmica
 - [ ] Testar conexão com impressora via TCP/IP
+
+
+## Feature: Botão de Teste de Conexão com Impressora
+- [x] Criar rota no backend para testar conexão TCP com a impressora (printer.testConnection)
+- [x] Adicionar botão "Testar Conexão" no modal de adicionar/editar impressora
+- [x] Mostrar feedback visual do resultado do teste (sucesso/falha) com cores verde/vermelho

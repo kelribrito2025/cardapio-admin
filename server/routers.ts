@@ -1731,6 +1731,62 @@ export const appRouter = router({
           },
         };
       }),
+    
+    // Testar conexão com impressora via TCP
+    testConnection: protectedProcedure
+      .input(z.object({
+        ipAddress: z.string().min(1, "Endereço IP é obrigatório"),
+        port: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const net = await import('net');
+        const port = input.port || 9100;
+        
+        return new Promise<{ success: boolean; message: string }>((resolve) => {
+          const socket = new net.Socket();
+          const timeout = 5000; // 5 segundos de timeout
+          
+          socket.setTimeout(timeout);
+          
+          socket.on('connect', () => {
+            socket.destroy();
+            resolve({ 
+              success: true, 
+              message: `Conexão estabelecida com sucesso em ${input.ipAddress}:${port}` 
+            });
+          });
+          
+          socket.on('timeout', () => {
+            socket.destroy();
+            resolve({ 
+              success: false, 
+              message: `Tempo limite excedido ao conectar em ${input.ipAddress}:${port}` 
+            });
+          });
+          
+          socket.on('error', (err: Error) => {
+            socket.destroy();
+            let errorMessage = `Erro ao conectar em ${input.ipAddress}:${port}`;
+            
+            if (err.message.includes('ECONNREFUSED')) {
+              errorMessage = `Conexão recusada em ${input.ipAddress}:${port}. Verifique se a impressora está ligada e acessível.`;
+            } else if (err.message.includes('EHOSTUNREACH')) {
+              errorMessage = `Host inacessível: ${input.ipAddress}. Verifique o endereço IP.`;
+            } else if (err.message.includes('ENETUNREACH')) {
+              errorMessage = `Rede inacessível. Verifique sua conexão de rede.`;
+            } else if (err.message.includes('ENOTFOUND')) {
+              errorMessage = `Endereço não encontrado: ${input.ipAddress}`;
+            }
+            
+            resolve({ 
+              success: false, 
+              message: errorMessage 
+            });
+          });
+          
+          socket.connect(port, input.ipAddress);
+        });
+      }),
   }),
 });
 
