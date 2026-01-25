@@ -2721,3 +2721,5 @@
 - [x] Adicionar mensagem de "nenhum bairro encontrado" quando a busca não retornar resultados (já implementado)
 - [x] Refletir a taxa de entrega na sacola ao selecionar bairro
 - [x] Implementar novo modelo do cartão de fidelidade com dois corações e container semi-transparente
+- [ ] Bug: Cartão de fidelidade aparece por trás do cupom na versão mobile quando virado
+- [x] Bug: Cartão de fidelidade aparece por trás do cupom na versão mobile quando virado (corrigido com z-index)

@@ -5779,7 +5779,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
         >
           {/* Face Frontal - Carimbos */}
           <div 
-            className="absolute inset-0 bg-white rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden] flex flex-col"
+            className="absolute inset-0 bg-white rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden] flex flex-col z-[1]"
           >
             {/* Parte verde do card */}
             <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-3 md:p-5 text-white flex-1 relative overflow-hidden" style={{height: '215px'}}>
@@ -5936,7 +5936,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
           
           {/* Face Traseira - Cupom (Estilo Voucher) com Stack Visual */}
           <div 
-            className="absolute inset-0 rounded-2xl overflow-visible [backface-visibility:hidden]"
+            className="absolute inset-0 rounded-2xl overflow-visible [backface-visibility:hidden] z-[2]"
             style={{ transform: 'rotateY(180deg)' }}
           >
             {/* Container do Stack de Cupons */}
