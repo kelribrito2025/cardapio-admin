@@ -2890,3 +2890,12 @@
 
 ## Ajuste: Altura da foto no modal de detalhes do item
 - [x] Diminuir altura da foto em 20% para telas menores (mobile) - de 268px para 215px
+
+
+## Verificação: Consistência de estilo entre modais
+- [x] Comparar modal "Como chegar" com modal "Meus pedidos"
+- [x] Ajustar cabeçalho, fundo e estilos para ficarem consistentes
+  - Adicionado sticky top-0 no header
+  - Ajustado max-h para 85vh, overflow-y-auto e overscroll-contain
+  - Adicionado animações md:slide-in-from-bottom-0 md:zoom-in-95
+  - Fundo branco (#ffffff) em todas as seções (endereço, opções, footer)

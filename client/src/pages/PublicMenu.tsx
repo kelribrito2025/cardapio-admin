@@ -4883,9 +4883,9 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet Style */}
-          <div className="relative bg-gray-200 w-full md:w-[400px] md:rounded-2xl rounded-t-2xl shadow-2xl max-h-[70vh] overflow-hidden animate-in slide-in-from-bottom duration-300">
+          <div className="relative bg-gray-200 w-full md:max-w-md md:mx-4 md:rounded-2xl rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
-            <div className="bg-white flex items-center justify-between px-6 py-4 border-b border-gray-300 rounded-t-2xl" style={{height: '68px'}}>
+            <div className="sticky top-0 bg-white flex items-center justify-between px-6 py-4 border-b border-gray-300 rounded-t-2xl" style={{height: '68px'}}>
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-red-100 rounded-xl">
                   <MapPin className="h-5 w-5 text-red-500" />
@@ -4907,7 +4907,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Endereço Completo */}
-            <div className="p-4 bg-gray-50 border-b">
+            <div className="p-4 border-b" style={{backgroundColor: '#ffffff'}}>
               <p className="text-sm text-gray-700">
                 {establishment.street}
                 {establishment.number && `, ${establishment.number}`}
@@ -4918,7 +4918,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Opções de Navegação */}
-            <div className="p-4 space-y-3">
+            <div className="p-4 space-y-3" style={{backgroundColor: '#ffffff'}}>
               <p className="text-sm font-medium text-gray-500 mb-3">Abrir com:</p>
               
               {/* Google Maps */}
@@ -4990,7 +4990,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Botão Copiar Endereço */}
-            <div className="p-4 border-t">
+            <div className="p-4 border-t" style={{backgroundColor: '#ffffff'}}>
               <button
                 onClick={() => {
                   const fullAddress = [establishment.street, establishment.number, establishment.neighborhood, establishment.city, establishment.state].filter(Boolean).join(", ");
