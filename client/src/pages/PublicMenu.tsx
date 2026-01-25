@@ -110,6 +110,7 @@ export default function PublicMenu() {
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<{ name: string; fee: string } | null>(null);
   const [showNeighborhoodModal, setShowNeighborhoodModal] = useState(false);
   const [neighborhoodSearch, setNeighborhoodSearch] = useState('');
+  const [isNeighborhoodButtonHovered, setIsNeighborhoodButtonHovered] = useState(false);
   
   // Estados do sistema de fidelidade
   const [showLoyaltyModal, setShowLoyaltyModal] = useState(false);
@@ -1831,10 +1832,21 @@ export default function PublicMenu() {
                       <div ref={neighborhoodDropdownRef} className="relative">
                         <button 
                           onClick={() => setShowNeighborhoodModal(!showNeighborhoodModal)}
+                          onMouseEnter={() => setIsNeighborhoodButtonHovered(true)}
+                          onMouseLeave={() => setIsNeighborhoodButtonHovered(false)}
                           className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all flex items-center gap-1.5"
                         >
-                          {selectedNeighborhood ? selectedNeighborhood.name : "Selecionar"}
-                          <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showNeighborhoodModal ? 'rotate-180' : ''}`} />
+                          {selectedNeighborhood ? (
+                            <>
+                              {isNeighborhoodButtonHovered ? (
+                                <>Alterar <ChevronDown className="h-3.5 w-3.5" /></>
+                              ) : (
+                                <><Check className="h-3.5 w-3.5" /> Selecionado</>
+                              )}
+                            </>
+                          ) : (
+                            <>Selecionar <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showNeighborhoodModal ? 'rotate-180' : ''}`} /></>
+                          )}
                         </button>
                         
                       </div>

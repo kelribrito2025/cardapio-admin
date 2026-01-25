@@ -2723,3 +2723,9 @@
 - [x] Implementar novo modelo do cartão de fidelidade com dois corações e container semi-transparente
 - [ ] Bug: Cartão de fidelidade aparece por trás do cupom na versão mobile quando virado
 - [x] Bug: Cartão de fidelidade aparece por trás do cupom na versão mobile quando virado (corrigido com z-index)
+- [ ] Alterar botão de bairro: mostrar "Selecionado" com check quando selecionado, "Alterar" no hover
+
+## Botão de Seleção de Bairro - Comportamento Melhorado
+- [x] Mostrar "Selecionado" + ícone Check quando bairro selecionado
+- [x] Mudar para "Alterar" no hover quando bairro selecionado
+- [x] Manter "Selecionar" quando nenhum bairro estiver selecionado
