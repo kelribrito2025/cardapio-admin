@@ -3107,3 +3107,4 @@
 - [x] Limitar campo de telefone no modal "Seus Dados" para máximo de 13 caracteres
 - [x] Adicionar máscara visual (DDD) 9 9999-9999 no campo de telefone com formatação automática
 - [x] Criar variável {{greeting}} para saudação automática baseada no horário (Bom dia/Boa tarde/Boa noite)
+- [x] Permitir underscore (_), ponto (.) e números no campo "Link do Cardápio"

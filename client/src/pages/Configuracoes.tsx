@@ -1458,8 +1458,8 @@ export default function Configuracoes() {
                   <Input
                     id="menuSlug"
                     value={menuSlug}
-                    onChange={(e) => setMenuSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
-                    placeholder="seu-restaurante"
+                    onChange={(e) => setMenuSlug(e.target.value.toLowerCase().replace(/[^a-z0-9_.\-]/g, ""))}
+                    placeholder="seu_restaurante"
                     className="rounded-l-none flex-1 h-10 rounded-r-xl border-border/50 focus:ring-2 focus:ring-primary/20"
                   />
                   <Button variant="outline" size="icon" onClick={copyMenuLink} title="Copiar link" className="h-10 w-10 rounded-xl border-border/50 hover:bg-accent" disabled={!menuSlug}>
@@ -1509,7 +1509,7 @@ export default function Configuracoes() {
               </div>
 
               <p className="text-xs text-muted-foreground">
-                O link do cardápio será público. Use apenas letras minúsculas, números e hífens.
+                O link do cardápio será público. Use apenas letras minúsculas, números, hífens (-), underscores (_) e pontos (.).
               </p>
 
               <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
