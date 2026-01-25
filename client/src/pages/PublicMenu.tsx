@@ -108,7 +108,7 @@ export default function PublicMenu() {
   
   // Estados para taxa por bairro
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<{ name: string; fee: string } | null>(null);
-  const [showNeighborhoodModal, setShowNeighborhoodModal] = useState(false);
+  const [showNeighborhoodDropdown, setShowNeighborhoodDropdown] = useState(false);
   
   // Estados do sistema de fidelidade
   const [showLoyaltyModal, setShowLoyaltyModal] = useState(false);
@@ -896,7 +896,9 @@ export default function PublicMenu() {
       if (ratingTooltipRef.current && !ratingTooltipRef.current.contains(event.target as Node)) {
         setShowRatingTooltip(false);
       }
-      // Removido - modal fecha pelo backdrop
+      if (neighborhoodDropdownRef.current && !neighborhoodDropdownRef.current.contains(event.target as Node)) {
+        setShowNeighborhoodDropdown(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -1829,13 +1831,34 @@ export default function PublicMenu() {
                     {establishment.deliveryFeeType === "byNeighborhood" && (
                       <div ref={neighborhoodDropdownRef} className="relative">
                         <button 
-                          onClick={() => setShowNeighborhoodModal(!showNeighborhoodModal)}
+                          onClick={() => setShowNeighborhoodDropdown(!showNeighborhoodDropdown)}
                           className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all flex items-center gap-1.5"
                         >
                           {selectedNeighborhood ? selectedNeighborhood.name : "Selecionar"}
-                          <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showNeighborhoodModal ? 'rotate-180' : ''}`} />
+                          <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showNeighborhoodDropdown ? 'rotate-180' : ''}`} />
                         </button>
-                        
+                        {showNeighborhoodDropdown && neighborhoodFeesData && neighborhoodFeesData.length > 0 && (
+                          <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50 max-h-60 overflow-y-auto">
+                            {neighborhoodFeesData.map((item) => (
+                              <button
+                                key={item.id}
+                                onClick={() => {
+                                  setSelectedNeighborhood({ name: item.neighborhood, fee: item.fee });
+                                  setShowNeighborhoodDropdown(false);
+                                  // Preencher o bairro no endereço de entrega
+                                  setDeliveryAddress(prev => ({ ...prev, neighborhood: item.neighborhood }));
+                                }}
+                                className={cn(
+                                  "w-full px-4 py-2.5 text-left hover:bg-gray-50 flex items-center justify-between transition-colors",
+                                  selectedNeighborhood?.name === item.neighborhood && "bg-red-50"
+                                )}
+                              >
+                                <span className="font-medium text-gray-800">{item.neighborhood}</span>
+                                <span className="text-red-500 font-semibold">R$ {Number(item.fee).toFixed(2).replace('.', ',')}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -5021,82 +5044,6 @@ export default function PublicMenu() {
               >
                 <ShoppingBag className="h-5 w-5" />
                 Continuar comprando
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal de Seleção de Bairro */}
-      {showNeighborhoodModal && neighborhoodFeesData && neighborhoodFeesData.length > 0 && (
-        <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
-          {/* Backdrop - clique para fechar */}
-          <div 
-            className="absolute inset-0 bg-black/50"
-            onClick={() => setShowNeighborhoodModal(false)}
-          />
-          
-          {/* Modal - Bottom Sheet no mobile */}
-          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
-            {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 rounded-xl">
-                  <MapPin className="h-5 w-5 text-red-500" />
-                </div>
-                <h2 className="text-lg font-bold text-gray-900">Selecione seu bairro</h2>
-              </div>
-              <button 
-                onClick={() => setShowNeighborhoodModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="h-5 w-5 text-gray-500" />
-              </button>
-            </div>
-
-            {/* Body */}
-            <div className="p-4 space-y-2" style={{backgroundColor: '#ffffff'}}>
-              {neighborhoodFeesData.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setSelectedNeighborhood({ name: item.neighborhood, fee: item.fee });
-                    setShowNeighborhoodModal(false);
-                    // Preencher o bairro no endereço de entrega
-                    setDeliveryAddress(prev => ({ ...prev, neighborhood: item.neighborhood }));
-                  }}
-                  className={cn(
-                    "w-full px-4 py-3.5 text-left rounded-xl flex items-center justify-between transition-all border",
-                    selectedNeighborhood?.name === item.neighborhood 
-                      ? "bg-red-50 border-red-300 shadow-sm" 
-                      : "bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300"
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors",
-                      selectedNeighborhood?.name === item.neighborhood 
-                        ? "border-red-500 bg-red-500" 
-                        : "border-gray-300"
-                    )}>
-                      {selectedNeighborhood?.name === item.neighborhood && (
-                        <Check className="h-3 w-3 text-white" />
-                      )}
-                    </div>
-                    <span className="font-medium text-gray-800">{item.neighborhood}</span>
-                  </div>
-                  <span className="text-red-500 font-semibold">R$ {Number(item.fee).toFixed(2).replace('.', ',')}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Footer */}
-            <div className="border-t px-6 py-4" style={{backgroundColor: '#ffffff'}}>
-              <button
-                onClick={() => setShowNeighborhoodModal(false)}
-                className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors"
-              >
-                Fechar
               </button>
             </div>
           </div>
