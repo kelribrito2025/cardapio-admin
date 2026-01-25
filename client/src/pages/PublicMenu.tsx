@@ -5279,6 +5279,8 @@ export default function PublicMenu() {
                       setNeighborhoodSearch('');
                       // Preencher o bairro no endereço de entrega
                       setDeliveryAddress(prev => ({ ...prev, neighborhood: item.neighborhood }));
+                      // Selecionar automaticamente a opção de entrega já que o usuário escolheu um bairro
+                      setDeliveryType('delivery');
                       // Reabrir a sacola ou checkout se veio do botão Alterar bairro
                       if (reopenBagAfterNeighborhood) {
                         setReopenBagAfterNeighborhood(false);

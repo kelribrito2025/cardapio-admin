@@ -2825,3 +2825,7 @@
 - [x] Limpar sacola do localStorage após envio bem-sucedido do pedido (onSuccess do createOrderMutation)
 - [x] Garantir que o modal da sacola mostre estado vazio após envio
 - [x] Resetar todos os estados relacionados à sacola (também no botão Fechar do modal de acompanhamento)
+
+## Seleção Automática de Entrega ao Selecionar Bairro
+- [x] Quando usuário selecionar um bairro, definir deliveryType como "delivery" automaticamente
+- [x] Manter a opção de retirar no local disponível para alteração manual
