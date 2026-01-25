@@ -1929,10 +1929,17 @@ export default function PublicMenu() {
                         <div key={index} className="flex gap-3 pb-3 border-b border-gray-100 last:border-0 group">
                           <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start gap-2">
-                              <p className="font-medium text-gray-900 text-sm truncate flex-1">{item.quantity}x {item.name}</p>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-gray-900 text-sm truncate">{item.quantity}x {item.name}</p>
+                                {item.complements.length > 0 && (
+                                  <p className="text-xs text-gray-500 truncate">
+                                    {item.complements.map(c => `+ ${c.name} (${formatPrice(c.price)})`).join(', ')}
+                                  </p>
+                                )}
+                              </div>
                               <div className="flex items-center gap-2 flex-shrink-0">
                                 {itemTotal > 0 && (
-                                  <span className="text-sm font-semibold text-red-500">
+                                  <span className="text-sm font-semibold text-gray-900">
                                     {formatPrice(itemTotal)}
                                   </span>
                                 )}
@@ -1947,16 +1954,6 @@ export default function PublicMenu() {
                                 </button>
                               </div>
                             </div>
-                            {item.complements.length > 0 && (
-                              <div className="mt-1">
-                                {item.complements.map((c) => (
-                                  <div key={c.id} className="flex justify-between items-center text-xs">
-                                    <span className="text-gray-500">+ {c.name}</span>
-                                    <span className="text-red-500 font-medium mr-7">{formatPrice(c.price)}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
                             {item.observation && (
                               <p className="text-xs text-gray-400 mt-0.5 truncate">Obs: {item.observation}</p>
                             )}
@@ -2683,24 +2680,24 @@ export default function PublicMenu() {
           />
           
           {/* Modal de Checkout Unificado - Bottom Sheet no mobile */}
-          <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[90vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 overflow-hidden">
+          <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[90vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header com Título */}
-            <div className="flex-shrink-0 bg-white border-b border-gray-300 px-4 sm:px-6 py-3 sm:py-4 rounded-t-2xl" style={{minHeight: '60px'}}>
+            <div className="flex-shrink-0 bg-white border-b border-gray-300 px-6 py-4 rounded-t-2xl" style={{height: '68px'}}>
               {/* Título e Botão Fechar */}
               <div className="flex items-center justify-between h-full">
-                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                <div className="flex items-center gap-3">
                   {checkoutStep > 1 && (
                     <button
                       onClick={() => setCheckoutStep(checkoutStep - 1)}
-                      className="p-1 sm:p-1.5 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+                      className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
                     >
-                      <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
+                      <ChevronLeft className="h-5 w-5 text-gray-500" />
                     </button>
                   )}
-                  <div className="p-1.5 sm:p-2 bg-red-100 rounded-xl flex-shrink-0">
-                    <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" />
+                  <div className="p-2 bg-red-100 rounded-xl">
+                    <ShoppingBag className="h-5 w-5 text-red-500" />
                   </div>
-                  <h2 className="text-base sm:text-lg font-bold text-gray-900 truncate">
+                  <h2 className="text-lg font-bold text-gray-900">
                     {checkoutStep === 1 && 'Resumo do Pedido'}
                     {checkoutStep === 2 && 'Tipo de Entrega'}
                     {checkoutStep === 3 && 'Confirmar Endereço'}
@@ -2710,35 +2707,35 @@ export default function PublicMenu() {
                 </div>
                 <button 
                   onClick={() => setCheckoutStep(0)}
-                  className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 >
-                  <X className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
+                  <X className="h-5 w-5 text-gray-500" />
                 </button>
               </div>
             </div>
             
             {/* Indicador de Progresso */}
-            <div className="flex-shrink-0 bg-white px-3 sm:px-6 py-2 sm:py-3 border-b border-gray-100">
-              <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+            <div className="flex-shrink-0 bg-white px-6 py-3 border-b border-gray-100">
+              <div className="flex items-center justify-between mb-2">
                 {[1, 2, 3, 4, 5].map((step) => (
                   <div key={step} className="flex items-center">
                     <button
                       onClick={() => step < checkoutStep && setCheckoutStep(step)}
                       disabled={step >= checkoutStep}
-                      className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold transition-all ${
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
                         checkoutStep >= step 
                           ? 'bg-red-500 text-white' 
                           : 'bg-gray-200 text-gray-500'
                       } ${step < checkoutStep ? 'cursor-pointer hover:ring-2 hover:ring-red-300' : ''}`}
                     >
                       {checkoutStep > step ? (
-                        <CheckCircle className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
+                        <CheckCircle className="h-5 w-5" />
                       ) : (
                         step
                       )}
                     </button>
                     {step < 5 && (
-                      <div className={`w-4 sm:w-8 md:w-12 h-0.5 sm:h-1 mx-0.5 sm:mx-1 rounded transition-all ${
+                      <div className={`w-8 sm:w-12 h-1 mx-1 rounded transition-all ${
                         checkoutStep > step ? 'bg-red-500' : 'bg-gray-200'
                       }`} />
                     )}
@@ -2759,31 +2756,28 @@ export default function PublicMenu() {
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 space-y-3 sm:space-y-4">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-6 space-y-4">
                 {/* Lista de Itens */}
-                <div className="space-y-2 sm:space-y-3">
-                  <h3 className="font-semibold text-gray-800 text-xs sm:text-sm">Itens do pedido</h3>
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-gray-800 text-sm">Itens do pedido</h3>
                   {cart.map((item, index) => (
-                    <div key={index} className="p-2.5 sm:p-3 bg-gray-50 rounded-xl">
-                      <div className="min-w-0">
-                        <div className="flex justify-between items-start gap-2">
-                          <p className="font-medium text-gray-900 text-xs sm:text-sm flex-1 min-w-0 break-words">{item.quantity}x {item.name}</p>
+                    <div key={index} className="p-3 bg-gray-50 rounded-xl">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start">
+                          <p className="font-medium text-gray-900 text-sm">{item.quantity}x {item.name}</p>
                           {Number(item.price) * item.quantity > 0 && (
-                            <p className="font-semibold text-red-500 text-xs sm:text-sm flex-shrink-0">{formatPrice(Number(item.price) * item.quantity)}</p>
+                            <p className="font-semibold text-red-500 text-sm">{formatPrice(Number(item.price) * item.quantity)}</p>
                           )}
                         </div>
                         {item.complements.length > 0 && (
                           <div className="mt-1">
                             {item.complements.map((c) => (
-                              <div key={c.id} className="flex justify-between items-center text-[10px] sm:text-xs gap-2">
-                                <span className="text-gray-500 min-w-0 break-words flex-1">+ {c.name}</span>
-                                <span className="text-red-500 font-medium flex-shrink-0">{formatPrice(c.price)}</span>
-                              </div>
+                              <p key={c.id} className="text-xs text-gray-500">+ {c.name} ({formatPrice(c.price)})</p>
                             ))}
                           </div>
                         )}
                         {item.observation && (
-                          <p className="text-[10px] sm:text-xs text-gray-400 mt-1 break-words">Obs: {item.observation}</p>
+                          <p className="text-xs text-gray-400 mt-1">Obs: {item.observation}</p>
                         )}
                       </div>
                     </div>
@@ -2791,7 +2785,7 @@ export default function PublicMenu() {
                 </div>
 
                 {/* Resumo */}
-                <div className="border-t border-dashed border-gray-200 pt-3 sm:pt-4 space-y-1.5 sm:space-y-2">
+                <div className="border-t border-dashed border-gray-200 pt-4 space-y-2">
                   {(() => {
                     const subtotal = cart.reduce((sum, item) => {
                       const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
@@ -2808,22 +2802,22 @@ export default function PublicMenu() {
                     const total = Math.max(0, subtotal - discount + deliveryFee);
                     return (
                       <>
-                        <div className="flex justify-between text-xs sm:text-sm">
+                        <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Subtotal</span>
                           <span className="text-gray-600">{formatPrice(subtotal)}</span>
                         </div>
                         {appliedCoupon && (
-                          <div className="flex justify-between text-xs sm:text-sm">
+                          <div className="flex justify-between text-sm">
                             <span className="text-green-600 flex items-center gap-1">
-                              <Ticket className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                              <span className="truncate">Cupom {appliedCoupon.code}</span>
+                              <Ticket className="h-3.5 w-3.5" />
+                              Cupom {appliedCoupon.code}
                             </span>
-                            <span className="text-green-600 flex-shrink-0">-{formatPrice(discount)}</span>
+                            <span className="text-green-600">-{formatPrice(discount)}</span>
                           </div>
                         )}
-                        <div className="flex justify-between text-xs sm:text-sm">
+                        <div className="flex justify-between text-sm">
                           <span className="text-gray-400">Taxa de entrega</span>
-                          <span className={`flex-shrink-0 ${establishment.deliveryFeeType === "free" ? "text-green-600 font-medium" : "text-gray-400"}`}>
+                          <span className={establishment.deliveryFeeType === "free" ? "text-green-600 font-medium" : "text-gray-400"}>
                             {establishment.deliveryFeeType === "free" 
                               ? "Grátis" 
                               : establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed
@@ -2834,7 +2828,7 @@ export default function PublicMenu() {
                             }
                           </span>
                         </div>
-                        <div className="flex justify-between font-bold text-sm sm:text-base pt-2 border-t border-gray-100">
+                        <div className="flex justify-between font-bold text-base pt-2 border-t border-gray-100">
                           <span className="text-gray-900">Total</span>
                           <span className="text-gray-900">{formatPrice(total)}</span>
                         </div>
@@ -2845,22 +2839,22 @@ export default function PublicMenu() {
 
                 {/* Observação do Pedido */}
                 <div className="pt-2">
-                  <label className="block text-xs sm:text-sm font-semibold text-gray-800 mb-1.5 sm:mb-2">Observação do pedido</label>
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">Observação do pedido</label>
                   <textarea
                     value={orderObservation}
                     onChange={(e) => setOrderObservation(e.target.value)}
                     placeholder="Ex: Sem cebola, bem passado..."
-                    className="w-full px-3 sm:px-4 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
                     rows={2}
                   />
                 </div>
               </div>
 
               {/* Footer */}
-              <div className="flex-shrink-0 border-t px-4 sm:px-6 py-3 sm:py-4">
+              <div className="flex-shrink-0 border-t px-6 py-4">
                 <button
                   onClick={() => setCheckoutStep(2)}
-                  className="w-full py-3 sm:py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors text-sm sm:text-base"
+                  className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
                 >
                   Próximo
                 </button>
@@ -2873,15 +2867,15 @@ export default function PublicMenu() {
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 space-y-4 sm:space-y-6">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-6 space-y-6">
                 {/* Forma de Entrega */}
                 <div>
-                  <h3 className="font-semibold text-gray-800 text-xs sm:text-sm mb-2 sm:mb-3 flex items-center gap-2">
-                    <Truck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500" />
+                  <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                    <Truck className="h-4 w-4 text-red-500" />
                     Forma de entrega
                   </h3>
                   <div className="space-y-2">
-                    <label className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 border rounded-xl cursor-pointer transition-colors ${
+                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
                       deliveryType === "pickup" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
                     }`}>
                       <input
@@ -2890,12 +2884,12 @@ export default function PublicMenu() {
                         value="pickup"
                         checked={deliveryType === "pickup"}
                         onChange={() => setDeliveryType("pickup")}
-                        className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 focus:ring-red-500 flex-shrink-0"
+                        className="w-4 h-4 text-red-500 focus:ring-red-500"
                       />
-                      <Package className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 flex-shrink-0" />
-                      <span className="font-medium text-gray-800 text-sm sm:text-base">Retirar no local</span>
+                      <Package className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-800">Retirar no local</span>
                     </label>
-                    <label className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 border rounded-xl cursor-pointer transition-colors ${
+                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
                       deliveryType === "delivery" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
                     }`}>
                       <input
@@ -2904,29 +2898,29 @@ export default function PublicMenu() {
                         value="delivery"
                         checked={deliveryType === "delivery"}
                         onChange={() => setDeliveryType("delivery")}
-                        className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 focus:ring-red-500 flex-shrink-0"
+                        className="w-4 h-4 text-red-500 focus:ring-red-500"
                       />
-                      <Truck className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 flex-shrink-0" />
-                      <span className="font-medium text-gray-800 text-sm sm:text-base">Entrega</span>
+                      <Truck className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-800">Entrega</span>
                     </label>
                   </div>
 
                   {/* Campos de Endereço (condicional) */}
                   {deliveryType === "delivery" && (
-                    <div className="mt-3 sm:mt-4 space-y-2.5 sm:space-y-3 p-3 sm:p-4 bg-gray-50 rounded-xl">
-                      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                    <div className="mt-4 space-y-3 p-4 bg-gray-50 rounded-xl">
+                      <div className="grid grid-cols-3 gap-3">
                         <div className="col-span-2">
-                          <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-1">Rua <span className="text-red-500">*</span></label>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Rua <span className="text-red-500">*</span></label>
                           <input
                             type="text"
                             value={deliveryAddress.street}
                             onChange={(e) => setDeliveryAddress({...deliveryAddress, street: e.target.value})}
                             placeholder="Nome da rua"
-                            className="w-full px-2.5 sm:px-3 py-2 sm:py-2.5 border border-gray-200 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-1">Número <span className="text-red-500">*</span></label>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Número <span className="text-red-500">*</span></label>
                           <input
                             type="text"
                             inputMode="numeric"
@@ -2938,15 +2932,15 @@ export default function PublicMenu() {
                               setDeliveryAddress({...deliveryAddress, number: value});
                             }}
                             placeholder="Nº"
-                            className="w-full px-2.5 sm:px-3 py-2 sm:py-2.5 border border-gray-200 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                           />
                         </div>
                       </div>
                       <div>
-                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-1">Bairro <span className="text-red-500">*</span></label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Bairro <span className="text-red-500">*</span></label>
                         {selectedNeighborhood && establishment.deliveryFeeType === 'byNeighborhood' ? (
-                          <div className="flex items-center gap-1.5 sm:gap-2">
-                            <div className="flex-1 min-w-0 px-2.5 sm:px-3 py-2 sm:py-2.5 border border-gray-200 rounded-lg text-xs sm:text-sm bg-gray-50 text-gray-700 truncate">
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700">
                               {selectedNeighborhood.name}
                             </div>
                             <button
@@ -2956,9 +2950,9 @@ export default function PublicMenu() {
                                 setCheckoutStep(0);
                                 setShowNeighborhoodModal(true);
                               }}
-                              className="px-2 sm:px-3 py-2 sm:py-2.5 text-red-500 text-xs sm:text-sm font-medium hover:bg-red-50 rounded-lg transition-colors whitespace-nowrap flex-shrink-0"
+                              className="px-3 py-2.5 text-red-500 text-sm font-medium hover:bg-red-50 rounded-lg transition-colors whitespace-nowrap"
                             >
-                              Alterar
+                              Alterar bairro
                             </button>
                           </div>
                         ) : (
@@ -2967,28 +2961,28 @@ export default function PublicMenu() {
                             value={deliveryAddress.neighborhood}
                             onChange={(e) => setDeliveryAddress({...deliveryAddress, neighborhood: e.target.value})}
                             placeholder="Nome do bairro"
-                            className="w-full px-2.5 sm:px-3 py-2 sm:py-2.5 border border-gray-200 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                           />
                         )}
                       </div>
                       <div>
-                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-1">Complemento</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Complemento</label>
                         <input
                           type="text"
                           value={deliveryAddress.complement}
                           onChange={(e) => setDeliveryAddress({...deliveryAddress, complement: e.target.value})}
                           placeholder="Apto, bloco, etc."
-                          className="w-full px-2.5 sm:px-3 py-2 sm:py-2.5 border border-gray-200 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-1">Ponto de referência</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Ponto de referência</label>
                         <input
                           type="text"
                           value={deliveryAddress.reference}
                           onChange={(e) => setDeliveryAddress({...deliveryAddress, reference: e.target.value})}
                           placeholder="Próximo a..."
-                          className="w-full px-2.5 sm:px-3 py-2 sm:py-2.5 border border-gray-200 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                         />
                       </div>
                     </div>
@@ -2997,13 +2991,13 @@ export default function PublicMenu() {
 
                 {/* Forma de Pagamento */}
                 <div>
-                  <h3 className="font-semibold text-gray-800 text-xs sm:text-sm mb-2 sm:mb-3 flex items-center gap-2">
-                    <CreditCard className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500" />
+                  <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                    <CreditCard className="h-4 w-4 text-red-500" />
                     Forma de pagamento
                   </h3>
                   <div className="space-y-2">
                     <div>
-                      <label className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 border rounded-xl cursor-pointer transition-colors ${
+                      <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
                         paymentMethod === "cash" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
                       }`}>
                         <input
@@ -3012,15 +3006,15 @@ export default function PublicMenu() {
                           value="cash"
                           checked={paymentMethod === "cash"}
                           onChange={() => setPaymentMethod("cash")}
-                          className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 focus:ring-red-500 flex-shrink-0"
+                          className="w-4 h-4 text-red-500 focus:ring-red-500"
                         />
-                        <Banknote className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 flex-shrink-0" />
-                        <span className="font-medium text-gray-800 text-sm sm:text-base">Dinheiro</span>
+                        <Banknote className="h-5 w-5 text-gray-600" />
+                        <span className="font-medium text-gray-800">Dinheiro</span>
                       </label>
                       {/* Campo de Troco (logo abaixo de Dinheiro) */}
                       {paymentMethod === "cash" && (
-                        <div className="mt-2 p-3 sm:p-4 bg-gray-50 rounded-xl ml-5 sm:ml-7">
-                          <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-1">Precisa de troco para quanto?</label>
+                        <div className="mt-2 p-4 bg-gray-50 rounded-xl ml-7">
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Precisa de troco para quanto?</label>
                           <div className="relative">
                             <input
                               type="text"
@@ -3054,33 +3048,33 @@ export default function PublicMenu() {
                                 }
                               }}
                               placeholder="0,00"
-                              className={`w-full px-2.5 sm:px-3 py-2 sm:py-2.5 border rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 ${
+                              className={`w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 ${
                                 changeAmountError 
                                   ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500 bg-red-50' 
                                   : 'border-gray-200 focus:ring-red-500/20 focus:border-red-500'
                               }`}
                             />
                             {changeAmountError && (
-                              <div className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2">
-                                <svg className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                <svg className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                               </div>
                             )}
                           </div>
                           {changeAmountError && (
-                            <p className="mt-1.5 sm:mt-2 text-[10px] sm:text-xs text-red-600 flex items-start gap-1">
-                              <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <p className="mt-2 text-xs text-red-600 flex items-center gap-1">
+                              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                               </svg>
-                              <span className="break-words">{changeAmountError}</span>
+                              {changeAmountError}
                             </p>
                           )}
-                          <p className="mt-1 text-[10px] sm:text-xs text-gray-500">Deixe em branco se não precisar de troco</p>
+                          <p className="mt-1 text-xs text-gray-500">Deixe em branco se não precisar de troco</p>
                         </div>
                       )}
                     </div>
-                    <label className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 border rounded-xl cursor-pointer transition-colors ${
+                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
                       paymentMethod === "card" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
                     }`}>
                       <input
@@ -3089,12 +3083,12 @@ export default function PublicMenu() {
                         value="card"
                         checked={paymentMethod === "card"}
                         onChange={() => setPaymentMethod("card")}
-                        className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 focus:ring-red-500 flex-shrink-0"
+                        className="w-4 h-4 text-red-500 focus:ring-red-500"
                       />
-                      <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 flex-shrink-0" />
-                      <span className="font-medium text-gray-800 text-sm sm:text-base">Cartão</span>
+                      <CreditCard className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-800">Cartão</span>
                     </label>
-                    <label className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 border rounded-xl cursor-pointer transition-colors ${
+                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
                       paymentMethod === "pix" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
                     }`}>
                       <input
@@ -3103,19 +3097,19 @@ export default function PublicMenu() {
                         value="pix"
                         checked={paymentMethod === "pix"}
                         onChange={() => setPaymentMethod("pix")}
-                        className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 focus:ring-red-500 flex-shrink-0"
+                        className="w-4 h-4 text-red-500 focus:ring-red-500"
                       />
-                      <QrCode className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 flex-shrink-0" />
-                      <span className="font-medium text-gray-800 text-sm sm:text-base">Pix</span>
+                      <QrCode className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-800">Pix</span>
                     </label>
                   </div>
 
                   {/* Chave Pix */}
                   {paymentMethod === "pix" && establishment.pixKey && (
-                    <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-teal-50 border border-teal-200 rounded-xl">
-                      <p className="text-xs sm:text-sm text-teal-700 font-medium mb-1.5 sm:mb-2">Chave Pix do restaurante:</p>
-                      <div className="flex items-center gap-1.5 sm:gap-2">
-                        <code className="flex-1 min-w-0 bg-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm text-gray-800 border border-teal-200 break-all">
+                    <div className="mt-4 p-4 bg-teal-50 border border-teal-200 rounded-xl">
+                      <p className="text-sm text-teal-700 font-medium mb-2">Chave Pix do restaurante:</p>
+                      <div className="flex items-center gap-2">
+                        <code className="flex-1 bg-white px-3 py-2 rounded-lg text-sm text-gray-800 border border-teal-200 break-all">
                           {establishment.pixKey}
                         </code>
                         <button
@@ -3124,13 +3118,13 @@ export default function PublicMenu() {
                             navigator.clipboard.writeText(establishment.pixKey || "");
                             alert("Chave Pix copiada!");
                           }}
-                          className="flex-shrink-0 p-1.5 sm:p-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg transition-colors"
+                          className="flex-shrink-0 p-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg transition-colors"
                           title="Copiar chave Pix"
                         >
-                          <Copy className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          <Copy className="h-4 w-4" />
                         </button>
                       </div>
-                      <p className="text-[10px] sm:text-xs text-teal-600 mt-1.5 sm:mt-2">Copie a chave para realizar o pagamento via Pix.</p>
+                      <p className="text-xs text-teal-600 mt-2">Copie a chave para realizar o pagamento via Pix.</p>
                     </div>
                   )}
 
@@ -3138,7 +3132,7 @@ export default function PublicMenu() {
               </div>
 
               {/* Footer */}
-              <div className="flex-shrink-0 border-t px-4 sm:px-6 py-3 sm:py-4">
+              <div className="flex-shrink-0 border-t px-6 py-4">
                 {(() => {
                   const isAddressValid = deliveryType === 'pickup' || (
                     deliveryAddress.street.trim() !== '' &&
@@ -3154,7 +3148,7 @@ export default function PublicMenu() {
                         }
                         setCheckoutStep(3);
                       }}
-                      className={`w-full py-3 sm:py-3.5 font-semibold rounded-xl transition-colors text-sm sm:text-base ${
+                      className={`w-full py-3.5 font-semibold rounded-xl transition-colors ${
                         isAddressValid
                           ? 'bg-red-500 hover:bg-red-600 text-white'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -3173,36 +3167,33 @@ export default function PublicMenu() {
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 space-y-4 sm:space-y-5">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-6 space-y-5">
                 {/* Itens */}
                 <div>
-                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
-                      <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" />
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+                      <ShoppingBag className="h-5 w-5 text-red-500" />
                     </div>
-                    <h3 className="font-bold text-gray-900 text-sm sm:text-base">Itens</h3>
+                    <h3 className="font-bold text-gray-900">Itens</h3>
                   </div>
-                  <div className="bg-gray-50 rounded-xl p-3 sm:p-4 space-y-2">
+                  <div className="bg-gray-50 rounded-xl p-4 space-y-2">
                     {cart.map((item, index) => (
-                      <div key={index} className="text-xs sm:text-sm">
-                        <div className="flex justify-between items-start gap-2">
-                          <span className="text-gray-800 font-medium flex-1 min-w-0 break-words">{item.quantity}x {item.name}</span>
-                          {Number(item.price) * item.quantity > 0 && (
-                            <span className="text-red-500 font-semibold flex-shrink-0">{formatPrice(Number(item.price) * item.quantity)}</span>
+                      <div key={index} className="flex justify-between text-sm">
+                        <div className="flex-1 min-w-0">
+                          <span className="text-gray-800 font-medium">{item.quantity}x {item.name}</span>
+                          {item.complements.length > 0 && (
+                            <div className="text-xs text-gray-500 mt-0.5">
+                              {item.complements.map((c, cIdx) => (
+                                <p key={cIdx}>+ {c.name} ({formatPrice(c.price)})</p>
+                              ))}
+                            </div>
+                          )}
+                          {item.observation && (
+                            <p className="text-xs text-gray-400 mt-0.5">Obs: {item.observation}</p>
                           )}
                         </div>
-                        {item.complements.length > 0 && (
-                          <div className="mt-1">
-                            {item.complements.map((c, cIdx) => (
-                              <div key={cIdx} className="flex justify-between items-center text-[10px] sm:text-xs gap-2">
-                                <span className="text-gray-500 flex-1 min-w-0 break-words">+ {c.name}</span>
-                                <span className="text-red-500 font-medium flex-shrink-0">{formatPrice(c.price)}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {item.observation && (
-                          <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5 break-words">Obs: {item.observation}</p>
+                        {Number(item.price) * item.quantity > 0 && (
+                          <span className="text-gray-700 font-medium ml-2">{formatPrice(Number(item.price) * item.quantity)}</span>
                         )}
                       </div>
                     ))}
@@ -3211,18 +3202,18 @@ export default function PublicMenu() {
 
                 {/* Entrega */}
                 <div>
-                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                      <Truck className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                      <Truck className="h-5 w-5 text-blue-500" />
                     </div>
-                    <h3 className="font-bold text-gray-900 text-sm sm:text-base">Entrega</h3>
+                    <h3 className="font-bold text-gray-900">Entrega</h3>
                   </div>
-                  <div className="bg-gray-50 rounded-xl p-3 sm:p-4">
-                    <p className="text-xs sm:text-sm text-gray-800 font-medium">
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <p className="text-sm text-gray-800 font-medium">
                       {deliveryType === "pickup" ? "Retirar no local" : "Entrega"}
                     </p>
                     {deliveryType === "delivery" && deliveryAddress.street && (
-                      <p className="text-xs sm:text-sm text-gray-500 mt-1 break-words">
+                      <p className="text-sm text-gray-500 mt-1">
                         {deliveryAddress.street}, {deliveryAddress.number}
                         {deliveryAddress.complement && ` - ${deliveryAddress.complement}`}
                         <br />
@@ -3235,18 +3226,18 @@ export default function PublicMenu() {
 
                 {/* Pagamento */}
                 <div>
-                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
-                      <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
+                      <CreditCard className="h-5 w-5 text-green-500" />
                     </div>
-                    <h3 className="font-bold text-gray-900 text-sm sm:text-base">Pagamento</h3>
+                    <h3 className="font-bold text-gray-900">Pagamento</h3>
                   </div>
-                  <div className="bg-gray-50 rounded-xl p-3 sm:p-4">
-                    <p className="text-xs sm:text-sm text-gray-800 font-medium">
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <p className="text-sm text-gray-800 font-medium">
                       {paymentMethod === "cash" ? "Dinheiro" : paymentMethod === "card" ? "Cartão" : "Pix"}
                     </p>
                     {paymentMethod === "cash" && changeAmount && (
-                      <p className="text-xs sm:text-sm text-gray-500 mt-1">Troco para: R$ {changeAmount}</p>
+                      <p className="text-sm text-gray-500 mt-1">Troco para: R$ {changeAmount}</p>
                     )}
                   </div>
                 </div>
@@ -3254,20 +3245,20 @@ export default function PublicMenu() {
                 {/* Observações */}
                 {orderObservation && (
                   <div>
-                    <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0">
-                        <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
+                        <FileText className="h-5 w-5 text-purple-500" />
                       </div>
-                      <h3 className="font-bold text-gray-900 text-sm sm:text-base">Observações</h3>
+                      <h3 className="font-bold text-gray-900">Observações</h3>
                     </div>
-                    <div className="bg-gray-50 rounded-xl p-3 sm:p-4">
-                      <p className="text-xs sm:text-sm text-gray-600 break-words">{orderObservation}</p>
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <p className="text-sm text-gray-600">{orderObservation}</p>
                     </div>
                   </div>
                 )}
 
                 {/* Total */}
-                <div className="border-t border-dashed border-gray-200 pt-3 sm:pt-4 space-y-1.5 sm:space-y-2">
+                <div className="border-t border-dashed border-gray-200 pt-4 space-y-2">
                   {(() => {
                     const subtotal = cart.reduce((sum, item) => {
                       const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
@@ -3284,30 +3275,30 @@ export default function PublicMenu() {
                     const total = Math.max(0, subtotal - discount + deliveryFee);
                     return (
                       <>
-                        <div className="flex justify-between text-xs sm:text-sm">
+                        <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Subtotal</span>
                           <span className="text-gray-600">{formatPrice(subtotal)}</span>
                         </div>
                         {appliedCoupon && (
-                          <div className="flex justify-between text-xs sm:text-sm">
+                          <div className="flex justify-between text-sm">
                             <span className="text-green-600 flex items-center gap-1">
-                              <Ticket className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                              <span className="truncate">Cupom {appliedCoupon.code}</span>
+                              <Ticket className="h-3.5 w-3.5" />
+                              Cupom {appliedCoupon.code}
                             </span>
-                            <span className="text-green-600 flex-shrink-0">-{formatPrice(discount)}</span>
+                            <span className="text-green-600">-{formatPrice(discount)}</span>
                           </div>
                         )}
                         {deliveryType === 'delivery' && (
-                          <div className="flex justify-between text-xs sm:text-sm">
+                          <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Taxa de entrega</span>
-                            <span className={`flex-shrink-0 ${establishment.deliveryFeeType === "free" ? "text-green-600 font-medium" : "text-gray-600"}`}>
+                            <span className={establishment.deliveryFeeType === "free" ? "text-green-600 font-medium" : "text-gray-600"}>
                               {establishment.deliveryFeeType === "free" 
                                 ? "Grátis" 
                                 : formatPrice(deliveryFee)}
                             </span>
                           </div>
                         )}
-                        <div className="flex justify-between font-bold text-base sm:text-lg pt-2">
+                        <div className="flex justify-between font-bold text-lg pt-2">
                           <span className="text-gray-900">Total</span>
                           <span className="text-red-500">{formatPrice(total)}</span>
                         </div>
@@ -3318,10 +3309,10 @@ export default function PublicMenu() {
               </div>
 
               {/* Footer */}
-              <div className="flex-shrink-0 border-t px-4 sm:px-6 py-3 sm:py-4">
+              <div className="flex-shrink-0 border-t px-6 py-4">
                 <button
                   onClick={() => setCheckoutStep(4)}
-                  className="w-full py-3 sm:py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors text-sm sm:text-base"
+                  className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
                 >
                   Finalizar
                 </button>
@@ -3334,19 +3325,19 @@ export default function PublicMenu() {
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 space-y-3 sm:space-y-4">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-6 space-y-4">
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">Nome</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Nome</label>
                   <input
                     type="text"
                     value={customerInfo.name}
                     onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
                     placeholder="Digite seu nome"
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">Telefone</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
                   <input
                     type="text"
                     inputMode="tel"
@@ -3365,17 +3356,17 @@ export default function PublicMenu() {
                       }
                     }}
                     placeholder="(00) 00000-0000"
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                   />
                 </div>
               </div>
 
               {/* Footer */}
-              <div className="flex-shrink-0 border-t px-4 sm:px-6 py-3 sm:py-4">
+              <div className="flex-shrink-0 border-t px-6 py-4">
                 <button
                   onClick={() => setCheckoutStep(5)}
                   disabled={!customerInfo.name || !customerInfo.phone}
-                  className={`w-full py-3 sm:py-3.5 font-semibold rounded-xl transition-colors text-sm sm:text-base ${
+                  className={`w-full py-3.5 font-semibold rounded-xl transition-colors ${
                     customerInfo.name && customerInfo.phone
                       ? "bg-red-500 hover:bg-red-600 text-white"
                       : "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -3392,48 +3383,48 @@ export default function PublicMenu() {
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
-              <div className={`overflow-y-auto overscroll-contain p-4 sm:p-6 ${!orderSent ? 'flex-1' : ''}`}>
+              <div className={`overflow-y-auto overscroll-contain p-6 ${!orderSent ? 'flex-1' : ''}`}>
                 {orderError ? (
-                  <div className="text-center py-6 sm:py-8">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                      <XCircle className="h-8 w-8 sm:h-10 sm:w-10 text-red-500" />
+                  <div className="text-center py-8">
+                    <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <XCircle className="h-10 w-10 text-red-500" />
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-bold text-red-600 mb-3 sm:mb-4">
+                    <h3 className="text-2xl font-bold text-red-600 mb-4">
                       Não foi possível enviar o pedido
                     </h3>
-                    <p className="text-sm sm:text-base text-gray-600 break-words px-2">
+                    <p className="text-gray-600">
                       {orderError}
                     </p>
                   </div>
                 ) : !orderSent ? (
-                  <div className="text-center py-6 sm:py-8">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                      <CheckCircle className="h-8 w-8 sm:h-10 sm:w-10 text-green-500" />
+                  <div className="text-center py-8">
+                    <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <CheckCircle className="h-10 w-10 text-green-500" />
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4">
                       Quase lá, {customerInfo.name.split(" ")[0]}!
                     </h3>
-                    <p className="text-sm sm:text-base text-gray-600 mb-2">
+                    <p className="text-gray-600 mb-2">
                       O prazo de entrega está entre <strong>30 a 45 minutos</strong>.
                     </p>
-                    <p className="text-xs sm:text-sm text-gray-500">
+                    <p className="text-gray-500 text-sm">
                       Após enviar o seu pedido, favor aguardar a confirmação do nosso atendente.
                     </p>
                   </div>
                 ) : (
-                  <div className="text-center py-6 sm:py-8">
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 animate-bounce">
-                      <CheckCircle className="h-10 w-10 sm:h-12 sm:w-12 text-green-500" />
+                  <div className="text-center py-8">
+                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+                      <CheckCircle className="h-12 w-12 text-green-500" />
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-bold text-green-600 mb-2">
+                    <h3 className="text-2xl font-bold text-green-600 mb-2">
                       Pedido enviado com sucesso!
                     </h3>
                     {currentOrderNumber && (
-                      <p className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">
+                      <p className="text-xl font-semibold text-gray-800 mb-4">
                         Número do pedido: <span className="text-primary">{currentOrderNumber}</span>
                       </p>
                     )}
-                    <p className="text-sm sm:text-base text-gray-600">
+                    <p className="text-gray-600">
                       Seu pedido foi recebido e está sendo processado.
                     </p>
                   </div>
@@ -3442,20 +3433,20 @@ export default function PublicMenu() {
 
               {/* Footer */}
               {orderSent ? (
-              <div className="flex-shrink-0 border-t px-4 sm:px-6 py-3 sm:py-4">
+              <div className="flex-shrink-0 border-t px-6 py-4">
                 <button
                   onClick={() => {
                     setCheckoutStep(0);
                     setShowTrackingModal(true);
                   }}
-                  className="w-full py-3 sm:py-3.5 bg-primary text-white font-semibold rounded-xl transition-colors hover:bg-primary/90 flex items-center justify-center gap-2 text-sm sm:text-base"
+                  className="w-full py-3.5 bg-primary text-white font-semibold rounded-xl transition-colors hover:bg-primary/90 flex items-center justify-center gap-2"
                 >
-                  <Package className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <Package className="h-5 w-5" />
                   Acompanhar pedido
                 </button>
               </div>
               ) : (
-              <div className="flex-shrink-0 border-t px-4 sm:px-6 py-3 sm:py-4">
+              <div className="flex-shrink-0 border-t px-6 py-4">
                 <button
                   onClick={() => {
                     if (isSendingOrder || !establishment || !isOpen) return;
@@ -3534,7 +3525,7 @@ export default function PublicMenu() {
                     }, 3000); // Delay de 3 segundos
                   }}
                   disabled={isSendingOrder || !isOpen || !!changeAmountError}
-                  className={`w-full py-3 sm:py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 text-sm sm:text-base ${
+                  className={`w-full py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
                     !isOpen
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : changeAmountError
@@ -3546,12 +3537,12 @@ export default function PublicMenu() {
                 >
                   {!isOpen ? (
                     <>
-                      <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <Clock className="h-5 w-5" />
                       Restaurante Fechado
                     </>
                   ) : isSendingOrder ? (
                     <>
-                      <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
@@ -3696,54 +3687,51 @@ export default function PublicMenu() {
           {/* Modal */}
           <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 overflow-hidden">
             {/* Header */}
-            <div className="flex-shrink-0 bg-white border-b border-gray-300 px-4 sm:px-6 h-[56px] sm:h-[68px] flex items-center justify-between rounded-t-2xl md:rounded-t-2xl">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-red-100 rounded-xl">
-                  <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" />
+            <div className="flex-shrink-0 bg-white border-b border-gray-300 px-6 h-[68px] flex items-center justify-between rounded-t-2xl md:rounded-t-2xl">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-100 rounded-xl">
+                  <ShoppingBag className="h-5 w-5 text-red-500" />
                 </div>
-                <h2 className="text-base sm:text-lg font-bold text-gray-900">Sua Sacola</h2>
+                <h2 className="text-lg font-bold text-gray-900">Sua Sacola</h2>
               </div>
               <button 
                 onClick={() => setShowMobileBag(false)}
-                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <X className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
+                <X className="h-5 w-5 text-gray-500" />
               </button>
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto overscroll-contain p-3 sm:p-4" style={{backgroundColor: '#ffffff'}}>
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4" style={{backgroundColor: '#ffffff'}}>
               {cart.length === 0 ? (
-                <div className="text-center py-6 sm:py-8">
-                  <ShoppingBag className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mx-auto mb-2 sm:mb-3" />
-                  <p className="text-sm sm:text-base text-gray-500">Sua sacola está vazia</p>
-                  <p className="text-xs sm:text-sm text-gray-400 mt-1">Adicione itens do cardápio</p>
+                <div className="text-center py-8">
+                  <ShoppingBag className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">Sua sacola está vazia</p>
+                  <p className="text-sm text-gray-400 mt-1">Adicione itens do cardápio</p>
                 </div>
               ) : (
-                <div className="space-y-2 sm:space-y-3">
+                <div className="space-y-3">
                   {cart.map((item, index) => (
-                    <div key={index} className="flex items-start justify-between p-2.5 sm:p-3 bg-gray-50 rounded-xl">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="font-medium text-gray-900 text-sm sm:text-base flex-1 min-w-0 break-words">{item.quantity}x {item.name}</span>
+                    <div key={index} className="flex items-start justify-between p-3 bg-gray-50 rounded-xl">
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-gray-900">{item.quantity}x {item.name}</span>
                           {parseFloat(item.price) * item.quantity > 0 && (
-                            <span className="text-red-500 font-semibold text-sm sm:text-base flex-shrink-0">
+                            <span className="text-red-500 font-semibold ml-2">
                               R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}
                             </span>
                           )}
                         </div>
                         {item.complements.length > 0 && (
-                          <div className="mt-1">
+                          <div className="mt-1 text-xs text-gray-500">
                             {item.complements.map((c, cIdx) => (
-                              <div key={cIdx} className="flex justify-between items-center text-[10px] sm:text-xs gap-2">
-                                <span className="text-gray-500 flex-1 min-w-0 break-words">+ {c.name}</span>
-                                <span className="text-red-500 font-medium flex-shrink-0">{formatPrice(c.price)}</span>
-                              </div>
+                              <p key={cIdx}>+ {c.name} ({formatPrice(c.price)})</p>
                             ))}
                           </div>
                         )}
                         {item.observation && (
-                          <p className="text-[10px] sm:text-xs text-gray-400 mt-1 break-words">Obs: {item.observation}</p>
+                          <p className="text-xs text-gray-400 mt-1">Obs: {item.observation}</p>
                         )}
                       </div>
                       <button
@@ -3752,9 +3740,9 @@ export default function PublicMenu() {
                           newCart.splice(index, 1);
                           setCart(newCart);
                         }}
-                        className="ml-1.5 sm:ml-2 p-1 sm:p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                        className="ml-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                       >
-                        <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   ))}
@@ -3764,7 +3752,7 @@ export default function PublicMenu() {
 
             {/* Footer */}
             {cart.length > 0 && (
-              <div className="flex-shrink-0 border-t p-3 sm:p-4 space-y-2 sm:space-y-3">
+              <div className="flex-shrink-0 border-t p-4 space-y-3">
                 {(() => {
                   const subtotal = cart.reduce((sum, item) => {
                     const itemTotal = parseFloat(item.price) * item.quantity;
@@ -3782,21 +3770,21 @@ export default function PublicMenu() {
                   const total = Math.max(0, subtotal - discount + deliveryFee);
                   return (
                     <>
-                      <div className="flex justify-between text-xs sm:text-sm">
+                      <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Subtotal</span>
                         <span className="font-medium">R$ {subtotal.toFixed(2).replace('.', ',')}</span>
                       </div>
                       {appliedCoupon && (
-                        <div className="flex justify-between text-xs sm:text-sm">
+                        <div className="flex justify-between text-sm">
                           <span className="text-green-600 flex items-center gap-1">
-                            <Ticket className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                            <span className="truncate">Cupom {appliedCoupon.code}</span>
+                            <Ticket className="h-3.5 w-3.5" />
+                            Cupom {appliedCoupon.code}
                           </span>
-                          <span className="text-green-600 flex-shrink-0">-R$ {discount.toFixed(2).replace('.', ',')}</span>
+                          <span className="text-green-600">-R$ {discount.toFixed(2).replace('.', ',')}</span>
                         </div>
                       )}
-                      <div className="flex justify-between text-xs sm:text-sm">
-                        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                      <div className="flex justify-between text-sm">
+                        <div className="flex items-center gap-2">
                           <span className="text-gray-600">Taxa de entrega</span>
                           {selectedNeighborhood && establishment.deliveryFeeType === "byNeighborhood" && (
                             <button
@@ -3805,13 +3793,13 @@ export default function PublicMenu() {
                                 setReopenBagAfterNeighborhood(true);
                                 setShowNeighborhoodModal(true);
                               }}
-                              className="text-red-500 text-[10px] sm:text-xs font-medium hover:text-red-600 transition-colors"
+                              className="text-red-500 text-xs font-medium hover:text-red-600 transition-colors"
                             >
                               Alterar bairro
                             </button>
                           )}
                         </div>
-                        <span className={`flex-shrink-0 ${establishment.deliveryFeeType === "free" ? "text-green-600 font-medium" : "text-gray-500"}`}>
+                        <span className={establishment.deliveryFeeType === "free" ? "text-green-600 font-medium" : "text-gray-500"}>
                           {establishment.deliveryFeeType === "free" 
                             ? "Grátis" 
                             : establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed
@@ -3822,7 +3810,7 @@ export default function PublicMenu() {
                           }
                         </span>
                       </div>
-                      <div className="flex justify-between font-bold text-base sm:text-lg pt-2 border-t">
+                      <div className="flex justify-between font-bold text-lg pt-2 border-t">
                         <span>Total</span>
                         <span className="text-red-500">R$ {total.toFixed(2).replace('.', ',')}</span>
                       </div>
@@ -3854,12 +3842,12 @@ export default function PublicMenu() {
                     <>
                       {/* Alerta de Pedido Mínimo - cor vermelha */}
                       {isBelowMinOrder && (
-                        <div className="w-full p-2.5 sm:p-3 bg-red-50 border border-red-200 rounded-xl">
-                          <div className="flex items-center gap-1.5 sm:gap-2 text-red-600">
-                            <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
-                            <span className="font-semibold text-xs sm:text-sm">Pedido mínimo: R$ {minOrderValue.toFixed(2).replace('.', ',')}</span>
+                        <div className="w-full p-3 bg-red-50 border border-red-200 rounded-xl">
+                          <div className="flex items-center gap-2 text-red-600">
+                            <ShoppingBag className="h-4 w-4" />
+                            <span className="font-semibold text-sm">Pedido mínimo: R$ {minOrderValue.toFixed(2).replace('.', ',')}</span>
                           </div>
-                          <p className="text-[10px] sm:text-xs text-red-500 mt-1 ml-5 sm:ml-6">
+                          <p className="text-xs text-red-500 mt-1 ml-6">
                             Faltam R$ {amountMissing.toFixed(2).replace('.', ',')} para atingir o mínimo
                           </p>
                         </div>
@@ -3867,14 +3855,14 @@ export default function PublicMenu() {
                       
                       {/* Cupom */}
                       {appliedCoupon ? (
-                        <div className="w-full flex items-center justify-between py-2.5 sm:py-3 border-t border-gray-100">
-                          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                            <div className="p-1.5 sm:p-2 bg-green-100 rounded-lg flex-shrink-0">
-                              <Ticket className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                        <div className="w-full flex items-center justify-between py-3 border-t border-gray-100">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-green-100 rounded-lg">
+                              <Ticket className="h-5 w-5 text-green-600" />
                             </div>
-                            <div className="text-left min-w-0">
-                              <p className="font-medium text-green-700 text-xs sm:text-sm">Cupom aplicado!</p>
-                              <p className="text-[10px] sm:text-xs text-green-600 truncate">{appliedCoupon.code} - {appliedCoupon.type === 'percentage' ? `${appliedCoupon.value}% de desconto` : `R$ ${appliedCoupon.value.toFixed(2).replace('.', ',')} de desconto`}</p>
+                            <div className="text-left">
+                              <p className="font-medium text-green-700 text-sm">Cupom aplicado!</p>
+                              <p className="text-xs text-green-600">{appliedCoupon.code} - {appliedCoupon.type === 'percentage' ? `${appliedCoupon.value}% de desconto` : `R$ ${appliedCoupon.value.toFixed(2).replace('.', ',')} de desconto`}</p>
                             </div>
                           </div>
                           <button
@@ -3882,9 +3870,9 @@ export default function PublicMenu() {
                               setAppliedCoupon(null);
                               setCouponCode("");
                             }}
-                            className="p-1.5 sm:p-2 hover:bg-red-50 rounded-full transition-colors flex-shrink-0"
+                            className="p-2 hover:bg-red-50 rounded-full transition-colors"
                           >
-                            <X className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500" />
+                            <X className="h-4 w-4 text-red-500" />
                           </button>
                         </div>
                       ) : (
@@ -3893,15 +3881,15 @@ export default function PublicMenu() {
                             setShowCouponModal(true);
                             setCouponError("");
                           }}
-                          className="w-full flex items-center justify-between py-2.5 sm:py-3 border-t border-gray-100 hover:bg-gray-50 transition-colors">
-                          <div className="flex items-center gap-2 sm:gap-3">
-                            <Ticket className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
+                          className="w-full flex items-center justify-between py-3 border-t border-gray-100 hover:bg-gray-50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <Ticket className="h-5 w-5 text-gray-500" />
                             <div className="text-left">
-                              <p className="font-medium text-gray-800 text-xs sm:text-sm">Tem um cupom?</p>
-                              <p className="text-[10px] sm:text-xs text-gray-400">Clique e insira o código</p>
+                              <p className="font-medium text-gray-800 text-sm">Tem um cupom?</p>
+                              <p className="text-xs text-gray-400">Clique e insira o código</p>
                             </div>
                           </div>
-                          <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+                          <ChevronRight className="h-5 w-5 text-gray-400" />
                         </button>
                       )}
                       
@@ -3912,9 +3900,9 @@ export default function PublicMenu() {
                             setShowMobileBag(false);
                             setBagAutoOpenEnabled(false);
                           }}
-                          className="w-full py-2.5 sm:py-3 font-semibold rounded-xl transition-colors border-2 border-red-500 text-red-500 hover:bg-red-50 flex items-center justify-center gap-2 text-sm sm:text-base"
+                          className="w-full py-3 font-semibold rounded-xl transition-colors border-2 border-red-500 text-red-500 hover:bg-red-50 flex items-center justify-center gap-2"
                         >
-                          <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
+                          <Plus className="h-5 w-5" />
                           Adicionar mais itens
                         </button>
                       )}
@@ -3926,9 +3914,9 @@ export default function PublicMenu() {
                             setShowMobileBag(false);
                             setBagAutoOpenEnabled(false);
                           }}
-                          className="w-full py-3 sm:py-3.5 font-semibold rounded-xl transition-colors border-2 border-red-500 text-red-500 hover:bg-red-50 flex items-center justify-center gap-2 text-sm sm:text-base"
+                          className="w-full py-3.5 font-semibold rounded-xl transition-colors border-2 border-red-500 text-red-500 hover:bg-red-50 flex items-center justify-center gap-2"
                         >
-                          <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
+                          <Plus className="h-5 w-5" />
                           Adicionar mais itens
                         </button>
                       ) : (
@@ -3947,7 +3935,7 @@ export default function PublicMenu() {
                             setCheckoutStep(1);
                           }}
                           disabled={!isOpen}
-                          className={`w-full py-3 sm:py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 text-sm sm:text-base ${
+                          className={`w-full py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
                             !isOpen
                               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                               : 'bg-red-500 hover:bg-red-600 text-white'
@@ -3955,7 +3943,7 @@ export default function PublicMenu() {
                         >
                           {!isOpen ? (
                             <>
-                              <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
+                              <Clock className="h-5 w-5" />
                               Restaurante Fechado
                             </>
                           ) : (
