@@ -1119,6 +1119,7 @@ export const appRouter = router({
                               input.status === 'ready' ? config.templateReady :
                               input.status === 'completed' ? config.templateCompleted :
                               input.status === 'cancelled' ? config.templateCancelled : null,
+                    deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
                   }
                 );
               }

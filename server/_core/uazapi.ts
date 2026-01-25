@@ -394,7 +394,8 @@ export function generateStatusMessage(
   orderNumber: string,
   customerName: string,
   establishmentName: string,
-  template?: string | null
+  template?: string | null,
+  deliveryType?: 'delivery' | 'pickup' | null
 ): string {
   // Default templates
   const defaultTemplates: Record<string, string> = {
@@ -405,7 +406,28 @@ export function generateStatusMessage(
     cancelled: `Olá {{customerName}}! ❌\n\nInfelizmente seu pedido {{orderNumber}} foi cancelado.\n\nEntre em contato conosco para mais informações.\n\n{{establishmentName}}`,
   };
   
-  const messageTemplate = template || defaultTemplates[status] || defaultTemplates.new;
+  let messageTemplate = template || defaultTemplates[status] || defaultTemplates.new;
+  
+  // Substituir variáveis de tipo de entrega para status "ready"
+  if (status === 'ready' && deliveryType) {
+    // Mensagem para retirada
+    const pickupMessage = 'Você já pode vir retirar. 😄';
+    // Mensagem para delivery
+    const deliveryMessage = '🛵 Nosso entregador já está a caminho.';
+    
+    // Substituir {{deliveryMessage}} se existir no template
+    if (messageTemplate.includes('{{deliveryMessage}}')) {
+      messageTemplate = messageTemplate.replace(
+        /{{deliveryMessage}}/g,
+        deliveryType === 'pickup' ? pickupMessage : deliveryMessage
+      );
+    } else {
+      // Se não tiver a variável, substituir a frase genérica
+      messageTemplate = messageTemplate
+        .replace(/Você já pode retirar ou aguardar a entrega\./g, 
+          deliveryType === 'pickup' ? pickupMessage : deliveryMessage);
+    }
+  }
   
   return messageTemplate
     .replace(/{{customerName}}/g, customerName)
@@ -425,6 +447,7 @@ export async function sendOrderStatusNotification(
     orderNumber: string;
     establishmentName: string;
     template?: string | null;
+    deliveryType?: 'delivery' | 'pickup' | null;
   }
 ): Promise<SendTextResponse> {
   const message = generateStatusMessage(
@@ -432,7 +455,8 @@ export async function sendOrderStatusNotification(
     data.orderNumber,
     data.customerName,
     data.establishmentName,
-    data.template
+    data.template,
+    data.deliveryType
   );
   
   return sendTextMessage(instanceToken, phone, message);

@@ -37,7 +37,7 @@ export function WhatsAppTab() {
   const DEFAULT_TEMPLATES = {
     newOrder: `Olá {{customerName}}! 🎉\n\nSeu pedido {{orderNumber}} foi recebido com sucesso!\n\nAguarde, em breve começaremos a preparar.\n\n{{establishmentName}}`,
     preparing: `Olá {{customerName}}! 👨‍🍳\n\nSeu pedido {{orderNumber}} está sendo preparado!\n\nEm breve estará pronto.\n\n{{establishmentName}}`,
-    ready: `Olá {{customerName}}! ✅\n\nSeu pedido {{orderNumber}} está pronto!\n\nVocê já pode retirar ou aguardar a entrega.\n\n{{establishmentName}}`,
+    ready: `Olá {{customerName}}! ✅\n\nSeu pedido {{orderNumber}} está pronto!\n\n{{deliveryMessage}}\n\n{{establishmentName}}`,
     completed: `Olá {{customerName}}! 🙏\n\nSeu pedido {{orderNumber}} foi finalizado!\n\nObrigado pela preferência!\n\n{{establishmentName}}`,
     cancelled: `Olá {{customerName}}! ❌\n\nInfelizmente seu pedido {{orderNumber}} foi cancelado.\n\nEntre em contato conosco para mais informações.\n\n{{establishmentName}}`,
   };
@@ -400,7 +400,11 @@ export function WhatsAppTab() {
                 Personalize as mensagens enviadas aos clientes. Use as variáveis: 
                 <code className="mx-1 px-1 bg-muted rounded">{"{{customerName}}"}</code>,
                 <code className="mx-1 px-1 bg-muted rounded">{"{{orderNumber}}"}</code>,
-                <code className="mx-1 px-1 bg-muted rounded">{"{{establishmentName}}"}</code>
+                <code className="mx-1 px-1 bg-muted rounded">{"{{establishmentName}}"}</code>,
+                <code className="mx-1 px-1 bg-muted rounded">{"{{deliveryMessage}}"}</code>
+                <span className="text-xs block mt-1 text-muted-foreground">
+                  A variável {"{{deliveryMessage}}"} é substituída automaticamente pela mensagem de retirada ou entrega.
+                </span>
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -430,6 +434,11 @@ export function WhatsAppTab() {
                     onChange={(e) => setTemplateReady(e.target.value)}
                     rows={4}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Use <code className="px-1 bg-muted rounded">{"{{deliveryMessage}}"}</code> para mensagem automática:
+                    <br />• <strong>Retirada:</strong> "Você já pode vir retirar. 😄"
+                    <br />• <strong>Entrega:</strong> "🛵 Nosso entregador já está a caminho."
+                  </p>
                 </div>
                 
                 <div className="space-y-2">
