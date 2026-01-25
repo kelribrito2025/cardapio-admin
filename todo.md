@@ -2761,3 +2761,9 @@
 - [x] Lado direito permanece azul escuro/preto em todos os cupons
 - [x] Cores mudam ao navegar entre cupons para dar percepção de troca
 - [x] Transição suave de 300ms entre cores
+
+## Ajuste de Cores do Lado Direito do Cupom
+- [x] Mudar cor do texto R$10 OFF para corresponder ao lado esquerdo
+- [x] Mudar cor do botão Copiar para corresponder ao lado esquerdo
+- [x] Mudar cor do botão Usar agora para corresponder ao lado esquerdo
+- [x] Mudar cor do botão próximo para corresponder ao lado esquerdo

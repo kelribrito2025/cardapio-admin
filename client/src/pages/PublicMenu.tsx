@@ -5660,14 +5660,14 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
   
   // Cores para variação dos cupons - primeiro é amarelo/dourado (padrão), demais são cores distintas
   const couponColors = [
-    { bg: 'from-amber-400 via-amber-500 to-amber-600', icon: 'text-amber-800', label: 'text-amber-700/60', value: 'text-amber-800/70' },
-    { bg: 'from-emerald-400 via-emerald-500 to-emerald-600', icon: 'text-emerald-800', label: 'text-emerald-700/60', value: 'text-emerald-800/70' },
-    { bg: 'from-sky-400 via-sky-500 to-sky-600', icon: 'text-sky-800', label: 'text-sky-700/60', value: 'text-sky-800/70' },
-    { bg: 'from-violet-400 via-violet-500 to-violet-600', icon: 'text-violet-800', label: 'text-violet-700/60', value: 'text-violet-800/70' },
-    { bg: 'from-rose-400 via-rose-500 to-rose-600', icon: 'text-rose-800', label: 'text-rose-700/60', value: 'text-rose-800/70' },
-    { bg: 'from-orange-400 via-orange-500 to-orange-600', icon: 'text-orange-800', label: 'text-orange-700/60', value: 'text-orange-800/70' },
-    { bg: 'from-teal-400 via-teal-500 to-teal-600', icon: 'text-teal-800', label: 'text-teal-700/60', value: 'text-teal-800/70' },
-    { bg: 'from-pink-400 via-pink-500 to-pink-600', icon: 'text-pink-800', label: 'text-pink-700/60', value: 'text-pink-800/70' },
+    { bg: 'from-amber-400 via-amber-500 to-amber-600', icon: 'text-amber-800', label: 'text-amber-700/60', value: 'text-amber-800/70', accent: 'text-amber-400', btnBg: 'bg-amber-500 hover:bg-amber-600', btnNextBg: 'bg-amber-500 hover:bg-amber-600' },
+    { bg: 'from-emerald-400 via-emerald-500 to-emerald-600', icon: 'text-emerald-800', label: 'text-emerald-700/60', value: 'text-emerald-800/70', accent: 'text-emerald-400', btnBg: 'bg-emerald-500 hover:bg-emerald-600', btnNextBg: 'bg-emerald-500 hover:bg-emerald-600' },
+    { bg: 'from-sky-400 via-sky-500 to-sky-600', icon: 'text-sky-800', label: 'text-sky-700/60', value: 'text-sky-800/70', accent: 'text-sky-400', btnBg: 'bg-sky-500 hover:bg-sky-600', btnNextBg: 'bg-sky-500 hover:bg-sky-600' },
+    { bg: 'from-violet-400 via-violet-500 to-violet-600', icon: 'text-violet-800', label: 'text-violet-700/60', value: 'text-violet-800/70', accent: 'text-violet-400', btnBg: 'bg-violet-500 hover:bg-violet-600', btnNextBg: 'bg-violet-500 hover:bg-violet-600' },
+    { bg: 'from-rose-400 via-rose-500 to-rose-600', icon: 'text-rose-800', label: 'text-rose-700/60', value: 'text-rose-800/70', accent: 'text-rose-400', btnBg: 'bg-rose-500 hover:bg-rose-600', btnNextBg: 'bg-rose-500 hover:bg-rose-600' },
+    { bg: 'from-orange-400 via-orange-500 to-orange-600', icon: 'text-orange-800', label: 'text-orange-700/60', value: 'text-orange-800/70', accent: 'text-orange-400', btnBg: 'bg-orange-500 hover:bg-orange-600', btnNextBg: 'bg-orange-500 hover:bg-orange-600' },
+    { bg: 'from-teal-400 via-teal-500 to-teal-600', icon: 'text-teal-800', label: 'text-teal-700/60', value: 'text-teal-800/70', accent: 'text-teal-400', btnBg: 'bg-teal-500 hover:bg-teal-600', btnNextBg: 'bg-teal-500 hover:bg-teal-600' },
+    { bg: 'from-pink-400 via-pink-500 to-pink-600', icon: 'text-pink-800', label: 'text-pink-700/60', value: 'text-pink-800/70', accent: 'text-pink-400', btnBg: 'bg-pink-500 hover:bg-pink-600', btnNextBg: 'bg-pink-500 hover:bg-pink-600' },
   ];
   const currentCouponColor = couponColors[currentCouponIndex % couponColors.length];
   
@@ -6093,7 +6093,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   {hasMultipleCoupons && (
                     <button
                       onClick={nextCoupon}
-                      className="absolute top-1/2 -translate-y-1/2 -right-3 p-2 rounded-full bg-amber-500 hover:bg-amber-600 transition-colors shadow-lg z-20"
+                      className={`absolute top-1/2 -translate-y-1/2 -right-3 p-2 rounded-full ${currentCouponColor.btnNextBg} transition-colors shadow-lg z-20`}
                       title="Próximo cupom"
                       style={{marginRight: '26px', width: '22px', height: '22px'}}
                     >
@@ -6103,14 +6103,14 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
 
                   {/* Valor do Desconto */}
                   <div className="text-center flex-1 flex flex-col justify-center">
-                    <p className="text-amber-400 font-black text-3xl md:text-4xl leading-none">
+                    <p className={`${currentCouponColor.accent} font-black text-3xl md:text-4xl leading-none`}>
                       {currentCoupon.type === 'percentage'
                         ? `${currentCoupon.value}%`
                         : currentCoupon.type === 'free_delivery'
                         ? 'FRETE'
                         : `R$${Number(currentCoupon.value).toFixed(0)}`}
                     </p>
-                    <p className="text-amber-400 font-black text-2xl md:text-3xl">
+                    <p className={`${currentCouponColor.accent} font-black text-2xl md:text-3xl`}>
                       {currentCoupon.type === 'free_delivery' ? 'GRÁTIS' : 'OFF'}
                     </p>
                   </div>
@@ -6127,7 +6127,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                         }
                       }}
                       id="voucher-copy-btn"
-                      className="w-full py-2 md:py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg font-semibold text-[10px] md:text-xs flex items-center justify-center gap-1.5 transition-colors border border-slate-700" style={{width: '149px', height: '32px'}}
+                      className={`w-full py-2 md:py-2.5 px-3 bg-slate-800 hover:bg-slate-700 ${currentCouponColor.accent} rounded-lg font-semibold text-[10px] md:text-xs flex items-center justify-center gap-1.5 transition-colors border border-slate-700`} style={{width: '149px', height: '32px'}}
                     >
                       <Copy className="h-3.5 w-3.5" />
                       Copiar
@@ -6143,7 +6143,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                           );
                         }
                       }}
-                      className="w-full py-2 md:py-2.5 px-3 bg-amber-500 hover:bg-amber-600 text-slate-900 rounded-lg font-bold text-[10px] md:text-xs flex items-center justify-center gap-1.5 transition-colors" style={{width: '149px', height: '31px'}}
+                      className={`w-full py-2 md:py-2.5 px-3 ${currentCouponColor.btnBg} text-slate-900 rounded-lg font-bold text-[10px] md:text-xs flex items-center justify-center gap-1.5 transition-colors`} style={{width: '149px', height: '31px'}}
                     >
                       <ShoppingBag className="h-3.5 w-3.5" />
                       Usar agora
