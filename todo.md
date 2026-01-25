@@ -2802,3 +2802,8 @@
 ## Reabrir Modal da Sacola após Selecionar Bairro (Fluxo Finalizar Pedido)
 - [x] Quando usuário clica em "Finalizar pedido" sem bairro selecionado, abrir modal de bairro
 - [x] Após selecionar o bairro, reabrir automaticamente o modal da sacola (mobile e desktop)
+
+## Validação do Campo Número no Modal de Entrega
+- [x] Permitir apenas números no campo "Número" (regex remove caracteres não numéricos)
+- [x] Limitar a 6 caracteres máximo
+- [x] Adicionado inputMode="numeric" para teclado numérico no mobile

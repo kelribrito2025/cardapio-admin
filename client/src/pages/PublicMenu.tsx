@@ -2859,8 +2859,14 @@ export default function PublicMenu() {
                           <label className="block text-xs font-medium text-gray-600 mb-1">Número <span className="text-red-500">*</span></label>
                           <input
                             type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            maxLength={6}
                             value={deliveryAddress.number}
-                            onChange={(e) => setDeliveryAddress({...deliveryAddress, number: e.target.value})}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                              setDeliveryAddress({...deliveryAddress, number: value});
+                            }}
                             placeholder="Nº"
                             className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                           />
