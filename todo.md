@@ -3005,3 +3005,14 @@
 - [x] Formato: Nome - Ícone pagamento - Método - Tag entrega - Valor
 - [x] Remover linha separada de "Total" no mobile
 - [x] Manter layout atual no desktop
+
+
+## Bug: Notificações Push não funcionando após instalação PWA
+- [ ] Verificar se o Service Worker está registrado corretamente
+- [ ] Verificar se a subscription está sendo salva no banco
+- [ ] Verificar se as chaves VAPID estão configuradas
+- [ ] Testar envio de notificação de teste
+
+
+## Bug: Número do pedido com ## duplicado na notificação push
+- [x] Corrigir formato do número do pedido na notificação (##P345 → #P345)

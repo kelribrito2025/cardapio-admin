@@ -95,7 +95,7 @@ export async function sendNewOrderNotification(
 ): Promise<boolean> {
   const payload: PushPayload = {
     title: '🔔 Novo Pedido!',
-    body: `Pedido #${orderData.orderNumber} de ${orderData.customerName} - R$ ${orderData.total.toFixed(2).replace('.', ',')}`,
+    body: `Pedido ${orderData.orderNumber} de ${orderData.customerName} - R$ ${orderData.total.toFixed(2).replace('.', ',')}`,
     icon: '/icons/icon-192x192.png',
     badge: '/icons/icon-96x96.png',
     tag: `order-${orderData.orderId}`,
