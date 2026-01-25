@@ -385,3 +385,23 @@
 .animate-delivery-pulse {
   animation: delivery-pulse 2s ease-in-out infinite;
 }
+
+/* Animação de brilho dourado pulsante para voucher de cupom */
+@keyframes golden-glow-pulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 15px rgba(251, 191, 36, 0.3),
+      0 0 30px rgba(251, 191, 36, 0.15),
+      inset 0 0 20px rgba(251, 191, 36, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 0 25px rgba(251, 191, 36, 0.5),
+      0 0 50px rgba(251, 191, 36, 0.25),
+      inset 0 0 30px rgba(251, 191, 36, 0.15);
+  }
+}
+
+.animate-golden-glow {
+  animation: golden-glow-pulse 3s ease-in-out infinite;
+}

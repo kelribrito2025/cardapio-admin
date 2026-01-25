@@ -2754,3 +2754,7 @@
 - [x] Lado direito azul escuro (slate-900) com valor do desconto e botões
 - [x] Ícone de talheres como marca d'água no lado esquerdo
 - [x] Sombra drop-shadow para efeito de profundidade
+
+## Efeito de Brilho Dourado no Cupom
+- [x] Adicionar efeito de brilho dourado de fundo no cupom
+- [x] Implementar animação de pulso suave (3s ease-in-out infinite)

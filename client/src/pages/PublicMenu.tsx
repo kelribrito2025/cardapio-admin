@@ -5962,7 +5962,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
               >
             {currentCoupon && (
               <div 
-                className="h-full flex relative"
+                className="h-full flex relative animate-golden-glow rounded-lg"
                 style={{
                   maskImage: `
                     radial-gradient(circle 8px at 0% 8%, transparent 0, transparent 8px, black 8.5px),
