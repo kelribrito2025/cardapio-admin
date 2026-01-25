@@ -2947,3 +2947,8 @@
 - [x] Remover item "Impressoras" do menu lateral
 - [x] Remover rota /impressoras do App.tsx
 - [x] Deletar arquivo Impressoras.tsx
+
+
+## Ajuste: Taxa de Entrega na Impressão do Pedido
+- [x] Adicionar taxa de entrega no layout de impressão do pedido
+- [x] Mostrar "Grátis" quando taxa for zero

@@ -499,12 +499,10 @@ export default function Pedidos() {
               <span>- R$ ${discount.toFixed(2).replace('.', ',')}</span>
             </div>
             ` : ''}
-            ${Number(orderDetails.deliveryFee) > 0 ? `
             <div class="total-row">
               <span>Taxa de entrega</span>
-              <span>R$ ${Number(orderDetails.deliveryFee).toFixed(2).replace('.', ',')}</span>
+              <span>${Number(orderDetails.deliveryFee) > 0 ? `R$ ${Number(orderDetails.deliveryFee).toFixed(2).replace('.', ',')}` : 'Grátis'}</span>
             </div>
-            ` : ''}
             <div class="total-row final">
               <span>Total</span>
               <span>R$ ${Number(orderDetails.total).toFixed(2).replace('.', ',')}</span>
