@@ -3081,3 +3081,21 @@
 ### Fase 4: Integração
 - [x] Enviar mensagem automática quando status do pedido mudar
 - [x] Personalizar mensagens por tipo de status
+
+
+## Melhoria: Configuração automática do WhatsApp via UAZAPI
+- [ ] Configurar credenciais UAZAPI como variáveis de ambiente centralizadas
+- [ ] Criar instância automaticamente por estabelecimento (usando ID do estabelecimento)
+- [ ] Simplificar interface - dono do restaurante só precisa escanear QR Code
+- [ ] Remover campos de subdomínio e token da interface
+
+## Integração WhatsApp Simplificada (UAZAPI)
+- [x] Configurar credenciais UAZAPI centralizadas (UAZAPI_BASE_URL, UAZAPI_ADMIN_TOKEN)
+- [x] Criar módulo uazapi.ts com funções para criar instâncias automaticamente
+- [x] Atualizar schema do banco para usar instanceId e instanceToken em vez de subdomain/token
+- [x] Simplificar interface do WhatsApp - apenas QR Code para conectar (sem campos de credenciais)
+- [x] Criar instância automaticamente ao clicar em Conectar
+- [x] Atualizar rotas tRPC para usar credenciais centralizadas
+- [x] Manter configurações de notificações e templates personalizáveis
+- [ ] Testar fluxo completo de conexão via QR Code
+- [ ] Testar envio de notificações automáticas ao mudar status do pedido

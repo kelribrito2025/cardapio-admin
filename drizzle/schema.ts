@@ -404,8 +404,8 @@ export type InsertPushSubscription = typeof pushSubscriptions.$inferInsert;
 export const whatsappConfig = mysqlTable("whatsappConfig", {
   id: int("id").autoincrement().primaryKey(),
   establishmentId: int("establishmentId").notNull().unique(),
-  subdomain: varchar("subdomain", { length: 100 }).notNull(), // Subdomínio da instância UAZAPI (ex: 'free')
-  token: varchar("token", { length: 500 }).notNull(), // Token de autenticação da instância
+  instanceId: varchar("instanceId", { length: 100 }), // ID da instância UAZAPI (criada automaticamente)
+  instanceToken: varchar("instanceToken", { length: 500 }), // Token da instância (gerado automaticamente)
   status: mysqlEnum("status", ["disconnected", "connecting", "connected"]).default("disconnected").notNull(),
   connectedPhone: varchar("connectedPhone", { length: 30 }), // Número conectado
   lastQrCode: text("lastQrCode"), // Último QR code gerado (base64)

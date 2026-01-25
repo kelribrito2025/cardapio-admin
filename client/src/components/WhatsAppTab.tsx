@@ -11,7 +11,6 @@ import { toast } from "sonner";
 import { 
   MessageCircle, 
   QrCode, 
-  Settings, 
   CheckCircle2, 
   XCircle, 
   Loader2,
@@ -23,8 +22,6 @@ import {
 } from "lucide-react";
 
 export function WhatsAppTab() {
-  const [subdomain, setSubdomain] = useState("");
-  const [token, setToken] = useState("");
   const [testPhone, setTestPhone] = useState("");
   const [testMessage, setTestMessage] = useState("Olá! Esta é uma mensagem de teste do Cardápio Admin.");
   const [isPolling, setIsPolling] = useState(false);
@@ -45,17 +42,16 @@ export function WhatsAppTab() {
   
   const configQuery = trpc.whatsapp.getConfig.useQuery();
   const statusQuery = trpc.whatsapp.getStatus.useQuery(undefined, {
-    enabled: !!configQuery.data,
     refetchInterval: isPolling ? 3000 : false,
   });
   
-  const saveConfigMutation = trpc.whatsapp.saveConfig.useMutation({
+  const saveNotificationsMutation = trpc.whatsapp.saveNotificationSettings.useMutation({
     onSuccess: () => {
-      toast.success("Configuração salva com sucesso!");
+      toast.success("Configurações salvas com sucesso!");
       configQuery.refetch();
     },
     onError: (error) => {
-      toast.error(error.message || "Erro ao salvar configuração");
+      toast.error(error.message || "Erro ao salvar configurações");
     },
   });
   
@@ -106,8 +102,6 @@ export function WhatsAppTab() {
   // Load config data
   useEffect(() => {
     if (configQuery.data) {
-      setSubdomain(configQuery.data.subdomain || "");
-      // Token is masked, don't overwrite if user is editing
       setNotifyOnNewOrder(configQuery.data.notifyOnNewOrder ?? true);
       setNotifyOnPreparing(configQuery.data.notifyOnPreparing ?? true);
       setNotifyOnReady(configQuery.data.notifyOnReady ?? true);
@@ -128,15 +122,8 @@ export function WhatsAppTab() {
     }
   }, [statusQuery.data?.status]);
   
-  const handleSaveConfig = () => {
-    if (!subdomain || !token) {
-      toast.error("Preencha o subdomínio e token da UAZAPI");
-      return;
-    }
-    
-    saveConfigMutation.mutate({
-      subdomain,
-      token,
+  const handleSaveNotifications = () => {
+    saveNotificationsMutation.mutate({
       notifyOnNewOrder,
       notifyOnPreparing,
       notifyOnReady,
@@ -219,7 +206,7 @@ export function WhatsAppTab() {
                   <div>
                     <p className="font-medium text-red-600">Desconectado</p>
                     <p className="text-sm text-muted-foreground">
-                      Configure e conecte seu WhatsApp
+                      Clique em Conectar para gerar o QR Code
                     </p>
                   </div>
                 </>
@@ -250,7 +237,7 @@ export function WhatsAppTab() {
               ) : (
                 <Button
                   onClick={handleConnect}
-                  disabled={connectMutation.isPending || !configQuery.data}
+                  disabled={connectMutation.isPending}
                   size="sm"
                 >
                   {connectMutation.isPending ? (
@@ -288,12 +275,8 @@ export function WhatsAppTab() {
         </CardContent>
       </Card>
       
-      <Tabs defaultValue="config" className="w-full">
+      <Tabs defaultValue="notifications" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="config" className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
-            <span className="hidden sm:inline">Configuração</span>
-          </TabsTrigger>
           <TabsTrigger value="notifications" className="flex items-center gap-2">
             <Smartphone className="h-4 w-4" />
             <span className="hidden sm:inline">Notificações</span>
@@ -302,106 +285,11 @@ export function WhatsAppTab() {
             <FileText className="h-4 w-4" />
             <span className="hidden sm:inline">Templates</span>
           </TabsTrigger>
+          <TabsTrigger value="test" className="flex items-center gap-2">
+            <Send className="h-4 w-4" />
+            <span className="hidden sm:inline">Teste</span>
+          </TabsTrigger>
         </TabsList>
-        
-        {/* Configuration Tab */}
-        <TabsContent value="config" className="space-y-4 mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Credenciais UAZAPI</CardTitle>
-              <CardDescription>
-                Configure suas credenciais da UAZAPI para conectar o WhatsApp.
-                Acesse <a href="https://uazapi.com" target="_blank" rel="noopener noreferrer" className="text-primary underline">uazapi.com</a> para criar sua conta.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="subdomain">Subdomínio</Label>
-                  <Input
-                    id="subdomain"
-                    placeholder="ex: free, premium, etc"
-                    value={subdomain}
-                    onChange={(e) => setSubdomain(e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    O subdomínio da sua instância (ex: free.uazapi.com → "free")
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="token">Token de Autenticação</Label>
-                  <Input
-                    id="token"
-                    type="password"
-                    placeholder="Cole seu token aqui"
-                    value={token}
-                    onChange={(e) => setToken(e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Token encontrado no painel da UAZAPI
-                  </p>
-                </div>
-              </div>
-              
-              <Button 
-                onClick={handleSaveConfig}
-                disabled={saveConfigMutation.isPending}
-              >
-                {saveConfigMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : null}
-                Salvar Configuração
-              </Button>
-            </CardContent>
-          </Card>
-          
-          {/* Test Message */}
-          {isConnected && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Enviar Mensagem de Teste</CardTitle>
-                <CardDescription>
-                  Teste a conexão enviando uma mensagem
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="testPhone">Telefone</Label>
-                    <Input
-                      id="testPhone"
-                      placeholder="(11) 99999-9999"
-                      value={testPhone}
-                      onChange={(e) => setTestPhone(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="testMessage">Mensagem</Label>
-                    <Input
-                      id="testMessage"
-                      value={testMessage}
-                      onChange={(e) => setTestMessage(e.target.value)}
-                    />
-                  </div>
-                </div>
-                
-                <Button 
-                  onClick={handleSendTest}
-                  disabled={sendTestMutation.isPending}
-                  variant="outline"
-                >
-                  {sendTestMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4 mr-2" />
-                  )}
-                  Enviar Teste
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
         
         {/* Notifications Tab */}
         <TabsContent value="notifications" className="space-y-4 mt-4">
@@ -481,10 +369,10 @@ export function WhatsAppTab() {
               </div>
               
               <Button 
-                onClick={handleSaveConfig}
-                disabled={saveConfigMutation.isPending}
+                onClick={handleSaveNotifications}
+                disabled={saveNotificationsMutation.isPending}
               >
-                {saveConfigMutation.isPending ? (
+                {saveNotificationsMutation.isPending ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 ) : null}
                 Salvar Configurações
@@ -570,6 +458,62 @@ export function WhatsAppTab() {
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 ) : null}
                 Salvar Templates
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Test Tab */}
+        <TabsContent value="test" className="space-y-4 mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Enviar Mensagem de Teste</CardTitle>
+              <CardDescription>
+                Teste a conexão enviando uma mensagem
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {!isConnected && (
+                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                  <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                    Conecte seu WhatsApp primeiro para enviar mensagens de teste
+                  </p>
+                </div>
+              )}
+              
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="testPhone">Telefone</Label>
+                  <Input
+                    id="testPhone"
+                    placeholder="(11) 99999-9999"
+                    value={testPhone}
+                    onChange={(e) => setTestPhone(e.target.value)}
+                    disabled={!isConnected}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="testMessage">Mensagem</Label>
+                  <Input
+                    id="testMessage"
+                    value={testMessage}
+                    onChange={(e) => setTestMessage(e.target.value)}
+                    disabled={!isConnected}
+                  />
+                </div>
+              </div>
+              
+              <Button 
+                onClick={handleSendTest}
+                disabled={sendTestMutation.isPending || !isConnected}
+                variant="outline"
+              >
+                {sendTestMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4 mr-2" />
+                )}
+                Enviar Teste
               </Button>
             </CardContent>
           </Card>

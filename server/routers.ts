@@ -1103,12 +1103,12 @@ export const appRouter = router({
                 (input.status === 'completed' && config.notifyOnCompleted) ||
                 (input.status === 'cancelled' && config.notifyOnCancelled);
               
-              if (shouldNotify) {
+              if (shouldNotify && config.instanceToken) {
                 const { sendOrderStatusNotification } = await import('./_core/uazapi');
                 const establishment = await db.getEstablishmentById(order.establishmentId);
                 
                 await sendOrderStatusNotification(
-                  { subdomain: config.subdomain, token: config.token },
+                  config.instanceToken,
                   order.customerPhone,
                   input.status,
                   {
@@ -1975,20 +1975,12 @@ export const appRouter = router({
         if (!establishment) return null;
         
         const config = await db.getWhatsappConfig(establishment.id);
-        if (!config) return null;
-        
-        // Não retornar o token completo por segurança
-        return {
-          ...config,
-          token: config.token ? '***' + config.token.slice(-4) : null,
-        };
+        return config || null;
       }),
     
-    // Salvar configuração do WhatsApp (subdomain e token)
-    saveConfig: protectedProcedure
+    // Salvar configurações de notificação (sem precisar de subdomain/token)
+    saveNotificationSettings: protectedProcedure
       .input(z.object({
-        subdomain: z.string().min(1, "Subdomínio é obrigatório"),
-        token: z.string().min(1, "Token é obrigatório"),
         notifyOnNewOrder: z.boolean().optional(),
         notifyOnPreparing: z.boolean().optional(),
         notifyOnReady: z.boolean().optional(),
@@ -2003,8 +1995,6 @@ export const appRouter = router({
         
         await db.upsertWhatsappConfig({
           establishmentId: establishment.id,
-          subdomain: input.subdomain,
-          token: input.token,
           notifyOnNewOrder: input.notifyOnNewOrder,
           notifyOnPreparing: input.notifyOnPreparing,
           notifyOnReady: input.notifyOnReady,
@@ -2015,7 +2005,7 @@ export const appRouter = router({
         return { success: true };
       }),
     
-    // Conectar instância ao WhatsApp (gera QR code)
+    // Conectar instância ao WhatsApp (gera QR code automaticamente)
     connect: protectedProcedure
       .mutation(async ({ ctx }) => {
         if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
@@ -2023,11 +2013,40 @@ export const appRouter = router({
         const establishment = await db.getEstablishmentByUserId(ctx.user.id);
         if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
         
-        const config = await db.getWhatsappConfig(establishment.id);
-        if (!config) throw new TRPCError({ code: 'NOT_FOUND', message: 'Configure o WhatsApp primeiro' });
+        const { isUazapiConfigured, getOrCreateInstance, connectInstance } = await import('./_core/uazapi');
         
-        const { connectInstance } = await import('./_core/uazapi');
-        const result = await connectInstance({ subdomain: config.subdomain, token: config.token });
+        // Verificar se UAZAPI está configurado
+        if (!isUazapiConfigured()) {
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'WhatsApp não configurado no sistema' });
+        }
+        
+        // Obter ou criar instância para este estabelecimento
+        let config = await db.getWhatsappConfig(establishment.id);
+        
+        if (!config || !config.instanceToken) {
+          // Criar nova instância
+          const instanceResult = await getOrCreateInstance(establishment.id, establishment.name);
+          
+          if (!instanceResult.success) {
+            throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: instanceResult.message || 'Erro ao criar instância' });
+          }
+          
+          // Salvar instância no banco
+          await db.upsertWhatsappConfig({
+            establishmentId: establishment.id,
+            instanceId: instanceResult.instanceId,
+            instanceToken: instanceResult.instanceToken,
+          });
+          
+          config = await db.getWhatsappConfig(establishment.id);
+        }
+        
+        if (!config?.instanceToken) {
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Token da instância não encontrado' });
+        }
+        
+        // Conectar instância
+        const result = await connectInstance(config.instanceToken);
         
         // Atualizar status no banco
         await db.updateWhatsappStatus(
@@ -2049,10 +2068,12 @@ export const appRouter = router({
         if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
         
         const config = await db.getWhatsappConfig(establishment.id);
-        if (!config) return { success: false, status: 'disconnected' as const, message: 'Não configurado' };
+        if (!config || !config.instanceToken) {
+          return { success: false, status: 'disconnected' as const, message: 'Não configurado' };
+        }
         
         const { getInstanceStatus } = await import('./_core/uazapi');
-        const result = await getInstanceStatus({ subdomain: config.subdomain, token: config.token });
+        const result = await getInstanceStatus(config.instanceToken);
         
         // Atualizar status no banco
         if (result.status !== config.status || result.phone !== config.connectedPhone) {
@@ -2076,10 +2097,12 @@ export const appRouter = router({
         if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
         
         const config = await db.getWhatsappConfig(establishment.id);
-        if (!config) throw new TRPCError({ code: 'NOT_FOUND', message: 'WhatsApp não configurado' });
+        if (!config || !config.instanceToken) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'WhatsApp não configurado' });
+        }
         
         const { disconnectInstance } = await import('./_core/uazapi');
-        const result = await disconnectInstance({ subdomain: config.subdomain, token: config.token });
+        const result = await disconnectInstance(config.instanceToken);
         
         // Atualizar status no banco
         await db.updateWhatsappStatus(establishment.id, 'disconnected', null, null);
@@ -2100,10 +2123,12 @@ export const appRouter = router({
         if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
         
         const config = await db.getWhatsappConfig(establishment.id);
-        if (!config) throw new TRPCError({ code: 'NOT_FOUND', message: 'WhatsApp não configurado' });
+        if (!config || !config.instanceToken) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'WhatsApp não configurado' });
+        }
         
         const { sendTextMessage } = await import('./_core/uazapi');
-        return await sendTextMessage({ subdomain: config.subdomain, token: config.token }, input.phone, input.message);
+        return await sendTextMessage(config.instanceToken, input.phone, input.message);
       }),
     
     // Salvar templates de mensagem
@@ -2121,13 +2146,8 @@ export const appRouter = router({
         const establishment = await db.getEstablishmentByUserId(ctx.user.id);
         if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
         
-        const config = await db.getWhatsappConfig(establishment.id);
-        if (!config) throw new TRPCError({ code: 'NOT_FOUND', message: 'WhatsApp não configurado' });
-        
         await db.upsertWhatsappConfig({
           establishmentId: establishment.id,
-          subdomain: config.subdomain,
-          token: config.token,
           templateNewOrder: input.templateNewOrder,
           templatePreparing: input.templatePreparing,
           templateReady: input.templateReady,

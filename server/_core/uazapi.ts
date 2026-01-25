@@ -1,12 +1,12 @@
 /**
  * UAZAPI Integration Module
  * Handles WhatsApp connection and messaging via UAZAPI
+ * Uses centralized credentials - each establishment gets its own instance
  */
 
-interface UazapiConfig {
-  subdomain: string;
-  token: string;
-}
+// Get centralized credentials from environment
+const UAZAPI_BASE_URL = process.env.UAZAPI_BASE_URL || '';
+const UAZAPI_ADMIN_TOKEN = process.env.UAZAPI_ADMIN_TOKEN || '';
 
 interface ConnectResponse {
   success: boolean;
@@ -32,27 +32,38 @@ interface SendTextResponse {
   message?: string;
 }
 
-/**
- * Build the base URL for UAZAPI requests
- */
-function getBaseUrl(subdomain: string): string {
-  return `https://${subdomain}.uazapi.com`;
+interface InstanceInfo {
+  id: string;
+  name: string;
+  status: 'disconnected' | 'connecting' | 'connected';
+  phone?: string;
+  profileName?: string;
 }
 
 /**
- * Make a request to UAZAPI
+ * Check if UAZAPI is configured
  */
-async function makeRequest<T>(
-  config: UazapiConfig,
+export function isUazapiConfigured(): boolean {
+  return Boolean(UAZAPI_BASE_URL && UAZAPI_ADMIN_TOKEN);
+}
+
+/**
+ * Make an admin request to UAZAPI (for creating/managing instances)
+ */
+async function makeAdminRequest<T>(
   endpoint: string,
   method: 'GET' | 'POST' | 'DELETE' = 'GET',
   body?: Record<string, unknown>
 ): Promise<T> {
-  const url = `${getBaseUrl(config.subdomain)}${endpoint}`;
+  if (!isUazapiConfigured()) {
+    throw new Error('UAZAPI not configured');
+  }
+
+  const url = `${UAZAPI_BASE_URL}${endpoint}`;
   
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'token': config.token,
+    'admintoken': UAZAPI_ADMIN_TOKEN,
   };
 
   const options: RequestInit = {
@@ -74,22 +85,171 @@ async function makeRequest<T>(
     
     return data as T;
   } catch (error) {
-    console.error('[UAZAPI] Request failed:', error);
+    console.error('[UAZAPI] Admin request failed:', error);
     throw error;
   }
 }
 
 /**
+ * Make an instance request to UAZAPI (for operations on a specific instance)
+ */
+async function makeInstanceRequest<T>(
+  instanceToken: string,
+  endpoint: string,
+  method: 'GET' | 'POST' | 'DELETE' = 'GET',
+  body?: Record<string, unknown>
+): Promise<T> {
+  if (!isUazapiConfigured()) {
+    throw new Error('UAZAPI not configured');
+  }
+
+  const url = `${UAZAPI_BASE_URL}${endpoint}`;
+  
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'token': instanceToken,
+  };
+
+  const options: RequestInit = {
+    method,
+    headers,
+  };
+
+  if (body && method !== 'GET') {
+    options.body = JSON.stringify(body);
+  }
+
+  try {
+    const response = await fetch(url, options);
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.message || `UAZAPI error: ${response.status}`);
+    }
+    
+    return data as T;
+  } catch (error) {
+    console.error('[UAZAPI] Instance request failed:', error);
+    throw error;
+  }
+}
+
+/**
+ * Create a new instance for an establishment
+ * Instance name will be based on establishment ID for uniqueness
+ */
+export async function createInstance(establishmentId: number, establishmentName: string): Promise<{
+  success: boolean;
+  instanceId?: string;
+  instanceToken?: string;
+  message?: string;
+}> {
+  try {
+    const instanceName = `cardapio_${establishmentId}`;
+    
+    const response = await makeAdminRequest<{
+      id?: string;
+      token?: string;
+      message?: string;
+    }>('/instance/create', 'POST', {
+      name: instanceName,
+      // Optional: set webhook URL for receiving messages
+      // webhook: `${process.env.VITE_APP_URL}/api/webhook/whatsapp/${establishmentId}`,
+    });
+    
+    return {
+      success: true,
+      instanceId: response.id || instanceName,
+      instanceToken: response.token,
+      message: response.message,
+    };
+  } catch (error) {
+    // If instance already exists, try to get its token
+    if (error instanceof Error && error.message.includes('already exists')) {
+      const instances = await listInstances();
+      const existing = instances.find(i => i.name === `cardapio_${establishmentId}`);
+      if (existing) {
+        return {
+          success: true,
+          instanceId: existing.id,
+          message: 'Instance already exists',
+        };
+      }
+    }
+    
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to create instance',
+    };
+  }
+}
+
+/**
+ * List all instances
+ */
+export async function listInstances(): Promise<InstanceInfo[]> {
+  try {
+    const response = await makeAdminRequest<Array<{
+      id: string;
+      name: string;
+      status: string;
+      phone?: string;
+      profileName?: string;
+    }>>('/instance/all', 'GET');
+    
+    return response.map(inst => ({
+      id: inst.id,
+      name: inst.name,
+      status: (inst.status as 'disconnected' | 'connecting' | 'connected') || 'disconnected',
+      phone: inst.phone,
+      profileName: inst.profileName,
+    }));
+  } catch (error) {
+    console.error('[UAZAPI] Failed to list instances:', error);
+    return [];
+  }
+}
+
+/**
+ * Get or create instance for an establishment
+ */
+export async function getOrCreateInstance(establishmentId: number, establishmentName: string): Promise<{
+  success: boolean;
+  instanceId?: string;
+  instanceToken?: string;
+  message?: string;
+}> {
+  const instanceName = `cardapio_${establishmentId}`;
+  
+  // First, check if instance already exists
+  const instances = await listInstances();
+  const existing = instances.find(i => i.name === instanceName);
+  
+  if (existing) {
+    // Instance exists, we need to get its token
+    // Note: The token is only returned on creation, so we may need to store it
+    return {
+      success: true,
+      instanceId: existing.id,
+      message: 'Instance already exists',
+    };
+  }
+  
+  // Create new instance
+  return createInstance(establishmentId, establishmentName);
+}
+
+/**
  * Connect instance to WhatsApp (generates QR code)
  */
-export async function connectInstance(config: UazapiConfig): Promise<ConnectResponse> {
+export async function connectInstance(instanceToken: string): Promise<ConnectResponse> {
   try {
-    const response = await makeRequest<{
+    const response = await makeInstanceRequest<{
       status?: string;
       qrcode?: string;
       pairingCode?: string;
       message?: string;
-    }>(config, '/instance/connect', 'POST', {});
+    }>(instanceToken, '/instance/connect', 'POST', {});
     
     return {
       success: true,
@@ -110,16 +270,16 @@ export async function connectInstance(config: UazapiConfig): Promise<ConnectResp
 /**
  * Get instance status
  */
-export async function getInstanceStatus(config: UazapiConfig): Promise<StatusResponse> {
+export async function getInstanceStatus(instanceToken: string): Promise<StatusResponse> {
   try {
-    const response = await makeRequest<{
+    const response = await makeInstanceRequest<{
       status?: string;
       qrcode?: string;
       pairingCode?: string;
       phone?: string;
       name?: string;
       message?: string;
-    }>(config, '/instance/status', 'GET');
+    }>(instanceToken, '/instance/status', 'GET');
     
     return {
       success: true,
@@ -142,9 +302,9 @@ export async function getInstanceStatus(config: UazapiConfig): Promise<StatusRes
 /**
  * Disconnect instance from WhatsApp
  */
-export async function disconnectInstance(config: UazapiConfig): Promise<{ success: boolean; message?: string }> {
+export async function disconnectInstance(instanceToken: string): Promise<{ success: boolean; message?: string }> {
   try {
-    await makeRequest(config, '/instance/disconnect', 'POST');
+    await makeInstanceRequest(instanceToken, '/instance/disconnect', 'POST');
     return { success: true };
   } catch (error) {
     return {
@@ -158,7 +318,7 @@ export async function disconnectInstance(config: UazapiConfig): Promise<{ succes
  * Send a text message via WhatsApp
  */
 export async function sendTextMessage(
-  config: UazapiConfig,
+  instanceToken: string,
   phone: string,
   text: string
 ): Promise<SendTextResponse> {
@@ -171,10 +331,10 @@ export async function sendTextMessage(
       formattedPhone = '55' + formattedPhone;
     }
     
-    const response = await makeRequest<{
+    const response = await makeInstanceRequest<{
       id?: string;
       message?: string;
-    }>(config, '/send/text', 'POST', {
+    }>(instanceToken, '/send/text', 'POST', {
       number: formattedPhone,
       text: text,
       delay: 1000, // 1 second delay to show "typing..."
@@ -220,12 +380,11 @@ export function generateStatusMessage(
     .replace(/{{establishmentName}}/g, establishmentName);
 }
 
-
 /**
  * Send order status notification via WhatsApp
  */
 export async function sendOrderStatusNotification(
-  config: UazapiConfig,
+  instanceToken: string,
   phone: string,
   status: 'new' | 'preparing' | 'ready' | 'completed' | 'cancelled',
   data: {
@@ -243,5 +402,5 @@ export async function sendOrderStatusNotification(
     data.template
   );
   
-  return sendTextMessage(config, phone, message);
+  return sendTextMessage(instanceToken, phone, message);
 }

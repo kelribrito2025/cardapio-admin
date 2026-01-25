@@ -2868,8 +2868,8 @@ export async function getWhatsappConfig(establishmentId: number): Promise<Whatsa
  */
 export async function upsertWhatsappConfig(data: {
   establishmentId: number;
-  subdomain: string;
-  token: string;
+  instanceId?: string | null;
+  instanceToken?: string | null;
   status?: 'disconnected' | 'connecting' | 'connected';
   connectedPhone?: string | null;
   lastQrCode?: string | null;
@@ -2893,8 +2893,8 @@ export async function upsertWhatsappConfig(data: {
   if (existing) {
     await db.update(whatsappConfig)
       .set({
-        subdomain: data.subdomain,
-        token: data.token,
+        instanceId: data.instanceId !== undefined ? data.instanceId : existing.instanceId,
+        instanceToken: data.instanceToken !== undefined ? data.instanceToken : existing.instanceToken,
         status: data.status ?? existing.status,
         connectedPhone: data.connectedPhone !== undefined ? data.connectedPhone : existing.connectedPhone,
         lastQrCode: data.lastQrCode !== undefined ? data.lastQrCode : existing.lastQrCode,
@@ -2916,8 +2916,8 @@ export async function upsertWhatsappConfig(data: {
   
   const result = await db.insert(whatsappConfig).values({
     establishmentId: data.establishmentId,
-    subdomain: data.subdomain,
-    token: data.token,
+    instanceId: data.instanceId || null,
+    instanceToken: data.instanceToken || null,
     status: data.status || 'disconnected',
     connectedPhone: data.connectedPhone || null,
     lastQrCode: data.lastQrCode || null,
