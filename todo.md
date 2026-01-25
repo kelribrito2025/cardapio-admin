@@ -2833,3 +2833,8 @@
 ## Exibir Taxa de Entrega no Modal de Confirmação
 - [x] Adicionar linha de "Taxa de entrega" entre Subtotal e Total no modal de confirmação
 - [x] Exibir o valor da taxa do bairro selecionado (apenas quando deliveryType === 'delivery')
+
+## Bug: Som de Novo Pedido Tocando no Menu Público
+- [x] Investigar onde o som de novo pedido está sendo disparado no menu público
+- [x] Garantir que o som só toque no painel administrativo (adicionado isInPublicMenu() no NotificationAudioManager)
+- [x] Bloquear som no método play() e no pendingPlay quando estiver no menu público

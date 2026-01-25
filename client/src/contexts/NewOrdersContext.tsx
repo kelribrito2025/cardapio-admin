@@ -23,6 +23,14 @@ class NotificationAudioManager {
     return soundEnabled === "true";
   }
 
+  // Verificar se estamos no menu público (onde o som nunca deve tocar)
+  private isInPublicMenu(): boolean {
+    if (typeof window !== "undefined") {
+      return window.location.pathname.startsWith('/menu/');
+    }
+    return false;
+  }
+
   static getInstance(): NotificationAudioManager {
     if (!NotificationAudioManager.instance) {
       NotificationAudioManager.instance = new NotificationAudioManager();
@@ -53,11 +61,12 @@ class NotificationAudioManager {
               console.log("[NotificationAudio] Áudio desbloqueado com sucesso!");
               
               // Se tinha um play pendente, executar agora APENAS se o som estiver habilitado
-              if (this.pendingPlay && this.isSoundEnabled()) {
+              // E se NÃO estiver no menu público
+              if (this.pendingPlay && this.isSoundEnabled() && !this.isInPublicMenu()) {
                 this.pendingPlay = false;
                 this.play();
               } else {
-                this.pendingPlay = false; // Limpar pendingPlay mesmo se som desabilitado
+                this.pendingPlay = false; // Limpar pendingPlay mesmo se som desabilitado ou no menu público
               }
             })
             .catch(() => {
@@ -75,6 +84,12 @@ class NotificationAudioManager {
   }
 
   play() {
+    // Verificar se estamos no menu público - NUNCA tocar som lá
+    if (this.isInPublicMenu()) {
+      console.log("[NotificationAudio] No menu público, som bloqueado");
+      return;
+    }
+
     // Verificar se o som está habilitado nas configurações
     if (!this.isSoundEnabled()) {
       console.log("[NotificationAudio] Som desabilitado, não tocando");
