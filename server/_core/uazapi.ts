@@ -290,7 +290,14 @@ export async function connectInstance(instanceToken: string): Promise<ConnectRes
 export async function getInstanceStatus(instanceToken: string): Promise<StatusResponse> {
   try {
     const response = await makeInstanceRequest<{
-      status?: string;
+      instance?: {
+        status?: string;
+        qrcode?: string;
+        paircode?: string;
+        profileName?: string;
+        owner?: string;
+      };
+      status?: { connected?: boolean; jid?: string; loggedIn?: boolean };
       qrcode?: string;
       pairingCode?: string;
       phone?: string;
@@ -298,13 +305,22 @@ export async function getInstanceStatus(instanceToken: string): Promise<StatusRe
       message?: string;
     }>(instanceToken, '/instance/status', 'GET');
     
+    // A API retorna status em diferentes lugares
+    const isConnected = response.status?.connected || response.instance?.status === 'connected';
+    const status = isConnected ? 'connected' : (response.instance?.status as 'disconnected' | 'connecting' | 'connected') || 'disconnected';
+    const phone = response.instance?.owner || response.phone;
+    const name = response.instance?.profileName || response.name;
+    const qrcode = response.instance?.qrcode || response.qrcode;
+    
+    console.log('[UAZAPI] Status response:', { status, isConnected, phone, name });
+    
     return {
       success: true,
-      status: (response.status as 'disconnected' | 'connecting' | 'connected') || 'disconnected',
-      qrcode: response.qrcode,
-      pairingCode: response.pairingCode,
-      phone: response.phone,
-      name: response.name,
+      status,
+      qrcode,
+      pairingCode: response.instance?.paircode || response.pairingCode,
+      phone,
+      name,
       message: response.message,
     };
   } catch (error) {

@@ -3098,4 +3098,5 @@
 - [x] Atualizar rotas tRPC para usar credenciais centralizadas
 - [x] Manter configurações de notificações e templates personalizáveis
 - [x] Testar fluxo completo de conexão via QR Code
+- [x] Corrigir exibição do status de conexão (mostrava desconectado mesmo conectado)
 - [ ] Testar envio de notificações automáticas ao mudar status do pedido
