@@ -2149,34 +2149,33 @@ export default function PublicMenu() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-100 py-6 mt-8">
+      <footer className="bg-gradient-to-b from-gray-50 to-blue-50/30 py-6 mt-8">
         <div className="max-w-7xl mx-auto px-4">
           <a 
             href="https://mindi.com.br" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="block bg-white rounded-2xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow"
+            className="block bg-white rounded-2xl shadow-sm border-2 border-blue-100 p-5 hover:shadow-lg hover:border-blue-200 transition-all"
           >
             <div className="flex items-center gap-4">
-              {/* Ícone azul de celular */}
+              {/* Ícone azul com talheres */}
               <div className="bg-blue-500 rounded-xl p-3 flex-shrink-0">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
-                  <line x1="12" y1="18" x2="12" y2="18"/>
+                <svg className="w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  {/* Garfo */}
+                  <path d="M7 3v6c0 1.1-.9 2-2 2H4v10" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M4 3v8" strokeLinecap="round"/>
+                  <path d="M7 3v8" strokeLinecap="round"/>
+                  <path d="M5.5 3v5" strokeLinecap="round"/>
+                  {/* Faca */}
+                  <path d="M17 3c0 0 3 2 3 6v2h-3v10" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
               
               {/* Textos */}
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-gray-900 text-lg">Novo Menu Digital</h3>
-                <p className="text-gray-600 text-sm">Desenvolvido por Mindi</p>
-                <p className="text-gray-400 text-xs flex items-center gap-1 mt-0.5">
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"/>
-                    <polyline points="12,6 12,12 16,14"/>
-                  </svg>
-                  Toque para criar o seu
-                </p>
+                <p className="text-blue-500 text-xs font-semibold tracking-wider uppercase">Menu Digital</p>
+                <h3 className="font-bold text-gray-900 text-2xl">Mindi</h3>
+                <p className="text-gray-500 text-sm">Criando experiências digitais</p>
               </div>
               
               {/* Seta */}

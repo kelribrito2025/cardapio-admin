@@ -3112,3 +3112,4 @@
 - [x] Atualizar templates padrão de WhatsApp para novos estabelecimentos (incluindo template de fidelidade)
 - [x] Criar rodapé estiloso no cardápio público com fundo escuro e texto "Menu criado por" com destaque
 - [x] Redesenhar rodapé com estilo de card branco arredondado, ícone azul de celular, título "Novo Menu Digital", subtítulo "Desenvolvido por Mindi" e seta
+- [x] Atualizar rodapé com novo estilo: ícone de talheres azul, "MENU DIGITAL" pequeno, "Mindi" grande, "Criando experiências digitais"
