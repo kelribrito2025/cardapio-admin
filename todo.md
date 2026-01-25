@@ -2814,3 +2814,9 @@
 - [x] Manter sacola ao atualizar página, fechar navegador ou navegar para outra página
 - [x] Limpar sacola apenas ao finalizar pedido ou limpar manualmente
 - [x] Associar sacola ao estabelecimento (slug) para não misturar itens de diferentes lojas
+
+## Campo Bairro no Modal de Entrega - Somente Leitura
+- [x] Quando bairro já estiver selecionado (taxa de entrega), campo fica somente leitura
+- [x] Exibir botão "Alterar bairro" ao lado do campo
+- [x] Ao clicar em "Alterar bairro", abrir modal de seleção de bairro
+- [x] Após selecionar novo bairro, retornar ao modal de tipo de entrega (checkout step 2)

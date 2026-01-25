@@ -2930,13 +2930,32 @@ export default function PublicMenu() {
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-gray-600 mb-1">Bairro <span className="text-red-500">*</span></label>
-                        <input
-                          type="text"
-                          value={deliveryAddress.neighborhood}
-                          onChange={(e) => setDeliveryAddress({...deliveryAddress, neighborhood: e.target.value})}
-                          placeholder="Nome do bairro"
-                          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
-                        />
+                        {selectedNeighborhood && establishment.deliveryFeeType === 'byNeighborhood' ? (
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700">
+                              {selectedNeighborhood.name}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setReopenBagAfterNeighborhood(true);
+                                setCheckoutStep(0);
+                                setShowNeighborhoodModal(true);
+                              }}
+                              className="px-3 py-2.5 text-red-500 text-sm font-medium hover:bg-red-50 rounded-lg transition-colors whitespace-nowrap"
+                            >
+                              Alterar bairro
+                            </button>
+                          </div>
+                        ) : (
+                          <input
+                            type="text"
+                            value={deliveryAddress.neighborhood}
+                            onChange={(e) => setDeliveryAddress({...deliveryAddress, neighborhood: e.target.value})}
+                            placeholder="Nome do bairro"
+                            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                          />
+                        )}
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-gray-600 mb-1">Complemento</label>
@@ -5252,10 +5271,17 @@ export default function PublicMenu() {
                       setNeighborhoodSearch('');
                       // Preencher o bairro no endereço de entrega
                       setDeliveryAddress(prev => ({ ...prev, neighborhood: item.neighborhood }));
-                      // Reabrir a sacola se veio do botão Alterar bairro
+                      // Reabrir a sacola ou checkout se veio do botão Alterar bairro
                       if (reopenBagAfterNeighborhood) {
                         setReopenBagAfterNeighborhood(false);
-                        setTimeout(() => setShowMobileBag(true), 100);
+                        setTimeout(() => {
+                          // Se estava no checkout (step 2), voltar para lá
+                          if (checkoutStep === 0) {
+                            setCheckoutStep(2);
+                          } else {
+                            setShowMobileBag(true);
+                          }
+                        }, 100);
                       }
                     }}
                     className={cn(
