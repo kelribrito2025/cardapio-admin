@@ -4902,9 +4902,9 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[75vh] md:max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[75vh] md:max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{ touchAction: 'pan-y' }}>
             {/* Header */}
-            <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl shadow-sm" style={{height: '68px'}}>
+            <div className="sticky top-0 z-[50] bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl shadow-sm" style={{height: '68px'}}>
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-emerald-100 rounded-xl">
                   <Gift className="h-5 w-5 text-emerald-600" />
@@ -5809,7 +5809,8 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
         >
           {/* Face Frontal - Carimbos */}
           <div 
-            className="absolute inset-0 bg-white rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden] flex flex-col z-[1]"
+            className="absolute inset-0 bg-white rounded-2xl overflow-hidden shadow-lg [backface-visibility:hidden] flex flex-col"
+            style={{ zIndex: 1 }}
           >
             {/* Parte verde do card */}
             <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-3 md:p-5 text-white flex-1 relative overflow-hidden" style={{height: '215px'}}>
@@ -5966,8 +5967,8 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
           
           {/* Face Traseira - Cupom (Estilo Voucher) com Stack Visual */}
           <div 
-            className="absolute inset-0 rounded-2xl overflow-visible [backface-visibility:hidden] z-[2]"
-            style={{ transform: 'rotateY(180deg)' }}
+            className="absolute inset-0 rounded-2xl overflow-visible [backface-visibility:hidden]"
+            style={{ transform: 'rotateY(180deg)', zIndex: 2 }}
           >
             {/* Container do Stack de Cupons */}
             <div className="relative h-full w-full">

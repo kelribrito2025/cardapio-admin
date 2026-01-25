@@ -2781,3 +2781,8 @@
 ## Link Alterar Bairro no Modal da Sacola
 - [x] Adicionar texto "Alterar bairro" ao lado de "Taxa de entrega" quando bairro estiver selecionado
 - [x] Ao clicar em "Alterar bairro", abrir o modal de seleção de bairro (fecha a sacola e abre o modal)
+
+## Bug: Cabeçalho do Modal de Fidelidade Sumindo (Mobile)
+- [x] Investigar por que o cabeçalho do modal de fidelidade some em algumas situações
+- [x] Identificar o cenário que causa o bug (z-index dos elementos do card flip sobrepondo o header sticky)
+- [x] Corrigir o problema (aumentado z-index do header para z-[50] e ajustado z-index dos elementos internos)
