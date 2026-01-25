@@ -69,6 +69,37 @@ export function notifyNewOrder(establishmentId: number, order: unknown): void {
 }
 
 /**
+ * Envia evento para imprimir pedido (usado pelo Print Server Local)
+ */
+export function notifyPrintOrder(establishmentId: number, orderData: {
+  orderId: number;
+  orderNumber: string;
+  customerName: string | null;
+  customerPhone: string | null;
+  customerAddress: string | null;
+  deliveryType: string;
+  paymentMethod: string;
+  subtotal: string;
+  deliveryFee: string;
+  discount: string;
+  total: string;
+  notes: string | null;
+  changeAmount: string | null;
+  items: Array<{
+    productName: string;
+    quantity: number;
+    unitPrice: string;
+    totalPrice: string;
+    complements: Array<{ name: string; price: number }> | null;
+    notes: string | null;
+  }>;
+  createdAt: Date;
+}): void {
+  console.log(`[SSE] notifyPrintOrder chamado para establishmentId: ${establishmentId}, pedido: ${orderData.orderNumber}`);
+  sendEvent(establishmentId, "print_order", orderData);
+}
+
+/**
  * Envia evento de atualização de status do pedido
  */
 export function notifyOrderUpdate(establishmentId: number, order: unknown): void {

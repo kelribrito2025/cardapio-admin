@@ -346,3 +346,38 @@ export const loyaltyStamps = mysqlTable("loyaltyStamps", {
 
 export type LoyaltyStamp = typeof loyaltyStamps.$inferSelect;
 export type InsertLoyaltyStamp = typeof loyaltyStamps.$inferInsert;
+
+
+// Impressoras térmicas para impressão automática de pedidos
+export const printers = mysqlTable("printers", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(), // Nome identificador (ex: "Cozinha", "Balcão")
+  ipAddress: varchar("ipAddress", { length: 45 }).notNull(), // IP da impressora na rede local
+  port: int("port").default(9100).notNull(), // Porta padrão ESC/POS
+  isActive: boolean("isActive").default(true).notNull(), // Se a impressora está ativa
+  isDefault: boolean("isDefault").default(false).notNull(), // Se é a impressora padrão
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Printer = typeof printers.$inferSelect;
+export type InsertPrinter = typeof printers.$inferInsert;
+
+// Configurações de impressão do estabelecimento
+export const printerSettings = mysqlTable("printerSettings", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull().unique(),
+  autoPrintEnabled: boolean("autoPrintEnabled").default(false).notNull(), // Impressão automática ativada
+  printOnNewOrder: boolean("printOnNewOrder").default(true).notNull(), // Imprimir ao receber novo pedido
+  printOnStatusChange: boolean("printOnStatusChange").default(false).notNull(), // Imprimir ao mudar status
+  copies: int("copies").default(1).notNull(), // Número de cópias
+  showLogo: boolean("showLogo").default(true).notNull(), // Mostrar logo no cupom
+  showQrCode: boolean("showQrCode").default(false).notNull(), // Mostrar QR Code no cupom
+  footerMessage: text("footerMessage"), // Mensagem personalizada no rodapé
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PrinterSettings = typeof printerSettings.$inferSelect;
+export type InsertPrinterSettings = typeof printerSettings.$inferInsert;

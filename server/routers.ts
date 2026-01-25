@@ -1556,6 +1556,182 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+
+  // ============ PRINTERS ============
+  printer: router({
+    // Listar impressoras do estabelecimento
+    list: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getPrintersByEstablishment(input.establishmentId);
+      }),
+    
+    // Buscar impressora por ID
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return db.getPrinterById(input.id);
+      }),
+    
+    // Criar nova impressora
+    create: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        name: z.string().min(1, "Nome é obrigatório"),
+        ipAddress: z.string().min(1, "Endereço IP é obrigatório"),
+        port: z.number().optional(),
+        isActive: z.boolean().optional(),
+        isDefault: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createPrinter(input);
+        return { id };
+      }),
+    
+    // Atualizar impressora
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        ipAddress: z.string().optional(),
+        port: z.number().optional(),
+        isActive: z.boolean().optional(),
+        isDefault: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await db.updatePrinter(id, data);
+        return { success: true };
+      }),
+    
+    // Deletar impressora
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deletePrinter(input.id);
+        return { success: true };
+      }),
+    
+    // Buscar configurações de impressão
+    getSettings: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getPrinterSettings(input.establishmentId);
+      }),
+    
+    // Salvar configurações de impressão
+    saveSettings: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        autoPrintEnabled: z.boolean().optional(),
+        printOnNewOrder: z.boolean().optional(),
+        printOnStatusChange: z.boolean().optional(),
+        copies: z.number().min(1).max(5).optional(),
+        showLogo: z.boolean().optional(),
+        showQrCode: z.boolean().optional(),
+        footerMessage: z.string().nullable().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.upsertPrinterSettings(input);
+        return { success: true };
+      }),
+    
+    // Buscar impressora padrão
+    getDefault: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getDefaultPrinter(input.establishmentId);
+      }),
+    
+    // Imprimir pedido manualmente (retorna dados para o cliente enviar à impressora)
+    printOrder: protectedProcedure
+      .input(z.object({
+        orderId: z.number(),
+        printerId: z.number().optional(), // Se não informado, usa a impressora padrão
+      }))
+      .mutation(async ({ input }) => {
+        // Buscar dados do pedido
+        const order = await db.getOrderById(input.orderId);
+        if (!order) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Pedido não encontrado",
+          });
+        }
+        
+        // Buscar itens do pedido
+        const orderItems = await db.getOrderItems(input.orderId);
+        
+        // Buscar impressora
+        let printer;
+        if (input.printerId) {
+          printer = await db.getPrinterById(input.printerId);
+        } else {
+          printer = await db.getDefaultPrinter(order.establishmentId);
+        }
+        
+        if (!printer) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Nenhuma impressora configurada",
+          });
+        }
+        
+        if (!printer.isActive) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Impressora está desativada",
+          });
+        }
+        
+        // Buscar configurações de impressão
+        const settings = await db.getPrinterSettings(order.establishmentId);
+        
+        // Buscar estabelecimento para o nome
+        const establishment = await db.getEstablishmentById(order.establishmentId);
+        
+        // Retornar dados para o cliente enviar à impressora
+        return {
+          printer: {
+            ip: printer.ipAddress,
+            port: printer.port || 9100,
+          },
+          order: {
+            id: order.id,
+            orderNumber: order.orderNumber,
+            customerName: order.customerName,
+            customerPhone: order.customerPhone,
+            customerAddress: order.customerAddress,
+            deliveryType: order.deliveryType,
+            paymentMethod: order.paymentMethod,
+            subtotal: order.subtotal,
+            deliveryFee: order.deliveryFee,
+            discount: order.discount,
+            total: order.total,
+            notes: order.notes,
+            couponCode: order.couponCode,
+            createdAt: order.createdAt,
+            items: orderItems.map(item => ({
+              productName: item.productName,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              totalPrice: item.totalPrice,
+              notes: item.notes,
+              complements: item.complements,
+            })),
+          },
+          settings: {
+            copies: settings?.copies || 1,
+            showLogo: settings?.showLogo ?? true,
+            showQrCode: settings?.showQrCode ?? false,
+            footerMessage: settings?.footerMessage || null,
+          },
+          establishment: {
+            name: establishment?.name || 'Estabelecimento',
+          },
+        };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

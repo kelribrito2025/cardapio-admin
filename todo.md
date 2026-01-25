@@ -2899,3 +2899,33 @@
   - Ajustado max-h para 85vh, overflow-y-auto e overscroll-contain
   - Adicionado animações md:slide-in-from-bottom-0 md:zoom-in-95
   - Fundo branco (#ffffff) em todas as seções (endereço, opções, footer)
+
+
+## Feature: Sistema de Impressão Automática de Pedidos
+
+### Fase 1: Backend - Schema e Rotas
+- [x] Criar tabela `printers` no schema (nome, IP, porta, ativo, estabelecimento)
+- [x] Criar tabela `printer_settings` para configurações de impressão
+- [x] Criar rotas tRPC para CRUD de impressoras (list, get, create, update, delete, getSettings, saveSettings, getDefault, printOrder)
+- [ ] Criar rota para testar conexão com impressora (pendente - requer cliente de impressão)
+
+### Fase 2: Evento SSE para Impressão
+- [x] Adicionar evento SSE `new_order_to_print` no sistema de notificações (notifyPrintOrder)
+- [x] Disparar evento quando pedido for criado (createPublicOrder)
+- [x] Incluir dados completos do pedido no evento
+
+### Fase 3: Interface de Configuração no Admin
+- [x] Criar página de configuração de impressoras (/impressoras)
+- [x] Formulário para adicionar/editar impressora (nome, IP, porta)
+- [x] Toggle para ativar/desativar impressão automática
+- [x] Botão para testar impressão (abre window.print)
+
+### Fase 4: Impressão Manual
+- [x] Adicionar botão "Imprimir" nos detalhes do pedido (já existia)
+- [x] Criar layout de impressão formatado para cupom 80mm
+- [x] Usar window.print() com @media print CSS
+- [x] Criar rota printer.printOrder para impressão via impressora térmica
+
+### Próximos Passos (Cliente de Impressão)
+- [ ] Cliente local (app desktop) para receber eventos SSE e enviar para impressora térmica
+- [ ] Testar conexão com impressora via TCP/IP

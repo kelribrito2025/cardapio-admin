@@ -1,6 +1,6 @@
 import { eq, desc, asc, and, like, sql, gte, lte, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate } from "./_core/sse";
+import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate, notifyPrintOrder } from "./_core/sse";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
 import { 
   InsertUser, users, 
@@ -19,7 +19,9 @@ import {
   businessHours, InsertBusinessHours, BusinessHours,
   neighborhoodFees, InsertNeighborhoodFee, NeighborhoodFee,
   loyaltyCards, InsertLoyaltyCard, LoyaltyCard,
-  loyaltyStamps, InsertLoyaltyStamp, LoyaltyStamp
+  loyaltyStamps, InsertLoyaltyStamp, LoyaltyStamp,
+  printers, InsertPrinter, Printer,
+  printerSettings, InsertPrinterSettings, PrinterSettings
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -1356,6 +1358,42 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     };
     notifyNewOrder(data.establishmentId, newOrder);
     
+    // Verificar se impressão automática está ativada e enviar evento de impressão
+    try {
+      const printerSettingsResult = await getPrinterSettings(data.establishmentId);
+      if (printerSettingsResult?.autoPrintEnabled && printerSettingsResult?.printOnNewOrder) {
+        // Enviar evento SSE para impressão
+        notifyPrintOrder(data.establishmentId, {
+          orderId,
+          orderNumber,
+          customerName: data.customerName || null,
+          customerPhone: data.customerPhone || null,
+          customerAddress: data.customerAddress || null,
+          deliveryType: data.deliveryType || "delivery",
+          paymentMethod: data.paymentMethod || "cash",
+          subtotal: data.subtotal || "0",
+          deliveryFee: data.deliveryFee || "0",
+          discount: data.discount || "0",
+          total: data.total,
+          notes: data.notes || null,
+          changeAmount: data.changeAmount || null,
+          items: items.map(item => ({
+            productName: item.productName,
+            quantity: item.quantity ?? 1,
+            unitPrice: item.unitPrice,
+            totalPrice: item.totalPrice,
+            complements: item.complements || null,
+            notes: item.notes || null,
+          })),
+          createdAt: new Date(),
+        });
+        console.log('[DB:createPublicOrder] Evento de impressão enviado para pedido:', orderNumber);
+      }
+    } catch (printError) {
+      console.error('[DB:createPublicOrder] Erro ao verificar configurações de impressão:', printError);
+      // Não falhar o pedido por causa de erro de impressão
+    }
+    
     console.log('[DB:createPublicOrder] Pedido criado com sucesso:', { orderId, orderNumber });
     return { orderId, orderNumber };
   } catch (error) {
@@ -2487,4 +2525,186 @@ export async function consumeLoyaltyCardCoupon(loyaltyCardId: number, couponIdTo
   // Histórico de carimbos é preservado - não deletar
   
   console.log(`[Fidelidade] Cupom ${couponIdToUse} consumido. Cupons restantes: ${newActiveCouponIds.length}`);
+}
+
+
+// ============ PRINTER FUNCTIONS ============
+
+/**
+ * Busca todas as impressoras de um estabelecimento
+ */
+export async function getPrintersByEstablishment(establishmentId: number): Promise<Printer[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(printers)
+    .where(eq(printers.establishmentId, establishmentId))
+    .orderBy(desc(printers.isDefault), asc(printers.name));
+}
+
+/**
+ * Busca uma impressora por ID
+ */
+export async function getPrinterById(id: number): Promise<Printer | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(printers)
+    .where(eq(printers.id, id))
+    .limit(1);
+  
+  return result[0];
+}
+
+/**
+ * Cria uma nova impressora
+ */
+export async function createPrinter(data: {
+  establishmentId: number;
+  name: string;
+  ipAddress: string;
+  port?: number;
+  isActive?: boolean;
+  isDefault?: boolean;
+}): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Se for definida como padrão, remover padrão das outras
+  if (data.isDefault) {
+    await db.update(printers)
+      .set({ isDefault: false })
+      .where(eq(printers.establishmentId, data.establishmentId));
+  }
+  
+  const result = await db.insert(printers).values({
+    establishmentId: data.establishmentId,
+    name: data.name,
+    ipAddress: data.ipAddress,
+    port: data.port || 9100,
+    isActive: data.isActive ?? true,
+    isDefault: data.isDefault ?? false,
+  });
+  
+  return result[0].insertId;
+}
+
+/**
+ * Atualiza uma impressora
+ */
+export async function updatePrinter(id: number, data: Partial<InsertPrinter>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Se for definida como padrão, remover padrão das outras
+  if (data.isDefault) {
+    const printer = await getPrinterById(id);
+    if (printer) {
+      await db.update(printers)
+        .set({ isDefault: false })
+        .where(and(
+          eq(printers.establishmentId, printer.establishmentId),
+          sql`${printers.id} != ${id}`
+        ));
+    }
+  }
+  
+  await db.update(printers).set(data).where(eq(printers.id, id));
+}
+
+/**
+ * Deleta uma impressora
+ */
+export async function deletePrinter(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(printers).where(eq(printers.id, id));
+}
+
+/**
+ * Busca configurações de impressão de um estabelecimento
+ */
+export async function getPrinterSettings(establishmentId: number): Promise<PrinterSettings | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(printerSettings)
+    .where(eq(printerSettings.establishmentId, establishmentId))
+    .limit(1);
+  
+  return result[0];
+}
+
+/**
+ * Cria ou atualiza configurações de impressão
+ */
+export async function upsertPrinterSettings(data: {
+  establishmentId: number;
+  autoPrintEnabled?: boolean;
+  printOnNewOrder?: boolean;
+  printOnStatusChange?: boolean;
+  copies?: number;
+  showLogo?: boolean;
+  showQrCode?: boolean;
+  footerMessage?: string | null;
+}): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const existing = await getPrinterSettings(data.establishmentId);
+  
+  if (existing) {
+    await db.update(printerSettings)
+      .set({
+        autoPrintEnabled: data.autoPrintEnabled ?? existing.autoPrintEnabled,
+        printOnNewOrder: data.printOnNewOrder ?? existing.printOnNewOrder,
+        printOnStatusChange: data.printOnStatusChange ?? existing.printOnStatusChange,
+        copies: data.copies ?? existing.copies,
+        showLogo: data.showLogo ?? existing.showLogo,
+        showQrCode: data.showQrCode ?? existing.showQrCode,
+        footerMessage: data.footerMessage !== undefined ? data.footerMessage : existing.footerMessage,
+      })
+      .where(eq(printerSettings.establishmentId, data.establishmentId));
+  } else {
+    await db.insert(printerSettings).values({
+      establishmentId: data.establishmentId,
+      autoPrintEnabled: data.autoPrintEnabled ?? false,
+      printOnNewOrder: data.printOnNewOrder ?? true,
+      printOnStatusChange: data.printOnStatusChange ?? false,
+      copies: data.copies ?? 1,
+      showLogo: data.showLogo ?? true,
+      showQrCode: data.showQrCode ?? false,
+      footerMessage: data.footerMessage || null,
+    });
+  }
+}
+
+/**
+ * Busca a impressora padrão de um estabelecimento
+ */
+export async function getDefaultPrinter(establishmentId: number): Promise<Printer | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  // Primeiro tenta buscar a impressora marcada como padrão
+  let result = await db.select().from(printers)
+    .where(and(
+      eq(printers.establishmentId, establishmentId),
+      eq(printers.isDefault, true),
+      eq(printers.isActive, true)
+    ))
+    .limit(1);
+  
+  // Se não houver padrão, pega a primeira ativa
+  if (result.length === 0) {
+    result = await db.select().from(printers)
+      .where(and(
+        eq(printers.establishmentId, establishmentId),
+        eq(printers.isActive, true)
+      ))
+      .limit(1);
+  }
+  
+  return result[0];
 }
