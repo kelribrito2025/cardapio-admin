@@ -3351,17 +3351,25 @@ export default function PublicMenu() {
                     type="text"
                     inputMode="tel"
                     autoComplete="tel"
-                    maxLength={13}
-                    value={customerInfo.phone}
+                    maxLength={16}
+                    value={(() => {
+                      // Formatar para exibição: (DDD) 9 9999-9999
+                      const digits = customerInfo.phone.replace(/\D/g, "");
+                      if (digits.length === 0) return "";
+                      if (digits.length <= 2) return `(${digits}`;
+                      if (digits.length <= 3) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+                      if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2, 3)} ${digits.slice(3)}`;
+                      if (digits.length <= 11) return `(${digits.slice(0, 2)}) ${digits.slice(2, 3)} ${digits.slice(3, 7)}-${digits.slice(7)}`;
+                      return `(${digits.slice(0, 2)}) ${digits.slice(2, 3)} ${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+                    })()}
                     onChange={(e) => {
-                      // Permitir apenas números, máximo 13 caracteres
-                      let value = e.target.value.replace(/\D/g, "");
-                      // Limitar a 13 dígitos (código país + DDD + número)
-                      if (value.length <= 13) {
-                        setCustomerInfo({...customerInfo, phone: value});
+                      // Extrair apenas números e limitar a 11 dígitos (DDD + 9 dígitos)
+                      const digits = e.target.value.replace(/\D/g, "");
+                      if (digits.length <= 11) {
+                        setCustomerInfo({...customerInfo, phone: digits});
                       }
                     }}
-                    placeholder="5534999999999"
+                    placeholder="(34) 9 9999-9999"
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                   />
                 </div>
