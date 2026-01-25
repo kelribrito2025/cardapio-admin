@@ -121,7 +121,7 @@ function SortableComplementItem({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "flex items-center gap-2 p-2 bg-card rounded-lg border border-border/50",
+        "flex items-center gap-2 p-2 bg-card rounded-lg border border-border/50 overflow-x-auto",
         isDragging && "shadow-lg"
       )}
     >
@@ -180,7 +180,7 @@ function SortableComplementItem({
           })
         }
         placeholder="Nome do item"
-        className="flex-1 h-8 text-sm rounded-md border-border/50"
+        className="flex-1 min-w-[120px] h-8 text-sm rounded-md border-border/50"
       />
       <div className="relative">
         <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">R$</span>

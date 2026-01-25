@@ -3039,3 +3039,7 @@
 
 ## Bug: Nomes dos botões não aparecem no mobile na página Catálogo
 - [x] Mostrar nomes "Reordenar", "Categoria" e "Item" nos botões no mobile
+
+
+## Melhoria: Scroll horizontal nos campos de complementos (mobile)
+- [x] Adicionar scroll horizontal nos itens de complemento para ver texto completo no mobile
