@@ -3104,3 +3104,4 @@
 - [x] Bug: ao aceitar pedido deve enviar mensagem de "Novo Pedido", não "Preparando" - Corrigido: agora envia notificação de novo pedido quando o pedido é criado
 - [x] Adicionar templates diferentes para status "Pronto" baseado no tipo de entrega (retirada vs delivery)
 - [x] Adicionar variável {{cancellationReason}} no template de cancelamento para enviar o motivo ao cliente
+- [x] Limitar campo de telefone no modal "Seus Dados" para máximo de 13 caracteres

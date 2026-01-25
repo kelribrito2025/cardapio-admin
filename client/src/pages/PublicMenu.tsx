@@ -3351,20 +3351,17 @@ export default function PublicMenu() {
                     type="text"
                     inputMode="tel"
                     autoComplete="tel"
+                    maxLength={13}
                     value={customerInfo.phone}
                     onChange={(e) => {
+                      // Permitir apenas números, máximo 13 caracteres
                       let value = e.target.value.replace(/\D/g, "");
-                      if (value.length <= 11) {
-                        if (value.length > 2) {
-                          value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
-                        }
-                        if (value.length > 10) {
-                          value = `${value.slice(0, 10)}-${value.slice(10)}`;
-                        }
+                      // Limitar a 13 dígitos (código país + DDD + número)
+                      if (value.length <= 13) {
                         setCustomerInfo({...customerInfo, phone: value});
                       }
                     }}
-                    placeholder="(00) 00000-0000"
+                    placeholder="5534999999999"
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                   />
                 </div>
