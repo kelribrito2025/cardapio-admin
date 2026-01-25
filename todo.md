@@ -3048,3 +3048,7 @@
 ## Melhoria: Scroll horizontal no card de Complementos/Adicionais
 - [x] Adicionar scroll horizontal no card inteiro para ver nomes completos dos complementos
 - [x] Adicionar min-width de 400px nos itens para garantir espaço
+
+
+## Melhoria: Ocultar badge de tempo real no mobile (Pedidos)
+- [x] Ocultar o badge de tempo real na versão mobile da página de Pedidos

@@ -777,7 +777,7 @@ export default function Pedidos() {
           title="Pedidos"
           description="Gerencie os pedidos do seu estabelecimento"
         />
-        <div className="flex items-center gap-2">
+        <div className="hidden sm:flex items-center gap-2">
           <div className={cn(
             "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium",
             sseConnected 
