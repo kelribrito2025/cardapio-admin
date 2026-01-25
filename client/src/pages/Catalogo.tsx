@@ -22,6 +22,7 @@ import {
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
@@ -786,28 +787,51 @@ export default function Catalogo() {
         title="Cardápio"
         description="Gerencie seus produtos e categorias"
         actions={
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setReorderCategoriesMode(true)}
-              className="rounded-lg border-border/50 hover:bg-accent h-9 px-3.5 text-sm"
-            >
-              <Layers className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Reordenar</span>
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setCategoryDialogOpen(true)}
-              className="rounded-lg border-border/50 hover:bg-accent h-9 px-3.5 text-sm"
-            >
-              <FolderPlus className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Categoria</span>
-            </Button>
-            <Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-9 px-3.5 text-sm">
-              <Plus className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Novo íten</span>
-            </Button>
-          </div>
+          <TooltipProvider>
+            <div className="flex items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    onClick={() => setReorderCategoriesMode(true)}
+                    className="rounded-lg border-border/50 hover:bg-accent h-9 px-3 text-xs sm:text-sm sm:px-3.5"
+                  >
+                    <Layers className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Reordenar</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="sm:hidden">
+                  <p>Reordenar</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    onClick={() => setCategoryDialogOpen(true)}
+                    className="rounded-lg border-border/50 hover:bg-accent h-9 px-3 text-xs sm:text-sm sm:px-3.5"
+                  >
+                    <FolderPlus className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Categoria</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="sm:hidden">
+                  <p>Nova Categoria</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
+                    <Plus className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Novo item</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="sm:hidden">
+                  <p>Novo Item</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
         }
       />
 

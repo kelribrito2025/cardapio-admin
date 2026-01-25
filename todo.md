@@ -3016,3 +3016,7 @@
 
 ## Bug: Número do pedido com ## duplicado na notificação push
 - [x] Corrigir formato do número do pedido na notificação (##P345 → #P345)
+
+
+## Bug: Botões sem nomes na versão mobile da página Cardápio
+- [x] Adicionar Tooltips aos botões "Reorganizar", "Nova Categoria" e "Novo Item" no mobile
