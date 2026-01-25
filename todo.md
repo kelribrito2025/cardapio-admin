@@ -2850,3 +2850,10 @@
 - [x] Impedir que a página de fundo role quando o modal está aberto (onTouchMove com preventDefault)
 - [x] Garantir que apenas o conteúdo do modal seja rolável (data-neighborhood-scrollable)
 - [x] Adicionado overscroll-contain e WebkitOverflowScrolling para melhor suporte mobile
+
+
+## Bug: Carimbo do Cartão Fidelidade não atualiza automaticamente
+- [x] Investigar por que o carimbo não aparece ao abrir o modal após fazer pedido
+- [x] Verificar se a query do cartão fidelidade está sendo invalidada corretamente
+- [x] Garantir que o modal sempre busque dados atualizados ao abrir (adicionado refetch ao clicar no botão Fidelidade)
+- [x] Correção aplicada tanto no desktop quanto no mobile

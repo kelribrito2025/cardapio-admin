@@ -1390,6 +1390,8 @@ export default function PublicMenu() {
                       setLoyaltyStep('login');
                     } else {
                       setLoyaltyStep('card');
+                      // Recarregar dados do cartão ao abrir o modal
+                      loyaltyCardQuery.refetch();
                     }
                   }}
                 >
@@ -2164,6 +2166,8 @@ export default function PublicMenu() {
                   setLoyaltyStep('login');
                 } else {
                   setLoyaltyStep('card');
+                  // Recarregar dados do cartão ao abrir o modal
+                  loyaltyCardQuery.refetch();
                 }
               }}
             >
