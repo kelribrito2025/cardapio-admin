@@ -2829,3 +2829,7 @@
 ## Seleção Automática de Entrega ao Selecionar Bairro
 - [x] Quando usuário selecionar um bairro, definir deliveryType como "delivery" automaticamente
 - [x] Manter a opção de retirar no local disponível para alteração manual
+
+## Exibir Taxa de Entrega no Modal de Confirmação
+- [x] Adicionar linha de "Taxa de entrega" entre Subtotal e Total no modal de confirmação
+- [x] Exibir o valor da taxa do bairro selecionado (apenas quando deliveryType === 'delivery')

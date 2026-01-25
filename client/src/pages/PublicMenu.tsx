@@ -3282,6 +3282,16 @@ export default function PublicMenu() {
                             <span className="text-green-600">-{formatPrice(discount)}</span>
                           </div>
                         )}
+                        {deliveryType === 'delivery' && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Taxa de entrega</span>
+                            <span className={establishment.deliveryFeeType === "free" ? "text-green-600 font-medium" : "text-gray-600"}>
+                              {establishment.deliveryFeeType === "free" 
+                                ? "Grátis" 
+                                : formatPrice(deliveryFee)}
+                            </span>
+                          </div>
+                        )}
                         <div className="flex justify-between font-bold text-lg pt-2">
                           <span className="text-gray-900">Total</span>
                           <span className="text-red-500">{formatPrice(total)}</span>
