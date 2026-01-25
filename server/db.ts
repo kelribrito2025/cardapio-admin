@@ -37,6 +37,49 @@ export async function getDb() {
   return _db;
 }
 
+// ============ HELPER FUNCTIONS ============
+
+/**
+ * Gera um código único para cupom de fidelidade
+ * Formato: FID + 5 caracteres alfanuméricos (total 8 chars)
+ * Verifica unicidade no banco antes de retornar
+ * @param establishmentId ID do estabelecimento
+ * @param maxAttempts Número máximo de tentativas (padrão: 10)
+ */
+export async function generateUniqueLoyaltyCouponCode(establishmentId: number, maxAttempts = 10): Promise<string> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Sem I, O, 0, 1 para evitar confusão
+  
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    // Gerar código aleatório
+    let shortCode = '';
+    for (let i = 0; i < 5; i++) {
+      shortCode += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    const couponCode = `FID${shortCode}`;
+    
+    // Verificar se já existe no banco (globalmente, não apenas no estabelecimento)
+    const existing = await db.select({ id: coupons.id })
+      .from(coupons)
+      .where(eq(coupons.code, couponCode))
+      .limit(1);
+    
+    if (existing.length === 0) {
+      // Código único encontrado
+      return couponCode;
+    }
+    
+    console.log(`[Fidelidade] Código ${couponCode} já existe, tentando novamente (tentativa ${attempt + 1}/${maxAttempts})`);
+  }
+  
+  // Se todas as tentativas falharem, usar timestamp como fallback
+  const fallbackCode = `FID${Date.now().toString(36).slice(-5).toUpperCase()}`;
+  console.warn(`[Fidelidade] Máximo de tentativas atingido, usando código fallback: ${fallbackCode}`);
+  return fallbackCode;
+}
+
 // ============ USER FUNCTIONS ============
 export async function upsertUser(user: InsertUser): Promise<void> {
   if (!user.openId) {
@@ -780,16 +823,8 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
                 
                 // Verificar se completou o cartão
                 if (newStamps >= stampsRequired) {
-                  // Gerar código único para o cupom de fidelidade (max 8 chars: FID + 5 alfanuméricos)
-                  const generateShortCode = () => {
-                    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Sem I, O, 0, 1 para evitar confusão
-                    let code = '';
-                    for (let i = 0; i < 5; i++) {
-                      code += chars.charAt(Math.floor(Math.random() * chars.length));
-                    }
-                    return code;
-                  };
-                  const couponCode = `FID${generateShortCode()}`;
+                  // Gerar código único para o cupom de fidelidade (verifica unicidade no banco)
+                  const couponCode = await generateUniqueLoyaltyCouponCode(order.establishmentId);
                   
                   // Buscar configurações de fidelidade do estabelecimento
                   const estSettings = await db.select({
@@ -2361,16 +2396,8 @@ export async function processLoyaltyStampForOrder(
   const newStampCount = currentStamps + 1;
   
   if (newStampCount >= requiredStamps) {
-    // Completou o cartão - criar cupom de fidelidade (max 8 chars: FID + 5 alfanuméricos)
-    const generateShortCode = () => {
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Sem I, O, 0, 1 para evitar confusão
-      let code = '';
-      for (let i = 0; i < 5; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return code;
-    };
-    const couponCode = `FID${generateShortCode()}`;
+    // Completou o cartão - criar cupom de fidelidade (verifica unicidade no banco)
+    const couponCode = await generateUniqueLoyaltyCouponCode(establishmentId);
     const couponType = establishment.loyaltyCouponType === 'percentage' ? 'percentage' : 'fixed';
     const couponValue = establishment.loyaltyCouponValue || "10";
     

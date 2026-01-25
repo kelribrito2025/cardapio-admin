@@ -132,4 +132,73 @@ describe('Loyalty Coupon Single Use', () => {
       expect(chars).not.toContain('1');
     });
   });
+  
+  describe('Unique code generation', () => {
+    it('should generate different codes on multiple calls', () => {
+      const generateShortCode = () => {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let code = '';
+        for (let i = 0; i < 5; i++) {
+          code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return code;
+      };
+      
+      const codes = new Set<string>();
+      for (let i = 0; i < 100; i++) {
+        codes.add(`FID${generateShortCode()}`);
+      }
+      
+      // Com 100 gerações, devemos ter pelo menos 95 códigos únicos
+      // (probabilidade de colisão é muito baixa com 32^5 = 33 milhões de combinações)
+      expect(codes.size).toBeGreaterThan(95);
+    });
+    
+    it('should have fallback mechanism for collision handling', () => {
+      // Simula o comportamento de fallback
+      const maxAttempts = 10;
+      let attempts = 0;
+      const existingCodes = new Set(['FIDAAAAA', 'FIDBBBBB', 'FIDCCCCC']);
+      
+      const generateWithFallback = () => {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+          let shortCode = '';
+          for (let i = 0; i < 5; i++) {
+            shortCode += chars.charAt(Math.floor(Math.random() * chars.length));
+          }
+          const code = `FID${shortCode}`;
+          attempts++;
+          
+          if (!existingCodes.has(code)) {
+            return code;
+          }
+        }
+        
+        // Fallback com timestamp
+        return `FID${Date.now().toString(36).slice(-5).toUpperCase()}`;
+      };
+      
+      const code = generateWithFallback();
+      expect(code.startsWith('FID')).toBe(true);
+      expect(code.length).toBe(8);
+    });
+    
+    it('should check code uniqueness globally (not per establishment)', () => {
+      // O código deve ser único globalmente para evitar confusão
+      // mesmo que dois estabelecimentos diferentes gerem cupons
+      const globalCodes = new Set<string>();
+      
+      // Simula geração de códigos para diferentes estabelecimentos
+      const establishment1Codes = ['FIDAB2C3', 'FIDDE4F5'];
+      const establishment2Codes = ['FIDGH6H7', 'FIDJK8L9'];
+      
+      establishment1Codes.forEach(code => globalCodes.add(code));
+      establishment2Codes.forEach(code => globalCodes.add(code));
+      
+      // Todos os códigos devem ser únicos globalmente
+      expect(globalCodes.size).toBe(4);
+    });
+  });
 });

@@ -2739,3 +2739,9 @@
 - [x] Alterar formato do código para máximo 8 caracteres (ex: FIDM7F9K)
 - [x] Incluir números no código alfanumérico
 - [x] Remover caracteres confusos (I, O, 0, 1) para evitar erros de digitação
+
+## Verificação de Unicidade do Código de Cupom
+- [x] Verificar se código já existe antes de criar cupom
+- [x] Regenerar código automaticamente em caso de colisão
+- [x] Limitar tentativas de geração para evitar loop infinito (max 10 tentativas)
+- [x] Fallback com timestamp caso todas as tentativas falhem
