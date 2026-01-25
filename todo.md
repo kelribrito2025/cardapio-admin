@@ -3035,3 +3035,7 @@
 ## Bug: Erro ao imprimir direto do card no PWA
 - [x] Corrigir erro ao abrir janela de impressão quando clica no botão de imprimir do card do pedido
 - [x] Abrir janela ANTES do fetch para manter contexto de evento do usuário
+
+
+## Bug: Nomes dos botões não aparecem no mobile na página Catálogo
+- [x] Mostrar nomes "Reordenar", "Categoria" e "Item" nos botões no mobile

@@ -796,8 +796,8 @@ export default function Catalogo() {
                     onClick={() => setReorderCategoriesMode(true)}
                     className="rounded-lg border-border/50 hover:bg-accent h-9 px-3 text-xs sm:text-sm sm:px-3.5"
                   >
-                    <Layers className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Reordenar</span>
+                    <Layers className="h-4 w-4 mr-1.5 sm:mr-2" />
+                    <span className="text-xs sm:text-sm">Reordenar</span>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className="sm:hidden">
@@ -811,8 +811,8 @@ export default function Catalogo() {
                     onClick={() => setCategoryDialogOpen(true)}
                     className="rounded-lg border-border/50 hover:bg-accent h-9 px-3 text-xs sm:text-sm sm:px-3.5"
                   >
-                    <FolderPlus className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Categoria</span>
+                    <FolderPlus className="h-4 w-4 mr-1.5 sm:mr-2" />
+                    <span className="text-xs sm:text-sm">Categoria</span>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className="sm:hidden">
@@ -822,8 +822,8 @@ export default function Catalogo() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
-                    <Plus className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Novo item</span>
+                    <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
+                    <span className="text-xs sm:text-sm">Item</span>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className="sm:hidden">
