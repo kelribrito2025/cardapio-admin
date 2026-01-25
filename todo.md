@@ -2794,3 +2794,7 @@
 ## Bug: Link Alterar Bairro não aparece no Modal da Sacola (Mobile) - CORRIGIDO
 - [x] Verificar por que o link "Alterar bairro" não está aparecendo (condição usava "neighborhood" ao invés de "byNeighborhood")
 - [x] Corrigir o problema (atualizada condição para usar valor correto do schema)
+
+## Reabrir Modal da Sacola após Alterar Bairro
+- [x] Ao clicar em "Alterar bairro" no modal da sacola, fechar sacola e abrir modal de bairro
+- [x] Após selecionar um bairro, reabrir automaticamente o modal da sacola (com setTimeout de 100ms)

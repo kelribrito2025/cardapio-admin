@@ -111,6 +111,7 @@ export default function PublicMenu() {
   const [showNeighborhoodModal, setShowNeighborhoodModal] = useState(false);
   const [neighborhoodSearch, setNeighborhoodSearch] = useState('');
   const [isNeighborhoodButtonHovered, setIsNeighborhoodButtonHovered] = useState(false);
+  const [reopenBagAfterNeighborhood, setReopenBagAfterNeighborhood] = useState(false);
   
   // Estados do sistema de fidelidade
   const [showLoyaltyModal, setShowLoyaltyModal] = useState(false);
@@ -3685,6 +3686,7 @@ export default function PublicMenu() {
                             <button
                               onClick={() => {
                                 setShowMobileBag(false);
+                                setReopenBagAfterNeighborhood(true);
                                 setShowNeighborhoodModal(true);
                               }}
                               className="text-red-500 text-xs font-medium hover:text-red-600 transition-colors"
@@ -5186,6 +5188,11 @@ export default function PublicMenu() {
                       setNeighborhoodSearch('');
                       // Preencher o bairro no endereço de entrega
                       setDeliveryAddress(prev => ({ ...prev, neighborhood: item.neighborhood }));
+                      // Reabrir a sacola se veio do botão Alterar bairro
+                      if (reopenBagAfterNeighborhood) {
+                        setReopenBagAfterNeighborhood(false);
+                        setTimeout(() => setShowMobileBag(true), 100);
+                      }
                     }}
                     className={cn(
                       "w-full px-5 py-4 text-left rounded-xl flex items-center justify-between transition-all border",
