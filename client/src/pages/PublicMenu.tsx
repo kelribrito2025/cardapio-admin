@@ -2040,6 +2040,7 @@ export default function PublicMenu() {
                         if (cart.length > 0 && isOpen && !isBelowMinBtn) {
                           // Validar seleção de bairro se necessário
                           if (needsNeighborhoodSelection) {
+                            setReopenBagAfterNeighborhood(true);
                             setShowNeighborhoodModal(true);
                             return;
                           }
@@ -3822,6 +3823,7 @@ export default function PublicMenu() {
                             // Validar seleção de bairro se necessário
                             if (establishment?.deliveryFeeType === 'byNeighborhood' && !selectedNeighborhood) {
                               setShowMobileBag(false);
+                              setReopenBagAfterNeighborhood(true);
                               setShowNeighborhoodModal(true);
                               return;
                             }

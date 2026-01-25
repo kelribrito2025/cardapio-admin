@@ -2798,3 +2798,7 @@
 ## Reabrir Modal da Sacola após Alterar Bairro
 - [x] Ao clicar em "Alterar bairro" no modal da sacola, fechar sacola e abrir modal de bairro
 - [x] Após selecionar um bairro, reabrir automaticamente o modal da sacola (com setTimeout de 100ms)
+
+## Reabrir Modal da Sacola após Selecionar Bairro (Fluxo Finalizar Pedido)
+- [x] Quando usuário clica em "Finalizar pedido" sem bairro selecionado, abrir modal de bairro
+- [x] Após selecionar o bairro, reabrir automaticamente o modal da sacola (mobile e desktop)
