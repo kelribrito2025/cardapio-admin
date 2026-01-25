@@ -5783,109 +5783,115 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
           >
             {/* Parte verde do card */}
             <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-3 md:p-5 text-white flex-1 relative overflow-hidden" style={{height: '215px'}}>
-              {/* Coração vazado como marca d'água */}
-              <div className="absolute -right-12 -bottom-12 opacity-[0.15] pointer-events-none">
-                <svg 
-                  width="280" 
-                  height="280" 
-                  viewBox="0 0 24 24" 
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1"
+              {/* Coração grande no canto inferior esquerdo */}
+              <div className="absolute -left-16 -bottom-16 opacity-[0.12] pointer-events-none">
+                <svg
+                  width="320"
+                  height="320"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
                   className="text-white"
                 >
                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                 </svg>
               </div>
-          <div className="flex items-start gap-2 md:gap-3 mb-3 md:mb-4">
-            <div className="p-1.5 md:p-2 bg-white/20 rounded-xl">
-              <Gift className="h-5 w-5 md:h-6 md:w-6" />
-            </div>
-            <div>
-              <h3 className="font-bold text-base md:text-lg">{establishmentName}</h3>
-              {cardData?.card?.customerName && (
-                <p className="text-white/80 text-sm">{cardData.card.customerName} <span className="text-white/60">• Fidelidade ativa</span></p>
-              )}
-            </div>
-          </div>
-          
-          {/* Progresso */}
-          <div className="mb-3 md:mb-4">
-            <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-white/80">Progresso</span>
-              <span className="font-bold">{stamps} / {required} carimbos</span>
-            </div>
-            <div className="h-2 bg-white/30 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-white rounded-full transition-all duration-700 ease-out"
-                style={{ 
-                  width: `${progress}%`,
-                  boxShadow: showConfetti ? '0 0 10px rgba(255,255,255,0.8)' : 'none'
-                }}
-              />
-            </div>
-          </div>
-          
-          {/* Carimbos visuais com animação */}
-          <div className="flex justify-center gap-1.5 relative">
-            {/* Confetti/Sparkles quando ganha carimbo */}
-            {showConfetti && (
-              <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                {[...Array(12)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute w-2 h-2 rounded-full animate-ping"
-                    style={{
-                      backgroundColor: ['#fbbf24', '#34d399', '#60a5fa', '#f472b6', '#a78bfa'][i % 5],
-                      left: `${20 + Math.random() * 60}%`,
-                      top: `${20 + Math.random() * 60}%`,
-                      animationDelay: `${i * 0.1}s`,
-                      animationDuration: '1s'
+              
+              {/* Coração pequeno no lado direito */}
+              <div className="absolute right-8 top-1/4 opacity-[0.12] pointer-events-none">
+                <svg
+                  width="160"
+                  height="160"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="text-white"
+                >
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </div>
+              
+              {/* Header com ícone e informações */}
+              <div className="flex items-start gap-2 md:gap-3 mb-3 md:mb-4 relative z-10">
+                <div className="p-1.5 md:p-2 bg-white/20 rounded-xl">
+                  <Gift className="h-5 w-5 md:h-6 md:w-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base md:text-lg">{establishmentName}</h3>
+                  {cardData?.card?.customerName && (
+                    <p className="text-white/80 text-sm">{cardData.card.customerName} <span className="text-white/60">• Fidelidade ativa</span></p>
+                  )}
+                </div>
+              </div>
+              
+              {/* Container com barra de progresso e carimbos */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-3 md:p-4 relative z-10">
+                <div className="flex items-center justify-between text-sm mb-2 md:mb-3">
+                  <span className="text-white/90">Progresso</span>
+                  <span className="font-bold">{stamps} / {required} carimbos</span>
+                </div>
+                <div className="h-2 bg-white/30 rounded-full overflow-hidden mb-3 md:mb-4">
+                  <div 
+                    className="h-full bg-white rounded-full transition-all duration-700 ease-out"
+                    style={{ 
+                      width: `${progress}%`,
+                      boxShadow: showConfetti ? '0 0 10px rgba(255,255,255,0.8)' : 'none'
                     }}
                   />
-                ))}
+                </div>
+                
+                {/* Carimbos visuais com animação */}
+                <div className="flex justify-center gap-1.5 relative">
+                  {/* Confetti/Sparkles quando ganha carimbo */}
+                  {showConfetti && (
+                    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                      {[...Array(12)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="absolute w-2 h-2 rounded-full animate-ping"
+                          style={{
+                            backgroundColor: ['#fbbf24', '#34d399', '#60a5fa', '#f472b6', '#a78bfa'][i % 5],
+                            left: `${20 + Math.random() * 60}%`,
+                            top: `${20 + Math.random() * 60}%`,
+                            animationDelay: `${i * 0.1}s`,
+                            animationDuration: '1s'
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  
+                  {Array.from({ length: required }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={cn(
+                        "w-7 h-7 md:w-8 md:h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500",
+                        i < stamps
+                          ? "bg-emerald-500 border-emerald-400 shadow-md shadow-emerald-500/50"
+                          : "border-white/40 bg-white/10",
+                        animatingStamp === i && "animate-bounce scale-125"
+                      )}
+                      style={{
+                        transitionDelay: `${i * 50}ms`,
+                        ...(i < stamps ? { boxShadow: '0 0 10px rgba(16, 185, 129, 0.5)' } : {})
+                      }}
+                    >
+                      {i < stamps ? (
+                        <svg 
+                          className={cn(
+                            "h-3.5 w-3.5 md:h-4 md:w-4 text-white transition-all duration-300",
+                            animatingStamp === i && "animate-pulse scale-110"
+                          )}
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor" 
+                          strokeWidth={3}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
               </div>
-            )}
-            
-            {Array.from({ length: required }).map((_, i) => (
-              <div
-                key={i}
-                className={cn(
-                  "w-6 h-6 md:w-7 md:h-7 rounded-full border-2 flex items-center justify-center transition-all duration-500",
-                  i < stamps
-                    ? "bg-emerald-500 border-emerald-400 shadow-md shadow-emerald-500/50"
-                    : "border-white/40 bg-white/10",
-                  // Animação de pop no carimbo recém-ganho
-                  animatingStamp === i && "animate-bounce scale-125"
-                )}
-                style={{
-                  // Efeito de entrada escalonado para carimbos existentes
-                  transitionDelay: `${i * 50}ms`,
-                  // Glow verde brilhante nos carimbos ativos
-                  ...(i < stamps ? { boxShadow: '0 0 10px rgba(16, 185, 129, 0.5)' } : {}),
-                  width: '36px',
-                  height: '36px'
-                }}
-              >
-                {i < stamps ? (
-                  <svg 
-                    className={cn(
-                      "h-3 w-3 md:h-3.5 md:w-3.5 text-white transition-all duration-300",
-                      animatingStamp === i && "animate-pulse scale-110"
-                    )}
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor" 
-                    strokeWidth={3}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <Clock className="h-3 w-3 md:h-3.5 md:w-3.5 text-white/50" />
-                )}
-              </div>
-            ))}
-          </div>
             </div>
             
             {/* Mensagem de progresso ou Botão Ver Cupom - Parte inferior do card (cinza) */}

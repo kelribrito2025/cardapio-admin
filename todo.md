@@ -2720,3 +2720,4 @@
 - [x] Ordenar lista de bairros em ordem alfabética no modal de seleção
 - [x] Adicionar mensagem de "nenhum bairro encontrado" quando a busca não retornar resultados (já implementado)
 - [x] Refletir a taxa de entrega na sacola ao selecionar bairro
+- [x] Implementar novo modelo do cartão de fidelidade com dois corações e container semi-transparente
