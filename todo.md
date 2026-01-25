@@ -2718,3 +2718,5 @@
 - [x] Adicionar campo de busca para filtrar bairros por nome
 - [x] Validar seleção de bairro no checkout (impede finalizar sem selecionar bairro quando taxa é por bairro)
 - [x] Ordenar lista de bairros em ordem alfabética no modal de seleção
+- [x] Adicionar mensagem de "nenhum bairro encontrado" quando a busca não retornar resultados (já implementado)
+- [x] Refletir a taxa de entrega na sacola ao selecionar bairro

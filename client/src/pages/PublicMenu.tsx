@@ -1907,7 +1907,14 @@ export default function PublicMenu() {
                     return sum + (Number(item.price) + complementsTotal) * item.quantity;
                   }, 0);
                   const discount = appliedCoupon?.discount || 0;
-                  const total = Math.max(0, subtotal - discount);
+                  const deliveryFee = establishment.deliveryFeeType === "free" 
+                    ? 0 
+                    : establishment.deliveryFeeType === "fixed" 
+                      ? Number(establishment.deliveryFeeFixed || 0)
+                      : selectedNeighborhood 
+                        ? Number(selectedNeighborhood.fee) 
+                        : 0;
+                  const total = Math.max(0, subtotal - discount + deliveryFee);
                   return (
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
@@ -1930,7 +1937,9 @@ export default function PublicMenu() {
                             ? "Grátis" 
                             : establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed
                               ? `R$ ${Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}`
-                              : "A calcular"
+                              : selectedNeighborhood
+                                ? `R$ ${Number(selectedNeighborhood.fee).toFixed(2).replace('.', ',')}`
+                                : "A calcular"
                           }
                         </span>
                       </div>
@@ -2713,7 +2722,14 @@ export default function PublicMenu() {
                       return sum + (Number(item.price) + complementsTotal) * item.quantity;
                     }, 0);
                     const discount = appliedCoupon?.discount || 0;
-                    const total = Math.max(0, subtotal - discount);
+                    const deliveryFee = establishment.deliveryFeeType === "free" 
+                      ? 0 
+                      : establishment.deliveryFeeType === "fixed" 
+                        ? Number(establishment.deliveryFeeFixed || 0)
+                        : selectedNeighborhood 
+                          ? Number(selectedNeighborhood.fee) 
+                          : 0;
+                    const total = Math.max(0, subtotal - discount + deliveryFee);
                     return (
                       <>
                         <div className="flex justify-between text-sm">
@@ -2736,7 +2752,9 @@ export default function PublicMenu() {
                               ? "Grátis" 
                               : establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed
                                 ? `R$ ${Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}`
-                                : "A calcular"
+                                : selectedNeighborhood
+                                  ? `R$ ${Number(selectedNeighborhood.fee).toFixed(2).replace('.', ',')}`
+                                  : "A calcular"
                             }
                           </span>
                         </div>
@@ -3150,7 +3168,14 @@ export default function PublicMenu() {
                       return sum + (Number(item.price) + complementsTotal) * item.quantity;
                     }, 0);
                     const discount = appliedCoupon?.discount || 0;
-                    const total = Math.max(0, subtotal - discount);
+                    const deliveryFee = establishment.deliveryFeeType === "free" 
+                      ? 0 
+                      : establishment.deliveryFeeType === "fixed" 
+                        ? Number(establishment.deliveryFeeFixed || 0)
+                        : selectedNeighborhood 
+                          ? Number(selectedNeighborhood.fee) 
+                          : 0;
+                    const total = Math.max(0, subtotal - discount + deliveryFee);
                     return (
                       <>
                         <div className="flex justify-between text-sm">
@@ -3347,7 +3372,16 @@ export default function PublicMenu() {
                     
                     // Calcular desconto do cupom
                     const discount = appliedCoupon?.discount || 0;
-                    const total = Math.max(0, subtotal - discount);
+                    
+                    // Calcular taxa de entrega
+                    const deliveryFeeValue = establishment.deliveryFeeType === "free" 
+                      ? 0 
+                      : establishment.deliveryFeeType === "fixed" 
+                        ? Number(establishment.deliveryFeeFixed || 0)
+                        : selectedNeighborhood 
+                          ? Number(selectedNeighborhood.fee) 
+                          : 0;
+                    const total = Math.max(0, subtotal - discount + deliveryFeeValue);
                     
                     // Montar endereço completo
                     const fullAddress = deliveryType === 'delivery' 
@@ -3363,7 +3397,7 @@ export default function PublicMenu() {
                       deliveryType,
                       paymentMethod,
                       subtotal: subtotal.toFixed(2),
-                      deliveryFee: "0",
+                      deliveryFee: deliveryFeeValue.toFixed(2),
                       discount: discount.toFixed(2),
                       total: total.toFixed(2),
                       notes: orderObservation || undefined,
@@ -3617,7 +3651,14 @@ export default function PublicMenu() {
                     return sum + itemTotal + complementsTotal;
                   }, 0);
                   const discount = appliedCoupon?.discount || 0;
-                  const total = Math.max(0, subtotal - discount);
+                  const deliveryFee = establishment.deliveryFeeType === "free" 
+                    ? 0 
+                    : establishment.deliveryFeeType === "fixed" 
+                      ? Number(establishment.deliveryFeeFixed || 0)
+                      : selectedNeighborhood 
+                        ? Number(selectedNeighborhood.fee) 
+                        : 0;
+                  const total = Math.max(0, subtotal - discount + deliveryFee);
                   return (
                     <>
                       <div className="flex justify-between text-sm">
@@ -3640,7 +3681,9 @@ export default function PublicMenu() {
                             ? "Grátis" 
                             : establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed
                               ? `R$ ${Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}`
-                              : "A calcular"
+                              : selectedNeighborhood
+                                ? `R$ ${Number(selectedNeighborhood.fee).toFixed(2).replace('.', ',')}`
+                                : "A calcular"
                           }
                         </span>
                       </div>
@@ -3660,7 +3703,14 @@ export default function PublicMenu() {
                     return sum + itemTotal + complementsTotal;
                   }, 0);
                   const discount = appliedCoupon?.discount || 0;
-                  const total = Math.max(0, subtotal - discount);
+                  const deliveryFee = establishment.deliveryFeeType === "free" 
+                    ? 0 
+                    : establishment.deliveryFeeType === "fixed" 
+                      ? Number(establishment.deliveryFeeFixed || 0)
+                      : selectedNeighborhood 
+                        ? Number(selectedNeighborhood.fee) 
+                        : 0;
+                  const total = Math.max(0, subtotal - discount + deliveryFee);
                   const minOrderValue = establishment?.minimumOrderEnabled && establishment?.minimumOrderValue ? Number(establishment.minimumOrderValue) : 0;
                   const isBelowMinOrder = minOrderValue > 0 && total < minOrderValue;
                   const amountMissing = minOrderValue - total;
