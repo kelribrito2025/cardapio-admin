@@ -1832,18 +1832,10 @@ export default function PublicMenu() {
                       <div ref={neighborhoodDropdownRef} className="relative">
                         <button 
                           onClick={() => setShowNeighborhoodModal(!showNeighborhoodModal)}
-                          onMouseEnter={() => setIsNeighborhoodButtonHovered(true)}
-                          onMouseLeave={() => setIsNeighborhoodButtonHovered(false)}
                           className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all flex items-center gap-1.5"
                         >
                           {selectedNeighborhood ? (
-                            <>
-                              {isNeighborhoodButtonHovered ? (
-                                <>Alterar <ChevronDown className="h-3.5 w-3.5" /></>
-                              ) : (
-                                <><Check className="h-3.5 w-3.5" /> Selecionado</>
-                              )}
-                            </>
+                            <>Alterar <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showNeighborhoodModal ? 'rotate-180' : ''}`} /></>
                           ) : (
                             <>Selecionar <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showNeighborhoodModal ? 'rotate-180' : ''}`} /></>
                           )}

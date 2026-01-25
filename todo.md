@@ -2726,6 +2726,5 @@
 - [ ] Alterar botão de bairro: mostrar "Selecionado" com check quando selecionado, "Alterar" no hover
 
 ## Botão de Seleção de Bairro - Comportamento Melhorado
-- [x] Mostrar "Selecionado" + ícone Check quando bairro selecionado
-- [x] Mudar para "Alterar" no hover quando bairro selecionado
+- [x] Mostrar "Alterar" diretamente quando bairro selecionado (sem hover)
 - [x] Manter "Selecionar" quando nenhum bairro estiver selecionado
