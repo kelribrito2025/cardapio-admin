@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, name, deliveryFeeType, menuSlug FROM establishments WHERE id = 30001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, deliveryFeeType, menuSlug FROM establishments WHERE id = 30001;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "deliveryFeeType": "byNeighborhood",
+      "menuSlug": "kelri"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tdeliveryFeeType\tmenuSlug\n30001\tSushi Haruno\tbyNeighborhood\tkelri\n",
+  "stderr": "",
+  "execution_time_ms": 340
+}

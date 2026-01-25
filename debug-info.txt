@@ -1,0 +1,8 @@
+Os bairros ESTÃO aparecendo no dropdown do menu público no meu teste:
+- cardere: R$ 3,00
+- Centro: R$ 5,00
+- dsfsfdsfsfsdf: R$ 3,00
+
+O dropdown está funcionando corretamente na minha visualização.
+
+O usuário pode estar com cache do navegador ou acessando uma versão diferente da aplicação.
