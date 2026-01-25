@@ -1008,7 +1008,7 @@ export default function Pedidos() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-9 w-9 rounded-lg text-destructive hover:text-destructive hover:bg-destructive/10"
+                            className="h-9 w-9 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20"
                             onClick={() => {
                               setOrderToCancel(order.id);
                               setCancelDialogOpen(true);

@@ -3057,3 +3057,7 @@
 ## Melhoria: Layout horizontal no card de pedido (desktop)
 - [x] Mostrar nome, forma de pagamento e tipo de entrega na mesma linha no desktop (igual mobile)
 - [x] Aumentar tamanhos de fonte e espaçamentos para desktop
+
+
+## Melhoria: Botão de cancelar vermelho por padrão
+- [x] Deixar o botão de cancelar já vermelho (sem precisar de hover)
