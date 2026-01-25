@@ -127,6 +127,7 @@ export default function PublicMenu() {
   const categoriesNavRef = useRef<HTMLDivElement>(null);
   const categoryRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const categoryButtonRefs = useRef<{ [key: number]: HTMLButtonElement | null }>({});
+  const neighborhoodDropdownRef = useRef<HTMLDivElement>(null);
 
   // Utils do TRPC para chamadas imperativas
   const trpcUtils = trpc.useUtils();
@@ -894,6 +895,9 @@ export default function PublicMenu() {
       }
       if (ratingTooltipRef.current && !ratingTooltipRef.current.contains(event.target as Node)) {
         setShowRatingTooltip(false);
+      }
+      if (neighborhoodDropdownRef.current && !neighborhoodDropdownRef.current.contains(event.target as Node)) {
+        setShowNeighborhoodDropdown(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -1825,7 +1829,7 @@ export default function PublicMenu() {
                       </span>
                     )}
                     {establishment.deliveryFeeType === "byNeighborhood" && (
-                      <div className="relative">
+                      <div ref={neighborhoodDropdownRef} className="relative">
                         <button 
                           onClick={() => setShowNeighborhoodDropdown(!showNeighborhoodDropdown)}
                           className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all flex items-center gap-1.5"
