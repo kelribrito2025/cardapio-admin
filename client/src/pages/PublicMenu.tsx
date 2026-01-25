@@ -906,7 +906,7 @@ export default function PublicMenu() {
 
   // Bloquear scroll do body quando modais estão abertos
   useEffect(() => {
-    const isAnyModalOpen = showOrdersModal || showTrackingModal || showMobileBag || checkoutStep > 0 || showInfoModal || showCouponModal || showReviewsModal || showRatingModal || selectedProduct !== null || showFullscreenImage || showNavigationModal || showLoyaltyModal;
+    const isAnyModalOpen = showOrdersModal || showTrackingModal || showMobileBag || checkoutStep > 0 || showInfoModal || showCouponModal || showReviewsModal || showRatingModal || selectedProduct !== null || showFullscreenImage || showNavigationModal || showLoyaltyModal || showNeighborhoodModal;
     
     if (isAnyModalOpen) {
       document.body.style.overflow = 'hidden';
@@ -917,7 +917,7 @@ export default function PublicMenu() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [showOrdersModal, showTrackingModal, showMobileBag, checkoutStep, showInfoModal, showCouponModal, showReviewsModal, showRatingModal, selectedProduct, showFullscreenImage, showNavigationModal, showLoyaltyModal]);
+  }, [showOrdersModal, showTrackingModal, showMobileBag, checkoutStep, showInfoModal, showCouponModal, showReviewsModal, showRatingModal, selectedProduct, showFullscreenImage, showNavigationModal, showLoyaltyModal, showNeighborhoodModal]);
 
   // Scroll the category nav to show the active category button
   const scrollCategoryNavToActive = useCallback((categoryId: number) => {
@@ -5106,7 +5106,7 @@ export default function PublicMenu() {
           />
           
           {/* Modal - Bottom Sheet no mobile, aumentado 20% no desktop */}
-          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-[520px] md:mx-4 max-h-[85vh] overflow-hidden overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 flex flex-col">
+          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-[520px] md:mx-4 max-h-[85vh] overflow-hidden overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 flex flex-col" style={{ touchAction: 'pan-y' }}>
             {/* Header */}
             <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
               <div className="flex items-center gap-3">

@@ -2773,3 +2773,7 @@
 - [x] Igualar tamanho do ícone e padding do modal de seleção de bairro (h-5 w-5, p-2)
 - [x] Igualar tamanho do título do modal de seleção de bairro (text-lg)
 - [x] Igualar tamanho do botão X de fechar (h-5 w-5, p-2)
+
+## Correção do Scroll do Modal de Seleção de Bairro (Mobile)
+- [x] Impedir que o fundo role quando o modal está aberto (adicionado showNeighborhoodModal ao useEffect)
+- [x] Garantir que apenas o conteúdo do modal seja rolável (touch-action: pan-y)
