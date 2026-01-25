@@ -3020,3 +3020,7 @@
 
 ## Bug: Botões sem nomes na versão mobile da página Cardápio
 - [x] Adicionar Tooltips aos botões "Reorganizar", "Nova Categoria" e "Novo Item" no mobile
+
+
+## Melhoria: Layout horizontal para informações do cliente no modal de pedido
+- [x] Colocar Nome e Telefone na mesma linha horizontal no card de informações do cliente

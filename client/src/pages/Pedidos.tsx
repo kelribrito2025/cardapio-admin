@@ -1066,26 +1066,20 @@ export default function Pedidos() {
               <div className="px-6 py-4 space-y-4">
                 {/* Customer Info */}
                 <div className="border border-blue-200 bg-blue-50/50 rounded-xl p-4">
-                  <h4 className="font-semibold text-base mb-4">Informações do Cliente</h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Nome:</span>
-                      <span className="font-medium flex items-center gap-2">
-                        <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                          {orderDetails.customerName?.charAt(0) || "C"}
-                        </span>
-                        {orderDetails.customerName || "Cliente"}
+                  <h4 className="font-semibold text-base mb-3">Informações do Cliente</h4>
+                  <div className="flex items-center justify-between gap-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+                        {orderDetails.customerName?.charAt(0) || "C"}
                       </span>
+                      <span className="font-medium truncate">{orderDetails.customerName || "Cliente"}</span>
                     </div>
                     {orderDetails.customerPhone && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Telefone:</span>
-                        <span className="font-medium">{orderDetails.customerPhone}</span>
-                      </div>
+                      <span className="text-muted-foreground shrink-0">{orderDetails.customerPhone}</span>
                     )}
                   </div>
                   {orderDetails.customerPhone && (
-                    <div className="flex gap-2 mt-4">
+                    <div className="flex gap-2 mt-3">
                       <Button variant="outline" size="sm" className="flex-1 h-8 text-xs" onClick={() => window.open(`tel:${orderDetails.customerPhone}`)}>
                         Ligar
                       </Button>
