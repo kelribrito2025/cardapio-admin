@@ -1570,16 +1570,36 @@ export async function incrementCouponUsage(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  await db.update(coupons)
-    .set({ usedCount: sql`${coupons.usedCount} + 1` })
-    .where(eq(coupons.id, id));
-  
-  // Check if coupon is exhausted
+  // Buscar cupom primeiro para verificar se é de fidelidade
   const coupon = await getCouponById(id);
-  if (coupon && coupon.quantity && coupon.usedCount >= coupon.quantity) {
+  if (!coupon) return;
+  
+  // Verificar se é cupom de fidelidade (código começa com FID ou FIDELIDADE)
+  const isLoyaltyCoupon = coupon.code.startsWith('FID') || coupon.code.startsWith('FIDELIDADE');
+  
+  if (isLoyaltyCoupon) {
+    // Cupons de fidelidade só podem ser usados UMA Única vez
+    // Marcar como esgotado imediatamente
     await db.update(coupons)
-      .set({ status: "exhausted" })
+      .set({ 
+        usedCount: 1,
+        quantity: 1,
+        status: "exhausted" 
+      })
       .where(eq(coupons.id, id));
+  } else {
+    // Cupons normais - incrementar contador
+    await db.update(coupons)
+      .set({ usedCount: sql`${coupons.usedCount} + 1` })
+      .where(eq(coupons.id, id));
+    
+    // Verificar se cupom normal está esgotado
+    const updatedCoupon = await getCouponById(id);
+    if (updatedCoupon && updatedCoupon.quantity && updatedCoupon.usedCount >= updatedCoupon.quantity) {
+      await db.update(coupons)
+        .set({ status: "exhausted" })
+        .where(eq(coupons.id, id));
+    }
   }
 }
 
@@ -1596,10 +1616,13 @@ export async function validateCoupon(
   }
   
   if (coupon.status !== "active") {
+    // Verificar se é cupom de fidelidade para mensagem específica
+    const isLoyaltyCoupon = coupon.code.startsWith('FID') || coupon.code.startsWith('FIDELIDADE');
+    
     const statusMessages: Record<string, string> = {
       inactive: "Cupom desativado",
       expired: "Cupom expirado",
-      exhausted: "Cupom esgotado",
+      exhausted: isLoyaltyCoupon ? "Este cupom de fidelidade já foi utilizado" : "Cupom esgotado",
     };
     return { valid: false, error: statusMessages[coupon.status] || "Cupom inválido" };
   }
@@ -2393,12 +2416,14 @@ export async function consumeLoyaltyCardCoupon(loyaltyCardId: number, couponIdTo
   const activeCouponIds = card[0].activeCouponIds || [];
   const couponIdToUse = couponIdToConsume || card[0].activeCouponId || (activeCouponIds.length > 0 ? activeCouponIds[0] : null);
   
-  // Marcar o cupom como usado (se existir)
+  // Marcar o cupom como usado e invalidado (se existir)
+  // Cupons de fidelidade só podem ser usados UMA Única vez
   if (couponIdToUse) {
     await db.update(coupons)
       .set({ 
-        usedCount: sql`${coupons.usedCount} + 1`,
+        usedCount: 1,
         quantity: 1, // Garantir que não pode ser usado novamente
+        status: 'exhausted', // Marcar como esgotado imediatamente após uso
       })
       .where(eq(coupons.id, couponIdToUse));
   }

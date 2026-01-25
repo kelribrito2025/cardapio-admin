@@ -2728,3 +2728,9 @@
 ## Botão de Seleção de Bairro - Comportamento Melhorado
 - [x] Mostrar "Alterar" diretamente quando bairro selecionado (sem hover)
 - [x] Manter "Selecionar" quando nenhum bairro estiver selecionado
+
+## Cupons de Fidelidade - Uso Único
+- [x] Garantir que cupons ganhos pelo cartão fidelidade só podem ser usados uma única vez
+- [x] Invalidar cupom após primeiro uso (independente do cliente)
+- [x] Adicionar validação no backend para verificar se cupom já foi usado
+- [x] Mensagem específica para cupom de fidelidade já utilizado
