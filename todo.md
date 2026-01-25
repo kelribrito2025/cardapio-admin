@@ -2958,3 +2958,7 @@
 - [x] Adicionar botão com ícone de impressora no card do pedido
 - [x] Ao clicar, abrir diretamente a janela de impressão do pedido
 - [x] Criar função handlePrintOrderDirect que busca dados do pedido e abre impressão
+
+
+## Feature: Tooltip no Botão de Impressora
+- [x] Adicionar tooltip informativo ao botão de impressora no card do pedido

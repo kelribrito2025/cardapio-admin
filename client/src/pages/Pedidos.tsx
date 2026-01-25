@@ -20,6 +20,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   ClipboardList,
   Clock,
   CheckCircle,
@@ -954,15 +960,23 @@ export default function Pedidos() {
                         >
                           Ver detalhes
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent"
-                          onClick={() => handlePrintOrderDirect(order.id)}
-                          title="Imprimir pedido"
-                        >
-                          <Printer className="h-4 w-4" />
-                        </Button>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent"
+                                onClick={() => handlePrintOrderDirect(order.id)}
+                              >
+                                <Printer className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Imprimir pedido</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                         {nextAction && (
                           <Button
                             size="sm"
