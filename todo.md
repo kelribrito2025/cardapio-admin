@@ -2754,3 +2754,10 @@
 - [x] Lado direito azul escuro (slate-900) com valor do desconto e botões
 - [x] Ícone de talheres como marca d'água no lado esquerdo
 - [x] Sombra drop-shadow para efeito de profundidade
+
+## Variações de Cor para Cupons
+- [x] Primeiro cupom mantém cor amarela/dourada atual
+- [x] Cupons seguintes têm cores distintas no lado esquerdo (emerald, sky, violet, rose, orange, teal, pink)
+- [x] Lado direito permanece azul escuro/preto em todos os cupons
+- [x] Cores mudam ao navegar entre cupons para dar percepção de troca
+- [x] Transição suave de 300ms entre cores

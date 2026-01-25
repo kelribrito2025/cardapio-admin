@@ -5658,6 +5658,19 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
   const currentCoupon = activeCoupons[currentCouponIndex] || null;
   const hasMultipleCoupons = activeCoupons.length > 1;
   
+  // Cores para variação dos cupons - primeiro é amarelo/dourado (padrão), demais são cores distintas
+  const couponColors = [
+    { bg: 'from-amber-400 via-amber-500 to-amber-600', icon: 'text-amber-800', label: 'text-amber-700/60', value: 'text-amber-800/70' },
+    { bg: 'from-emerald-400 via-emerald-500 to-emerald-600', icon: 'text-emerald-800', label: 'text-emerald-700/60', value: 'text-emerald-800/70' },
+    { bg: 'from-sky-400 via-sky-500 to-sky-600', icon: 'text-sky-800', label: 'text-sky-700/60', value: 'text-sky-800/70' },
+    { bg: 'from-violet-400 via-violet-500 to-violet-600', icon: 'text-violet-800', label: 'text-violet-700/60', value: 'text-violet-800/70' },
+    { bg: 'from-rose-400 via-rose-500 to-rose-600', icon: 'text-rose-800', label: 'text-rose-700/60', value: 'text-rose-800/70' },
+    { bg: 'from-orange-400 via-orange-500 to-orange-600', icon: 'text-orange-800', label: 'text-orange-700/60', value: 'text-orange-800/70' },
+    { bg: 'from-teal-400 via-teal-500 to-teal-600', icon: 'text-teal-800', label: 'text-teal-700/60', value: 'text-teal-800/70' },
+    { bg: 'from-pink-400 via-pink-500 to-pink-600', icon: 'text-pink-800', label: 'text-pink-700/60', value: 'text-pink-800/70' },
+  ];
+  const currentCouponColor = couponColors[currentCouponIndex % couponColors.length];
+  
   const progress = Math.min(100, (stamps / required) * 100);
   const isCardComplete = stamps >= required || hasCouponAvailable;
   
@@ -6004,11 +6017,11 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   WebkitMaskComposite: 'source-in',
                 }}
               >
-                {/* Lado Esquerdo - Amarelo/Dourado */}
-                <div className="w-[55%] bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 p-3 md:p-4 flex flex-col justify-between relative overflow-hidden">
+                {/* Lado Esquerdo - Cor dinâmica baseada no índice do cupom */}
+                <div className={`w-[55%] bg-gradient-to-br ${currentCouponColor.bg} p-3 md:p-4 flex flex-col justify-between relative overflow-hidden transition-colors duration-300`}>
                   {/* Ícone decorativo de talheres */}
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.15]">
-                    <UtensilsCrossed className="h-32 w-32 md:h-40 md:w-40 text-amber-800" strokeWidth={1} />
+                    <UtensilsCrossed className={`h-32 w-32 md:h-40 md:w-40 ${currentCouponColor.icon} transition-colors duration-300`} strokeWidth={1} />
                   </div>
 
                   {/* Informações do Voucher */}
@@ -6050,11 +6063,11 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
 
                   {/* Validade */}
                   <div className="relative z-10">
-                    <p className="text-amber-700/60 text-[10px] md:text-xs font-bold uppercase tracking-wider" style={{
+                    <p className={`${currentCouponColor.label} text-[10px] md:text-xs font-bold uppercase tracking-wider transition-colors duration-300`} style={{
                       textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
                       letterSpacing: '0.15em'
                     }}>VALIDADE</p>
-                    <p className="text-amber-800/70 font-black text-xs md:text-sm" style={{
+                    <p className={`${currentCouponColor.value} font-black text-xs md:text-sm transition-colors duration-300`} style={{
                       textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
                       letterSpacing: '0.05em'
                     }}>
