@@ -2314,7 +2314,7 @@ export default function PublicMenu() {
               
               if (displayImage) {
                 return (
-                  <div className="relative w-full h-[268px] sm:h-60 md:h-72 flex-shrink-0">
+                  <div className="relative w-full h-[215px] sm:h-60 md:h-72 flex-shrink-0">
                     <img
                       src={displayImage}
                       alt={selectedProduct.name}

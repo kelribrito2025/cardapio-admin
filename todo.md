@@ -2886,3 +2886,7 @@
 
 ## Ajuste: Texto do botão de complementos
 - [x] Alterar "Selecione uma opção" para "Escolha uma opção" para evitar quebra de linha
+
+
+## Ajuste: Altura da foto no modal de detalhes do item
+- [x] Diminuir altura da foto em 20% para telas menores (mobile) - de 268px para 215px
