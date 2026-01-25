@@ -2952,3 +2952,9 @@
 ## Ajuste: Taxa de Entrega na Impressão do Pedido
 - [x] Adicionar taxa de entrega no layout de impressão do pedido
 - [x] Mostrar "Grátis" quando taxa for zero
+
+
+## Feature: Botão de Impressão no Card do Pedido
+- [x] Adicionar botão com ícone de impressora no card do pedido
+- [x] Ao clicar, abrir diretamente a janela de impressão do pedido
+- [x] Criar função handlePrintOrderDirect que busca dados do pedido e abre impressão

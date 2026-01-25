@@ -298,7 +298,129 @@ export default function Pedidos() {
     },
   });
 
-  // Função para imprimir apenas o pedido
+  // Função para imprimir pedido diretamente do card (sem precisar abrir detalhes)
+  const handlePrintOrderDirect = async (orderId: number) => {
+    try {
+      // Buscar detalhes do pedido
+      const orderData = await utils.orders.get.fetch({ id: orderId });
+      if (!orderData) {
+        toast.error("Erro ao carregar pedido para impressão");
+        return;
+      }
+      
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        toast.error("Erro ao abrir janela de impressão");
+        return;
+      }
+      
+      // Gerar HTML dos itens com adicionais e observações
+      const itemsHtml = orderData.items?.map((item: any) => {
+        const complementsHtml = item.complements && item.complements.length > 0
+          ? item.complements.map((c: any) => {
+              const price = Number(c.price || 0);
+              const priceStr = price > 0 ? ` (R$ ${price.toFixed(2).replace('.', ',')})` : '';
+              return `<div class="item-complement">+ ${c.name}${priceStr}</div>`;
+            }).join('')
+          : '';
+        return `
+          <div class="item">
+            <div class="item-header">
+              <span class="item-qty">${item.quantity}x ${item.productName}</span>
+              <span class="item-price">R$ ${Number(item.totalPrice).toFixed(2).replace('.', ',')}</span>
+            </div>
+            ${complementsHtml}
+            ${item.notes ? `<div class="item-obs">Obs: ${item.notes}</div>` : ''}
+          </div>
+        `;
+      }).join('') || '';
+      
+      const discount = orderData.discount ? Number(orderData.discount) : 0;
+      
+      const printContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Pedido ${orderData.orderNumber?.startsWith('#') ? orderData.orderNumber : `#${orderData.orderNumber}`}</title>
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family: Arial, sans-serif; font-size: 13px; padding: 20px; max-width: 320px; margin: 0 auto; background: #f5f5f0; color: #333; }
+            .receipt { background: #f5f5f0; padding: 10px; }
+            .logo { text-align: center; padding-bottom: 15px; margin-bottom: 15px; }
+            .logo h1 { font-size: 22px; font-weight: bold; margin: 0; letter-spacing: 1px; }
+            .logo p { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-top: 2px; }
+            .order-info { margin-bottom: 15px; }
+            .order-info h2 { font-size: 16px; font-weight: bold; margin-bottom: 2px; }
+            .order-info p { font-size: 12px; color: #666; }
+            .divider { border: none; border-top: 1px solid #ccc; margin: 12px 0; }
+            .divider-dashed { border: none; border-top: 1px dashed #bbb; margin: 10px 0; }
+            .item { margin-bottom: 10px; }
+            .item-header { display: flex; justify-content: space-between; font-weight: 500; }
+            .item-obs { font-size: 11px; color: #666; margin-top: 2px; padding-left: 5px; }
+            .item-complement { font-size: 11px; color: #555; margin-top: 2px; padding-left: 10px; }
+            .totals { margin: 15px 0; }
+            .total-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
+            .total-row.final { font-weight: bold; font-size: 15px; margin-top: 8px; }
+            .section { margin: 15px 0; }
+            .section-title { font-weight: bold; font-size: 14px; margin-bottom: 6px; }
+            .section-content { font-size: 13px; color: #444; line-height: 1.4; }
+            .footer { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #ccc; }
+            .footer p { font-size: 11px; color: #666; }
+            @media print { body { padding: 0; background: white; } .receipt { background: white; } }
+          </style>
+        </head>
+        <body>
+          <div class="receipt">
+            <div class="logo">
+              <h1>${establishment?.name || 'Cardápio'}</h1>
+              <p>Sistema de Pedidos</p>
+            </div>
+            <div class="order-info">
+              <h2>Pedido ${orderData.orderNumber?.startsWith('#') ? orderData.orderNumber : `#${orderData.orderNumber}`}</h2>
+              <p>Realizado em: ${format(new Date(orderData.createdAt), "dd/MM/yyyy")} - ${format(new Date(orderData.createdAt), "HH:mm")}</p>
+            </div>
+            <hr class="divider">
+            <div class="items">${itemsHtml}</div>
+            <hr class="divider-dashed">
+            <div class="totals">
+              <div class="total-row"><span>Valor dos produtos</span><span>R$ ${Number(orderData.subtotal).toFixed(2).replace('.', ',')}</span></div>
+              ${orderData.couponCode ? `<div class="total-row"><span>Cupom aplicado</span><span>${orderData.couponCode}</span></div>` : ''}
+              ${discount > 0 ? `<div class="total-row"><span>Desconto</span><span>- R$ ${discount.toFixed(2).replace('.', ',')}</span></div>` : ''}
+              <div class="total-row"><span>Taxa de entrega</span><span>${Number(orderData.deliveryFee) > 0 ? `R$ ${Number(orderData.deliveryFee).toFixed(2).replace('.', ',')}` : 'Grátis'}</span></div>
+              <div class="total-row final"><span>Total</span><span>R$ ${Number(orderData.total).toFixed(2).replace('.', ',')}</span></div>
+            </div>
+            ${orderData.notes ? `<hr class="divider"><div class="section"><div class="section-title">Observações:</div><div class="section-content">${orderData.notes}</div></div>` : ''}
+            <hr class="divider">
+            <div class="section">
+              <div class="section-title">${orderData.deliveryType === 'delivery' ? 'Endereço de Entrega' : 'Retirada no Local'}</div>
+              <div class="section-content">
+                ${orderData.deliveryType === 'delivery' ? `${(orderData as any).deliveryAddress || (orderData as any).address || ''}<br>${(orderData as any).deliveryNeighborhood || (orderData as any).neighborhood || ''}` : 'Cliente irá retirar no estabelecimento'}
+              </div>
+            </div>
+            <div class="section">
+              <div class="section-title">Pagamento</div>
+              <div class="section-content">${orderData.paymentMethod === 'pix' ? 'PIX' : orderData.paymentMethod === 'card' ? 'Cartão' : orderData.paymentMethod === 'cash' ? 'Dinheiro' : orderData.paymentMethod === 'boleto' ? 'Boleto' : orderData.paymentMethod}</div>
+            </div>
+            <div class="section">
+              <div class="section-title">Cliente</div>
+              <div class="section-content">${orderData.customerName || 'Não informado'}<br>${orderData.customerPhone || ''}</div>
+            </div>
+            <div class="footer"><p>Pedido realizado via Cardápio Admin</p><p>manus.space</p></div>
+          </div>
+          <script>window.onload = function() { window.print(); window.onafterprint = function() { window.close(); }; };</script>
+        </body>
+        </html>
+      `;
+      
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+    } catch (error) {
+      console.error("Erro ao imprimir pedido:", error);
+      toast.error("Erro ao imprimir pedido");
+    }
+  };
+
+  // Função para imprimir apenas o pedido (do modal de detalhes)
   const handlePrintOrder = () => {
     if (!orderDetails) return;
     
@@ -831,6 +953,15 @@ export default function Pedidos() {
                           onClick={() => setSelectedOrder(order.id)}
                         >
                           Ver detalhes
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent"
+                          onClick={() => handlePrintOrderDirect(order.id)}
+                          title="Imprimir pedido"
+                        >
+                          <Printer className="h-4 w-4" />
                         </Button>
                         {nextAction && (
                           <Button
