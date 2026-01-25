@@ -2149,44 +2149,46 @@ export default function PublicMenu() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-b from-gray-50 to-blue-50/30 py-6 mt-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <a 
-            href="https://mindi.com.br" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="block bg-white rounded-2xl shadow-sm border-2 border-blue-100 p-5 hover:shadow-lg hover:border-blue-200 transition-all"
-          >
-            <div className="flex items-center gap-4">
-              {/* Ícone azul com talheres */}
-              <div className="bg-blue-500 rounded-xl p-3 flex-shrink-0">
-                <svg className="w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  {/* Garfo */}
-                  <path d="M7 3v6c0 1.1-.9 2-2 2H4v10" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M4 3v8" strokeLinecap="round"/>
-                  <path d="M7 3v8" strokeLinecap="round"/>
-                  <path d="M5.5 3v5" strokeLinecap="round"/>
-                  {/* Faca */}
-                  <path d="M17 3c0 0 3 2 3 6v2h-3v10" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              
-              {/* Textos */}
-              <div className="flex-1 min-w-0">
-                <p className="text-blue-500 text-xs font-semibold tracking-wider uppercase">Menu Digital</p>
-                <h3 className="font-bold text-gray-900 text-2xl">Mindi</h3>
-                <p className="text-gray-500 text-sm">Criando experiências digitais</p>
-              </div>
-              
-              {/* Seta */}
-              <div className="flex-shrink-0">
-                <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M9 18l6-6-6-6"/>
-                </svg>
-              </div>
-            </div>
-          </a>
-        </div>
+      <footer className="mt-8 relative overflow-hidden">
+        <a 
+          href="https://mindi.com.br" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="block"
+        >
+          {/* Texto centralizado */}
+          <div className="text-center py-8 bg-gray-50">
+            <p className="text-gray-600 text-sm mb-1">Menu Digital by</p>
+            <h3 className="font-bold text-gray-900 text-3xl tracking-tight">Mindi</h3>
+          </div>
+          
+          {/* Ondas azuis em camadas */}
+          <div className="relative h-32">
+            {/* Onda de fundo - mais clara */}
+            <svg className="absolute bottom-0 w-full h-full" viewBox="0 0 1440 120" preserveAspectRatio="none">
+              <path 
+                d="M0,60 C240,120 480,0 720,60 C960,120 1200,0 1440,60 L1440,120 L0,120 Z" 
+                fill="#bfdbfe"
+              />
+            </svg>
+            
+            {/* Onda do meio */}
+            <svg className="absolute bottom-0 w-full h-full" viewBox="0 0 1440 120" preserveAspectRatio="none">
+              <path 
+                d="M0,80 C360,40 720,100 1080,60 C1260,40 1380,80 1440,70 L1440,120 L0,120 Z" 
+                fill="#93c5fd"
+              />
+            </svg>
+            
+            {/* Onda da frente - mais escura */}
+            <svg className="absolute bottom-0 w-full h-full" viewBox="0 0 1440 120" preserveAspectRatio="none">
+              <path 
+                d="M0,90 C180,70 360,100 540,80 C720,60 900,90 1080,70 C1260,50 1380,80 1440,60 L1440,120 L0,120 Z" 
+                fill="#3b82f6"
+              />
+            </svg>
+          </div>
+        </a>
       </footer>
 
       {/* Mobile Bottom Navigation */}
