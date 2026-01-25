@@ -371,6 +371,10 @@ export default function PublicMenu() {
       // Nota: NÃO resetar checkoutStep aqui para manter o modal de sucesso visível
       // O checkoutStep será resetado quando o usuário clicar em "Acompanhar pedido"
       setCart([]);
+      // Limpar também o localStorage para garantir que a sacola não reapareça
+      if (slug) {
+        clearCartFromStorage(slug);
+      }
       setOrderObservation("");
       setAppliedCoupon(null);
       setChangeAmount("");
@@ -4404,6 +4408,10 @@ export default function PublicMenu() {
                   setShowTrackingModal(false);
                   setOrderSent(false);
                   setCart([]);
+                  // Limpar também o localStorage
+                  if (slug) {
+                    clearCartFromStorage(slug);
+                  }
                   setOrderObservation("");
                   setDeliveryType("pickup");
                   setPaymentMethod("pix");

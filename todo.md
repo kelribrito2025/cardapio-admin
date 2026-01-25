@@ -2820,3 +2820,8 @@
 - [x] Exibir botão "Alterar bairro" ao lado do campo
 - [x] Ao clicar em "Alterar bairro", abrir modal de seleção de bairro
 - [x] Após selecionar novo bairro, retornar ao modal de tipo de entrega (checkout step 2)
+
+## Bug: Sacola não limpa após envio do pedido
+- [x] Limpar sacola do localStorage após envio bem-sucedido do pedido (onSuccess do createOrderMutation)
+- [x] Garantir que o modal da sacola mostre estado vazio após envio
+- [x] Resetar todos os estados relacionados à sacola (também no botão Fechar do modal de acompanhamento)
