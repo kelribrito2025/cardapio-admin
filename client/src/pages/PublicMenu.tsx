@@ -3679,7 +3679,20 @@ export default function PublicMenu() {
                         </div>
                       )}
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Taxa de entrega</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-600">Taxa de entrega</span>
+                          {selectedNeighborhood && establishment.deliveryFeeType === "neighborhood" && (
+                            <button
+                              onClick={() => {
+                                setShowMobileBag(false);
+                                setShowNeighborhoodModal(true);
+                              }}
+                              className="text-red-500 text-xs font-medium hover:text-red-600 transition-colors"
+                            >
+                              Alterar bairro
+                            </button>
+                          )}
+                        </div>
                         <span className={establishment.deliveryFeeType === "free" ? "text-green-600 font-medium" : "text-gray-500"}>
                           {establishment.deliveryFeeType === "free" 
                             ? "Grátis" 

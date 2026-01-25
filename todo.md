@@ -2777,3 +2777,7 @@
 ## Correção do Scroll do Modal de Seleção de Bairro (Mobile)
 - [x] Impedir que o fundo role quando o modal está aberto (adicionado showNeighborhoodModal ao useEffect)
 - [x] Garantir que apenas o conteúdo do modal seja rolável (touch-action: pan-y)
+
+## Link Alterar Bairro no Modal da Sacola
+- [x] Adicionar texto "Alterar bairro" ao lado de "Taxa de entrega" quando bairro estiver selecionado
+- [x] Ao clicar em "Alterar bairro", abrir o modal de seleção de bairro (fecha a sacola e abre o modal)
