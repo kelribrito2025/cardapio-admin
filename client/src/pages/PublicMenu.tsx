@@ -2657,7 +2657,7 @@ export default function PublicMenu() {
                     ) : hasZeroPrice && !hasSelectedComplements ? (
                       <>
                         <ShoppingBag className="h-5 w-5" />
-                        <span>Selecione uma opção</span>
+                        <span>Escolha uma opção</span>
                       </>
                     ) : (
                       <>

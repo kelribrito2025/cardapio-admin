@@ -2882,3 +2882,7 @@
 - [x] Ajustar layout do campo de texto e botão para não serem cortados
 - [x] Colocar campo e botão em linhas separadas em telas pequenas (flex-col no mobile, flex-row no desktop)
 - [x] Garantir que o botão "Aplicar cupom" apareça completo (w-full no mobile)
+
+
+## Ajuste: Texto do botão de complementos
+- [x] Alterar "Selecione uma opção" para "Escolha uma opção" para evitar quebra de linha
