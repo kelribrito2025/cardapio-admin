@@ -6068,7 +6068,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   <button
                     onClick={() => setIsFlipped(false)}
                     className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-gray-900/20 hover:bg-gray-900/40 rounded-full transition-colors z-20"
-                    title="Voltar para carimbos"
+                    title="Voltar para carimbos" style={{marginLeft: '7px'}}
                   >
                     <RotateCcw className="h-4 w-4 text-gray-900" />
                   </button>
@@ -6082,8 +6082,9 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                       onClick={nextCoupon}
                       className="absolute top-1/2 -translate-y-1/2 -right-3 p-2 rounded-full bg-amber-500 hover:bg-amber-600 transition-colors shadow-lg z-20"
                       title="Próximo cupom"
+                      style={{marginRight: '26px', width: '22px', height: '22px'}}
                     >
-                      <ChevronRight className="h-4 w-4 text-white" />
+                      <ChevronRight className="text-white" style={{marginTop: '-3px', marginLeft: '-3px', width: '12px', height: '12px'}} />
                     </button>
                   )}
 
