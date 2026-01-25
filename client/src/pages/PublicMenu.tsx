@@ -3597,8 +3597,8 @@ export default function PublicMenu() {
             </div>
 
             {/* Body */}
-            <div className="p-6" style={{backgroundColor: '#ffffff'}}>
-              <div className="flex gap-3">
+            <div className="p-4 sm:p-6" style={{backgroundColor: '#ffffff'}}>
+              <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="text"
                   value={couponCode}
@@ -3607,7 +3607,7 @@ export default function PublicMenu() {
                     setCouponError("");
                   }}
                   placeholder="Digite o código do cupom"
-                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 uppercase"
+                  className="w-full sm:flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 uppercase"
                   disabled={isValidatingCoupon}
                 />
                 <button
@@ -3666,7 +3666,7 @@ export default function PublicMenu() {
                     }
                   }}
                   disabled={isValidatingCoupon}
-                  className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isValidatingCoupon ? "Validando..." : "Aplicar cupom"}
                 </button>

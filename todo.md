@@ -2876,3 +2876,9 @@
 - [x] Preço dos complementos em vermelho (igual ao preço do item)
 - [x] Preço alinhado à direita do container
 - [x] Aplicar em todos os modais (sacola desktop/mobile, resumo, confirmação)
+
+
+## Bug: Modal de Cupom cortado em telas pequenas
+- [x] Ajustar layout do campo de texto e botão para não serem cortados
+- [x] Colocar campo e botão em linhas separadas em telas pequenas (flex-col no mobile, flex-row no desktop)
+- [x] Garantir que o botão "Aplicar cupom" apareça completo (w-full no mobile)
