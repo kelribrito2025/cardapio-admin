@@ -5278,7 +5278,13 @@ export default function PublicMenu() {
             {/* Body - Lista de Bairros */}
             <div 
               className="p-5 space-y-2.5 overflow-y-auto flex-1 overscroll-contain" 
-              style={{backgroundColor: '#ffffff', maxHeight: '400px', WebkitOverflowScrolling: 'touch'}}
+              style={{
+                backgroundColor: '#ffffff', 
+                // No mobile: altura para ~4 itens (cada item tem ~60px + 10px gap = ~280px)
+                // No desktop: altura maior
+                maxHeight: window.innerWidth < 768 ? '280px' : '400px', 
+                WebkitOverflowScrolling: 'touch'
+              }}
               data-neighborhood-scrollable="true"
             >
               {(() => {

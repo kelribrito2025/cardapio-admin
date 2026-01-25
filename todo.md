@@ -2857,3 +2857,9 @@
 - [x] Verificar se a query do cartão fidelidade está sendo invalidada corretamente
 - [x] Garantir que o modal sempre busque dados atualizados ao abrir (adicionado refetch ao clicar no botão Fidelidade)
 - [x] Correção aplicada tanto no desktop quanto no mobile
+
+
+## Ajuste: Altura do Modal de Seleção de Bairro no Mobile
+- [x] Limitar altura do modal para mostrar no máximo 4 bairros (maxHeight: 280px no mobile)
+- [x] Garantir que o scroll funcione para ver os demais bairros
+- [x] Manter comportamento normal no desktop (maxHeight: 400px)
