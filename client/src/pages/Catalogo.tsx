@@ -823,7 +823,7 @@ export default function Catalogo() {
                 <TooltipTrigger asChild>
                   <Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
                     <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
-                    <span className="text-xs sm:text-sm">Item</span>
+                    <span className="text-xs sm:text-sm">item</span>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className="sm:hidden">
