@@ -6052,11 +6052,11 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   <div className="relative z-10">
                     <p className="text-amber-700/60 text-[10px] md:text-xs font-bold uppercase tracking-wider" style={{
                       textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-                      letterSpacing: '0.15em'
+                      letterSpacing: '0.15em', paddingLeft: '5px'
                     }}>VALIDADE</p>
                     <p className="text-amber-800/70 font-black text-xs md:text-sm" style={{
                       textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-                      letterSpacing: '0.05em'
+                      letterSpacing: '0.05em', paddingLeft: '5px', marginBottom: '-7px'
                     }}>
                       {currentCoupon.expiresAt
                         ? new Date(currentCoupon.expiresAt).toLocaleDateString('pt-BR')
@@ -6089,7 +6089,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   )}
 
                   {/* Valor do Desconto */}
-                  <div className="text-center flex-1 flex flex-col justify-center">
+                  <div className="text-center flex-1 flex flex-col justify-center" style={{paddingBottom: '15px', marginTop: '2px', marginBottom: '45px'}}>
                     <p className="text-amber-400 font-black text-3xl md:text-4xl leading-none">
                       {currentCoupon.type === 'percentage'
                         ? `${currentCoupon.value}%`
@@ -6103,7 +6103,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
                   </div>
 
                   {/* Botões de Ação */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5" style={{marginBottom: '-7px'}}>
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(currentCoupon?.code || '');
