@@ -33,12 +33,21 @@ export function WhatsAppTab() {
   const [notifyOnCompleted, setNotifyOnCompleted] = useState(false);
   const [notifyOnCancelled, setNotifyOnCancelled] = useState(true);
   
+  // Templates padrão
+  const DEFAULT_TEMPLATES = {
+    newOrder: `Olá {{customerName}}! 🎉\n\nSeu pedido {{orderNumber}} foi recebido com sucesso!\n\nAguarde, em breve começaremos a preparar.\n\n{{establishmentName}}`,
+    preparing: `Olá {{customerName}}! 👨‍🍳\n\nSeu pedido {{orderNumber}} está sendo preparado!\n\nEm breve estará pronto.\n\n{{establishmentName}}`,
+    ready: `Olá {{customerName}}! ✅\n\nSeu pedido {{orderNumber}} está pronto!\n\nVocê já pode retirar ou aguardar a entrega.\n\n{{establishmentName}}`,
+    completed: `Olá {{customerName}}! 🙏\n\nSeu pedido {{orderNumber}} foi finalizado!\n\nObrigado pela preferência!\n\n{{establishmentName}}`,
+    cancelled: `Olá {{customerName}}! ❌\n\nInfelizmente seu pedido {{orderNumber}} foi cancelado.\n\nEntre em contato conosco para mais informações.\n\n{{establishmentName}}`,
+  };
+  
   // Templates
-  const [templateNewOrder, setTemplateNewOrder] = useState("");
-  const [templatePreparing, setTemplatePreparing] = useState("");
-  const [templateReady, setTemplateReady] = useState("");
-  const [templateCompleted, setTemplateCompleted] = useState("");
-  const [templateCancelled, setTemplateCancelled] = useState("");
+  const [templateNewOrder, setTemplateNewOrder] = useState(DEFAULT_TEMPLATES.newOrder);
+  const [templatePreparing, setTemplatePreparing] = useState(DEFAULT_TEMPLATES.preparing);
+  const [templateReady, setTemplateReady] = useState(DEFAULT_TEMPLATES.ready);
+  const [templateCompleted, setTemplateCompleted] = useState(DEFAULT_TEMPLATES.completed);
+  const [templateCancelled, setTemplateCancelled] = useState(DEFAULT_TEMPLATES.cancelled);
   
   const configQuery = trpc.whatsapp.getConfig.useQuery();
   const statusQuery = trpc.whatsapp.getStatus.useQuery(undefined, {
@@ -107,11 +116,12 @@ export function WhatsAppTab() {
       setNotifyOnReady(configQuery.data.notifyOnReady ?? true);
       setNotifyOnCompleted(configQuery.data.notifyOnCompleted ?? false);
       setNotifyOnCancelled(configQuery.data.notifyOnCancelled ?? true);
-      setTemplateNewOrder(configQuery.data.templateNewOrder || "");
-      setTemplatePreparing(configQuery.data.templatePreparing || "");
-      setTemplateReady(configQuery.data.templateReady || "");
-      setTemplateCompleted(configQuery.data.templateCompleted || "");
-      setTemplateCancelled(configQuery.data.templateCancelled || "");
+      // Usar templates salvos ou manter os padrões
+      setTemplateNewOrder(configQuery.data.templateNewOrder || DEFAULT_TEMPLATES.newOrder);
+      setTemplatePreparing(configQuery.data.templatePreparing || DEFAULT_TEMPLATES.preparing);
+      setTemplateReady(configQuery.data.templateReady || DEFAULT_TEMPLATES.ready);
+      setTemplateCompleted(configQuery.data.templateCompleted || DEFAULT_TEMPLATES.completed);
+      setTemplateCancelled(configQuery.data.templateCancelled || DEFAULT_TEMPLATES.cancelled);
     }
   }, [configQuery.data]);
   
@@ -398,56 +408,51 @@ export function WhatsAppTab() {
                 <div className="space-y-2">
                   <Label>Novo Pedido</Label>
                   <Textarea
-                    placeholder="Olá {{customerName}}! 🎉 Seu pedido {{orderNumber}} foi recebido..."
                     value={templateNewOrder}
                     onChange={(e) => setTemplateNewOrder(e.target.value)}
-                    rows={3}
+                    rows={4}
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <Label>Preparando</Label>
                   <Textarea
-                    placeholder="Olá {{customerName}}! 👨‍🍳 Seu pedido {{orderNumber}} está sendo preparado..."
                     value={templatePreparing}
                     onChange={(e) => setTemplatePreparing(e.target.value)}
-                    rows={3}
+                    rows={4}
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <Label>Pronto</Label>
                   <Textarea
-                    placeholder="Olá {{customerName}}! ✅ Seu pedido {{orderNumber}} está pronto..."
                     value={templateReady}
                     onChange={(e) => setTemplateReady(e.target.value)}
-                    rows={3}
+                    rows={4}
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <Label>Finalizado</Label>
                   <Textarea
-                    placeholder="Olá {{customerName}}! 🙏 Seu pedido {{orderNumber}} foi finalizado..."
                     value={templateCompleted}
                     onChange={(e) => setTemplateCompleted(e.target.value)}
-                    rows={3}
+                    rows={4}
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <Label>Cancelado</Label>
                   <Textarea
-                    placeholder="Olá {{customerName}}! ❌ Seu pedido {{orderNumber}} foi cancelado..."
                     value={templateCancelled}
                     onChange={(e) => setTemplateCancelled(e.target.value)}
-                    rows={3}
+                    rows={4}
                   />
                 </div>
               </div>
               
               <p className="text-sm text-muted-foreground">
-                Deixe em branco para usar o template padrão
+                Personalize as mensagens conforme sua preferência. Use as variáveis para inserir dados do pedido automaticamente.
               </p>
               
               <Button 

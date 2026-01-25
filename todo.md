@@ -3100,3 +3100,4 @@
 - [x] Testar fluxo completo de conexão via QR Code
 - [x] Corrigir exibição do status de conexão (mostrava desconectado mesmo conectado)
 - [ ] Testar envio de notificações automáticas ao mudar status do pedido
+- [x] Preencher templates de mensagem com valores padrão (sem precisar preencher manualmente)
