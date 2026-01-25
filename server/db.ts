@@ -780,8 +780,16 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
                 
                 // Verificar se completou o cartão
                 if (newStamps >= stampsRequired) {
-                  // Gerar código único para o cupom de fidelidade (max 15 chars)
-                  const couponCode = `FID${Date.now().toString(36).slice(-8).toUpperCase()}`;
+                  // Gerar código único para o cupom de fidelidade (max 8 chars: FID + 5 alfanuméricos)
+                  const generateShortCode = () => {
+                    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Sem I, O, 0, 1 para evitar confusão
+                    let code = '';
+                    for (let i = 0; i < 5; i++) {
+                      code += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                    return code;
+                  };
+                  const couponCode = `FID${generateShortCode()}`;
                   
                   // Buscar configurações de fidelidade do estabelecimento
                   const estSettings = await db.select({
@@ -2353,8 +2361,16 @@ export async function processLoyaltyStampForOrder(
   const newStampCount = currentStamps + 1;
   
   if (newStampCount >= requiredStamps) {
-    // Completou o cartão - criar cupom de fidelidade
-    const couponCode = `FIDELIDADE${Date.now().toString(36).toUpperCase()}`;
+    // Completou o cartão - criar cupom de fidelidade (max 8 chars: FID + 5 alfanuméricos)
+    const generateShortCode = () => {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Sem I, O, 0, 1 para evitar confusão
+      let code = '';
+      for (let i = 0; i < 5; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    };
+    const couponCode = `FID${generateShortCode()}`;
     const couponType = establishment.loyaltyCouponType === 'percentage' ? 'percentage' : 'fixed';
     const couponValue = establishment.loyaltyCouponValue || "10";
     

@@ -2734,3 +2734,8 @@
 - [x] Invalidar cupom após primeiro uso (independente do cliente)
 - [x] Adicionar validação no backend para verificar se cupom já foi usado
 - [x] Mensagem específica para cupom de fidelidade já utilizado
+
+## Formato do Código de Cupom de Fidelidade
+- [x] Alterar formato do código para máximo 8 caracteres (ex: FIDM7F9K)
+- [x] Incluir números no código alfanumérico
+- [x] Remover caracteres confusos (I, O, 0, 1) para evitar erros de digitação

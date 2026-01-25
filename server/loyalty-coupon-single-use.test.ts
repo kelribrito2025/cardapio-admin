@@ -85,9 +85,18 @@ describe('Loyalty Coupon Single Use', () => {
   
   describe('Loyalty coupon creation', () => {
     it('should create coupon with quantity=1 for single use', () => {
-      // Simula a criação de cupom de fidelidade
+      // Simula a criação de cupom de fidelidade com novo formato
+      const generateShortCode = () => {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let code = '';
+        for (let i = 0; i < 5; i++) {
+          code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return code;
+      };
+      
       const newCoupon = {
-        code: `FID${Date.now().toString(36).slice(-8).toUpperCase()}`,
+        code: `FID${generateShortCode()}`,
         quantity: 1,
         usedCount: 0,
         status: 'active',
@@ -97,6 +106,30 @@ describe('Loyalty Coupon Single Use', () => {
       expect(newCoupon.usedCount).toBe(0);
       expect(newCoupon.status).toBe('active');
       expect(newCoupon.code.startsWith('FID')).toBe(true);
+      expect(newCoupon.code.length).toBe(8); // FID + 5 caracteres = 8
+    });
+    
+    it('should generate code with max 8 characters', () => {
+      const generateShortCode = () => {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let code = '';
+        for (let i = 0; i < 5; i++) {
+          code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return code;
+      };
+      
+      const code = `FID${generateShortCode()}`;
+      expect(code.length).toBe(8);
+      expect(code).toMatch(/^FID[A-Z2-9]{5}$/);
+    });
+    
+    it('should not include confusing characters (I, O, 0, 1)', () => {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      expect(chars).not.toContain('I');
+      expect(chars).not.toContain('O');
+      expect(chars).not.toContain('0');
+      expect(chars).not.toContain('1');
     });
   });
 });
