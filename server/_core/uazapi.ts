@@ -387,6 +387,26 @@ export async function sendTextMessage(
 }
 
 /**
+ * Get greeting based on current time (Brazil timezone)
+ */
+function getGreeting(): string {
+  // Usar horário de Brasília (UTC-3)
+  const now = new Date();
+  const brasiliaOffset = -3 * 60; // UTC-3 em minutos
+  const localOffset = now.getTimezoneOffset();
+  const brasiliaTime = new Date(now.getTime() + (localOffset + brasiliaOffset) * 60000);
+  const hour = brasiliaTime.getHours();
+  
+  if (hour >= 5 && hour < 12) {
+    return 'Bom dia';
+  } else if (hour >= 12 && hour < 18) {
+    return 'Boa tarde';
+  } else {
+    return 'Boa noite';
+  }
+}
+
+/**
  * Generate order status message based on template
  */
 export function generateStatusMessage(
@@ -400,7 +420,7 @@ export function generateStatusMessage(
 ): string {
   // Default templates
   const defaultTemplates: Record<string, string> = {
-    new: `Olá {{customerName}}! 🎉\n\nSeu pedido {{orderNumber}} foi recebido com sucesso!\n\nAguarde, em breve começaremos a preparar.\n\n{{establishmentName}}`,
+    new: `Olá {{customerName}}! 🎉 {{greeting}}!\n\nSeu pedido {{orderNumber}} foi recebido com sucesso!\n\nAguarde, em breve começaremos a preparar.\n\n{{establishmentName}}`,
     preparing: `Olá {{customerName}}! 👨‍🍳\n\nSeu pedido {{orderNumber}} está sendo preparado!\n\nEm breve estará pronto.\n\n{{establishmentName}}`,
     ready: `Olá {{customerName}}! ✅\n\nSeu pedido {{orderNumber}} está pronto!\n\nVocê já pode retirar ou aguardar a entrega.\n\n{{establishmentName}}`,
     completed: `Olá {{customerName}}! 🙏\n\nSeu pedido {{orderNumber}} foi finalizado!\n\nObrigado pela preferência!\n\n{{establishmentName}}`,
@@ -435,6 +455,10 @@ export function generateStatusMessage(
     const reason = cancellationReason || 'Não informado';
     messageTemplate = messageTemplate.replace(/{{cancellationReason}}/g, reason);
   }
+  
+  // Substituir variável de saudação baseada no horário
+  const greeting = getGreeting();
+  messageTemplate = messageTemplate.replace(/{{greeting}}/g, greeting);
   
   return messageTemplate
     .replace(/{{customerName}}/g, customerName)

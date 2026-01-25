@@ -35,7 +35,7 @@ export function WhatsAppTab() {
   
   // Templates padrão
   const DEFAULT_TEMPLATES = {
-    newOrder: `Olá {{customerName}}! 🎉\n\nSeu pedido {{orderNumber}} foi recebido com sucesso!\n\nAguarde, em breve começaremos a preparar.\n\n{{establishmentName}}`,
+    newOrder: `Olá {{customerName}}! 👋🏻 {{greeting}}! Tudo bem?\n\nSeu pedido {{orderNumber}} foi recebido com sucesso!\n\n🔔 Você será notificado por aqui em cada atualização.\n\n{{establishmentName}}`,
     preparing: `Olá {{customerName}}! 👨‍🍳\n\nSeu pedido {{orderNumber}} está sendo preparado!\n\nEm breve estará pronto.\n\n{{establishmentName}}`,
     ready: `Olá {{customerName}}! ✅\n\nSeu pedido {{orderNumber}} está pronto!\n\n{{deliveryMessage}}\n\n{{establishmentName}}`,
     completed: `Olá {{customerName}}! 🙏\n\nSeu pedido {{orderNumber}} foi finalizado!\n\nObrigado pela preferência!\n\n{{establishmentName}}`,
@@ -401,10 +401,12 @@ export function WhatsAppTab() {
                 <code className="mx-1 px-1 bg-muted rounded">{"{{customerName}}"}</code>,
                 <code className="mx-1 px-1 bg-muted rounded">{"{{orderNumber}}"}</code>,
                 <code className="mx-1 px-1 bg-muted rounded">{"{{establishmentName}}"}</code>,
+                <code className="mx-1 px-1 bg-muted rounded">{"{{greeting}}"}</code>,
                 <code className="mx-1 px-1 bg-muted rounded">{"{{deliveryMessage}}"}</code>,
                 <code className="mx-1 px-1 bg-muted rounded">{"{{cancellationReason}}"}</code>
                 <span className="text-xs block mt-1 text-muted-foreground">
-                  • {"{{deliveryMessage}}"} - mensagem automática de retirada ou entrega (apenas no status Pronto)
+                  • {"{{greeting}}"} - saudação automática baseada no horário (Bom dia/Boa tarde/Boa noite)
+                  <br />• {"{{deliveryMessage}}"} - mensagem automática de retirada ou entrega (apenas no status Pronto)
                   <br />• {"{{cancellationReason}}"} - motivo do cancelamento (apenas no status Cancelado)
                 </span>
               </CardDescription>
