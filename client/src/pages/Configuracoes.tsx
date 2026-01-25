@@ -55,6 +55,10 @@ import {
   WifiOff,
   Star,
   TestTube,
+  Bell,
+  BellRing,
+  Smartphone,
+  Download,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -62,6 +66,7 @@ import { cn } from "@/lib/utils";
 import { ImageCropModal } from "@/components/ImageCropModal";
 import { AddressMapPicker } from "@/components/AddressMapPicker";
 import { LoyaltySettingsCard } from "@/components/LoyaltySettingsCard";
+import { NotificationsTab } from "@/components/NotificationsTab";
 
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
@@ -767,6 +772,10 @@ export default function Configuracoes() {
           <TabsTrigger value="impressoras" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
             <Printer className="h-4 w-4" />
             Impressoras
+          </TabsTrigger>
+          <TabsTrigger value="notificacoes" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
+            <Bell className="h-4 w-4" />
+            Notificações
           </TabsTrigger>
         </TabsList>
 
@@ -2307,6 +2316,12 @@ export default function Configuracoes() {
               </div>
             </div>
           </SectionCard>
+        </TabsContent>
+
+        {/* Notificações Tab */}
+        <TabsContent value="notificacoes" className="space-y-5">
+          {/* Status das Notificações Push */}
+          <NotificationsTab establishmentId={establishment?.id || 0} />
         </TabsContent>
       </Tabs>
 

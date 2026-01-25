@@ -2967,3 +2967,34 @@
 ## Ajuste: Posição e estilo do botão de impressão
 - [x] Mover botão de impressão para o lado esquerdo do botão "Ver detalhes"
 - [x] Ajustar estilo para ficar como botão outline com apenas o ícone
+
+
+## Feature: PWA (Progressive Web App) para o Admin
+### Fase 1: Configuração básica do PWA
+- [x] Criar manifest.json com nome, ícones, cores e configurações do app
+- [x] Adicionar meta tags necessárias no index.html
+- [x] Criar ícones do app em diferentes tamanhos (192x192, 512x512)
+
+### Fase 2: Service Worker
+- [x] Criar service worker para cache de assets
+- [x] Implementar estratégia de cache (network-first para API, cache-first para assets)
+- [x] Registrar service worker no app
+
+### Fase 3: Notificações Push
+- [x] Implementar Web Push API no service worker
+- [x] Criar rota no backend para registrar subscriptions de push
+- [x] Enviar notificação push quando novo pedido chegar
+- [x] Tocar som na notificação mesmo com tela desligada
+
+### Fase 4: Experiência de instalação
+- [x] Adicionar botão/prompt para instalar o PWA
+- [x] Detectar se o app já está instalado
+- [x] Mostrar instruções de instalação para iOS (Add to Home Screen)
+
+### Fase 5: Interface de Configuração
+- [x] Criar aba de Notificações na página de Configurações
+- [x] Criar componente NotificationsTab com gerenciamento de subscriptions
+- [x] Mostrar status das notificações (ativadas/desativadas)
+- [x] Mostrar lista de dispositivos cadastrados
+- [x] Permitir enviar notificação de teste
+- [x] Mostrar instruções de instalação do PWA

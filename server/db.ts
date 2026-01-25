@@ -21,7 +21,8 @@ import {
   loyaltyCards, InsertLoyaltyCard, LoyaltyCard,
   loyaltyStamps, InsertLoyaltyStamp, LoyaltyStamp,
   printers, InsertPrinter, Printer,
-  printerSettings, InsertPrinterSettings, PrinterSettings
+  printerSettings, InsertPrinterSettings, PrinterSettings,
+  pushSubscriptions, InsertPushSubscription, PushSubscription
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -1394,6 +1395,47 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
       // Não falhar o pedido por causa de erro de impressão
     }
     
+    // Enviar push notification para dispositivos inscritos
+    try {
+      const { sendNewOrderNotification } = await import('./_core/webPush');
+      const subscriptions = await getPushSubscriptionsByEstablishment(data.establishmentId);
+      
+      if (subscriptions.length > 0) {
+        console.log(`[DB:createPublicOrder] Enviando push para ${subscriptions.length} dispositivos...`);
+        
+        for (const sub of subscriptions) {
+          try {
+            const success = await sendNewOrderNotification(
+              {
+                endpoint: sub.endpoint,
+                keys: {
+                  p256dh: sub.p256dh,
+                  auth: sub.auth,
+                },
+              },
+              {
+                orderId,
+                orderNumber,
+                customerName: data.customerName || 'Cliente',
+                total: parseFloat(data.total),
+              }
+            );
+            
+            if (!success) {
+              // Subscription inválida, remover
+              console.log(`[DB:createPublicOrder] Removendo subscription inválida: ${sub.id}`);
+              await deletePushSubscriptionById(sub.id);
+            }
+          } catch (pushError) {
+            console.error('[DB:createPublicOrder] Erro ao enviar push para subscription:', sub.id, pushError);
+          }
+        }
+      }
+    } catch (pushError) {
+      console.error('[DB:createPublicOrder] Erro ao enviar push notifications:', pushError);
+      // Não falhar o pedido por causa de erro de push
+    }
+    
     console.log('[DB:createPublicOrder] Pedido criado com sucesso:', { orderId, orderNumber });
     return { orderId, orderNumber };
   } catch (error) {
@@ -2707,4 +2749,97 @@ export async function getDefaultPrinter(establishmentId: number): Promise<Printe
   }
   
   return result[0];
+}
+
+
+// ============ PUSH SUBSCRIPTION FUNCTIONS ============
+
+/**
+ * Busca todas as push subscriptions de um estabelecimento
+ */
+export async function getPushSubscriptionsByEstablishment(establishmentId: number): Promise<PushSubscription[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(pushSubscriptions)
+    .where(eq(pushSubscriptions.establishmentId, establishmentId))
+    .orderBy(desc(pushSubscriptions.createdAt));
+}
+
+/**
+ * Busca push subscription por endpoint
+ */
+export async function getPushSubscriptionByEndpoint(endpoint: string): Promise<PushSubscription | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(pushSubscriptions)
+    .where(eq(pushSubscriptions.endpoint, endpoint))
+    .limit(1);
+  
+  return result[0];
+}
+
+/**
+ * Cria ou atualiza uma push subscription
+ */
+export async function upsertPushSubscription(data: {
+  establishmentId: number;
+  userId: number;
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+  userAgent?: string;
+}): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Verificar se já existe uma subscription com este endpoint
+  const existing = await getPushSubscriptionByEndpoint(data.endpoint);
+  
+  if (existing) {
+    // Atualizar subscription existente
+    await db.update(pushSubscriptions)
+      .set({
+        establishmentId: data.establishmentId,
+        userId: data.userId,
+        p256dh: data.p256dh,
+        auth: data.auth,
+        userAgent: data.userAgent,
+      })
+      .where(eq(pushSubscriptions.id, existing.id));
+    return existing.id;
+  }
+  
+  // Criar nova subscription
+  const result = await db.insert(pushSubscriptions).values({
+    establishmentId: data.establishmentId,
+    userId: data.userId,
+    endpoint: data.endpoint,
+    p256dh: data.p256dh,
+    auth: data.auth,
+    userAgent: data.userAgent,
+  });
+  
+  return result[0].insertId;
+}
+
+/**
+ * Remove uma push subscription por endpoint
+ */
+export async function deletePushSubscription(endpoint: string): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(pushSubscriptions).where(eq(pushSubscriptions.endpoint, endpoint));
+}
+
+/**
+ * Remove uma push subscription por ID
+ */
+export async function deletePushSubscriptionById(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(pushSubscriptions).where(eq(pushSubscriptions.id, id));
 }

@@ -190,6 +190,13 @@
       "when": 1769354607094,
       "tag": "0026_blushing_sugar_man",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "5",
+      "when": 1769363675108,
+      "tag": "0027_curvy_silver_fox",
+      "breakpoints": true
     }
   ]
 }

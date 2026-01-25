@@ -52,6 +52,24 @@ const trpcClient = trpc.createClient({
   ],
 });
 
+// Registrar Service Worker para PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration) => {
+        console.log('[PWA] Service Worker registrado:', registration.scope);
+        
+        // Verificar atualizações periodicamente
+        setInterval(() => {
+          registration.update();
+        }, 60 * 60 * 1000); // A cada hora
+      })
+      .catch((error) => {
+        console.error('[PWA] Erro ao registrar Service Worker:', error);
+      });
+  });
+}
+
 createRoot(document.getElementById("root")!).render(
   <trpc.Provider client={trpcClient} queryClient={queryClient}>
     <QueryClientProvider client={queryClient}>

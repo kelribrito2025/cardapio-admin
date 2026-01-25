@@ -381,3 +381,20 @@ export const printerSettings = mysqlTable("printerSettings", {
 
 export type PrinterSettings = typeof printerSettings.$inferSelect;
 export type InsertPrinterSettings = typeof printerSettings.$inferInsert;
+
+
+// Push Subscriptions para notificações PWA
+export const pushSubscriptions = mysqlTable("pushSubscriptions", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  userId: int("userId").notNull(),
+  endpoint: text("endpoint").notNull(), // URL do endpoint de push
+  p256dh: text("p256dh").notNull(), // Chave pública do cliente
+  auth: text("auth").notNull(), // Chave de autenticação
+  userAgent: text("userAgent"), // User agent do dispositivo
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type InsertPushSubscription = typeof pushSubscriptions.$inferInsert;
