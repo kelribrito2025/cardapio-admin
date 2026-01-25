@@ -1933,7 +1933,7 @@ export default function PublicMenu() {
                                 <p className="font-medium text-gray-900 text-sm truncate">{item.quantity}x {item.name}</p>
                                 {item.complements.length > 0 && (
                                   <p className="text-xs text-gray-500 truncate">
-                                    {item.complements.map(c => c.name).join(', ')}
+                                    {item.complements.map(c => `+ ${c.name} (${formatPrice(c.price)})`).join(', ')}
                                   </p>
                                 )}
                               </div>
@@ -3182,9 +3182,11 @@ export default function PublicMenu() {
                         <div className="flex-1 min-w-0">
                           <span className="text-gray-800 font-medium">{item.quantity}x {item.name}</span>
                           {item.complements.length > 0 && (
-                            <p className="text-xs text-gray-500">
-                              {item.complements.map(c => c.name).join(", ")}
-                            </p>
+                            <div className="text-xs text-gray-500 mt-0.5">
+                              {item.complements.map((c, cIdx) => (
+                                <p key={cIdx}>+ {c.name} ({formatPrice(c.price)})</p>
+                              ))}
+                            </div>
                           )}
                           {item.observation && (
                             <p className="text-xs text-gray-400 mt-0.5">Obs: {item.observation}</p>
@@ -3723,7 +3725,9 @@ export default function PublicMenu() {
                         </div>
                         {item.complements.length > 0 && (
                           <div className="mt-1 text-xs text-gray-500">
-                            {item.complements.map(c => `+ ${c.name}`).join(', ')}
+                            {item.complements.map((c, cIdx) => (
+                              <p key={cIdx}>+ {c.name} ({formatPrice(c.price)})</p>
+                            ))}
                           </div>
                         )}
                         {item.observation && (

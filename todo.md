@@ -2863,3 +2863,10 @@
 - [x] Limitar altura do modal para mostrar no máximo 4 bairros (maxHeight: 280px no mobile)
 - [x] Garantir que o scroll funcione para ver os demais bairros
 - [x] Manter comportamento normal no desktop (maxHeight: 400px)
+
+
+## Bug: Preço dos complementos não aparece nos modais
+- [x] Adicionar preço dos complementos no modal "Sua Sacola" (desktop e mobile)
+- [x] Adicionar preço dos complementos no modal de resumo do pedido (checkout)
+- [x] Adicionar preço dos complementos no modal de confirmação de endereço
+- [x] Formato: "+ Complemento (R$ X,XX)"
