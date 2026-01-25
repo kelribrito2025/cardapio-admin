@@ -2838,3 +2838,10 @@
 - [x] Investigar onde o som de novo pedido está sendo disparado no menu público
 - [x] Garantir que o som só toque no painel administrativo (adicionado isInPublicMenu() no NotificationAudioManager)
 - [x] Bloquear som no método play() e no pendingPlay quando estiver no menu público
+
+## Investigação Profunda: Som no Menu Público
+- [x] Verificar se NewOrdersProvider está sendo carregado no menu público (SIM - estava envolvendo toda a app)
+- [x] Verificar se o hook useOrdersSSE está ativo no menu público (SIM - era carregado pelo provider)
+- [x] Verificar se há BroadcastChannel ou listener global de eventos (NÃO - problema era o provider)
+- [x] Isolar o módulo de áudio para carregar apenas no painel admin (reestruturado App.tsx)
+- [x] Garantir que o NotificationAudioManager não seja instanciado no menu público (NewOrdersProvider agora só envolve rotas admin)

@@ -23,32 +23,46 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 
+// Componente wrapper para rotas do admin que precisam do NewOrdersProvider
+function AdminRoutes() {
+  return (
+    <NewOrdersProvider>
+      <Switch>
+        {/* App routes - Admin Panel */}
+        <Route path="/" component={Dashboard} />
+        <Route path="/catalogo" component={Catalogo} />
+        <Route path="/catalogo/novo" component={ProductForm} />
+        <Route path="/catalogo/editar/:id" component={ProductForm} />
+        <Route path="/pedidos" component={Pedidos} />
+        <Route path="/estoque" component={Estoque} />
+        <Route path="/configuracoes" component={Configuracoes} />
+        <Route path="/planos" component={Planos} />
+        <Route path="/cupons" component={Cupons} />
+        <Route path="/cupons/novo" component={CouponForm} />
+        <Route path="/cupons/:id" component={CouponForm} />
+        
+        <Route path="/404" component={NotFound} />
+        <Route component={NotFound} />
+      </Switch>
+    </NewOrdersProvider>
+  );
+}
+
 function Router() {
   return (
     <Switch>
-      {/* Auth routes */}
+      {/* Auth routes - sem NewOrdersProvider */}
       <Route path="/login" component={Login} />
       <Route path="/criar-conta" component={Register} />
       <Route path="/esqueci-senha" component={ForgotPassword} />
       
-      {/* App routes */}
-      <Route path="/" component={Dashboard} />
-      <Route path="/catalogo" component={Catalogo} />
-      <Route path="/catalogo/novo" component={ProductForm} />
-      <Route path="/catalogo/editar/:id" component={ProductForm} />
-      <Route path="/pedidos" component={Pedidos} />
-      <Route path="/estoque" component={Estoque} />
-      <Route path="/configuracoes" component={Configuracoes} />
-      <Route path="/planos" component={Planos} />
-      <Route path="/cupons" component={Cupons} />
-      <Route path="/cupons/novo" component={CouponForm} />
-      <Route path="/cupons/:id" component={CouponForm} />
-      
-      {/* Public menu route */}
+      {/* Public menu route - sem NewOrdersProvider (não deve ter som de notificação) */}
       <Route path="/menu/:slug" component={PublicMenu} />
       
-      <Route path="/404" component={NotFound} />
-      <Route component={NotFound} />
+      {/* Admin routes - com NewOrdersProvider */}
+      <Route>
+        <AdminRoutes />
+      </Route>
     </Switch>
   );
 }
@@ -57,12 +71,10 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
-        <NewOrdersProvider>
-          <TooltipProvider>
-            <Toaster position="top-right" />
-            <Router />
-          </TooltipProvider>
-        </NewOrdersProvider>
+        <TooltipProvider>
+          <Toaster position="top-right" />
+          <Router />
+        </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
