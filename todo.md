@@ -2962,3 +2962,8 @@
 
 ## Feature: Tooltip no Botão de Impressora
 - [x] Adicionar tooltip informativo ao botão de impressora no card do pedido
+
+
+## Ajuste: Posição e estilo do botão de impressão
+- [x] Mover botão de impressão para o lado esquerdo do botão "Ver detalhes"
+- [x] Ajustar estilo para ficar como botão outline com apenas o ícone

@@ -952,21 +952,13 @@ export default function Pedidos() {
 
                       {/* Actions */}
                       <div className="flex gap-2 mt-3">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 h-9 rounded-lg border-border/50 hover:bg-accent text-sm"
-                          onClick={() => setSelectedOrder(order.id)}
-                        >
-                          Ver detalhes
-                        </Button>
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button
-                                variant="ghost"
+                                variant="outline"
                                 size="icon"
-                                className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent"
+                                className="h-9 w-9 rounded-lg border-border/50 hover:bg-accent text-muted-foreground hover:text-foreground"
                                 onClick={() => handlePrintOrderDirect(order.id)}
                               >
                                 <Printer className="h-4 w-4" />
@@ -977,6 +969,14 @@ export default function Pedidos() {
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 h-9 rounded-lg border-border/50 hover:bg-accent text-sm"
+                          onClick={() => setSelectedOrder(order.id)}
+                        >
+                          Ver detalhes
+                        </Button>
                         {nextAction && (
                           <Button
                             size="sm"
