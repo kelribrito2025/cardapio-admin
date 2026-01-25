@@ -2786,3 +2786,11 @@
 - [x] Investigar por que o cabeçalho do modal de fidelidade some em algumas situações
 - [x] Identificar o cenário que causa o bug (z-index dos elementos do card flip sobrepondo o header sticky)
 - [x] Corrigir o problema (aumentado z-index do header para z-[50] e ajustado z-index dos elementos internos)
+
+## Bug: Link Alterar Bairro não aparece no Modal da Sacola (Mobile)
+- [ ] Verificar por que o link "Alterar bairro" não está aparecendo
+- [ ] Corrigir o problema
+
+## Bug: Link Alterar Bairro não aparece no Modal da Sacola (Mobile) - CORRIGIDO
+- [x] Verificar por que o link "Alterar bairro" não está aparecendo (condição usava "neighborhood" ao invés de "byNeighborhood")
+- [x] Corrigir o problema (atualizada condição para usar valor correto do schema)

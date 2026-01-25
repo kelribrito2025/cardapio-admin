@@ -3681,7 +3681,7 @@ export default function PublicMenu() {
                       <div className="flex justify-between text-sm">
                         <div className="flex items-center gap-2">
                           <span className="text-gray-600">Taxa de entrega</span>
-                          {selectedNeighborhood && establishment.deliveryFeeType === "neighborhood" && (
+                          {selectedNeighborhood && establishment.deliveryFeeType === "byNeighborhood" && (
                             <button
                               onClick={() => {
                                 setShowMobileBag(false);
