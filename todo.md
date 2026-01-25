@@ -3110,3 +3110,4 @@
 - [x] Permitir underscore (_), ponto (.) e números no campo "Link do Cardápio"
 - [x] Bug: ao avançar de "Seus Dados" para "Confirmação" mostra mensagem de erro "Não foi possível enviar o pedido" incorretamente - Corrigido: agora limpa o erro anterior ao iniciar novo checkout
 - [x] Atualizar templates padrão de WhatsApp para novos estabelecimentos (incluindo template de fidelidade)
+- [x] Criar rodapé estiloso no cardápio público com fundo escuro e texto "Menu criado por" com destaque
