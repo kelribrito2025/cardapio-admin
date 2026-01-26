@@ -3185,3 +3185,8 @@
 - [x] Adicionar notificação persistente para serviço em segundo plano
 - [x] Adicionar som e vibração quando chegar pedido
 - [x] Criar projeto completo com código fonte para compilação no Android Studio
+
+## Impressão Semi-Automática ao Aceitar Pedido
+- [x] Modificar botão "Aceitar" para enviar impressão automaticamente após aceitar
+- [x] Manter botão de impressora independente funcionando
+- [x] Testar fluxo completo

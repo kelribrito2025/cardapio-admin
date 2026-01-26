@@ -759,6 +759,14 @@ export default function Pedidos() {
 
   const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
     updateStatusMutation.mutate({ id: orderId, status: newStatus });
+    
+    // Se está aceitando o pedido (mudando de "new" para "preparing"), enviar para impressão térmica automaticamente
+    if (newStatus === "preparing") {
+      // Pequeno delay para garantir que a mutação foi processada
+      setTimeout(() => {
+        handlePrintThermal(orderId);
+      }, 300);
+    }
   };
 
   const handleCancelOrder = () => {
