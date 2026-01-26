@@ -3216,3 +3216,6 @@
 
 ## Melhorar Visibilidade do Recibo Térmico
 - [x] Colocar todos os textos em negrito para melhor legibilidade
+
+## Corrigir Impressão Térmica Android
+- [x] Fazer botão "Impressora Térmica (Android)" usar o mesmo estilo do botão "Impressão Normal"
