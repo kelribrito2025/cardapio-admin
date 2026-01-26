@@ -155,31 +155,77 @@ export default function TesteImpressao() {
     });
   };
 
-  const handleTestPrint = () => {
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      toast.error("Não foi possível abrir a janela de impressão");
+  const handleTestPrint = async () => {
+    if (!establishmentId) {
+      toast.error("Estabelecimento não encontrado");
       return;
     }
     
-    printWindow.document.write(generateReceiptHTML());
-    printWindow.document.close();
-    printWindow.print();
+    // Primeiro salvar as configurações atuais
+    await saveSettingsMutation.mutateAsync({
+      establishmentId,
+      fontSize,
+      fontWeight,
+      titleFontSize,
+      titleFontWeight,
+      itemFontSize,
+      itemFontWeight,
+      obsFontSize,
+      obsFontWeight,
+      paperWidth: paperWidth as "58mm" | "80mm",
+      showDividers,
+    });
+    
+    // Abrir o recibo de teste em nova janela
+    const testUrl = `${window.location.origin}/api/print/test/${establishmentId}`;
+    const printWindow = window.open(testUrl, '_blank');
+    if (!printWindow) {
+      toast.error("Não foi possível abrir a janela de impressão. Verifique se popups estão permitidos.");
+      return;
+    }
   };
 
-  const handleTestThermalPrint = () => {
-    // Criar HTML do recibo
-    const html = generateReceiptHTML();
+  const handleTestThermalPrint = async () => {
+    if (!establishmentId) {
+      toast.error("Estabelecimento não encontrado");
+      return;
+    }
     
-    // Criar blob e URL temporária
-    const blob = new Blob([html], { type: 'text/html' });
-    const blobUrl = URL.createObjectURL(blob);
+    // Primeiro salvar as configurações atuais
+    try {
+      await saveSettingsMutation.mutateAsync({
+        establishmentId,
+        fontSize,
+        fontWeight,
+        titleFontSize,
+        titleFontWeight,
+        itemFontSize,
+        itemFontWeight,
+        obsFontSize,
+        obsFontWeight,
+        paperWidth: paperWidth as "58mm" | "80mm",
+        showDividers,
+      });
+    } catch (e) {
+      // Continuar mesmo se falhar o save
+    }
     
-    // Abrir no app ESC POS com URL do blob
-    const printUrl = `print://escpos.org/escpos/net/print?srcTp=uri&srcObj=html&numCopies=1&src='${encodeURIComponent(blobUrl)}'`;
-    window.location.href = printUrl;
+    // URL do recibo de teste no servidor
+    const testUrl = `${window.location.origin}/api/print/test/${establishmentId}`;
     
-    toast.info("Enviando para impressora térmica...");
+    // Detectar se é Android
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    
+    if (isAndroid) {
+      // Usar app-link do ESC POS Wifi Print Service
+      const printUrl = `print://escpos.org/escpos/net/print?srcTp=uri&srcObj=html&numCopies=1&src=${encodeURIComponent(testUrl)}`;
+      window.location.href = printUrl;
+      toast.info("Enviando para impressora térmica...");
+    } else {
+      // Em outros dispositivos, abrir o recibo em nova aba
+      window.open(testUrl, '_blank');
+      toast.info("Recibo aberto em nova aba. Para impressão térmica, use um dispositivo Android com o app ESC POS Wifi Print Service.");
+    }
   };
 
   const generateReceiptHTML = () => {

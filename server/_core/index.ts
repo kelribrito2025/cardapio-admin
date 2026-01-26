@@ -604,6 +604,69 @@ async function startServer() {
     }
   });
   
+  // Rota para teste de impressão com dados de exemplo
+  app.get("/api/print/test/:establishmentId", async (req, res) => {
+    try {
+      const establishmentId = parseInt(req.params.establishmentId);
+      if (isNaN(establishmentId)) {
+        res.status(400).send("ID do estabelecimento inválido");
+        return;
+      }
+      
+      const establishment = await getEstablishmentById(establishmentId);
+      const settings = await getPrinterSettings(establishmentId);
+      
+      // Dados de exemplo para teste
+      const sampleOrder = {
+        orderNumber: "P999",
+        createdAt: new Date(),
+        deliveryType: "delivery",
+        customerName: "João Silva",
+        customerPhone: "11999998888",
+        customerAddress: "Rua das Flores, 123 - Centro, Apto 45",
+        subtotal: 90.80,
+        deliveryFee: 5.00,
+        discount: 0,
+        total: 95.80,
+        paymentMethod: "pix",
+        notes: ""
+      };
+      
+      const sampleItems = [
+        { 
+          productName: "X-Burger Especial", 
+          quantity: 2, 
+          totalPrice: 51.80,
+          notes: "Sem cebola",
+          complements: JSON.stringify([{ items: [{ name: "Bacon extra", price: 5.00 }, { name: "Queijo cheddar", price: 3.00 }] }])
+        },
+        { 
+          productName: "Batata Frita Grande", 
+          quantity: 1, 
+          totalPrice: 15.00,
+          notes: "",
+          complements: null
+        },
+        { 
+          productName: "Refrigerante 600ml", 
+          quantity: 2, 
+          totalPrice: 16.00,
+          notes: "Bem gelado",
+          complements: null
+        }
+      ];
+      
+      // Gerar HTML otimizado para impressora térmica
+      const html = generateReceiptHTML(sampleOrder, sampleItems, establishment, settings);
+      
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (error) {
+      console.error("[Print Test] Erro ao gerar recibo de teste:", error);
+      res.status(500).send("Erro ao gerar recibo de teste");
+    }
+  });
+  
   // tRPC API
   app.use(
     "/api/trpc",

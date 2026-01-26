@@ -3251,3 +3251,8 @@
 - [x] Implementar salvamento das configurações no banco de dados
 - [x] Integrar configurações salvas com o endpoint de impressão de recibos
 - [x] Carregar configurações salvas ao abrir a página
+
+
+## Bugs - Teste de Impressão
+- [x] Corrigir botão "Testar Impressão Normal" que não abre janela de impressão
+- [x] Corrigir botão "Testar Impressora Térmica (Android)" que não funciona
