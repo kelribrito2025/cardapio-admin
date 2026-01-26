@@ -3170,3 +3170,18 @@
 - [x] Investigar por que o link print:// não abre o app ESC POS
 - [x] Corrigir formato do link para usar o formato correto do ESC POS Wifi Print Service
 - [x] Usar window.location.href como na página de Pedidos
+
+## Impressão Automática na PWA
+- [x] Implementar impressão automática quando novos pedidos chegarem
+- [x] Contornar limitações de segurança do navegador para abrir links automaticamente
+- [x] Testar funcionamento no Android com app ESC POS
+- [x] Decisão: criar app Android nativo para contornar limitações do navegador
+
+## App Android Nativo para Impressão Automática
+- [x] Configurar ambiente Android e criar estrutura do projeto
+- [x] Implementar serviço de polling para verificar novos pedidos
+- [x] Integrar com API do backend (endpoint /api/print/queue/pending)
+- [x] Implementar abertura automática do app ESC POS via Intent
+- [x] Adicionar notificação persistente para serviço em segundo plano
+- [x] Adicionar som e vibração quando chegar pedido
+- [x] Criar projeto completo com código fonte para compilação no Android Studio
