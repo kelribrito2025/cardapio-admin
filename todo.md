@@ -3193,3 +3193,8 @@
 
 ## Notificação Visual ao Aceitar Pedido
 - [x] Adicionar toast de "Pedido aceito e enviado para impressão"
+
+## Melhorar Legibilidade do Recibo Térmico
+- [x] Aumentar tamanho da fonte para melhor leitura
+- [x] Ajustar espaçamento e margens
+- [x] Otimizar layout para impressoras 58mm/80mm

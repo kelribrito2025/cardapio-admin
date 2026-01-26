@@ -13,6 +13,7 @@ import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, get
 import { sdk } from "./sdk";
 
 // Função para gerar HTML do recibo otimizado para impressora térmica
+// OTIMIZADO para melhor legibilidade em impressoras ESC POS 58mm/80mm
 function generateReceiptHTML(
   order: any,
   items: any[],
@@ -38,16 +39,24 @@ function generateReceiptHTML(
   const deliveryTypeText = order.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA';
   const paymentMethodText: Record<string, string> = {
     'cash': 'Dinheiro',
-    'credit': 'Cartão de Crédito',
-    'debit': 'Cartão de Débito',
+    'credit': 'Cartao Credito',
+    'debit': 'Cartao Debito',
+    'card': 'Cartao',
     'pix': 'PIX',
     'boleto': 'Boleto'
   };
   
-  // Configurar largura do papel
-  const paperWidth = settings?.paperWidth === '58mm' ? '200px' : '300px';
-  const fontSize = settings?.paperWidth === '58mm' ? '10px' : '12px';
-  const headerFontSize = settings?.paperWidth === '58mm' ? '14px' : '16px';
+  // Configurar largura do papel - FONTES MAIORES para melhor legibilidade
+  const is58mm = settings?.paperWidth === '58mm';
+  const paperWidth = is58mm ? '48mm' : '72mm'; // Largura real do papel térmico
+  
+  // Fontes MAIORES para impressoras térmicas
+  const baseFontSize = is58mm ? '14px' : '16px';
+  const headerFontSize = is58mm ? '20px' : '24px';
+  const orderNumberSize = is58mm ? '28px' : '32px';
+  const itemFontSize = is58mm ? '14px' : '16px';
+  const totalFontSize = is58mm ? '18px' : '22px';
+  const smallFontSize = is58mm ? '12px' : '14px';
   
   // Logo URL (usa o personalizado ou o do estabelecimento)
   const logoUrl = settings?.logoUrl || establishment?.logo;
@@ -58,13 +67,16 @@ function generateReceiptHTML(
   let itemsHTML = '';
   for (const item of items) {
     itemsHTML += `
-      <tr>
-        <td style="text-align:left;padding:2px 0;">${item.quantity}x ${item.productName}</td>
-        <td style="text-align:right;padding:2px 0;">${formatCurrency(item.totalPrice)}</td>
-      </tr>
+      <div class="item">
+        <div class="item-line">
+          <span class="item-qty">${item.quantity}x</span>
+          <span class="item-name">${item.productName}</span>
+        </div>
+        <div class="item-price">${formatCurrency(item.totalPrice)}</div>
+      </div>
     `;
     if (item.notes) {
-      itemsHTML += `<tr><td colspan="2" style="font-size:10px;color:#666;padding-left:10px;">Obs: ${item.notes}</td></tr>`;
+      itemsHTML += `<div class="item-obs">OBS: ${item.notes}</div>`;
     }
     // Parse complements if exists
     if (item.complements) {
@@ -74,7 +86,7 @@ function generateReceiptHTML(
           for (const comp of complements) {
             if (comp.items && Array.isArray(comp.items)) {
               for (const ci of comp.items) {
-                itemsHTML += `<tr><td colspan="2" style="font-size:10px;color:#666;padding-left:10px;">+ ${ci.name}${ci.price > 0 ? ` (${formatCurrency(ci.price)})` : ''}</td></tr>`;
+                itemsHTML += `<div class="item-complement">+ ${ci.name}${ci.price > 0 ? ` ${formatCurrency(ci.price)}` : ''}</div>`;
               }
             }
           }
@@ -93,31 +105,194 @@ function generateReceiptHTML(
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pedido #${order.orderNumber}</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
-      font-family: 'Courier New', monospace; 
-      font-size: ${fontSize}; 
-      width: 100%; 
-      max-width: ${paperWidth}; 
-      margin: 0 auto;
-      padding: 5px;
-      background: #fff;
+    @page {
+      size: ${paperWidth} auto;
+      margin: 0;
     }
-    .header { text-align: center; margin-bottom: 10px; }
-    .header h1 { font-size: ${headerFontSize}; font-weight: bold; }
-    .header h2 { font-size: ${settings?.paperWidth === '58mm' ? '12px' : '14px'}; margin-top: 5px; }
-    .header-message { font-size: ${settings?.paperWidth === '58mm' ? '9px' : '11px'}; color: #666; margin-top: 3px; }
-    .logo { max-width: ${settings?.paperWidth === '58mm' ? '80px' : '120px'}; max-height: ${settings?.paperWidth === '58mm' ? '40px' : '60px'}; margin-bottom: 5px; }
-    .divider { border-top: 1px dashed #000; margin: 8px 0; }
-    .info { margin: 5px 0; }
-    .info-row { display: flex; justify-content: space-between; margin: 2px 0; }
-    .items-table { width: 100%; border-collapse: collapse; }
-    .totals { margin-top: 10px; }
-    .total-row { display: flex; justify-content: space-between; margin: 2px 0; }
-    .total-final { font-weight: bold; font-size: ${settings?.paperWidth === '58mm' ? '12px' : '14px'}; margin-top: 5px; }
-    .footer { text-align: center; margin-top: 15px; font-size: ${settings?.paperWidth === '58mm' ? '8px' : '10px'}; }
-    .customer { margin: 10px 0; }
-    .notes { background: #f5f5f5; padding: 5px; margin: 5px 0; font-size: ${settings?.paperWidth === '58mm' ? '9px' : '11px'}; }
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+    body { 
+      font-family: 'Arial', 'Helvetica', sans-serif; 
+      font-size: ${baseFontSize}; 
+      line-height: 1.4;
+      width: 100%; 
+      max-width: 100%;
+      padding: 8px;
+      background: #fff;
+      color: #000;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* CABEÇALHO */
+    .header { 
+      text-align: center; 
+      margin-bottom: 12px; 
+    }
+    .header h1 { 
+      font-size: ${headerFontSize}; 
+      font-weight: 900; 
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+    .order-number {
+      font-size: ${orderNumberSize};
+      font-weight: 900;
+      margin: 8px 0;
+      letter-spacing: 1px;
+    }
+    .header-date {
+      font-size: ${smallFontSize};
+      margin: 4px 0;
+    }
+    .delivery-type {
+      font-size: ${itemFontSize};
+      font-weight: 700;
+      background: #000;
+      color: #fff;
+      padding: 6px 12px;
+      display: inline-block;
+      margin: 8px 0;
+    }
+    .header-message { 
+      font-size: ${smallFontSize}; 
+      margin-top: 4px; 
+    }
+    .logo { 
+      max-width: ${is58mm ? '100px' : '140px'}; 
+      max-height: ${is58mm ? '50px' : '70px'}; 
+      margin-bottom: 8px; 
+    }
+    
+    /* DIVISOR */
+    .divider { 
+      border: none;
+      border-top: 2px dashed #000; 
+      margin: 10px 0; 
+    }
+    .divider-double {
+      border-top: 3px double #000;
+      margin: 12px 0;
+    }
+    
+    /* CLIENTE */
+    .customer { 
+      margin: 10px 0; 
+      font-size: ${itemFontSize};
+    }
+    .customer-label {
+      font-weight: 700;
+    }
+    .customer-value {
+      display: block;
+      margin-left: 0;
+      word-wrap: break-word;
+    }
+    .customer-row {
+      margin: 6px 0;
+    }
+    
+    /* ITENS */
+    .item {
+      margin: 8px 0;
+      padding: 4px 0;
+    }
+    .item-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .item-qty {
+      font-weight: 700;
+      font-size: ${itemFontSize};
+      min-width: 30px;
+    }
+    .item-name {
+      font-size: ${itemFontSize};
+      font-weight: 600;
+      flex: 1;
+      word-wrap: break-word;
+    }
+    .item-price {
+      font-size: ${itemFontSize};
+      font-weight: 700;
+      text-align: right;
+      margin-top: 2px;
+    }
+    .item-obs {
+      font-size: ${smallFontSize};
+      margin: 4px 0 4px 36px;
+      font-style: italic;
+    }
+    .item-complement {
+      font-size: ${smallFontSize};
+      margin: 2px 0 2px 36px;
+    }
+    
+    /* TOTAIS */
+    .totals { 
+      margin: 12px 0; 
+    }
+    .total-row { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      margin: 6px 0; 
+      font-size: ${itemFontSize};
+    }
+    .total-final { 
+      font-weight: 900; 
+      font-size: ${totalFontSize}; 
+      margin-top: 10px;
+      padding: 8px 0;
+      border-top: 2px solid #000;
+      border-bottom: 2px solid #000;
+    }
+    
+    /* PAGAMENTO */
+    .payment {
+      margin: 10px 0;
+      font-size: ${itemFontSize};
+    }
+    .payment-method {
+      font-weight: 700;
+      font-size: ${itemFontSize};
+    }
+    
+    /* OBSERVAÇÕES */
+    .notes { 
+      background: #f0f0f0; 
+      padding: 8px; 
+      margin: 10px 0; 
+      font-size: ${smallFontSize};
+      border: 1px solid #ccc;
+    }
+    .notes-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    /* RODAPÉ */
+    .footer { 
+      text-align: center; 
+      margin-top: 16px; 
+      font-size: ${smallFontSize}; 
+    }
+    .footer-thanks {
+      font-weight: 700;
+      font-size: ${itemFontSize};
+      margin-top: 8px;
+    }
+    
+    /* PRINT STYLES */
+    @media print {
+      body {
+        width: ${paperWidth};
+        padding: 2mm;
+      }
+    }
   </style>
 </head>
 <body>
@@ -125,28 +300,39 @@ function generateReceiptHTML(
     ${logoUrl && settings?.showLogo ? `<img src="${logoUrl}" alt="Logo" class="logo" />` : ''}
     <h1>${establishment?.name || 'Estabelecimento'}</h1>
     ${headerMessage ? `<p class="header-message">${headerMessage}</p>` : ''}
-    <h2>PEDIDO #${order.orderNumber}</h2>
-    <p>${formatDate(order.createdAt)}</p>
-    <p style="font-weight:bold;margin-top:5px;">${deliveryTypeText}</p>
+    <div class="order-number">#${order.orderNumber}</div>
+    <p class="header-date">${formatDate(order.createdAt)}</p>
+    <span class="delivery-type">${deliveryTypeText}</span>
   </div>
   
-  <div class="divider"></div>
+  <hr class="divider-double">
   
   <div class="customer">
-    <strong>Cliente:</strong> ${order.customerName || 'Não informado'}<br>
-    ${order.customerPhone ? `<strong>Tel:</strong> ${order.customerPhone}<br>` : ''}
-    ${order.deliveryType === 'delivery' && order.customerAddress ? `<strong>Endereço:</strong> ${order.customerAddress}` : ''}
+    <div class="customer-row">
+      <span class="customer-label">CLIENTE:</span>
+      <span class="customer-value">${order.customerName || 'Nao informado'}</span>
+    </div>
+    ${order.customerPhone ? `
+    <div class="customer-row">
+      <span class="customer-label">TEL:</span>
+      <span class="customer-value">${order.customerPhone}</span>
+    </div>
+    ` : ''}
+    ${order.deliveryType === 'delivery' && order.customerAddress ? `
+    <div class="customer-row">
+      <span class="customer-label">ENDERECO:</span>
+      <span class="customer-value">${order.customerAddress}</span>
+    </div>
+    ` : ''}
   </div>
   
-  <div class="divider"></div>
+  <hr class="divider">
   
-  <table class="items-table">
-    <tbody>
-      ${itemsHTML}
-    </tbody>
-  </table>
+  <div class="items">
+    ${itemsHTML}
+  </div>
   
-  <div class="divider"></div>
+  <hr class="divider">
   
   <div class="totals">
     <div class="total-row">
@@ -155,7 +341,7 @@ function generateReceiptHTML(
     </div>
     ${order.deliveryType === 'delivery' ? `
     <div class="total-row">
-      <span>Taxa de entrega:</span>
+      <span>Taxa entrega:</span>
       <span>${formatCurrency(order.deliveryFee)}</span>
     </div>
     ` : ''}
@@ -171,16 +357,17 @@ function generateReceiptHTML(
     </div>
   </div>
   
-  <div class="divider"></div>
+  <hr class="divider">
   
-  <div class="info">
-    <strong>Pagamento:</strong> ${paymentMethodText[order.paymentMethod] || order.paymentMethod}
-    ${order.paymentMethod === 'cash' && order.changeFor ? `<br><strong>Troco para:</strong> ${formatCurrency(order.changeFor)}` : ''}
+  <div class="payment">
+    <span class="payment-method">PAGAMENTO: ${paymentMethodText[order.paymentMethod] || order.paymentMethod}</span>
+    ${order.paymentMethod === 'cash' && order.changeFor ? `<br>Troco para: ${formatCurrency(order.changeFor)}` : ''}
   </div>
   
   ${order.notes ? `
   <div class="notes">
-    <strong>Observações:</strong> ${order.notes}
+    <div class="notes-title">OBSERVACOES:</div>
+    ${order.notes}
   </div>
   ` : ''}
   
@@ -191,7 +378,7 @@ function generateReceiptHTML(
   ` : ''}
   
   <div class="footer">
-    <p>Obrigado pela preferência!</p>
+    <p class="footer-thanks">Obrigado pela preferencia!</p>
   </div>
 </body>
 </html>
