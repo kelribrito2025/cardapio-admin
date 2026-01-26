@@ -104,11 +104,30 @@ export default function PrinterApp() {
     
     console.log('[PrinterApp] Abrindo link de impressão:', printUrl);
     
-    // Tentar abrir o link print://
-    window.location.href = printUrl;
+    // Usar window.open em vez de location.href para não sair da página
+    // Isso evita que a página trave ao tentar navegar para print://
+    const printWindow = window.open(printUrl, '_blank');
+    
+    // Se window.open não funcionar, tentar com iframe oculto
+    if (!printWindow) {
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = printUrl;
+      document.body.appendChild(iframe);
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+      }, 1000);
+    }
   }, []);
 
   // Função de polling
+  // Usar ref para printedJobs para evitar re-renders infinitos
+  const printedJobsRef = useRef(printedJobs);
+  printedJobsRef.current = printedJobs;
+  
+  const autoOpenRef = useRef(autoOpen);
+  autoOpenRef.current = autoOpen;
+
   const checkForNewJobs = useCallback(async () => {
     if (!establishmentId) return;
     
@@ -120,7 +139,7 @@ export default function PrinterApp() {
       setConnectionStatus('connected');
       
       if (result.data && result.data.length > 0) {
-        const newJobs = result.data.filter(job => !printedJobs.has(job.id));
+        const newJobs = result.data.filter(job => !printedJobsRef.current.has(job.id));
         
         if (newJobs.length > 0) {
           console.log('[PrinterApp] Novos jobs encontrados:', newJobs.length);
@@ -128,8 +147,12 @@ export default function PrinterApp() {
           // Tocar som
           playNotificationSound();
           
-          // Atualizar lista de jobs recentes
-          setRecentJobs(prev => [...newJobs, ...prev].slice(0, 20));
+          // Atualizar lista de jobs recentes (evitar duplicatas)
+          setRecentJobs(prev => {
+            const existingIds = new Set(prev.map(j => j.id));
+            const uniqueNewJobs = newJobs.filter(j => !existingIds.has(j.id));
+            return [...uniqueNewJobs, ...prev].slice(0, 20);
+          });
           
           // Processar cada job
           for (const job of newJobs) {
@@ -137,7 +160,7 @@ export default function PrinterApp() {
             setPrintedJobs(prev => new Set(Array.from(prev).concat(job.id)));
             
             // Abrir link de impressão automaticamente
-            if (autoOpen) {
+            if (autoOpenRef.current) {
               openPrintLink(job.orderId);
               
               // Marcar como impresso no servidor
@@ -156,7 +179,7 @@ export default function PrinterApp() {
       console.error('[PrinterApp] Erro no polling:', error);
       setConnectionStatus('disconnected');
     }
-  }, [establishmentId, pendingQuery, printedJobs, playNotificationSound, autoOpen, openPrintLink, markPrintedMutation]);
+  }, [establishmentId, pendingQuery, playNotificationSound, openPrintLink, markPrintedMutation]);
 
   // Gerenciar polling
   useEffect(() => {
@@ -178,7 +201,8 @@ export default function PrinterApp() {
       }
       setConnectionStatus('disconnected');
     }
-  }, [isPolling, establishmentId, pollingInterval, checkForNewJobs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPolling, establishmentId, pollingInterval]);
 
   // Selecionar estabelecimento automaticamente
   useEffect(() => {
@@ -345,6 +369,32 @@ export default function PrinterApp() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Pedidos Pendentes - Botão Grande de Impressão */}
+      {recentJobs.filter(job => !printedJobs.has(job.id)).length > 0 && (
+        <Card className="max-w-md mx-auto mb-4 border-2 border-red-500 bg-red-50">
+          <CardContent className="pt-6">
+            <div className="text-center mb-4">
+              <p className="text-lg font-bold text-red-600">
+                {recentJobs.filter(job => !printedJobs.has(job.id)).length} pedido(s) aguardando impressão
+              </p>
+            </div>
+            <Button 
+              className="w-full h-16 text-lg bg-red-500 hover:bg-red-600"
+              onClick={() => {
+                const pendingJobs = recentJobs.filter(job => !printedJobs.has(job.id));
+                if (pendingJobs.length > 0) {
+                  // Imprimir o primeiro pedido pendente
+                  handleManualPrint(pendingJobs[0]);
+                }
+              }}
+            >
+              <Printer className="w-6 h-6 mr-3" />
+              IMPRIMIR AGORA
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Configurações */}
       <Card className="max-w-md mx-auto mb-4">

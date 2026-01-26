@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, orderNumber, establishmentId, status, createdAt FROM orders ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, establishmentId, status, createdAt FROM orders ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "180004",
+      "orderNumber": "#P380",
+      "establishmentId": "30001",
+      "status": "preparing",
+      "createdAt": "2026-01-26 16:30:14"
+    },
+    {
+      "id": "180003",
+      "orderNumber": "#P379",
+      "establishmentId": "30001",
+      "status": "preparing",
+      "createdAt": "2026-01-26 16:27:44"
+    },
+    {
+      "id": "180002",
+      "orderNumber": "#P378",
+      "establishmentId": "30001",
+      "status": "preparing",
+      "createdAt": "2026-01-26 16:21:08"
+    },
+    {
+      "id": "180001",
+      "orderNumber": "#P377",
+      "establishmentId": "30001",
+      "status": "completed",
+      "createdAt": "2026-01-26 15:12:32"
+    },
+    {
+      "id": "150058",
+      "orderNumber": "#P376",
+      "establishmentId": "30001",
+      "status": "completed",
+      "createdAt": "2026-01-25 22:45:03"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\testablishmentId\tstatus\tcreatedAt\n180004\t#P380\t30001\tpreparing\t2026-01-26 16:30:14\n180003\t#P379\t30001\tpreparing\t2026-01-26 16:27:44\n180002\t#P378\t30001\tpreparing\t2026-01-26 16:21:08\n180001\t#P377\t30001\tcompleted\t2026-01-26 15:12:32\n150058\t#P376\t30001\tcompleted\t2026-01-25 22:45:03\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

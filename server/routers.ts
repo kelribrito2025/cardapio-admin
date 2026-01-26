@@ -915,10 +915,12 @@ export const appRouter = router({
         console.log('[CreateOrder] Pedido criado com sucesso:', result);
         
         // Adicionar pedido à fila de impressão automática
+        console.log('[CreateOrder] Verificando impressão automática para pedido:', result?.orderId, 'estabelecimento:', orderData.establishmentId);
         if (result && result.orderId) {
           try {
             // Verificar se impressão automática está ativada
             const printerSettingsData = await db.getPrinterSettings(orderData.establishmentId);
+            console.log('[CreateOrder] Configurações de impressão:', printerSettingsData?.autoPrintEnabled, printerSettingsData);
             if (printerSettingsData?.autoPrintEnabled) {
               await db.addToPrintQueue({
                 establishmentId: orderData.establishmentId,
