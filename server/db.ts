@@ -2632,6 +2632,8 @@ export async function createPrinter(data: {
   name: string;
   ipAddress: string;
   port?: number;
+  printerType?: string;
+  categoryIds?: string;
   isActive?: boolean;
   isDefault?: boolean;
 }): Promise<number> {
@@ -2650,6 +2652,8 @@ export async function createPrinter(data: {
     name: data.name,
     ipAddress: data.ipAddress,
     port: data.port || 9100,
+    printerType: data.printerType || 'all',
+    categoryIds: data.categoryIds || null,
     isActive: data.isActive ?? true,
     isDefault: data.isDefault ?? false,
   });
@@ -2714,8 +2718,11 @@ export async function upsertPrinterSettings(data: {
   printOnStatusChange?: boolean;
   copies?: number;
   showLogo?: boolean;
+  logoUrl?: string | null;
   showQrCode?: boolean;
+  headerMessage?: string | null;
   footerMessage?: string | null;
+  paperWidth?: string;
 }): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -2730,8 +2737,11 @@ export async function upsertPrinterSettings(data: {
         printOnStatusChange: data.printOnStatusChange ?? existing.printOnStatusChange,
         copies: data.copies ?? existing.copies,
         showLogo: data.showLogo ?? existing.showLogo,
+        logoUrl: data.logoUrl !== undefined ? data.logoUrl : (existing as any).logoUrl,
         showQrCode: data.showQrCode ?? existing.showQrCode,
+        headerMessage: data.headerMessage !== undefined ? data.headerMessage : (existing as any).headerMessage,
         footerMessage: data.footerMessage !== undefined ? data.footerMessage : existing.footerMessage,
+        paperWidth: data.paperWidth ?? (existing as any).paperWidth ?? '80mm',
       })
       .where(eq(printerSettings.establishmentId, data.establishmentId));
   } else {
@@ -2742,8 +2752,11 @@ export async function upsertPrinterSettings(data: {
       printOnStatusChange: data.printOnStatusChange ?? false,
       copies: data.copies ?? 1,
       showLogo: data.showLogo ?? true,
+      logoUrl: data.logoUrl || null,
       showQrCode: data.showQrCode ?? false,
+      headerMessage: data.headerMessage || null,
       footerMessage: data.footerMessage || null,
+      paperWidth: data.paperWidth || '80mm',
     });
   }
 }

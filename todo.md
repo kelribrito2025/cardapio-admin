@@ -3117,3 +3117,12 @@
 - [x] Integrar com app ESC POS Wifi Print Service (via app-links print://)
 - [x] Adicionar dropdown de impressão com opção térmica no painel de pedidos
 - [x] Criar testes unitários para o endpoint de recibo
+
+
+## Melhorias no Sistema de Impressão Térmica
+- [x] Impressão automática de novos pedidos
+- [x] Múltiplas impressoras (cozinha/balcão) com tipo e categorias
+- [x] Personalizar recibo com logo, mensagem de cabeçalho e rodapé
+- [x] Configuração de largura do papel (58mm/80mm)
+- [x] Adicionar campo de tipo de impressora no modal (Todos, Cozinha, Balcão, Bar)
+- [x] Atualizar endpoint de recibo para usar configurações personalizadas

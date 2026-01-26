@@ -177,6 +177,8 @@ export default function Configuracoes() {
   const [printerName, setPrinterName] = useState("");
   const [printerIpAddress, setPrinterIpAddress] = useState("");
   const [printerPort, setPrinterPort] = useState(9100);
+  const [printerType, setPrinterType] = useState<'all' | 'kitchen' | 'counter' | 'bar'>('all');
+  const [printerCategoryIds, setPrinterCategoryIds] = useState<number[]>([]);
   const [printerIsActive, setPrinterIsActive] = useState(true);
   const [printerIsDefault, setPrinterIsDefault] = useState(false);
   const [isTestingConnection, setIsTestingConnection] = useState(false);
@@ -188,8 +190,11 @@ export default function Configuracoes() {
   const [printOnStatusChange, setPrintOnStatusChange] = useState(false);
   const [printCopies, setPrintCopies] = useState(1);
   const [printShowLogo, setPrintShowLogo] = useState(true);
+  const [printLogoUrl, setPrintLogoUrl] = useState("");
   const [printShowQrCode, setPrintShowQrCode] = useState(false);
+  const [printHeaderMessage, setPrintHeaderMessage] = useState("");
   const [printFooterMessage, setPrintFooterMessage] = useState("");
+  const [printPaperWidth, setPrintPaperWidth] = useState<'58mm' | '80mm'>('80mm');
 
   // Image crop modal state
   const [cropModalOpen, setCropModalOpen] = useState(false);
@@ -307,8 +312,11 @@ export default function Configuracoes() {
       setPrintOnStatusChange(printerSettings.printOnStatusChange);
       setPrintCopies(printerSettings.copies);
       setPrintShowLogo(printerSettings.showLogo);
+      setPrintLogoUrl((printerSettings as any).logoUrl || "");
       setPrintShowQrCode(printerSettings.showQrCode);
+      setPrintHeaderMessage((printerSettings as any).headerMessage || "");
       setPrintFooterMessage(printerSettings.footerMessage || "");
+      setPrintPaperWidth((printerSettings as any).paperWidth || '80mm');
     }
   }, [printerSettings]);
 
@@ -447,6 +455,8 @@ export default function Configuracoes() {
     setPrinterName("");
     setPrinterIpAddress("");
     setPrinterPort(9100);
+    setPrinterType('all');
+    setPrinterCategoryIds([]);
     setPrinterIsActive(true);
     setPrinterIsDefault(false);
     setEditingPrinter(null);
@@ -473,6 +483,8 @@ export default function Configuracoes() {
     setPrinterName(printer.name);
     setPrinterIpAddress(printer.ipAddress);
     setPrinterPort(printer.port);
+    setPrinterType((printer as any).printerType || 'all');
+    setPrinterCategoryIds((printer as any).categoryIds ? JSON.parse((printer as any).categoryIds) : []);
     setPrinterIsActive(printer.isActive);
     setPrinterIsDefault(printer.isDefault);
     setIsPrinterModalOpen(true);
@@ -494,6 +506,8 @@ export default function Configuracoes() {
         name: printerName,
         ipAddress: printerIpAddress,
         port: printerPort,
+        printerType,
+        categoryIds: printerCategoryIds.length > 0 ? JSON.stringify(printerCategoryIds) : undefined,
         isActive: printerIsActive,
         isDefault: printerIsDefault,
       });
@@ -503,6 +517,8 @@ export default function Configuracoes() {
         name: printerName,
         ipAddress: printerIpAddress,
         port: printerPort,
+        printerType,
+        categoryIds: printerCategoryIds.length > 0 ? JSON.stringify(printerCategoryIds) : undefined,
         isActive: printerIsActive,
         isDefault: printerIsDefault,
       });
@@ -528,8 +544,11 @@ export default function Configuracoes() {
       printOnStatusChange,
       copies: printCopies,
       showLogo: printShowLogo,
+      logoUrl: printLogoUrl || null,
       showQrCode: printShowQrCode,
+      headerMessage: printHeaderMessage || null,
       footerMessage: printFooterMessage || null,
+      paperWidth: printPaperWidth,
     });
   };
 
@@ -2181,6 +2200,29 @@ export default function Configuracoes() {
                     </div>
                   </div>
 
+                  {/* Largura do Papel */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-muted-foreground">Largura do papel:</Label>
+                    <div className="flex gap-2">
+                      <Button
+                        variant={printPaperWidth === '58mm' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setPrintPaperWidth('58mm')}
+                        className="flex-1"
+                      >
+                        58mm
+                      </Button>
+                      <Button
+                        variant={printPaperWidth === '80mm' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setPrintPaperWidth('80mm')}
+                        className="flex-1"
+                      >
+                        80mm
+                      </Button>
+                    </div>
+                  </div>
+
                   {/* Opções de Layout */}
                   <div className="space-y-3">
                     <Label className="text-sm font-medium text-muted-foreground">Layout do cupom:</Label>
@@ -2192,6 +2234,20 @@ export default function Configuracoes() {
                         onCheckedChange={setPrintShowLogo}
                       />
                     </div>
+
+                    {printShowLogo && (
+                      <div className="space-y-2 pl-4">
+                        <Label className="text-sm">URL do logo personalizado (opcional)</Label>
+                        <Input
+                          value={printLogoUrl}
+                          onChange={(e) => setPrintLogoUrl(e.target.value)}
+                          placeholder="https://exemplo.com/logo.png"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Deixe em branco para usar o logo do estabelecimento
+                        </p>
+                      </div>
+                    )}
                     
                     <div className="flex items-center justify-between">
                       <Label className="text-sm">Mostrar QR Code</Label>
@@ -2200,6 +2256,16 @@ export default function Configuracoes() {
                         onCheckedChange={setPrintShowQrCode}
                       />
                     </div>
+                  </div>
+
+                  {/* Mensagem do Cabeçalho */}
+                  <div className="space-y-2">
+                    <Label className="text-sm">Mensagem do cabeçalho</Label>
+                    <Input
+                      value={printHeaderMessage}
+                      onChange={(e) => setPrintHeaderMessage(e.target.value)}
+                      placeholder="Ex: Delivery - (34) 99880-7793"
+                    />
                   </div>
 
                   {/* Mensagem do Rodapé */}
@@ -2381,6 +2447,48 @@ export default function Configuracoes() {
               />
               <p className="text-xs text-muted-foreground">
                 A porta padrão para impressoras ESC/POS é 9100
+              </p>
+            </div>
+
+            {/* Tipo de Impressora */}
+            <div className="space-y-2">
+              <Label>Tipo de Impressora</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant={printerType === 'all' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setPrinterType('all')}
+                >
+                  Todos os Itens
+                </Button>
+                <Button
+                  type="button"
+                  variant={printerType === 'kitchen' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setPrinterType('kitchen')}
+                >
+                  Cozinha
+                </Button>
+                <Button
+                  type="button"
+                  variant={printerType === 'counter' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setPrinterType('counter')}
+                >
+                  Balcão
+                </Button>
+                <Button
+                  type="button"
+                  variant={printerType === 'bar' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setPrinterType('bar')}
+                >
+                  Bar
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Defina o tipo para filtrar quais itens serão impressos nesta impressora
               </p>
             </div>
 

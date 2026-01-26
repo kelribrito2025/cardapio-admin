@@ -44,6 +44,17 @@ function generateReceiptHTML(
     'boleto': 'Boleto'
   };
   
+  // Configurar largura do papel
+  const paperWidth = settings?.paperWidth === '58mm' ? '200px' : '300px';
+  const fontSize = settings?.paperWidth === '58mm' ? '10px' : '12px';
+  const headerFontSize = settings?.paperWidth === '58mm' ? '14px' : '16px';
+  
+  // Logo URL (usa o personalizado ou o do estabelecimento)
+  const logoUrl = settings?.logoUrl || establishment?.logo;
+  
+  // Mensagem de cabeçalho personalizada
+  const headerMessage = settings?.headerMessage;
+  
   let itemsHTML = '';
   for (const item of items) {
     itemsHTML += `
@@ -85,31 +96,35 @@ function generateReceiptHTML(
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
       font-family: 'Courier New', monospace; 
-      font-size: 12px; 
+      font-size: ${fontSize}; 
       width: 100%; 
-      max-width: 300px; 
+      max-width: ${paperWidth}; 
       margin: 0 auto;
       padding: 5px;
       background: #fff;
     }
     .header { text-align: center; margin-bottom: 10px; }
-    .header h1 { font-size: 16px; font-weight: bold; }
-    .header h2 { font-size: 14px; margin-top: 5px; }
+    .header h1 { font-size: ${headerFontSize}; font-weight: bold; }
+    .header h2 { font-size: ${settings?.paperWidth === '58mm' ? '12px' : '14px'}; margin-top: 5px; }
+    .header-message { font-size: ${settings?.paperWidth === '58mm' ? '9px' : '11px'}; color: #666; margin-top: 3px; }
+    .logo { max-width: ${settings?.paperWidth === '58mm' ? '80px' : '120px'}; max-height: ${settings?.paperWidth === '58mm' ? '40px' : '60px'}; margin-bottom: 5px; }
     .divider { border-top: 1px dashed #000; margin: 8px 0; }
     .info { margin: 5px 0; }
     .info-row { display: flex; justify-content: space-between; margin: 2px 0; }
     .items-table { width: 100%; border-collapse: collapse; }
     .totals { margin-top: 10px; }
     .total-row { display: flex; justify-content: space-between; margin: 2px 0; }
-    .total-final { font-weight: bold; font-size: 14px; margin-top: 5px; }
-    .footer { text-align: center; margin-top: 15px; font-size: 10px; }
+    .total-final { font-weight: bold; font-size: ${settings?.paperWidth === '58mm' ? '12px' : '14px'}; margin-top: 5px; }
+    .footer { text-align: center; margin-top: 15px; font-size: ${settings?.paperWidth === '58mm' ? '8px' : '10px'}; }
     .customer { margin: 10px 0; }
-    .notes { background: #f5f5f5; padding: 5px; margin: 5px 0; font-size: 11px; }
+    .notes { background: #f5f5f5; padding: 5px; margin: 5px 0; font-size: ${settings?.paperWidth === '58mm' ? '9px' : '11px'}; }
   </style>
 </head>
 <body>
   <div class="header">
+    ${logoUrl && settings?.showLogo ? `<img src="${logoUrl}" alt="Logo" class="logo" />` : ''}
     <h1>${establishment?.name || 'Estabelecimento'}</h1>
+    ${headerMessage ? `<p class="header-message">${headerMessage}</p>` : ''}
     <h2>PEDIDO #${order.orderNumber}</h2>
     <p>${formatDate(order.createdAt)}</p>
     <p style="font-weight:bold;margin-top:5px;">${deliveryTypeText}</p>

@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE printers ADD COLUMN IF NOT EXISTS printerType VARCHAR(20) DEFAULT 'all';\nALTER TABLE printers ADD COLUMN IF NOT EXISTS categoryIds TEXT;\nALTER TABLE printerSettings ADD COLUMN IF NOT EXISTS logoUrl TEXT;\nALTER TABLE printerSettings ADD COLUMN IF NOT EXISTS headerMessage TEXT;\nALTER TABLE printerSettings ADD COLUMN IF NOT EXISTS paperWidth VARCHAR(10) DEFAULT '80mm';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute ALTER TABLE printers ADD COLUMN IF NOT EXISTS printerType VARCHAR(20) DEFAULT 'all';\nALTER TABLE printers ADD COLUMN IF NOT EXISTS categoryIds TEXT;\nALTER TABLE printerSettings ADD COLUMN IF NOT EXISTS logoUrl TEXT;\nALTER TABLE printerSettings ADD COLUMN IF NOT EXISTS headerMessage TEXT;\nALTER TABLE printerSettings ADD COLUMN IF NOT EXISTS paperWidth VARCHAR(10) DEFAULT '80mm';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 88
+}

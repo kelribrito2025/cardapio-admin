@@ -355,6 +355,8 @@ export const printers = mysqlTable("printers", {
   name: varchar("name", { length: 255 }).notNull(), // Nome identificador (ex: "Cozinha", "Balcão")
   ipAddress: varchar("ipAddress", { length: 45 }).notNull(), // IP da impressora na rede local
   port: int("port").default(9100).notNull(), // Porta padrão ESC/POS
+  printerType: varchar("printerType", { length: 20 }).default("all").notNull(), // Tipo: all, kitchen, counter, bar
+  categoryIds: text("categoryIds"), // JSON array de IDs de categorias para esta impressora
   isActive: boolean("isActive").default(true).notNull(), // Se a impressora está ativa
   isDefault: boolean("isDefault").default(false).notNull(), // Se é a impressora padrão
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -373,8 +375,11 @@ export const printerSettings = mysqlTable("printerSettings", {
   printOnStatusChange: boolean("printOnStatusChange").default(false).notNull(), // Imprimir ao mudar status
   copies: int("copies").default(1).notNull(), // Número de cópias
   showLogo: boolean("showLogo").default(true).notNull(), // Mostrar logo no cupom
+  logoUrl: text("logoUrl"), // URL do logo personalizado (se diferente do estabelecimento)
   showQrCode: boolean("showQrCode").default(false).notNull(), // Mostrar QR Code no cupom
+  headerMessage: text("headerMessage"), // Mensagem personalizada no cabeçalho
   footerMessage: text("footerMessage"), // Mensagem personalizada no rodapé
+  paperWidth: varchar("paperWidth", { length: 10 }).default("80mm").notNull(), // Largura do papel: 58mm ou 80mm
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

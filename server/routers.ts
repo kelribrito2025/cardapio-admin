@@ -1622,6 +1622,8 @@ export const appRouter = router({
         name: z.string().min(1, "Nome é obrigatório"),
         ipAddress: z.string().min(1, "Endereço IP é obrigatório"),
         port: z.number().optional(),
+        printerType: z.enum(['all', 'kitchen', 'counter', 'bar']).optional(),
+        categoryIds: z.string().optional(),
         isActive: z.boolean().optional(),
         isDefault: z.boolean().optional(),
       }))
@@ -1637,6 +1639,8 @@ export const appRouter = router({
         name: z.string().optional(),
         ipAddress: z.string().optional(),
         port: z.number().optional(),
+        printerType: z.enum(['all', 'kitchen', 'counter', 'bar']).optional(),
+        categoryIds: z.string().optional(),
         isActive: z.boolean().optional(),
         isDefault: z.boolean().optional(),
       }))
@@ -1668,8 +1672,11 @@ export const appRouter = router({
           printOnStatusChange: false,
           copies: 1,
           showLogo: true,
+          logoUrl: null,
           showQrCode: false,
+          headerMessage: null,
           footerMessage: null,
+          paperWidth: '80mm',
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -1684,8 +1691,11 @@ export const appRouter = router({
         printOnStatusChange: z.boolean().optional(),
         copies: z.number().min(1).max(5).optional(),
         showLogo: z.boolean().optional(),
+        logoUrl: z.string().nullable().optional(),
         showQrCode: z.boolean().optional(),
+        headerMessage: z.string().nullable().optional(),
         footerMessage: z.string().nullable().optional(),
+        paperWidth: z.enum(['58mm', '80mm']).optional(),
       }))
       .mutation(async ({ input }) => {
         await db.upsertPrinterSettings(input);
