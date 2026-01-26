@@ -3190,3 +3190,6 @@
 - [x] Modificar botão "Aceitar" para enviar impressão automaticamente após aceitar
 - [x] Manter botão de impressora independente funcionando
 - [x] Testar fluxo completo
+
+## Notificação Visual ao Aceitar Pedido
+- [x] Adicionar toast de "Pedido aceito e enviado para impressão"

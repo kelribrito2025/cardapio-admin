@@ -762,6 +762,12 @@ export default function Pedidos() {
     
     // Se está aceitando o pedido (mudando de "new" para "preparing"), enviar para impressão térmica automaticamente
     if (newStatus === "preparing") {
+      // Mostrar notificação visual de pedido aceito e enviado para impressão
+      toast.success("📦 Pedido aceito e enviado para impressão!", {
+        description: "O pedido foi aceito e está sendo enviado para a impressora térmica.",
+        duration: 4000,
+      });
+      
       // Pequeno delay para garantir que a mutação foi processada
       setTimeout(() => {
         handlePrintThermal(orderId);
