@@ -3198,3 +3198,10 @@
 - [x] Aumentar tamanho da fonte para melhor leitura
 - [x] Ajustar espaçamento e margens
 - [x] Otimizar layout para impressoras 58mm/80mm
+
+## Integração POSPrinterDriver - Impressão Automática via Servidor
+- [x] Adicionar campos no banco para linkcode e configurações
+- [x] Criar função de impressão via API POSPrinterDriver
+- [x] Integrar impressão automática quando chegar pedido novo
+- [x] Criar interface de configuração no painel admin
+- [x] Testar impressão automática

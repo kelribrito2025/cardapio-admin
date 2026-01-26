@@ -1699,6 +1699,9 @@ export const appRouter = router({
           headerMessage: null,
           footerMessage: null,
           paperWidth: '80mm',
+          posPrinterEnabled: false,
+          posPrinterLinkcode: null,
+          posPrinterNumber: 1,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -1718,10 +1721,24 @@ export const appRouter = router({
         headerMessage: z.string().nullable().optional(),
         footerMessage: z.string().nullable().optional(),
         paperWidth: z.enum(['58mm', '80mm']).optional(),
+        posPrinterEnabled: z.boolean().optional(),
+        posPrinterLinkcode: z.string().nullable().optional(),
+        posPrinterNumber: z.number().min(1).max(10).optional(),
       }))
       .mutation(async ({ input }) => {
         await db.upsertPrinterSettings(input);
         return { success: true };
+      }),
+    
+    // Testar conexão com POSPrinterDriver
+    testPOSPrinter: protectedProcedure
+      .input(z.object({
+        linkcode: z.string(),
+        printerNumber: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { testPOSPrinterConnection } = await import('./posPrinterDriver');
+        return testPOSPrinterConnection(input.linkcode, input.printerNumber || 1);
       }),
     
     // Buscar impressora padrão

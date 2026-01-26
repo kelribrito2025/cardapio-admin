@@ -59,6 +59,9 @@ import {
   BellRing,
   Smartphone,
   Download,
+  Loader2,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -195,6 +198,13 @@ export default function Configuracoes() {
   const [printHeaderMessage, setPrintHeaderMessage] = useState("");
   const [printFooterMessage, setPrintFooterMessage] = useState("");
   const [printPaperWidth, setPrintPaperWidth] = useState<'58mm' | '80mm'>('80mm');
+  
+  // POSPrinterDriver state
+  const [posPrinterEnabled, setPosPrinterEnabled] = useState(false);
+  const [posPrinterLinkcode, setPosPrinterLinkcode] = useState("");
+  const [posPrinterNumber, setPosPrinterNumber] = useState(1);
+  const [isTestingPosPrinter, setIsTestingPosPrinter] = useState(false);
+  const [posPrinterTestResult, setPosPrinterTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
   // Image crop modal state
   const [cropModalOpen, setCropModalOpen] = useState(false);
@@ -317,6 +327,10 @@ export default function Configuracoes() {
       setPrintHeaderMessage((printerSettings as any).headerMessage || "");
       setPrintFooterMessage(printerSettings.footerMessage || "");
       setPrintPaperWidth((printerSettings as any).paperWidth || '80mm');
+      // POSPrinterDriver
+      setPosPrinterEnabled((printerSettings as any).posPrinterEnabled || false);
+      setPosPrinterLinkcode((printerSettings as any).posPrinterLinkcode || "");
+      setPosPrinterNumber((printerSettings as any).posPrinterNumber || 1);
     }
   }, [printerSettings]);
 
@@ -449,6 +463,23 @@ export default function Configuracoes() {
       toast.error("Erro ao testar conexão");
     },
   });
+  
+  const testPosPrinterMutation = trpc.printer.testPOSPrinter.useMutation({
+    onSuccess: (result) => {
+      setPosPrinterTestResult(result);
+      setIsTestingPosPrinter(false);
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    },
+    onError: () => {
+      setIsTestingPosPrinter(false);
+      setPosPrinterTestResult({ success: false, message: "Erro ao testar conexão" });
+      toast.error("Erro ao testar conexão com POSPrinterDriver");
+    },
+  });
 
   // Printer helper functions
   const resetPrinterForm = () => {
@@ -549,7 +580,20 @@ export default function Configuracoes() {
       headerMessage: printHeaderMessage || null,
       footerMessage: printFooterMessage || null,
       paperWidth: printPaperWidth,
+      posPrinterEnabled,
+      posPrinterLinkcode: posPrinterLinkcode || null,
+      posPrinterNumber,
     });
+  };
+  
+  const handleTestPosPrinter = () => {
+    if (!posPrinterLinkcode.trim()) {
+      toast.error("Informe o Linkcode do POSPrinterDriver");
+      return;
+    }
+    setIsTestingPosPrinter(true);
+    setPosPrinterTestResult(null);
+    testPosPrinterMutation.mutate({ linkcode: posPrinterLinkcode, printerNumber: posPrinterNumber });
   };
 
   const handleSaveEstablishment = () => {
@@ -2280,6 +2324,125 @@ export default function Configuracoes() {
                   </div>
                 </div>
               )}
+              
+              {/* POSPrinterDriver - Impressão Automática via Servidor */}
+              <div className="mt-6 pt-6 border-t">
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl border border-blue-500/20">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Label className="text-base font-medium">POSPrinterDriver</Label>
+                      <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">Recomendado</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Impressão 100% automática via servidor - sem precisar clicar em nada!
+                    </p>
+                  </div>
+                  <Switch
+                    checked={posPrinterEnabled}
+                    onCheckedChange={setPosPrinterEnabled}
+                  />
+                </div>
+                
+                {posPrinterEnabled && (
+                  <div className="space-y-4 mt-4 pl-4 border-l-2 border-blue-500/30">
+                    {/* Instruções */}
+                    <div className="p-4 bg-muted/50 rounded-lg space-y-2">
+                      <p className="text-sm font-medium">Como configurar:</p>
+                      <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                        <li>Baixe o app <strong>POSPrinterDriver</strong> na Play Store</li>
+                        <li>Configure sua impressora térmica no app</li>
+                        <li>Copie o <strong>Linkcode</strong> gerado pelo app</li>
+                        <li>Cole o Linkcode abaixo e clique em "Testar Conexão"</li>
+                      </ol>
+                      <a 
+                        href="https://play.google.com/store/apps/details?id=com.nicola.posprinterdriver" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-sm text-blue-500 hover:underline mt-2"
+                      >
+                        Baixar POSPrinterDriver
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
+                    
+                    {/* Linkcode */}
+                    <div className="space-y-2">
+                      <Label className="text-sm">Linkcode do Terminal</Label>
+                      <Input
+                        value={posPrinterLinkcode}
+                        onChange={(e) => setPosPrinterLinkcode(e.target.value.toUpperCase())}
+                        placeholder="Ex: ABC123"
+                        className="font-mono uppercase"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        O Linkcode é gerado automaticamente pelo app POSPrinterDriver
+                      </p>
+                    </div>
+                    
+                    {/* Número da Impressora */}
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-1">
+                        <Label className="text-sm">Número da Impressora</Label>
+                        <p className="text-xs text-muted-foreground">Se tiver múltiplas impressoras configuradas</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setPosPrinterNumber(Math.max(1, posPrinterNumber - 1))}
+                          disabled={posPrinterNumber <= 1}
+                        >
+                          -
+                        </Button>
+                        <span className="w-8 text-center font-mono">{posPrinterNumber}</span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setPosPrinterNumber(Math.min(10, posPrinterNumber + 1))}
+                          disabled={posPrinterNumber >= 10}
+                        >
+                          +
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Botão Testar */}
+                    <Button
+                      variant="outline"
+                      onClick={handleTestPosPrinter}
+                      disabled={isTestingPosPrinter || !posPrinterLinkcode.trim()}
+                      className="w-full"
+                    >
+                      {isTestingPosPrinter ? (
+                        <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Testando...</>
+                      ) : (
+                        <><Printer className="h-4 w-4 mr-2" /> Testar Conexão</>
+                      )}
+                    </Button>
+                    
+                    {/* Resultado do Teste */}
+                    {posPrinterTestResult && (
+                      <div className={`p-3 rounded-lg text-sm ${
+                        posPrinterTestResult.success 
+                          ? 'bg-green-500/10 text-green-600 border border-green-500/20' 
+                          : 'bg-red-500/10 text-red-600 border border-red-500/20'
+                      }`}>
+                        {posPrinterTestResult.success ? (
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4" />
+                            {posPrinterTestResult.message}
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <XCircle className="h-4 w-4" />
+                            {posPrinterTestResult.message}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
 
               {/* Botão Salvar Configurações */}
               <div className="flex justify-end pt-4 border-t">

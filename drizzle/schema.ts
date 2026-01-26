@@ -380,6 +380,10 @@ export const printerSettings = mysqlTable("printerSettings", {
   headerMessage: text("headerMessage"), // Mensagem personalizada no cabeçalho
   footerMessage: text("footerMessage"), // Mensagem personalizada no rodapé
   paperWidth: varchar("paperWidth", { length: 10 }).default("80mm").notNull(), // Largura do papel: 58mm ou 80mm
+  // POSPrinterDriver - Impressão automática via servidor
+  posPrinterEnabled: boolean("posPrinterEnabled").default(false).notNull(), // Usar POSPrinterDriver
+  posPrinterLinkcode: varchar("posPrinterLinkcode", { length: 100 }), // Código de link do terminal
+  posPrinterNumber: int("posPrinterNumber").default(1).notNull(), // Número da impressora (1, 2, 3...)
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

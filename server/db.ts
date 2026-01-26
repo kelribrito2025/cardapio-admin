@@ -1365,7 +1365,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     try {
       const printerSettingsResult = await getPrinterSettings(data.establishmentId);
       if (printerSettingsResult?.autoPrintEnabled && printerSettingsResult?.printOnNewOrder) {
-        // Enviar evento SSE para impressão
+        // Enviar evento SSE para impressão (para app ESC POS)
         notifyPrintOrder(data.establishmentId, {
           orderId,
           orderNumber,
@@ -1391,6 +1391,53 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
           createdAt: new Date(),
         });
         console.log('[DB:createPublicOrder] Evento de impressão enviado para pedido:', orderNumber);
+      }
+      
+      // Impressão automática via POSPrinterDriver (se configurado)
+      if (printerSettingsResult?.posPrinterEnabled && printerSettingsResult?.posPrinterLinkcode) {
+        const { printViaPOSPrinterDriver } = await import('./posPrinterDriver');
+        const establishment = await getEstablishmentById(data.establishmentId);
+        
+        const printResult = await printViaPOSPrinterDriver(
+          {
+            orderNumber,
+            customerName: data.customerName || 'Nao informado',
+            customerPhone: data.customerPhone || undefined,
+            customerAddress: data.customerAddress || undefined,
+            deliveryType: (data.deliveryType || 'delivery') as 'delivery' | 'pickup',
+            paymentMethod: data.paymentMethod || 'cash',
+            changeFor: data.changeAmount || undefined,
+            items: items.map(item => ({
+              quantity: item.quantity ?? 1,
+              productName: item.productName,
+              totalPrice: item.totalPrice,
+              notes: item.notes || undefined,
+              complements: typeof item.complements === 'string' ? item.complements : (item.complements ? JSON.stringify(item.complements) : undefined),
+            })),
+            subtotal: data.subtotal || '0',
+            deliveryFee: data.deliveryFee || undefined,
+            discount: data.discount || undefined,
+            couponCode: data.couponCode || undefined,
+            total: data.total,
+            notes: data.notes || undefined,
+            createdAt: new Date(),
+          },
+          { name: establishment?.name || 'Estabelecimento' },
+          {
+            copies: printerSettingsResult.copies || 1,
+            headerMessage: printerSettingsResult.headerMessage || undefined,
+            footerMessage: printerSettingsResult.footerMessage || undefined,
+            paperWidth: printerSettingsResult.paperWidth || '80mm',
+            posPrinterLinkcode: printerSettingsResult.posPrinterLinkcode,
+            posPrinterNumber: printerSettingsResult.posPrinterNumber || 1,
+          }
+        );
+        
+        if (printResult.success) {
+          console.log('[DB:createPublicOrder] POSPrinterDriver:', printResult.message);
+        } else {
+          console.error('[DB:createPublicOrder] POSPrinterDriver erro:', printResult.message);
+        }
       }
     } catch (printError) {
       console.error('[DB:createPublicOrder] Erro ao verificar configurações de impressão:', printError);
@@ -2724,6 +2771,9 @@ export async function upsertPrinterSettings(data: {
   headerMessage?: string | null;
   footerMessage?: string | null;
   paperWidth?: string;
+  posPrinterEnabled?: boolean;
+  posPrinterLinkcode?: string | null;
+  posPrinterNumber?: number;
 }): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -2743,6 +2793,9 @@ export async function upsertPrinterSettings(data: {
         headerMessage: data.headerMessage !== undefined ? data.headerMessage : (existing as any).headerMessage,
         footerMessage: data.footerMessage !== undefined ? data.footerMessage : existing.footerMessage,
         paperWidth: data.paperWidth ?? (existing as any).paperWidth ?? '80mm',
+        posPrinterEnabled: data.posPrinterEnabled ?? (existing as any).posPrinterEnabled ?? false,
+        posPrinterLinkcode: data.posPrinterLinkcode !== undefined ? data.posPrinterLinkcode : (existing as any).posPrinterLinkcode,
+        posPrinterNumber: data.posPrinterNumber ?? (existing as any).posPrinterNumber ?? 1,
       })
       .where(eq(printerSettings.establishmentId, data.establishmentId));
   } else {
@@ -2758,6 +2811,9 @@ export async function upsertPrinterSettings(data: {
       headerMessage: data.headerMessage || null,
       footerMessage: data.footerMessage || null,
       paperWidth: data.paperWidth || '80mm',
+      posPrinterEnabled: data.posPrinterEnabled ?? false,
+      posPrinterLinkcode: data.posPrinterLinkcode || null,
+      posPrinterNumber: data.posPrinterNumber ?? 1,
     });
   }
 }
