@@ -622,7 +622,7 @@ async function startServer() {
     }
   });
   
-  // Rota para teste de impressão com dados de exemplo
+  // Rota para teste de impressão com dados de exemplo (mesmo modelo do Preview)
   app.get("/api/print/test/:establishmentId", async (req, res) => {
     try {
       const establishmentId = parseInt(req.params.establishmentId);
@@ -634,6 +634,21 @@ async function startServer() {
       const establishment = await getEstablishmentById(establishmentId);
       const settings = await getPrinterSettings(establishmentId);
       
+      // Configurações de fonte
+      const fontSize = settings?.fontSize || 12;
+      const fontWeight = settings?.fontWeight || 500;
+      const titleFontSize = settings?.titleFontSize || 16;
+      const titleFontWeight = settings?.titleFontWeight || 700;
+      const itemFontSize = settings?.itemFontSize || 12;
+      const itemFontWeight = settings?.itemFontWeight || 700;
+      const obsFontSize = settings?.obsFontSize || 11;
+      const obsFontWeight = settings?.obsFontWeight || 500;
+      const paperWidth = settings?.paperWidth || '80mm';
+      const showDividers = settings?.showDividers ?? true;
+      
+      const maxWidth = paperWidth === "58mm" ? "220px" : "300px";
+      const establishmentName = establishment?.name || "Restaurante";
+      
       // Dados de exemplo para teste
       const sampleOrder = {
         orderNumber: "P999",
@@ -641,43 +656,257 @@ async function startServer() {
         deliveryType: "delivery",
         customerName: "João Silva",
         customerPhone: "11999998888",
-        customerAddress: "Rua das Flores, 123 - Centro",
+        address: "Rua das Flores, 123 - Centro",
         addressComplement: "Apto 45",
         neighborhood: "Centro",
         subtotal: 90.80,
         deliveryFee: 5.00,
-        discount: 0,
         total: 95.80,
-        paymentMethod: "pix",
-        notes: ""
+        paymentMethod: "PIX",
+        items: [
+          { 
+            name: "X-Burger Especial", 
+            quantity: 2, 
+            price: 25.90,
+            observation: "Sem cebola",
+            complements: [
+              { name: "Bacon extra", price: 5.00 },
+              { name: "Queijo cheddar", price: 3.00 }
+            ]
+          },
+          { 
+            name: "Batata Frita Grande", 
+            quantity: 1, 
+            price: 15.00,
+            observation: "",
+            complements: []
+          },
+          { 
+            name: "Refrigerante 600ml", 
+            quantity: 2, 
+            price: 8.00,
+            observation: "Bem gelado",
+            complements: []
+          }
+        ]
       };
       
-      const sampleItems = [
-        { 
-          productName: "X-Burger Especial", 
-          quantity: 2, 
-          totalPrice: 51.80,
-          notes: "Sem cebola",
-          complements: JSON.stringify([{ items: [{ name: "Bacon extra", price: 5.00 }, { name: "Queijo cheddar", price: 3.00 }] }])
-        },
-        { 
-          productName: "Batata Frita Grande", 
-          quantity: 1, 
-          totalPrice: 15.00,
-          notes: "",
-          complements: null
-        },
-        { 
-          productName: "Refrigerante 600ml", 
-          quantity: 2, 
-          totalPrice: 16.00,
-          notes: "Bem gelado",
-          complements: null
-        }
-      ];
+      const formatCurrency = (value: number) => `R$ ${value.toFixed(2).replace('.', ',')}`;
+      const formatDate = (date: Date) => date.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
       
-      // Gerar HTML otimizado para impressora térmica
-      const html = generateReceiptHTML(sampleOrder, sampleItems, establishment, settings);
+      // Gerar HTML igual ao Preview
+      const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Teste de Impressão</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: Arial, sans-serif; 
+      font-size: ${fontSize}px; 
+      font-weight: ${fontWeight};
+      padding: 15px; 
+      max-width: ${maxWidth}; 
+      margin: 0 auto; 
+      background: #fff;
+      color: #333;
+    }
+    .receipt {
+      background: #fff;
+      padding: 8px;
+    }
+    .logo {
+      text-align: center;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      ${showDividers ? 'border-bottom: 1px solid #ccc;' : ''}
+    }
+    .logo h1 {
+      font-size: ${titleFontSize + 4}px;
+      font-weight: ${titleFontWeight};
+      margin: 0;
+    }
+    .logo p {
+      font-size: ${obsFontSize}px;
+      font-weight: ${obsFontWeight};
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+    .order-info {
+      margin-bottom: 12px;
+    }
+    .order-info h2 {
+      font-size: ${titleFontSize}px;
+      font-weight: ${titleFontWeight};
+      margin-bottom: 2px;
+    }
+    .order-info p {
+      font-size: ${obsFontSize}px;
+      font-weight: ${titleFontWeight};
+      color: #666;
+    }
+    .divider {
+      border: none;
+      ${showDividers ? 'border-top: 1px solid #ccc;' : ''}
+      margin: 10px 0;
+    }
+    .divider-dashed {
+      border: none;
+      ${showDividers ? 'border-top: 1px dashed #bbb;' : ''}
+      margin: 8px 0;
+    }
+    .item {
+      margin-bottom: 8px;
+    }
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: ${itemFontSize}px;
+      font-weight: ${itemFontWeight};
+    }
+    .item-obs {
+      font-size: ${obsFontSize}px;
+      font-weight: ${obsFontWeight};
+      color: #666;
+      margin-top: 2px;
+      padding-left: 5px;
+    }
+    .item-complement {
+      font-size: ${obsFontSize}px;
+      font-weight: ${obsFontWeight};
+      color: #555;
+      margin-top: 2px;
+      padding-left: 10px;
+    }
+    .totals {
+      margin: 12px 0;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      font-size: ${fontSize}px;
+      font-weight: ${fontWeight};
+    }
+    .total-row.final {
+      font-weight: ${titleFontWeight};
+      font-size: ${titleFontSize - 2}px;
+      margin-top: 6px;
+      ${showDividers ? 'border-top: 1px solid #333; padding-top: 6px;' : ''}
+    }
+    .section {
+      margin: 12px 0;
+    }
+    .section-title {
+      font-weight: ${titleFontWeight};
+      font-size: ${itemFontSize}px;
+      margin-bottom: 4px;
+    }
+    .section-content {
+      font-size: ${fontSize}px;
+      font-weight: ${fontWeight};
+      color: #444;
+      line-height: 1.4;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 15px;
+      padding-top: 10px;
+      ${showDividers ? 'border-top: 1px solid #ccc;' : ''}
+    }
+    .footer p {
+      font-size: ${obsFontSize}px;
+      font-weight: ${titleFontWeight};
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="receipt">
+    <div class="logo">
+      <h1>${establishmentName}</h1>
+      <p>Sistema de Pedidos</p>
+    </div>
+    
+    <div class="order-info">
+      <h2>Pedido #${sampleOrder.orderNumber}</h2>
+      <p>Realizado em: ${formatDate(sampleOrder.createdAt)}</p>
+    </div>
+    
+    <hr class="divider">
+    
+    ${sampleOrder.items.map(item => `
+      <div class="item">
+        <div class="item-header">
+          <span>${item.quantity}x ${item.name}</span>
+          <span>${formatCurrency(item.price * item.quantity)}</span>
+        </div>
+        ${item.observation ? `<div class="item-obs">Obs: ${item.observation}</div>` : ''}
+        ${item.complements.map((c: any) => `
+          <div class="item-complement">+ ${c.name} (${formatCurrency(c.price)})</div>
+        `).join('')}
+      </div>
+    `).join('')}
+    
+    <hr class="divider-dashed">
+    
+    <div class="totals">
+      <div class="total-row">
+        <span>Valor dos produtos</span>
+        <span>${formatCurrency(sampleOrder.subtotal)}</span>
+      </div>
+      <div class="total-row">
+        <span>Taxa de entrega</span>
+        <span>${formatCurrency(sampleOrder.deliveryFee)}</span>
+      </div>
+      <div class="total-row final">
+        <span>Total</span>
+        <span>${formatCurrency(sampleOrder.total)}</span>
+      </div>
+    </div>
+    
+    <hr class="divider">
+    
+    <div class="section">
+      <div class="section-title">Entrega</div>
+      <div class="section-content">
+        ${sampleOrder.address}<br>
+        ${sampleOrder.addressComplement ? sampleOrder.addressComplement + '<br>' : ''}
+        ${sampleOrder.neighborhood}
+      </div>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">Pagamento</div>
+      <div class="section-content">${sampleOrder.paymentMethod}</div>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">Cliente</div>
+      <div class="section-content">
+        ${sampleOrder.customerName}<br>
+        ${sampleOrder.customerPhone}
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>Pedido realizado via Cardapio Admin</p>
+      <p>manus.space</p>
+    </div>
+  </div>
+</body>
+</html>
+      `;
       
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       res.send(html);

@@ -3258,3 +3258,5 @@
 - [x] Corrigir botão "Testar Impressora Térmica (Android)" que não funciona
 
 - [x] Corrigir recibo de teste que não mostra todas as informações do Preview
+
+- [x] Alterar modelo do recibo de teste para usar o mesmo layout do Preview (sem logo, mesmo formato)
