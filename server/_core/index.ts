@@ -261,6 +261,22 @@ function generateReceiptHTML(
       ${showDividers ? 'border-top: 2px solid #000; border-bottom: 2px solid #000;' : ''}
     }
     
+    /* SEÇÕES (Entrega, Pagamento, Cliente) */
+    .section {
+      margin: 12px 0;
+    }
+    .section-title {
+      font-weight: ${headerFontWeight};
+      font-size: ${itemFontSize};
+      margin-bottom: 4px;
+    }
+    .section-content {
+      font-size: ${baseFontSize};
+      font-weight: ${baseFontWeight};
+      color: #333;
+      line-height: 1.4;
+    }
+    
     /* PAGAMENTO */
     .payment {
       margin: 10px 0;
@@ -315,27 +331,6 @@ function generateReceiptHTML(
     <span class="delivery-type">${deliveryTypeText}</span>
   </div>
   
-  <hr class="divider-double">
-  
-  <div class="customer">
-    <div class="customer-row">
-      <span class="customer-label">CLIENTE:</span>
-      <span class="customer-value">${order.customerName || 'Nao informado'}</span>
-    </div>
-    ${order.customerPhone ? `
-    <div class="customer-row">
-      <span class="customer-label">TEL:</span>
-      <span class="customer-value">${order.customerPhone}</span>
-    </div>
-    ` : ''}
-    ${order.deliveryType === 'delivery' && order.customerAddress ? `
-    <div class="customer-row">
-      <span class="customer-label">ENDERECO:</span>
-      <span class="customer-value">${order.customerAddress}</span>
-    </div>
-    ` : ''}
-  </div>
-  
   <hr class="divider">
   
   <div class="items">
@@ -369,9 +364,36 @@ function generateReceiptHTML(
   
   <hr class="divider">
   
-  <div class="payment">
-    <span class="payment-method">PAGAMENTO: ${paymentMethodText[order.paymentMethod] || order.paymentMethod}</span>
-    ${order.paymentMethod === 'cash' && order.changeFor ? `<br>Troco para: ${formatCurrency(order.changeFor)}` : ''}
+  ${order.deliveryType === 'delivery' ? `
+  <div class="section">
+    <div class="section-title">Entrega</div>
+    <div class="section-content">
+      ${order.customerAddress || ''}
+      ${order.addressComplement ? '<br>' + order.addressComplement : ''}
+      ${order.neighborhood ? '<br>' + order.neighborhood : ''}
+    </div>
+  </div>
+  ` : `
+  <div class="section">
+    <div class="section-title">Retirada</div>
+    <div class="section-content">Cliente irá retirar no estabelecimento</div>
+  </div>
+  `}
+  
+  <div class="section">
+    <div class="section-title">Pagamento</div>
+    <div class="section-content">
+      ${paymentMethodText[order.paymentMethod] || order.paymentMethod}
+      ${order.paymentMethod === 'cash' && order.changeFor ? '<br>Troco para: ' + formatCurrency(order.changeFor) : ''}
+    </div>
+  </div>
+  
+  <div class="section">
+    <div class="section-title">Cliente</div>
+    <div class="section-content">
+      ${order.customerName || 'Nao informado'}
+      ${order.customerPhone ? '<br>' + order.customerPhone : ''}
+    </div>
   </div>
   
   ${order.notes ? `
@@ -381,14 +403,10 @@ function generateReceiptHTML(
   </div>
   ` : ''}
   
-  ${settings?.footerMessage ? `
   <div class="footer">
-    <p>${settings.footerMessage}</p>
-  </div>
-  ` : ''}
-  
-  <div class="footer">
-    <p class="footer-thanks">Obrigado pela preferencia!</p>
+    ${settings?.footerMessage ? `<p>${settings.footerMessage}</p>` : ''}
+    <p>Pedido realizado via Cardapio Admin</p>
+    <p>manus.space</p>
   </div>
 </body>
 </html>
@@ -623,7 +641,9 @@ async function startServer() {
         deliveryType: "delivery",
         customerName: "João Silva",
         customerPhone: "11999998888",
-        customerAddress: "Rua das Flores, 123 - Centro, Apto 45",
+        customerAddress: "Rua das Flores, 123 - Centro",
+        addressComplement: "Apto 45",
+        neighborhood: "Centro",
         subtotal: 90.80,
         deliveryFee: 5.00,
         discount: 0,

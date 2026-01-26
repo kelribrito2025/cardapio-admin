@@ -3256,3 +3256,5 @@
 ## Bugs - Teste de Impressão
 - [x] Corrigir botão "Testar Impressão Normal" que não abre janela de impressão
 - [x] Corrigir botão "Testar Impressora Térmica (Android)" que não funciona
+
+- [x] Corrigir recibo de teste que não mostra todas as informações do Preview
