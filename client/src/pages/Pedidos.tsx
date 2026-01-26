@@ -26,6 +26,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
+import {
   ClipboardList,
   Clock,
   CheckCircle,
@@ -38,6 +46,7 @@ import {
   Banknote,
   RefreshCw,
   Printer,
+  Smartphone,
   MessageCircle,
   Mail,
   Calendar,
@@ -430,6 +439,26 @@ export default function Pedidos() {
     } catch (error) {
       console.error("Erro ao imprimir pedido:", error);
       toast.error("Erro ao imprimir pedido");
+    }
+  };
+
+  // Função para imprimir via app ESC POS Android (impressora térmica)
+  const handlePrintThermal = (orderId: number) => {
+    // Detectar se é Android
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    
+    // URL do recibo
+    const receiptUrl = `${window.location.origin}/api/print/receipt/${orderId}`;
+    
+    if (isAndroid) {
+      // Usar app-link do ESC POS Wifi Print Service
+      const printUrl = `print://escpos.org/escpos/net/print?srcTp=uri&srcObj=html&numCopies=1&src='${encodeURIComponent(receiptUrl)}'`;
+      window.location.href = printUrl;
+      toast.success("Enviando para impressora térmica...");
+    } else {
+      // Em outros dispositivos, abrir o recibo em nova aba
+      window.open(receiptUrl, '_blank');
+      toast.info("Recibo aberto em nova aba. Para impressão térmica, use um dispositivo Android com o app ESC POS Wifi Print Service.");
     }
   };
 
@@ -969,23 +998,29 @@ export default function Pedidos() {
 
                       {/* Actions */}
                       <div className="flex gap-2 mt-3">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-9 w-9 rounded-lg border-border/50 hover:bg-accent text-muted-foreground hover:text-foreground"
-                                onClick={() => handlePrintOrderDirect(order.id)}
-                              >
-                                <Printer className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Imprimir pedido</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-9 w-9 rounded-lg border-border/50 hover:bg-accent text-muted-foreground hover:text-foreground"
+                            >
+                              <Printer className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start">
+                            <DropdownMenuLabel>Imprimir</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => handlePrintOrderDirect(order.id)}>
+                              <Printer className="h-4 w-4 mr-2" />
+                              Impressão Normal
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handlePrintThermal(order.id)}>
+                              <Smartphone className="h-4 w-4 mr-2" />
+                              Impressora Térmica (Android)
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                         <Button
                           variant="outline"
                           size="sm"
@@ -1273,10 +1308,24 @@ export default function Pedidos() {
 
           {/* Footer */}
           <div className="px-6 py-4 border-t border-border/50 flex items-center justify-between mt-auto">
-            <Button variant="outline" onClick={handlePrintOrder} className="gap-2">
-              <Printer className="h-4 w-4" />
-              Imprimir Pedido
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Printer className="h-4 w-4" />
+                  Imprimir Pedido
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem onClick={handlePrintOrder}>
+                  <Printer className="h-4 w-4 mr-2" />
+                  Impressão Normal
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => orderDetails && handlePrintThermal(orderDetails.id)}>
+                  <Smartphone className="h-4 w-4 mr-2" />
+                  Impressora Térmica (Android)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button 
               className="gap-2 bg-emerald-600 hover:bg-emerald-700"
               onClick={() => {

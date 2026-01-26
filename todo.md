@@ -3110,3 +3110,10 @@
 - [x] Permitir underscore (_), ponto (.) e números no campo "Link do Cardápio"
 - [x] Bug: ao avançar de "Seus Dados" para "Confirmação" mostra mensagem de erro "Não foi possível enviar o pedido" incorretamente - Corrigido: agora limpa o erro anterior ao iniciar novo checkout
 - [x] Atualizar templates padrão de WhatsApp para novos estabelecimentos (incluindo template de fidelidade)
+
+## App Android de Impressão Local
+- [x] Pesquisar soluções de impressão ESC/POS para Android
+- [x] Criar endpoint de API para gerar HTML do recibo (/api/print/receipt/:orderId)
+- [x] Integrar com app ESC POS Wifi Print Service (via app-links print://)
+- [x] Adicionar dropdown de impressão com opção térmica no painel de pedidos
+- [x] Criar testes unitários para o endpoint de recibo

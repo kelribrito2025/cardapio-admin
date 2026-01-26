@@ -9,8 +9,179 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, sendAllOrdersHeartbeat } from "./sse";
-import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers } from "../db";
+import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrderById, getOrderItems, getEstablishmentById, getPrinterSettings } from "../db";
 import { sdk } from "./sdk";
+
+// Função para gerar HTML do recibo otimizado para impressora térmica
+function generateReceiptHTML(
+  order: any,
+  items: any[],
+  establishment: any,
+  settings: any
+): string {
+  const formatCurrency = (value: number | string | null) => {
+    const num = typeof value === 'string' ? parseFloat(value) : (value || 0);
+    return `R$ ${num.toFixed(2).replace('.', ',')}`;
+  };
+  
+  const formatDate = (date: Date | string) => {
+    const d = new Date(date);
+    return d.toLocaleString('pt-BR', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+  
+  const deliveryTypeText = order.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA';
+  const paymentMethodText: Record<string, string> = {
+    'cash': 'Dinheiro',
+    'credit': 'Cartão de Crédito',
+    'debit': 'Cartão de Débito',
+    'pix': 'PIX',
+    'boleto': 'Boleto'
+  };
+  
+  let itemsHTML = '';
+  for (const item of items) {
+    itemsHTML += `
+      <tr>
+        <td style="text-align:left;padding:2px 0;">${item.quantity}x ${item.productName}</td>
+        <td style="text-align:right;padding:2px 0;">${formatCurrency(item.totalPrice)}</td>
+      </tr>
+    `;
+    if (item.notes) {
+      itemsHTML += `<tr><td colspan="2" style="font-size:10px;color:#666;padding-left:10px;">Obs: ${item.notes}</td></tr>`;
+    }
+    // Parse complements if exists
+    if (item.complements) {
+      try {
+        const complements = typeof item.complements === 'string' ? JSON.parse(item.complements) : item.complements;
+        if (Array.isArray(complements)) {
+          for (const comp of complements) {
+            if (comp.items && Array.isArray(comp.items)) {
+              for (const ci of comp.items) {
+                itemsHTML += `<tr><td colspan="2" style="font-size:10px;color:#666;padding-left:10px;">+ ${ci.name}${ci.price > 0 ? ` (${formatCurrency(ci.price)})` : ''}</td></tr>`;
+              }
+            }
+          }
+        }
+      } catch (e) {
+        // Ignore parse errors
+      }
+    }
+  }
+  
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedido #${order.orderNumber}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Courier New', monospace; 
+      font-size: 12px; 
+      width: 100%; 
+      max-width: 300px; 
+      margin: 0 auto;
+      padding: 5px;
+      background: #fff;
+    }
+    .header { text-align: center; margin-bottom: 10px; }
+    .header h1 { font-size: 16px; font-weight: bold; }
+    .header h2 { font-size: 14px; margin-top: 5px; }
+    .divider { border-top: 1px dashed #000; margin: 8px 0; }
+    .info { margin: 5px 0; }
+    .info-row { display: flex; justify-content: space-between; margin: 2px 0; }
+    .items-table { width: 100%; border-collapse: collapse; }
+    .totals { margin-top: 10px; }
+    .total-row { display: flex; justify-content: space-between; margin: 2px 0; }
+    .total-final { font-weight: bold; font-size: 14px; margin-top: 5px; }
+    .footer { text-align: center; margin-top: 15px; font-size: 10px; }
+    .customer { margin: 10px 0; }
+    .notes { background: #f5f5f5; padding: 5px; margin: 5px 0; font-size: 11px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>${establishment?.name || 'Estabelecimento'}</h1>
+    <h2>PEDIDO #${order.orderNumber}</h2>
+    <p>${formatDate(order.createdAt)}</p>
+    <p style="font-weight:bold;margin-top:5px;">${deliveryTypeText}</p>
+  </div>
+  
+  <div class="divider"></div>
+  
+  <div class="customer">
+    <strong>Cliente:</strong> ${order.customerName || 'Não informado'}<br>
+    ${order.customerPhone ? `<strong>Tel:</strong> ${order.customerPhone}<br>` : ''}
+    ${order.deliveryType === 'delivery' && order.customerAddress ? `<strong>Endereço:</strong> ${order.customerAddress}` : ''}
+  </div>
+  
+  <div class="divider"></div>
+  
+  <table class="items-table">
+    <tbody>
+      ${itemsHTML}
+    </tbody>
+  </table>
+  
+  <div class="divider"></div>
+  
+  <div class="totals">
+    <div class="total-row">
+      <span>Subtotal:</span>
+      <span>${formatCurrency(order.subtotal)}</span>
+    </div>
+    ${order.deliveryType === 'delivery' ? `
+    <div class="total-row">
+      <span>Taxa de entrega:</span>
+      <span>${formatCurrency(order.deliveryFee)}</span>
+    </div>
+    ` : ''}
+    ${order.discount && parseFloat(order.discount) > 0 ? `
+    <div class="total-row">
+      <span>Desconto${order.couponCode ? ` (${order.couponCode})` : ''}:</span>
+      <span>-${formatCurrency(order.discount)}</span>
+    </div>
+    ` : ''}
+    <div class="total-row total-final">
+      <span>TOTAL:</span>
+      <span>${formatCurrency(order.total)}</span>
+    </div>
+  </div>
+  
+  <div class="divider"></div>
+  
+  <div class="info">
+    <strong>Pagamento:</strong> ${paymentMethodText[order.paymentMethod] || order.paymentMethod}
+    ${order.paymentMethod === 'cash' && order.changeFor ? `<br><strong>Troco para:</strong> ${formatCurrency(order.changeFor)}` : ''}
+  </div>
+  
+  ${order.notes ? `
+  <div class="notes">
+    <strong>Observações:</strong> ${order.notes}
+  </div>
+  ` : ''}
+  
+  ${settings?.footerMessage ? `
+  <div class="footer">
+    <p>${settings.footerMessage}</p>
+  </div>
+  ` : ''}
+  
+  <div class="footer">
+    <p>Obrigado pela preferência!</p>
+  </div>
+</body>
+</html>
+  `.trim();
+}
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -188,6 +359,36 @@ async function startServer() {
     } catch (error) {
       console.error("[SSE-Order] Erro ao estabelecer conexão:", error);
       res.status(500).json({ error: "Internal server error" });
+    }
+  });
+  
+  // Rota pública para gerar HTML do recibo de impressão (para app ESC POS)
+  app.get("/api/print/receipt/:orderId", async (req, res) => {
+    try {
+      const orderId = parseInt(req.params.orderId);
+      if (isNaN(orderId)) {
+        res.status(400).send("ID do pedido inválido");
+        return;
+      }
+      
+      const order = await getOrderById(orderId);
+      if (!order) {
+        res.status(404).send("Pedido não encontrado");
+        return;
+      }
+      
+      const orderItemsList = await getOrderItems(orderId);
+      const establishment = await getEstablishmentById(order.establishmentId);
+      const settings = await getPrinterSettings(order.establishmentId);
+      
+      // Gerar HTML otimizado para impressora térmica 58mm/80mm
+      const html = generateReceiptHTML(order, orderItemsList, establishment, settings);
+      
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (error) {
+      console.error("[Print] Erro ao gerar recibo:", error);
+      res.status(500).send("Erro ao gerar recibo");
     }
   });
   
