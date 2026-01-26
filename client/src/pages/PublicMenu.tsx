@@ -2149,7 +2149,7 @@ export default function PublicMenu() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-50 border-t-4 border-blue-500 py-6 mt-8 mb-16 md:mb-0" style={{paddingTop: '27px', paddingBottom: '2px'}}>
+      <footer className="bg-gray-50 border-t-4 border-blue-500 mt-8 mb-16 md:mb-0" style={{paddingTop: '8px', paddingBottom: '2px'}}>
         <a
           href="https://wa.me/5534998807793?text=Olá! Vi seu menu digital e gostaria de criar o meu."
           target="_blank"
