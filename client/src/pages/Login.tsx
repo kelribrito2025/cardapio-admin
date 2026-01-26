@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { LogIn, Check, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+import { AuthLayout } from "@/components/AuthLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -14,7 +19,9 @@ export default function Login() {
   const loginMutation = trpc.auth.loginWithEmail.useMutation({
     onSuccess: async () => {
       toast.success("Login realizado com sucesso!");
+      // Invalidar o cache de autenticação para forçar nova verificação
       await utils.auth.me.invalidate();
+      // Usar window.location para garantir reload completo do estado
       window.location.href = "/";
     },
     onError: (error: { message?: string }) => {
@@ -32,135 +39,110 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="max-w-6xl w-full grid lg:grid-cols-2 gap-12 items-center">
-        
-        {/* Lado Esquerdo - Card com Features */}
-        <div className="hidden lg:block">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl transform rotate-6"></div>
-            <div className="relative bg-gradient-to-br from-blue-600 to-purple-700 rounded-3xl p-12 text-white">
-              <LogIn className="w-16 h-16 mb-6" />
-              <h2 className="text-5xl font-black mb-4">Sistema de Gestão</h2>
-              <p className="text-xl mb-8 text-white/90">
-                Controle total do seu cardápio digital em uma plataforma moderna e intuitiva.
-              </p>
-              <div className="space-y-4">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Check className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg mb-1">Dashboard Completo</h3>
-                    <p className="text-white/80">Visualize todos os dados importantes em tempo real</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Check className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg mb-1">Gestão Inteligente</h3>
-                    <p className="text-white/80">IA integrada para otimizar suas vendas</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Check className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg mb-1">Suporte Premium</h3>
-                    <p className="text-white/80">Equipe sempre disponível para ajudar</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    <AuthLayout>
+      <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 p-8 border border-gray-100">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Acessar Conta</h2>
+          <p className="text-gray-600">Digite suas credenciais para acessar</p>
         </div>
 
-        {/* Lado Direito - Formulário */}
-        <div>
-          {/* Mobile - Card com gradiente simplificado */}
-          <div className="lg:hidden mb-8 bg-gradient-to-br from-blue-600 to-purple-700 rounded-2xl p-6 text-white text-center">
-            <LogIn className="w-12 h-12 mx-auto mb-3" />
-            <h2 className="text-2xl font-bold">Sistema de Gestão</h2>
-            <p className="text-white/80 text-sm mt-1">Cardápio Digital</p>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Email */}
+          <div className="space-y-2">
+            <Label htmlFor="email" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <Mail className="h-4 w-4 text-gray-500" />
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="h-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20"
+            />
           </div>
 
-          <div className="mb-8">
-            <h1 className="text-5xl font-black text-gray-900 mb-3">Login</h1>
-            <p className="text-xl text-gray-600">Acesse sua conta para continuar</p>
+          {/* Password */}
+          <div className="space-y-2">
+            <Label htmlFor="password" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <Lock className="h-4 w-4 text-gray-500" />
+              Senha
+            </Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Digite sua senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 pr-11"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="text-gray-900 font-bold mb-3 block text-lg">Email</label>
-              <input
-                type="email"
-                placeholder="voce@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 text-lg focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
-              />
-            </div>
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <label className="text-gray-900 font-bold text-lg">Senha</label>
-                <Link href="/esqueci-senha" className="text-blue-600 hover:text-blue-700 font-medium">
-                  Esqueceu?
-                </Link>
-              </div>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 text-lg focus:outline-none focus:border-blue-500 focus:bg-white transition-all pr-14"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
-                </button>
-              </div>
-            </div>
-            <label className="flex items-center text-gray-700 cursor-pointer">
-              <input 
-                type="checkbox" 
+
+          {/* Remember me & Forgot password */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="remember"
                 checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="mr-3 w-5 h-5 rounded accent-blue-600" 
+                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                className="border-gray-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
               />
-              <span className="text-lg">Manter-me conectado</span>
-            </label>
-            <button 
-              type="submit"
-              disabled={loginMutation.isPending}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-4 rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all shadow-xl text-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {loginMutation.isPending ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Entrando...
-                </>
-              ) : (
-                "Entrar no Sistema"
-              )}
-            </button>
-            <div className="text-center pt-4">
-              <p className="text-gray-600">
-                Não tem uma conta?{" "}
-                <Link href="/criar-conta" className="text-blue-600 hover:text-blue-700 font-bold">
-                  Cadastre-se gratuitamente
-                </Link>
-              </p>
+              <Label htmlFor="remember" className="text-sm text-gray-600 cursor-pointer">
+                Lembrar-me
+              </Label>
             </div>
-          </form>
+            <Link href="/esqueci-senha" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+              Esqueceu a senha?
+            </Link>
+          </div>
+
+          {/* Submit button */}
+          <Button
+            type="submit"
+            disabled={loginMutation.isPending}
+            className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200"
+          >
+            {loginMutation.isPending ? (
+              <>
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                Entrando...
+              </>
+            ) : (
+              <>
+                Entrar
+                <ArrowRight className="h-5 w-5 ml-2" />
+              </>
+            )}
+          </Button>
+        </form>
+
+        {/* Sign up link */}
+        <div className="mt-6 text-center">
+          <p className="text-gray-600">
+            Ainda não tem uma conta?{" "}
+            <Link href="/criar-conta" className="font-semibold text-primary hover:text-primary/80 transition-colors">
+              Criar conta
+            </Link>
+          </p>
         </div>
       </div>
-    </div>
+
+      {/* Mobile logo */}
+      <div className="lg:hidden mt-8 text-center">
+        <p className="text-sm text-gray-500">© 2025 Cardápio Admin</p>
+      </div>
+    </AuthLayout>
   );
 }
