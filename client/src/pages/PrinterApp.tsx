@@ -100,18 +100,14 @@ export default function PrinterApp() {
   const openPrintLink = useCallback((orderId: number) => {
     const baseUrl = window.location.origin;
     const receiptUrl = `${baseUrl}/api/print/receipt/${orderId}`;
-    const printUrl = `print://${encodeURIComponent(receiptUrl)}`;
+    // Usar o formato correto do app ESC POS Wifi Print Service
+    const printUrl = `print://escpos.org/escpos/net/print?srcTp=uri&srcObj=html&numCopies=1&src='${encodeURIComponent(receiptUrl)}'`;
     
     console.log('[PrinterApp] Abrindo link de impressão:', printUrl);
     
-    // Usar um link <a> com click() para abrir o app sem criar nova aba
-    // Isso é mais compatível com Android e evita tela branca
-    const link = document.createElement('a');
-    link.href = printUrl;
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Usar window.location.href para abrir o app ESC POS
+    // Isso é o mesmo método usado na página de Pedidos que funciona
+    window.location.href = printUrl;
   }, []);
 
   // Função de polling

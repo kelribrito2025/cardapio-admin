@@ -3164,3 +3164,9 @@
 - [x] Adicionar lista de pedidos pendentes para impressão manual
 - [x] Melhorar feedback visual quando pedido chega
 - [x] Não marcar como impresso automaticamente - usuário deve confirmar
+
+
+## Bug: Botão IMPRIMIR PEDIDO não funciona na PWA
+- [x] Investigar por que o link print:// não abre o app ESC POS
+- [x] Corrigir formato do link para usar o formato correto do ESC POS Wifi Print Service
+- [x] Usar window.location.href como na página de Pedidos
