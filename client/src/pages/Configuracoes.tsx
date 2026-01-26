@@ -205,6 +205,13 @@ export default function Configuracoes() {
   const [posPrinterNumber, setPosPrinterNumber] = useState(1);
   const [isTestingPosPrinter, setIsTestingPosPrinter] = useState(false);
   const [posPrinterTestResult, setPosPrinterTestResult] = useState<{ success: boolean; message: string } | null>(null);
+  
+  // Impressão Direta via Rede state
+  const [directPrintEnabled, setDirectPrintEnabled] = useState(false);
+  const [directPrintIp, setDirectPrintIp] = useState("");
+  const [directPrintPort, setDirectPrintPort] = useState(9100);
+  const [isTestingDirectPrint, setIsTestingDirectPrint] = useState(false);
+  const [directPrintTestResult, setDirectPrintTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
   // Image crop modal state
   const [cropModalOpen, setCropModalOpen] = useState(false);
@@ -331,6 +338,10 @@ export default function Configuracoes() {
       setPosPrinterEnabled((printerSettings as any).posPrinterEnabled || false);
       setPosPrinterLinkcode((printerSettings as any).posPrinterLinkcode || "");
       setPosPrinterNumber((printerSettings as any).posPrinterNumber || 1);
+      // Impressão Direta via Rede
+      setDirectPrintEnabled((printerSettings as any).directPrintEnabled || false);
+      setDirectPrintIp((printerSettings as any).directPrintIp || "");
+      setDirectPrintPort((printerSettings as any).directPrintPort || 9100);
     }
   }, [printerSettings]);
 
@@ -480,6 +491,23 @@ export default function Configuracoes() {
       toast.error("Erro ao testar conexão com POSPrinterDriver");
     },
   });
+  
+  const testDirectPrintMutation = trpc.printer.testDirectPrint.useMutation({
+    onSuccess: (result) => {
+      setDirectPrintTestResult(result);
+      setIsTestingDirectPrint(false);
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    },
+    onError: () => {
+      setIsTestingDirectPrint(false);
+      setDirectPrintTestResult({ success: false, message: "Erro ao testar conexão" });
+      toast.error("Erro ao testar conexão com a impressora");
+    },
+  });
 
   // Printer helper functions
   const resetPrinterForm = () => {
@@ -583,6 +611,9 @@ export default function Configuracoes() {
       posPrinterEnabled,
       posPrinterLinkcode: posPrinterLinkcode || null,
       posPrinterNumber,
+      directPrintEnabled,
+      directPrintIp: directPrintIp || null,
+      directPrintPort,
     });
   };
   
@@ -594,6 +625,16 @@ export default function Configuracoes() {
     setIsTestingPosPrinter(true);
     setPosPrinterTestResult(null);
     testPosPrinterMutation.mutate({ linkcode: posPrinterLinkcode, printerNumber: posPrinterNumber });
+  };
+  
+  const handleTestDirectPrint = () => {
+    if (!directPrintIp.trim()) {
+      toast.error("Informe o IP da impressora");
+      return;
+    }
+    setIsTestingDirectPrint(true);
+    setDirectPrintTestResult(null);
+    testDirectPrintMutation.mutate({ ip: directPrintIp, port: directPrintPort });
   };
 
   const handleSaveEstablishment = () => {
@@ -2436,6 +2477,104 @@ export default function Configuracoes() {
                           <div className="flex items-center gap-2">
                             <XCircle className="h-4 w-4" />
                             {posPrinterTestResult.message}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              {/* Impressão Direta via Rede Local */}
+              <div className="space-y-4 pt-4 border-t">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-sm font-medium flex items-center gap-2">
+                      <Wifi className="h-4 w-4 text-green-500" />
+                      Impressão Direta via Rede
+                    </h4>
+                    <p className="text-xs text-muted-foreground">
+                      Imprime automaticamente direto na impressora via rede local (recomendado)
+                    </p>
+                  </div>
+                  <Switch
+                    checked={directPrintEnabled}
+                    onCheckedChange={setDirectPrintEnabled}
+                  />
+                </div>
+                
+                {directPrintEnabled && (
+                  <div className="space-y-4 mt-4 pl-4 border-l-2 border-green-500/30">
+                    {/* Instruções */}
+                    <div className="p-4 bg-muted/50 rounded-lg space-y-2">
+                      <p className="text-sm font-medium">Como funciona:</p>
+                      <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                        <li>Sua impressora térmica deve estar conectada na mesma rede Wi-Fi</li>
+                        <li>Informe o IP da impressora (ex: 192.168.68.100)</li>
+                        <li>A porta padrão é 9100 (não precisa alterar)</li>
+                        <li>Quando chegar um pedido, ele será impresso automaticamente!</li>
+                      </ol>
+                    </div>
+                    
+                    {/* IP da Impressora */}
+                    <div className="space-y-2">
+                      <Label className="text-sm">IP da Impressora</Label>
+                      <Input
+                        value={directPrintIp}
+                        onChange={(e) => setDirectPrintIp(e.target.value)}
+                        placeholder="Ex: 192.168.68.100"
+                        className="font-mono"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Encontre o IP nas configurações da impressora ou no app de configuração
+                      </p>
+                    </div>
+                    
+                    {/* Porta */}
+                    <div className="space-y-2">
+                      <Label className="text-sm">Porta</Label>
+                      <Input
+                        type="number"
+                        value={directPrintPort}
+                        onChange={(e) => setDirectPrintPort(parseInt(e.target.value) || 9100)}
+                        placeholder="9100"
+                        className="font-mono w-32"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Porta padrão: 9100 (não altere a menos que necessário)
+                      </p>
+                    </div>
+                    
+                    {/* Botão Testar */}
+                    <Button
+                      variant="outline"
+                      onClick={handleTestDirectPrint}
+                      disabled={isTestingDirectPrint || !directPrintIp.trim()}
+                      className="w-full"
+                    >
+                      {isTestingDirectPrint ? (
+                        <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Testando...</>
+                      ) : (
+                        <><Printer className="h-4 w-4 mr-2" /> Testar Impressão</>
+                      )}
+                    </Button>
+                    
+                    {/* Resultado do Teste */}
+                    {directPrintTestResult && (
+                      <div className={`p-3 rounded-lg text-sm ${
+                        directPrintTestResult.success 
+                          ? 'bg-green-500/10 text-green-600 border border-green-500/20' 
+                          : 'bg-red-500/10 text-red-600 border border-red-500/20'
+                      }`}>
+                        {directPrintTestResult.success ? (
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4" />
+                            {directPrintTestResult.message}
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <XCircle className="h-4 w-4" />
+                            {directPrintTestResult.message}
                           </div>
                         )}
                       </div>

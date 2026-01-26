@@ -1439,6 +1439,53 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
           console.error('[DB:createPublicOrder] POSPrinterDriver erro:', printResult.message);
         }
       }
+      
+      // Impressão direta via rede local (Socket TCP)
+      if ((printerSettingsResult as any)?.directPrintEnabled && (printerSettingsResult as any)?.directPrintIp) {
+        const { printOrderDirect } = await import('./escposPrinter');
+        const establishment = await getEstablishmentById(data.establishmentId);
+        
+        // Extrair bairro do endereço se disponível
+        const addressParts = data.customerAddress?.split(',') || [];
+        const neighborhoodFromAddress = addressParts.length > 1 ? addressParts[addressParts.length - 1]?.trim() : undefined;
+        
+        const directPrintResult = await printOrderDirect(
+          {
+            ip: (printerSettingsResult as any).directPrintIp,
+            port: (printerSettingsResult as any).directPrintPort || 9100,
+          },
+          {
+            orderId: 0,
+            orderNumber: parseInt(orderNumber) || 0,
+            customerName: data.customerName || 'Nao informado',
+            customerPhone: data.customerPhone || undefined,
+            deliveryType: (data.deliveryType || 'delivery') as 'delivery' | 'pickup' | 'table',
+            address: data.customerAddress || undefined,
+            neighborhood: neighborhoodFromAddress,
+            paymentMethod: data.paymentMethod || 'Dinheiro',
+            items: items.map(item => ({
+              name: item.productName,
+              quantity: item.quantity ?? 1,
+              price: parseFloat(item.totalPrice) / (item.quantity ?? 1),
+              observation: item.notes || undefined,
+              complements: typeof item.complements === 'string' ? item.complements : undefined,
+            })),
+            subtotal: parseFloat(data.subtotal || '0'),
+            deliveryFee: parseFloat(data.deliveryFee || '0'),
+            discount: parseFloat(data.discount || '0'),
+            total: parseFloat(data.total),
+            observation: data.notes || undefined,
+            createdAt: new Date(),
+            establishmentName: establishment?.name || 'Estabelecimento',
+          }
+        );
+        
+        if (directPrintResult.success) {
+          console.log('[DB:createPublicOrder] Impressão direta:', directPrintResult.message);
+        } else {
+          console.error('[DB:createPublicOrder] Impressão direta erro:', directPrintResult.message);
+        }
+      }
     } catch (printError) {
       console.error('[DB:createPublicOrder] Erro ao verificar configurações de impressão:', printError);
       // Não falhar o pedido por causa de erro de impressão
@@ -2774,6 +2821,9 @@ export async function upsertPrinterSettings(data: {
   posPrinterEnabled?: boolean;
   posPrinterLinkcode?: string | null;
   posPrinterNumber?: number;
+  directPrintEnabled?: boolean;
+  directPrintIp?: string | null;
+  directPrintPort?: number;
 }): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -2796,6 +2846,9 @@ export async function upsertPrinterSettings(data: {
         posPrinterEnabled: data.posPrinterEnabled ?? (existing as any).posPrinterEnabled ?? false,
         posPrinterLinkcode: data.posPrinterLinkcode !== undefined ? data.posPrinterLinkcode : (existing as any).posPrinterLinkcode,
         posPrinterNumber: data.posPrinterNumber ?? (existing as any).posPrinterNumber ?? 1,
+        directPrintEnabled: data.directPrintEnabled ?? (existing as any).directPrintEnabled ?? false,
+        directPrintIp: data.directPrintIp !== undefined ? data.directPrintIp : (existing as any).directPrintIp,
+        directPrintPort: data.directPrintPort ?? (existing as any).directPrintPort ?? 9100,
       })
       .where(eq(printerSettings.establishmentId, data.establishmentId));
   } else {
@@ -2814,6 +2867,9 @@ export async function upsertPrinterSettings(data: {
       posPrinterEnabled: data.posPrinterEnabled ?? false,
       posPrinterLinkcode: data.posPrinterLinkcode || null,
       posPrinterNumber: data.posPrinterNumber ?? 1,
+      directPrintEnabled: data.directPrintEnabled ?? false,
+      directPrintIp: data.directPrintIp || null,
+      directPrintPort: data.directPrintPort ?? 9100,
     });
   }
 }

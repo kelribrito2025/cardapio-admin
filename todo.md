@@ -3205,3 +3205,11 @@
 - [x] Integrar impressão automática quando chegar pedido novo
 - [x] Criar interface de configuração no painel admin
 - [x] Testar impressão automática
+
+## Impressão Direta via Rede Local (Socket TCP)
+- [x] Criar módulo de impressão ESC/POS via socket TCP
+- [x] Gerar comandos ESC/POS para formatação do recibo
+- [x] Integrar impressão automática quando chegar pedido novo
+- [x] Adicionar toggle para ativar/desativar impressão direta
+- [x] Adicionar interface de configuração no painel admin
+- [x] Adicionar botão de teste de conexão

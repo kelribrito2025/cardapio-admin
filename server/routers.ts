@@ -1702,6 +1702,9 @@ export const appRouter = router({
           posPrinterEnabled: false,
           posPrinterLinkcode: null,
           posPrinterNumber: 1,
+          directPrintEnabled: false,
+          directPrintIp: null,
+          directPrintPort: 9100,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -1724,10 +1727,24 @@ export const appRouter = router({
         posPrinterEnabled: z.boolean().optional(),
         posPrinterLinkcode: z.string().nullable().optional(),
         posPrinterNumber: z.number().min(1).max(10).optional(),
+        directPrintEnabled: z.boolean().optional(),
+        directPrintIp: z.string().nullable().optional(),
+        directPrintPort: z.number().min(1).max(65535).optional(),
       }))
       .mutation(async ({ input }) => {
         await db.upsertPrinterSettings(input);
         return { success: true };
+      }),
+    
+    // Testar conexão com impressão direta via rede
+    testDirectPrint: protectedProcedure
+      .input(z.object({
+        ip: z.string(),
+        port: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { testPrinterConnection } = await import('./escposPrinter');
+        return testPrinterConnection({ ip: input.ip, port: input.port || 9100 });
       }),
     
     // Testar conexão com POSPrinterDriver

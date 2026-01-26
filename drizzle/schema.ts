@@ -384,6 +384,10 @@ export const printerSettings = mysqlTable("printerSettings", {
   posPrinterEnabled: boolean("posPrinterEnabled").default(false).notNull(), // Usar POSPrinterDriver
   posPrinterLinkcode: varchar("posPrinterLinkcode", { length: 100 }), // Código de link do terminal
   posPrinterNumber: int("posPrinterNumber").default(1).notNull(), // Número da impressora (1, 2, 3...)
+  // Impressão Direta via Rede Local (Socket TCP)
+  directPrintEnabled: boolean("directPrintEnabled").default(false).notNull(), // Usar impressão direta
+  directPrintIp: varchar("directPrintIp", { length: 50 }), // IP da impressora
+  directPrintPort: int("directPrintPort").default(9100).notNull(), // Porta da impressora
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
