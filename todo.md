@@ -3213,3 +3213,6 @@
 - [x] Adicionar toggle para ativar/desativar impressão direta
 - [x] Adicionar interface de configuração no painel admin
 - [x] Adicionar botão de teste de conexão
+
+## Melhorar Visibilidade do Recibo Térmico
+- [x] Colocar todos os textos em negrito para melhor legibilidade

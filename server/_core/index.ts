@@ -117,6 +117,7 @@ function generateReceiptHTML(
     body { 
       font-family: 'Arial', 'Helvetica', sans-serif; 
       font-size: ${baseFontSize}; 
+      font-weight: 700;
       line-height: 1.4;
       width: 100%; 
       max-width: 100%;
@@ -146,6 +147,7 @@ function generateReceiptHTML(
     .header-date {
       font-size: ${smallFontSize};
       margin: 4px 0;
+      font-weight: 700;
     }
     .delivery-type {
       font-size: ${itemFontSize};
@@ -159,6 +161,7 @@ function generateReceiptHTML(
     .header-message { 
       font-size: ${smallFontSize}; 
       margin-top: 4px; 
+      font-weight: 700;
     }
     .logo { 
       max-width: ${is58mm ? '100px' : '140px'}; 
@@ -189,6 +192,7 @@ function generateReceiptHTML(
       display: block;
       margin-left: 0;
       word-wrap: break-word;
+      font-weight: 700;
     }
     .customer-row {
       margin: 6px 0;
@@ -211,7 +215,7 @@ function generateReceiptHTML(
     }
     .item-name {
       font-size: ${itemFontSize};
-      font-weight: 600;
+      font-weight: 900;
       flex: 1;
       word-wrap: break-word;
     }
@@ -225,10 +229,12 @@ function generateReceiptHTML(
       font-size: ${smallFontSize};
       margin: 4px 0 4px 36px;
       font-style: italic;
+      font-weight: 700;
     }
     .item-complement {
       font-size: ${smallFontSize};
       margin: 2px 0 2px 36px;
+      font-weight: 700;
     }
     
     /* TOTAIS */
