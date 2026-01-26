@@ -12,8 +12,7 @@ import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMu
 import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrderById, getOrderItems, getEstablishmentById, getPrinterSettings } from "../db";
 import { sdk } from "./sdk";
 
-// Função para gerar HTML do recibo otimizado para impressora térmica
-// OTIMIZADO para melhor legibilidade em impressoras ESC POS 58mm/80mm
+// Função para gerar HTML do recibo - Layout Simples (mesmo da Impressão Normal)
 function generateReceiptHTML(
   order: any,
   items: any[],
@@ -27,16 +26,14 @@ function generateReceiptHTML(
   
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
-    return d.toLocaleString('pt-BR', { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const year = d.getFullYear();
+    const hours = d.getHours().toString().padStart(2, '0');
+    const minutes = d.getMinutes().toString().padStart(2, '0');
+    return `${day}/${month}/${year} - ${hours}:${minutes}`;
   };
   
-  const deliveryTypeText = order.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA';
   const paymentMethodText: Record<string, string> = {
     'cash': 'Dinheiro',
     'credit': 'Cartao Credito',
@@ -46,38 +43,10 @@ function generateReceiptHTML(
     'boleto': 'Boleto'
   };
   
-  // Configurar largura do papel - FONTES MAIORES para melhor legibilidade
-  const is58mm = settings?.paperWidth === '58mm';
-  const paperWidth = is58mm ? '48mm' : '72mm'; // Largura real do papel térmico
-  
-  // Fontes menores para impressoras térmicas
-  const baseFontSize = is58mm ? '11px' : '12px';
-  const headerFontSize = is58mm ? '14px' : '16px';
-  const orderNumberSize = is58mm ? '18px' : '20px';
-  const itemFontSize = is58mm ? '11px' : '12px';
-  const totalFontSize = is58mm ? '13px' : '14px';
-  const smallFontSize = is58mm ? '10px' : '11px';
-  
-  // Logo URL (usa o personalizado ou o do estabelecimento)
-  const logoUrl = settings?.logoUrl || establishment?.logo;
-  
-  // Mensagem de cabeçalho personalizada
-  const headerMessage = settings?.headerMessage;
-  
+  // Gerar HTML dos itens
   let itemsHTML = '';
   for (const item of items) {
-    itemsHTML += `
-      <div class="item">
-        <div class="item-line">
-          <span class="item-qty">${item.quantity}x</span>
-          <span class="item-name">${item.productName}</span>
-        </div>
-        <div class="item-price">${formatCurrency(item.totalPrice)}</div>
-      </div>
-    `;
-    if (item.notes) {
-      itemsHTML += `<div class="item-obs">OBS: ${item.notes}</div>`;
-    }
+    let complementsHTML = '';
     // Parse complements if exists
     if (item.complements) {
       try {
@@ -86,7 +55,8 @@ function generateReceiptHTML(
           for (const comp of complements) {
             if (comp.items && Array.isArray(comp.items)) {
               for (const ci of comp.items) {
-                itemsHTML += `<div class="item-complement">+ ${ci.name}${ci.price > 0 ? ` ${formatCurrency(ci.price)}` : ''}</div>`;
+                const priceStr = ci.price > 0 ? ` (${formatCurrency(ci.price)})` : '';
+                complementsHTML += `<div class="item-complement">+ ${ci.name}${priceStr}</div>`;
               }
             }
           }
@@ -95,296 +65,234 @@ function generateReceiptHTML(
         // Ignore parse errors
       }
     }
+    
+    itemsHTML += `
+      <div class="item">
+        <div class="item-header">
+          <span class="item-qty">${item.quantity}x ${item.productName}</span>
+          <span class="item-price">${formatCurrency(item.totalPrice)}</span>
+        </div>
+        ${complementsHTML}
+        ${item.notes ? `<div class="item-obs">Obs: ${item.notes}</div>` : ''}
+      </div>
+    `;
   }
+  
+  const discount = order.discount ? parseFloat(order.discount) : 0;
   
   return `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pedido #${order.orderNumber}</title>
   <style>
-    @page {
-      size: ${paperWidth} auto;
-      margin: 0;
-    }
-    * { 
-      margin: 0; 
-      padding: 0; 
-      box-sizing: border-box; 
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
-      font-family: 'Arial', 'Helvetica', sans-serif; 
-      font-size: ${baseFontSize}; 
-      font-weight: 500;
-      line-height: 1.4;
-      width: 100%; 
-      max-width: 100%;
-      padding: 8px;
+      font-family: Arial, sans-serif; 
+      font-size: 13px; 
+      padding: 20px; 
+      max-width: 320px; 
+      margin: 0 auto; 
       background: #fff;
-      color: #000;
-      -webkit-font-smoothing: antialiased;
+      color: #333;
     }
-    
-    /* CABEÇALHO */
-    .header { 
-      text-align: center; 
-      margin-bottom: 12px; 
+    .receipt {
+      background: #fff;
+      padding: 10px;
     }
-    .header h1 { 
-      font-size: ${headerFontSize}; 
-      font-weight: 700; 
-      letter-spacing: -0.5px;
-      margin-bottom: 4px;
+    .logo {
+      text-align: center;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
     }
-    .order-number {
-      font-size: ${orderNumberSize};
-      font-weight: 700;
-      margin: 8px 0;
+    .logo h1 {
+      font-size: 22px;
+      font-weight: bold;
+      margin: 0;
       letter-spacing: 1px;
     }
-    .header-date {
-      font-size: ${smallFontSize};
-      margin: 4px 0;
-      font-weight: 700;
-    }
-    .delivery-type {
-      font-size: ${itemFontSize};
-      font-weight: 700;
-      background: #000;
-      color: #fff;
-      padding: 6px 12px;
-      display: inline-block;
-      margin: 8px 0;
-    }
-    .header-message { 
-      font-size: ${smallFontSize}; 
-      margin-top: 4px; 
-      font-weight: 700;
-    }
-    .logo { 
-      max-width: ${is58mm ? '100px' : '140px'}; 
-      max-height: ${is58mm ? '50px' : '70px'}; 
-      margin-bottom: 8px; 
-    }
-    
-    /* DIVISOR */
-    .divider { 
-      border: none;
-      border-top: 2px dashed #000; 
-      margin: 10px 0; 
-    }
-    .divider-double {
-      border-top: 3px double #000;
-      margin: 12px 0;
-    }
-    
-    /* CLIENTE */
-    .customer { 
-      margin: 10px 0; 
-      font-size: ${itemFontSize};
-    }
-    .customer-label {
-      font-weight: 500;
-    }
-    .customer-value {
-      display: block;
-      margin-left: 0;
-      word-wrap: break-word;
-      font-weight: 500;
-    }
-    .customer-row {
-      margin: 6px 0;
-    }
-    
-    /* ITENS */
-    .item {
-      margin: 8px 0;
-      padding: 4px 0;
-    }
-    .item-line {
-      display: flex;
-      align-items: flex-start;
-      gap: 6px;
-    }
-    .item-qty {
-      font-weight: 700;
-      font-size: ${itemFontSize};
-      min-width: 30px;
-    }
-    .item-name {
-      font-size: ${itemFontSize};
-      font-weight: 700;
-      flex: 1;
-      word-wrap: break-word;
-    }
-    .item-price {
-      font-size: ${itemFontSize};
-      font-weight: 500;
-      text-align: right;
+    .logo p {
+      font-size: 10px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 2px;
       margin-top: 2px;
     }
-    .item-obs {
-      font-size: ${smallFontSize};
-      margin: 4px 0 4px 36px;
-      font-style: italic;
+    .order-info {
+      margin-bottom: 15px;
+    }
+    .order-info h2 {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+    .order-info p {
+      font-size: 12px;
+      color: #666;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid #ccc;
+      margin: 12px 0;
+    }
+    .divider-dashed {
+      border: none;
+      border-top: 1px dashed #bbb;
+      margin: 10px 0;
+    }
+    .item {
+      margin-bottom: 10px;
+    }
+    .item-header {
+      display: flex;
+      justify-content: space-between;
       font-weight: 500;
+    }
+    .item-obs {
+      font-size: 11px;
+      color: #666;
+      margin-top: 2px;
+      padding-left: 5px;
     }
     .item-complement {
-      font-size: ${smallFontSize};
-      margin: 2px 0 2px 36px;
-      font-weight: 500;
+      font-size: 11px;
+      color: #555;
+      margin-top: 2px;
+      padding-left: 10px;
     }
-    
-    /* TOTAIS */
-    .totals { 
-      margin: 12px 0; 
+    .totals {
+      margin: 15px 0;
     }
-    .total-row { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center;
-      margin: 6px 0; 
-      font-size: ${itemFontSize};
-    }
-    .total-final { 
-      font-weight: 700; 
-      font-size: ${totalFontSize}; 
-      margin-top: 10px;
-      padding: 8px 0;
-      border-top: 2px solid #000;
-      border-bottom: 2px solid #000;
-    }
-    
-    /* PAGAMENTO */
-    .payment {
-      margin: 10px 0;
-      font-size: ${itemFontSize};
-    }
-    .payment-method {
-      font-weight: 500;
-      font-size: ${itemFontSize};
-    }
-    
-    /* OBSERVAÇÕES */
-    .notes { 
-      background: #f0f0f0; 
-      padding: 8px; 
-      margin: 10px 0; 
-      font-size: ${smallFontSize};
-      border: 1px solid #ccc;
-    }
-    .notes-title {
-      font-weight: 500;
+    .total-row {
+      display: flex;
+      justify-content: space-between;
       margin-bottom: 4px;
+      font-size: 13px;
     }
-    
-    /* RODAPÉ */
-    .footer { 
-      text-align: center; 
-      margin-top: 16px; 
-      font-size: ${smallFontSize}; 
-    }
-    .footer-thanks {
-      font-weight: 700;
-      font-size: ${itemFontSize};
+    .total-row.final {
+      font-weight: bold;
+      font-size: 15px;
       margin-top: 8px;
     }
-    
-    /* PRINT STYLES */
-    @media print {
-      body {
-        width: ${paperWidth};
-        padding: 2mm;
+    .section {
+      margin: 15px 0;
+    }
+    .section-title {
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+    .section-content {
+      font-size: 13px;
+      color: #444;
+      line-height: 1.4;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #ccc;
+    }
+    .footer p {
+      font-size: 11px;
+      color: #666;
+    }
+    @media print { 
+      body { 
+        padding: 0; 
+        background: white;
+      }
+      .receipt {
+        background: white;
       }
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    ${logoUrl && settings?.showLogo ? `<img src="${logoUrl}" alt="Logo" class="logo" />` : ''}
-    <h1>${establishment?.name || 'Estabelecimento'}</h1>
-    ${headerMessage ? `<p class="header-message">${headerMessage}</p>` : ''}
-    <div class="order-number">#${order.orderNumber}</div>
-    <p class="header-date">${formatDate(order.createdAt)}</p>
-    <span class="delivery-type">${deliveryTypeText}</span>
-  </div>
-  
-  <hr class="divider-double">
-  
-  <div class="customer">
-    <div class="customer-row">
-      <span class="customer-label">CLIENTE:</span>
-      <span class="customer-value">${order.customerName || 'Nao informado'}</span>
+  <div class="receipt">
+    <div class="logo">
+      <h1>${establishment?.name || 'Cardapio'}</h1>
+      <p>Sistema de Pedidos</p>
     </div>
-    ${order.customerPhone ? `
-    <div class="customer-row">
-      <span class="customer-label">TEL:</span>
-      <span class="customer-value">${order.customerPhone}</span>
+    
+    <div class="order-info">
+      <h2>Pedido #${order.orderNumber}</h2>
+      <p>Realizado em: ${formatDate(order.createdAt)}</p>
     </div>
-    ` : ''}
-    ${order.deliveryType === 'delivery' && order.customerAddress ? `
-    <div class="customer-row">
-      <span class="customer-label">ENDERECO:</span>
-      <span class="customer-value">${order.customerAddress}</span>
+    
+    <hr class="divider">
+    
+    <div class="items">
+      ${itemsHTML}
     </div>
-    ` : ''}
-  </div>
-  
-  <hr class="divider">
-  
-  <div class="items">
-    ${itemsHTML}
-  </div>
-  
-  <hr class="divider">
-  
-  <div class="totals">
-    <div class="total-row">
-      <span>Subtotal:</span>
-      <span>${formatCurrency(order.subtotal)}</span>
+    
+    <hr class="divider-dashed">
+    
+    <div class="totals">
+      <div class="total-row">
+        <span>Valor dos produtos</span>
+        <span>${formatCurrency(order.subtotal)}</span>
+      </div>
+      ${order.couponCode ? `
+      <div class="total-row">
+        <span>Cupom aplicado</span>
+        <span>${order.couponCode}</span>
+      </div>
+      ` : ''}
+      ${discount > 0 ? `
+      <div class="total-row">
+        <span>Desconto</span>
+        <span>- ${formatCurrency(discount)}</span>
+      </div>
+      ` : ''}
+      <div class="total-row">
+        <span>Taxa de entrega</span>
+        <span>${parseFloat(order.deliveryFee || '0') > 0 ? formatCurrency(order.deliveryFee) : 'Gratis'}</span>
+      </div>
+      <div class="total-row final">
+        <span>Total</span>
+        <span>${formatCurrency(order.total)}</span>
+      </div>
     </div>
-    ${order.deliveryType === 'delivery' ? `
-    <div class="total-row">
-      <span>Taxa entrega:</span>
-      <span>${formatCurrency(order.deliveryFee)}</span>
-    </div>
-    ` : ''}
-    ${order.discount && parseFloat(order.discount) > 0 ? `
-    <div class="total-row">
-      <span>Desconto${order.couponCode ? ` (${order.couponCode})` : ''}:</span>
-      <span>-${formatCurrency(order.discount)}</span>
+    
+    ${order.notes ? `
+    <hr class="divider">
+    <div class="section">
+      <div class="section-title">Observacoes:</div>
+      <div class="section-content">${order.notes}</div>
     </div>
     ` : ''}
-    <div class="total-row total-final">
-      <span>TOTAL:</span>
-      <span>${formatCurrency(order.total)}</span>
+    
+    <hr class="divider">
+    
+    <div class="section">
+      <div class="section-title">${order.deliveryType === 'delivery' ? 'Endereco de Entrega' : 'Retirada no Local'}</div>
+      <div class="section-content">
+        ${order.deliveryType === 'delivery' ? 
+          (order.customerAddress || 'Endereco nao informado') : 
+          'Cliente ira retirar no estabelecimento'
+        }
+      </div>
     </div>
-  </div>
-  
-  <hr class="divider">
-  
-  <div class="payment">
-    <span class="payment-method">PAGAMENTO: ${paymentMethodText[order.paymentMethod] || order.paymentMethod}</span>
-    ${order.paymentMethod === 'cash' && order.changeFor ? `<br>Troco para: ${formatCurrency(order.changeFor)}` : ''}
-  </div>
-  
-  ${order.notes ? `
-  <div class="notes">
-    <div class="notes-title">OBSERVACOES:</div>
-    ${order.notes}
-  </div>
-  ` : ''}
-  
-  ${settings?.footerMessage ? `
-  <div class="footer">
-    <p>${settings.footerMessage}</p>
-  </div>
-  ` : ''}
-  
-  <div class="footer">
-    <p class="footer-thanks">Obrigado pela preferencia!</p>
+    
+    <div class="section">
+      <div class="section-title">Pagamento</div>
+      <div class="section-content">${paymentMethodText[order.paymentMethod] || order.paymentMethod}</div>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">Cliente</div>
+      <div class="section-content">
+        ${order.customerName || 'Nao informado'}<br>
+        ${order.customerPhone || ''}
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>Pedido realizado via Cardapio Admin</p>
+      <p>manus.space</p>
+    </div>
   </div>
 </body>
 </html>

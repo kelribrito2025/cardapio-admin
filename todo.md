@@ -3227,3 +3227,7 @@
 ## Bug: Impressão Térmica Android não funciona
 - [x] Investigar problema no botão de impressão térmica Android
 - [x] Corrigir o código para funcionar corretamente (usar URL HTTP em vez de blob)
+
+## Unificar Layout de Impressão
+- [x] Atualizar endpoint /api/print/receipt para usar layout simples (sem logo)
+- [x] Corrigir dados em branco na impressão
