@@ -23,6 +23,7 @@ import {
   Ticket,
   Volume2,
   VolumeX,
+  Printer,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -53,6 +54,7 @@ const navItems = [
   { icon: ClipboardList, label: "Pedidos", href: "/pedidos" },
   { icon: Package, label: "Estoque", href: "/estoque" },
   { icon: Ticket, label: "Cupons", href: "/cupons" },
+  { icon: Printer, label: "Teste Impressão", href: "/teste-impressao" },
 ];
 
 interface AdminLayoutProps {

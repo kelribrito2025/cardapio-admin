@@ -388,6 +388,16 @@ export const printerSettings = mysqlTable("printerSettings", {
   directPrintEnabled: boolean("directPrintEnabled").default(false).notNull(), // Usar impressão direta
   directPrintIp: varchar("directPrintIp", { length: 50 }), // IP da impressora
   directPrintPort: int("directPrintPort").default(9100).notNull(), // Porta da impressora
+  // Configurações de fonte para impressão térmica
+  fontSize: int("fontSize").default(12).notNull(), // Tamanho da fonte geral
+  fontWeight: int("fontWeight").default(500).notNull(), // Peso da fonte geral
+  titleFontSize: int("titleFontSize").default(16).notNull(), // Tamanho da fonte de títulos
+  titleFontWeight: int("titleFontWeight").default(700).notNull(), // Peso da fonte de títulos
+  itemFontSize: int("itemFontSize").default(12).notNull(), // Tamanho da fonte de itens
+  itemFontWeight: int("itemFontWeight").default(700).notNull(), // Peso da fonte de itens
+  obsFontSize: int("obsFontSize").default(11).notNull(), // Tamanho da fonte de observações
+  obsFontWeight: int("obsFontWeight").default(500).notNull(), // Peso da fonte de observações
+  showDividers: boolean("showDividers").default(true).notNull(), // Mostrar divisores
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

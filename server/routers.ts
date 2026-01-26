@@ -1705,6 +1705,15 @@ export const appRouter = router({
           directPrintEnabled: false,
           directPrintIp: null,
           directPrintPort: 9100,
+          fontSize: 12,
+          fontWeight: 500,
+          titleFontSize: 16,
+          titleFontWeight: 700,
+          itemFontSize: 12,
+          itemFontWeight: 700,
+          obsFontSize: 11,
+          obsFontWeight: 500,
+          showDividers: true,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -1730,6 +1739,15 @@ export const appRouter = router({
         directPrintEnabled: z.boolean().optional(),
         directPrintIp: z.string().nullable().optional(),
         directPrintPort: z.number().min(1).max(65535).optional(),
+        fontSize: z.number().min(8).max(24).optional(),
+        fontWeight: z.number().min(300).max(900).optional(),
+        titleFontSize: z.number().min(10).max(32).optional(),
+        titleFontWeight: z.number().min(300).max(900).optional(),
+        itemFontSize: z.number().min(8).max(24).optional(),
+        itemFontWeight: z.number().min(300).max(900).optional(),
+        obsFontSize: z.number().min(8).max(20).optional(),
+        obsFontWeight: z.number().min(300).max(900).optional(),
+        showDividers: z.boolean().optional(),
       }))
       .mutation(async ({ input }) => {
         await db.upsertPrinterSettings(input);

@@ -3227,3 +3227,27 @@
 ## Bug: Impressão Térmica Android não funciona
 - [x] Investigar problema no botão de impressão térmica Android
 - [x] Corrigir o código para funcionar corretamente (usar URL HTTP em vez de blob)
+
+## Página de Teste e Configuração de Impressão
+- [ ] Criar página com preview do recibo em tempo real
+- [ ] Adicionar controles para tamanho de fonte (pequeno, médio, grande)
+- [ ] Adicionar controles para peso de fonte (normal, semi-negrito, negrito)
+- [ ] Adicionar controles para largura do papel (58mm, 80mm)
+- [ ] Botão para testar impressão com configurações atuais
+- [ ] Salvar configurações no banco de dados
+- [ ] Aplicar configurações salvas no recibo térmico
+
+
+## Página de Teste de Impressão
+- [x] Criar página TesteImpressao.tsx com preview em tempo real
+- [x] Adicionar controles de ajuste de fonte (tamanho e peso) para texto geral, títulos, itens e observações
+- [x] Adicionar controles de layout (largura do papel, divisores)
+- [x] Implementar preview do recibo com dados de exemplo
+- [x] Adicionar botão de teste de impressão normal (navegador)
+- [x] Adicionar botão de teste de impressão térmica (Android ESC POS)
+- [x] Adicionar botão de restaurar configurações padrão
+- [x] Adicionar link "Teste Impressão" no menu lateral
+- [x] Adicionar campos de configuração de fonte no schema printerSettings
+- [x] Implementar salvamento das configurações no banco de dados
+- [x] Integrar configurações salvas com o endpoint de impressão de recibos
+- [x] Carregar configurações salvas ao abrir a página
