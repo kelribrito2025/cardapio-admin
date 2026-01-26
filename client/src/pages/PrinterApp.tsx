@@ -104,20 +104,14 @@ export default function PrinterApp() {
     
     console.log('[PrinterApp] Abrindo link de impressão:', printUrl);
     
-    // Usar window.open em vez de location.href para não sair da página
-    // Isso evita que a página trave ao tentar navegar para print://
-    const printWindow = window.open(printUrl, '_blank');
-    
-    // Se window.open não funcionar, tentar com iframe oculto
-    if (!printWindow) {
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = printUrl;
-      document.body.appendChild(iframe);
-      setTimeout(() => {
-        document.body.removeChild(iframe);
-      }, 1000);
-    }
+    // Usar um link <a> com click() para abrir o app sem criar nova aba
+    // Isso é mais compatível com Android e evita tela branca
+    const link = document.createElement('a');
+    link.href = printUrl;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }, []);
 
   // Função de polling

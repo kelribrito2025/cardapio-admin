@@ -3153,3 +3153,7 @@
 - [x] Adicionar chamada para addToPrintQueue após criar pedido
 - [x] Verificar se printerSettings.autoPrintEnabled está ativado
 - [ ] Testar fluxo completo de impressão automática
+
+
+## Bug: Tela branca ao abrir link print://
+- [x] Corrigir método de abertura do link print:// para não criar aba em branco no Android
