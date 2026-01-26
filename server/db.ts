@@ -2824,6 +2824,15 @@ export async function upsertPrinterSettings(data: {
   directPrintEnabled?: boolean;
   directPrintIp?: string | null;
   directPrintPort?: number;
+  fontSize?: number;
+  fontWeight?: number;
+  titleFontSize?: number;
+  titleFontWeight?: number;
+  itemFontSize?: number;
+  itemFontWeight?: number;
+  obsFontSize?: number;
+  obsFontWeight?: number;
+  showDividers?: boolean;
 }): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -2849,6 +2858,15 @@ export async function upsertPrinterSettings(data: {
         directPrintEnabled: data.directPrintEnabled ?? (existing as any).directPrintEnabled ?? false,
         directPrintIp: data.directPrintIp !== undefined ? data.directPrintIp : (existing as any).directPrintIp,
         directPrintPort: data.directPrintPort ?? (existing as any).directPrintPort ?? 9100,
+        fontSize: data.fontSize ?? (existing as any).fontSize ?? 12,
+        fontWeight: data.fontWeight ?? (existing as any).fontWeight ?? 500,
+        titleFontSize: data.titleFontSize ?? (existing as any).titleFontSize ?? 16,
+        titleFontWeight: data.titleFontWeight ?? (existing as any).titleFontWeight ?? 700,
+        itemFontSize: data.itemFontSize ?? (existing as any).itemFontSize ?? 12,
+        itemFontWeight: data.itemFontWeight ?? (existing as any).itemFontWeight ?? 700,
+        obsFontSize: data.obsFontSize ?? (existing as any).obsFontSize ?? 11,
+        obsFontWeight: data.obsFontWeight ?? (existing as any).obsFontWeight ?? 500,
+        showDividers: data.showDividers ?? (existing as any).showDividers ?? true,
       })
       .where(eq(printerSettings.establishmentId, data.establishmentId));
   } else {
@@ -2870,6 +2888,15 @@ export async function upsertPrinterSettings(data: {
       directPrintEnabled: data.directPrintEnabled ?? false,
       directPrintIp: data.directPrintIp || null,
       directPrintPort: data.directPrintPort ?? 9100,
+      fontSize: data.fontSize ?? 12,
+      fontWeight: data.fontWeight ?? 500,
+      titleFontSize: data.titleFontSize ?? 16,
+      titleFontWeight: data.titleFontWeight ?? 700,
+      itemFontSize: data.itemFontSize ?? 12,
+      itemFontWeight: data.itemFontWeight ?? 700,
+      obsFontSize: data.obsFontSize ?? 11,
+      obsFontWeight: data.obsFontWeight ?? 500,
+      showDividers: data.showDividers ?? true,
     });
   }
 }
