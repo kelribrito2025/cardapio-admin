@@ -3157,3 +3157,10 @@
 
 ## Bug: Tela branca ao abrir link print://
 - [x] Corrigir método de abertura do link print:// para não criar aba em branco no Android
+
+
+## Melhoria: Botão de impressão visível na PWA
+- [x] Garantir que o botão "IMPRIMIR AGORA" apareça quando há pedidos pendentes
+- [x] Adicionar lista de pedidos pendentes para impressão manual
+- [x] Melhorar feedback visual quando pedido chega
+- [x] Não marcar como impresso automaticamente - usuário deve confirmar

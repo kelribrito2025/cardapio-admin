@@ -150,22 +150,18 @@ export default function PrinterApp() {
           
           // Processar cada job
           for (const job of newJobs) {
-            // Marcar como impresso localmente
-            setPrintedJobs(prev => new Set(Array.from(prev).concat(job.id)));
+            // NÃO marcar como impresso automaticamente
+            // O usuário deve clicar no botão para confirmar a impressão
             
-            // Abrir link de impressão automaticamente
+            // Tentar abrir link de impressão automaticamente (pode não funcionar no Android)
             if (autoOpenRef.current) {
               openPrintLink(job.orderId);
-              
-              // Marcar como impresso no servidor
-              try {
-                await markPrintedMutation.mutateAsync({ jobId: job.id });
-              } catch (e) {
-                console.error('[PrinterApp] Erro ao marcar job como impresso:', e);
-              }
+              // Não marcar como impresso aqui - o usuário deve confirmar
             }
             
-            toast.success(`Novo pedido #${job.orderId} enviado para impressão!`);
+            toast.success(`Novo pedido #${job.orderId} - Clique em IMPRIMIR AGORA!`, {
+              duration: 10000,
+            });
           }
         }
       }
@@ -365,30 +361,35 @@ export default function PrinterApp() {
       </Card>
 
       {/* Pedidos Pendentes - Botão Grande de Impressão */}
-      {recentJobs.filter(job => !printedJobs.has(job.id)).length > 0 && (
-        <Card className="max-w-md mx-auto mb-4 border-2 border-red-500 bg-red-50">
-          <CardContent className="pt-6">
-            <div className="text-center mb-4">
-              <p className="text-lg font-bold text-red-600">
-                {recentJobs.filter(job => !printedJobs.has(job.id)).length} pedido(s) aguardando impressão
-              </p>
-            </div>
-            <Button 
-              className="w-full h-16 text-lg bg-red-500 hover:bg-red-600"
-              onClick={() => {
-                const pendingJobs = recentJobs.filter(job => !printedJobs.has(job.id));
-                if (pendingJobs.length > 0) {
-                  // Imprimir o primeiro pedido pendente
-                  handleManualPrint(pendingJobs[0]);
-                }
-              }}
-            >
-              <Printer className="w-6 h-6 mr-3" />
-              IMPRIMIR AGORA
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+      {(() => {
+        const pendingJobs = recentJobs.filter(job => !printedJobs.has(job.id));
+        if (pendingJobs.length === 0) return null;
+        
+        return (
+          <Card className="max-w-md mx-auto mb-4 border-2 border-red-500 bg-red-50 animate-pulse">
+            <CardContent className="pt-6">
+              <div className="text-center mb-4">
+                <Bell className="w-8 h-8 text-red-500 mx-auto mb-2 animate-bounce" />
+                <p className="text-xl font-bold text-red-600">
+                  {pendingJobs.length} pedido(s) aguardando impressão!
+                </p>
+              </div>
+              <div className="space-y-2">
+                {pendingJobs.map((job) => (
+                  <Button 
+                    key={job.id}
+                    className="w-full h-14 text-lg bg-red-500 hover:bg-red-600"
+                    onClick={() => handleManualPrint(job)}
+                  >
+                    <Printer className="w-6 h-6 mr-3" />
+                    IMPRIMIR PEDIDO #{job.orderId}
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       {/* Configurações */}
       <Card className="max-w-md mx-auto mb-4">
