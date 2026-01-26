@@ -2,7 +2,7 @@ import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, MessageCircle } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, CheckCircle2, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, MessageCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -2149,32 +2149,27 @@ export default function PublicMenu() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-100 py-3 mt-8 mb-16 md:mb-0">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex items-center gap-6">
-            {/* Card azul à esquerda */}
-            <div className="bg-[#4285F4] rounded-xl flex flex-col items-center justify-center gap-2 px-16 py-5 min-w-[300px]">
-              <Star className="w-10 h-10 text-white" strokeWidth={1.5} fill="none" />
-              <span className="text-white font-semibold text-xl">Menu Premium</span>
-            </div>
-            {/* Conteúdo à direita */}
-            <div className="flex-1 flex items-center justify-center">
-              <div className="flex flex-col items-center">
-                <span className="text-gray-600 text-base">Desenvolvido por</span>
-                <span className="text-[#4285F4] font-bold text-2xl">Mindi</span>
-                <a 
-                  href="https://wa.me/5534998807793?text=Olá! Vi seu trabalho no menu digital e gostaria de conversar."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-gray-500 hover:text-[#4285F4] transition-colors mt-1"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span className="text-sm">Fale comigo</span>
-                </a>
-              </div>
-            </div>
+      <footer className="bg-gray-50 border-t-4 border-blue-500 py-6 mt-8 mb-16 md:mb-0">
+        <a
+          href="https://wa.me/5534998807793?text=Olá! Vi seu menu digital e gostaria de criar o meu."
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-4 hover:gap-5 transition-all"
+        >
+          {/* Ponto Azul Pulsante */}
+          <div className="flex items-center gap-2 relative">
+            <div className="w-3 h-3 bg-blue-500 rounded-full animate-ping absolute"></div>
+            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
           </div>
-        </div>
+
+          {/* Texto */}
+          <span className="text-gray-700 font-medium">
+            Criado e desenvolvido por: <strong className="text-blue-600 text-lg">Mindi</strong>
+          </span>
+
+          {/* Check Verde */}
+          <CheckCircle2 className="w-5 h-5 text-green-500" />
+        </a>
       </footer>
 
       {/* Mobile Bottom Navigation */}
