@@ -1,0 +1,26 @@
+{
+  "query": "SELECT * FROM printerSettings WHERE establishmentId = 30001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM printerSettings WHERE establishmentId = 30001;",
+  "rows": [
+    {
+      "id": "1",
+      "establishmentId": "30001",
+      "autoPrintEnabled": "1",
+      "printOnNewOrder": "1",
+      "printOnStatusChange": "0",
+      "copies": "1",
+      "showLogo": "1",
+      "showQrCode": "0",
+      "footerMessage": "NULL",
+      "createdAt": "2026-01-26 14:38:49",
+      "updatedAt": "2026-01-26 14:38:49",
+      "logoUrl": "NULL",
+      "headerMessage": "NULL",
+      "paperWidth": "80mm"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\tautoPrintEnabled\tprintOnNewOrder\tprintOnStatusChange\tcopies\tshowLogo\tshowQrCode\tfooterMessage\tcreatedAt\tupdatedAt\tlogoUrl\theaderMessage\tpaperWidth\n1\t30001\t1\t1\t0\t1\t1\t0\tNULL\t2026-01-26 14:38:49\t2026-01-26 14:38:49\tNULL\tNULL\t80mm\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}

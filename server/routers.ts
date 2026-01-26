@@ -913,6 +913,26 @@ export const appRouter = router({
         }
         
         console.log('[CreateOrder] Pedido criado com sucesso:', result);
+        
+        // Adicionar pedido à fila de impressão automática
+        if (result && result.orderId) {
+          try {
+            // Verificar se impressão automática está ativada
+            const printerSettingsData = await db.getPrinterSettings(orderData.establishmentId);
+            if (printerSettingsData?.autoPrintEnabled) {
+              await db.addToPrintQueue({
+                establishmentId: orderData.establishmentId,
+                orderId: result.orderId,
+                copies: 1
+              });
+              console.log('[CreateOrder] Pedido adicionado à fila de impressão:', result.orderId);
+            }
+          } catch (printError) {
+            console.error('[CreateOrder] Erro ao adicionar à fila de impressão:', printError);
+            // Não lançar erro para não impedir o pedido
+          }
+        }
+        
         return result;
         } catch (error) {
           console.error('[CreateOrder] Erro ao criar pedido:', error);

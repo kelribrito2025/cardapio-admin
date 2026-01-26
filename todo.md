@@ -3147,3 +3147,9 @@
 - [x] Som de notificação para novos pedidos
 - [x] Histórico de impressões recentes
 - [x] Criar testes unitários
+
+
+## Bug: Pedidos não aparecem na fila de impressão
+- [x] Adicionar chamada para addToPrintQueue após criar pedido
+- [x] Verificar se printerSettings.autoPrintEnabled está ativado
+- [ ] Testar fluxo completo de impressão automática
