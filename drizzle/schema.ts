@@ -435,3 +435,21 @@ export const whatsappConfig = mysqlTable("whatsappConfig", {
 
 export type WhatsappConfig = typeof whatsappConfig.$inferSelect;
 export type InsertWhatsappConfig = typeof whatsappConfig.$inferInsert;
+
+
+// Fila de impressão para app Android
+export const printQueue = mysqlTable("printQueue", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  orderId: int("orderId").notNull(),
+  printerId: int("printerId"), // Impressora específica (null = impressora padrão)
+  status: mysqlEnum("status", ["pending", "printing", "completed", "failed"]).default("pending").notNull(),
+  copies: int("copies").default(1).notNull(),
+  errorMessage: text("errorMessage"), // Mensagem de erro se falhou
+  printedAt: timestamp("printedAt"), // Quando foi impresso
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PrintQueue = typeof printQueue.$inferSelect;
+export type InsertPrintQueue = typeof printQueue.$inferInsert;

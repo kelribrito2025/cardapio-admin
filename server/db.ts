@@ -23,7 +23,8 @@ import {
   printers, InsertPrinter, Printer,
   printerSettings, InsertPrinterSettings, PrinterSettings,
   pushSubscriptions, InsertPushSubscription, PushSubscription,
-  whatsappConfig, InsertWhatsappConfig, WhatsappConfig
+  whatsappConfig, InsertWhatsappConfig, WhatsappConfig,
+  printQueue, InsertPrintQueue, PrintQueue
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -3011,4 +3012,142 @@ export async function deleteWhatsappConfig(establishmentId: number): Promise<voi
   if (!db) throw new Error("Database not available");
   
   await db.delete(whatsappConfig).where(eq(whatsappConfig.establishmentId, establishmentId));
+}
+
+
+// ============ PRINT QUEUE FUNCTIONS ============
+
+/**
+ * Adiciona um pedido à fila de impressão
+ */
+export async function addToPrintQueue(data: {
+  establishmentId: number;
+  orderId: number;
+  printerId?: number | null;
+  copies?: number;
+}): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(printQueue).values({
+    establishmentId: data.establishmentId,
+    orderId: data.orderId,
+    printerId: data.printerId,
+    copies: data.copies || 1,
+    status: 'pending'
+  });
+  
+  return Number(result[0].insertId);
+}
+
+/**
+ * Busca pedidos pendentes na fila de impressão
+ */
+export async function getPendingPrintJobs(establishmentId: number): Promise<PrintQueue[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db.select().from(printQueue)
+    .where(and(
+      eq(printQueue.establishmentId, establishmentId),
+      eq(printQueue.status, 'pending')
+    ))
+    .orderBy(asc(printQueue.createdAt));
+  
+  return result;
+}
+
+/**
+ * Atualiza status de um job na fila de impressão
+ */
+export async function updatePrintJobStatus(
+  jobId: number, 
+  status: 'pending' | 'printing' | 'completed' | 'failed',
+  errorMessage?: string
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const updateData: any = { status };
+  if (status === 'completed') {
+    updateData.printedAt = new Date();
+  }
+  if (errorMessage) {
+    updateData.errorMessage = errorMessage;
+  }
+  
+  await db.update(printQueue).set(updateData).where(eq(printQueue.id, jobId));
+}
+
+/**
+ * Busca um job específico da fila de impressão com dados do pedido
+ */
+export async function getPrintJobWithOrder(jobId: number): Promise<{
+  job: PrintQueue;
+  order: Order;
+  items: any[];
+} | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const jobResult = await db.select().from(printQueue).where(eq(printQueue.id, jobId)).limit(1);
+  if (!jobResult.length) return null;
+  
+  const job = jobResult[0];
+  
+  const orderResult = await db.select().from(orders).where(eq(orders.id, job.orderId)).limit(1);
+  if (!orderResult.length) return null;
+  
+  const order = orderResult[0];
+  
+  // Buscar itens do pedido
+  const itemsResult = await db.select({
+    id: orderItems.id,
+    quantity: orderItems.quantity,
+    unitPrice: orderItems.unitPrice,
+    totalPrice: orderItems.totalPrice,
+    notes: orderItems.notes,
+    productName: products.name,
+    productId: products.id
+  })
+  .from(orderItems)
+  .leftJoin(products, eq(orderItems.productId, products.id))
+  .where(eq(orderItems.orderId, order.id));
+  
+  return { job, order, items: itemsResult };
+}
+
+/**
+ * Remove jobs antigos da fila (mais de 24 horas)
+ */
+export async function cleanOldPrintJobs(): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  
+  await db.delete(printQueue).where(
+    and(
+      sql`${printQueue.createdAt} < ${oneDayAgo}`,
+      or(
+        eq(printQueue.status, 'completed'),
+        eq(printQueue.status, 'failed')
+      )
+    )
+  );
+}
+
+/**
+ * Busca histórico de impressões de um estabelecimento
+ */
+export async function getPrintHistory(establishmentId: number, limit: number = 50): Promise<PrintQueue[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db.select().from(printQueue)
+    .where(eq(printQueue.establishmentId, establishmentId))
+    .orderBy(desc(printQueue.createdAt))
+    .limit(limit);
+  
+  return result;
 }

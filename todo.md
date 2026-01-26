@@ -3126,3 +3126,24 @@
 - [x] Configuração de largura do papel (58mm/80mm)
 - [x] Adicionar campo de tipo de impressora no modal (Todos, Cozinha, Balcão, Bar)
 - [x] Atualizar endpoint de recibo para usar configurações personalizadas
+
+
+## App Android de Impressão Automática
+- [ ] Criar tabela de fila de impressão no banco de dados
+- [ ] Criar endpoints de API para polling (buscar pedidos pendentes, marcar como impresso)
+- [ ] Desenvolver app Android com Kotlin/Jetpack Compose
+- [ ] Implementar polling a cada X segundos
+- [ ] Integrar com impressora ESC/POS via socket TCP
+- [ ] Gerar APK para instalação
+- [ ] Documentar configuração e uso do app
+
+
+## PWA de Impressão Automática
+- [x] Criar tabela de fila de impressão (printQueue)
+- [x] Criar endpoints de API para polling (pending, getJob, markPrinted, markFailed)
+- [x] Desenvolver página PWA de impressão (/printer-app)
+- [x] Integrar com app ESC POS via print://
+- [x] Configurações de intervalo de polling (3s a 30s)
+- [x] Som de notificação para novos pedidos
+- [x] Histórico de impressões recentes
+- [x] Criar testes unitários

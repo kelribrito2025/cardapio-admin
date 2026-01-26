@@ -1853,6 +1853,108 @@ export const appRouter = router({
           socket.connect(port, input.ipAddress);
         });
       }),
+    
+    // ============ PRINT QUEUE (API para App Android) ============
+    
+    // Buscar pedidos pendentes na fila de impressão (polling)
+    queue: router({
+      // Buscar pedidos pendentes para impressão
+      pending: publicProcedure
+        .input(z.object({ 
+          establishmentId: z.number(),
+          apiKey: z.string().optional() // Para autenticação do app Android
+        }))
+        .query(async ({ input }) => {
+          const jobs = await db.getPendingPrintJobs(input.establishmentId);
+          return jobs;
+        }),
+      
+      // Buscar dados completos de um job para impressão
+      getJob: publicProcedure
+        .input(z.object({ 
+          jobId: z.number(),
+          apiKey: z.string().optional()
+        }))
+        .query(async ({ input }) => {
+          const result = await db.getPrintJobWithOrder(input.jobId);
+          if (!result) {
+            throw new TRPCError({
+              code: 'NOT_FOUND',
+              message: 'Job não encontrado'
+            });
+          }
+          
+          // Buscar configurações de impressão
+          const settings = await db.getPrinterSettings(result.job.establishmentId);
+          const establishment = await db.getEstablishmentById(result.job.establishmentId);
+          
+          return {
+            job: result.job,
+            order: result.order,
+            items: result.items,
+            settings: {
+              copies: settings?.copies || 1,
+              showLogo: settings?.showLogo ?? true,
+              logoUrl: settings?.logoUrl || establishment?.logo,
+              showQrCode: settings?.showQrCode ?? false,
+              headerMessage: settings?.headerMessage,
+              footerMessage: settings?.footerMessage,
+              paperWidth: settings?.paperWidth || '80mm',
+            },
+            establishment: {
+              name: establishment?.name || 'Estabelecimento',
+              logo: establishment?.logo,
+              whatsapp: establishment?.whatsapp,
+            },
+          };
+        }),
+      
+      // Marcar job como impresso
+      markPrinted: publicProcedure
+        .input(z.object({ 
+          jobId: z.number(),
+          apiKey: z.string().optional()
+        }))
+        .mutation(async ({ input }) => {
+          await db.updatePrintJobStatus(input.jobId, 'completed');
+          return { success: true };
+        }),
+      
+      // Marcar job como falha
+      markFailed: publicProcedure
+        .input(z.object({ 
+          jobId: z.number(),
+          errorMessage: z.string().optional(),
+          apiKey: z.string().optional()
+        }))
+        .mutation(async ({ input }) => {
+          await db.updatePrintJobStatus(input.jobId, 'failed', input.errorMessage);
+          return { success: true };
+        }),
+      
+      // Adicionar pedido à fila manualmente
+      add: protectedProcedure
+        .input(z.object({
+          establishmentId: z.number(),
+          orderId: z.number(),
+          printerId: z.number().optional(),
+          copies: z.number().optional(),
+        }))
+        .mutation(async ({ input }) => {
+          const id = await db.addToPrintQueue(input);
+          return { id };
+        }),
+      
+      // Buscar histórico de impressões
+      history: protectedProcedure
+        .input(z.object({ 
+          establishmentId: z.number(),
+          limit: z.number().optional()
+        }))
+        .query(async ({ input }) => {
+          return db.getPrintHistory(input.establishmentId, input.limit);
+        }),
+    }),
   }),
   
   // ============ PUSH NOTIFICATIONS ============

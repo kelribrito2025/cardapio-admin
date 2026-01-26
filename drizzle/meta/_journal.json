@@ -225,6 +225,13 @@
       "when": 1769440969077,
       "tag": "0031_fat_masked_marvel",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "5",
+      "when": 1769441310412,
+      "tag": "0032_burly_paladin",
+      "breakpoints": true
     }
   ]
 }

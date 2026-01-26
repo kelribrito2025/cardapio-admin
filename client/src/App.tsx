@@ -17,6 +17,7 @@ import Planos from "./pages/Planos";
 import PublicMenu from "./pages/PublicMenu";
 import Cupons from "./pages/Cupons";
 import CouponForm from "./pages/CouponForm";
+import PrinterApp from "./pages/PrinterApp";
 
 
 // Auth Pages
@@ -60,6 +61,9 @@ function Router() {
       
       {/* Public menu route - sem NewOrdersProvider (não deve ter som de notificação) */}
       <Route path="/menu/:slug" component={PublicMenu} />
+      
+      {/* PWA de Impressão Automática */}
+      <Route path="/printer-app" component={PrinterApp} />
       
       {/* Admin routes - com NewOrdersProvider */}
       <Route>
