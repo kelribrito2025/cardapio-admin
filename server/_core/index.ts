@@ -90,7 +90,8 @@ function generateReceiptHTML(
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
       font-family: Arial, sans-serif; 
-      font-size: 13px; 
+      font-size: 12px; 
+      font-weight: 500;
       padding: 20px; 
       max-width: 320px; 
       margin: 0 auto; 
@@ -108,12 +109,13 @@ function generateReceiptHTML(
     }
     .logo h1 {
       font-size: 22px;
-      font-weight: bold;
+      font-weight: 700;
       margin: 0;
       letter-spacing: 1px;
     }
     .logo p {
-      font-size: 10px;
+      font-size: 11px;
+      font-weight: 700;
       color: #666;
       text-transform: uppercase;
       letter-spacing: 2px;
@@ -124,11 +126,12 @@ function generateReceiptHTML(
     }
     .order-info h2 {
       font-size: 16px;
-      font-weight: bold;
+      font-weight: 700;
       margin-bottom: 2px;
     }
     .order-info p {
-      font-size: 12px;
+      font-size: 11px;
+      font-weight: 700;
       color: #666;
     }
     .divider {
@@ -147,16 +150,19 @@ function generateReceiptHTML(
     .item-header {
       display: flex;
       justify-content: space-between;
-      font-weight: 500;
+      font-size: 12px;
+      font-weight: 700;
     }
     .item-obs {
       font-size: 11px;
+      font-weight: 500;
       color: #666;
       margin-top: 2px;
       padding-left: 5px;
     }
     .item-complement {
       font-size: 11px;
+      font-weight: 500;
       color: #555;
       margin-top: 2px;
       padding-left: 10px;
@@ -168,23 +174,25 @@ function generateReceiptHTML(
       display: flex;
       justify-content: space-between;
       margin-bottom: 4px;
-      font-size: 13px;
+      font-size: 12px;
+      font-weight: 500;
     }
     .total-row.final {
-      font-weight: bold;
-      font-size: 15px;
+      font-weight: 700;
+      font-size: 14px;
       margin-top: 8px;
     }
     .section {
       margin: 15px 0;
     }
     .section-title {
-      font-weight: bold;
-      font-size: 14px;
+      font-weight: 700;
+      font-size: 12px;
       margin-bottom: 6px;
     }
     .section-content {
-      font-size: 13px;
+      font-size: 12px;
+      font-weight: 500;
       color: #444;
       line-height: 1.4;
     }
@@ -196,6 +204,7 @@ function generateReceiptHTML(
     }
     .footer p {
       font-size: 11px;
+      font-weight: 700;
       color: #666;
     }
     @media print { 

@@ -3231,3 +3231,10 @@
 ## Unificar Layout de Impressão
 - [x] Atualizar endpoint /api/print/receipt para usar layout simples (sem logo)
 - [x] Corrigir dados em branco na impressão
+
+## Ajustar Fontes do Recibo Térmico v2
+- [x] Corpo do texto: font-weight 500 (11-12px)
+- [x] Nome dos itens: font-weight 700 (11-12px)
+- [x] Observações e complementos: font-weight 500 (10-11px)
+- [x] Dados do cliente: font-weight 500 (11-12px)
+- [x] Data/hora e mensagens: font-weight 700 (10-11px)
