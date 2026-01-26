@@ -3223,3 +3223,7 @@
 ## Ajustar Tamanho e Peso das Fontes do Recibo
 - [x] Diminuir tamanho das fontes do recibo térmico
 - [x] Ajustar pesos: corpo (500), itens (700), observações (500), cliente (500), data/hora (700)
+
+## Bug: Impressão Térmica Android não funciona
+- [x] Investigar problema no botão de impressão térmica Android
+- [x] Corrigir o código para funcionar corretamente (usar URL HTTP em vez de blob)
