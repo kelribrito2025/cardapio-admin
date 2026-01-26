@@ -50,13 +50,13 @@ function generateReceiptHTML(
   const is58mm = settings?.paperWidth === '58mm';
   const paperWidth = is58mm ? '48mm' : '72mm'; // Largura real do papel térmico
   
-  // Fontes MAIORES para impressoras térmicas
-  const baseFontSize = is58mm ? '14px' : '16px';
-  const headerFontSize = is58mm ? '20px' : '24px';
-  const orderNumberSize = is58mm ? '28px' : '32px';
-  const itemFontSize = is58mm ? '14px' : '16px';
-  const totalFontSize = is58mm ? '18px' : '22px';
-  const smallFontSize = is58mm ? '12px' : '14px';
+  // Fontes menores para impressoras térmicas
+  const baseFontSize = is58mm ? '11px' : '12px';
+  const headerFontSize = is58mm ? '14px' : '16px';
+  const orderNumberSize = is58mm ? '18px' : '20px';
+  const itemFontSize = is58mm ? '11px' : '12px';
+  const totalFontSize = is58mm ? '13px' : '14px';
+  const smallFontSize = is58mm ? '10px' : '11px';
   
   // Logo URL (usa o personalizado ou o do estabelecimento)
   const logoUrl = settings?.logoUrl || establishment?.logo;
@@ -117,7 +117,7 @@ function generateReceiptHTML(
     body { 
       font-family: 'Arial', 'Helvetica', sans-serif; 
       font-size: ${baseFontSize}; 
-      font-weight: 700;
+      font-weight: 500;
       line-height: 1.4;
       width: 100%; 
       max-width: 100%;
@@ -134,13 +134,13 @@ function generateReceiptHTML(
     }
     .header h1 { 
       font-size: ${headerFontSize}; 
-      font-weight: 900; 
+      font-weight: 700; 
       letter-spacing: -0.5px;
       margin-bottom: 4px;
     }
     .order-number {
       font-size: ${orderNumberSize};
-      font-weight: 900;
+      font-weight: 700;
       margin: 8px 0;
       letter-spacing: 1px;
     }
@@ -186,13 +186,13 @@ function generateReceiptHTML(
       font-size: ${itemFontSize};
     }
     .customer-label {
-      font-weight: 700;
+      font-weight: 500;
     }
     .customer-value {
       display: block;
       margin-left: 0;
       word-wrap: break-word;
-      font-weight: 700;
+      font-weight: 500;
     }
     .customer-row {
       margin: 6px 0;
@@ -215,13 +215,13 @@ function generateReceiptHTML(
     }
     .item-name {
       font-size: ${itemFontSize};
-      font-weight: 900;
+      font-weight: 700;
       flex: 1;
       word-wrap: break-word;
     }
     .item-price {
       font-size: ${itemFontSize};
-      font-weight: 700;
+      font-weight: 500;
       text-align: right;
       margin-top: 2px;
     }
@@ -229,12 +229,12 @@ function generateReceiptHTML(
       font-size: ${smallFontSize};
       margin: 4px 0 4px 36px;
       font-style: italic;
-      font-weight: 700;
+      font-weight: 500;
     }
     .item-complement {
       font-size: ${smallFontSize};
       margin: 2px 0 2px 36px;
-      font-weight: 700;
+      font-weight: 500;
     }
     
     /* TOTAIS */
@@ -249,7 +249,7 @@ function generateReceiptHTML(
       font-size: ${itemFontSize};
     }
     .total-final { 
-      font-weight: 900; 
+      font-weight: 700; 
       font-size: ${totalFontSize}; 
       margin-top: 10px;
       padding: 8px 0;
@@ -263,7 +263,7 @@ function generateReceiptHTML(
       font-size: ${itemFontSize};
     }
     .payment-method {
-      font-weight: 700;
+      font-weight: 500;
       font-size: ${itemFontSize};
     }
     
@@ -276,7 +276,7 @@ function generateReceiptHTML(
       border: 1px solid #ccc;
     }
     .notes-title {
-      font-weight: 700;
+      font-weight: 500;
       margin-bottom: 4px;
     }
     

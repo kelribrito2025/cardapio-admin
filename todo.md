@@ -3219,3 +3219,7 @@
 
 ## Corrigir Impressão Térmica Android
 - [x] Fazer botão "Impressora Térmica (Android)" usar o mesmo estilo do botão "Impressão Normal"
+
+## Ajustar Tamanho e Peso das Fontes do Recibo
+- [x] Diminuir tamanho das fontes do recibo térmico
+- [x] Ajustar pesos: corpo (500), itens (700), observações (500), cliente (500), data/hora (700)
