@@ -643,10 +643,9 @@ ${itemsList}
 
 🔔 Você será notificado por aqui em cada atualização.`;
 
-  // Buttons for confirmation
+  // Button for confirmation (only confirm button)
   const buttons = [
     { text: '✅ Ok, pode fazer o pedido', id: `confirm_order_${data.orderNumber}` },
-    { text: '❌ Não quero mais', id: `cancel_order_${data.orderNumber}` },
   ];
 
   return sendButtonMessage(
@@ -654,7 +653,7 @@ ${itemsList}
     phone,
     message,
     buttons,
-    'Clique em uma opção para confirmar'
+    'Clique para confirmar seu pedido'
   );
 }
 

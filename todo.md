@@ -3425,3 +3425,7 @@
 - [x] Investigar por que página não atualiza em tempo real
 - [x] Adicionar logs de debug para identificar problema de conexão SSE
 - [ ] Testar após publicar nova versão
+
+
+## Remover botão "Não quero mais" do WhatsApp
+- [x] Remover o botão "Não quero mais" da mensagem de confirmação, mantendo apenas "Ok, pode fazer"
