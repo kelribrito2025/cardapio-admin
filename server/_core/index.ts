@@ -183,6 +183,8 @@ function generateReceiptHTML(
       width: 14px;
       height: 14px;
       margin-right: 4px;
+      display: inline;
+      vertical-align: middle;
     }
     .delivery-badge {
       display: inline-block;
@@ -834,6 +836,8 @@ async function startServer() {
       width: 14px;
       height: 14px;
       margin-right: 4px;
+      display: inline;
+      vertical-align: middle;
     }
     .delivery-badge {
       display: inline-block;
