@@ -3417,3 +3417,11 @@
 
 ## Remover mensagem automática de confirmação
 - [x] Remover mensagem "Perfeito! Seu pedido foi confirmado..." enviada após cliente clicar no botão
+
+
+## Bug: Notificação em tempo real não funciona após confirmação via WhatsApp
+- [x] Investigar por que som não toca quando pedido é confirmado
+- [x] Investigar por que badge de quantidade não atualiza
+- [x] Investigar por que página não atualiza em tempo real
+- [x] Adicionar logs de debug para identificar problema de conexão SSE
+- [ ] Testar após publicar nova versão

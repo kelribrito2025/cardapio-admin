@@ -1859,8 +1859,12 @@ export async function confirmOrderByNumber(
     
     // Notificar via SSE sobre o novo pedido
     const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id));
-    const { notifyNewOrder } = await import('./_core/sse');
-    notifyNewOrder(establishmentId, {
+    const { notifyNewOrder, getConnectionCount } = await import('./_core/sse');
+    
+    const connectionCount = getConnectionCount(establishmentId);
+    console.log(`[DB:confirmOrderByNumber] Conexões SSE ativas para estabelecimento ${establishmentId}: ${connectionCount}`);
+    
+    const orderData = {
       ...order,
       status: 'new',
       items: items.map((item, index) => ({
@@ -1874,7 +1878,11 @@ export async function confirmOrderByNumber(
         complements: item.complements,
         notes: item.notes,
       })),
-    });
+    };
+    
+    console.log('[DB:confirmOrderByNumber] Enviando notificação SSE para pedido:', orderNumber);
+    notifyNewOrder(establishmentId, orderData);
+    console.log('[DB:confirmOrderByNumber] Notificação SSE enviada!');
     
     console.log('[DB:confirmOrderByNumber] Pedido confirmado:', orderNumber);
     return { success: true };
