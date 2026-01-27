@@ -1,4 +1,4 @@
-import { eq, desc, asc, and, like, sql, gte, lte, or } from "drizzle-orm";
+import { eq, desc, asc, and, like, sql, gte, lte, or, ne } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate, notifyPrintOrder } from "./_core/sse";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
@@ -617,7 +617,8 @@ export async function deleteComplementItem(id: number) {
 // ============ ORDER FUNCTIONS ============
 export async function getOrdersByEstablishment(
   establishmentId: number,
-  status?: "new" | "preparing" | "ready" | "completed" | "cancelled"
+  status?: "new" | "preparing" | "ready" | "completed" | "cancelled",
+  includePendingConfirmation?: boolean
 ) {
   const db = await getDb();
   if (!db) return [];
@@ -625,6 +626,9 @@ export async function getOrdersByEstablishment(
   const conditions = [eq(orders.establishmentId, establishmentId)];
   if (status) {
     conditions.push(eq(orders.status, status));
+  } else if (!includePendingConfirmation) {
+    // Por padrão, excluir pedidos aguardando confirmação do cliente
+    conditions.push(ne(orders.status, 'pending_confirmation'));
   }
   
   return db.select().from(orders)
@@ -1320,6 +1324,18 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     throw new Error("Database not available");
   }
   
+  // Verificar ANTES se deve usar confirmação via botões
+  let requiresConfirmation = false;
+  try {
+    const whatsappConfig = await getWhatsappConfig(data.establishmentId);
+    if (whatsappConfig && whatsappConfig.status === 'connected' && (whatsappConfig as any).requireOrderConfirmation && data.customerPhone) {
+      requiresConfirmation = true;
+      console.log('[DB:createPublicOrder] Confirmação via botões está ativada');
+    }
+  } catch (e) {
+    console.log('[DB:createPublicOrder] Erro ao verificar configuração de confirmação:', e);
+  }
+  
   // Generate order number with format #P1, #P2, etc. (sem zeros à esquerda)
   // Get the next order number from the database
   const lastOrderResult = await db.select({ orderNumber: orders.orderNumber })
@@ -1342,12 +1358,16 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
   const orderNumber = `#P${nextNumber}`;
   console.log('[DB:createPublicOrder] Order number gerado:', orderNumber);
   
+  // Definir status inicial baseado na configuração de confirmação
+  const initialStatus = requiresConfirmation ? 'pending_confirmation' : 'new';
+  console.log('[DB:createPublicOrder] Status inicial:', initialStatus);
+  
   try {
     console.log('[DB:createPublicOrder] Inserindo pedido no banco...');
     const result = await db.insert(orders).values({
       ...data,
       orderNumber,
-      status: "new",
+      status: initialStatus,
     });
     const orderId = result[0].insertId;
     console.log('[DB:createPublicOrder] Pedido inserido com ID:', orderId);
@@ -1359,38 +1379,43 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
       console.log('[DB:createPublicOrder] Itens inseridos com sucesso');
     }
     
-    // Notificar via SSE sobre novo pedido
-    const newOrder = {
-      id: orderId,
-      orderNumber,
-      establishmentId: data.establishmentId,
-      customerName: data.customerName,
-      customerPhone: data.customerPhone,
-      customerAddress: data.customerAddress,
-      deliveryType: data.deliveryType,
-      paymentMethod: data.paymentMethod,
-      subtotal: data.subtotal,
-      deliveryFee: data.deliveryFee,
-      discount: data.discount || "0",
-      couponCode: data.couponCode || null,
-      total: data.total,
-      notes: data.notes,
-      changeAmount: data.changeAmount,
-      status: "new",
-      createdAt: new Date(),
-      items: items.map((item, index) => ({
-        id: index + 1,
-        orderId,
-        productId: item.productId,
-        productName: item.productName,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
-        totalPrice: item.totalPrice,
-        complements: item.complements,
-        notes: item.notes,
-      })),
-    };
-    notifyNewOrder(data.establishmentId, newOrder);
+    // Notificar via SSE sobre novo pedido SOMENTE se não requer confirmação
+    // Se requer confirmação, a notificação será enviada quando o cliente confirmar
+    if (!requiresConfirmation) {
+      const newOrder = {
+        id: orderId,
+        orderNumber,
+        establishmentId: data.establishmentId,
+        customerName: data.customerName,
+        customerPhone: data.customerPhone,
+        customerAddress: data.customerAddress,
+        deliveryType: data.deliveryType,
+        paymentMethod: data.paymentMethod,
+        subtotal: data.subtotal,
+        deliveryFee: data.deliveryFee,
+        discount: data.discount || "0",
+        couponCode: data.couponCode || null,
+        total: data.total,
+        notes: data.notes,
+        changeAmount: data.changeAmount,
+        status: "new",
+        createdAt: new Date(),
+        items: items.map((item, index) => ({
+          id: index + 1,
+          orderId,
+          productId: item.productId,
+          productName: item.productName,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          totalPrice: item.totalPrice,
+          complements: item.complements,
+          notes: item.notes,
+        })),
+      };
+      notifyNewOrder(data.establishmentId, newOrder);
+    } else {
+      console.log('[DB:createPublicOrder] Notificação SSE adiada - aguardando confirmação do cliente');
+    }
     
     // Verificar se impressão automática está ativada e enviar evento de impressão
     try {
@@ -1596,12 +1621,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
             }
           );
           console.log('[DB:createPublicOrder] Mensagem de confirmação com botões enviada:', orderNumber);
-          
-          // Atualizar status para pending_confirmation
-          await db.update(orders)
-            .set({ status: 'pending_confirmation' })
-            .where(eq(orders.id, orderId));
-          console.log('[DB:createPublicOrder] Status atualizado para pending_confirmation');
+          // Status já foi definido como pending_confirmation na criação do pedido
           
         } else if (whatsappConfig.notifyOnNewOrder) {
           // Enviar notificação normal (sem botões)
