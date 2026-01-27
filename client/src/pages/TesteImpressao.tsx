@@ -54,6 +54,9 @@ export default function TesteImpressao() {
   // Texto personalizado
   const [customText, setCustomText] = useState("");
   
+  // Estilo de borda dos itens (rounded = bordas redondas, dashed = linhas tracejadas)
+  const [itemBorderStyle, setItemBorderStyle] = useState<"rounded" | "dashed">("rounded");
+  
   // QR Code para pagamento
   const [showQrCode, setShowQrCode] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
@@ -75,6 +78,7 @@ export default function TesteImpressao() {
       setBoxPadding((savedSettings as any).boxPadding || 12);
       setShowQrCode(savedSettings.showQrCode ?? false);
       setQrCodeUrl((savedSettings as any).qrCodeUrl || null);
+      setItemBorderStyle((savedSettings as any).itemBorderStyle || "rounded");
     }
   }, [savedSettings]);
   
@@ -171,6 +175,7 @@ export default function TesteImpressao() {
       boxPadding,
       showQrCode,
       qrCodeUrl,
+      itemBorderStyle,
     });
   };
 
@@ -698,6 +703,19 @@ export default function TesteImpressao() {
                     step={1}
                   />
                 </div>
+
+                <div className="space-y-3">
+                  <Label>Estilo de borda dos itens</Label>
+                  <Select value={itemBorderStyle} onValueChange={(v: "rounded" | "dashed") => setItemBorderStyle(v)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rounded">Bordas redondas</SelectItem>
+                      <SelectItem value="dashed">Linhas tracejadas</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </CardContent>
             </Card>
 
@@ -925,9 +943,11 @@ export default function TesteImpressao() {
                   {sampleOrder.items.map((item, idx) => (
                     <div key={idx} style={{ 
                       marginBottom: '8px',
-                      padding: `${boxPadding}px`,
-                      border: '2px solid #000',
-                      borderRadius: '8px'
+                      padding: itemBorderStyle === 'rounded' ? `${boxPadding}px` : '8px 0',
+                      border: itemBorderStyle === 'rounded' ? '2px solid #000' : 'none',
+                      borderTop: itemBorderStyle === 'dashed' ? '1px dashed #000' : undefined,
+                      borderBottom: itemBorderStyle === 'dashed' ? '1px dashed #000' : undefined,
+                      borderRadius: itemBorderStyle === 'rounded' ? '8px' : '0'
                     }}>
                       <div style={{ 
                         display: 'flex', 

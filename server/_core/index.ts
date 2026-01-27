@@ -63,6 +63,7 @@ function generateReceiptHTML(
   const smallFontWeight = settings?.obsFontWeight || 500;
   const showDividers = settings?.showDividers ?? true;
   const boxPadding = `${(settings as any)?.boxPadding || 12}px`;
+  const itemBorderStyle = (settings as any)?.itemBorderStyle || 'rounded';
   
   // Logo URL (usa o personalizado ou o do estabelecimento)
   const logoUrl = settings?.logoUrl || establishment?.logo;
@@ -215,9 +216,8 @@ function generateReceiptHTML(
     /* ITENS */
     .item {
       margin: 8px 0;
-      padding: ${boxPadding};
-      border: 2px solid #000;
-      border-radius: 8px;
+      padding: ${itemBorderStyle === 'rounded' ? boxPadding : '8px 0'};
+      ${itemBorderStyle === 'rounded' ? 'border: 2px solid #000; border-radius: 8px;' : 'border: none; border-top: 1px dashed #000; border-bottom: 1px dashed #000;'}
     }
     .item-header {
       display: flex;
@@ -689,6 +689,7 @@ async function startServer() {
       const paperWidth = settings?.paperWidth || '80mm';
       const showDividers = settings?.showDividers ?? true;
       const boxPadding = (settings as any)?.boxPadding || 12;
+      const itemBorderStyle = (settings as any)?.itemBorderStyle || 'rounded';
       
       const maxWidth = paperWidth === "58mm" ? "220px" : "300px";
       const establishmentName = establishment?.name || "Restaurante";
@@ -832,9 +833,8 @@ async function startServer() {
     }
     .item {
       margin: 8px 0;
-      padding: ${boxPadding}px;
-      border: 2px solid #000;
-      border-radius: 8px;
+      padding: ${itemBorderStyle === 'rounded' ? boxPadding + 'px' : '8px 0'};
+      ${itemBorderStyle === 'rounded' ? 'border: 2px solid #000; border-radius: 8px;' : 'border: none; border-top: 1px dashed #000; border-bottom: 1px dashed #000;'}
     }
     .item-header {
       display: flex;

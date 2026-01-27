@@ -3323,3 +3323,7 @@
 - [x] Bug: Horário 8h-2h ainda mostra fechado - corrigido para usar timezone de Brasília
 
 - [x] Bug: Menu público ainda mostra fechado após correção de timezone - corrigido frontend para usar timezone de Brasília
+
+- [x] Bug: Erro de login - Failed query na tabela users (coluna loginMethod adicionada)
+
+- [x] Adicionar opção para alternar entre bordas redondas e linhas tracejadas nos itens do pedido

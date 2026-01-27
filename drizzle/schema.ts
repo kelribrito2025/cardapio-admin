@@ -400,6 +400,7 @@ export const printerSettings = mysqlTable("printerSettings", {
   obsFontWeight: int("obsFontWeight").default(500).notNull(), // Peso da fonte de observações
   showDividers: boolean("showDividers").default(true).notNull(), // Mostrar divisores
   boxPadding: int("boxPadding").default(12).notNull(), // Espaçamento interno das caixas com bordas redondas
+  itemBorderStyle: varchar("itemBorderStyle", { length: 20 }).default("rounded").notNull(), // Estilo de borda dos itens: rounded ou dashed
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
