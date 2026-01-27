@@ -321,9 +321,7 @@ function generateReceiptHTML(
     
     /* QR CODE */
     .qrcode-box {
-      border: 2px solid #000;
-      border-radius: 8px;
-      padding: 12px;
+      padding: 12px 0;
       margin: 12px 0;
       text-align: center;
     }
@@ -331,8 +329,8 @@ function generateReceiptHTML(
       margin-bottom: 8px;
     }
     .qrcode-box img {
-      width: 120px;
-      height: 120px;
+      width: 144px;
+      height: 144px;
       display: block;
       margin: 0 auto;
     }
@@ -929,9 +927,7 @@ async function startServer() {
       margin-bottom: 8px;
     }
     .qrcode-box {
-      border: 2px solid #000;
-      border-radius: 8px;
-      padding: 12px;
+      padding: 12px 0;
       margin: 12px 0;
       text-align: center;
     }
@@ -939,8 +935,8 @@ async function startServer() {
       margin-bottom: 8px;
     }
     .qrcode-box img {
-      width: 120px;
-      height: 120px;
+      width: 144px;
+      height: 144px;
       display: block;
       margin: 0 auto;
     }

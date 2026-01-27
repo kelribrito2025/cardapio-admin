@@ -1050,9 +1050,7 @@ export default function TesteImpressao() {
                   {/* QR Code */}
                   {showQrCode && qrCodeUrl && (
                     <div style={{ 
-                      border: '2px solid #000',
-                      borderRadius: '8px',
-                      padding: '12px',
+                      padding: '12px 0',
                       margin: '12px 0',
                       textAlign: 'center'
                     }}>
@@ -1067,8 +1065,8 @@ export default function TesteImpressao() {
                         src={qrCodeUrl} 
                         alt="QR Code PIX" 
                         style={{ 
-                          width: '120px', 
-                          height: '120px', 
+                          width: '144px', 
+                          height: '144px', 
                           margin: '0 auto',
                           display: 'block'
                         }}

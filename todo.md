@@ -3301,3 +3301,5 @@
 - [x] Pagamento: "Pagamento" à esquerda e forma de pagamento (PIX) à direita na mesma linha
 
 - [x] Adicionar campo para upload de imagem QR Code na página de Teste de Impressão (após seção Cliente)
+
+- [x] QR Code PIX: aumentar tamanho em 20% (de 120px para 144px) e remover borda redonda
