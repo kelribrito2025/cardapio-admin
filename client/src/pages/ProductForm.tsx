@@ -227,7 +227,6 @@ export default function ProductForm() {
   const [hasStock, setHasStock] = useState(true);
   const [stockQuantity, setStockQuantity] = useState<string>("");
   const [complementGroups, setComplementGroups] = useState<ComplementGroup[]>([]);
-  const [printerSectorId, setPrinterSectorId] = useState<string>("none");
 
   // Preview selections state - para simular seleção do cliente
   const [previewSelections, setPreviewSelections] = useState<Record<number, number[]>>({});
@@ -292,12 +291,6 @@ export default function ProductForm() {
 
   // All hooks MUST be called before any early return
   const { data: categories } = trpc.category.list.useQuery(
-    { establishmentId: establishmentId! },
-    { enabled: !!establishmentId }
-  );
-
-  // Query para setores de impressão
-  const { data: printerSectors } = trpc.printerSector.listActive.useQuery(
     { establishmentId: establishmentId! },
     { enabled: !!establishmentId }
   );
@@ -466,12 +459,6 @@ export default function ProductForm() {
       setStatus(product.status === "archived" ? "paused" : product.status);
       setHasStock(product.hasStock);
       setStockQuantity(product.stockQuantity ? String(product.stockQuantity) : "");
-      // Carregar setor de impressão
-      if ((product as any).printerSectorId) {
-        setPrinterSectorId(String((product as any).printerSectorId));
-      } else {
-        setPrinterSectorId("none");
-      }
     }
   }, [product]);
 
@@ -546,7 +533,6 @@ export default function ProductForm() {
       status,
       hasStock,
       stockQuantity: stockQuantity ? Number(stockQuantity) : null,
-      printerSectorId: printerSectorId && printerSectorId !== "none" ? Number(printerSectorId) : null,
     };
 
     if (isEditing) {
@@ -880,43 +866,9 @@ export default function ProductForm() {
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
 
-                {/* Setor de Impressão - só mostra se houver setores cadastrados */}
-                {printerSectors && printerSectors.length > 0 && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <Label htmlFor="printerSector" className="text-sm font-semibold">Setor de Preparo</Label>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
-                              <Info className="h-4 w-4" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-xs text-center">
-                            <p>Selecione qual setor prepara este item. Ao aceitar um pedido, cada setor receberá automaticamente apenas seus itens na impressora.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                      <Select key={`sector-${printerSectorId}`} value={printerSectorId} onValueChange={setPrinterSectorId}>
-                        <SelectTrigger className="mt-1.5 h-9 text-sm rounded-lg border-border/50">
-                          <SelectValue placeholder="Selecione o setor" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-lg">
-                          <SelectItem value="none" className="rounded text-sm text-muted-foreground">
-                            Impressora padrão
-                          </SelectItem>
-                          {printerSectors?.map((sector) => (
-                            <SelectItem key={sector.id} value={String(sector.id)} className="rounded text-sm">
-                              {sector.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                )}
+
+                </div>
 
                 <div>
                   <Label htmlFor="description" className="text-sm font-semibold">Descrição</Label>

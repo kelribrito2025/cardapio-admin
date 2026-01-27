@@ -19,7 +19,6 @@ import Cupons from "./pages/Cupons";
 import CouponForm from "./pages/CouponForm";
 import PrinterApp from "./pages/PrinterApp";
 import TesteImpressao from "./pages/TesteImpressao";
-import SetoresImpressao from "./pages/SetoresImpressao";
 
 
 // Auth Pages
@@ -45,7 +44,6 @@ function AdminRoutes() {
         <Route path="/cupons/novo" component={CouponForm} />
         <Route path="/cupons/:id" component={CouponForm} />
         <Route path="/teste-impressao" component={TesteImpressao} />
-        <Route path="/setores-impressao" component={SetoresImpressao} />
         
         
         <Route path="/404" component={NotFound} />

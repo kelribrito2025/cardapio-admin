@@ -364,7 +364,6 @@ export const appRouter = router({
         status: z.enum(["active", "paused", "archived"]).optional(),
         stockQuantity: z.number().nullable().optional(),
         hasStock: z.boolean().optional(),
-        printerSectorId: z.number().nullable().optional(),
       }))
       .mutation(async ({ input }) => {
         const id = await db.createProduct(input);
@@ -382,7 +381,6 @@ export const appRouter = router({
         status: z.enum(["active", "paused", "archived"]).optional(),
         stockQuantity: z.number().nullable().optional(),
         hasStock: z.boolean().optional(),
-        printerSectorId: z.number().nullable().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
@@ -1798,125 +1796,6 @@ export const appRouter = router({
         return db.getDefaultPrinter(input.establishmentId);
       }),
     
-    // Imprimir pedido por setor (separa itens por setor de preparo)
-    printOrderBySector: protectedProcedure
-      .input(z.object({
-        orderId: z.number(),
-      }))
-      .mutation(async ({ input }) => {
-        // Buscar dados do pedido
-        const order = await db.getOrderById(input.orderId);
-        if (!order) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Pedido não encontrado",
-          });
-        }
-        
-        // Buscar itens do pedido com printerSectorId do produto
-        const orderItems = await db.getOrderItems(input.orderId);
-        
-        // Buscar setores ativos
-        const sectors = await db.getActivePrinterSectors(order.establishmentId);
-        
-        // Buscar configurações de impressão
-        const settings = await db.getPrinterSettings(order.establishmentId);
-        
-        // Buscar estabelecimento
-        const establishment = await db.getEstablishmentById(order.establishmentId);
-        
-        // Agrupar itens por setor
-        const itemsBySector: Record<number | 'default', typeof orderItems> = { 'default': [] };
-        
-        for (const item of orderItems) {
-          // Buscar o produto para obter o printerSectorId
-          const product = await db.getProductById(item.productId);
-          const sectorId = (product as any)?.printerSectorId;
-          
-          if (sectorId && sectors.some(s => s.id === sectorId)) {
-            if (!itemsBySector[sectorId]) {
-              itemsBySector[sectorId] = [];
-            }
-            itemsBySector[sectorId].push(item);
-          } else {
-            itemsBySector['default'].push(item);
-          }
-        }
-        
-        // Preparar resultado com recibos separados por setor
-        const printJobs: Array<{
-          sectorId: number | null;
-          sectorName: string;
-          linkcode: string | null;
-          items: typeof orderItems;
-        }> = [];
-        
-        // Adicionar jobs para cada setor com itens
-        for (const sector of sectors) {
-          const sectorItems = itemsBySector[sector.id];
-          if (sectorItems && sectorItems.length > 0) {
-            printJobs.push({
-              sectorId: sector.id,
-              sectorName: sector.name,
-              linkcode: sector.linkcode,
-              items: sectorItems,
-            });
-          }
-        }
-        
-        // Adicionar job para itens sem setor (impressora padrão)
-        if (itemsBySector['default'].length > 0) {
-          printJobs.push({
-            sectorId: null,
-            sectorName: 'Padrão',
-            linkcode: settings?.posPrinterLinkcode || null,
-            items: itemsBySector['default'],
-          });
-        }
-        
-        return {
-          order: {
-            id: order.id,
-            orderNumber: order.orderNumber,
-            customerName: order.customerName,
-            customerPhone: order.customerPhone,
-            customerAddress: order.customerAddress,
-            deliveryType: order.deliveryType,
-            paymentMethod: order.paymentMethod,
-            subtotal: order.subtotal,
-            deliveryFee: order.deliveryFee,
-            discount: order.discount,
-            total: order.total,
-            notes: order.notes,
-            couponCode: order.couponCode,
-            createdAt: order.createdAt,
-          },
-          settings: {
-            copies: settings?.copies || 1,
-            showLogo: settings?.showLogo ?? true,
-            showQrCode: settings?.showQrCode ?? false,
-            footerMessage: settings?.footerMessage || null,
-            paperWidth: settings?.paperWidth || '80mm',
-            fontSize: settings?.fontSize || 12,
-            fontWeight: settings?.fontWeight || 500,
-            titleFontSize: settings?.titleFontSize || 16,
-            titleFontWeight: settings?.titleFontWeight || 700,
-            itemFontSize: settings?.itemFontSize || 12,
-            itemFontWeight: settings?.itemFontWeight || 700,
-            obsFontSize: settings?.obsFontSize || 11,
-            obsFontWeight: settings?.obsFontWeight || 500,
-            showDividers: settings?.showDividers ?? true,
-            boxPadding: (settings as any)?.boxPadding || 12,
-            itemBorderStyle: (settings as any)?.itemBorderStyle || 'rounded',
-          },
-          establishment: {
-            name: establishment?.name || 'Estabelecimento',
-            logo: establishment?.logo || null,
-          },
-          printJobs,
-        };
-      }),
-    
     // Imprimir pedido manualmente (retorna dados para o cliente enviar à impressora)
     printOrder: protectedProcedure
       .input(z.object({
@@ -2477,67 +2356,6 @@ export const appRouter = router({
           templateCancelled: input.templateCancelled,
         });
         
-        return { success: true };
-      }),
-  }),
-  
-  // ============ PRINTER SECTORS (Setores de Impressão) ============
-  printerSector: router({
-    // Listar setores do estabelecimento
-    list: protectedProcedure
-      .input(z.object({ establishmentId: z.number() }))
-      .query(async ({ input }) => {
-        return db.getPrinterSectorsByEstablishment(input.establishmentId);
-      }),
-    
-    // Listar apenas setores ativos (para dropdown em produtos)
-    listActive: protectedProcedure
-      .input(z.object({ establishmentId: z.number() }))
-      .query(async ({ input }) => {
-        return db.getActivePrinterSectors(input.establishmentId);
-      }),
-    
-    // Buscar setor por ID
-    get: protectedProcedure
-      .input(z.object({ id: z.number() }))
-      .query(async ({ input }) => {
-        return db.getPrinterSectorById(input.id);
-      }),
-    
-    // Criar novo setor
-    create: protectedProcedure
-      .input(z.object({
-        establishmentId: z.number(),
-        name: z.string().min(1, "Nome é obrigatório"),
-        linkcode: z.string().nullable().optional(),
-        isActive: z.boolean().optional(),
-        sortOrder: z.number().optional(),
-      }))
-      .mutation(async ({ input }) => {
-        const id = await db.createPrinterSector(input);
-        return { id };
-      }),
-    
-    // Atualizar setor
-    update: protectedProcedure
-      .input(z.object({
-        id: z.number(),
-        name: z.string().optional(),
-        linkcode: z.string().nullable().optional(),
-        isActive: z.boolean().optional(),
-        sortOrder: z.number().optional(),
-      }))
-      .mutation(async ({ input }) => {
-        const { id, ...data } = input;
-        await db.updatePrinterSector(id, data);
-        return { success: true };
-      }),
-    
-    // Deletar setor
-    delete: protectedProcedure
-      .input(z.object({ id: z.number() }))
-      .mutation(async ({ input }) => {
-        await db.deletePrinterSector(input.id);
         return { success: true };
       }),
   }),
