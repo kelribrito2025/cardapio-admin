@@ -2197,6 +2197,25 @@ export const appRouter = router({
         const establishment = await db.getEstablishmentByUserId(ctx.user.id);
         if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
         
+        // Se está ativando confirmação via botões, configurar webhook automaticamente
+        if (input.requireOrderConfirmation) {
+          const whatsappConfig = await db.getWhatsappConfig(establishment.id);
+          if (whatsappConfig?.instanceToken) {
+            const { configureWebhook } = await import('./_core/uazapi');
+            // Usar a URL do app publicado
+            const appUrl = process.env.VITE_APP_URL || 'https://cardapio-admin.manus.space';
+            const webhookUrl = `${appUrl}/api/webhook/whatsapp/${establishment.id}`;
+            
+            try {
+              const result = await configureWebhook(whatsappConfig.instanceToken, webhookUrl);
+              console.log('[WhatsApp] Webhook configurado automaticamente:', { establishmentId: establishment.id, webhookUrl, success: result.success });
+            } catch (error) {
+              console.error('[WhatsApp] Erro ao configurar webhook:', error);
+              // Não falhar a operação, apenas logar o erro
+            }
+          }
+        }
+        
         await db.upsertWhatsappConfig({
           establishmentId: establishment.id,
           requireOrderConfirmation: input.requireOrderConfirmation,

@@ -3390,3 +3390,9 @@
 - [x] Implementar lógica para cancelar pedido quando cliente clica em "Não quero mais"
 - [x] Adicionar toggle de configuração na aba WhatsApp para ativar/desativar confirmação
 - [ ] Testar fluxo completo de confirmação via WhatsApp (aguardando teste do usuário)
+
+
+## Configuração Automática do Webhook UAZAPI
+- [x] Criar função configureWebhook no módulo UAZAPI para criar/atualizar webhook automaticamente
+- [x] Integrar chamada da função ao salvar configurações de WhatsApp com confirmação via botões ativada
+- [x] Testar fluxo completo de ativação automática do webhook
