@@ -403,11 +403,13 @@ export function WhatsAppTab() {
                 <code className="mx-1 px-1 bg-muted rounded">{"{{establishmentName}}"}</code>,
                 <code className="mx-1 px-1 bg-muted rounded">{"{{greeting}}"}</code>,
                 <code className="mx-1 px-1 bg-muted rounded">{"{{deliveryMessage}}"}</code>,
-                <code className="mx-1 px-1 bg-muted rounded">{"{{cancellationReason}}"}</code>
+                <code className="mx-1 px-1 bg-muted rounded">{"{{cancellationReason}}"}</code>,
+                <code className="mx-1 px-1 bg-muted rounded">{"{{itensPedido}}"}</code>
                 <span className="text-xs block mt-1 text-muted-foreground">
                   • {"{{greeting}}"} - saudação automática baseada no horário (Bom dia/Boa tarde/Boa noite)
                   <br />• {"{{deliveryMessage}}"} - mensagem automática de retirada ou entrega (apenas no status Pronto)
                   <br />• {"{{cancellationReason}}"} - motivo do cancelamento (apenas no status Cancelado)
+                  <br />• {"{{itensPedido}}"} - lista completa dos itens do pedido (produtos, complementos, observações e total)
                 </span>
               </CardDescription>
             </CardHeader>

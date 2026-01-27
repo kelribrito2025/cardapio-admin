@@ -3309,3 +3309,9 @@
 - [x] Bug: Espaçamento interno das caixas (boxPadding) não está salvando no banco de dados
 
 - [x] Bug: Lógica de horário não suporta horários que atravessam meia-noite (ex: 08:00 - 02:00)
+
+- [x] Verificar e garantir que configurações de Teste de Impressão sejam aplicadas na impressão de pedidos aceitos
+
+- [ ] Criar variável de template WhatsApp {itens_pedido} com todos os itens do pedido (produtos, complementos, observações)
+
+- [x] Criar variável de template WhatsApp {{itensPedido}} com todos os itens do pedido (produtos, complementos, observações)

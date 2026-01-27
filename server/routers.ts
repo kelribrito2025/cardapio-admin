@@ -1128,6 +1128,7 @@ export const appRouter = router({
               if (shouldNotify && config.instanceToken) {
                 const { sendOrderStatusNotification } = await import('./_core/uazapi');
                 const establishment = await db.getEstablishmentById(order.establishmentId);
+                const orderItems = await db.getOrderItems(order.id);
                 
                 await sendOrderStatusNotification(
                   config.instanceToken,
@@ -1143,6 +1144,15 @@ export const appRouter = router({
                               input.status === 'cancelled' ? config.templateCancelled : null,
                     deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
                     cancellationReason: input.cancellationReason || order.cancellationReason,
+                    orderItems: orderItems.map(item => ({
+                      productName: item.productName,
+                      quantity: item.quantity ?? 1,
+                      unitPrice: item.unitPrice,
+                      totalPrice: item.totalPrice,
+                      complements: item.complements as Array<{ name: string; price: number }> | string | null,
+                      notes: item.notes,
+                    })),
+                    orderTotal: order.total,
                   }
                 );
               }

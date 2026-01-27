@@ -1507,6 +1507,15 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
             orderNumber,
             establishmentName: establishment?.name || 'Restaurante',
             template: whatsappConfig.templateNewOrder,
+            orderItems: items.map(item => ({
+              productName: item.productName,
+              quantity: item.quantity ?? 1,
+              unitPrice: item.unitPrice,
+              totalPrice: item.totalPrice,
+              complements: item.complements,
+              notes: item.notes,
+            })),
+            orderTotal: data.total,
           }
         );
         console.log('[DB:createPublicOrder] Notificação WhatsApp enviada para novo pedido:', orderNumber);

@@ -416,7 +416,16 @@ export function generateStatusMessage(
   establishmentName: string,
   template?: string | null,
   deliveryType?: 'delivery' | 'pickup' | null,
-  cancellationReason?: string | null
+  cancellationReason?: string | null,
+  orderItems?: Array<{
+    productName: string;
+    quantity: number;
+    unitPrice: string;
+    totalPrice: string;
+    complements?: Array<{ name: string; price: number }> | string | null;
+    notes?: string | null;
+  }> | null,
+  orderTotal?: string | null
 ): string {
   // Default templates
   const defaultTemplates: Record<string, string> = {
@@ -460,10 +469,50 @@ export function generateStatusMessage(
   const greeting = getGreeting();
   messageTemplate = messageTemplate.replace(/{{greeting}}/g, greeting);
   
+  // Gerar texto dos itens do pedido
+  let itensPedidoText = '';
+  if (orderItems && orderItems.length > 0) {
+    itensPedidoText = orderItems.map(item => {
+      let itemText = `${item.quantity}x ${item.productName} - R$ ${parseFloat(item.totalPrice).toFixed(2).replace('.', ',')}`;
+      
+      // Adicionar complementos se existirem
+      if (item.complements) {
+        let complementsArray: Array<{ name: string; price: number }> = [];
+        if (typeof item.complements === 'string') {
+          try {
+            complementsArray = JSON.parse(item.complements);
+          } catch (e) {
+            // Se não for JSON válido, ignorar
+          }
+        } else if (Array.isArray(item.complements)) {
+          complementsArray = item.complements;
+        }
+        
+        if (complementsArray.length > 0) {
+          const complementsText = complementsArray.map(c => `  + ${c.name}`).join('\n');
+          itemText += '\n' + complementsText;
+        }
+      }
+      
+      // Adicionar observações se existirem
+      if (item.notes) {
+        itemText += `\n  📝 ${item.notes}`;
+      }
+      
+      return itemText;
+    }).join('\n\n');
+    
+    // Adicionar total se fornecido
+    if (orderTotal) {
+      itensPedidoText += `\n\n💰 *Total: R$ ${parseFloat(orderTotal).toFixed(2).replace('.', ',')}*`;
+    }
+  }
+  
   return messageTemplate
     .replace(/{{customerName}}/g, customerName)
     .replace(/{{orderNumber}}/g, orderNumber)
-    .replace(/{{establishmentName}}/g, establishmentName);
+    .replace(/{{establishmentName}}/g, establishmentName)
+    .replace(/{{itensPedido}}/g, itensPedidoText);
 }
 
 /**
@@ -480,6 +529,15 @@ export async function sendOrderStatusNotification(
     template?: string | null;
     deliveryType?: 'delivery' | 'pickup' | null;
     cancellationReason?: string | null;
+    orderItems?: Array<{
+      productName: string;
+      quantity: number;
+      unitPrice: string;
+      totalPrice: string;
+      complements?: Array<{ name: string; price: number }> | string | null;
+      notes?: string | null;
+    }> | null;
+    orderTotal?: string | null;
   }
 ): Promise<SendTextResponse> {
   const message = generateStatusMessage(
@@ -489,7 +547,9 @@ export async function sendOrderStatusNotification(
     data.establishmentName,
     data.template,
     data.deliveryType,
-    data.cancellationReason
+    data.cancellationReason,
+    data.orderItems,
+    data.orderTotal
   );
   
   return sendTextMessage(instanceToken, phone, message);
