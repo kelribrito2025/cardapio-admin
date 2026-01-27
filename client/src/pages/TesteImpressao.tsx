@@ -54,8 +54,8 @@ export default function TesteImpressao() {
   // Texto personalizado
   const [customText, setCustomText] = useState("");
   
-  // Estilo de borda dos itens (rounded = bordas redondas, dashed = linhas tracejadas, table = tabela com colunas)
-  const [itemBorderStyle, setItemBorderStyle] = useState<"rounded" | "dashed" | "table">("rounded");
+  // Estilo de borda dos itens (rounded = bordas redondas, dashed = linhas tracejadas)
+  const [itemBorderStyle, setItemBorderStyle] = useState<"rounded" | "dashed">("rounded");
   
   // QR Code para pagamento
   const [showQrCode, setShowQrCode] = useState(false);
@@ -706,14 +706,13 @@ export default function TesteImpressao() {
 
                 <div className="space-y-3">
                   <Label>Estilo de borda dos itens</Label>
-                  <Select value={itemBorderStyle} onValueChange={(v: "rounded" | "dashed" | "table") => setItemBorderStyle(v)}>
+                  <Select value={itemBorderStyle} onValueChange={(v: "rounded" | "dashed") => setItemBorderStyle(v)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="rounded">Bordas redondas</SelectItem>
                       <SelectItem value="dashed">Linhas tracejadas</SelectItem>
-                      <SelectItem value="table">Tabela (Qtd, Descrição, Valor)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -940,27 +939,11 @@ export default function TesteImpressao() {
 
                   {showDividers && <hr style={{ border: 'none', borderTop: '1px solid #ccc', margin: '10px 0' }} />}
 
-                  {/* Items - Cabeçalho */}
-                  {itemBorderStyle === 'table' && (
-                    <div style={{
-                      display: 'flex',
-                      borderBottom: '1px solid #000',
-                      paddingBottom: '4px',
-                      marginBottom: '8px',
-                      fontSize: `${itemFontSize}px`,
-                      fontWeight: itemFontWeight
-                    }}>
-                      <span style={{ width: '30px', textAlign: 'center' }}>Qtd</span>
-                      <span style={{ flex: 1, paddingLeft: '8px' }}>Descrição</span>
-                      <span style={{ width: '70px', textAlign: 'right' }}>Valor</span>
-                    </div>
-                  )}
-
                   {/* Items */}
                   {sampleOrder.items.map((item, idx) => (
                     <div key={idx} style={{ 
-                      marginBottom: itemBorderStyle === 'table' ? '4px' : '8px',
-                      padding: itemBorderStyle === 'rounded' ? `${boxPadding}px` : (itemBorderStyle === 'table' ? '2px 0' : '8px 0'),
+                      marginBottom: '8px',
+                      padding: itemBorderStyle === 'rounded' ? `${boxPadding}px` : '8px 0',
                       border: itemBorderStyle === 'rounded' ? '2px solid #000' : 'none',
                       borderTop: itemBorderStyle === 'dashed' ? '1px dashed #000' : undefined,
                       borderBottom: itemBorderStyle === 'dashed' ? '1px dashed #000' : undefined,
@@ -968,23 +951,12 @@ export default function TesteImpressao() {
                     }}>
                       <div style={{ 
                         display: 'flex', 
-                        justifyContent: itemBorderStyle === 'table' ? 'flex-start' : 'space-between',
-                        alignItems: 'flex-start',
+                        justifyContent: 'space-between',
                         fontSize: `${itemFontSize}px`,
                         fontWeight: itemFontWeight
                       }}>
-                        {itemBorderStyle === 'table' ? (
-                          <>
-                            <span style={{ width: '30px', textAlign: 'center' }}>{item.quantity}</span>
-                            <span style={{ flex: 1, paddingLeft: '8px' }}>{item.name}</span>
-                            <span style={{ width: '70px', textAlign: 'right' }}>{formatCurrency(item.price * item.quantity)}</span>
-                          </>
-                        ) : (
-                          <>
-                            <span>{item.quantity}x {item.name}</span>
-                            <span>{formatCurrency(item.price * item.quantity)}</span>
-                          </>
-                        )}
+                        <span>{item.quantity}x {item.name}</span>
+                        <span>{formatCurrency(item.price * item.quantity)}</span>
                       </div>
                       {item.observation && (
                         <div style={{ 
@@ -992,7 +964,7 @@ export default function TesteImpressao() {
                           fontWeight: obsFontWeight,
                           color: '#666',
                           marginTop: '2px',
-                          paddingLeft: itemBorderStyle === 'table' ? '38px' : '5px'
+                          paddingLeft: '5px'
                         }}>
                           Obs: {item.observation}
                         </div>
@@ -1003,7 +975,7 @@ export default function TesteImpressao() {
                           fontWeight: obsFontWeight,
                           color: '#555',
                           marginTop: '2px',
-                          paddingLeft: itemBorderStyle === 'table' ? '38px' : '10px'
+                          paddingLeft: '10px'
                         }}>
                           + {c.name} ({formatCurrency(c.price)})
                         </div>

@@ -71,30 +71,13 @@ function generateReceiptHTML(
   // Mensagem de cabeçalho personalizada
   const headerMessage = settings?.headerMessage;
   
-  // Cabeçalho da tabela (se estilo for tabela)
   let itemsHTML = '';
-  if (itemBorderStyle === 'table') {
-    itemsHTML += `
-      <div class="items-table-header">
-        <span class="col-qty">Qtd</span>
-        <span class="col-desc">Descrição</span>
-        <span class="col-value">Valor</span>
-      </div>
-    `;
-  }
-  
   for (const item of items) {
     let itemHTML = `
       <div class="item">
         <div class="item-header">
-          ${itemBorderStyle === 'table' ? `
-            <span class="col-qty">${item.quantity}</span>
-            <span class="col-desc">${item.productName}</span>
-            <span class="col-value">${formatCurrency(item.totalPrice)}</span>
-          ` : `
-            <span>${item.quantity}x ${item.productName}</span>
-            <span>${formatCurrency(item.totalPrice)}</span>
-          `}
+          <span>${item.quantity}x ${item.productName}</span>
+          <span>${formatCurrency(item.totalPrice)}</span>
         </div>
     `;
     if (item.notes) {
@@ -231,43 +214,28 @@ function generateReceiptHTML(
     }
     
     /* ITENS */
-    .items-table-header {
-      display: flex;
-      border-bottom: 1px solid #000;
-      padding-bottom: 4px;
-      margin-bottom: 8px;
-      font-size: ${itemFontSize};
-      font-weight: ${itemFontWeight};
-    }
-    .items-table-header .col-qty { width: 30px; text-align: center; }
-    .items-table-header .col-desc { flex: 1; padding-left: 8px; }
-    .items-table-header .col-value { width: 70px; text-align: right; }
     .item {
-      margin: ${itemBorderStyle === 'table' ? '4px 0' : '8px 0'};
-      padding: ${itemBorderStyle === 'rounded' ? boxPadding : (itemBorderStyle === 'table' ? '2px 0' : '8px 0')};
-      ${itemBorderStyle === 'rounded' ? 'border: 2px solid #000; border-radius: 8px;' : (itemBorderStyle === 'table' ? '' : 'border: none; border-top: 1px dashed #000; border-bottom: 1px dashed #000;')}
+      margin: 8px 0;
+      padding: ${itemBorderStyle === 'rounded' ? boxPadding : '8px 0'};
+      ${itemBorderStyle === 'rounded' ? 'border: 2px solid #000; border-radius: 8px;' : 'border: none; border-top: 1px dashed #000; border-bottom: 1px dashed #000;'}
     }
     .item-header {
       display: flex;
-      justify-content: ${itemBorderStyle === 'table' ? 'flex-start' : 'space-between'};
-      align-items: flex-start;
+      justify-content: space-between;
       font-size: ${itemFontSize};
       font-weight: ${itemFontWeight};
     }
-    .item-header .col-qty { width: 30px; text-align: center; }
-    .item-header .col-desc { flex: 1; padding-left: 8px; }
-    .item-header .col-value { width: 70px; text-align: right; }
     .item-obs {
       font-size: ${smallFontSize};
       font-weight: ${smallFontWeight};
       margin-top: 2px;
-      padding-left: ${itemBorderStyle === 'table' ? '38px' : '5px'};
+      padding-left: 5px;
     }
     .item-complement {
       font-size: ${smallFontSize};
       font-weight: ${smallFontWeight};
       margin-top: 2px;
-      padding-left: ${itemBorderStyle === 'table' ? '38px' : '10px'};
+      padding-left: 10px;
     }
     
     /* TOTAIS */
@@ -863,43 +831,28 @@ async function startServer() {
       ${showDividers ? 'border-top: 3px double #000;' : ''}
       margin: 12px 0;
     }
-    .items-table-header {
-      display: flex;
-      border-bottom: 1px solid #000;
-      padding-bottom: 4px;
-      margin-bottom: 8px;
-      font-size: ${itemFontSize}px;
-      font-weight: ${itemFontWeight};
-    }
-    .items-table-header .col-qty { width: 30px; text-align: center; }
-    .items-table-header .col-desc { flex: 1; padding-left: 8px; }
-    .items-table-header .col-value { width: 70px; text-align: right; }
     .item {
-      margin: ${itemBorderStyle === 'table' ? '4px 0' : '8px 0'};
-      padding: ${itemBorderStyle === 'rounded' ? boxPadding + 'px' : (itemBorderStyle === 'table' ? '2px 0' : '8px 0')};
-      ${itemBorderStyle === 'rounded' ? 'border: 2px solid #000; border-radius: 8px;' : (itemBorderStyle === 'table' ? '' : 'border: none; border-top: 1px dashed #000; border-bottom: 1px dashed #000;')}
+      margin: 8px 0;
+      padding: ${itemBorderStyle === 'rounded' ? boxPadding + 'px' : '8px 0'};
+      ${itemBorderStyle === 'rounded' ? 'border: 2px solid #000; border-radius: 8px;' : 'border: none; border-top: 1px dashed #000; border-bottom: 1px dashed #000;'}
     }
     .item-header {
       display: flex;
-      justify-content: ${itemBorderStyle === 'table' ? 'flex-start' : 'space-between'};
-      align-items: flex-start;
+      justify-content: space-between;
       font-size: ${itemFontSize}px;
       font-weight: ${itemFontWeight};
     }
-    .item-header .col-qty { width: 30px; text-align: center; }
-    .item-header .col-desc { flex: 1; padding-left: 8px; }
-    .item-header .col-value { width: 70px; text-align: right; }
     .item-obs {
       font-size: ${obsFontSize}px;
       font-weight: ${obsFontWeight};
       margin-top: 2px;
-      padding-left: ${itemBorderStyle === 'table' ? '38px' : '5px'};
+      padding-left: 5px;
     }
     .item-complement {
       font-size: ${obsFontSize}px;
       font-weight: ${obsFontWeight};
       margin-top: 2px;
-      padding-left: ${itemBorderStyle === 'table' ? '38px' : '10px'};
+      padding-left: 10px;
     }
     .totals {
       margin: 12px 0;
@@ -1022,25 +975,11 @@ async function startServer() {
     
     <hr class="divider">
     
-    ${itemBorderStyle === 'table' ? `
-      <div class="items-table-header">
-        <span class="col-qty">Qtd</span>
-        <span class="col-desc">Descrição</span>
-        <span class="col-value">Valor</span>
-      </div>
-    ` : ''}
-    
     ${sampleOrder.items.map(item => `
       <div class="item">
         <div class="item-header">
-          ${itemBorderStyle === 'table' ? `
-            <span class="col-qty">${item.quantity}</span>
-            <span class="col-desc">${item.name}</span>
-            <span class="col-value">${formatCurrency(item.price * item.quantity)}</span>
-          ` : `
-            <span>${item.quantity}x ${item.name}</span>
-            <span>${formatCurrency(item.price * item.quantity)}</span>
-          `}
+          <span>${item.quantity}x ${item.name}</span>
+          <span>${formatCurrency(item.price * item.quantity)}</span>
         </div>
         ${item.observation ? `<div class="item-obs">Obs: ${item.observation}</div>` : ''}
         ${item.complements.map((c: any) => `

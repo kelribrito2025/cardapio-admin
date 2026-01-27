@@ -1760,7 +1760,7 @@ export const appRouter = router({
         obsFontWeight: z.number().min(300).max(900).optional(),
         showDividers: z.boolean().optional(),
         boxPadding: z.number().min(4).max(20).optional(),
-        itemBorderStyle: z.enum(['rounded', 'dashed', 'table']).optional(),
+        itemBorderStyle: z.enum(['rounded', 'dashed']).optional(),
       }))
       .mutation(async ({ input }) => {
         await db.upsertPrinterSettings(input);
