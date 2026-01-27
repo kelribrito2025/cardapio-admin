@@ -2227,12 +2227,37 @@ export async function getEstablishmentOpenStatus(establishmentId: number): Promi
   const currentTime = currentDate.toTimeString().slice(0, 5);
   
   // Verificar se está dentro do horário de funcionamento
+  // Considera horários que atravessam a meia-noite (ex: 08:00 - 02:00)
   const todayHours = hours.find(h => h.dayOfWeek === currentDayOfWeek);
-  const isWithinSchedule = todayHours?.isActive && 
-    todayHours.openTime && 
-    todayHours.closeTime && 
-    currentTime >= todayHours.openTime && 
-    currentTime < todayHours.closeTime;
+  const yesterdayDayOfWeek = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
+  const yesterdayHours = hours.find(h => h.dayOfWeek === yesterdayDayOfWeek);
+  
+  // Função auxiliar para verificar se o horário atravessa meia-noite
+  const crossesMidnight = (openTime: string, closeTime: string) => closeTime < openTime;
+  
+  // Verificar se está dentro do horário de hoje
+  let isWithinSchedule = false;
+  
+  if (todayHours?.isActive && todayHours.openTime && todayHours.closeTime) {
+    if (crossesMidnight(todayHours.openTime, todayHours.closeTime)) {
+      // Horário atravessa meia-noite (ex: 08:00 - 02:00)
+      // Está aberto se: hora atual >= abertura (ex: 08:00 até 23:59)
+      isWithinSchedule = currentTime >= todayHours.openTime;
+    } else {
+      // Horário normal no mesmo dia (ex: 08:00 - 22:00)
+      isWithinSchedule = currentTime >= todayHours.openTime && currentTime < todayHours.closeTime;
+    }
+  }
+  
+  // Verificar se está dentro do horário de ontem que atravessa meia-noite
+  // Ex: Se ontem abriu 08:00-02:00, e agora são 01:00, ainda está aberto
+  if (!isWithinSchedule && yesterdayHours?.isActive && yesterdayHours.openTime && yesterdayHours.closeTime) {
+    if (crossesMidnight(yesterdayHours.openTime, yesterdayHours.closeTime)) {
+      // Horário de ontem atravessa meia-noite
+      // Está aberto se: hora atual < fechamento (ex: 00:00 até 02:00)
+      isWithinSchedule = currentTime < yesterdayHours.closeTime;
+    }
+  }
   
   // Calcular próximo horário de abertura
   const nextOpening = getNextOpeningTime(hours, currentDate);

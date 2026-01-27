@@ -3307,3 +3307,5 @@
 - [x] Adicionar slider para controlar espaçamento interno (padding) das caixas com bordas redondas no card de Configurações de Fonte
 
 - [x] Bug: Espaçamento interno das caixas (boxPadding) não está salvando no banco de dados
+
+- [x] Bug: Lógica de horário não suporta horários que atravessam meia-noite (ex: 08:00 - 02:00)
