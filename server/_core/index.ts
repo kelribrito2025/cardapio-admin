@@ -207,7 +207,7 @@ function generateReceiptHTML(
     .item {
       margin: 8px 0;
       padding: 10px 12px;
-      border: 1px solid #ccc;
+      border: 2px solid #000;
       border-radius: 8px;
     }
     .item-line {
@@ -295,7 +295,7 @@ function generateReceiptHTML(
       padding: 8px; 
       margin: 10px 0; 
       font-size: ${smallFontSize};
-      border: 1px solid #ccc;
+      border: 2px solid #000;
     }
     .notes-title {
       font-weight: ${baseFontWeight};
@@ -791,7 +791,7 @@ async function startServer() {
     .item {
       margin: 8px 0;
       padding: 10px 12px;
-      border: 1px solid #ccc;
+      border: 2px solid #000;
       border-radius: 8px;
     }
     .item-header {
@@ -848,7 +848,7 @@ async function startServer() {
       line-height: 1.4;
     }
     .address-box {
-      border: 1px solid #ccc;
+      border: 2px solid #000;
       border-radius: 8px;
       padding: 12px;
       margin: 12px 0;
@@ -857,7 +857,7 @@ async function startServer() {
       margin-bottom: 8px;
     }
     .payment-box {
-      border: 1px solid #ccc;
+      border: 2px solid #000;
       border-radius: 8px;
       padding: 12px;
       margin: 12px 0;
@@ -878,7 +878,7 @@ async function startServer() {
       font-size: ${itemFontSize}px;
     }
     .client-box {
-      border: 1px solid #ccc;
+      border: 2px solid #000;
       border-radius: 8px;
       padding: 12px;
       margin: 12px 0;

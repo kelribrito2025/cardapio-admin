@@ -797,7 +797,7 @@ export default function TesteImpressao() {
                     <div key={idx} style={{ 
                       marginBottom: '8px',
                       padding: '10px 12px',
-                      border: '1px solid #ccc',
+                      border: '2px solid #000',
                       borderRadius: '8px'
                     }}>
                       <div style={{ 
@@ -879,7 +879,7 @@ export default function TesteImpressao() {
 
                   {/* Sections */}
                   <div style={{ 
-                    border: '1px solid #ccc',
+                    border: '2px solid #000',
                     borderRadius: '8px',
                     padding: '12px',
                     margin: '12px 0'
@@ -902,7 +902,7 @@ export default function TesteImpressao() {
                   </div>
 
                   <div style={{ 
-                    border: '1px solid #ccc',
+                    border: '2px solid #000',
                     borderRadius: '8px',
                     padding: '12px',
                     margin: '12px 0'
@@ -930,7 +930,7 @@ export default function TesteImpressao() {
                   </div>
 
                   <div style={{ 
-                    border: '1px solid #ccc',
+                    border: '2px solid #000',
                     borderRadius: '8px',
                     padding: '12px',
                     margin: '12px 0'

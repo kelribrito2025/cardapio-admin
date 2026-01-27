@@ -3289,3 +3289,5 @@
 - [x] Cliente: título e dados na mesma linha (Cliente: Nome - Telefone)
 
 - [x] Itens do pedido: adicionar caixa com bordas redondas em cada item
+
+- [x] Aumentar espessura das bordas de 1px para 2px em todas as caixas (agora 2px solid #000)
