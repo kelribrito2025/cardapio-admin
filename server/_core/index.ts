@@ -964,8 +964,7 @@ async function startServer() {
     <div class="client-box">
       <div class="section-title">Cliente:</div>
       <div class="section-content">
-        ${sampleOrder.customerName}<br>
-        ${sampleOrder.customerPhone}
+        ${sampleOrder.customerName} - ${sampleOrder.customerPhone}
       </div>
     </div>
     

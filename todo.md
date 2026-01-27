@@ -3283,3 +3283,5 @@
 
 - [x] Pagamento: caixa com bordas redondas, título PAGAMENTO e forma de pagamento em badge na mesma linha
 - [x] Cliente: mesmo estilo de caixa com bordas redondas igual ao Endereço
+
+- [x] Cliente: nome e telefone na mesma linha horizontal

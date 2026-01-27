@@ -943,8 +943,7 @@ export default function TesteImpressao() {
                       color: '#444',
                       lineHeight: 1.4
                     }}>
-                      {sampleOrder.customerName}<br />
-                      {sampleOrder.customerPhone}
+                      {sampleOrder.customerName} - {sampleOrder.customerPhone}
                     </div>
                   </div>
 
