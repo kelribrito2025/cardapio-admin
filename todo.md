@@ -3413,3 +3413,7 @@
 - [x] Investigar por que pedido está aparecendo como Novo sem aguardar confirmação no WhatsApp
 - [x] Corrigir fluxo para usar status pending_confirmation quando confirmação via botões está ativada
 - [x] Ajustar página de Pedidos para não mostrar pedidos com status pending_confirmation
+
+
+## Remover mensagem automática de confirmação
+- [x] Remover mensagem "Perfeito! Seu pedido foi confirmado..." enviada após cliente clicar no botão

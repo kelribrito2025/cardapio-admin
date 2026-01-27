@@ -1714,21 +1714,9 @@ async function startServer() {
           const result = await confirmOrderByNumber(establishmentId, orderNumber);
           console.log('[WhatsApp Webhook] Resultado confirmação:', result);
           
+          // Mensagem de confirmação removida - o estabelecimento pode configurar suas próprias notificações
           if (result.success) {
-            // Enviar mensagem de confirmação
-            const { getWhatsappConfig } = await import('../db');
-            const { sendTextMessage } = await import('./uazapi');
-            const config = await getWhatsappConfig(establishmentId);
-            
-            // Usar senderPhone que já foi extraído acima
-            if (config?.instanceToken && senderPhone) {
-              const phone = senderPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
-              await sendTextMessage(
-                config.instanceToken,
-                phone,
-                `✅ Perfeito! Seu pedido ${orderNumber} foi confirmado e já está sendo preparado!\n\n🔔 Você receberá uma notificação quando estiver pronto.`
-              );
-            }
+            console.log('[WhatsApp Webhook] Pedido confirmado com sucesso, sem mensagem automática');
           }
         } else if (cancelMatch) {
           const orderNumber = cancelMatch[1];
