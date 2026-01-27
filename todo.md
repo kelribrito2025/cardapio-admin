@@ -3319,3 +3319,5 @@
 - [x] Ajustar variável {{itensPedido}} para não mostrar preço individual dos itens, apenas o total do pedido
 
 - [x] Remover quebra de linha extra entre os itens na variável {{itensPedido}}
+
+- [x] Bug: Horário 8h-2h ainda mostra fechado - corrigido para usar timezone de Brasília

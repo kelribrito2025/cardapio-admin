@@ -2231,9 +2231,18 @@ export async function getEstablishmentOpenStatus(establishmentId: number): Promi
   // Buscar horários de funcionamento
   const hours = await getBusinessHoursByEstablishment(establishmentId);
   
+  // Usar timezone de Brasília (America/Sao_Paulo) para cálculos de horário
   const currentDate = new Date();
-  const currentDayOfWeek = currentDate.getDay();
-  const currentTime = currentDate.toTimeString().slice(0, 5);
+  const brasiliaFormatter = new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+  const brasiliaDate = new Date(currentDate.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  const currentDayOfWeek = brasiliaDate.getDay();
+  const currentTime = brasiliaDate.toTimeString().slice(0, 5);
   
   // Verificar se está dentro do horário de funcionamento
   // Considera horários que atravessam a meia-noite (ex: 08:00 - 02:00)
@@ -2268,14 +2277,14 @@ export async function getEstablishmentOpenStatus(establishmentId: number): Promi
     }
   }
   
-  // Calcular próximo horário de abertura
-  const nextOpening = getNextOpeningTime(hours, currentDate);
+  // Calcular próximo horário de abertura (usando horário de Brasília)
+  const nextOpening = getNextOpeningTime(hours, brasiliaDate);
   
-  // Verificar se deve reabrir automaticamente
+  // Verificar se deve reabrir automaticamente (usando horário de Brasília)
   const autoReopen = shouldAutoReopen(
     establishment.manuallyClosedAt ? new Date(establishment.manuallyClosedAt) : null,
     hours,
-    currentDate
+    brasiliaDate
   );
   
   // Lógica de status:
