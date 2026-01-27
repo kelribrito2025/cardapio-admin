@@ -3303,3 +3303,5 @@
 - [x] Adicionar campo para upload de imagem QR Code na página de Teste de Impressão (após seção Cliente)
 
 - [x] QR Code PIX: aumentar tamanho em 20% (de 120px para 144px) e remover borda redonda
+
+- [x] Adicionar slider para controlar espaçamento interno (padding) das caixas com bordas redondas no card de Configurações de Fonte

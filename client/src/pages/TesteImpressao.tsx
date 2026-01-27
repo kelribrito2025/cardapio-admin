@@ -49,6 +49,7 @@ export default function TesteImpressao() {
   // Configurações de layout
   const [paperWidth, setPaperWidth] = useState("80mm");
   const [showDividers, setShowDividers] = useState(true);
+  const [boxPadding, setBoxPadding] = useState(12); // Padding interno das caixas com bordas redondas
   
   // Texto personalizado
   const [customText, setCustomText] = useState("");
@@ -71,6 +72,7 @@ export default function TesteImpressao() {
       setObsFontWeight(savedSettings.obsFontWeight || 500);
       setPaperWidth(savedSettings.paperWidth || "80mm");
       setShowDividers(savedSettings.showDividers ?? true);
+      setBoxPadding((savedSettings as any).boxPadding || 12);
       setShowQrCode(savedSettings.showQrCode ?? false);
       setQrCodeUrl((savedSettings as any).qrCodeUrl || null);
     }
@@ -166,6 +168,7 @@ export default function TesteImpressao() {
       obsFontWeight,
       paperWidth: paperWidth as "58mm" | "80mm",
       showDividers,
+      boxPadding,
       showQrCode,
       qrCodeUrl,
     });
@@ -190,6 +193,7 @@ export default function TesteImpressao() {
       obsFontWeight,
       paperWidth: paperWidth as "58mm" | "80mm",
       showDividers,
+      boxPadding,
       showQrCode,
       qrCodeUrl,
     });
@@ -683,6 +687,17 @@ export default function TesteImpressao() {
                     onCheckedChange={setShowDividers}
                   />
                 </div>
+
+                <div className="space-y-3">
+                  <Label>Espaçamento interno das caixas: {boxPadding}px</Label>
+                  <Slider
+                    value={[boxPadding]}
+                    onValueChange={(v) => setBoxPadding(v[0])}
+                    min={4}
+                    max={20}
+                    step={1}
+                  />
+                </div>
               </CardContent>
             </Card>
 
@@ -910,7 +925,7 @@ export default function TesteImpressao() {
                   {sampleOrder.items.map((item, idx) => (
                     <div key={idx} style={{ 
                       marginBottom: '8px',
-                      padding: '10px 12px',
+                      padding: `${boxPadding}px`,
                       border: '2px solid #000',
                       borderRadius: '8px'
                     }}>
@@ -995,7 +1010,7 @@ export default function TesteImpressao() {
                   <div style={{ 
                     border: '2px solid #000',
                     borderRadius: '8px',
-                    padding: '12px',
+                    padding: `${boxPadding}px`,
                     margin: '12px 0'
                   }}>
                     <div style={{ 
@@ -1018,7 +1033,7 @@ export default function TesteImpressao() {
                   <div style={{ 
                     border: '2px solid #000',
                     borderRadius: '8px',
-                    padding: '12px',
+                    padding: `${boxPadding}px`,
                     margin: '12px 0'
                   }}>
                     <div style={{ 
@@ -1034,7 +1049,7 @@ export default function TesteImpressao() {
                   <div style={{ 
                     border: '2px solid #000',
                     borderRadius: '8px',
-                    padding: '12px',
+                    padding: `${boxPadding}px`,
                     margin: '12px 0'
                   }}>
                     <div style={{ 

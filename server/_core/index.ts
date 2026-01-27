@@ -62,6 +62,7 @@ function generateReceiptHTML(
   const smallFontSize = `${settings?.obsFontSize || (is58mm ? 10 : 11)}px`;
   const smallFontWeight = settings?.obsFontWeight || 500;
   const showDividers = settings?.showDividers ?? true;
+  const boxPadding = `${(settings as any)?.boxPadding || 12}px`;
   
   // Logo URL (usa o personalizado ou o do estabelecimento)
   const logoUrl = settings?.logoUrl || establishment?.logo;
@@ -214,7 +215,7 @@ function generateReceiptHTML(
     /* ITENS */
     .item {
       margin: 8px 0;
-      padding: 10px 12px;
+      padding: ${boxPadding};
       border: 2px solid #000;
       border-radius: 8px;
     }
@@ -265,7 +266,7 @@ function generateReceiptHTML(
     .section-box {
       border: 2px solid #000;
       border-radius: 8px;
-      padding: 12px;
+      padding: ${boxPadding};
       margin: 12px 0;
     }
     .section-title {
@@ -687,6 +688,7 @@ async function startServer() {
       const obsFontWeight = settings?.obsFontWeight || 500;
       const paperWidth = settings?.paperWidth || '80mm';
       const showDividers = settings?.showDividers ?? true;
+      const boxPadding = (settings as any)?.boxPadding || 12;
       
       const maxWidth = paperWidth === "58mm" ? "220px" : "300px";
       const establishmentName = establishment?.name || "Restaurante";
@@ -830,7 +832,7 @@ async function startServer() {
     }
     .item {
       margin: 8px 0;
-      padding: 10px 12px;
+      padding: ${boxPadding}px;
       border: 2px solid #000;
       border-radius: 8px;
     }
@@ -890,7 +892,7 @@ async function startServer() {
     .address-box {
       border: 2px solid #000;
       border-radius: 8px;
-      padding: 12px;
+      padding: ${boxPadding}px;
       margin: 12px 0;
     }
     .address-box .section-title {
@@ -899,7 +901,7 @@ async function startServer() {
     .payment-box {
       border: 2px solid #000;
       border-radius: 8px;
-      padding: 12px;
+      padding: ${boxPadding}px;
       margin: 12px 0;
     }
     .payment-row {
@@ -920,7 +922,7 @@ async function startServer() {
     .client-box {
       border: 2px solid #000;
       border-radius: 8px;
-      padding: 12px;
+      padding: ${boxPadding}px;
       margin: 12px 0;
     }
     .client-box .section-title {

@@ -399,6 +399,7 @@ export const printerSettings = mysqlTable("printerSettings", {
   obsFontSize: int("obsFontSize").default(11).notNull(), // Tamanho da fonte de observações
   obsFontWeight: int("obsFontWeight").default(500).notNull(), // Peso da fonte de observações
   showDividers: boolean("showDividers").default(true).notNull(), // Mostrar divisores
+  boxPadding: int("boxPadding").default(12).notNull(), // Espaçamento interno das caixas com bordas redondas
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
