@@ -753,21 +753,34 @@ export default function TesteImpressao() {
                   </div>
 
                   {/* Order Info */}
-                  <div style={{ marginBottom: '12px' }}>
-                    <h2 style={{ 
-                      fontSize: `${titleFontSize}px`, 
+                  <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+                    <div style={{ 
+                      fontSize: `${titleFontSize + 6}px`, 
                       fontWeight: titleFontWeight,
-                      marginBottom: '2px'
+                      marginBottom: '4px'
                     }}>
-                      Pedido #{sampleOrder.orderNumber}
-                    </h2>
-                    <p style={{ 
+                      #{sampleOrder.orderNumber}
+                    </div>
+                    <div style={{ 
                       fontSize: `${obsFontSize}px`, 
                       fontWeight: titleFontWeight,
-                      color: '#666'
+                      color: '#666',
+                      marginBottom: '8px'
                     }}>
-                      Realizado em: {formatDate(sampleOrder.createdAt)}
-                    </p>
+                      {formatDate(sampleOrder.createdAt)}
+                    </div>
+                    <div style={{ 
+                      display: 'inline-block',
+                      background: '#000',
+                      color: '#fff',
+                      fontSize: `${itemFontSize}px`,
+                      fontWeight: titleFontWeight,
+                      padding: '6px 16px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px'
+                    }}>
+                      {sampleOrder.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA'}
+                    </div>
                   </div>
 
                   {showDividers && <hr style={{ border: 'none', borderTop: '1px solid #ccc', margin: '10px 0' }} />}

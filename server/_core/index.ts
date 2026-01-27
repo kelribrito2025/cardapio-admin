@@ -748,16 +748,28 @@ async function startServer() {
       margin-top: 2px;
     }
     .order-info {
+      text-align: center;
       margin-bottom: 12px;
     }
-    .order-info h2 {
-      font-size: ${titleFontSize}px;
+    .order-number {
+      font-size: ${titleFontSize + 6}px;
       font-weight: ${titleFontWeight};
-      margin-bottom: 2px;
+      margin-bottom: 4px;
     }
-    .order-info p {
+    .order-date {
       font-size: ${obsFontSize}px;
       font-weight: ${titleFontWeight};
+      margin-bottom: 8px;
+    }
+    .delivery-badge {
+      display: inline-block;
+      background: #000;
+      color: #fff;
+      font-size: ${itemFontSize}px;
+      font-weight: ${titleFontWeight};
+      padding: 6px 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     .divider {
       border: none;
@@ -844,8 +856,9 @@ async function startServer() {
     </div>
     
     <div class="order-info">
-      <h2>Pedido #${sampleOrder.orderNumber}</h2>
-      <p>Realizado em: ${formatDate(sampleOrder.createdAt)}</p>
+      <div class="order-number">#${sampleOrder.orderNumber}</div>
+      <div class="order-date">${formatDate(sampleOrder.createdAt)}</div>
+      <div class="delivery-badge">${sampleOrder.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA'}</div>
     </div>
     
     <hr class="divider">

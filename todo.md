@@ -3268,3 +3268,5 @@
 - [x] Atualizar estilos do endpoint de teste para usar os mesmos estilos otimizados da função generateReceiptHTML
 
 - [x] Ajustar layout do teste de impressão para alinhar Pedido e data à esquerda (igual foto do recibo)
+
+- [x] Adicionar badge de ENTREGA/RETIRADA no recibo de teste (fundo preto, texto branco, centralizado)
