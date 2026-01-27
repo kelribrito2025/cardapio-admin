@@ -3297,3 +3297,5 @@
 - [x] Forma de pagamento: remover badge preto e deixar apenas texto em negrito
 
 - [x] Garantir que a impressão dos pedidos reais use exatamente o mesmo estilo da página de teste (sem logo)
+
+- [x] Pagamento: "Pagamento" à esquerda e forma de pagamento (PIX) à direita na mesma linha
