@@ -71,17 +71,15 @@ function generateReceiptHTML(
   
   let itemsHTML = '';
   for (const item of items) {
-    itemsHTML += `
+    let itemHTML = `
       <div class="item">
-        <div class="item-line">
-          <span class="item-qty">${item.quantity}x</span>
-          <span class="item-name">${item.productName}</span>
+        <div class="item-header">
+          <span>${item.quantity}x ${item.productName}</span>
+          <span>${formatCurrency(item.totalPrice)}</span>
         </div>
-        <div class="item-price">${formatCurrency(item.totalPrice)}</div>
-      </div>
     `;
     if (item.notes) {
-      itemsHTML += `<div class="item-obs">OBS: ${item.notes}</div>`;
+      itemHTML += `<div class="item-obs">Obs: ${item.notes}</div>`;
     }
     // Parse complements if exists
     if (item.complements) {
@@ -91,7 +89,7 @@ function generateReceiptHTML(
           for (const comp of complements) {
             if (comp.items && Array.isArray(comp.items)) {
               for (const ci of comp.items) {
-                itemsHTML += `<div class="item-complement">+ ${ci.name}${ci.price > 0 ? ` ${formatCurrency(ci.price)}` : ''}</div>`;
+                itemHTML += `<div class="item-complement">+ ${ci.name}${ci.price > 0 ? ` (${formatCurrency(ci.price)})` : ''}</div>`;
               }
             }
           }
@@ -100,6 +98,8 @@ function generateReceiptHTML(
         // Ignore parse errors
       }
     }
+    itemHTML += `</div>`;
+    itemsHTML += itemHTML;
   }
   
   return `
@@ -133,45 +133,53 @@ function generateReceiptHTML(
     }
     
     /* CABEÇALHO */
-    .header { 
-      text-align: center; 
-      margin-bottom: 12px; 
+    .logo {
+      text-align: center;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      ${showDividers ? 'border-bottom: 1px solid #000;' : ''}
     }
-    .header h1 { 
-      font-size: ${headerFontSize}; 
-      font-weight: ${headerFontWeight}; 
-      letter-spacing: -0.5px;
-      margin-bottom: 4px;
+    .logo h1 {
+      font-size: ${orderNumberSize};
+      font-weight: ${headerFontWeight};
+      margin: 0;
+    }
+    .logo p {
+      font-size: ${smallFontSize};
+      font-weight: ${smallFontWeight};
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+    .order-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .order-text {
+      display: flex;
+      flex-direction: column;
     }
     .order-number {
       font-size: ${orderNumberSize};
-      font-weight: 700;
-      margin: 8px 0;
-      letter-spacing: 1px;
+      font-weight: ${headerFontWeight};
+      margin-bottom: 2px;
     }
-    .header-date {
+    .order-date {
       font-size: ${smallFontSize};
-      margin: 4px 0;
-      font-weight: 700;
+      font-weight: ${headerFontWeight};
     }
-    .delivery-type {
-      font-size: ${itemFontSize};
-      font-weight: 700;
+    .delivery-badge {
+      display: inline-block;
       background: #000;
       color: #fff;
+      font-size: ${smallFontSize};
+      font-weight: ${headerFontWeight};
       padding: 6px 12px;
-      display: inline-block;
-      margin: 8px 0;
-    }
-    .header-message { 
-      font-size: ${smallFontSize}; 
-      margin-top: 4px; 
-      font-weight: 700;
-    }
-    .logo { 
-      max-width: ${is58mm ? '100px' : '140px'}; 
-      max-height: ${is58mm ? '50px' : '70px'}; 
-      margin-bottom: 8px; 
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      align-self: center;
     }
     
     /* DIVISOR */
@@ -210,38 +218,23 @@ function generateReceiptHTML(
       border: 2px solid #000;
       border-radius: 8px;
     }
-    .item-line {
+    .item-header {
       display: flex;
-      align-items: flex-start;
-      gap: 6px;
-    }
-    .item-qty {
-      font-weight: ${itemFontWeight};
-      font-size: ${itemFontSize};
-      min-width: 30px;
-    }
-    .item-name {
+      justify-content: space-between;
       font-size: ${itemFontSize};
       font-weight: ${itemFontWeight};
-      flex: 1;
-      word-wrap: break-word;
-    }
-    .item-price {
-      font-size: ${itemFontSize};
-      font-weight: ${baseFontWeight};
-      text-align: right;
-      margin-top: 2px;
     }
     .item-obs {
       font-size: ${smallFontSize};
-      margin: 4px 0 4px 36px;
-      font-style: italic;
       font-weight: ${smallFontWeight};
+      margin-top: 2px;
+      padding-left: 5px;
     }
     .item-complement {
       font-size: ${smallFontSize};
-      margin: 2px 0 2px 36px;
       font-weight: ${smallFontWeight};
+      margin-top: 2px;
+      padding-left: 10px;
     }
     
     /* TOTAIS */
@@ -348,18 +341,17 @@ function generateReceiptHTML(
   </style>
 </head>
 <body>
-  <div class="header">
-    ${logoUrl && settings?.showLogo ? `<img src="${logoUrl}" alt="Logo" class="logo" />` : ''}
+  <div class="logo">
     <h1>${establishment?.name || 'Estabelecimento'}</h1>
-    ${headerMessage ? `<p class="header-message">${headerMessage}</p>` : ''}
+    <p>Sistema de Pedidos</p>
   </div>
   
-  <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
-    <div>
+  <div class="order-info">
+    <div class="order-text">
       <div class="order-number">Pedido #${order.orderNumber}</div>
-      <p class="header-date">📅 ${formatDate(order.createdAt)}</p>
+      <div class="order-date">📅 ${formatDate(order.createdAt)}</div>
     </div>
-    <span class="delivery-type">${deliveryTypeText}</span>
+    <div class="delivery-badge">${deliveryTypeText}</div>
   </div>
   
   <hr class="divider">

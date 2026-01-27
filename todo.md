@@ -3295,3 +3295,5 @@
 - [x] Aplicar o mesmo estilo do preview de teste na função generateReceiptHTML dos pedidos reais
 
 - [x] Forma de pagamento: remover badge preto e deixar apenas texto em negrito
+
+- [x] Garantir que a impressão dos pedidos reais use exatamente o mesmo estilo da página de teste (sem logo)
