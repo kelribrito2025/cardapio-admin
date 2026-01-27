@@ -3358,3 +3358,5 @@
 - [ ] Testar impressão simultânea nas duas impressoras via app Multi Printer
 
 - [x] Bug: Impressão Multi Printer não executa automaticamente - corrigido usando printerName (KOT-1, KOT-2) em vez de IP
+
+- [x] Bug: Multi Printer mostra "please set the ip address" - corrigido usando printerIpAddr + printerPort
