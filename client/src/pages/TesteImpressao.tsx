@@ -1084,7 +1084,10 @@ export default function TesteImpressao() {
                       color: '#444',
                       lineHeight: 1.4
                     }}>
-                      <strong>Cliente:</strong> {sampleOrder.customerName} - {sampleOrder.customerPhone}
+                      <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                          <img src="/client-icon.png" alt="" style={{ width: '14px', height: '14px', marginRight: '4px' }} />
+                          <strong>Cliente:</strong>
+                        </span> {sampleOrder.customerName} - {sampleOrder.customerPhone}
                     </div>
                   </div>
 

@@ -3331,3 +3331,5 @@
 - [x] Substituir emoji de data (📅) pelo ícone de calendário no preview do recibo
 
 - [x] Adicionar ícone de pagamento ao lado esquerdo do título Pagamento no card de pagamento
+
+- [x] Adicionar ícone de estrela ao lado esquerdo do título Cliente no card de cliente
