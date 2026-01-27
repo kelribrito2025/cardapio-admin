@@ -3374,3 +3374,5 @@
 - [x] Bug: Impressão por setor imprime todos os itens em todas as impressoras - corrigido: alterado endpoint para multiprinter-sectors
 
 - [x] Bug: Recibo de setor incompleto - corrigido para usar layout completo igual ao recibo normal (endereço, pagamento, QR code, total, taxa entrega), apenas filtrando itens por setor
+
+- [x] Implementar lógica: itens sem setor (printerId = null) vão para todas as impressoras, itens com setor específico vão apenas para aquela impressora

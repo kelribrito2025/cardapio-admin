@@ -1538,37 +1538,44 @@ async function startServer() {
       const printJobs: any[] = [];
       const printersSummary: any[] = [];
       
-      // Para cada impressora com itens associados
-      for (const [printerId, items] of Array.from(itemsByPrinter.entries())) {
-        const printer = allPrinters.find((p: any) => p.id === printerId);
-        if (!printer) continue;
-        
-        // URL do recibo filtrado por setor
-        const receiptUrl = `${baseUrl}/api/print/receipt-sector/${orderId}/${printerId}`;
-        
-        printJobs.push({
-          srcTp: "uri",
-          srcObj: "html",
-          src: encodeURIComponent(receiptUrl),
-          printerIpAddr: printer.ipAddress,
-          printerPort: String(printer.port || 9100),
-          numCopies: 1,
-          openCashDrawer: 0
-        });
-        
-        printersSummary.push({
-          name: printer.name,
-          ip: printer.ipAddress,
-          port: printer.port,
-          items: items.map((i: any) => i.productName)
-        });
-      }
-      
-      // Se houver itens sem impressora definida, enviar para a primeira impressora (padrão)
-      if (itemsWithoutPrinter.length > 0 && printJobs.length === 0) {
-        // Nenhum item tem impressora definida, enviar tudo para todas as impressoras
+      // Se há itens sem setor definido, precisamos enviar para todas as impressoras
+      // Então geramos um job para cada impressora ativa
+      if (itemsWithoutPrinter.length > 0) {
+        // Itens sem setor vão para TODAS as impressoras
         for (const printer of allPrinters) {
-          const receiptUrl = `${baseUrl}/api/print/receipt/${orderId}`;
+          const receiptUrl = `${baseUrl}/api/print/receipt-sector/${orderId}/${printer.id}`;
+          
+          // Combinar itens do setor específico + itens sem setor
+          const printerSpecificItems = itemsByPrinter.get(printer.id) || [];
+          const allItemsForPrinter = [...printerSpecificItems, ...itemsWithoutPrinter];
+          
+          if (allItemsForPrinter.length > 0) {
+            printJobs.push({
+              srcTp: "uri",
+              srcObj: "html",
+              src: encodeURIComponent(receiptUrl),
+              printerIpAddr: printer.ipAddress,
+              printerPort: String(printer.port || 9100),
+              numCopies: 1,
+              openCashDrawer: 0
+            });
+            
+            printersSummary.push({
+              name: printer.name,
+              ip: printer.ipAddress,
+              port: printer.port,
+              items: allItemsForPrinter.map((i: any) => i.productName)
+            });
+          }
+        }
+      } else {
+        // Não há itens sem setor, enviar apenas para impressoras com itens associados
+        for (const [printerId, items] of Array.from(itemsByPrinter.entries())) {
+          const printer = allPrinters.find((p: any) => p.id === printerId);
+          if (!printer) continue;
+          
+          // URL do recibo filtrado por setor
+          const receiptUrl = `${baseUrl}/api/print/receipt-sector/${orderId}/${printerId}`;
           
           printJobs.push({
             srcTp: "uri",
@@ -1584,7 +1591,7 @@ async function startServer() {
             name: printer.name,
             ip: printer.ipAddress,
             port: printer.port,
-            items: itemsWithoutPrinter.map((i: any) => i.productName)
+            items: items.map((i: any) => i.productName)
           });
         }
       }
@@ -1634,13 +1641,21 @@ async function startServer() {
       // Buscar itens com informação de impressora para filtrar
       const itemsWithPrinter = await getOrderItemsWithPrinter(orderId);
       
-      // Filtrar apenas os IDs dos itens desta impressora
-      const sectorItemIds = itemsWithPrinter
+      // Filtrar IDs dos itens desta impressora específica
+      const sectorSpecificItemIds = itemsWithPrinter
         .filter((item: any) => item.printerId === printerId)
         .map((item: any) => item.id);
       
-      // Filtrar os itens completos do pedido que pertencem a este setor
-      const sectorItems = allOrderItems.filter((item: any) => sectorItemIds.includes(item.id));
+      // Filtrar IDs dos itens sem setor definido (printerId = null) - vão para todas as impressoras
+      const noSectorItemIds = itemsWithPrinter
+        .filter((item: any) => item.printerId === null || item.printerId === undefined)
+        .map((item: any) => item.id);
+      
+      // Combinar: itens deste setor + itens sem setor (que vão para todas)
+      const allSectorItemIds = [...sectorSpecificItemIds, ...noSectorItemIds];
+      
+      // Filtrar os itens completos do pedido
+      const sectorItems = allOrderItems.filter((item: any) => allSectorItemIds.includes(item.id));
       
       if (sectorItems.length === 0) {
         res.status(404).send("Nenhum item para esta impressora");
