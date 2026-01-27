@@ -869,7 +869,7 @@ async function startServer() {
     <div class="order-info">
       <div class="order-text">
         <div class="order-number">Pedido #${sampleOrder.orderNumber}</div>
-        <div class="order-date">Realizado em: ${formatDate(sampleOrder.createdAt)}</div>
+        <div class="order-date">📅 ${formatDate(sampleOrder.createdAt)}</div>
       </div>
       <div class="delivery-badge">${sampleOrder.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA'}</div>
     </div>

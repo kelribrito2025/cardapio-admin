@@ -772,7 +772,7 @@ export default function TesteImpressao() {
                         fontWeight: titleFontWeight,
                         color: '#666'
                       }}>
-                        Realizado em: {formatDate(sampleOrder.createdAt)}
+                        📅 {formatDate(sampleOrder.createdAt)}
                       </div>
                     </div>
                     <div style={{ 

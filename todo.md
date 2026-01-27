@@ -3276,3 +3276,5 @@
 - [x] Centralizar badge de ENTREGA verticalmente entre as linhas Pedido e Realizado em (à direita)
 
 - [x] Adicionar badge no Total com fundo escuro e texto branco (TOTAL à esquerda, valor à direita)
+
+- [x] Trocar texto "Realizado em:" por ícone de calendário 📅 antes da data
