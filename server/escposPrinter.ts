@@ -374,6 +374,57 @@ export async function printOrderDirect(
 }
 
 /**
+ * Imprime um pedido em múltiplas impressoras simultaneamente
+ */
+export async function printOrderToMultiplePrinters(
+  printers: PrinterConfig[],
+  order: OrderData
+): Promise<{ success: boolean; results: Array<{ ip: string; success: boolean; message: string }> }> {
+  try {
+    console.log(`[ESC/POS] Gerando recibo para pedido #${order.orderNumber} para ${printers.length} impressora(s)...`);
+    
+    // Gera o recibo em formato ESC/POS
+    const receipt = generateEscPosReceipt(order);
+    
+    // Envia para todas as impressoras em paralelo
+    const printPromises = printers.map(async (printer) => {
+      const result = await sendToPrinter(printer, receipt);
+      return {
+        ip: printer.ip,
+        success: result.success,
+        message: result.message,
+      };
+    });
+    
+    const results = await Promise.all(printPromises);
+    
+    // Verifica se pelo menos uma impressora teve sucesso
+    const anySuccess = results.some(r => r.success);
+    
+    // Log dos resultados
+    for (const result of results) {
+      if (result.success) {
+        console.log(`[ESC/POS] Pedido #${order.orderNumber} impresso com sucesso em ${result.ip}`);
+      } else {
+        console.error(`[ESC/POS] Falha ao imprimir pedido #${order.orderNumber} em ${result.ip}: ${result.message}`);
+      }
+    }
+    
+    return {
+      success: anySuccess,
+      results,
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+    console.error(`[ESC/POS] Erro ao imprimir em múltiplas impressoras: ${errorMessage}`);
+    return {
+      success: false,
+      results: printers.map(p => ({ ip: p.ip, success: false, message: errorMessage })),
+    };
+  }
+}
+
+/**
  * Testa a conexão com a impressora
  */
 export async function testPrinterConnection(config: PrinterConfig): Promise<{ success: boolean; message: string }> {

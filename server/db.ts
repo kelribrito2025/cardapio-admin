@@ -1440,8 +1440,56 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
         }
       }
       
-      // Impressão direta via rede local (Socket TCP)
-      if ((printerSettingsResult as any)?.directPrintEnabled && (printerSettingsResult as any)?.directPrintIp) {
+      // Impressão direta via rede local (Socket TCP) - Múltiplas impressoras
+      const activePrinters = await getActivePrinters(data.establishmentId);
+      
+      if (activePrinters.length > 0) {
+        const { printOrderToMultiplePrinters } = await import('./escposPrinter');
+        const establishment = await getEstablishmentById(data.establishmentId);
+        
+        // Extrair bairro do endereço se disponível
+        const addressParts = data.customerAddress?.split(',') || [];
+        const neighborhoodFromAddress = addressParts.length > 1 ? addressParts[addressParts.length - 1]?.trim() : undefined;
+        
+        // Preparar configuração das impressoras
+        const printerConfigs = activePrinters.map(p => ({
+          ip: p.ipAddress,
+          port: p.port || 9100,
+        }));
+        
+        // Preparar dados do pedido
+        const orderData = {
+          orderId: 0,
+          orderNumber: parseInt(orderNumber) || 0,
+          customerName: data.customerName || 'Nao informado',
+          customerPhone: data.customerPhone || undefined,
+          deliveryType: (data.deliveryType || 'delivery') as 'delivery' | 'pickup' | 'table',
+          address: data.customerAddress || undefined,
+          neighborhood: neighborhoodFromAddress,
+          paymentMethod: data.paymentMethod || 'Dinheiro',
+          items: items.map(item => ({
+            name: item.productName,
+            quantity: item.quantity ?? 1,
+            price: parseFloat(item.totalPrice) / (item.quantity ?? 1),
+            observation: item.notes || undefined,
+            complements: typeof item.complements === 'string' ? item.complements : undefined,
+          })),
+          subtotal: parseFloat(data.subtotal || '0'),
+          deliveryFee: parseFloat(data.deliveryFee || '0'),
+          discount: parseFloat(data.discount || '0'),
+          total: parseFloat(data.total),
+          observation: data.notes || undefined,
+          createdAt: new Date(),
+          establishmentName: establishment?.name || 'Estabelecimento',
+        };
+        
+        // Imprimir em todas as impressoras ativas simultaneamente
+        const multiPrintResult = await printOrderToMultiplePrinters(printerConfigs, orderData);
+        
+        console.log(`[DB:createPublicOrder] Impressão em ${activePrinters.length} impressora(s):`, 
+          multiPrintResult.results.map(r => `${r.ip}: ${r.success ? 'OK' : r.message}`).join(', '));
+      } else if ((printerSettingsResult as any)?.directPrintEnabled && (printerSettingsResult as any)?.directPrintIp) {
+        // Fallback para impressão direta única (configuração antiga)
         const { printOrderDirect } = await import('./escposPrinter');
         const establishment = await getEstablishmentById(data.establishmentId);
         
@@ -2830,6 +2878,21 @@ export async function deletePrinter(id: number): Promise<void> {
   if (!db) throw new Error("Database not available");
   
   await db.delete(printers).where(eq(printers.id, id));
+}
+
+/**
+ * Busca todas as impressoras ativas de um estabelecimento
+ */
+export async function getActivePrinters(establishmentId: number): Promise<Printer[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(printers)
+    .where(and(
+      eq(printers.establishmentId, establishmentId),
+      eq(printers.isActive, true)
+    ))
+    .orderBy(desc(printers.isDefault), asc(printers.name));
 }
 
 /**

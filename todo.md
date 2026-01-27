@@ -3341,3 +3341,11 @@
 - [x] Ajustar card de Cliente para mesmo layout do card de Pagamento: ícone + "Cliente" à esquerda, nome + telefone à direita, sem dois pontos
 
 - [x] Aumentar tamanho do ícone de estrela no card de Cliente para ficar igual ao ícone de pagamento
+
+## Impressão Simultânea em Múltiplas Impressoras (via IP)
+- [x] Usar tabela printers existente para cadastrar múltiplas impressoras com IP
+- [x] Criar função getActivePrinters para buscar impressoras ativas
+- [x] Implementar função printOrderToMultiplePrinters para envio simultâneo
+- [x] Modificar fluxo de criar pedido para imprimir em todas as impressoras ativas
+- [x] Cadastrar as duas impressoras: 192.168.123.100 e 192.168.68.101
+- [ ] Testar impressão simultânea com pedido real

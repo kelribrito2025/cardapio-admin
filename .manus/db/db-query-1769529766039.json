@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE printers SET establishmentId = 30001 WHERE establishmentId = 1;\n\nINSERT INTO printers (establishmentId, name, ipAddress, port, printerType, isActive, isDefault, createdAt, updatedAt)\nSELECT 30001, 'Impressora 1 - Principal', '192.168.123.100', 9100, 'all', true, true, NOW(), NOW()\nWHERE NOT EXISTS (SELECT 1 FROM printers WHERE establishmentId = 30001 AND ipAddress = '192.168.123.100');\n\nINSERT INTO printers (establishmentId, name, ipAddress, port, printerType, isActive, isDefault, createdAt, updatedAt)\nSELECT 30001, 'Impressora 2 - Secundária', '192.168.68.101', 9100, 'all', true, false, NOW(), NOW()\nWHERE NOT EXISTS (SELECT 1 FROM printers WHERE establishmentId = 30001 AND ipAddress = '192.168.68.101');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute UPDATE printers SET establishmentId = 30001 WHERE establishmentId = 1;\n\nINSERT INTO printers (establishmentId, name, ipAddress, port, printerType, isActive, isDefault, createdAt, updatedAt)\nSELECT 30001, 'Impressora 1 - Principal', '192.168.123.100', 9100, 'all', true, true, NOW(), NOW()\nWHERE NOT EXISTS (SELECT 1 FROM printers WHERE establishmentId = 30001 AND ipAddress = '192.168.123.100');\n\nINSERT INTO printers (establishmentId, name, ipAddress, port, printerType, isActive, isDefault, createdAt, updatedAt)\nSELECT 30001, 'Impressora 2 - Secundária', '192.168.68.101', 9100, 'all', true, false, NOW(), NOW()\nWHERE NOT EXISTS (SELECT 1 FROM printers WHERE establishmentId = 30001 AND ipAddress = '192.168.68.101');",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 74
+}
