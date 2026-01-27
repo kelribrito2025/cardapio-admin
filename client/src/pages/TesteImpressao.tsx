@@ -856,13 +856,16 @@ export default function TesteImpressao() {
                     <div style={{ 
                       display: 'flex', 
                       justifyContent: 'space-between',
+                      alignItems: 'center',
+                      background: '#000',
+                      color: '#fff',
                       fontWeight: titleFontWeight,
                       fontSize: `${titleFontSize - 2}px`,
-                      marginTop: '6px',
-                      borderTop: showDividers ? '1px solid #333' : 'none',
-                      paddingTop: showDividers ? '6px' : '0'
+                      marginTop: '10px',
+                      padding: '8px 12px',
+                      textTransform: 'uppercase'
                     }}>
-                      <span>Total</span>
+                      <span>TOTAL</span>
                       <span>{formatCurrency(sampleOrder.total)}</span>
                     </div>
                   </div>

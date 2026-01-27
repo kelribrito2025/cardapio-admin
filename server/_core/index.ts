@@ -819,11 +819,16 @@ async function startServer() {
       font-size: ${itemFontSize}px;
     }
     .total-final {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #000;
+      color: #fff;
       font-weight: ${titleFontWeight};
       font-size: ${titleFontSize - 2}px;
       margin-top: 10px;
-      padding: 8px 0;
-      ${showDividers ? 'border-top: 2px solid #000; border-bottom: 2px solid #000;' : ''}
+      padding: 8px 12px;
+      text-transform: uppercase;
     }
     .section {
       margin: 12px 0;

@@ -3274,3 +3274,5 @@
 - [x] Mover badge de ENTREGA/RETIRADA para o lado direito do número do pedido (mesma linha)
 
 - [x] Centralizar badge de ENTREGA verticalmente entre as linhas Pedido e Realizado em (à direita)
+
+- [x] Adicionar badge no Total com fundo escuro e texto branco (TOTAL à esquerda, valor à direita)
