@@ -2203,7 +2203,7 @@ export const appRouter = router({
           if (whatsappConfig?.instanceToken) {
             const { configureWebhook } = await import('./_core/uazapi');
             // Usar a URL do app publicado
-            const appUrl = process.env.VITE_APP_URL || 'https://cardapio-admin.manus.space';
+            const appUrl = process.env.VITE_APP_URL || 'https://mindi.manus.space';
             const webhookUrl = `${appUrl}/api/webhook/whatsapp/${establishment.id}`;
             
             try {

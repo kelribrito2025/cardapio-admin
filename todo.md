@@ -3402,3 +3402,8 @@
 - [x] Investigar por que pedido #P441 não apareceu na página de pedidos após cliente clicar em "Ok, pode fazer"
 - [x] Verificar se webhook está recebendo a resposta do botão
 - [x] Corrigir fluxo de confirmação de pedido (campo correto é buttonOrListid)
+
+
+## Bug: Webhook usando domínio incorreto
+- [x] Corrigir URL do webhook de cardapio-admin.manus.space para mindi.manus.space
+- [x] Atualizar webhook na UAZAPI para o domínio correto

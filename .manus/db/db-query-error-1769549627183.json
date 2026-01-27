@@ -1,0 +1,8 @@
+{
+  "query": "UPDATE orders SET status = 'pending' WHERE orderNumber IN ('#P441', '#P442') AND status = 'pending_confirmation';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute UPDATE orders SET status = 'pending' WHERE orderNumber IN ('#P441', '#P442') AND status = 'pending_confirmation';",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1265 (01000) at line 1: Data truncated for column '%s' at row %d"
+  ]
+}
