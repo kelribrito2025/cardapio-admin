@@ -3299,3 +3299,5 @@
 - [x] Garantir que a impressão dos pedidos reais use exatamente o mesmo estilo da página de teste (sem logo)
 
 - [x] Pagamento: "Pagamento" à esquerda e forma de pagamento (PIX) à direita na mesma linha
+
+- [x] Adicionar campo para upload de imagem QR Code na página de Teste de Impressão (após seção Cliente)

@@ -2815,6 +2815,7 @@ export async function upsertPrinterSettings(data: {
   showLogo?: boolean;
   logoUrl?: string | null;
   showQrCode?: boolean;
+  qrCodeUrl?: string | null;
   headerMessage?: string | null;
   footerMessage?: string | null;
   paperWidth?: string;
@@ -2849,6 +2850,7 @@ export async function upsertPrinterSettings(data: {
         showLogo: data.showLogo ?? existing.showLogo,
         logoUrl: data.logoUrl !== undefined ? data.logoUrl : (existing as any).logoUrl,
         showQrCode: data.showQrCode ?? existing.showQrCode,
+        qrCodeUrl: data.qrCodeUrl !== undefined ? data.qrCodeUrl : (existing as any).qrCodeUrl,
         headerMessage: data.headerMessage !== undefined ? data.headerMessage : (existing as any).headerMessage,
         footerMessage: data.footerMessage !== undefined ? data.footerMessage : existing.footerMessage,
         paperWidth: data.paperWidth ?? (existing as any).paperWidth ?? '80mm',
@@ -2879,6 +2881,7 @@ export async function upsertPrinterSettings(data: {
       showLogo: data.showLogo ?? true,
       logoUrl: data.logoUrl || null,
       showQrCode: data.showQrCode ?? false,
+      qrCodeUrl: data.qrCodeUrl || null,
       headerMessage: data.headerMessage || null,
       footerMessage: data.footerMessage || null,
       paperWidth: data.paperWidth || '80mm',

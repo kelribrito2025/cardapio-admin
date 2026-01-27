@@ -33,6 +33,9 @@ export default function TesteImpressao() {
     }
   });
 
+  // Mutation para upload de imagem
+  const uploadImageMutation = trpc.upload.image.useMutation();
+
   // Configurações de fonte
   const [fontSize, setFontSize] = useState(12);
   const [fontWeight, setFontWeight] = useState(500);
@@ -49,6 +52,11 @@ export default function TesteImpressao() {
   
   // Texto personalizado
   const [customText, setCustomText] = useState("");
+  
+  // QR Code para pagamento
+  const [showQrCode, setShowQrCode] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+  const [qrCodeUploading, setQrCodeUploading] = useState(false);
 
   // Carregar configurações salvas quando disponíveis
   useEffect(() => {
@@ -63,6 +71,8 @@ export default function TesteImpressao() {
       setObsFontWeight(savedSettings.obsFontWeight || 500);
       setPaperWidth(savedSettings.paperWidth || "80mm");
       setShowDividers(savedSettings.showDividers ?? true);
+      setShowQrCode(savedSettings.showQrCode ?? false);
+      setQrCodeUrl((savedSettings as any).qrCodeUrl || null);
     }
   }, [savedSettings]);
   
@@ -156,6 +166,8 @@ export default function TesteImpressao() {
       obsFontWeight,
       paperWidth: paperWidth as "58mm" | "80mm",
       showDividers,
+      showQrCode,
+      qrCodeUrl,
     });
   };
 
@@ -178,6 +190,8 @@ export default function TesteImpressao() {
       obsFontWeight,
       paperWidth: paperWidth as "58mm" | "80mm",
       showDividers,
+      showQrCode,
+      qrCodeUrl,
     });
     
     // Abrir o recibo de teste em nova janela
@@ -209,6 +223,8 @@ export default function TesteImpressao() {
         obsFontWeight,
         paperWidth: paperWidth as "58mm" | "80mm",
         showDividers,
+        showQrCode,
+        qrCodeUrl,
       });
     } catch (e) {
       // Continuar mesmo se falhar o save
@@ -257,6 +273,8 @@ export default function TesteImpressao() {
         obsFontWeight,
         paperWidth: paperWidth as "58mm" | "80mm",
         showDividers,
+        showQrCode,
+        qrCodeUrl,
       });
     } catch (e) {
       // Continuar mesmo se falhar o save
@@ -670,6 +688,102 @@ export default function TesteImpressao() {
 
             <Card>
               <CardHeader>
+                <CardTitle>QR Code de Pagamento</CardTitle>
+                <CardDescription>Adicione um QR Code PIX para pagamento</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label>Mostrar QR Code no recibo</Label>
+                  <Switch
+                    checked={showQrCode}
+                    onCheckedChange={setShowQrCode}
+                  />
+                </div>
+                
+                {showQrCode && (
+                  <div className="space-y-3">
+                    <Label>Imagem do QR Code</Label>
+                    {qrCodeUrl ? (
+                      <div className="space-y-2">
+                        <img 
+                          src={qrCodeUrl} 
+                          alt="QR Code" 
+                          className="w-32 h-32 mx-auto border rounded"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                          onClick={() => setQrCodeUrl(null)}
+                        >
+                          Remover QR Code
+                        </Button>
+                      </div>
+                    ) : (
+                      <div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          id="qrcode-upload"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            
+                            setQrCodeUploading(true);
+                            try {
+                              // Converter arquivo para base64
+                              const reader = new FileReader();
+                              reader.onload = async () => {
+                                const base64 = (reader.result as string).split(',')[1];
+                                
+                                try {
+                                  const result = await uploadImageMutation.mutateAsync({
+                                    base64,
+                                    mimeType: file.type,
+                                    folder: 'qrcodes',
+                                  });
+                                  setQrCodeUrl(result.url);
+                                  toast.success('QR Code enviado com sucesso!');
+                                } catch (error) {
+                                  toast.error('Erro ao enviar QR Code');
+                                } finally {
+                                  setQrCodeUploading(false);
+                                }
+                              };
+                              reader.onerror = () => {
+                                toast.error('Erro ao ler arquivo');
+                                setQrCodeUploading(false);
+                              };
+                              reader.readAsDataURL(file);
+                            } catch (error) {
+                              toast.error('Erro ao processar arquivo');
+                              setQrCodeUploading(false);
+                            }
+                          }}
+                        />
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          disabled={qrCodeUploading}
+                          onClick={() => document.getElementById('qrcode-upload')?.click()}
+                        >
+                          {qrCodeUploading ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          ) : (
+                            <FileText className="mr-2 h-4 w-4" />
+                          )}
+                          Enviar imagem do QR Code
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
                 <CardTitle>Ações</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -932,6 +1046,35 @@ export default function TesteImpressao() {
                       <strong>Cliente:</strong> {sampleOrder.customerName} - {sampleOrder.customerPhone}
                     </div>
                   </div>
+
+                  {/* QR Code */}
+                  {showQrCode && qrCodeUrl && (
+                    <div style={{ 
+                      border: '2px solid #000',
+                      borderRadius: '8px',
+                      padding: '12px',
+                      margin: '12px 0',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ 
+                        fontWeight: titleFontWeight, 
+                        fontSize: `${itemFontSize}px`,
+                        marginBottom: '8px'
+                      }}>
+                        PIX - Escaneie para pagar
+                      </div>
+                      <img 
+                        src={qrCodeUrl} 
+                        alt="QR Code PIX" 
+                        style={{ 
+                          width: '120px', 
+                          height: '120px', 
+                          margin: '0 auto',
+                          display: 'block'
+                        }}
+                      />
+                    </div>
+                  )}
 
                   {/* Footer */}
                   <div style={{ 

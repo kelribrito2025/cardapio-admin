@@ -377,6 +377,7 @@ export const printerSettings = mysqlTable("printerSettings", {
   showLogo: boolean("showLogo").default(true).notNull(), // Mostrar logo no cupom
   logoUrl: text("logoUrl"), // URL do logo personalizado (se diferente do estabelecimento)
   showQrCode: boolean("showQrCode").default(false).notNull(), // Mostrar QR Code no cupom
+  qrCodeUrl: text("qrCodeUrl"), // URL da imagem do QR Code para pagamento
   headerMessage: text("headerMessage"), // Mensagem personalizada no cabeçalho
   footerMessage: text("footerMessage"), // Mensagem personalizada no rodapé
   paperWidth: varchar("paperWidth", { length: 10 }).default("80mm").notNull(), // Largura do papel: 58mm ou 80mm

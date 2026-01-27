@@ -1730,6 +1730,7 @@ export const appRouter = router({
         showLogo: z.boolean().optional(),
         logoUrl: z.string().nullable().optional(),
         showQrCode: z.boolean().optional(),
+        qrCodeUrl: z.string().nullable().optional(),
         headerMessage: z.string().nullable().optional(),
         footerMessage: z.string().nullable().optional(),
         paperWidth: z.enum(['58mm', '80mm']).optional(),

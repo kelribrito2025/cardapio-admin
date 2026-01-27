@@ -319,6 +319,24 @@ function generateReceiptHTML(
       margin-bottom: 4px;
     }
     
+    /* QR CODE */
+    .qrcode-box {
+      border: 2px solid #000;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 12px 0;
+      text-align: center;
+    }
+    .qrcode-box .section-title {
+      margin-bottom: 8px;
+    }
+    .qrcode-box img {
+      width: 120px;
+      height: 120px;
+      display: block;
+      margin: 0 auto;
+    }
+    
     /* RODAPÉ */
     .footer { 
       text-align: center; 
@@ -414,6 +432,13 @@ function generateReceiptHTML(
       <strong>Cliente:</strong> ${order.customerName || 'Nao informado'}${order.customerPhone ? ' - ' + order.customerPhone : ''}
     </div>
   </div>
+  
+  ${settings?.showQrCode && settings?.qrCodeUrl ? `
+  <div class="qrcode-box">
+    <div class="section-title">PIX - Escaneie para pagar</div>
+    <img src="${settings.qrCodeUrl}" alt="QR Code PIX" />
+  </div>
+  ` : ''}
   
   ${order.notes ? `
   <div class="notes">
@@ -903,6 +928,22 @@ async function startServer() {
     .client-box .section-title {
       margin-bottom: 8px;
     }
+    .qrcode-box {
+      border: 2px solid #000;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 12px 0;
+      text-align: center;
+    }
+    .qrcode-box .section-title {
+      margin-bottom: 8px;
+    }
+    .qrcode-box img {
+      width: 120px;
+      height: 120px;
+      display: block;
+      margin: 0 auto;
+    }
     .footer {
       text-align: center;
       margin-top: 16px;
@@ -987,6 +1028,13 @@ async function startServer() {
         <strong>Cliente:</strong> ${sampleOrder.customerName} - ${sampleOrder.customerPhone}
       </div>
     </div>
+    
+    ${settings?.showQrCode && settings?.qrCodeUrl ? `
+    <div class="qrcode-box">
+      <div class="section-title">PIX - Escaneie para pagar</div>
+      <img src="${settings.qrCodeUrl}" alt="QR Code PIX" />
+    </div>
+    ` : ''}
     
     <div class="footer">
       <p>Pedido realizado via Cardapio Admin</p>
