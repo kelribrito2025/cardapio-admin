@@ -445,7 +445,7 @@ function generateReceiptHTML(
   
   <div class="section-box">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/client-icon.png" class="section-icon" /> Cliente</span>
+      <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/client-icon.png" style="width: 18px; height: 18px; margin-right: 4px;" /> Cliente</span>
       <span style="font-weight: ${headerFontWeight};">${order.customerName || 'Nao informado'}${order.customerPhone ? ' - ' + order.customerPhone : ''}</span>
     </div>
   </div>
@@ -1055,7 +1055,7 @@ async function startServer() {
     
     <div class="client-box">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-weight: ${titleFontWeight}; display: inline-flex; align-items: center;"><img src="/client-icon.png" class="section-icon" /> Cliente</span>
+        <span style="font-weight: ${titleFontWeight}; display: inline-flex; align-items: center;"><img src="/client-icon.png" style="width: 18px; height: 18px; margin-right: 4px;" /> Cliente</span>
         <span style="font-weight: ${titleFontWeight};">${sampleOrder.customerName} - ${sampleOrder.customerPhone}</span>
       </div>
     </div>

@@ -1084,7 +1084,7 @@ export default function TesteImpressao() {
                       alignItems: 'center'
                     }}>
                       <span style={{ fontWeight: titleFontWeight, fontSize: `${itemFontSize}px`, display: 'inline-flex', alignItems: 'center' }}>
-                        <img src="/client-icon.png" alt="" style={{ width: '14px', height: '14px', marginRight: '4px' }} />
+                        <img src="/client-icon.png" alt="" style={{ width: '18px', height: '18px', marginRight: '4px' }} />
                         Cliente
                       </span>
                       <span style={{ fontWeight: titleFontWeight, fontSize: `${itemFontSize}px` }}>{sampleOrder.customerName} - {sampleOrder.customerPhone}</span>
