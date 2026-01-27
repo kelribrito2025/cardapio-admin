@@ -919,8 +919,10 @@ export default function TesteImpressao() {
                         fontWeight: titleFontWeight,
                         color: '#666'
                       }}>
-                        <img src="/calendar-icon.png" alt="" style={{ width: '14px', height: '14px', marginRight: '4px', verticalAlign: 'middle' }} />
-                        {formatDate(sampleOrder.createdAt)}
+                        <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                          <img src="/calendar-icon.png" alt="" style={{ width: '14px', height: '14px', marginRight: '4px' }} />
+                          {formatDate(sampleOrder.createdAt)}
+                        </span>
                       </div>
                     </div>
                     <div style={{ 

@@ -171,6 +171,13 @@ function generateReceiptHTML(
     .order-date {
       font-size: ${smallFontSize};
       font-weight: ${headerFontWeight};
+      display: inline-flex;
+      align-items: center;
+    }
+    .date-icon {
+      width: 14px;
+      height: 14px;
+      margin-right: 4px;
     }
     .delivery-badge {
       display: inline-block;
@@ -810,6 +817,13 @@ async function startServer() {
     .order-date {
       font-size: ${obsFontSize}px;
       font-weight: ${titleFontWeight};
+      display: inline-flex;
+      align-items: center;
+    }
+    .date-icon {
+      width: 14px;
+      height: 14px;
+      margin-right: 4px;
     }
     .delivery-badge {
       display: inline-block;
