@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id FROM orders ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id FROM orders ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "180053"
+    },
+    {
+      "id": "180052"
+    },
+    {
+      "id": "180051"
+    },
+    {
+      "id": "180050"
+    },
+    {
+      "id": "180049"
+    },
+    {
+      "id": "180048"
+    },
+    {
+      "id": "180047"
+    },
+    {
+      "id": "180046"
+    },
+    {
+      "id": "180045"
+    },
+    {
+      "id": "180044"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\n180053\n180052\n180051\n180050\n180049\n180048\n180047\n180046\n180045\n180044\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

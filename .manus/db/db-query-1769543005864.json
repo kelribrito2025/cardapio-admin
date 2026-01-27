@@ -1,0 +1,20 @@
+{
+  "query": "SELECT id, name, ipAddress FROM printers WHERE establishmentId = 30001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, ipAddress FROM printers WHERE establishmentId = 30001;",
+  "rows": [
+    {
+      "id": "30002",
+      "name": "KOT-1",
+      "ipAddress": "192.168.68.100"
+    },
+    {
+      "id": "30003",
+      "name": "KOT-2",
+      "ipAddress": "192.168.68.101"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tipAddress\n30002\tKOT-1\t192.168.68.100\n30003\tKOT-2\t192.168.68.101\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}

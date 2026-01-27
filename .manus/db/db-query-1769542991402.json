@@ -1,0 +1,20 @@
+{
+  "query": "SELECT id, name, printerId FROM products WHERE id IN (120069, 120001);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, printerId FROM products WHERE id IN (120069, 120001);",
+  "rows": [
+    {
+      "id": "120069",
+      "name": "CAMARÃO AO ALHO E ÓLEO",
+      "printerId": "30002"
+    },
+    {
+      "id": "120001",
+      "name": "SASHIMI DE SALMÃO",
+      "printerId": "30003"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tprinterId\n120069\tCAMARÃO AO ALHO E ÓLEO\t30002\n120001\tSASHIMI DE SALMÃO\t30003\n",
+  "stderr": "",
+  "execution_time_ms": 100
+}

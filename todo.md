@@ -3370,3 +3370,5 @@
 - [x] Modificar lógica de impressão para separar itens por setor
 - [x] Gerar recibo separado para cada setor com apenas os itens daquele setor
 - [x] Endpoint /api/print/multiprinter-sectors para impressão separada por setor
+
+- [x] Bug: Impressão por setor imprime todos os itens em todas as impressoras - corrigido: alterado endpoint para multiprinter-sectors

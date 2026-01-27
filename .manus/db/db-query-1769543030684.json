@@ -1,0 +1,35 @@
+{
+  "query": "SELECT id, orderNumber, establishmentId FROM orders WHERE establishmentId = 30001 ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, establishmentId FROM orders WHERE establishmentId = 30001 ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "180053",
+      "orderNumber": "#P429",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "180052",
+      "orderNumber": "#P428",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "180051",
+      "orderNumber": "#P427",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "180050",
+      "orderNumber": "#P426",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "180049",
+      "orderNumber": "#P425",
+      "establishmentId": "30001"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\testablishmentId\n180053\t#P429\t30001\n180052\t#P428\t30001\n180051\t#P427\t30001\n180050\t#P426\t30001\n180049\t#P425\t30001\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

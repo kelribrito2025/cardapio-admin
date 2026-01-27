@@ -1,0 +1,50 @@
+{
+  "query": "SELECT id, orderNumber FROM orders LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber FROM orders LIMIT 10;",
+  "rows": [
+    {
+      "id": "60002",
+      "orderNumber": "#MKLQQV7T"
+    },
+    {
+      "id": "60003",
+      "orderNumber": "#MKLWF716"
+    },
+    {
+      "id": "60004",
+      "orderNumber": "#MKLXAG2V"
+    },
+    {
+      "id": "60005",
+      "orderNumber": "#MKLXMP35"
+    },
+    {
+      "id": "60006",
+      "orderNumber": "#MKLYTGYJ"
+    },
+    {
+      "id": "60007",
+      "orderNumber": "#MKLYYW0V"
+    },
+    {
+      "id": "60008",
+      "orderNumber": "#MKMK5DJY"
+    },
+    {
+      "id": "60009",
+      "orderNumber": "#MKMKE8V9"
+    },
+    {
+      "id": "60010",
+      "orderNumber": "#MKMKOQPO"
+    },
+    {
+      "id": "60011",
+      "orderNumber": "#MKMKVMMS"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\n60002\t#MKLQQV7T\n60003\t#MKLWF716\n60004\t#MKLXAG2V\n60005\t#MKLXMP35\n60006\t#MKLYTGYJ\n60007\t#MKLYYW0V\n60008\t#MKMK5DJY\n60009\t#MKMKE8V9\n60010\t#MKMKOQPO\n60011\t#MKMKVMMS\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}
