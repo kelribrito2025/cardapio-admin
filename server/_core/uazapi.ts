@@ -469,11 +469,11 @@ export function generateStatusMessage(
   const greeting = getGreeting();
   messageTemplate = messageTemplate.replace(/{{greeting}}/g, greeting);
   
-  // Gerar texto dos itens do pedido
+  // Gerar texto dos itens do pedido (sem preço individual, apenas total no final)
   let itensPedidoText = '';
   if (orderItems && orderItems.length > 0) {
     itensPedidoText = orderItems.map(item => {
-      let itemText = `${item.quantity}x ${item.productName} - R$ ${parseFloat(item.totalPrice).toFixed(2).replace('.', ',')}`;
+      let itemText = `${item.quantity}x ${item.productName}`;
       
       // Adicionar complementos se existirem
       if (item.complements) {
