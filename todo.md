@@ -3266,3 +3266,5 @@
 - [x] Adicionar card de preview com campo de texto personalizado e botão de teste de impressão térmica
 
 - [x] Atualizar estilos do endpoint de teste para usar os mesmos estilos otimizados da função generateReceiptHTML
+
+- [x] Ajustar layout do teste de impressão para alinhar Pedido e data à esquerda (igual foto do recibo)

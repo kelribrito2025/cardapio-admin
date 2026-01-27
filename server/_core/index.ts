@@ -729,33 +729,35 @@ async function startServer() {
     .receipt {
       background: #fff;
     }
-    .header {
+    .logo {
       text-align: center;
+      padding-bottom: 12px;
       margin-bottom: 12px;
+      ${showDividers ? 'border-bottom: 1px solid #000;' : ''}
     }
-    .header h1 {
+    .logo h1 {
       font-size: ${titleFontSize + 4}px;
       font-weight: ${titleFontWeight};
-      letter-spacing: -0.5px;
-      margin-bottom: 4px;
+      margin: 0;
     }
-    .header p {
+    .logo p {
       font-size: ${obsFontSize}px;
-      font-weight: 700;
+      font-weight: ${obsFontWeight};
       text-transform: uppercase;
       letter-spacing: 1px;
       margin-top: 2px;
     }
-    .order-number {
-      font-size: ${titleFontSize + 4}px;
-      font-weight: 700;
-      margin: 8px 0;
-      letter-spacing: 1px;
+    .order-info {
+      margin-bottom: 12px;
     }
-    .order-date {
+    .order-info h2 {
+      font-size: ${titleFontSize}px;
+      font-weight: ${titleFontWeight};
+      margin-bottom: 2px;
+    }
+    .order-info p {
       font-size: ${obsFontSize}px;
-      margin: 4px 0;
-      font-weight: 700;
+      font-weight: ${titleFontWeight};
     }
     .divider {
       border: none;
@@ -770,38 +772,23 @@ async function startServer() {
       margin: 8px 0;
       padding: 4px 0;
     }
-    .item-line {
+    .item-header {
       display: flex;
-      align-items: flex-start;
-      gap: 6px;
-    }
-    .item-qty {
-      font-weight: ${itemFontWeight};
-      font-size: ${itemFontSize}px;
-      min-width: 30px;
-    }
-    .item-name {
+      justify-content: space-between;
       font-size: ${itemFontSize}px;
       font-weight: ${itemFontWeight};
-      flex: 1;
-      word-wrap: break-word;
-    }
-    .item-price {
-      font-size: ${itemFontSize}px;
-      font-weight: ${fontWeight};
-      text-align: right;
-      margin-top: 2px;
     }
     .item-obs {
       font-size: ${obsFontSize}px;
-      margin: 4px 0 4px 36px;
-      font-style: italic;
       font-weight: ${obsFontWeight};
+      margin-top: 2px;
+      padding-left: 5px;
     }
     .item-complement {
       font-size: ${obsFontSize}px;
-      margin: 2px 0 2px 36px;
       font-weight: ${obsFontWeight};
+      margin-top: 2px;
+      padding-left: 10px;
     }
     .totals {
       margin: 12px 0;
@@ -851,25 +838,27 @@ async function startServer() {
 </head>
 <body>
   <div class="receipt">
-    <div class="header">
+    <div class="logo">
       <h1>${establishmentName}</h1>
       <p>Sistema de Pedidos</p>
-      <div class="order-number">PEDIDO #${sampleOrder.orderNumber}</div>
-      <div class="order-date">${formatDate(sampleOrder.createdAt)}</div>
     </div>
     
-    <hr class="divider-double">
+    <div class="order-info">
+      <h2>Pedido #${sampleOrder.orderNumber}</h2>
+      <p>Realizado em: ${formatDate(sampleOrder.createdAt)}</p>
+    </div>
+    
+    <hr class="divider">
     
     ${sampleOrder.items.map(item => `
       <div class="item">
-        <div class="item-line">
-          <span class="item-qty">${item.quantity}x</span>
-          <span class="item-name">${item.name}</span>
+        <div class="item-header">
+          <span>${item.quantity}x ${item.name}</span>
+          <span>${formatCurrency(item.price * item.quantity)}</span>
         </div>
-        <div class="item-price">${formatCurrency(item.price * item.quantity)}</div>
-        ${item.observation ? `<div class="item-obs">OBS: ${item.observation}</div>` : ''}
+        ${item.observation ? `<div class="item-obs">Obs: ${item.observation}</div>` : ''}
         ${item.complements.map((c: any) => `
-          <div class="item-complement">+ ${c.name} ${formatCurrency(c.price)}</div>
+          <div class="item-complement">+ ${c.name} (${formatCurrency(c.price)})</div>
         `).join('')}
       </div>
     `).join('')}
@@ -878,15 +867,15 @@ async function startServer() {
     
     <div class="totals">
       <div class="total-row">
-        <span>Subtotal:</span>
+        <span>Valor dos produtos</span>
         <span>${formatCurrency(sampleOrder.subtotal)}</span>
       </div>
       <div class="total-row">
-        <span>Taxa entrega:</span>
+        <span>Taxa de entrega</span>
         <span>${formatCurrency(sampleOrder.deliveryFee)}</span>
       </div>
       <div class="total-row total-final">
-        <span>TOTAL:</span>
+        <span>Total</span>
         <span>${formatCurrency(sampleOrder.total)}</span>
       </div>
     </div>
@@ -894,7 +883,7 @@ async function startServer() {
     <hr class="divider">
     
     <div class="section">
-      <div class="section-title">ENTREGA</div>
+      <div class="section-title">Entrega</div>
       <div class="section-content">
         ${sampleOrder.address}<br>
         ${sampleOrder.addressComplement ? sampleOrder.addressComplement + '<br>' : ''}
@@ -903,12 +892,12 @@ async function startServer() {
     </div>
     
     <div class="section">
-      <div class="section-title">PAGAMENTO</div>
+      <div class="section-title">Pagamento</div>
       <div class="section-content">${sampleOrder.paymentMethod}</div>
     </div>
     
     <div class="section">
-      <div class="section-title">CLIENTE</div>
+      <div class="section-title">Cliente</div>
       <div class="section-content">
         ${sampleOrder.customerName}<br>
         ${sampleOrder.customerPhone}
@@ -916,8 +905,7 @@ async function startServer() {
     </div>
     
     <div class="footer">
-      <p class="footer-thanks">Obrigado pela preferência!</p>
-      <p>Pedido via Cardapio Admin</p>
+      <p>Pedido realizado via Cardapio Admin</p>
       <p>manus.space</p>
     </div>
   </div>
