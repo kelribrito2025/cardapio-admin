@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Printer, Save, RotateCcw, Smartphone, Loader2 } from "lucide-react";
+import { Printer, Save, RotateCcw, Smartphone, Loader2, FileText } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -45,6 +46,9 @@ export default function TesteImpressao() {
   // Configurações de layout
   const [paperWidth, setPaperWidth] = useState("80mm");
   const [showDividers, setShowDividers] = useState(true);
+  
+  // Texto personalizado
+  const [customText, setCustomText] = useState("");
 
   // Carregar configurações salvas quando disponíveis
   useEffect(() => {
@@ -225,6 +229,54 @@ export default function TesteImpressao() {
       // Em outros dispositivos, abrir o recibo em nova aba
       window.open(testUrl, '_blank');
       toast.info("Recibo aberto em nova aba. Para impressão térmica, use um dispositivo Android com o app ESC POS Wifi Print Service.");
+    }
+  };
+
+  const handleTestCustomPrint = async () => {
+    if (!establishmentId) {
+      toast.error("Estabelecimento não encontrado");
+      return;
+    }
+    
+    if (!customText.trim()) {
+      toast.error("Digite um texto para imprimir");
+      return;
+    }
+    
+    // Primeiro salvar as configurações atuais
+    try {
+      await saveSettingsMutation.mutateAsync({
+        establishmentId,
+        fontSize,
+        fontWeight,
+        titleFontSize,
+        titleFontWeight,
+        itemFontSize,
+        itemFontWeight,
+        obsFontSize,
+        obsFontWeight,
+        paperWidth: paperWidth as "58mm" | "80mm",
+        showDividers,
+      });
+    } catch (e) {
+      // Continuar mesmo se falhar o save
+    }
+    
+    // URL do texto personalizado no servidor
+    const customUrl = `${window.location.origin}/api/print/custom/${establishmentId}?text=${encodeURIComponent(customText)}`;
+    
+    // Detectar se é Android
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    
+    if (isAndroid) {
+      // Usar app-link do ESC POS Wifi Print Service
+      const printUrl = `print://escpos.org/escpos/net/print?srcTp=uri&srcObj=html&numCopies=1&src=${encodeURIComponent(customUrl)}`;
+      window.location.href = printUrl;
+      toast.info("Enviando texto para impressora térmica...");
+    } else {
+      // Em outros dispositivos, abrir em nova aba
+      window.open(customUrl, '_blank');
+      toast.info("Texto aberto em nova aba. Para impressão térmica, use um dispositivo Android com o app ESC POS Wifi Print Service.");
     }
   };
 
@@ -878,6 +930,82 @@ export default function TesteImpressao() {
                   </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Card de Texto Personalizado */}
+          <Card className="h-fit">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Texto Personalizado
+              </CardTitle>
+              <CardDescription>
+                Cole ou digite um texto para testar a impressão
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="customText">Texto para imprimir</Label>
+                <Textarea
+                  id="customText"
+                  placeholder="Digite ou cole o texto que deseja imprimir...&#10;&#10;Exemplo:&#10;PEDIDO #123&#10;Cliente: João Silva&#10;Tel: (11) 99999-8888&#10;&#10;2x X-Burger - R$ 45,00&#10;1x Refrigerante - R$ 8,00&#10;&#10;Total: R$ 53,00"
+                  value={customText}
+                  onChange={(e) => setCustomText(e.target.value)}
+                  rows={12}
+                  className="mt-2 font-mono text-sm"
+                />
+              </div>
+              
+              {/* Preview do texto */}
+              {customText && (
+                <div className="border rounded-lg p-4 bg-white">
+                  <div className="text-xs text-gray-500 mb-2">Preview:</div>
+                  <div 
+                    style={{
+                      fontFamily: 'Arial, sans-serif',
+                      fontSize: `${fontSize}px`,
+                      fontWeight: fontWeight,
+                      maxWidth: paperWidth === "58mm" ? "220px" : "300px",
+                      whiteSpace: 'pre-wrap',
+                      wordWrap: 'break-word',
+                      lineHeight: 1.5,
+                      color: '#333'
+                    }}
+                  >
+                    <div style={{ 
+                      textAlign: 'center', 
+                      paddingBottom: '12px', 
+                      marginBottom: '12px',
+                      borderBottom: showDividers ? '1px solid #ccc' : 'none',
+                      fontSize: `${titleFontSize + 4}px`,
+                      fontWeight: titleFontWeight
+                    }}>
+                      {establishment?.name || "Restaurante"}
+                    </div>
+                    {customText}
+                    <div style={{ 
+                      textAlign: 'center', 
+                      marginTop: '15px',
+                      paddingTop: '10px',
+                      borderTop: showDividers ? '1px solid #ccc' : 'none',
+                      fontSize: `${fontSize - 2}px`,
+                      color: '#666'
+                    }}>
+                      Cardapio Admin
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <Button 
+                onClick={handleTestCustomPrint} 
+                className="w-full"
+                disabled={!customText.trim()}
+              >
+                <Smartphone className="mr-2 h-4 w-4" />
+                Testar Impressão Térmica (Android)
+              </Button>
             </CardContent>
           </Card>
         </div>

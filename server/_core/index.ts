@@ -916,6 +916,106 @@ async function startServer() {
     }
   });
   
+  // Rota para impressão de texto personalizado
+  app.get("/api/print/custom/:establishmentId", async (req, res) => {
+    try {
+      const establishmentId = parseInt(req.params.establishmentId);
+      const customText = req.query.text as string || '';
+      
+      if (isNaN(establishmentId)) {
+        res.status(400).send("ID do estabelecimento inválido");
+        return;
+      }
+      
+      const establishment = await getEstablishmentById(establishmentId);
+      const settings = await getPrinterSettings(establishmentId);
+      
+      // Configurações de fonte
+      const fontSize = settings?.fontSize || 12;
+      const fontWeight = settings?.fontWeight || 500;
+      const titleFontSize = settings?.titleFontSize || 16;
+      const titleFontWeight = settings?.titleFontWeight || 700;
+      const paperWidth = settings?.paperWidth || '80mm';
+      const showDividers = settings?.showDividers ?? true;
+      
+      const maxWidth = paperWidth === "58mm" ? "220px" : "300px";
+      const establishmentName = establishment?.name || "Restaurante";
+      
+      // Converter quebras de linha para <br>
+      const formattedText = customText.replace(/\n/g, '<br>');
+      
+      const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Impressão Personalizada</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: Arial, sans-serif; 
+      font-size: ${fontSize}px; 
+      font-weight: ${fontWeight};
+      padding: 15px; 
+      max-width: ${maxWidth}; 
+      margin: 0 auto; 
+      background: #fff;
+      color: #333;
+    }
+    .receipt {
+      background: #fff;
+      padding: 8px;
+    }
+    .header {
+      text-align: center;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      ${showDividers ? 'border-bottom: 1px solid #ccc;' : ''}
+    }
+    .header h1 {
+      font-size: ${titleFontSize + 4}px;
+      font-weight: ${titleFontWeight};
+      margin: 0;
+    }
+    .content {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      line-height: 1.5;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 15px;
+      padding-top: 10px;
+      ${showDividers ? 'border-top: 1px solid #ccc;' : ''}
+      font-size: ${fontSize - 2}px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="receipt">
+    <div class="header">
+      <h1>${establishmentName}</h1>
+    </div>
+    <div class="content">
+      ${formattedText}
+    </div>
+    <div class="footer">
+      <p>Cardapio Admin</p>
+    </div>
+  </div>
+</body>
+</html>
+      `;
+      
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (error) {
+      console.error("[Print Custom] Erro ao gerar impressão personalizada:", error);
+      res.status(500).send("Erro ao gerar impressão personalizada");
+    }
+  });
+  
   // tRPC API
   app.use(
     "/api/trpc",

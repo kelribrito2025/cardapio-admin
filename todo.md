@@ -3262,3 +3262,5 @@
 - [x] Alterar modelo do recibo de teste para usar o mesmo layout do Preview (sem logo, mesmo formato)
 
 - [x] Corrigir salvamento das configurações de fonte que não persiste no banco de dados
+
+- [x] Adicionar card de preview com campo de texto personalizado e botão de teste de impressão térmica
