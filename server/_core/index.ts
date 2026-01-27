@@ -410,11 +410,10 @@ function generateReceiptHTML(
   `}
   
   <div class="section-box">
-    <div class="payment-header">
-      <span style="color: #666; font-size: ${smallFontSize}; text-transform: uppercase;">PAGAMENTO</span>
-      <span class="payment-badge">${paymentMethodText[order.paymentMethod] || order.paymentMethod}</span>
+    <div class="section-inline">
+      <strong>Pagamento:</strong> ${paymentMethodText[order.paymentMethod] || order.paymentMethod}
+      ${order.paymentMethod === 'cash' && order.changeFor ? ` - Troco para: ${formatCurrency(order.changeFor)}` : ''}
     </div>
-    ${order.paymentMethod === 'cash' && order.changeFor ? `<div style="margin-top: 8px;">Troco para: ${formatCurrency(order.changeFor)}</div>` : ''}
   </div>
   
   <div class="section-box">
@@ -984,9 +983,8 @@ async function startServer() {
     </div>
     
     <div class="payment-box">
-      <div class="payment-row">
-        <div class="payment-title">Pagamento</div>
-        <div class="payment-badge">${sampleOrder.paymentMethod}</div>
+      <div class="section-content">
+        <strong>Pagamento:</strong> ${sampleOrder.paymentMethod}
       </div>
     </div>
     

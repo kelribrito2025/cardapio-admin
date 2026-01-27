@@ -908,24 +908,12 @@ export default function TesteImpressao() {
                     margin: '12px 0'
                   }}>
                     <div style={{ 
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
+                      fontSize: `${fontSize}px`, 
+                      fontWeight: fontWeight,
+                      color: '#444',
+                      lineHeight: 1.4
                     }}>
-                      <div style={{ 
-                        fontWeight: titleFontWeight, 
-                        fontSize: `${obsFontSize}px`,
-                        textTransform: 'uppercase',
-                        color: '#666'
-                      }}>
-                        Pagamento
-                      </div>
-                      <div style={{ 
-                        fontWeight: titleFontWeight,
-                        fontSize: `${itemFontSize}px`
-                      }}>
-                        {sampleOrder.paymentMethod}
-                      </div>
+                      <strong>Pagamento:</strong> {sampleOrder.paymentMethod}
                     </div>
                   </div>
 

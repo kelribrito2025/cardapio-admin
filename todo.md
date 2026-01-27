@@ -3293,3 +3293,5 @@
 - [x] Aumentar espessura das bordas de 1px para 2px em todas as caixas (agora 2px solid #000)
 
 - [x] Aplicar o mesmo estilo do preview de teste na função generateReceiptHTML dos pedidos reais
+
+- [x] Forma de pagamento: remover badge preto e deixar apenas texto em negrito
