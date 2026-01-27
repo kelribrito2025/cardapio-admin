@@ -206,7 +206,9 @@ function generateReceiptHTML(
     /* ITENS */
     .item {
       margin: 8px 0;
-      padding: 4px 0;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
     }
     .item-line {
       display: flex;
@@ -788,7 +790,9 @@ async function startServer() {
     }
     .item {
       margin: 8px 0;
-      padding: 4px 0;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
     }
     .item-header {
       display: flex;

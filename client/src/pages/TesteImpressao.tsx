@@ -794,7 +794,12 @@ export default function TesteImpressao() {
 
                   {/* Items */}
                   {sampleOrder.items.map((item, idx) => (
-                    <div key={idx} style={{ marginBottom: '8px' }}>
+                    <div key={idx} style={{ 
+                      marginBottom: '8px',
+                      padding: '10px 12px',
+                      border: '1px solid #ccc',
+                      borderRadius: '8px'
+                    }}>
                       <div style={{ 
                         display: 'flex', 
                         justifyContent: 'space-between',
