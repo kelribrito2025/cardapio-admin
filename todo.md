@@ -3272,3 +3272,5 @@
 - [x] Adicionar badge de ENTREGA/RETIRADA no recibo de teste (fundo preto, texto branco, centralizado)
 
 - [x] Mover badge de ENTREGA/RETIRADA para o lado direito do número do pedido (mesma linha)
+
+- [x] Centralizar badge de ENTREGA verticalmente entre as linhas Pedido e Realizado em (à direita)

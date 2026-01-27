@@ -753,38 +753,40 @@ export default function TesteImpressao() {
                   </div>
 
                   {/* Order Info */}
-                  <div style={{ marginBottom: '12px' }}>
-                    <div style={{ 
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '4px'
-                    }}>
+                  <div style={{ 
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '12px'
+                  }}>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <div style={{ 
                         fontSize: `${titleFontSize + 4}px`, 
-                        fontWeight: titleFontWeight
+                        fontWeight: titleFontWeight,
+                        marginBottom: '2px'
                       }}>
                         Pedido #{sampleOrder.orderNumber}
                       </div>
                       <div style={{ 
-                        display: 'inline-block',
-                        background: '#000',
-                        color: '#fff',
-                        fontSize: `${obsFontSize}px`,
+                        fontSize: `${obsFontSize}px`, 
                         fontWeight: titleFontWeight,
-                        padding: '4px 10px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '1px'
+                        color: '#666'
                       }}>
-                        {sampleOrder.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA'}
+                        Realizado em: {formatDate(sampleOrder.createdAt)}
                       </div>
                     </div>
                     <div style={{ 
-                      fontSize: `${obsFontSize}px`, 
+                      display: 'inline-block',
+                      background: '#000',
+                      color: '#fff',
+                      fontSize: `${obsFontSize}px`,
                       fontWeight: titleFontWeight,
-                      color: '#666'
+                      padding: '6px 12px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                      alignSelf: 'center'
                     }}>
-                      Realizado em: {formatDate(sampleOrder.createdAt)}
+                      {sampleOrder.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA'}
                     </div>
                   </div>
 

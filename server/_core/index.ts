@@ -748,16 +748,22 @@ async function startServer() {
       margin-top: 2px;
     }
     .order-info {
-      margin-bottom: 12px;
-    }
-    .order-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 4px;
+      margin-bottom: 12px;
+    }
+    .order-text {
+      display: flex;
+      flex-direction: column;
     }
     .order-number {
       font-size: ${titleFontSize + 4}px;
+      font-weight: ${titleFontWeight};
+      margin-bottom: 2px;
+    }
+    .order-date {
+      font-size: ${obsFontSize}px;
       font-weight: ${titleFontWeight};
     }
     .delivery-badge {
@@ -766,13 +772,10 @@ async function startServer() {
       color: #fff;
       font-size: ${obsFontSize}px;
       font-weight: ${titleFontWeight};
-      padding: 4px 10px;
+      padding: 6px 12px;
       text-transform: uppercase;
       letter-spacing: 1px;
-    }
-    .order-date {
-      font-size: ${obsFontSize}px;
-      font-weight: ${titleFontWeight};
+      align-self: center;
     }
     .divider {
       border: none;
@@ -859,11 +862,11 @@ async function startServer() {
     </div>
     
     <div class="order-info">
-      <div class="order-row">
+      <div class="order-text">
         <div class="order-number">Pedido #${sampleOrder.orderNumber}</div>
-        <div class="delivery-badge">${sampleOrder.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA'}</div>
+        <div class="order-date">Realizado em: ${formatDate(sampleOrder.createdAt)}</div>
       </div>
-      <div class="order-date">Realizado em: ${formatDate(sampleOrder.createdAt)}</div>
+      <div class="delivery-badge">${sampleOrder.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA'}</div>
     </div>
     
     <hr class="divider">
