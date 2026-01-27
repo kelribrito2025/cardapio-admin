@@ -139,10 +139,7 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Mobile logo */}
-      <div className="lg:hidden mt-8 text-center">
-        <p className="text-sm text-gray-500">© 2025 Cardápio Admin</p>
-      </div>
+
     </AuthLayout>
   );
 }

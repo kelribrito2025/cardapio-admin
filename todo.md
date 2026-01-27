@@ -3429,3 +3429,7 @@
 
 ## Remover botão "Não quero mais" do WhatsApp
 - [x] Remover o botão "Não quero mais" da mensagem de confirmação, mantendo apenas "Ok, pode fazer"
+
+
+## Simplificar página de login
+- [x] Remover seção lateral "Bem-vindo de volta" e deixar apenas o container de login centralizado
