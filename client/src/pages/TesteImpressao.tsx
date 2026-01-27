@@ -931,19 +931,12 @@ export default function TesteImpressao() {
                     margin: '12px 0'
                   }}>
                     <div style={{ 
-                      fontWeight: titleFontWeight, 
-                      fontSize: `${itemFontSize}px`,
-                      marginBottom: '8px'
-                    }}>
-                      Cliente:
-                    </div>
-                    <div style={{ 
                       fontSize: `${fontSize}px`, 
                       fontWeight: fontWeight,
                       color: '#444',
                       lineHeight: 1.4
                     }}>
-                      {sampleOrder.customerName} - {sampleOrder.customerPhone}
+                      <strong>Cliente:</strong> {sampleOrder.customerName} - {sampleOrder.customerPhone}
                     </div>
                   </div>
 

@@ -3285,3 +3285,5 @@
 - [x] Cliente: mesmo estilo de caixa com bordas redondas igual ao Endereço
 
 - [x] Cliente: nome e telefone na mesma linha horizontal
+
+- [x] Cliente: título e dados na mesma linha (Cliente: Nome - Telefone)
