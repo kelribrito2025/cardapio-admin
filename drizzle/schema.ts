@@ -106,6 +106,7 @@ export const products = mysqlTable("products", {
   hasStock: boolean("hasStock").default(true).notNull(),
   sortOrder: int("sortOrder").default(0).notNull(),
   salesCount: int("salesCount").default(0).notNull(),
+  printerSectorId: int("printerSectorId"), // Setor de preparo para impressão (null = impressora padrão)
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -474,3 +475,19 @@ export const printQueue = mysqlTable("printQueue", {
 
 export type PrintQueue = typeof printQueue.$inferSelect;
 export type InsertPrintQueue = typeof printQueue.$inferInsert;
+
+
+// Setores de impressão (Cozinha, Sushi Bar, Bar, etc.)
+export const printerSectors = mysqlTable("printerSectors", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  name: varchar("name", { length: 100 }).notNull(), // Nome do setor (ex: Cozinha, Sushi Bar)
+  linkcode: varchar("linkcode", { length: 100 }), // Linkcode do app ESC/POS para este setor
+  isActive: boolean("isActive").default(true).notNull(),
+  sortOrder: int("sortOrder").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PrinterSector = typeof printerSectors.$inferSelect;
+export type InsertPrinterSector = typeof printerSectors.$inferInsert;

@@ -24,7 +24,8 @@ import {
   printerSettings, InsertPrinterSettings, PrinterSettings,
   pushSubscriptions, InsertPushSubscription, PushSubscription,
   whatsappConfig, InsertWhatsappConfig, WhatsappConfig,
-  printQueue, InsertPrintQueue, PrintQueue
+  printQueue, InsertPrintQueue, PrintQueue,
+  printerSectors, InsertPrinterSector, PrinterSector
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -3341,4 +3342,110 @@ export async function getPrintHistory(establishmentId: number, limit: number = 5
     .limit(limit);
   
   return result;
+}
+
+
+
+// ============ PRINTER SECTORS FUNCTIONS ============
+
+/**
+ * Busca todos os setores de impressão de um estabelecimento
+ */
+export async function getPrinterSectorsByEstablishment(establishmentId: number): Promise<PrinterSector[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(printerSectors)
+    .where(eq(printerSectors.establishmentId, establishmentId))
+    .orderBy(asc(printerSectors.sortOrder), asc(printerSectors.name));
+}
+
+/**
+ * Busca um setor de impressão por ID
+ */
+export async function getPrinterSectorById(id: number): Promise<PrinterSector | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(printerSectors)
+    .where(eq(printerSectors.id, id))
+    .limit(1);
+  
+  return result[0];
+}
+
+/**
+ * Cria um novo setor de impressão
+ */
+export async function createPrinterSector(data: {
+  establishmentId: number;
+  name: string;
+  linkcode?: string | null;
+  isActive?: boolean;
+  sortOrder?: number;
+}): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(printerSectors).values({
+    establishmentId: data.establishmentId,
+    name: data.name,
+    linkcode: data.linkcode || null,
+    isActive: data.isActive ?? true,
+    sortOrder: data.sortOrder ?? 0,
+  });
+  
+  return result[0].insertId;
+}
+
+/**
+ * Atualiza um setor de impressão
+ */
+export async function updatePrinterSector(id: number, data: {
+  name?: string;
+  linkcode?: string | null;
+  isActive?: boolean;
+  sortOrder?: number;
+}): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const updateData: any = {};
+  if (data.name !== undefined) updateData.name = data.name;
+  if (data.linkcode !== undefined) updateData.linkcode = data.linkcode;
+  if (data.isActive !== undefined) updateData.isActive = data.isActive;
+  if (data.sortOrder !== undefined) updateData.sortOrder = data.sortOrder;
+  
+  await db.update(printerSectors).set(updateData).where(eq(printerSectors.id, id));
+}
+
+/**
+ * Remove um setor de impressão
+ */
+export async function deletePrinterSector(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Primeiro, remover referência dos produtos
+  await db.update(products)
+    .set({ printerSectorId: null })
+    .where(eq(products.printerSectorId, id));
+  
+  // Depois, deletar o setor
+  await db.delete(printerSectors).where(eq(printerSectors.id, id));
+}
+
+/**
+ * Busca setores ativos de um estabelecimento
+ */
+export async function getActivePrinterSectors(establishmentId: number): Promise<PrinterSector[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(printerSectors)
+    .where(and(
+      eq(printerSectors.establishmentId, establishmentId),
+      eq(printerSectors.isActive, true)
+    ))
+    .orderBy(asc(printerSectors.sortOrder), asc(printerSectors.name));
 }

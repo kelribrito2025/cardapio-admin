@@ -274,6 +274,13 @@
       "when": 1769513618968,
       "tag": "0038_strange_blizzard",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "5",
+      "when": 1769516808181,
+      "tag": "0039_square_mattie_franklin",
+      "breakpoints": true
     }
   ]
 }

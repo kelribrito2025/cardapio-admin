@@ -3341,3 +3341,11 @@
 - [x] Ajustar card de Cliente para mesmo layout do card de Pagamento: ícone + "Cliente" à esquerda, nome + telefone à direita, sem dois pontos
 
 - [x] Aumentar tamanho do ícone de estrela no card de Cliente para ficar igual ao ícone de pagamento
+
+## Sistema de Múltiplas Impressoras por Setor
+- [x] Criar tabela de setores/impressoras no banco de dados (printerSectors)
+- [x] Criar endpoints tRPC para CRUD de setores (list, create, update, delete)
+- [x] Criar página de Configuração de Impressoras/Setores no menu
+- [x] Adicionar campo "Setor de Preparo" no cadastro de produtos
+- [x] Modificar lógica de impressão para separar itens por setor ao aceitar pedido
+- [x] Enviar automaticamente para cada impressora apenas os itens do seu setor
