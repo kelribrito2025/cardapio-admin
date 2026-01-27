@@ -1064,7 +1064,10 @@ export default function TesteImpressao() {
                       justifyContent: 'space-between',
                       alignItems: 'center'
                     }}>
-                      <span style={{ fontWeight: titleFontWeight, fontSize: `${itemFontSize}px` }}>Pagamento</span>
+                      <span style={{ fontWeight: titleFontWeight, fontSize: `${itemFontSize}px`, display: 'inline-flex', alignItems: 'center' }}>
+                          <img src="/payment-icon.png" alt="" style={{ width: '14px', height: '14px', marginRight: '4px' }} />
+                          Pagamento
+                        </span>
                       <span style={{ fontWeight: titleFontWeight, fontSize: `${itemFontSize}px` }}>{sampleOrder.paymentMethod}</span>
                     </div>
                   </div>

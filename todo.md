@@ -3329,3 +3329,5 @@
 - [x] Adicionar opção para alternar entre bordas redondas e linhas tracejadas nos itens do pedido
 
 - [x] Substituir emoji de data (📅) pelo ícone de calendário no preview do recibo
+
+- [x] Adicionar ícone de pagamento ao lado esquerdo do título Pagamento no card de pagamento

@@ -179,6 +179,11 @@ function generateReceiptHTML(
       height: 14px;
       margin-right: 4px;
     }
+    .section-icon {
+      width: 14px;
+      height: 14px;
+      margin-right: 4px;
+    }
     .delivery-badge {
       display: inline-block;
       background: #000;
@@ -427,7 +432,7 @@ function generateReceiptHTML(
   
   <div class="section-box">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span style="font-weight: ${headerFontWeight};">Pagamento</span>
+      <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/payment-icon.png" class="section-icon" /> Pagamento</span>
       <span style="font-weight: ${headerFontWeight};">${paymentMethodText[order.paymentMethod] || order.paymentMethod}</span>
     </div>
     ${order.paymentMethod === 'cash' && order.changeFor ? `<div style="margin-top: 8px; font-size: ${smallFontSize};">Troco para: ${formatCurrency(order.changeFor)}</div>` : ''}
@@ -825,6 +830,11 @@ async function startServer() {
       height: 14px;
       margin-right: 4px;
     }
+    .section-icon {
+      width: 14px;
+      height: 14px;
+      margin-right: 4px;
+    }
     .delivery-badge {
       display: inline-block;
       background: #000;
@@ -1022,7 +1032,7 @@ async function startServer() {
     <hr class="divider">
     
     <div class="address-box">
-      <div class="section-title">Endereço:</div>
+      <div class="section-title">Endereço</div>
       <div class="section-content">
         ${sampleOrder.address} - ${sampleOrder.neighborhood}${sampleOrder.addressComplement ? ' - ' + sampleOrder.addressComplement : ''}
       </div>
@@ -1030,7 +1040,7 @@ async function startServer() {
     
     <div class="payment-box">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-weight: ${titleFontWeight};">Pagamento</span>
+        <span style="font-weight: ${titleFontWeight}; display: inline-flex; align-items: center;"><img src="/payment-icon.png" class="section-icon" /> Pagamento</span>
         <span style="font-weight: ${titleFontWeight};">${sampleOrder.paymentMethod}</span>
       </div>
     </div>
