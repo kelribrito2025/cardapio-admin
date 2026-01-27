@@ -54,6 +54,7 @@ import {
   Edit,
   ArrowLeft,
   MoreVertical,
+  Plus,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
@@ -69,15 +70,50 @@ const statusConfig: Record<OrderStatus, {
   label: string; 
   variant: "success" | "warning" | "error" | "info" | "default";
   icon: typeof Clock;
-  color: string;
-  bgColor: string;
-  borderColor: string;
+  headerBg: string;
+  headerText: string;
+  emptyText: string;
 }> = {
-  new: { label: "Novos", variant: "info", icon: Clock, color: "text-blue-600", bgColor: "bg-blue-50", borderColor: "border-blue-200" },
-  preparing: { label: "Em Preparo", variant: "warning", icon: ChefHat, color: "text-amber-600", bgColor: "bg-amber-50", borderColor: "border-amber-200" },
-  ready: { label: "Prontos", variant: "success", icon: Package, color: "text-emerald-600", bgColor: "bg-emerald-50", borderColor: "border-emerald-200" },
-  completed: { label: "Finalizados", variant: "default", icon: CheckCircle, color: "text-gray-600", bgColor: "bg-gray-50", borderColor: "border-gray-200" },
-  cancelled: { label: "Cancelados", variant: "error", icon: XCircle, color: "text-red-600", bgColor: "bg-red-50", borderColor: "border-red-200" },
+  new: { 
+    label: "Novos", 
+    variant: "info", 
+    icon: Clock, 
+    headerBg: "bg-gradient-to-r from-blue-500 to-blue-600",
+    headerText: "text-white",
+    emptyText: "Nenhum pedido novo"
+  },
+  preparing: { 
+    label: "Em Preparo", 
+    variant: "warning", 
+    icon: ChefHat, 
+    headerBg: "bg-gradient-to-r from-orange-400 to-orange-500",
+    headerText: "text-white",
+    emptyText: "Nenhum em preparo"
+  },
+  ready: { 
+    label: "Prontos", 
+    variant: "success", 
+    icon: Package, 
+    headerBg: "bg-gradient-to-r from-green-500 to-green-600",
+    headerText: "text-white",
+    emptyText: "Nenhum pronto"
+  },
+  completed: { 
+    label: "Finalizados", 
+    variant: "default", 
+    icon: CheckCircle, 
+    headerBg: "bg-gradient-to-r from-gray-700 to-gray-800",
+    headerText: "text-white",
+    emptyText: "Nenhum finalizado"
+  },
+  cancelled: { 
+    label: "Cancelados", 
+    variant: "error", 
+    icon: XCircle, 
+    headerBg: "bg-gradient-to-r from-red-500 to-red-600",
+    headerText: "text-white",
+    emptyText: "Nenhum cancelado"
+  },
 };
 
 const paymentMethodLabels: Record<string, { label: string; icon: typeof CreditCard }> = {
@@ -310,41 +346,50 @@ export default function Pedidos() {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Pedido ${(orderToPrint as any).orderNumber?.startsWith('#') ? (orderToPrint as any).orderNumber : `#${(orderToPrint as any).orderNumber}`}</title>
+        <title>Pedido ${orderToPrint.orderNumber}</title>
         <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: Arial, sans-serif; font-size: 13px; padding: 20px; max-width: 320px; margin: 0 auto; }
-          .logo { text-align: center; padding-bottom: 15px; margin-bottom: 15px; }
-          .logo h1 { font-size: 22px; font-weight: bold; }
-          .order-info { margin-bottom: 15px; }
-          .order-info h2 { font-size: 16px; font-weight: bold; }
-          .divider { border: none; border-top: 1px solid #ccc; margin: 12px 0; }
-          .item { margin-bottom: 10px; }
-          .item-header { display: flex; justify-content: space-between; font-weight: 500; }
-          .item-obs { font-size: 11px; color: #666; margin-top: 2px; }
-          .item-complement { font-size: 11px; color: #555; margin-top: 2px; padding-left: 10px; }
-          .totals { margin: 15px 0; }
-          .total-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-          .total-row.final { font-weight: bold; font-size: 15px; margin-top: 8px; }
-          @media print { body { padding: 0; } }
+          body { font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px; }
+          .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+          .order-number { font-size: 24px; font-weight: bold; }
+          .customer { margin: 15px 0; padding: 10px; background: #f5f5f5; border-radius: 5px; }
+          .item { padding: 8px 0; border-bottom: 1px dashed #ccc; }
+          .item-header { display: flex; justify-content: space-between; }
+          .item-qty { font-weight: bold; }
+          .item-complement { font-size: 12px; color: #666; margin-left: 15px; }
+          .item-obs { font-size: 12px; color: #666; font-style: italic; margin-top: 4px; }
+          .total { margin-top: 15px; padding-top: 10px; border-top: 2px solid #000; font-size: 18px; font-weight: bold; text-align: right; }
+          .delivery { margin-top: 15px; padding: 10px; background: #e8f5e9; border-radius: 5px; }
+          .payment { margin-top: 10px; padding: 10px; background: #fff3e0; border-radius: 5px; }
+          .discount { color: #e53935; }
+          @media print { body { margin: 0; padding: 10px; } }
         </style>
       </head>
       <body>
-        <div class="logo"><h1>${establishment?.name || 'Cardápio'}</h1></div>
-        <div class="order-info">
-          <h2>Pedido ${(orderToPrint as any).orderNumber?.startsWith('#') ? (orderToPrint as any).orderNumber : `#${(orderToPrint as any).orderNumber}`}</h2>
-          <p>${format(new Date((orderToPrint as any).createdAt), "dd/MM/yyyy HH:mm")}</p>
+        <div class="header">
+          <div class="order-number">${orderToPrint.orderNumber}</div>
+          <div>${format(new Date(orderToPrint.createdAt), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</div>
         </div>
-        <hr class="divider">
-        <div class="items">${itemsHtml}</div>
-        <hr class="divider">
-        <div class="totals">
-          <div class="total-row"><span>Subtotal</span><span>R$ ${Number((orderToPrint as any).subtotal).toFixed(2).replace('.', ',')}</span></div>
-          ${discount > 0 ? `<div class="total-row"><span>Desconto</span><span>- R$ ${discount.toFixed(2).replace('.', ',')}</span></div>` : ''}
-          <div class="total-row"><span>Taxa de entrega</span><span>${Number((orderToPrint as any).deliveryFee) > 0 ? `R$ ${Number((orderToPrint as any).deliveryFee).toFixed(2).replace('.', ',')}` : 'Grátis'}</span></div>
-          <div class="total-row final"><span>Total</span><span>R$ ${Number((orderToPrint as any).total).toFixed(2).replace('.', ',')}</span></div>
+        <div class="customer">
+          <strong>${orderToPrint.customerName}</strong><br>
+          ${orderToPrint.customerPhone}
         </div>
-        <script>window.onload = function() { window.print(); window.onafterprint = function() { window.close(); }; };</script>
+        <div class="items">
+          ${itemsHtml}
+        </div>
+        ${discount > 0 ? `<div class="discount">Desconto: -R$ ${discount.toFixed(2).replace('.', ',')}</div>` : ''}
+        <div class="total">Total: R$ ${Number(orderToPrint.total).toFixed(2).replace('.', ',')}</div>
+        <div class="delivery">
+          <strong>${orderToPrint.deliveryType === 'delivery' ? '🛵 Entrega' : '🏪 Retirada'}</strong><br>
+          ${orderToPrint.deliveryType === 'delivery' && (orderToPrint as any).deliveryAddress 
+            ? `${(orderToPrint as any).deliveryAddress}${(orderToPrint as any).deliveryNumber ? `, ${(orderToPrint as any).deliveryNumber}` : ''}${(orderToPrint as any).deliveryNeighborhood ? ` - ${(orderToPrint as any).deliveryNeighborhood}` : ''}${(orderToPrint as any).deliveryComplement ? ` (${(orderToPrint as any).deliveryComplement})` : ''}`
+            : 'Retirar no local'}
+        </div>
+        <div class="payment">
+          <strong>💳 ${paymentMethodLabels[orderToPrint.paymentMethod]?.label || orderToPrint.paymentMethod}</strong>
+          ${orderToPrint.changeAmount ? `<br>Troco para: R$ ${Number(orderToPrint.changeAmount).toFixed(2).replace('.', ',')}` : ''}
+        </div>
+        ${orderToPrint.notes ? `<div style="margin-top: 10px; padding: 10px; background: #ffebee; border-radius: 5px;"><strong>📝 Obs:</strong> ${orderToPrint.notes}</div>` : ''}
+        <script>window.onload = function() { window.print(); }</script>
       </body>
       </html>
     `;
@@ -353,186 +398,165 @@ export default function Pedidos() {
     printWindow.document.close();
   };
 
-  // Se não há estabelecimento, mostrar tela de criação
-  if (!establishmentLoading && !establishment) {
+  // Early return after all hooks
+  if (establishmentLoading) {
     return (
       <AdminLayout>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-          <div className="p-6 bg-muted/30 rounded-3xl mb-6">
-            <ClipboardList className="h-16 w-16 text-muted-foreground" />
-          </div>
-          <h2 className="text-2xl font-bold mb-2">Configure seu estabelecimento</h2>
-          <p className="text-muted-foreground mb-6 max-w-md">
-            Antes de gerenciar pedidos, você precisa configurar as informações do seu estabelecimento.
-          </p>
-          <Button onClick={() => window.location.href = "/configuracoes"} className="rounded-xl">
-            Ir para Configurações
-          </Button>
+        <div className="flex items-center justify-center h-64">
+          <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       </AdminLayout>
     );
   }
 
-  const formatCurrency = (value: string | number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(Number(value));
-  };
+  if (!establishment) {
+    return (
+      <AdminLayout>
+        <EmptyState
+          icon={ClipboardList}
+          title="Configure seu estabelecimento"
+          description="Antes de gerenciar pedidos, você precisa configurar as informações do seu estabelecimento."
+        />
+      </AdminLayout>
+    );
+  }
 
-  const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
-    updateStatusMutation.mutate({ id: orderId, status: newStatus });
-    
-    if (newStatus === "preparing") {
-      toast.success("📦 Pedido aceito e enviado para impressão!", {
-        description: "O pedido foi aceito e está sendo enviado para as impressoras.",
-        duration: 4000,
-      });
-      
-      setTimeout(() => {
-        handlePrintMultiPrinter(orderId);
-      }, 300);
-    }
-  };
-
-  const handleCancelOrder = () => {
-    if (orderToCancel) {
-      updateStatusMutation.mutate(
-        { id: orderToCancel, status: "cancelled", cancellationReason: cancellationReason || undefined },
-        {
-          onSuccess: () => {
-            setCancelDialogOpen(false);
-            setOrderToCancel(null);
-            setCancellationReason("");
-          },
-        }
-      );
-    }
-  };
-
-  const getNextAction = (status: OrderStatus): { label: string; newStatus: OrderStatus } | null => {
-    switch (status) {
-      case "new":
-        return { label: "Aceitar", newStatus: "preparing" };
-      case "preparing":
-        return { label: "Pronto", newStatus: "ready" };
-      case "ready":
-        return { label: "Finalizar", newStatus: "completed" };
-      default:
-        return null;
-    }
+  const formatCurrency = (value: number | string) => {
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num);
   };
 
   // Agrupar pedidos por status
-  const ordersByStatus = {
-    new: allOrders?.filter(o => o.status === "new") ?? [],
-    preparing: allOrders?.filter(o => o.status === "preparing") ?? [],
-    ready: allOrders?.filter(o => o.status === "ready") ?? [],
-    completed: allOrders?.filter(o => o.status === "completed") ?? [],
-    cancelled: allOrders?.filter(o => o.status === "cancelled") ?? [],
+  const ordersByStatus: Record<OrderStatus, typeof allOrders> = {
+    new: allOrders.filter(o => o.status === "new"),
+    preparing: allOrders.filter(o => o.status === "preparing"),
+    ready: allOrders.filter(o => o.status === "ready"),
+    completed: allOrders.filter(o => o.status === "completed"),
+    cancelled: allOrders.filter(o => o.status === "cancelled"),
   };
 
-  // Colunas do Kanban (sem finalizados e cancelados para manter mais limpo)
-  const kanbanColumns: OrderStatus[] = ["new", "preparing", "ready"];
+  // Colunas do Kanban (sem cancelled que vai junto com completed)
+  const kanbanColumns: OrderStatus[] = ["new", "preparing", "ready", "completed"];
 
-  // Componente de Card de Pedido compacto para o Kanban
+  // Componente de card do pedido
   const OrderCard = ({ order }: { order: typeof allOrders[0] }) => {
-    const config = statusConfig[order.status as OrderStatus];
-    const nextAction = getNextAction(order.status as OrderStatus);
-    const PaymentIcon = paymentMethodLabels[order.paymentMethod]?.icon || CreditCard;
+    const items = (order as any).items || [];
+    const itemsText = items.length > 0 
+      ? items.slice(0, 2).map((i: any) => `${i.quantity}x ${i.productName}`).join(', ')
+      : 'Sem itens';
+    const moreItems = items.length > 2 ? ` +${items.length - 2}` : '';
 
     return (
-      <div className="bg-white rounded-xl border border-border/50 overflow-hidden shadow-sm hover:shadow-md transition-all duration-200">
-        {/* Header compacto */}
-        <div className={cn("px-3 py-2 flex items-center justify-between", config.bgColor)}>
-          <div className="flex items-center gap-2">
-            <span className={cn("font-bold text-sm", config.color)}>
+      <div 
+        className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer"
+        onClick={() => setSelectedOrder(order.id)}
+      >
+        {/* Card Header */}
+        <div className="p-3 border-b border-gray-100">
+          <div className="flex items-center justify-between">
+            <span className="font-bold text-gray-800">
               {order.orderNumber?.startsWith('#') ? order.orderNumber : `#${order.orderNumber}`}
             </span>
+            <span className="text-xs text-gray-500">
+              {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true, locale: ptBR })}
+            </span>
           </div>
-          <div className={cn("flex items-center gap-1 text-xs", config.color)}>
-            <Clock className="h-3 w-3" />
-            {formatDistanceToNow(new Date(order.createdAt), { addSuffix: false, locale: ptBR })}
+          <div className="flex items-center gap-1 mt-1">
+            <User className="h-3 w-3 text-gray-400" />
+            <span className="text-sm text-gray-600 truncate">{order.customerName}</span>
           </div>
         </div>
 
-        {/* Content */}
+        {/* Card Body */}
         <div className="p-3">
-          {/* Cliente e valor */}
-          <div className="flex items-center justify-between mb-2">
-            <span className="font-medium text-sm truncate max-w-[120px]">
-              {order.customerName || "Cliente"}
-            </span>
-            <span className="font-bold text-primary">
-              {formatCurrency(order.total)}
-            </span>
+          <p className="text-xs text-gray-500 truncate">
+            {itemsText}{moreItems}
+          </p>
+          <div className="flex items-center justify-between mt-2">
+            <span className="font-bold text-gray-800">{formatCurrency(order.total)}</span>
+            <div className="flex items-center gap-1">
+              {order.deliveryType === 'delivery' ? (
+                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Entrega</span>
+              ) : (
+                <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">Retirada</span>
+              )}
+            </div>
           </div>
+        </div>
 
-          {/* Info linha */}
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-            <span className="flex items-center gap-1">
-              <PaymentIcon className="h-3 w-3" />
-              {paymentMethodLabels[order.paymentMethod]?.label}
-            </span>
-            <span>•</span>
-            <span className="capitalize">
-              {order.deliveryType === "delivery" ? "Entrega" : "Retirada"}
-            </span>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 h-8 text-xs"
-              onClick={() => setSelectedOrder(order.id)}
+        {/* Card Actions */}
+        <div className="px-3 pb-3 flex items-center gap-2">
+          {order.status === "new" && (
+            <Button 
+              size="sm" 
+              className="flex-1 h-8 bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                updateStatusMutation.mutate({ id: order.id, status: "preparing" });
+              }}
             >
-              Detalhes
+              <ChefHat className="h-3 w-3 mr-1" />
+              Preparar
             </Button>
-            {nextAction && (
-              <Button
-                size="sm"
-                className="flex-1 h-8 text-xs"
-                onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
-                disabled={updateStatusMutation.isPending}
-              >
-                {nextAction.label}
+          )}
+          {order.status === "preparing" && (
+            <Button 
+              size="sm" 
+              className="flex-1 h-8 bg-green-500 hover:bg-green-600 text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                updateStatusMutation.mutate({ id: order.id, status: "ready" });
+              }}
+            >
+              <Package className="h-3 w-3 mr-1" />
+              Pronto
+            </Button>
+          )}
+          {order.status === "ready" && (
+            <Button 
+              size="sm" 
+              className="flex-1 h-8 bg-gray-700 hover:bg-gray-800 text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                updateStatusMutation.mutate({ id: order.id, status: "completed" });
+              }}
+            >
+              <CheckCircle className="h-3 w-3 mr-1" />
+              Finalizar
+            </Button>
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                <MoreVertical className="h-4 w-4" />
               </Button>
-            )}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handlePrintOrderDirect(order.id)}>
-                  <Printer className="h-4 w-4 mr-2" />
-                  Imprimir
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handlePrintThermal(order.id)}>
-                  <Smartphone className="h-4 w-4 mr-2" />
-                  Impressora Térmica
-                </DropdownMenuItem>
-                {order.status !== "completed" && order.status !== "cancelled" && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      className="text-destructive"
-                      onClick={() => {
-                        setOrderToCancel(order.id);
-                        setCancelDialogOpen(true);
-                      }}
-                    >
-                      <XCircle className="h-4 w-4 mr-2" />
-                      Cancelar
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handlePrintOrderDirect(order.id)}>
+                <Printer className="h-4 w-4 mr-2" />
+                Imprimir
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handlePrintThermal(order.id)}>
+                <Smartphone className="h-4 w-4 mr-2" />
+                Impressora Térmica
+              </DropdownMenuItem>
+              {order.status !== "completed" && order.status !== "cancelled" && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="text-destructive"
+                    onClick={() => {
+                      setOrderToCancel(order.id);
+                      setCancelDialogOpen(true);
+                    }}
+                  >
+                    <XCircle className="h-4 w-4 mr-2" />
+                    Cancelar
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     );
@@ -565,7 +589,7 @@ export default function Pedidos() {
       </div>
 
       {/* Kanban Board */}
-      <div className="flex gap-4 overflow-x-auto pb-4" style={{ minHeight: 'calc(100vh - 200px)' }}>
+      <div className="flex gap-4 overflow-x-auto pb-4" style={{ minHeight: 'calc(100vh - 280px)' }}>
         {kanbanColumns.map((status) => {
           const config = statusConfig[status];
           const orders = ordersByStatus[status];
@@ -574,27 +598,33 @@ export default function Pedidos() {
           return (
             <div 
               key={status} 
-              className={cn(
-                "flex-shrink-0 w-[320px] rounded-xl border-2 flex flex-col",
-                config.borderColor,
-                config.bgColor
-              )}
+              className="flex-shrink-0 w-[320px] rounded-2xl bg-gray-50 flex flex-col overflow-hidden shadow-sm"
             >
-              {/* Column Header */}
-              <div className={cn("px-4 py-3 border-b", config.borderColor)}>
+              {/* Column Header - Colorido */}
+              <div className={cn("px-4 py-3", config.headerBg)}>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className={cn("p-1.5 rounded-lg bg-white", config.color)}>
-                      <StatusIcon className="h-4 w-4" />
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-white/20">
+                      <StatusIcon className={cn("h-5 w-5", config.headerText)} />
                     </div>
-                    <span className={cn("font-semibold", config.color)}>{config.label}</span>
+                    <div>
+                      <span className={cn("font-bold text-lg", config.headerText)}>{config.label}</span>
+                      <p className={cn("text-sm opacity-80", config.headerText)}>{orders.length} pedidos</p>
+                    </div>
                   </div>
-                  <span className={cn(
-                    "px-2 py-0.5 rounded-full text-sm font-bold bg-white",
-                    config.color
-                  )}>
-                    {orders.length}
-                  </span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className={cn("h-8 w-8 hover:bg-white/20", config.headerText)}>
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => refetchAll()}>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Atualizar
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
 
@@ -615,10 +645,10 @@ export default function Pedidos() {
                     <OrderCard key={order.id} order={order} />
                   ))
                 ) : (
-                  <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <StatusIcon className={cn("h-10 w-10 mb-2 opacity-30", config.color)} />
-                    <p className={cn("text-sm font-medium opacity-50", config.color)}>
-                      Nenhum pedido
+                  <div className="flex flex-col items-center justify-center py-12 text-center bg-white rounded-xl border-2 border-dashed border-gray-200">
+                    <Plus className="h-8 w-8 text-gray-300 mb-2" />
+                    <p className="text-sm text-gray-400 font-medium">
+                      {config.emptyText}
                     </p>
                   </div>
                 )}
@@ -626,248 +656,279 @@ export default function Pedidos() {
             </div>
           );
         })}
+      </div>
 
-        {/* Coluna de Finalizados/Cancelados (colapsada) */}
-        <div className="flex-shrink-0 w-[280px] rounded-xl border-2 border-gray-200 bg-gray-50 flex flex-col">
-          <div className="px-4 py-3 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-white text-gray-600">
-                  <CheckCircle className="h-4 w-4" />
-                </div>
-                <span className="font-semibold text-gray-600">Histórico</span>
-              </div>
-              <span className="px-2 py-0.5 rounded-full text-sm font-bold bg-white text-gray-600">
-                {ordersByStatus.completed.length + ordersByStatus.cancelled.length}
-              </span>
+      {/* Barra de Resumo */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-10">
+        <div className="max-w-screen-2xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ClipboardList className="h-5 w-5 text-gray-600" />
+              <span className="font-semibold text-gray-800">Total de Pedidos Hoje</span>
+              <span className="text-sm text-gray-500">{allOrders.length} pedidos processados</span>
             </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-3 space-y-3">
-            {/* Finalizados */}
-            {ordersByStatus.completed.slice(0, 5).map((order) => (
-              <div 
-                key={order.id} 
-                className="bg-white rounded-lg border border-gray-200 p-2 opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
-                onClick={() => setSelectedOrder(order.id)}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-xs text-gray-600">
-                    {order.orderNumber?.startsWith('#') ? order.orderNumber : `#${order.orderNumber}`}
-                  </span>
-                  <span className="text-xs text-emerald-600 font-medium">Finalizado</span>
-                </div>
-                <div className="flex items-center justify-between mt-1">
-                  <span className="text-xs text-muted-foreground truncate max-w-[100px]">
-                    {order.customerName}
-                  </span>
-                  <span className="text-xs font-medium">{formatCurrency(order.total)}</span>
-                </div>
+            <div className="flex items-center gap-6">
+              <div className="text-center">
+                <span className="text-2xl font-bold text-blue-500">{ordersByStatus.new.length}</span>
+                <p className="text-xs text-gray-500">Novos</p>
               </div>
-            ))}
-            
-            {/* Cancelados */}
-            {ordersByStatus.cancelled.slice(0, 3).map((order) => (
-              <div 
-                key={order.id} 
-                className="bg-white rounded-lg border border-red-200 p-2 opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
-                onClick={() => setSelectedOrder(order.id)}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-xs text-gray-600">
-                    {order.orderNumber?.startsWith('#') ? order.orderNumber : `#${order.orderNumber}`}
-                  </span>
-                  <span className="text-xs text-red-600 font-medium">Cancelado</span>
-                </div>
-                <div className="flex items-center justify-between mt-1">
-                  <span className="text-xs text-muted-foreground truncate max-w-[100px]">
-                    {order.customerName}
-                  </span>
-                  <span className="text-xs font-medium">{formatCurrency(order.total)}</span>
-                </div>
+              <div className="text-center">
+                <span className="text-2xl font-bold text-orange-500">{ordersByStatus.preparing.length}</span>
+                <p className="text-xs text-gray-500">Preparo</p>
               </div>
-            ))}
-
-            {(ordersByStatus.completed.length > 5 || ordersByStatus.cancelled.length > 3) && (
-              <p className="text-xs text-center text-muted-foreground py-2">
-                + {Math.max(0, ordersByStatus.completed.length - 5) + Math.max(0, ordersByStatus.cancelled.length - 3)} mais pedidos
-              </p>
-            )}
+              <div className="text-center">
+                <span className="text-2xl font-bold text-green-500">{ordersByStatus.ready.length}</span>
+                <p className="text-xs text-gray-500">Prontos</p>
+              </div>
+              <div className="text-center">
+                <span className="text-2xl font-bold text-gray-600">{ordersByStatus.completed.length}</span>
+                <p className="text-xs text-gray-500">Finalizados</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Order Details Sidebar */}
       <Sheet open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-md p-0 overflow-hidden flex flex-col">
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" onClick={() => setSelectedOrder(null)} className="h-8 w-8">
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <span className="font-semibold text-lg">Detalhes do Pedido</span>
-            </div>
-          </div>
-
+        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
           {orderDetails && (
-            <div className="overflow-y-auto flex-1">
-              {/* Order ID and Actions */}
-              <div className="px-6 py-4 bg-muted/20 flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-bold">Pedido {orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</h2>
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(orderDetails.createdAt), "dd 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <StatusBadge variant={statusConfig[orderDetails.status as OrderStatus]?.variant}>
-                    {statusConfig[orderDetails.status as OrderStatus]?.label}
+            <>
+              <SheetHeader>
+                <SheetTitle className="flex items-center gap-2">
+                  <span className="text-xl font-bold">
+                    {orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}
+                  </span>
+                  <StatusBadge 
+                    variant={statusConfig[orderDetails.status as OrderStatus]?.variant || "default"}
+                  >
+                    {statusConfig[orderDetails.status as OrderStatus]?.label || orderDetails.status}
                   </StatusBadge>
-                </div>
-              </div>
+                </SheetTitle>
+                <SheetDescription>
+                  {format(new Date(orderDetails.createdAt), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
+                </SheetDescription>
+              </SheetHeader>
 
-              {/* Info Cards */}
-              <div className="px-6 py-4 space-y-4">
-                {/* Customer Info */}
-                <div className="border border-blue-200 bg-blue-50/50 rounded-xl p-4">
-                  <h4 className="font-semibold text-base mb-3">Informações do Cliente</h4>
-                  <div className="flex items-center justify-between gap-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
-                        {orderDetails.customerName?.charAt(0) || "C"}
-                      </span>
-                      <span className="font-medium truncate">{orderDetails.customerName || "Cliente"}</span>
+              <div className="mt-6 space-y-6">
+                {/* Cliente */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Cliente
+                  </h4>
+                  <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                    <p className="font-medium">{orderDetails.customerName}</p>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Phone className="h-3 w-3" />
+                      {orderDetails.customerPhone}
                     </div>
-                    {orderDetails.customerPhone && (
-                      <span className="text-muted-foreground shrink-0">{orderDetails.customerPhone}</span>
+                    {(orderDetails as any).customerEmail && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Mail className="h-3 w-3" />
+                        {(orderDetails as any).customerEmail}
+                      </div>
                     )}
                   </div>
-                  {orderDetails.customerPhone && (
-                    <div className="flex gap-2 mt-3">
-                      <Button variant="outline" size="sm" className="flex-1 h-8 text-xs" onClick={() => window.open(`tel:${orderDetails.customerPhone}`)}>
-                        Ligar
-                      </Button>
-                      <Button variant="outline" size="sm" className="flex-1 h-8 text-xs" onClick={() => window.open(`https://wa.me/${orderDetails.customerPhone?.replace(/\D/g, '')}`, '_blank')}>
-                        Mensagem
-                      </Button>
-                    </div>
-                  )}
                 </div>
 
-                {/* Order Items */}
-                <div className="border border-amber-200 bg-amber-50/50 rounded-xl p-4">
-                  <h4 className="font-semibold text-base mb-4">Itens do Pedido</h4>
-                  <div className="space-y-3">
-                    {orderDetails.items?.map((item, index) => (
-                      <div key={index} className="border-b border-border/30 pb-3 last:border-0 last:pb-0">
-                        <div className="flex justify-between">
-                          <span className="font-medium text-sm">{item.productName}</span>
-                          <span className="font-semibold text-sm">{formatCurrency(item.totalPrice)}</span>
-                        </div>
-                        {item.complements && item.complements.length > 0 && (
-                          <div className="mt-1.5 pl-2 border-l-2 border-primary/30">
-                            {item.complements.map((complement: { name: string; price: number }, compIndex: number) => (
-                              <div key={compIndex} className="flex justify-between text-xs text-muted-foreground">
-                                <span className="text-foreground/70">+ {complement.name}</span>
-                                {complement.price > 0 && (
-                                  <span className="text-foreground/70">+ {formatCurrency(complement.price)}</span>
-                                )}
-                              </div>
-                            ))}
-                          </div>
+                {/* Entrega */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    {orderDetails.deliveryType === 'delivery' ? 'Entrega' : 'Retirada'}
+                  </h4>
+                  <div className="bg-muted/50 rounded-lg p-3">
+                    {orderDetails.deliveryType === 'delivery' ? (
+                      <p className="text-sm">
+                        {(orderDetails as any).deliveryAddress}
+                        {(orderDetails as any).deliveryNumber && `, ${(orderDetails as any).deliveryNumber}`}
+                        {(orderDetails as any).deliveryNeighborhood && ` - ${(orderDetails as any).deliveryNeighborhood}`}
+                        {(orderDetails as any).deliveryComplement && (
+                          <span className="block text-muted-foreground mt-1">
+                            Complemento: {(orderDetails as any).deliveryComplement}
+                          </span>
                         )}
-                        {(Number(item.unitPrice) > 0 || item.notes) && (
-                          <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                            <span>{item.notes || ""}</span>
-                            {Number(item.unitPrice) > 0 && (
-                              <span>{formatCurrency(item.unitPrice)} x {item.quantity}</span>
+                      </p>
+                    ) : (
+                      <p className="text-sm">Retirar no estabelecimento</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Itens */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold flex items-center gap-2">
+                    <ClipboardList className="h-4 w-4" />
+                    Itens do Pedido
+                  </h4>
+                  <div className="space-y-2">
+                    {(orderDetails as any).items?.map((item: any, index: number) => (
+                      <div key={index} className="bg-muted/50 rounded-lg p-3">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <p className="font-medium">{item.quantity}x {item.productName}</p>
+                            {item.complements && item.complements.length > 0 && (
+                              <div className="mt-1 space-y-0.5">
+                                {item.complements.map((c: any, i: number) => (
+                                  <p key={i} className="text-xs text-muted-foreground">
+                                    + {c.name} {Number(c.price) > 0 && `(${formatCurrency(c.price)})`}
+                                  </p>
+                                ))}
+                              </div>
+                            )}
+                            {item.notes && (
+                              <p className="text-xs text-muted-foreground mt-1 italic">
+                                Obs: {item.notes}
+                              </p>
                             )}
                           </div>
-                        )}
+                          <span className="font-medium">{formatCurrency(item.totalPrice)}</span>
+                        </div>
                       </div>
                     ))}
                   </div>
-                  
-                  {/* Price Details */}
-                  <div className="mt-4 pt-4 border-t border-border/50 space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Subtotal:</span>
-                      <span className="font-medium">{formatCurrency(orderDetails.subtotal)}</span>
+                </div>
+
+                {/* Pagamento */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold flex items-center gap-2">
+                    <CreditCard className="h-4 w-4" />
+                    Pagamento
+                  </h4>
+                  <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                    <div className="flex items-center gap-2">
+                      {paymentMethodLabels[orderDetails.paymentMethod]?.icon && (
+                        <span className="text-muted-foreground">
+                          {(() => {
+                            const Icon = paymentMethodLabels[orderDetails.paymentMethod]?.icon;
+                            return Icon ? <Icon className="h-4 w-4" /> : null;
+                          })()}
+                        </span>
+                      )}
+                      <span className="font-medium">
+                        {paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}
+                      </span>
                     </div>
-                    {Number(orderDetails.deliveryFee) > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Taxa de Entrega:</span>
-                        <span className="font-medium">{formatCurrency(orderDetails.deliveryFee)}</span>
-                      </div>
+                    {orderDetails.changeAmount && (
+                      <p className="text-sm text-muted-foreground">
+                        Troco para: {formatCurrency(orderDetails.changeAmount)}
+                      </p>
                     )}
-                    {Number(orderDetails.discount) > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Desconto:</span>
-                        <span className="font-medium text-red-500">-{formatCurrency(orderDetails.discount)}</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between pt-2 border-t border-border/50">
-                      <span className="font-bold text-primary">Total:</span>
-                      <span className="font-bold text-primary">{formatCurrency(orderDetails.total)}</span>
-                    </div>
                   </div>
                 </div>
 
-                {/* Delivery & Payment Info */}
-                <div className="border border-emerald-200 bg-emerald-50/50 rounded-xl p-4">
-                  <h4 className="font-semibold text-base mb-3">Entrega e Pagamento</h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Tipo:</span>
-                      <span className="font-medium">{orderDetails.deliveryType === "delivery" ? "Entrega" : "Retirada"}</span>
+                {/* Total */}
+                <div className="border-t pt-4">
+                  {(orderDetails as any).discount && Number((orderDetails as any).discount) > 0 && (
+                    <div className="flex justify-between text-sm text-muted-foreground mb-2">
+                      <span>Desconto</span>
+                      <span className="text-red-500">-{formatCurrency((orderDetails as any).discount)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Método:</span>
-                      <span className="font-medium">{paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</span>
-                    </div>
-                    {orderDetails.customerAddress && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Endereço:</span>
-                        <span className="font-medium text-right max-w-[180px]">{orderDetails.customerAddress}</span>
-                      </div>
-                    )}
+                  )}
+                  <div className="flex justify-between text-lg font-bold">
+                    <span>Total</span>
+                    <span>{formatCurrency(orderDetails.total)}</span>
                   </div>
                 </div>
+
+                {/* Observações */}
+                {orderDetails.notes && (
+                  <div className="space-y-3">
+                    <h4 className="font-semibold flex items-center gap-2">
+                      <MessageCircle className="h-4 w-4" />
+                      Observações
+                    </h4>
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                      <p className="text-sm">{orderDetails.notes}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Motivo do cancelamento */}
+                {orderDetails.status === "cancelled" && orderDetails.cancellationReason && (
+                  <div className="space-y-3">
+                    <h4 className="font-semibold flex items-center gap-2 text-red-600">
+                      <XCircle className="h-4 w-4" />
+                      Motivo do Cancelamento
+                    </h4>
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                      <p className="text-sm text-red-700">{orderDetails.cancellationReason}</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Actions Footer */}
-              <div className="px-6 py-4 border-t border-border/50 space-y-3">
-                {getNextAction(orderDetails.status as OrderStatus) && (
-                  <Button
-                    className="w-full"
-                    onClick={() => handleStatusUpdate(orderDetails.id, getNextAction(orderDetails.status as OrderStatus)!.newStatus)}
-                    disabled={updateStatusMutation.isPending}
+              <SheetFooter className="mt-6 flex-col gap-2">
+                <div className="flex gap-2 w-full">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={() => handlePrintOrderDirect(orderDetails.id)}
                   >
-                    {getNextAction(orderDetails.status as OrderStatus)?.label}
-                  </Button>
-                )}
-                <div className="flex gap-2">
-                  <Button variant="outline" className="flex-1" onClick={() => handlePrintOrderDirect(orderDetails.id)}>
                     <Printer className="h-4 w-4 mr-2" />
                     Imprimir
                   </Button>
-                  {orderDetails.status !== "completed" && orderDetails.status !== "cancelled" && (
-                    <Button 
-                      variant="destructive" 
-                      className="flex-1"
-                      onClick={() => {
-                        setOrderToCancel(orderDetails.id);
-                        setCancelDialogOpen(true);
-                      }}
-                    >
-                      <XCircle className="h-4 w-4 mr-2" />
-                      Cancelar
-                    </Button>
-                  )}
+                  <Button 
+                    variant="outline"
+                    onClick={() => handlePrintThermal(orderDetails.id)}
+                  >
+                    <Smartphone className="h-4 w-4" />
+                  </Button>
                 </div>
-              </div>
-            </div>
+                
+                {orderDetails.status === "new" && (
+                  <Button 
+                    className="w-full bg-orange-500 hover:bg-orange-600"
+                    onClick={() => {
+                      updateStatusMutation.mutate({ id: orderDetails.id, status: "preparing" });
+                      setSelectedOrder(null);
+                    }}
+                  >
+                    <ChefHat className="h-4 w-4 mr-2" />
+                    Iniciar Preparo
+                  </Button>
+                )}
+                {orderDetails.status === "preparing" && (
+                  <Button 
+                    className="w-full bg-green-500 hover:bg-green-600"
+                    onClick={() => {
+                      updateStatusMutation.mutate({ id: orderDetails.id, status: "ready" });
+                      setSelectedOrder(null);
+                    }}
+                  >
+                    <Package className="h-4 w-4 mr-2" />
+                    Marcar como Pronto
+                  </Button>
+                )}
+                {orderDetails.status === "ready" && (
+                  <Button 
+                    className="w-full"
+                    onClick={() => {
+                      updateStatusMutation.mutate({ id: orderDetails.id, status: "completed" });
+                      setSelectedOrder(null);
+                    }}
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Finalizar Pedido
+                  </Button>
+                )}
+                
+                {orderDetails.status !== "completed" && orderDetails.status !== "cancelled" && (
+                  <Button 
+                    variant="destructive" 
+                    className="w-full"
+                    onClick={() => {
+                      setOrderToCancel(orderDetails.id);
+                      setCancelDialogOpen(true);
+                    }}
+                  >
+                    <XCircle className="h-4 w-4 mr-2" />
+                    Cancelar Pedido
+                  </Button>
+                )}
+              </SheetFooter>
+            </>
           )}
         </SheetContent>
       </Sheet>
@@ -884,18 +945,36 @@ export default function Pedidos() {
           <div className="py-4">
             <label className="text-sm font-medium">Motivo do cancelamento (opcional)</label>
             <textarea
-              className="w-full mt-2 p-3 border rounded-lg resize-none"
+              className="w-full mt-2 p-3 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-red-500"
               rows={3}
-              placeholder="Informe o motivo do cancelamento..."
+              placeholder="Ex: Cliente desistiu, item indisponível..."
               value={cancellationReason}
               onChange={(e) => setCancellationReason(e.target.value)}
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCancelDialogOpen(false)}>
+            <Button variant="outline" onClick={() => {
+              setCancelDialogOpen(false);
+              setCancellationReason("");
+            }}>
               Voltar
             </Button>
-            <Button variant="destructive" onClick={handleCancelOrder} disabled={updateStatusMutation.isPending}>
+            <Button 
+              variant="destructive"
+              onClick={() => {
+                if (orderToCancel) {
+                  updateStatusMutation.mutate({ 
+                    id: orderToCancel, 
+                    status: "cancelled",
+                    cancellationReason: cancellationReason || undefined
+                  });
+                  setCancelDialogOpen(false);
+                  setSelectedOrder(null);
+                  setOrderToCancel(null);
+                  setCancellationReason("");
+                }
+              }}
+            >
               Confirmar Cancelamento
             </Button>
           </DialogFooter>

@@ -3451,3 +3451,11 @@
 - [x] Criar colunas: Novos, Em Preparo, Prontos, Histórico
 - [x] Cards compactos com informações essenciais
 - [x] Scroll vertical independente por coluna
+
+
+## Ajustar estilo visual do Kanban conforme referência
+- [x] Headers coloridos (azul Novos, laranja Em Preparo, verde Prontos, cinza escuro Finalizados)
+- [x] Ícones nos headers de cada coluna
+- [x] Contador de pedidos em cada header
+- [x] Placeholder "Nenhum pedido novo" quando coluna vazia
+- [x] Barra de resumo na parte inferior com totais por status
