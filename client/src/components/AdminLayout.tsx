@@ -599,7 +599,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   placeholder="Buscar produtos, pedidos..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-56 pl-9 h-9 text-sm bg-background border-border/50 rounded-lg focus:ring-2 focus:ring-primary/20"
+                  className="w-56 pl-9 pr-0 h-9 text-sm bg-background border-border/50 rounded-lg focus:ring-2 focus:ring-primary/20"
                 />
               </div>
             </div>
