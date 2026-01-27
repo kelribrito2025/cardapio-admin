@@ -3264,3 +3264,5 @@
 - [x] Corrigir salvamento das configurações de fonte que não persiste no banco de dados
 
 - [x] Adicionar card de preview com campo de texto personalizado e botão de teste de impressão térmica
+
+- [x] Atualizar estilos do endpoint de teste para usar os mesmos estilos otimizados da função generateReceiptHTML

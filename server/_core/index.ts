@@ -700,93 +700,108 @@ async function startServer() {
         minute: '2-digit'
       });
       
-      // Gerar HTML igual ao Preview
+      // Gerar HTML otimizado para impressão térmica (mesmos estilos do generateReceiptHTML)
       const html = `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Teste de Impressão</title>
   <style>
+    @page {
+      size: ${paperWidth} auto;
+      margin: 0;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
-      font-family: Arial, sans-serif; 
+      font-family: 'Arial', 'Helvetica', sans-serif; 
       font-size: ${fontSize}px; 
       font-weight: ${fontWeight};
-      padding: 15px; 
-      max-width: ${maxWidth}; 
-      margin: 0 auto; 
+      line-height: 1.4;
+      width: 100%;
+      max-width: 100%;
+      padding: 8px;
       background: #fff;
-      color: #333;
+      color: #000;
+      -webkit-font-smoothing: antialiased;
     }
     .receipt {
       background: #fff;
-      padding: 8px;
     }
-    .logo {
+    .header {
       text-align: center;
-      padding-bottom: 12px;
       margin-bottom: 12px;
-      ${showDividers ? 'border-bottom: 1px solid #ccc;' : ''}
     }
-    .logo h1 {
+    .header h1 {
       font-size: ${titleFontSize + 4}px;
       font-weight: ${titleFontWeight};
-      margin: 0;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
     }
-    .logo p {
+    .header p {
       font-size: ${obsFontSize}px;
-      font-weight: ${obsFontWeight};
-      color: #666;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
       margin-top: 2px;
     }
-    .order-info {
-      margin-bottom: 12px;
+    .order-number {
+      font-size: ${titleFontSize + 4}px;
+      font-weight: 700;
+      margin: 8px 0;
+      letter-spacing: 1px;
     }
-    .order-info h2 {
-      font-size: ${titleFontSize}px;
-      font-weight: ${titleFontWeight};
-      margin-bottom: 2px;
-    }
-    .order-info p {
+    .order-date {
       font-size: ${obsFontSize}px;
-      font-weight: ${titleFontWeight};
-      color: #666;
+      margin: 4px 0;
+      font-weight: 700;
     }
     .divider {
       border: none;
-      ${showDividers ? 'border-top: 1px solid #ccc;' : ''}
+      ${showDividers ? 'border-top: 2px dashed #000;' : ''}
       margin: 10px 0;
     }
-    .divider-dashed {
-      border: none;
-      ${showDividers ? 'border-top: 1px dashed #bbb;' : ''}
-      margin: 8px 0;
+    .divider-double {
+      ${showDividers ? 'border-top: 3px double #000;' : ''}
+      margin: 12px 0;
     }
     .item {
-      margin-bottom: 8px;
+      margin: 8px 0;
+      padding: 4px 0;
     }
-    .item-header {
+    .item-line {
       display: flex;
-      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .item-qty {
+      font-weight: ${itemFontWeight};
+      font-size: ${itemFontSize}px;
+      min-width: 30px;
+    }
+    .item-name {
       font-size: ${itemFontSize}px;
       font-weight: ${itemFontWeight};
+      flex: 1;
+      word-wrap: break-word;
+    }
+    .item-price {
+      font-size: ${itemFontSize}px;
+      font-weight: ${fontWeight};
+      text-align: right;
+      margin-top: 2px;
     }
     .item-obs {
       font-size: ${obsFontSize}px;
+      margin: 4px 0 4px 36px;
+      font-style: italic;
       font-weight: ${obsFontWeight};
-      color: #666;
-      margin-top: 2px;
-      padding-left: 5px;
     }
     .item-complement {
       font-size: ${obsFontSize}px;
+      margin: 2px 0 2px 36px;
       font-weight: ${obsFontWeight};
-      color: #555;
-      margin-top: 2px;
-      padding-left: 10px;
     }
     .totals {
       margin: 12px 0;
@@ -794,15 +809,16 @@ async function startServer() {
     .total-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 4px;
-      font-size: ${fontSize}px;
-      font-weight: ${fontWeight};
+      align-items: center;
+      margin: 6px 0;
+      font-size: ${itemFontSize}px;
     }
-    .total-row.final {
+    .total-final {
       font-weight: ${titleFontWeight};
       font-size: ${titleFontSize - 2}px;
-      margin-top: 6px;
-      ${showDividers ? 'border-top: 1px solid #333; padding-top: 6px;' : ''}
+      margin-top: 10px;
+      padding: 8px 0;
+      ${showDividers ? 'border-top: 2px solid #000; border-bottom: 2px solid #000;' : ''}
     }
     .section {
       margin: 12px 0;
@@ -815,62 +831,62 @@ async function startServer() {
     .section-content {
       font-size: ${fontSize}px;
       font-weight: ${fontWeight};
-      color: #444;
       line-height: 1.4;
     }
     .footer {
       text-align: center;
-      margin-top: 15px;
-      padding-top: 10px;
-      ${showDividers ? 'border-top: 1px solid #ccc;' : ''}
-    }
-    .footer p {
+      margin-top: 16px;
       font-size: ${obsFontSize}px;
+    }
+    .footer-thanks {
       font-weight: ${titleFontWeight};
-      color: #666;
+      font-size: ${itemFontSize}px;
+      margin-top: 8px;
+    }
+    @media print {
+      body { padding: 0; }
+      .receipt { page-break-inside: avoid; }
     }
   </style>
 </head>
 <body>
   <div class="receipt">
-    <div class="logo">
+    <div class="header">
       <h1>${establishmentName}</h1>
       <p>Sistema de Pedidos</p>
+      <div class="order-number">PEDIDO #${sampleOrder.orderNumber}</div>
+      <div class="order-date">${formatDate(sampleOrder.createdAt)}</div>
     </div>
     
-    <div class="order-info">
-      <h2>Pedido #${sampleOrder.orderNumber}</h2>
-      <p>Realizado em: ${formatDate(sampleOrder.createdAt)}</p>
-    </div>
-    
-    <hr class="divider">
+    <hr class="divider-double">
     
     ${sampleOrder.items.map(item => `
       <div class="item">
-        <div class="item-header">
-          <span>${item.quantity}x ${item.name}</span>
-          <span>${formatCurrency(item.price * item.quantity)}</span>
+        <div class="item-line">
+          <span class="item-qty">${item.quantity}x</span>
+          <span class="item-name">${item.name}</span>
         </div>
-        ${item.observation ? `<div class="item-obs">Obs: ${item.observation}</div>` : ''}
+        <div class="item-price">${formatCurrency(item.price * item.quantity)}</div>
+        ${item.observation ? `<div class="item-obs">OBS: ${item.observation}</div>` : ''}
         ${item.complements.map((c: any) => `
-          <div class="item-complement">+ ${c.name} (${formatCurrency(c.price)})</div>
+          <div class="item-complement">+ ${c.name} ${formatCurrency(c.price)}</div>
         `).join('')}
       </div>
     `).join('')}
     
-    <hr class="divider-dashed">
+    <hr class="divider">
     
     <div class="totals">
       <div class="total-row">
-        <span>Valor dos produtos</span>
+        <span>Subtotal:</span>
         <span>${formatCurrency(sampleOrder.subtotal)}</span>
       </div>
       <div class="total-row">
-        <span>Taxa de entrega</span>
+        <span>Taxa entrega:</span>
         <span>${formatCurrency(sampleOrder.deliveryFee)}</span>
       </div>
-      <div class="total-row final">
-        <span>Total</span>
+      <div class="total-row total-final">
+        <span>TOTAL:</span>
         <span>${formatCurrency(sampleOrder.total)}</span>
       </div>
     </div>
@@ -878,7 +894,7 @@ async function startServer() {
     <hr class="divider">
     
     <div class="section">
-      <div class="section-title">Entrega</div>
+      <div class="section-title">ENTREGA</div>
       <div class="section-content">
         ${sampleOrder.address}<br>
         ${sampleOrder.addressComplement ? sampleOrder.addressComplement + '<br>' : ''}
@@ -887,12 +903,12 @@ async function startServer() {
     </div>
     
     <div class="section">
-      <div class="section-title">Pagamento</div>
+      <div class="section-title">PAGAMENTO</div>
       <div class="section-content">${sampleOrder.paymentMethod}</div>
     </div>
     
     <div class="section">
-      <div class="section-title">Cliente</div>
+      <div class="section-title">CLIENTE</div>
       <div class="section-content">
         ${sampleOrder.customerName}<br>
         ${sampleOrder.customerPhone}
@@ -900,7 +916,8 @@ async function startServer() {
     </div>
     
     <div class="footer">
-      <p>Pedido realizado via Cardapio Admin</p>
+      <p class="footer-thanks">Obrigado pela preferência!</p>
+      <p>Pedido via Cardapio Admin</p>
       <p>manus.space</p>
     </div>
   </div>
