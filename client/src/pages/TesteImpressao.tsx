@@ -919,7 +919,8 @@ export default function TesteImpressao() {
                         fontWeight: titleFontWeight,
                         color: '#666'
                       }}>
-                        📅 {formatDate(sampleOrder.createdAt)}
+                        <img src="/calendar-icon.png" alt="" style={{ width: '14px', height: '14px', marginRight: '4px', verticalAlign: 'middle' }} />
+                        {formatDate(sampleOrder.createdAt)}
                       </div>
                     </div>
                     <div style={{ 

@@ -3327,3 +3327,5 @@
 - [x] Bug: Erro de login - Failed query na tabela users (coluna loginMethod adicionada)
 
 - [x] Adicionar opção para alternar entre bordas redondas e linhas tracejadas nos itens do pedido
+
+- [x] Substituir emoji de data (📅) pelo ícone de calendário no preview do recibo
