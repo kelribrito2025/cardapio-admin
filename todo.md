@@ -3305,3 +3305,5 @@
 - [x] QR Code PIX: aumentar tamanho em 20% (de 120px para 144px) e remover borda redonda
 
 - [x] Adicionar slider para controlar espaçamento interno (padding) das caixas com bordas redondas no card de Configurações de Fonte
+
+- [x] Bug: Espaçamento interno das caixas (boxPadding) não está salvando no banco de dados

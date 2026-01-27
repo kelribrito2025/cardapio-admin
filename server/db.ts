@@ -2834,6 +2834,7 @@ export async function upsertPrinterSettings(data: {
   obsFontSize?: number;
   obsFontWeight?: number;
   showDividers?: boolean;
+  boxPadding?: number;
 }): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -2869,6 +2870,7 @@ export async function upsertPrinterSettings(data: {
         obsFontSize: data.obsFontSize ?? (existing as any).obsFontSize ?? 11,
         obsFontWeight: data.obsFontWeight ?? (existing as any).obsFontWeight ?? 500,
         showDividers: data.showDividers ?? (existing as any).showDividers ?? true,
+        boxPadding: data.boxPadding ?? (existing as any).boxPadding ?? 12,
       })
       .where(eq(printerSettings.establishmentId, data.establishmentId));
   } else {
@@ -2900,6 +2902,7 @@ export async function upsertPrinterSettings(data: {
       obsFontSize: data.obsFontSize ?? 11,
       obsFontWeight: data.obsFontWeight ?? 500,
       showDividers: data.showDividers ?? true,
+      boxPadding: data.boxPadding ?? 12,
     });
   }
 }
