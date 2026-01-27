@@ -645,7 +645,7 @@ ${itemsList}
 
   // Button for confirmation (only confirm button)
   const buttons = [
-    { text: '✅ Ok, pode fazer o pedido', id: `confirm_order_${data.orderNumber}` },
+    { text: '✅ Sim, Confirmo o Pedido.', id: `confirm_order_${data.orderNumber}` },
   ];
 
   return sendButtonMessage(
