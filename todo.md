@@ -3376,3 +3376,5 @@
 - [x] Bug: Recibo de setor incompleto - corrigido para usar layout completo igual ao recibo normal (endereço, pagamento, QR code, total, taxa entrega), apenas filtrando itens por setor
 
 - [x] Implementar lógica: itens sem setor (printerId = null) vão para todas as impressoras, itens com setor específico vão apenas para aquela impressora
+
+- [x] Bug: Número do pedido aparece como ## em vez de #P35 no recibo impresso - corrigido removendo # extra do HTML

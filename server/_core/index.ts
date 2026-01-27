@@ -110,7 +110,7 @@ function generateReceiptHTML(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pedido #${order.orderNumber}</title>
+  <title>Pedido ${order.orderNumber}</title>
   <style>
     @page {
       size: ${paperWidth} auto;
@@ -382,7 +382,7 @@ function generateReceiptHTML(
   
   <div class="order-info">
     <div class="order-text">
-      <div class="order-number">Pedido #${order.orderNumber}</div>
+      <div class="order-number">Pedido ${order.orderNumber}</div>
       <div class="order-date"><img src="/calendar-icon.png" class="date-icon" /> ${formatDate(order.createdAt)}</div>
     </div>
     <div class="delivery-badge">${deliveryTypeText}</div>
@@ -645,7 +645,7 @@ function generateSectorReceiptHTML(
 <body>
   <div class="header">
     <div class="sector-name">${sectorName.toUpperCase()}</div>
-    <div class="order-number">Pedido #${order.orderNumber}</div>
+    <div class="order-number">Pedido ${order.orderNumber}</div>
     <div class="order-date">${formatDate(order.createdAt)}</div>
     <div class="delivery-badge">${deliveryTypeText}</div>
   </div>
