@@ -1573,31 +1573,62 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     // Enviar notificação WhatsApp para o cliente sobre novo pedido
     try {
       const whatsappConfig = await getWhatsappConfig(data.establishmentId);
-      if (whatsappConfig && whatsappConfig.status === 'connected' && whatsappConfig.notifyOnNewOrder && whatsappConfig.instanceToken) {
-        const { sendOrderStatusNotification } = await import('./_core/uazapi');
+      if (whatsappConfig && whatsappConfig.status === 'connected' && whatsappConfig.instanceToken && data.customerPhone) {
         const establishment = await getEstablishmentById(data.establishmentId);
         
-        await sendOrderStatusNotification(
-          whatsappConfig.instanceToken,
-          data.customerPhone || '',
-          'new',
-          {
-            customerName: data.customerName || 'Cliente',
-            orderNumber,
-            establishmentName: establishment?.name || 'Restaurante',
-            template: whatsappConfig.templateNewOrder,
-            orderItems: items.map(item => ({
-              productName: item.productName,
-              quantity: item.quantity ?? 1,
-              unitPrice: item.unitPrice,
-              totalPrice: item.totalPrice,
-              complements: item.complements,
-              notes: item.notes,
-            })),
-            orderTotal: data.total,
-          }
-        );
-        console.log('[DB:createPublicOrder] Notificação WhatsApp enviada para novo pedido:', orderNumber);
+        // Verificar se deve usar confirmação via botões
+        if ((whatsappConfig as any).requireOrderConfirmation) {
+          // Enviar mensagem com botões de confirmação
+          const { sendOrderConfirmationRequest } = await import('./_core/uazapi');
+          
+          await sendOrderConfirmationRequest(
+            whatsappConfig.instanceToken,
+            data.customerPhone,
+            {
+              customerName: data.customerName || 'Cliente',
+              orderNumber,
+              establishmentName: establishment?.name || 'Restaurante',
+              orderItems: items.map(item => ({
+                productName: item.productName,
+                quantity: item.quantity ?? 1,
+              })),
+              orderTotal: data.total,
+            }
+          );
+          console.log('[DB:createPublicOrder] Mensagem de confirmação com botões enviada:', orderNumber);
+          
+          // Atualizar status para pending_confirmation
+          await db.update(orders)
+            .set({ status: 'pending_confirmation' })
+            .where(eq(orders.id, orderId));
+          console.log('[DB:createPublicOrder] Status atualizado para pending_confirmation');
+          
+        } else if (whatsappConfig.notifyOnNewOrder) {
+          // Enviar notificação normal (sem botões)
+          const { sendOrderStatusNotification } = await import('./_core/uazapi');
+          
+          await sendOrderStatusNotification(
+            whatsappConfig.instanceToken,
+            data.customerPhone,
+            'new',
+            {
+              customerName: data.customerName || 'Cliente',
+              orderNumber,
+              establishmentName: establishment?.name || 'Restaurante',
+              template: whatsappConfig.templateNewOrder,
+              orderItems: items.map(item => ({
+                productName: item.productName,
+                quantity: item.quantity ?? 1,
+                unitPrice: item.unitPrice,
+                totalPrice: item.totalPrice,
+                complements: item.complements,
+                notes: item.notes,
+              })),
+              orderTotal: data.total,
+            }
+          );
+          console.log('[DB:createPublicOrder] Notificação WhatsApp enviada para novo pedido:', orderNumber);
+        }
       }
     } catch (whatsappError) {
       console.error('[DB:createPublicOrder] Erro ao enviar notificação WhatsApp:', whatsappError);
@@ -1776,6 +1807,103 @@ export async function getActiveOrdersByEstablishment(establishmentId: number) {
   return ordersWithItems;
 }
 
+
+// ============ CONFIRM/CANCEL ORDER BY NUMBER (WhatsApp Buttons) ============
+export async function confirmOrderByNumber(
+  establishmentId: number,
+  orderNumber: string
+): Promise<{ success: boolean; message?: string }> {
+  const db = await getDb();
+  if (!db) return { success: false, message: 'Database not available' };
+  
+  try {
+    // Buscar o pedido
+    const result = await db.select().from(orders)
+      .where(and(
+        eq(orders.establishmentId, establishmentId),
+        eq(orders.orderNumber, orderNumber),
+        eq(orders.status, 'pending_confirmation')
+      ))
+      .limit(1);
+    
+    if (result.length === 0) {
+      return { success: false, message: 'Pedido não encontrado ou já confirmado' };
+    }
+    
+    const order = result[0];
+    
+    // Atualizar status para "new" (confirmado, aguardando aceite do estabelecimento)
+    await db.update(orders)
+      .set({ status: 'new', updatedAt: new Date() })
+      .where(eq(orders.id, order.id));
+    
+    // Notificar via SSE sobre o novo pedido
+    const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id));
+    const { notifyNewOrder } = await import('./_core/sse');
+    notifyNewOrder(establishmentId, {
+      ...order,
+      status: 'new',
+      items: items.map((item, index) => ({
+        id: item.id,
+        orderId: item.orderId,
+        productId: item.productId,
+        productName: item.productName,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        totalPrice: item.totalPrice,
+        complements: item.complements,
+        notes: item.notes,
+      })),
+    });
+    
+    console.log('[DB:confirmOrderByNumber] Pedido confirmado:', orderNumber);
+    return { success: true };
+  } catch (error) {
+    console.error('[DB:confirmOrderByNumber] Erro:', error);
+    return { success: false, message: 'Erro ao confirmar pedido' };
+  }
+}
+
+export async function cancelOrderByNumber(
+  establishmentId: number,
+  orderNumber: string,
+  reason?: string
+): Promise<{ success: boolean; message?: string }> {
+  const db = await getDb();
+  if (!db) return { success: false, message: 'Database not available' };
+  
+  try {
+    // Buscar o pedido
+    const result = await db.select().from(orders)
+      .where(and(
+        eq(orders.establishmentId, establishmentId),
+        eq(orders.orderNumber, orderNumber),
+        eq(orders.status, 'pending_confirmation')
+      ))
+      .limit(1);
+    
+    if (result.length === 0) {
+      return { success: false, message: 'Pedido não encontrado ou já processado' };
+    }
+    
+    const order = result[0];
+    
+    // Atualizar status para "cancelled"
+    await db.update(orders)
+      .set({ 
+        status: 'cancelled', 
+        cancellationReason: reason || 'Cancelado pelo cliente',
+        updatedAt: new Date() 
+      })
+      .where(eq(orders.id, order.id));
+    
+    console.log('[DB:cancelOrderByNumber] Pedido cancelado:', orderNumber);
+    return { success: true };
+  } catch (error) {
+    console.error('[DB:cancelOrderByNumber] Erro:', error);
+    return { success: false, message: 'Erro ao cancelar pedido' };
+  }
+}
 
 // ============ GET ORDERS BY ORDER NUMBERS ============
 export async function getOrdersByOrderNumbers(orderNumbers: string[]) {
@@ -3198,6 +3326,7 @@ export async function upsertWhatsappConfig(data: {
   connectedPhone?: string | null;
   lastQrCode?: string | null;
   qrCodeExpiresAt?: Date | null;
+  requireOrderConfirmation?: boolean;
   notifyOnNewOrder?: boolean;
   notifyOnPreparing?: boolean;
   notifyOnReady?: boolean;
@@ -3223,6 +3352,7 @@ export async function upsertWhatsappConfig(data: {
         connectedPhone: data.connectedPhone !== undefined ? data.connectedPhone : existing.connectedPhone,
         lastQrCode: data.lastQrCode !== undefined ? data.lastQrCode : existing.lastQrCode,
         qrCodeExpiresAt: data.qrCodeExpiresAt !== undefined ? data.qrCodeExpiresAt : existing.qrCodeExpiresAt,
+        requireOrderConfirmation: data.requireOrderConfirmation ?? existing.requireOrderConfirmation,
         notifyOnNewOrder: data.notifyOnNewOrder ?? existing.notifyOnNewOrder,
         notifyOnPreparing: data.notifyOnPreparing ?? existing.notifyOnPreparing,
         notifyOnReady: data.notifyOnReady ?? existing.notifyOnReady,
@@ -3246,6 +3376,7 @@ export async function upsertWhatsappConfig(data: {
     connectedPhone: data.connectedPhone || null,
     lastQrCode: data.lastQrCode || null,
     qrCodeExpiresAt: data.qrCodeExpiresAt || null,
+    requireOrderConfirmation: data.requireOrderConfirmation ?? false,
     notifyOnNewOrder: data.notifyOnNewOrder ?? true,
     notifyOnPreparing: data.notifyOnPreparing ?? true,
     notifyOnReady: data.notifyOnReady ?? true,

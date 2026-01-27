@@ -295,6 +295,20 @@
       "when": 1769542487950,
       "tag": "0041_glamorous_tenebrous",
       "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "5",
+      "when": 1769546420124,
+      "tag": "0042_fast_revanche",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "5",
+      "when": 1769546921047,
+      "tag": "0043_naive_randall",
+      "breakpoints": true
     }
   ]
 }

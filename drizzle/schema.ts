@@ -154,7 +154,7 @@ export const orders = mysqlTable("orders", {
   customerName: varchar("customerName", { length: 255 }),
   customerPhone: varchar("customerPhone", { length: 30 }),
   customerAddress: text("customerAddress"),
-  status: mysqlEnum("status", ["new", "preparing", "ready", "completed", "cancelled"]).default("new").notNull(),
+  status: mysqlEnum("status", ["pending_confirmation", "new", "preparing", "ready", "completed", "cancelled"]).default("pending_confirmation").notNull(),
   deliveryType: mysqlEnum("deliveryType", ["delivery", "pickup"]).default("delivery").notNull(),
   paymentMethod: mysqlEnum("paymentMethod", ["cash", "card", "pix", "boleto"]).default("cash").notNull(),
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
@@ -441,6 +441,7 @@ export const whatsappConfig = mysqlTable("whatsappConfig", {
   lastQrCode: text("lastQrCode"), // Último QR code gerado (base64)
   qrCodeExpiresAt: timestamp("qrCodeExpiresAt"), // Quando o QR code expira
   // Configurações de notificação
+  requireOrderConfirmation: boolean("requireOrderConfirmation").default(false).notNull(), // Exigir confirmação do cliente via botões do WhatsApp
   notifyOnNewOrder: boolean("notifyOnNewOrder").default(true).notNull(), // Notificar cliente quando pedido é criado
   notifyOnPreparing: boolean("notifyOnPreparing").default(true).notNull(), // Notificar quando pedido está sendo preparado
   notifyOnReady: boolean("notifyOnReady").default(true).notNull(), // Notificar quando pedido está pronto

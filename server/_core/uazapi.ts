@@ -554,3 +554,133 @@ export async function sendOrderStatusNotification(
   
   return sendTextMessage(instanceToken, phone, message);
 }
+
+
+/**
+ * Send a message with interactive buttons via WhatsApp
+ * Used for order confirmation flow
+ */
+export async function sendButtonMessage(
+  instanceToken: string,
+  phone: string,
+  text: string,
+  buttons: Array<{ text: string; id: string }>,
+  footerText?: string
+): Promise<SendTextResponse> {
+  try {
+    // Format phone number (remove non-digits and ensure country code)
+    let formattedPhone = phone.replace(/\D/g, '');
+    
+    // Add Brazil country code if not present
+    if (!formattedPhone.startsWith('55')) {
+      formattedPhone = '55' + formattedPhone;
+    }
+    
+    // Format buttons for UAZAPI: "texto|id"
+    const choices = buttons.map(btn => `${btn.text}|${btn.id}`);
+    
+    const response = await makeInstanceRequest<{
+      id?: string;
+      message?: string;
+    }>(instanceToken, '/send/menu', 'POST', {
+      number: formattedPhone,
+      type: 'button',
+      text: text,
+      choices: choices,
+      footerText: footerText || '',
+      delay: 1000,
+    });
+    
+    console.log('[UAZAPI] Button message sent:', { phone: formattedPhone, buttonsCount: buttons.length });
+    
+    return {
+      success: true,
+      messageId: response.id,
+      message: response.message,
+    };
+  } catch (error) {
+    console.error('[UAZAPI] Failed to send button message:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to send button message',
+    };
+  }
+}
+
+/**
+ * Send order confirmation request with buttons
+ */
+export async function sendOrderConfirmationRequest(
+  instanceToken: string,
+  phone: string,
+  data: {
+    customerName: string;
+    orderNumber: string;
+    establishmentName: string;
+    orderItems: Array<{
+      productName: string;
+      quantity: number;
+    }>;
+    orderTotal: string;
+  }
+): Promise<SendTextResponse> {
+  const greeting = getGreeting();
+  
+  // Build items list
+  const itemsList = data.orderItems.map(item => `${item.quantity}x ${item.productName}`).join('\n');
+  
+  // Format total
+  const formattedTotal = `R$ ${parseFloat(data.orderTotal).toFixed(2).replace('.', ',')}`;
+  
+  // Build message
+  const message = `Olá ${data.customerName}! 👋🏻 ${greeting}, Tudo bem?
+
+Seu pedido ${data.orderNumber} foi recebido!
+
+${itemsList}
+
+💰 Total: ${formattedTotal}
+
+🔔 Você será notificado por aqui em cada atualização.`;
+
+  // Buttons for confirmation
+  const buttons = [
+    { text: '✅ Ok, pode fazer o pedido', id: `confirm_order_${data.orderNumber}` },
+    { text: '❌ Não quero mais', id: `cancel_order_${data.orderNumber}` },
+  ];
+
+  return sendButtonMessage(
+    instanceToken,
+    phone,
+    message,
+    buttons,
+    'Clique em uma opção para confirmar'
+  );
+}
+
+/**
+ * Configure webhook for an instance to receive message responses
+ */
+export async function configureWebhook(
+  instanceToken: string,
+  webhookUrl: string
+): Promise<{ success: boolean; message?: string }> {
+  try {
+    await makeInstanceRequest(instanceToken, '/webhook', 'POST', {
+      enabled: true,
+      url: webhookUrl,
+      events: ['messages'],
+      excludeMessages: ['wasSentByApi'], // Avoid loops
+    });
+    
+    console.log('[UAZAPI] Webhook configured:', { url: webhookUrl });
+    
+    return { success: true };
+  } catch (error) {
+    console.error('[UAZAPI] Failed to configure webhook:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to configure webhook',
+    };
+  }
+}

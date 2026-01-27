@@ -2184,6 +2184,7 @@ export const appRouter = router({
     // Salvar configurações de notificação (sem precisar de subdomain/token)
     saveNotificationSettings: protectedProcedure
       .input(z.object({
+        requireOrderConfirmation: z.boolean().optional(),
         notifyOnNewOrder: z.boolean().optional(),
         notifyOnPreparing: z.boolean().optional(),
         notifyOnReady: z.boolean().optional(),
@@ -2198,6 +2199,7 @@ export const appRouter = router({
         
         await db.upsertWhatsappConfig({
           establishmentId: establishment.id,
+          requireOrderConfirmation: input.requireOrderConfirmation,
           notifyOnNewOrder: input.notifyOnNewOrder,
           notifyOnPreparing: input.notifyOnPreparing,
           notifyOnReady: input.notifyOnReady,

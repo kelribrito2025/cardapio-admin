@@ -1676,6 +1676,85 @@ async function startServer() {
     }
   });
 
+  // Webhook para receber respostas dos botões do WhatsApp (UAZAPI)
+  app.post("/api/webhook/whatsapp/:establishmentId", express.json(), async (req, res) => {
+    try {
+      const establishmentId = parseInt(req.params.establishmentId);
+      const body = req.body;
+      
+      console.log('[WhatsApp Webhook] Recebido:', JSON.stringify(body, null, 2));
+      
+      // Verificar se é uma resposta de botão
+      // A UAZAPI envia diferentes formatos dependendo do tipo de mensagem
+      const message = body.message || body.data || body;
+      const buttonId = message?.buttonId || message?.selectedButtonId || message?.selectedId;
+      const messageText = message?.text || message?.body || message?.conversation;
+      
+      if (buttonId) {
+        console.log('[WhatsApp Webhook] Botão clicado:', buttonId);
+        
+        // Extrair o número do pedido do buttonId
+        // Formato: confirm_order_#P123 ou cancel_order_#P123
+        const confirmMatch = buttonId.match(/confirm_order_(#P\d+)/);
+        const cancelMatch = buttonId.match(/cancel_order_(#P\d+)/);
+        
+        if (confirmMatch) {
+          const orderNumber = confirmMatch[1];
+          console.log('[WhatsApp Webhook] Pedido confirmado:', orderNumber);
+          
+          // Buscar e atualizar o pedido
+          const { confirmOrderByNumber } = await import('../db');
+          const result = await confirmOrderByNumber(establishmentId, orderNumber);
+          
+          if (result.success) {
+            // Enviar mensagem de confirmação
+            const { getWhatsappConfig } = await import('../db');
+            const { sendTextMessage } = await import('./uazapi');
+            const config = await getWhatsappConfig(establishmentId);
+            
+            if (config?.instanceToken && message?.from) {
+              const phone = message.from.replace('@s.whatsapp.net', '').replace('@c.us', '');
+              await sendTextMessage(
+                config.instanceToken,
+                phone,
+                `✅ Perfeito! Seu pedido ${orderNumber} foi confirmado e já está sendo preparado!\n\n🔔 Você receberá uma notificação quando estiver pronto.`
+              );
+            }
+          }
+        } else if (cancelMatch) {
+          const orderNumber = cancelMatch[1];
+          console.log('[WhatsApp Webhook] Pedido cancelado pelo cliente:', orderNumber);
+          
+          // Buscar e cancelar o pedido
+          const { cancelOrderByNumber } = await import('../db');
+          const result = await cancelOrderByNumber(establishmentId, orderNumber, 'Cancelado pelo cliente via WhatsApp');
+          
+          if (result.success) {
+            // Enviar mensagem de cancelamento
+            const { getWhatsappConfig } = await import('../db');
+            const { sendTextMessage } = await import('./uazapi');
+            const config = await getWhatsappConfig(establishmentId);
+            
+            if (config?.instanceToken && message?.from) {
+              const phone = message.from.replace('@s.whatsapp.net', '').replace('@c.us', '');
+              await sendTextMessage(
+                config.instanceToken,
+                phone,
+                `❌ Seu pedido ${orderNumber} foi cancelado conforme solicitado.\n\nSe mudar de ideia, faça um novo pedido pelo nosso cardápio!`
+              );
+            }
+          }
+        }
+      }
+      
+      // Sempre responder 200 para o webhook
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('[WhatsApp Webhook] Erro:', error);
+      res.status(200).json({ success: false, error: 'Internal error' });
+    }
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

@@ -3378,3 +3378,15 @@
 - [x] Implementar lógica: itens sem setor (printerId = null) vão para todas as impressoras, itens com setor específico vão apenas para aquela impressora
 
 - [x] Bug: Número do pedido aparece como ## em vez de #P35 no recibo impresso - corrigido removendo # extra do HTML
+
+
+## Confirmação de Pedido via WhatsApp com Botões
+- [x] Adicionar novo status "pending_confirmation" no schema de pedidos
+- [x] Criar função sendButtonMessage no módulo UAZAPI para enviar mensagem com botões de resposta rápida
+- [x] Modificar fluxo de criação de pedido para usar status "pending_confirmation" inicialmente
+- [x] Criar endpoint webhook para receber resposta dos botões do WhatsApp
+- [x] Configurar webhook na instância UAZAPI para enviar eventos de mensagens
+- [x] Implementar lógica para confirmar pedido quando cliente clica em "Ok, pode fazer"
+- [x] Implementar lógica para cancelar pedido quando cliente clica em "Não quero mais"
+- [x] Adicionar toggle de configuração na aba WhatsApp para ativar/desativar confirmação
+- [ ] Testar fluxo completo de confirmação via WhatsApp (aguardando teste do usuário)

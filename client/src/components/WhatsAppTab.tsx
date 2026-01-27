@@ -27,6 +27,7 @@ export function WhatsAppTab() {
   const [isPolling, setIsPolling] = useState(false);
   
   // Notification settings
+  const [requireOrderConfirmation, setRequireOrderConfirmation] = useState(false);
   const [notifyOnNewOrder, setNotifyOnNewOrder] = useState(true);
   const [notifyOnPreparing, setNotifyOnPreparing] = useState(true);
   const [notifyOnReady, setNotifyOnReady] = useState(true);
@@ -111,6 +112,7 @@ export function WhatsAppTab() {
   // Load config data
   useEffect(() => {
     if (configQuery.data) {
+      setRequireOrderConfirmation((configQuery.data as any).requireOrderConfirmation ?? false);
       setNotifyOnNewOrder(configQuery.data.notifyOnNewOrder ?? true);
       setNotifyOnPreparing(configQuery.data.notifyOnPreparing ?? true);
       setNotifyOnReady(configQuery.data.notifyOnReady ?? true);
@@ -134,6 +136,7 @@ export function WhatsAppTab() {
   
   const handleSaveNotifications = () => {
     saveNotificationsMutation.mutate({
+      requireOrderConfirmation,
       notifyOnNewOrder,
       notifyOnPreparing,
       notifyOnReady,
@@ -312,6 +315,41 @@ export function WhatsAppTab() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-4">
+                {/* Confirmação de Pedido com Botões */}
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-amber-800 font-semibold flex items-center gap-2">
+                        📱 Confirmação via Botões
+                      </Label>
+                      <p className="text-sm text-amber-700">
+                        Enviar botões interativos para o cliente confirmar ou cancelar o pedido antes de começar a preparar
+                      </p>
+                    </div>
+                    <Switch
+                      checked={requireOrderConfirmation}
+                      onCheckedChange={setRequireOrderConfirmation}
+                    />
+                  </div>
+                  {requireOrderConfirmation && (
+                    <div className="mt-3 p-3 bg-white rounded-md border border-amber-100">
+                      <p className="text-xs text-amber-600 mb-2">
+                        <strong>Como funciona:</strong>
+                      </p>
+                      <ol className="text-xs text-amber-600 list-decimal list-inside space-y-1">
+                        <li>Cliente faz o pedido no cardápio</li>
+                        <li>Recebe mensagem com botões: "✅ Ok, pode fazer" ou "❌ Não quero mais"</li>
+                        <li>Se confirmar, o pedido aparece na página de Pedidos</li>
+                        <li>Se cancelar, o pedido é automaticamente cancelado</li>
+                      </ol>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="border-t pt-4">
+                  <p className="text-sm font-medium text-muted-foreground mb-4">Notificações de Status</p>
+                </div>
+                
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label>Novo Pedido</Label>
@@ -322,6 +360,7 @@ export function WhatsAppTab() {
                   <Switch
                     checked={notifyOnNewOrder}
                     onCheckedChange={setNotifyOnNewOrder}
+                    disabled={requireOrderConfirmation}
                   />
                 </div>
                 
