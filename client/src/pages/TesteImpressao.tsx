@@ -896,30 +896,46 @@ export default function TesteImpressao() {
                     </div>
                   </div>
 
-                  <div style={{ margin: '12px 0' }}>
+                  <div style={{ 
+                    border: '1px solid #ccc',
+                    borderRadius: '8px',
+                    padding: '12px',
+                    margin: '12px 0'
+                  }}>
                     <div style={{ 
-                      fontWeight: titleFontWeight, 
-                      fontSize: `${itemFontSize}px`,
-                      marginBottom: '4px'
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
                     }}>
-                      Pagamento
-                    </div>
-                    <div style={{ 
-                      fontSize: `${fontSize}px`, 
-                      fontWeight: fontWeight,
-                      color: '#444'
-                    }}>
-                      {sampleOrder.paymentMethod}
+                      <div style={{ 
+                        fontWeight: titleFontWeight, 
+                        fontSize: `${obsFontSize}px`,
+                        textTransform: 'uppercase',
+                        color: '#666'
+                      }}>
+                        Pagamento
+                      </div>
+                      <div style={{ 
+                        fontWeight: titleFontWeight,
+                        fontSize: `${itemFontSize}px`
+                      }}>
+                        {sampleOrder.paymentMethod}
+                      </div>
                     </div>
                   </div>
 
-                  <div style={{ margin: '12px 0' }}>
+                  <div style={{ 
+                    border: '1px solid #ccc',
+                    borderRadius: '8px',
+                    padding: '12px',
+                    margin: '12px 0'
+                  }}>
                     <div style={{ 
                       fontWeight: titleFontWeight, 
                       fontSize: `${itemFontSize}px`,
-                      marginBottom: '4px'
+                      marginBottom: '8px'
                     }}>
-                      Cliente
+                      Cliente:
                     </div>
                     <div style={{ 
                       fontSize: `${fontSize}px`, 

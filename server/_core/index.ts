@@ -852,6 +852,36 @@ async function startServer() {
     .address-box .section-title {
       margin-bottom: 8px;
     }
+    .payment-box {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 12px 0;
+    }
+    .payment-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .payment-title {
+      font-weight: ${titleFontWeight};
+      font-size: ${obsFontSize}px;
+      text-transform: uppercase;
+      color: #666;
+    }
+    .payment-badge {
+      font-weight: ${titleFontWeight};
+      font-size: ${itemFontSize}px;
+    }
+    .client-box {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 12px 0;
+    }
+    .client-box .section-title {
+      margin-bottom: 8px;
+    }
     .footer {
       text-align: center;
       margin-top: 16px;
@@ -924,13 +954,15 @@ async function startServer() {
       </div>
     </div>
     
-    <div class="section">
-      <div class="section-title">Pagamento</div>
-      <div class="section-content">${sampleOrder.paymentMethod}</div>
+    <div class="payment-box">
+      <div class="payment-row">
+        <div class="payment-title">Pagamento</div>
+        <div class="payment-badge">${sampleOrder.paymentMethod}</div>
+      </div>
     </div>
     
-    <div class="section">
-      <div class="section-title">Cliente</div>
+    <div class="client-box">
+      <div class="section-title">Cliente:</div>
       <div class="section-content">
         ${sampleOrder.customerName}<br>
         ${sampleOrder.customerPhone}

@@ -3280,3 +3280,6 @@
 - [x] Trocar texto "Realizado em:" por ícone de calendário 📅 antes da data
 
 - [x] Adicionar estilo de caixa com bordas redondas na seção de Endereço
+
+- [x] Pagamento: caixa com bordas redondas, título PAGAMENTO e forma de pagamento em badge na mesma linha
+- [x] Cliente: mesmo estilo de caixa com bordas redondas igual ao Endereço
