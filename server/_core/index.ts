@@ -9,7 +9,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, sendAllOrdersHeartbeat } from "./sse";
-import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrderById, getOrderItems, getEstablishmentById, getPrinterSettings } from "../db";
+import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrderById, getOrderItems, getEstablishmentById, getPrinterSettings, getActivePrinters } from "../db";
 import { sdk } from "./sdk";
 
 // Função para gerar HTML do recibo otimizado para impressora térmica
@@ -1184,6 +1184,108 @@ async function startServer() {
     }
   });
   
+  // Endpoint para gerar deep link do Multi Printer Print Service
+  // Permite imprimir em múltiplas impressoras simultaneamente via app Android
+  app.get("/api/print/multiprinter/:orderId", async (req, res) => {
+    try {
+      const orderId = parseInt(req.params.orderId);
+      if (isNaN(orderId)) {
+        res.status(400).json({ error: "ID do pedido inválido" });
+        return;
+      }
+      
+      const order = await getOrderById(orderId);
+      if (!order) {
+        res.status(404).json({ error: "Pedido não encontrado" });
+        return;
+      }
+      
+      // Buscar impressoras ativas do estabelecimento
+      const printers = await getActivePrinters(order.establishmentId);
+      
+      if (printers.length === 0) {
+        res.status(400).json({ error: "Nenhuma impressora configurada" });
+        return;
+      }
+      
+      // URL pública do recibo
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const receiptUrl = `${baseUrl}/api/print/receipt/${orderId}`;
+      
+      // Gerar deep link para o app Multi Printer
+      // Formato: print://escpos.org/escpos/mnps/print?mpjo=[{jobs}]
+      const printJobs = printers.map((printer: any) => ({
+        srcTp: "uri",
+        srcObj: "html",
+        src: encodeURIComponent(receiptUrl),
+        printerIpAddr: printer.ipAddress,
+        printerPort: printer.port || 9100,
+        numCopies: 1,
+        openCashDrawer: 0
+      }));
+      
+      const deepLink = `print://escpos.org/escpos/mnps/print?mpjo=${encodeURIComponent(JSON.stringify(printJobs))}`;
+      
+      res.json({
+        success: true,
+        deepLink,
+        receiptUrl,
+        printers: printers.map((p: any) => ({ name: p.name, ip: p.ipAddress, port: p.port })),
+        orderId,
+        orderNumber: order.orderNumber
+      });
+    } catch (error) {
+      console.error("[MultiPrinter] Erro ao gerar deep link:", error);
+      res.status(500).json({ error: "Erro ao gerar link de impressão" });
+    }
+  });
+  
+  // Endpoint para gerar deep link de teste (sem pedido real)
+  app.get("/api/print/multiprinter-test/:establishmentId", async (req, res) => {
+    try {
+      const establishmentId = parseInt(req.params.establishmentId);
+      if (isNaN(establishmentId)) {
+        res.status(400).json({ error: "ID do estabelecimento inválido" });
+        return;
+      }
+      
+      // Buscar impressoras ativas do estabelecimento
+      const printers = await getActivePrinters(establishmentId);
+      
+      if (printers.length === 0) {
+        res.status(400).json({ error: "Nenhuma impressora configurada" });
+        return;
+      }
+      
+      // URL pública do recibo de teste
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const receiptUrl = `${baseUrl}/api/print/test/${establishmentId}`;
+      
+      // Gerar deep link para o app Multi Printer
+      const printJobs = printers.map((printer: any) => ({
+        srcTp: "uri",
+        srcObj: "html",
+        src: encodeURIComponent(receiptUrl),
+        printerIpAddr: printer.ipAddress,
+        printerPort: printer.port || 9100,
+        numCopies: 1,
+        openCashDrawer: 0
+      }));
+      
+      const deepLink = `print://escpos.org/escpos/mnps/print?mpjo=${encodeURIComponent(JSON.stringify(printJobs))}`;
+      
+      res.json({
+        success: true,
+        deepLink,
+        receiptUrl,
+        printers: printers.map((p: any) => ({ name: p.name, ip: p.ipAddress, port: p.port }))
+      });
+    } catch (error) {
+      console.error("[MultiPrinter Test] Erro ao gerar deep link:", error);
+      res.status(500).json({ error: "Erro ao gerar link de impressão" });
+    }
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

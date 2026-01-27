@@ -462,6 +462,34 @@ export default function Pedidos() {
     }
   };
 
+  // Função para imprimir em múltiplas impressoras via Multi Printer app
+  const handlePrintMultiPrinter = async (orderId: number) => {
+    // Detectar se é Android
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    
+    if (!isAndroid) {
+      toast.info("Para impressão em múltiplas impressoras, use um dispositivo Android com o app Multi Printer Network Print Service.");
+      return;
+    }
+    
+    try {
+      // Buscar deep link do servidor
+      const response = await fetch(`${window.location.origin}/api/print/multiprinter/${orderId}`);
+      const data = await response.json();
+      
+      if (data.success && data.deepLink) {
+        // Abrir o deep link para o app Multi Printer
+        window.location.href = data.deepLink;
+        toast.success(`Enviando para ${data.printers.length} impressora(s)...`);
+      } else {
+        toast.error(data.error || "Erro ao gerar link de impressão");
+      }
+    } catch (error) {
+      console.error("Erro ao imprimir em múltiplas impressoras:", error);
+      toast.error("Erro ao conectar com o servidor");
+    }
+  };
+
   // Função para imprimir apenas o pedido (do modal de detalhes)
   const handlePrintOrder = () => {
     if (!orderDetails) return;
@@ -1031,7 +1059,11 @@ export default function Pedidos() {
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handlePrintThermal(order.id)}>
                               <Smartphone className="h-4 w-4 mr-2" />
-                              Impressora Térmica (Android)
+                              Impressora Térmica (1 impressora)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handlePrintMultiPrinter(order.id)}>
+                              <Printer className="h-4 w-4 mr-2" />
+                              Múltiplas Impressoras (Android)
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -1336,7 +1368,11 @@ export default function Pedidos() {
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => orderDetails && handlePrintThermal(orderDetails.id)}>
                   <Smartphone className="h-4 w-4 mr-2" />
-                  Impressora Térmica (Android)
+                  Impressora Térmica (1 impressora)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => orderDetails && handlePrintMultiPrinter(orderDetails.id)}>
+                  <Printer className="h-4 w-4 mr-2" />
+                  Múltiplas Impressoras (Android)
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

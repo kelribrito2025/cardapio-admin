@@ -3349,3 +3349,10 @@
 - [x] Modificar fluxo de criar pedido para imprimir em todas as impressoras ativas
 - [x] Cadastrar as duas impressoras: 192.168.123.100 e 192.168.68.101
 - [ ] Testar impressão simultânea com pedido real
+
+## Integração ESC/POS Multi Printer Network Print Service
+- [x] Criar endpoint público para gerar HTML do recibo acessível via URL
+- [x] Implementar geração de deep link para o app Multi Printer com fila de impressão
+- [x] Usar impressoras já cadastradas no banco (192.168.123.100 e 192.168.68.101)
+- [x] Adicionar opção "Múltiplas Impressoras" no menu de impressão dos pedidos
+- [ ] Testar impressão simultânea nas duas impressoras via app Multi Printer
