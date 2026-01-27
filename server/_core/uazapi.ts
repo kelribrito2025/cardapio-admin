@@ -500,7 +500,7 @@ export function generateStatusMessage(
       }
       
       return itemText;
-    }).join('\n\n');
+    }).join('\n');
     
     // Adicionar total se fornecido
     if (orderTotal) {

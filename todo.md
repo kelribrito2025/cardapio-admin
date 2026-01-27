@@ -3317,3 +3317,5 @@
 - [x] Criar variável de template WhatsApp {{itensPedido}} com todos os itens do pedido (produtos, complementos, observações)
 
 - [x] Ajustar variável {{itensPedido}} para não mostrar preço individual dos itens, apenas o total do pedido
+
+- [x] Remover quebra de linha extra entre os itens na variável {{itensPedido}}
