@@ -788,17 +788,18 @@ export default function Pedidos() {
   const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
     updateStatusMutation.mutate({ id: orderId, status: newStatus });
     
-    // Se está aceitando o pedido (mudando de "new" para "preparing"), enviar para impressão térmica automaticamente
+    // Se está aceitando o pedido (mudando de "new" para "preparing"), enviar para impressão automática
     if (newStatus === "preparing") {
       // Mostrar notificação visual de pedido aceito e enviado para impressão
       toast.success("📦 Pedido aceito e enviado para impressão!", {
-        description: "O pedido foi aceito e está sendo enviado para a impressora térmica.",
+        description: "O pedido foi aceito e está sendo enviado para as impressoras.",
         duration: 4000,
       });
       
       // Pequeno delay para garantir que a mutação foi processada
       setTimeout(() => {
-        handlePrintThermal(orderId);
+        // Usar Multi Printer para imprimir em todas as impressoras simultaneamente
+        handlePrintMultiPrinter(orderId);
       }, 300);
     }
   };

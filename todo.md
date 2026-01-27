@@ -3360,3 +3360,5 @@
 - [x] Bug: Impressão Multi Printer não executa automaticamente - corrigido usando printerName (KOT-1, KOT-2) em vez de IP
 
 - [x] Bug: Multi Printer mostra "please set the ip address" - corrigido usando printerIpAddr + printerPort
+
+- [x] Impressão automática ao aceitar pedido - abrir deep link do Multi Printer automaticamente
