@@ -1685,13 +1685,20 @@ async function startServer() {
       console.log('[WhatsApp Webhook] Recebido:', JSON.stringify(body, null, 2));
       
       // Verificar se é uma resposta de botão
-      // A UAZAPI envia diferentes formatos dependendo do tipo de mensagem
+      // A UAZAPI envia o payload em diferentes formatos:
+      // - Direto no body (quando addUrlEvents está ativo)
+      // - Em body.message ou body.data
       const message = body.message || body.data || body;
-      const buttonId = message?.buttonId || message?.selectedButtonId || message?.selectedId;
+      
+      // O campo correto para botões na UAZAPI é 'buttonOrListid'
+      // Também verificamos outros campos possíveis para compatibilidade
+      const buttonId = message?.buttonOrListid || message?.buttonId || message?.selectedButtonId || message?.selectedId || body?.buttonOrListid;
       const messageText = message?.text || message?.body || message?.conversation;
+      const senderPhone = message?.sender || message?.from || body?.sender || body?.from;
       
       if (buttonId) {
         console.log('[WhatsApp Webhook] Botão clicado:', buttonId);
+        console.log('[WhatsApp Webhook] Sender phone:', senderPhone);
         
         // Extrair o número do pedido do buttonId
         // Formato: confirm_order_#P123 ou cancel_order_#P123
@@ -1705,6 +1712,7 @@ async function startServer() {
           // Buscar e atualizar o pedido
           const { confirmOrderByNumber } = await import('../db');
           const result = await confirmOrderByNumber(establishmentId, orderNumber);
+          console.log('[WhatsApp Webhook] Resultado confirmação:', result);
           
           if (result.success) {
             // Enviar mensagem de confirmação
@@ -1712,8 +1720,9 @@ async function startServer() {
             const { sendTextMessage } = await import('./uazapi');
             const config = await getWhatsappConfig(establishmentId);
             
-            if (config?.instanceToken && message?.from) {
-              const phone = message.from.replace('@s.whatsapp.net', '').replace('@c.us', '');
+            // Usar senderPhone que já foi extraído acima
+            if (config?.instanceToken && senderPhone) {
+              const phone = senderPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
               await sendTextMessage(
                 config.instanceToken,
                 phone,
@@ -1728,6 +1737,7 @@ async function startServer() {
           // Buscar e cancelar o pedido
           const { cancelOrderByNumber } = await import('../db');
           const result = await cancelOrderByNumber(establishmentId, orderNumber, 'Cancelado pelo cliente via WhatsApp');
+          console.log('[WhatsApp Webhook] Resultado cancelamento:', result);
           
           if (result.success) {
             // Enviar mensagem de cancelamento
@@ -1735,8 +1745,9 @@ async function startServer() {
             const { sendTextMessage } = await import('./uazapi');
             const config = await getWhatsappConfig(establishmentId);
             
-            if (config?.instanceToken && message?.from) {
-              const phone = message.from.replace('@s.whatsapp.net', '').replace('@c.us', '');
+            // Usar senderPhone que já foi extraído acima
+            if (config?.instanceToken && senderPhone) {
+              const phone = senderPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
               await sendTextMessage(
                 config.instanceToken,
                 phone,
@@ -1745,6 +1756,15 @@ async function startServer() {
             }
           }
         }
+      } else {
+        // Log para debug quando não encontrar buttonId
+        console.log('[WhatsApp Webhook] Nenhum buttonId encontrado. Campos disponíveis:', {
+          hasMessage: !!body.message,
+          hasData: !!body.data,
+          messageKeys: body.message ? Object.keys(body.message) : [],
+          dataKeys: body.data ? Object.keys(body.data) : [],
+          bodyKeys: Object.keys(body),
+        });
       }
       
       // Sempre responder 200 para o webhook

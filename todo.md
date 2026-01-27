@@ -3396,3 +3396,9 @@
 - [x] Criar função configureWebhook no módulo UAZAPI para criar/atualizar webhook automaticamente
 - [x] Integrar chamada da função ao salvar configurações de WhatsApp com confirmação via botões ativada
 - [x] Testar fluxo completo de ativação automática do webhook
+
+
+## Bug: Pedido não aparece após confirmação via WhatsApp
+- [x] Investigar por que pedido #P441 não apareceu na página de pedidos após cliente clicar em "Ok, pode fazer"
+- [x] Verificar se webhook está recebendo a resposta do botão
+- [x] Corrigir fluxo de confirmação de pedido (campo correto é buttonOrListid)
