@@ -843,6 +843,15 @@ async function startServer() {
       font-weight: ${fontWeight};
       line-height: 1.4;
     }
+    .address-box {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 12px 0;
+    }
+    .address-box .section-title {
+      margin-bottom: 8px;
+    }
     .footer {
       text-align: center;
       margin-top: 16px;
@@ -908,12 +917,10 @@ async function startServer() {
     
     <hr class="divider">
     
-    <div class="section">
-      <div class="section-title">Entrega</div>
+    <div class="address-box">
+      <div class="section-title">Endereço:</div>
       <div class="section-content">
-        ${sampleOrder.address}<br>
-        ${sampleOrder.addressComplement ? sampleOrder.addressComplement + '<br>' : ''}
-        ${sampleOrder.neighborhood}
+        ${sampleOrder.address} - ${sampleOrder.neighborhood}${sampleOrder.addressComplement ? ' - ' + sampleOrder.addressComplement : ''}
       </div>
     </div>
     

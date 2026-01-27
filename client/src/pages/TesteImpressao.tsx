@@ -873,13 +873,18 @@ export default function TesteImpressao() {
                   {showDividers && <hr style={{ border: 'none', borderTop: '1px solid #ccc', margin: '10px 0' }} />}
 
                   {/* Sections */}
-                  <div style={{ margin: '12px 0' }}>
+                  <div style={{ 
+                    border: '1px solid #ccc',
+                    borderRadius: '8px',
+                    padding: '12px',
+                    margin: '12px 0'
+                  }}>
                     <div style={{ 
                       fontWeight: titleFontWeight, 
                       fontSize: `${itemFontSize}px`,
-                      marginBottom: '4px'
+                      marginBottom: '8px'
                     }}>
-                      Entrega
+                      Endereço:
                     </div>
                     <div style={{ 
                       fontSize: `${fontSize}px`, 
@@ -887,9 +892,7 @@ export default function TesteImpressao() {
                       color: '#444',
                       lineHeight: 1.4
                     }}>
-                      {sampleOrder.address}<br />
-                      {sampleOrder.addressComplement}<br />
-                      {sampleOrder.neighborhood}
+                      {sampleOrder.address} - {sampleOrder.neighborhood}{sampleOrder.addressComplement ? ` - ${sampleOrder.addressComplement}` : ''}
                     </div>
                   </div>
 

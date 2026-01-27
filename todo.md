@@ -3278,3 +3278,5 @@
 - [x] Adicionar badge no Total com fundo escuro e texto branco (TOTAL à esquerda, valor à direita)
 
 - [x] Trocar texto "Realizado em:" por ícone de calendário 📅 antes da data
+
+- [x] Adicionar estilo de caixa com bordas redondas na seção de Endereço
