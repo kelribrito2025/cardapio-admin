@@ -1131,31 +1131,59 @@ export default function PublicMenu() {
       return establishment.isOpen;
     }
     
+    // Usar timezone de Brasília para cálculos
     const now = new Date();
-    const currentDay = now.getDay(); // 0 = Domingo, 1 = Segunda, etc.
-    const currentTime = now.getHours() * 60 + now.getMinutes(); // Minutos desde meia-noite
+    const brasiliaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+    const currentDay = brasiliaDate.getDay(); // 0 = Domingo, 1 = Segunda, etc.
+    const currentTime = brasiliaDate.getHours() * 60 + brasiliaDate.getMinutes(); // Minutos desde meia-noite
     
     // Buscar horário do dia atual
     const todayHours = businessHoursData.find(h => h.dayOfWeek === currentDay);
+    const yesterdayDay = currentDay === 0 ? 6 : currentDay - 1;
+    const yesterdayHours = businessHoursData.find(h => h.dayOfWeek === yesterdayDay);
     
-    // Se o dia não está ativo, está fechado
-    if (!todayHours?.isActive) {
-      return false;
+    // Função auxiliar para verificar se o horário atravessa meia-noite
+    const crossesMidnight = (openTime: string, closeTime: string) => {
+      const [openH] = openTime.split(':').map(Number);
+      const [closeH] = closeTime.split(':').map(Number);
+      return closeH < openH || (closeH === openH && closeTime < openTime);
+    };
+    
+    // Verificar horário de hoje
+    if (todayHours?.isActive && todayHours.openTime && todayHours.closeTime) {
+      const [openHour, openMin] = todayHours.openTime.split(':').map(Number);
+      const [closeHour, closeMin] = todayHours.closeTime.split(':').map(Number);
+      const openTimeMinutes = openHour * 60 + openMin;
+      const closeTimeMinutes = closeHour * 60 + closeMin;
+      
+      if (crossesMidnight(todayHours.openTime, todayHours.closeTime)) {
+        // Horário atravessa meia-noite (ex: 08:00 - 02:00)
+        // Está aberto se: hora atual >= abertura (ex: 08:00 até 23:59)
+        if (currentTime >= openTimeMinutes) {
+          return true;
+        }
+      } else {
+        // Horário normal no mesmo dia (ex: 08:00 - 22:00)
+        if (currentTime >= openTimeMinutes && currentTime < closeTimeMinutes) {
+          return true;
+        }
+      }
     }
     
-    // Se não tem horários definidos, considerar fechado
-    if (!todayHours.openTime || !todayHours.closeTime) {
-      return false;
+    // Verificar horário de ontem que atravessa meia-noite
+    // Ex: Se ontem abriu 08:00-02:00, e agora são 01:00, ainda está aberto
+    if (yesterdayHours?.isActive && yesterdayHours.openTime && yesterdayHours.closeTime) {
+      if (crossesMidnight(yesterdayHours.openTime, yesterdayHours.closeTime)) {
+        const [closeHour, closeMin] = yesterdayHours.closeTime.split(':').map(Number);
+        const closeTimeMinutes = closeHour * 60 + closeMin;
+        // Está aberto se: hora atual < fechamento (ex: 00:00 até 02:00)
+        if (currentTime < closeTimeMinutes) {
+          return true;
+        }
+      }
     }
     
-    // Converter horários para minutos
-    const [openHour, openMin] = todayHours.openTime.split(':').map(Number);
-    const [closeHour, closeMin] = todayHours.closeTime.split(':').map(Number);
-    const openTimeMinutes = openHour * 60 + openMin;
-    const closeTimeMinutes = closeHour * 60 + closeMin;
-    
-    // Verificar se está dentro do horário
-    return currentTime >= openTimeMinutes && currentTime <= closeTimeMinutes;
+    return false;
   };
 
   // Verifica se deve reabrir automaticamente (fechamento manual expirou)
@@ -1163,9 +1191,11 @@ export default function PublicMenu() {
     if (!establishment.manuallyClosed || !establishment.manuallyClosedAt) return false;
     if (!businessHoursData || businessHoursData.length === 0) return false;
     
+    // Usar timezone de Brasília para cálculos
     const now = new Date();
-    const currentDay = now.getDay();
-    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const brasiliaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+    const currentDay = brasiliaDate.getDay();
+    const currentTime = brasiliaDate.getHours() * 60 + brasiliaDate.getMinutes();
     const closedAt = new Date(establishment.manuallyClosedAt);
     
     // Encontrar o horário de hoje
@@ -1179,7 +1209,7 @@ export default function PublicMenu() {
     // Se o fechamento foi em um dia anterior e hoje tem horário de abertura que já passou
     const closedDate = new Date(closedAt);
     closedDate.setHours(0, 0, 0, 0);
-    const today = new Date(now);
+    const today = new Date(brasiliaDate);
     today.setHours(0, 0, 0, 0);
     
     if (closedDate.getTime() < today.getTime() && currentTime >= openTimeMinutes) {
@@ -1188,7 +1218,7 @@ export default function PublicMenu() {
     
     // Se o fechamento foi antes do horário de abertura de hoje e agora já passou o horário
     const closedTimeMinutes = closedAt.getHours() * 60 + closedAt.getMinutes();
-    if (closedAt.toDateString() === now.toDateString() && closedTimeMinutes < openTimeMinutes && currentTime >= openTimeMinutes) {
+    if (closedAt.toDateString() === brasiliaDate.toDateString() && closedTimeMinutes < openTimeMinutes && currentTime >= openTimeMinutes) {
       return true;
     }
     
@@ -1234,9 +1264,11 @@ export default function PublicMenu() {
       return "Fechado no momento";
     }
     
+    // Usar timezone de Brasília para cálculos
     const now = new Date();
-    const currentDay = now.getDay(); // 0 = Domingo, 1 = Segunda, etc.
-    const currentTime = now.getHours() * 60 + now.getMinutes(); // Minutos desde meia-noite
+    const brasiliaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+    const currentDay = brasiliaDate.getDay(); // 0 = Domingo, 1 = Segunda, etc.
+    const currentTime = brasiliaDate.getHours() * 60 + brasiliaDate.getMinutes(); // Minutos desde meia-noite
     
     // Buscar horário do dia atual
     const todayHours = businessHoursData.find(h => h.dayOfWeek === currentDay);
@@ -1248,7 +1280,7 @@ export default function PublicMenu() {
       
       // Se ainda não chegou o horário de abertura, mostrar "Abriremos hoje às X"
       if (currentTime < openTimeMinutes) {
-        return `Fechado \u2013 Abriremos hoje às ${todayHours.openTime}`;
+        return `Fechado – Abriremos hoje às ${todayHours.openTime}`;
       }
     }
     
@@ -1260,12 +1292,12 @@ export default function PublicMenu() {
       if (nextDayHours?.isActive && nextDayHours.openTime) {
         // Se é amanhã (i === 1)
         if (i === 1) {
-          return `Fechado hoje \u2013 Abriremos amanhã às ${nextDayHours.openTime}`;
+          return `Fechado hoje – Abriremos amanhã às ${nextDayHours.openTime}`;
         }
         
         // Se é outro dia, mostrar o nome do dia
         const dayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-        return `Fechado \u2013 Abriremos ${dayNames[nextDay]} às ${nextDayHours.openTime}`;
+        return `Fechado – Abriremos ${dayNames[nextDay]} às ${nextDayHours.openTime}`;
       }
     }
     

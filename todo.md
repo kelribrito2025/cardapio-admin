@@ -3321,3 +3321,5 @@
 - [x] Remover quebra de linha extra entre os itens na variável {{itensPedido}}
 
 - [x] Bug: Horário 8h-2h ainda mostra fechado - corrigido para usar timezone de Brasília
+
+- [x] Bug: Menu público ainda mostra fechado após correção de timezone - corrigido frontend para usar timezone de Brasília
