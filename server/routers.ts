@@ -364,6 +364,7 @@ export const appRouter = router({
         status: z.enum(["active", "paused", "archived"]).optional(),
         stockQuantity: z.number().nullable().optional(),
         hasStock: z.boolean().optional(),
+        printerId: z.number().nullable().optional(), // Setor/Impressora para este produto
       }))
       .mutation(async ({ input }) => {
         const id = await db.createProduct(input);
@@ -381,6 +382,7 @@ export const appRouter = router({
         status: z.enum(["active", "paused", "archived"]).optional(),
         stockQuantity: z.number().nullable().optional(),
         hasStock: z.boolean().optional(),
+        printerId: z.number().nullable().optional(), // Setor/Impressora para este produto
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;

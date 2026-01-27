@@ -9,7 +9,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, sendAllOrdersHeartbeat } from "./sse";
-import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrderById, getOrderItems, getEstablishmentById, getPrinterSettings, getActivePrinters } from "../db";
+import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrderById, getOrderItems, getOrderItemsWithPrinter, getEstablishmentById, getPrinterSettings, getActivePrinters } from "../db";
 import { sdk } from "./sdk";
 
 // Função para gerar HTML do recibo otimizado para impressora térmica
@@ -469,6 +469,205 @@ function generateReceiptHTML(
     <p>Pedido realizado via Cardapio Admin</p>
     <p>manus.space</p>
   </div>
+</body>
+</html>
+  `.trim();
+}
+
+// Função para gerar HTML do recibo filtrado por setor
+// Mostra apenas os itens do setor específico
+function generateSectorReceiptHTML(
+  order: any,
+  items: any[],
+  establishment: any,
+  settings: any,
+  sectorName: string
+): string {
+  const formatCurrency = (value: number | string | null) => {
+    const num = typeof value === 'string' ? parseFloat(value) : (value || 0);
+    return `R$ ${num.toFixed(2).replace('.', ',')}`;
+  };
+  
+  const formatDate = (date: Date | string) => {
+    const d = new Date(date);
+    return d.toLocaleString('pt-BR', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+  
+  const deliveryTypeText = order.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA';
+  
+  // Configurar largura do papel
+  const is58mm = settings?.paperWidth === '58mm';
+  const paperWidth = is58mm ? '48mm' : '72mm';
+  
+  const baseFontSize = `${settings?.fontSize || (is58mm ? 11 : 12)}px`;
+  const baseFontWeight = settings?.fontWeight || 500;
+  const headerFontSize = `${settings?.titleFontSize || (is58mm ? 14 : 16)}px`;
+  const headerFontWeight = settings?.titleFontWeight || 700;
+  const orderNumberSize = `${(settings?.titleFontSize || (is58mm ? 14 : 16)) + 4}px`;
+  const itemFontSize = `${settings?.itemFontSize || (is58mm ? 11 : 12)}px`;
+  const itemFontWeight = settings?.itemFontWeight || 700;
+  const smallFontSize = `${settings?.obsFontSize || (is58mm ? 10 : 11)}px`;
+  const smallFontWeight = settings?.obsFontWeight || 500;
+  const showDividers = settings?.showDividers ?? true;
+  const boxPadding = `${(settings as any)?.boxPadding || 12}px`;
+  const itemBorderStyle = (settings as any)?.itemBorderStyle || 'rounded';
+  
+  let itemsHTML = '';
+  for (const item of items) {
+    let itemHTML = `
+      <div class="item">
+        <div class="item-header">
+          <span>${item.quantity}x ${item.productName}</span>
+        </div>
+    `;
+    if (item.notes) {
+      itemHTML += `<div class="item-obs">Obs: ${item.notes}</div>`;
+    }
+    if (item.complements) {
+      try {
+        const complements = typeof item.complements === 'string' ? JSON.parse(item.complements) : item.complements;
+        if (Array.isArray(complements)) {
+          for (const comp of complements) {
+            if (comp.items && Array.isArray(comp.items)) {
+              for (const ci of comp.items) {
+                itemHTML += `<div class="item-complement">+ ${ci.name}</div>`;
+              }
+            }
+          }
+        }
+      } catch (e) {}
+    }
+    itemHTML += `</div>`;
+    itemsHTML += itemHTML;
+  }
+  
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedido #${order.orderNumber} - ${sectorName}</title>
+  <style>
+    @page { size: ${paperWidth} auto; margin: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Arial', 'Helvetica', sans-serif; 
+      font-size: ${baseFontSize}; 
+      font-weight: ${baseFontWeight};
+      line-height: 1.4;
+      width: 100%; 
+      max-width: 100%;
+      padding: 8px;
+      background: #fff;
+      color: #000;
+    }
+    .header {
+      text-align: center;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      ${showDividers ? 'border-bottom: 2px solid #000;' : ''}
+    }
+    .sector-name {
+      font-size: ${orderNumberSize};
+      font-weight: ${headerFontWeight};
+      background: #000;
+      color: #fff;
+      padding: 8px 16px;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+    .order-number {
+      font-size: ${headerFontSize};
+      font-weight: ${headerFontWeight};
+      margin-top: 8px;
+    }
+    .order-date {
+      font-size: ${smallFontSize};
+      font-weight: ${smallFontWeight};
+    }
+    .delivery-badge {
+      display: inline-block;
+      background: #000;
+      color: #fff;
+      font-size: ${smallFontSize};
+      font-weight: ${headerFontWeight};
+      padding: 4px 12px;
+      margin-top: 8px;
+    }
+    .divider { 
+      border: none;
+      ${showDividers ? 'border-top: 2px dashed #000;' : ''} 
+      margin: 10px 0; 
+    }
+    .item {
+      margin: 8px 0;
+      padding: ${itemBorderStyle === 'rounded' ? boxPadding : '8px 0'};
+      ${itemBorderStyle === 'rounded' ? 'border: 2px solid #000; border-radius: 8px;' : 'border: none; border-top: 1px dashed #000; border-bottom: 1px dashed #000;'}
+    }
+    .item-header {
+      font-size: ${itemFontSize};
+      font-weight: ${itemFontWeight};
+    }
+    .item-obs {
+      font-size: ${smallFontSize};
+      font-weight: ${smallFontWeight};
+      margin-top: 2px;
+      padding-left: 5px;
+    }
+    .item-complement {
+      font-size: ${smallFontSize};
+      font-weight: ${smallFontWeight};
+      margin-top: 2px;
+      padding-left: 10px;
+    }
+    .customer-info {
+      margin-top: 12px;
+      padding: 8px;
+      border: 2px solid #000;
+      border-radius: 8px;
+    }
+    .customer-name {
+      font-size: ${itemFontSize};
+      font-weight: ${headerFontWeight};
+    }
+    @media print {
+      body { width: ${paperWidth}; padding: 2mm; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="sector-name">${sectorName.toUpperCase()}</div>
+    <div class="order-number">Pedido #${order.orderNumber}</div>
+    <div class="order-date">${formatDate(order.createdAt)}</div>
+    <div class="delivery-badge">${deliveryTypeText}</div>
+  </div>
+  
+  <hr class="divider">
+  
+  <div class="items">
+    ${itemsHTML}
+  </div>
+  
+  <hr class="divider">
+  
+  <div class="customer-info">
+    <div class="customer-name">${order.customerName || 'Cliente'}${order.customerPhone ? ' - ' + order.customerPhone : ''}</div>
+    ${order.deliveryType === 'delivery' && order.customerAddress ? `<div style="font-size: ${smallFontSize}; margin-top: 4px;">${order.customerAddress}</div>` : ''}
+  </div>
+  
+  ${order.notes ? `
+  <div style="margin-top: 12px; padding: 8px; background: #f0f0f0; border: 2px solid #000;">
+    <strong>OBS:</strong> ${order.notes}
+  </div>
+  ` : ''}
 </body>
 </html>
   `.trim();
@@ -1286,6 +1485,173 @@ async function startServer() {
     } catch (error) {
       console.error("[MultiPrinter Test] Erro ao gerar deep link:", error);
       res.status(500).json({ error: "Erro ao gerar link de impressão" });
+    }
+  });
+
+  // Endpoint para gerar deep link com separação de itens por setor/impressora
+  // Cada impressora recebe apenas os itens do seu setor
+  app.get("/api/print/multiprinter-sectors/:orderId", async (req, res) => {
+    try {
+      const orderId = parseInt(req.params.orderId);
+      if (isNaN(orderId)) {
+        res.status(400).json({ error: "ID do pedido inválido" });
+        return;
+      }
+      
+      const order = await getOrderById(orderId);
+      if (!order) {
+        res.status(404).json({ error: "Pedido não encontrado" });
+        return;
+      }
+      
+      // Buscar itens do pedido com informações da impressora
+      const itemsWithPrinter = await getOrderItemsWithPrinter(orderId);
+      
+      // Buscar todas as impressoras ativas
+      const allPrinters = await getActivePrinters(order.establishmentId);
+      
+      if (allPrinters.length === 0) {
+        res.status(400).json({ error: "Nenhuma impressora configurada" });
+        return;
+      }
+      
+      // Agrupar itens por impressora
+      const itemsByPrinter = new Map<number, typeof itemsWithPrinter>();
+      const itemsWithoutPrinter: typeof itemsWithPrinter = [];
+      
+      for (const item of itemsWithPrinter) {
+        if (item.printerId && item.printerActive) {
+          if (!itemsByPrinter.has(item.printerId)) {
+            itemsByPrinter.set(item.printerId, []);
+          }
+          itemsByPrinter.get(item.printerId)!.push(item);
+        } else {
+          // Itens sem impressora definida vão para todas as impressoras
+          itemsWithoutPrinter.push(item);
+        }
+      }
+      
+      // URL base
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      
+      // Gerar jobs de impressão
+      const printJobs: any[] = [];
+      const printersSummary: any[] = [];
+      
+      // Para cada impressora com itens associados
+      for (const [printerId, items] of Array.from(itemsByPrinter.entries())) {
+        const printer = allPrinters.find((p: any) => p.id === printerId);
+        if (!printer) continue;
+        
+        // URL do recibo filtrado por setor
+        const receiptUrl = `${baseUrl}/api/print/receipt-sector/${orderId}/${printerId}`;
+        
+        printJobs.push({
+          srcTp: "uri",
+          srcObj: "html",
+          src: encodeURIComponent(receiptUrl),
+          printerIpAddr: printer.ipAddress,
+          printerPort: String(printer.port || 9100),
+          numCopies: 1,
+          openCashDrawer: 0
+        });
+        
+        printersSummary.push({
+          name: printer.name,
+          ip: printer.ipAddress,
+          port: printer.port,
+          items: items.map((i: any) => i.productName)
+        });
+      }
+      
+      // Se houver itens sem impressora definida, enviar para a primeira impressora (padrão)
+      if (itemsWithoutPrinter.length > 0 && printJobs.length === 0) {
+        // Nenhum item tem impressora definida, enviar tudo para todas as impressoras
+        for (const printer of allPrinters) {
+          const receiptUrl = `${baseUrl}/api/print/receipt/${orderId}`;
+          
+          printJobs.push({
+            srcTp: "uri",
+            srcObj: "html",
+            src: encodeURIComponent(receiptUrl),
+            printerIpAddr: printer.ipAddress,
+            printerPort: String(printer.port || 9100),
+            numCopies: 1,
+            openCashDrawer: 0
+          });
+          
+          printersSummary.push({
+            name: printer.name,
+            ip: printer.ipAddress,
+            port: printer.port,
+            items: itemsWithoutPrinter.map((i: any) => i.productName)
+          });
+        }
+      }
+      
+      if (printJobs.length === 0) {
+        res.status(400).json({ error: "Nenhum item para imprimir" });
+        return;
+      }
+      
+      const deepLink = `print://escpos.org/escpos/mnps/print?mpjo=${encodeURIComponent(JSON.stringify(printJobs))}`;
+      
+      res.json({
+        success: true,
+        deepLink,
+        printers: printersSummary,
+        orderId,
+        orderNumber: order.orderNumber,
+        mode: "sectors"
+      });
+    } catch (error) {
+      console.error("[MultiPrinter Sectors] Erro ao gerar deep link:", error);
+      res.status(500).json({ error: "Erro ao gerar link de impressão" });
+    }
+  });
+  
+  // Endpoint para gerar recibo filtrado por setor/impressora
+  app.get("/api/print/receipt-sector/:orderId/:printerId", async (req, res) => {
+    try {
+      const orderId = parseInt(req.params.orderId);
+      const printerId = parseInt(req.params.printerId);
+      
+      if (isNaN(orderId) || isNaN(printerId)) {
+        res.status(400).send("Parâmetros inválidos");
+        return;
+      }
+      
+      const order = await getOrderById(orderId);
+      if (!order) {
+        res.status(404).send("Pedido não encontrado");
+        return;
+      }
+      
+      // Buscar itens com informação de impressora
+      const allItems = await getOrderItemsWithPrinter(orderId);
+      
+      // Filtrar apenas itens desta impressora
+      const sectorItems = allItems.filter((item: any) => item.printerId === printerId);
+      
+      if (sectorItems.length === 0) {
+        res.status(404).send("Nenhum item para esta impressora");
+        return;
+      }
+      
+      const establishment = await getEstablishmentById(order.establishmentId);
+      const settings = await getPrinterSettings(order.establishmentId);
+      
+      // Pegar o nome do setor da primeira impressora
+      const sectorName = sectorItems[0]?.printerName || "Setor";
+      
+      // Gerar HTML do recibo com apenas os itens do setor
+      const html = generateSectorReceiptHTML(order, sectorItems, establishment, settings, sectorName);
+      
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send(html);
+    } catch (error) {
+      console.error("[Receipt Sector] Erro:", error);
+      res.status(500).send("Erro ao gerar recibo");
     }
   });
 

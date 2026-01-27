@@ -288,6 +288,13 @@
       "when": 1769529463302,
       "tag": "0040_warm_madame_hydra",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "5",
+      "when": 1769542487950,
+      "tag": "0041_glamorous_tenebrous",
+      "breakpoints": true
     }
   ]
 }

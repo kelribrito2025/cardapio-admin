@@ -647,6 +647,37 @@ export async function getOrderItems(orderId: number) {
   return db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
 }
 
+/**
+ * Busca itens do pedido com informações da impressora associada ao produto
+ */
+export async function getOrderItemsWithPrinter(orderId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const items = await db.select({
+    id: orderItems.id,
+    orderId: orderItems.orderId,
+    productId: orderItems.productId,
+    productName: orderItems.productName,
+    quantity: orderItems.quantity,
+    unitPrice: orderItems.unitPrice,
+    totalPrice: orderItems.totalPrice,
+    notes: orderItems.notes,
+    complements: orderItems.complements,
+    printerId: products.printerId,
+    printerName: printers.name,
+    printerIp: printers.ipAddress,
+    printerPort: printers.port,
+    printerActive: printers.isActive
+  })
+  .from(orderItems)
+  .leftJoin(products, eq(orderItems.productId, products.id))
+  .leftJoin(printers, eq(products.printerId, printers.id))
+  .where(eq(orderItems.orderId, orderId));
+  
+  return items;
+}
+
 export async function createOrder(data: InsertOrder, items: InsertOrderItem[]) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");

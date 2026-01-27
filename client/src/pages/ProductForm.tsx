@@ -226,6 +226,7 @@ export default function ProductForm() {
   const [status, setStatus] = useState<"active" | "paused">("active");
   const [hasStock, setHasStock] = useState(true);
   const [stockQuantity, setStockQuantity] = useState<string>("");
+  const [printerId, setPrinterId] = useState<string>("none"); // Setor/Impressora para este produto
   const [complementGroups, setComplementGroups] = useState<ComplementGroup[]>([]);
 
   // Preview selections state - para simular seleção do cliente
@@ -291,6 +292,12 @@ export default function ProductForm() {
 
   // All hooks MUST be called before any early return
   const { data: categories } = trpc.category.list.useQuery(
+    { establishmentId: establishmentId! },
+    { enabled: !!establishmentId }
+  );
+
+  // Buscar impressoras/setores para seleção
+  const { data: printers } = trpc.printer.list.useQuery(
     { establishmentId: establishmentId! },
     { enabled: !!establishmentId }
   );
@@ -459,6 +466,12 @@ export default function ProductForm() {
       setStatus(product.status === "archived" ? "paused" : product.status);
       setHasStock(product.hasStock);
       setStockQuantity(product.stockQuantity ? String(product.stockQuantity) : "");
+      // Carregar setor/impressora do produto
+      if ((product as any).printerId) {
+        setPrinterId(String((product as any).printerId));
+      } else {
+        setPrinterId("none");
+      }
     }
   }, [product]);
 
@@ -533,6 +546,7 @@ export default function ProductForm() {
       status,
       hasStock,
       stockQuantity: stockQuantity ? Number(stockQuantity) : null,
+      printerId: printerId && printerId !== "none" ? Number(printerId) : null, // Setor/Impressora
     };
 
     if (isEditing) {
@@ -866,9 +880,34 @@ export default function ProductForm() {
                       </SelectContent>
                     </Select>
                   </div>
-
-
                 </div>
+
+                {/* Setor de Impressão */}
+                {printers && printers.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="printer" className="text-sm font-semibold">Setor de Preparo (Impressora)</Label>
+                      <Select key={`printer-${printerId}`} value={printerId} onValueChange={setPrinterId}>
+                        <SelectTrigger className="mt-1.5 h-9 text-sm rounded-lg border-border/50">
+                          <SelectValue placeholder="Selecione o setor" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-lg">
+                          <SelectItem value="none" className="rounded text-sm text-muted-foreground">
+                            Todas as impressoras
+                          </SelectItem>
+                          {printers.map((printer: any) => (
+                            <SelectItem key={printer.id} value={String(printer.id)} className="rounded text-sm">
+                              {printer.name} ({printer.ipAddress})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground mt-1">Selecione qual impressora/setor deve receber este item ao imprimir o pedido</p>
+                    </div>
+                  </div>
+                )}
+
+
 
                 <div>
                   <Label htmlFor="description" className="text-sm font-semibold">Descrição</Label>

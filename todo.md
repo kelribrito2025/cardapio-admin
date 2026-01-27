@@ -3362,3 +3362,11 @@
 - [x] Bug: Multi Printer mostra "please set the ip address" - corrigido usando printerIpAddr + printerPort
 
 - [x] Impressão automática ao aceitar pedido - abrir deep link do Multi Printer automaticamente
+
+## Sistema de Separação de Itens por Setor de Impressão
+- [x] Adicionar campo printerId na tabela de produtos
+- [x] Adicionar campo "Setor de Preparo" no formulário de cadastro de produtos
+- [x] Criar página de gerenciamento de impressoras (/impressoras)
+- [x] Modificar lógica de impressão para separar itens por setor
+- [x] Gerar recibo separado para cada setor com apenas os itens daquele setor
+- [x] Endpoint /api/print/multiprinter-sectors para impressão separada por setor

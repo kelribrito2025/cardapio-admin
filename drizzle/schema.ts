@@ -106,6 +106,7 @@ export const products = mysqlTable("products", {
   hasStock: boolean("hasStock").default(true).notNull(),
   sortOrder: int("sortOrder").default(0).notNull(),
   salesCount: int("salesCount").default(0).notNull(),
+  printerId: int("printerId"), // ID da impressora/setor para este produto (ex: Cozinha, Sushi Bar)
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -183,6 +184,7 @@ export const orderItems = mysqlTable("orderItems", {
   totalPrice: decimal("totalPrice", { precision: 10, scale: 2 }).notNull(),
   complements: json("complements").$type<{ name: string; price: number }[]>(),
   notes: text("notes"),
+  printerId: int("printerId"), // ID da impressora/setor deste item (copiado do produto)
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
