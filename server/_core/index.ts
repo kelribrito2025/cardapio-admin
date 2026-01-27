@@ -1214,16 +1214,17 @@ async function startServer() {
       
       // Gerar deep link para o app Multi Printer
       // Formato: print://escpos.org/escpos/mnps/print?mpjo=[{jobs}]
+      // Usando printerName (nome configurado no app) em vez de IP para melhor compatibilidade
       const printJobs = printers.map((printer: any) => ({
         srcTp: "uri",
         srcObj: "html",
         src: encodeURIComponent(receiptUrl),
-        printerIpAddr: printer.ipAddress,
-        printerPort: printer.port || 9100,
+        printerName: printer.name, // Usa o nome da impressora configurado no app (KOT-1, KOT-2, etc.)
         numCopies: 1,
         openCashDrawer: 0
       }));
       
+      // O deep link usa o JSON array diretamente, encodado uma vez
       const deepLink = `print://escpos.org/escpos/mnps/print?mpjo=${encodeURIComponent(JSON.stringify(printJobs))}`;
       
       res.json({
@@ -1262,12 +1263,12 @@ async function startServer() {
       const receiptUrl = `${baseUrl}/api/print/test/${establishmentId}`;
       
       // Gerar deep link para o app Multi Printer
+      // Usando printerName (nome configurado no app) em vez de IP
       const printJobs = printers.map((printer: any) => ({
         srcTp: "uri",
         srcObj: "html",
         src: encodeURIComponent(receiptUrl),
-        printerIpAddr: printer.ipAddress,
-        printerPort: printer.port || 9100,
+        printerName: printer.name, // Usa o nome da impressora configurado no app (KOT-1, KOT-2, etc.)
         numCopies: 1,
         openCashDrawer: 0
       }));

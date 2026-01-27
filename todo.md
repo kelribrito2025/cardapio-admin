@@ -3356,3 +3356,5 @@
 - [x] Usar impressoras já cadastradas no banco (192.168.123.100 e 192.168.68.101)
 - [x] Adicionar opção "Múltiplas Impressoras" no menu de impressão dos pedidos
 - [ ] Testar impressão simultânea nas duas impressoras via app Multi Printer
+
+- [x] Bug: Impressão Multi Printer não executa automaticamente - corrigido usando printerName (KOT-1, KOT-2) em vez de IP
