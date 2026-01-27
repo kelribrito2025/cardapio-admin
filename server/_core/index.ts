@@ -440,7 +440,7 @@ function generateReceiptHTML(
   
   <div class="section-box">
     <div class="section-inline">
-      <span style="display: inline-flex; align-items: center;"><img src="/client-icon.png" class="section-icon" /> <strong>Cliente:</strong></span> ${order.customerName || 'Nao informado'}${order.customerPhone ? ' - ' + order.customerPhone : ''}
+      <img src="/client-icon.png" class="section-icon" style="vertical-align: middle;" /> <strong>Cliente:</strong> ${order.customerName || 'Nao informado'}${order.customerPhone ? ' - ' + order.customerPhone : ''}
     </div>
   </div>
   
@@ -1047,7 +1047,7 @@ async function startServer() {
     
     <div class="client-box">
       <div class="section-content">
-        <span style="display: inline-flex; align-items: center;"><img src="/client-icon.png" class="section-icon" /> <strong>Cliente:</strong></span> ${sampleOrder.customerName} - ${sampleOrder.customerPhone}
+        <img src="/client-icon.png" class="section-icon" style="vertical-align: middle;" /> <strong>Cliente:</strong> ${sampleOrder.customerName} - ${sampleOrder.customerPhone}
       </div>
     </div>
     
