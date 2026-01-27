@@ -297,6 +297,9 @@ function generateReceiptHTML(
       font-size: ${baseFontSize};
       font-weight: ${baseFontWeight};
       line-height: 1.4;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
     }
     .payment-header {
       display: flex;
@@ -442,7 +445,7 @@ function generateReceiptHTML(
   
   <div class="section-box">
     <div class="section-inline">
-      <img src="/client-icon.png" class="section-icon" style="vertical-align: middle;" /> <strong>Cliente:</strong> ${order.customerName || 'Nao informado'}${order.customerPhone ? ' - ' + order.customerPhone : ''}
+      <img src="/client-icon.png" class="section-icon" style="flex-shrink: 0;" /> <span><strong>Cliente:</strong> ${order.customerName || 'Nao informado'}${order.customerPhone ? ' - ' + order.customerPhone : ''}</span>
     </div>
   </div>
   
@@ -1050,8 +1053,8 @@ async function startServer() {
     </div>
     
     <div class="client-box">
-      <div class="section-content">
-        <img src="/client-icon.png" class="section-icon" style="vertical-align: middle;" /> <strong>Cliente:</strong> ${sampleOrder.customerName} - ${sampleOrder.customerPhone}
+      <div class="section-content" style="display: flex; align-items: center; flex-wrap: wrap;">
+        <img src="/client-icon.png" class="section-icon" style="flex-shrink: 0;" /> <span><strong>Cliente:</strong> ${sampleOrder.customerName} - ${sampleOrder.customerPhone}</span>
       </div>
     </div>
     

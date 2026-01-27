@@ -3335,3 +3335,5 @@
 - [x] Adicionar ícone de estrela ao lado esquerdo do título Cliente no card de cliente
 
 - [x] Bug: Nome do cliente foi para baixo - corrigir layout inline
+
+- [x] Bug: Ícone de estrela no card de cliente aparecia em linha separada - corrigido usando display flex
