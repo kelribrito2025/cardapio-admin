@@ -1611,6 +1611,7 @@ async function startServer() {
   });
   
   // Endpoint para gerar recibo filtrado por setor/impressora
+  // Usa o mesmo layout completo do recibo normal, apenas filtrando os itens por setor
   app.get("/api/print/receipt-sector/:orderId/:printerId", async (req, res) => {
     try {
       const orderId = parseInt(req.params.orderId);
@@ -1627,11 +1628,19 @@ async function startServer() {
         return;
       }
       
-      // Buscar itens com informação de impressora
-      const allItems = await getOrderItemsWithPrinter(orderId);
+      // Buscar todos os itens do pedido
+      const allOrderItems = await getOrderItems(orderId);
       
-      // Filtrar apenas itens desta impressora
-      const sectorItems = allItems.filter((item: any) => item.printerId === printerId);
+      // Buscar itens com informação de impressora para filtrar
+      const itemsWithPrinter = await getOrderItemsWithPrinter(orderId);
+      
+      // Filtrar apenas os IDs dos itens desta impressora
+      const sectorItemIds = itemsWithPrinter
+        .filter((item: any) => item.printerId === printerId)
+        .map((item: any) => item.id);
+      
+      // Filtrar os itens completos do pedido que pertencem a este setor
+      const sectorItems = allOrderItems.filter((item: any) => sectorItemIds.includes(item.id));
       
       if (sectorItems.length === 0) {
         res.status(404).send("Nenhum item para esta impressora");
@@ -1641,11 +1650,8 @@ async function startServer() {
       const establishment = await getEstablishmentById(order.establishmentId);
       const settings = await getPrinterSettings(order.establishmentId);
       
-      // Pegar o nome do setor da primeira impressora
-      const sectorName = sectorItems[0]?.printerName || "Setor";
-      
-      // Gerar HTML do recibo com apenas os itens do setor
-      const html = generateSectorReceiptHTML(order, sectorItems, establishment, settings, sectorName);
+      // Usar o mesmo layout completo do recibo normal, apenas com itens filtrados
+      const html = generateReceiptHTML(order, sectorItems, establishment, settings);
       
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(html);

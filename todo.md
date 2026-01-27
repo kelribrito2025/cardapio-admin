@@ -3372,3 +3372,5 @@
 - [x] Endpoint /api/print/multiprinter-sectors para impressão separada por setor
 
 - [x] Bug: Impressão por setor imprime todos os itens em todas as impressoras - corrigido: alterado endpoint para multiprinter-sectors
+
+- [x] Bug: Recibo de setor incompleto - corrigido para usar layout completo igual ao recibo normal (endereço, pagamento, QR code, total, taxa entrega), apenas filtrando itens por setor
