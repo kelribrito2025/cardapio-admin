@@ -3291,3 +3291,5 @@
 - [x] Itens do pedido: adicionar caixa com bordas redondas em cada item
 
 - [x] Aumentar espessura das bordas de 1px para 2px em todas as caixas (agora 2px solid #000)
+
+- [x] Aplicar o mesmo estilo do preview de teste na função generateReceiptHTML dos pedidos reais

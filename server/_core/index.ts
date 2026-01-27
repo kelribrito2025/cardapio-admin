@@ -256,27 +256,51 @@ function generateReceiptHTML(
       font-size: ${itemFontSize};
     }
     .total-final { 
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #000;
+      color: #fff;
       font-weight: ${headerFontWeight}; 
-      font-size: ${totalFontSize}; 
+      font-size: ${itemFontSize}; 
       margin-top: 10px;
-      padding: 8px 0;
-      ${showDividers ? 'border-top: 2px solid #000; border-bottom: 2px solid #000;' : ''}
+      padding: 8px 12px;
+      text-transform: uppercase;
     }
     
     /* SEÇÕES (Entrega, Pagamento, Cliente) */
-    .section {
+    .section-box {
+      border: 2px solid #000;
+      border-radius: 8px;
+      padding: 12px;
       margin: 12px 0;
     }
     .section-title {
       font-weight: ${headerFontWeight};
       font-size: ${itemFontSize};
-      margin-bottom: 4px;
+      margin-bottom: 8px;
     }
     .section-content {
       font-size: ${baseFontSize};
       font-weight: ${baseFontWeight};
-      color: #333;
       line-height: 1.4;
+    }
+    .section-inline {
+      font-size: ${baseFontSize};
+      font-weight: ${baseFontWeight};
+      line-height: 1.4;
+    }
+    .payment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .payment-badge {
+      background: #000;
+      color: #fff;
+      padding: 4px 10px;
+      font-weight: ${headerFontWeight};
+      font-size: ${smallFontSize};
     }
     
     /* PAGAMENTO */
@@ -328,8 +352,13 @@ function generateReceiptHTML(
     ${logoUrl && settings?.showLogo ? `<img src="${logoUrl}" alt="Logo" class="logo" />` : ''}
     <h1>${establishment?.name || 'Estabelecimento'}</h1>
     ${headerMessage ? `<p class="header-message">${headerMessage}</p>` : ''}
-    <div class="order-number">#${order.orderNumber}</div>
-    <p class="header-date">${formatDate(order.createdAt)}</p>
+  </div>
+  
+  <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+    <div>
+      <div class="order-number">Pedido #${order.orderNumber}</div>
+      <p class="header-date">📅 ${formatDate(order.createdAt)}</p>
+    </div>
     <span class="delivery-type">${deliveryTypeText}</span>
   </div>
   
@@ -367,34 +396,30 @@ function generateReceiptHTML(
   <hr class="divider">
   
   ${order.deliveryType === 'delivery' ? `
-  <div class="section">
-    <div class="section-title">Entrega</div>
+  <div class="section-box">
+    <div class="section-title">Endereço:</div>
     <div class="section-content">
-      ${order.customerAddress || ''}
+      ${order.customerAddress || ''} - ${order.neighborhood || ''}
       ${order.addressComplement ? '<br>' + order.addressComplement : ''}
-      ${order.neighborhood ? '<br>' + order.neighborhood : ''}
     </div>
   </div>
   ` : `
-  <div class="section">
-    <div class="section-title">Retirada</div>
-    <div class="section-content">Cliente irá retirar no estabelecimento</div>
+  <div class="section-box">
+    <div class="section-content"><strong>Retirada:</strong> Cliente irá retirar no estabelecimento</div>
   </div>
   `}
   
-  <div class="section">
-    <div class="section-title">Pagamento</div>
-    <div class="section-content">
-      ${paymentMethodText[order.paymentMethod] || order.paymentMethod}
-      ${order.paymentMethod === 'cash' && order.changeFor ? '<br>Troco para: ' + formatCurrency(order.changeFor) : ''}
+  <div class="section-box">
+    <div class="payment-header">
+      <span style="color: #666; font-size: ${smallFontSize}; text-transform: uppercase;">PAGAMENTO</span>
+      <span class="payment-badge">${paymentMethodText[order.paymentMethod] || order.paymentMethod}</span>
     </div>
+    ${order.paymentMethod === 'cash' && order.changeFor ? `<div style="margin-top: 8px;">Troco para: ${formatCurrency(order.changeFor)}</div>` : ''}
   </div>
   
-  <div class="section">
-    <div class="section-title">Cliente</div>
-    <div class="section-content">
-      ${order.customerName || 'Nao informado'}
-      ${order.customerPhone ? '<br>' + order.customerPhone : ''}
+  <div class="section-box">
+    <div class="section-inline">
+      <strong>Cliente:</strong> ${order.customerName || 'Nao informado'}${order.customerPhone ? ' - ' + order.customerPhone : ''}
     </div>
   </div>
   
