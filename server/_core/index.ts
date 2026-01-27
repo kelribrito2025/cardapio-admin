@@ -444,8 +444,9 @@ function generateReceiptHTML(
   </div>
   
   <div class="section-box">
-    <div class="section-inline">
-      <img src="/client-icon.png" class="section-icon" style="flex-shrink: 0;" /> <span><strong>Cliente:</strong> ${order.customerName || 'Nao informado'}${order.customerPhone ? ' - ' + order.customerPhone : ''}</span>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/client-icon.png" class="section-icon" /> Cliente</span>
+      <span style="font-weight: ${headerFontWeight};">${order.customerName || 'Nao informado'}${order.customerPhone ? ' - ' + order.customerPhone : ''}</span>
     </div>
   </div>
   
@@ -1053,8 +1054,9 @@ async function startServer() {
     </div>
     
     <div class="client-box">
-      <div class="section-content" style="display: flex; align-items: center; flex-wrap: wrap;">
-        <img src="/client-icon.png" class="section-icon" style="flex-shrink: 0;" /> <span><strong>Cliente:</strong> ${sampleOrder.customerName} - ${sampleOrder.customerPhone}</span>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: ${titleFontWeight}; display: inline-flex; align-items: center;"><img src="/client-icon.png" class="section-icon" /> Cliente</span>
+        <span style="font-weight: ${titleFontWeight};">${sampleOrder.customerName} - ${sampleOrder.customerPhone}</span>
       </div>
     </div>
     

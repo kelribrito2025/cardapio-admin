@@ -1079,16 +1079,15 @@ export default function TesteImpressao() {
                     margin: '12px 0'
                   }}>
                     <div style={{ 
-                      fontSize: `${fontSize}px`, 
-                      fontWeight: fontWeight,
-                      color: '#444',
-                      lineHeight: 1.4,
                       display: 'flex',
-                      alignItems: 'center',
-                      flexWrap: 'wrap'
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
                     }}>
-                      <img src="/client-icon.png" alt="" style={{ width: '14px', height: '14px', marginRight: '4px', flexShrink: 0 }} />
-                      <span><strong>Cliente:</strong> {sampleOrder.customerName} - {sampleOrder.customerPhone}</span>
+                      <span style={{ fontWeight: titleFontWeight, fontSize: `${itemFontSize}px`, display: 'inline-flex', alignItems: 'center' }}>
+                        <img src="/client-icon.png" alt="" style={{ width: '14px', height: '14px', marginRight: '4px' }} />
+                        Cliente
+                      </span>
+                      <span style={{ fontWeight: titleFontWeight, fontSize: `${itemFontSize}px` }}>{sampleOrder.customerName} - {sampleOrder.customerPhone}</span>
                     </div>
                   </div>
 

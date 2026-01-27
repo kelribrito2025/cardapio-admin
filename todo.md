@@ -3337,3 +3337,5 @@
 - [x] Bug: Nome do cliente foi para baixo - corrigir layout inline
 
 - [x] Bug: Ícone de estrela no card de cliente aparecia em linha separada - corrigido usando display flex
+
+- [x] Ajustar card de Cliente para mesmo layout do card de Pagamento: ícone + "Cliente" à esquerda, nome + telefone à direita, sem dois pontos
