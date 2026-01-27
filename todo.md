@@ -3438,3 +3438,16 @@
 ## Ajustar estilo do modal de Avaliações
 - [x] Comparar estilos dos modais de Avaliações e Meus Pedidos
 - [x] Ajustar o modal de Avaliações para seguir o mesmo padrão visual do modal de Meus Pedidos
+
+
+## Layout Kanban na página de Pedidos
+- [ ] Analisar estrutura atual da página de Pedidos
+- [ ] Implementar layout Kanban com colunas por status (Novos, Em Preparo, Prontos, etc.)
+- [ ] Manter funcionalidades existentes (ações, detalhes, etc.)
+
+
+## Layout Kanban na página de Pedidos
+- [x] Transformar layout atual para estilo Kanban com colunas por status
+- [x] Criar colunas: Novos, Em Preparo, Prontos, Histórico
+- [x] Cards compactos com informações essenciais
+- [x] Scroll vertical independente por coluna
