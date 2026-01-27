@@ -4811,14 +4811,14 @@ export default function PublicMenu() {
         <div className="fixed inset-0 z-[110] flex items-end md:items-center md:justify-center">
           {/* Backdrop */}
           <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/50"
             onClick={() => setShowReviewsModal(false)}
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-lg md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-lg md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header */}
-            <div className="bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between flex-shrink-0 rounded-t-2xl" style={{height: '68px'}}>
+            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-yellow-100 rounded-xl">
                   <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
@@ -4839,7 +4839,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Body - Lista de Avaliações */}
-            <div className="flex-1 overflow-y-auto overscroll-contain p-6">
+            <div className="p-4 space-y-4" style={{backgroundColor: '#ffffff'}}>
               {reviewsQuery.isLoading ? (
                 <div className="space-y-4">
                   {[1, 2, 3].map((i) => (

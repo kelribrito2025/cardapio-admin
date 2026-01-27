@@ -3433,3 +3433,8 @@
 
 ## Simplificar página de login
 - [x] Remover seção lateral "Bem-vindo de volta" e deixar apenas o container de login centralizado
+
+
+## Ajustar estilo do modal de Avaliações
+- [x] Comparar estilos dos modais de Avaliações e Meus Pedidos
+- [x] Ajustar o modal de Avaliações para seguir o mesmo padrão visual do modal de Meus Pedidos
