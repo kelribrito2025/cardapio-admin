@@ -3484,3 +3484,4 @@
 - [x] Limitar campo de dados do usuário no modal do menu público para máximo 15 caracteres
 - [x] Implementar contador de caracteres no campo de nome do checkout (X/15)
 - [x] Alterar contador de caracteres para mostrar "X restantes" em vez de "X/15"
+- [x] Remover caixa com bordas redondas da tela de login na versão mobile
