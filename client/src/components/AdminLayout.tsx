@@ -621,11 +621,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               {/* Botão de Som de Notificação */}
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
+                  <div 
                     className={cn(
-                      "relative h-9 w-9 rounded-lg hover:bg-accent transition-colors",
+                      "flex items-center gap-2 px-3 py-2 bg-white rounded-xl shadow-sm border border-gray-100 cursor-pointer transition-all hover:shadow-md",
                       !isAudioUnlocked && "animate-pulse"
                     )}
                     onClick={async () => {
@@ -652,33 +650,23 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       }
                     }}
                   >
-                    {isAudioUnlocked ? (
-                      isSoundEnabled ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-amber-500">
-                          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" />
-                          <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                          <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-                        </svg>
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-muted-foreground">
-                          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" />
-                          <line x1="23" y1="9" x2="17" y2="15" />
-                          <line x1="17" y1="9" x2="23" y2="15" />
-                        </svg>
-                      )
-                    ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-amber-500">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" />
-                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-                      </svg>
-                    )}
-                    {!isAudioUnlocked && (
-                      <span className="absolute -top-1 -right-1 h-3 w-3 bg-amber-500 rounded-full ring-2 ring-card flex items-center justify-center">
-                        <span className="text-[8px] text-white font-bold">!</span>
-                      </span>
-                    )}
-                  </Button>
+                    {/* Ícone de Som Amarelo */}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#f59e0b" />
+                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                    </svg>
+                    
+                    {/* Toggle Switch */}
+                    <div className={cn(
+                      "relative w-12 h-6 rounded-full transition-colors duration-200",
+                      isAudioUnlocked && isSoundEnabled ? "bg-amber-400" : "bg-red-400"
+                    )}>
+                      <div className={cn(
+                        "absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200",
+                        isAudioUnlocked && isSoundEnabled ? "translate-x-6" : "translate-x-0.5"
+                      )} />
+                    </div>
+                  </div>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
                   {!isAudioUnlocked 
