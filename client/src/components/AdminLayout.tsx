@@ -624,9 +624,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   <div 
                     className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full cursor-pointer transition-all hover:bg-gray-200"
                   >
-                    {/* Ícone de Som com 2 ondas de volume */}
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#f59e0b" />
+                    {/* Ícone de Som com 2 ondas de volume - cor dinâmica */}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke={isAudioUnlocked && isSoundEnabled ? "#10b981" : "#f87171"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 transition-colors">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill={isAudioUnlocked && isSoundEnabled ? "#10b981" : "#f87171"} />
                       <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
                       <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
                     </svg>

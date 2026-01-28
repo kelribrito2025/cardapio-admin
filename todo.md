@@ -3496,3 +3496,4 @@
 - [x] Alterar toggle de som: cor verde quando ativado e ícone de som com 3 ondas de volume
 - [x] Alterar ícone de som para ter apenas 2 ondas igual à imagem de referência
 - [x] Remover animação de pulso do card de som
+- [x] Alterar cor do ícone de som para verde quando ativado e vermelho quando desativado
