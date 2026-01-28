@@ -889,7 +889,8 @@ export default function Catalogo() {
                 key={category.id} 
                 className={cn(
                   "bg-card rounded-xl border border-border/50 shadow-soft overflow-hidden transition-all duration-200",
-                  isDropTarget && "ring-2 ring-primary/50 ring-offset-2"
+                  isDropTarget && "ring-2 ring-primary/50 ring-offset-2",
+                  "border-t-4 border-t-primary"
                 )}
               >
                 {/* Drop zone for this category */}

@@ -3467,3 +3467,4 @@
 - [x] Reverter placeholders do Kanban para estilo anterior (com cores de fundo) e alterar os cards das colunas (área cinza) para fundo branco e sombra
 - [x] Melhorar card de status WhatsApp: mostrar loading inicial, só mostrar desconectado após confirmação da API
 - [x] Alterar cores do card de status WhatsApp: verde quando conectado, vermelho quando desconectado
+- [x] Atualizar cards da página de Cardápio para ter bordas coloridas no topo (estilo igual à página de Pedidos)
