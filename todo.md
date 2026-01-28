@@ -3447,3 +3447,4 @@
 - [ ] BUG: Erro "Rate exceeded" ao enviar pedido no menu público
 - [x] Implementar acordeão (expandir/minimizar) nas colunas do Kanban para versão mobile
 - [x] BUG: Erro "ERRO AO CONECTAR COM AS IMPRESSORAS" ao aceitar pedido
+- [x] BUG: Pedidos não são impressos após clicar em Aceitar

@@ -1,0 +1,52 @@
+{
+  "query": "SELECT id, orderNumber, status, establishmentId FROM orders;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, status, establishmentId FROM orders;",
+  "rows": [
+    {
+      "id": "180076",
+      "orderNumber": "#P1",
+      "status": "completed",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "180077",
+      "orderNumber": "#P2",
+      "status": "completed",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "180078",
+      "orderNumber": "#P3",
+      "status": "completed",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "180079",
+      "orderNumber": "#P4",
+      "status": "cancelled",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "180080",
+      "orderNumber": "#P5",
+      "status": "completed",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "180081",
+      "orderNumber": "#P6",
+      "status": "preparing",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "180082",
+      "orderNumber": "#P7",
+      "status": "preparing",
+      "establishmentId": "30001"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tstatus\testablishmentId\n180076\t#P1\tcompleted\t30001\n180077\t#P2\tcompleted\t30001\n180078\t#P3\tcompleted\t30001\n180079\t#P4\tcancelled\t30001\n180080\t#P5\tcompleted\t30001\n180081\t#P6\tpreparing\t30001\n180082\t#P7\tpreparing\t30001\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}

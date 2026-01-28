@@ -1,0 +1,35 @@
+{
+  "query": "SELECT id, orderNumber, status FROM orders ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, status FROM orders ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "180082",
+      "orderNumber": "#P7",
+      "status": "preparing"
+    },
+    {
+      "id": "180081",
+      "orderNumber": "#P6",
+      "status": "preparing"
+    },
+    {
+      "id": "180080",
+      "orderNumber": "#P5",
+      "status": "completed"
+    },
+    {
+      "id": "180079",
+      "orderNumber": "#P4",
+      "status": "cancelled"
+    },
+    {
+      "id": "180078",
+      "orderNumber": "#P3",
+      "status": "completed"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tstatus\n180082\t#P7\tpreparing\n180081\t#P6\tpreparing\n180080\t#P5\tcompleted\n180079\t#P4\tcancelled\n180078\t#P3\tcompleted\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

@@ -1,0 +1,26 @@
+{
+  "query": "SELECT id, name, ipAddress, port, isActive, establishmentId FROM printers WHERE isActive = 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, ipAddress, port, isActive, establishmentId FROM printers WHERE isActive = 1;",
+  "rows": [
+    {
+      "id": "30002",
+      "name": "KOT-1",
+      "ipAddress": "192.168.68.100",
+      "port": "9100",
+      "isActive": "1",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "30003",
+      "name": "KOT-2",
+      "ipAddress": "192.168.68.101",
+      "port": "9100",
+      "isActive": "1",
+      "establishmentId": "30001"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tipAddress\tport\tisActive\testablishmentId\n30002\tKOT-1\t192.168.68.100\t9100\t1\t30001\n30003\tKOT-2\t192.168.68.101\t9100\t1\t30001\n",
+  "stderr": "",
+  "execution_time_ms": 95
+}

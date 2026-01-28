@@ -416,24 +416,29 @@ export default function Pedidos() {
 
   // Função para imprimir via Multi Printer
   const handlePrintMultiPrinter = async (orderId: number) => {
+    // Detectar se é Android
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    
+    if (!isAndroid) {
+      toast.info("Para impressão em múltiplas impressoras, use um dispositivo Android com o app Multi Printer Network Print Service.");
+      return;
+    }
+    
     try {
-      const response = await fetch(`/api/print/multiprinter/${orderId}`);
+      // Buscar deep link do servidor
+      const response = await fetch(`${window.location.origin}/api/print/multiprinter/${orderId}`);
+      const data = await response.json();
       
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success && result.deepLink) {
-          // Abrir o deep link para o app Multi Printer
-          window.location.href = result.deepLink;
-          toast.success(`Pedido enviado para ${result.printers?.length || 'múltiplas'} impressoras!`);
-        } else {
-          toast.error(result.error || "Erro ao gerar link de impressão");
-        }
+      if (data.success && data.deepLink) {
+        // Abrir o deep link para o app Multi Printer
+        window.location.href = data.deepLink;
+        toast.success(`Enviando para ${data.printers.length} impressora(s)...`);
       } else {
-        const error = await response.json();
-        toast.error(error.error || "Erro ao enviar para impressoras");
+        toast.error(data.error || "Erro ao gerar link de impressão");
       }
     } catch (error) {
-      toast.error("Erro ao conectar com as impressoras");
+      console.error("Erro ao imprimir em múltiplas impressoras:", error);
+      toast.error("Erro ao conectar com o servidor");
     }
   };
 

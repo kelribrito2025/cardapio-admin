@@ -1,8 +1,8 @@
-import 'dotenv/config';
-import { createConnection } from 'mysql2/promise';
+import mysql from 'mysql2/promise';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const conn = await createConnection(process.env.DATABASE_URL);
-const [rows] = await conn.execute('SELECT id, establishmentId, status, customerName, total, createdAt FROM orders ORDER BY createdAt DESC LIMIT 10');
-console.log('Pedidos no banco:');
-console.table(rows);
+const conn = await mysql.createConnection(process.env.DATABASE_URL);
+const [rows] = await conn.execute('SELECT id, orderNumber, status FROM orders LIMIT 10');
+console.log('Pedidos encontrados:', rows);
 await conn.end();
