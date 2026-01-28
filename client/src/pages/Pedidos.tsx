@@ -417,17 +417,20 @@ export default function Pedidos() {
   // Função para imprimir via Multi Printer
   const handlePrintMultiPrinter = async (orderId: number) => {
     try {
-      const response = await fetch(`/api/print/multi/${orderId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
+      const response = await fetch(`/api/print/multiprinter/${orderId}`);
       
       if (response.ok) {
         const result = await response.json();
-        toast.success(`Pedido enviado para ${result.printerCount || 'múltiplas'} impressoras!`);
+        if (result.success && result.deepLink) {
+          // Abrir o deep link para o app Multi Printer
+          window.location.href = result.deepLink;
+          toast.success(`Pedido enviado para ${result.printers?.length || 'múltiplas'} impressoras!`);
+        } else {
+          toast.error(result.error || "Erro ao gerar link de impressão");
+        }
       } else {
         const error = await response.json();
-        toast.error(error.message || "Erro ao enviar para impressoras");
+        toast.error(error.error || "Erro ao enviar para impressoras");
       }
     } catch (error) {
       toast.error("Erro ao conectar com as impressoras");
