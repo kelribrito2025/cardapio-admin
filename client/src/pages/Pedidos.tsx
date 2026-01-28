@@ -917,10 +917,15 @@ export default function Pedidos() {
                           </div>
                           <div className={cn("flex items-center gap-1.5 text-sm font-medium", config.color)}>
                             <Clock className="h-4 w-4" />
-                            {formatDistanceToNow(new Date(order.createdAt), {
-                              addSuffix: false,
-                              locale: ptBR,
-                            })}
+                            {(() => {
+                              const diffMs = Date.now() - new Date(order.createdAt).getTime();
+                              const diffMins = Math.floor(diffMs / 60000);
+                              const diffHours = Math.floor(diffMins / 60);
+                              if (diffMins < 1) return 'agora';
+                              if (diffMins < 60) return `${diffMins} min`;
+                              if (diffHours === 1) return '1 hora';
+                              return `${diffHours} horas`;
+                            })()}
                           </div>
                         </div>
 
