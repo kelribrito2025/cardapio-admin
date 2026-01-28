@@ -640,6 +640,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           if (unlocked) {
                             setIsSoundEnabled(true);
                             localStorage.setItem("notificationSoundEnabled", "true");
+                            // Tocar som de teste breve ao ativar
+                            try {
+                              const testAudio = new Audio("/notification.mp3");
+                              testAudio.volume = 0.5;
+                              await testAudio.play();
+                            } catch (err) {
+                              console.log("[Som] Erro ao tocar som de teste:", err);
+                            }
                             toast.success("Som ativado!", {
                               description: "Você receberá notificações sonoras para novos pedidos.",
                             });
@@ -648,6 +656,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           setIsSoundEnabled(checked);
                           localStorage.setItem("notificationSoundEnabled", checked ? "true" : "false");
                           if (checked) {
+                            // Tocar som de teste breve ao ativar
+                            try {
+                              const testAudio = new Audio("/notification.mp3");
+                              testAudio.volume = 0.5;
+                              await testAudio.play();
+                            } catch (err) {
+                              console.log("[Som] Erro ao tocar som de teste:", err);
+                            }
                             toast.success("Som ativado!");
                           } else {
                             toast.info("Som desativado");
