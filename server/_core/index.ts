@@ -463,7 +463,7 @@ function generateReceiptHTML(
   <div style="margin: 8px 0; text-align: center;">
     <div style="border-top: 1px dashed #000; margin-bottom: 8px;"></div>
     <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: ${baseFontSize}; font-weight: ${baseFontWeight};">
-      <span style="display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border: 1px solid #000; border-radius: 50%; font-size: 10px; font-weight: bold;">i</span>
+      <img src="/info-icon.svg" style="width: 16px; height: 16px;" alt="info" />
       <span>Obs: Troco para ${formatCurrency(order.changeAmount)}</span>
     </div>
     <div style="border-top: 1px dashed #000; margin-top: 8px;"></div>
