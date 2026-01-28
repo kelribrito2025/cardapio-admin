@@ -3375,6 +3375,7 @@ export default function PublicMenu() {
                     value={customerInfo.name}
                     onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
                     placeholder="Digite seu nome"
+                    maxLength={15}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                   />
                 </div>
