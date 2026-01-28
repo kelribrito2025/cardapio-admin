@@ -1,0 +1,250 @@
+{
+  "query": "SELECT p.id, p.name, p.printerId, pr.name as printerName, pr.ipAddress, pr.isActive \nFROM products p \nLEFT JOIN printers pr ON p.printerId = pr.id \nWHERE p.establishmentId = 30001 \nORDER BY p.printerId ASC\nLIMIT 30;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.printerId, pr.name as printerName, pr.ipAddress, pr.isActive \nFROM products p \nLEFT JOIN printers pr ON p.printerId = pr.id \nWHERE p.establishmentId = 30001 \nORDER BY p.printerId ASC\nLIMIT 30;",
+  "rows": [
+    {
+      "id": "120002",
+      "name": "SHASHIMI - TEMPURÁ",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120003",
+      "name": "SUNOMONO",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120004",
+      "name": "DUPLA KANI",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120005",
+      "name": "DUPLA DE SKIN",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120006",
+      "name": "DUPLA DE CAMARÃO",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120007",
+      "name": "DUPLA DE GUNGA SKIN",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120008",
+      "name": "DUPLA DE GUNGA PATÊ DE CAMARÃO",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120009",
+      "name": "Dupla de gunda tomate seco",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120010",
+      "name": "DUPLA EBI SHAKÊ",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120011",
+      "name": "Dupla de salmão",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120012",
+      "name": "DUPLA DE SALMÃO C/ QUEIJO",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120013",
+      "name": "DUPLA DE SALMÃO C/ CAMARÃO",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120014",
+      "name": "DUPLA DE SALMÃO C/ SKIN",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120015",
+      "name": "DUPLA VEGETAL MAKE",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120016",
+      "name": "EBITEN",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120017",
+      "name": "SALMÃO ESPECIAL",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120018",
+      "name": "CAMARÃO ESPECIAL",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120019",
+      "name": "FILADÉLFIA",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120020",
+      "name": "CALIFORNIA",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120021",
+      "name": "SKIN",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120022",
+      "name": "SALMÃO",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120023",
+      "name": "SALMÃO C/TOMATE SECO",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120024",
+      "name": "KANI MAKE",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120025",
+      "name": "EBI MAKE",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120026",
+      "name": "SALMÃO MAKE",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120027",
+      "name": "FUTO MAKE",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120028",
+      "name": "HOSSOMAKI MISTO",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120029",
+      "name": "HOT FILADÉLFIA",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120030",
+      "name": "HOT CAMARÃO",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    },
+    {
+      "id": "120031",
+      "name": "HOT SKIN",
+      "printerId": "NULL",
+      "printerName": "NULL",
+      "ipAddress": "NULL",
+      "isActive": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tprinterId\tprinterName\tipAddress\tisActive\n120002\tSHASHIMI - TEMPURÁ\tNULL\tNULL\tNULL\tNULL\n120003\tSUNOMONO\tNULL\tNULL\tNULL\tNULL\n120004\tDUPLA KANI\tNULL\tNULL\tNULL\tNULL\n120005\tDUPLA DE SKIN\tNULL\tNULL\tNULL\tNULL\n120006\tDUPLA DE CAMARÃO\tNULL\tNULL\tNULL\tNULL\n120007\tDUPLA DE GUNGA SKIN\tNULL\tNULL\tNULL\tNULL\n120008\tDUPLA DE GUNGA PATÊ DE CAMARÃO\tNULL\tNULL\tNULL\tNULL\n120009\tDupla de gunda tomate seco\tNULL\tNULL\tNULL\tNULL\n120010\tDUPLA EBI SHAKÊ\tNULL\tNULL\tNULL\tNULL\n120011\tDupla de salmão\tNULL\tNULL\tNULL\tNULL\n120012\tDUPLA DE SALMÃO C/ QUEIJO\tNULL\tNULL\tNULL\tNULL\n120013\tDUPLA DE SALMÃO C/ CAMARÃO\tNULL\tNULL\tNULL\tNULL\n120014\tDUPLA DE SALMÃO C/ SKIN\tNULL\tNULL\tNULL\tNULL\n120015\tDUPLA VEGETAL MAKE\tNULL\tNULL\tNULL\tNULL\n120016\tEBITEN\tNULL\tNULL\tNULL\tNULL\n120017\tSALMÃO ESPECIAL\tNULL\tNULL\tNULL\tNULL\n120018\tCAMARÃO ESPECIAL\tNULL\tNULL\tNULL\tNULL\n120019\tFILADÉLFIA\tNULL\tNULL\tNULL\tNULL\n120020\tCALIFORNIA\tNULL\tNULL\tNULL\tNULL\n120021\tSKIN\tNULL\tNULL\tNULL\tNULL\n120022\tSALMÃO\tNULL\tNULL\tNULL\tNULL\n120023\tSALMÃO C/TOMATE SECO\tNULL\tNULL\tNULL\tNULL\n120024\tKANI MAKE\tNULL\tNULL\tNULL\tNULL\n120025\tEBI MAKE\tNULL\tNULL\tNULL\tNULL\n120026\tSALMÃO MAKE\tNULL\tNULL\tNULL\tNULL\n120027\tFUTO MAKE\tNULL\tNULL\tNULL\tNULL\n120028\tHOSSOMAKI MISTO\tNULL\tNULL\tNULL\tNULL\n120029\tHOT FILADÉLFIA\tNULL\tNULL\tNULL\tNULL\n120030\tHOT CAMARÃO\tNULL\tNULL\tNULL\tNULL\n120031\tHOT SKIN\tNULL\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}
