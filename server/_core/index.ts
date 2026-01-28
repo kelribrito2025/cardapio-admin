@@ -455,9 +455,8 @@ function generateReceiptHTML(
   <div class="section-box">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/payment-icon.png" class="section-icon" /> Pagamento</span>
-      <span style="font-weight: ${headerFontWeight};">${paymentMethodText[order.paymentMethod] || order.paymentMethod}</span>
+      <span style="font-weight: ${headerFontWeight};">${paymentMethodText[order.paymentMethod] || order.paymentMethod}${order.paymentMethod === 'cash' && order.changeFor ? ` | Troco para ${formatCurrency(order.changeFor)}` : ''}</span>
     </div>
-    ${order.paymentMethod === 'cash' && order.changeFor ? `<div style="margin-top: 8px; font-size: ${smallFontSize};">Troco para: ${formatCurrency(order.changeFor)}</div>` : ''}
   </div>
   
   <div class="section-box">

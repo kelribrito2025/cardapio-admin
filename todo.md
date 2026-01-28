@@ -3480,3 +3480,4 @@
 - [x] Sincronizar estilos do recibo de teste com o recibo de pedidos reais (mesma fonte Arial, mesmos pesos, mesmos tamanhos, mesmos estilos de caixas)
 - [x] Padronizar recibo de teste para usar EXATAMENTE o mesmo template do recibo real (mesma função generateReceiptHTML)
 - [x] Corrigir formatação do número de telefone no recibo de impressão para o formato (88) 9 9929-0000
+- [x] Corrigir recibo para mostrar troco solicitado quando pagamento for em dinheiro (formato: Dinheiro | Troco para R$X)
