@@ -620,28 +620,34 @@ export async function sendOrderConfirmationRequest(
     orderItems: Array<{
       productName: string;
       quantity: number;
+      unitPrice?: string;
+      totalPrice?: string;
+      complements?: Array<{ name: string; price: number }> | string | null;
+      notes?: string | null;
     }>;
     orderTotal: string;
+    template?: string | null;
   }
 ): Promise<SendTextResponse> {
-  const greeting = getGreeting();
-  
-  // Build items list
-  const itemsList = data.orderItems.map(item => `${item.quantity}x ${item.productName}`).join('\n');
-  
-  // Format total
-  const formattedTotal = `R$ ${parseFloat(data.orderTotal).toFixed(2).replace('.', ',')}`;
-  
-  // Build message
-  const message = `Olá ${data.customerName}! 👋🏻 ${greeting}, Tudo bem?
-
-Seu pedido ${data.orderNumber} foi recebido!
-
-${itemsList}
-
-💰 Total: ${formattedTotal}
-
-🔔 Você será notificado por aqui em cada atualização.`;
+  // Usar a função generateStatusMessage para processar o template
+  const message = generateStatusMessage(
+    'new',
+    data.orderNumber,
+    data.customerName,
+    data.establishmentName,
+    data.template,
+    undefined, // deliveryType
+    undefined, // cancellationReason
+    data.orderItems.map(item => ({
+      productName: item.productName,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice || '0',
+      totalPrice: item.totalPrice || '0',
+      complements: item.complements,
+      notes: item.notes,
+    })),
+    data.orderTotal
+  );
 
   // Button for confirmation (only confirm button)
   const buttons = [

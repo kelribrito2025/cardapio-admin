@@ -1616,8 +1616,13 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
               orderItems: items.map(item => ({
                 productName: item.productName,
                 quantity: item.quantity ?? 1,
+                unitPrice: item.unitPrice,
+                totalPrice: item.totalPrice,
+                complements: item.complements,
+                notes: item.notes,
               })),
               orderTotal: data.total,
+              template: whatsappConfig.templateNewOrder,
             }
           );
           console.log('[DB:createPublicOrder] Mensagem de confirmação com botões enviada:', orderNumber);

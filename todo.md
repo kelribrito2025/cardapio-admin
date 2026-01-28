@@ -3461,3 +3461,4 @@
 - [x] Criar modal de QR Code do WhatsApp na página de Pedidos (com título "Aguardando conexão...", QR Code e instruções)
 - [x] Remover aba de WhatsApp da página de configurações (funcionalidade movida para Pedidos)
 - [x] Restaurar aba de WhatsApp nas configurações, removendo apenas o card de status de conexão (manter notificações, templates e teste)
+- [x] Remover mensagem hardcoded "🔔 Você será notificado por aqui em cada atualização." das notificações de WhatsApp (usar apenas o template configurado)
