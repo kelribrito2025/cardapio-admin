@@ -3475,3 +3475,5 @@
 - [x] Remover texto "cerca de" dos cards do Kanban na página de Pedidos
 - [x] Mover menu 'Teste Impressão' do sidebar para a página de Configurações como nova aba
 - [x] Ajustar layout da aba Teste Impressão para seguir o mesmo padrão visual da aba WhatsApp
+- [x] Corrigir layout da aba Teste na versão mobile para ficar igual às outras abas (Layout, Fontes)
+- [x] Corrigir função de impressão térmica Android na aba de Teste Impressão (comparar com página de Pedidos)

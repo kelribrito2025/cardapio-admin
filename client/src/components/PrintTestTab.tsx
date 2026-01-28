@@ -239,21 +239,30 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
       // Continuar mesmo se falhar o save
     }
     
-    // URL do recibo de teste no servidor
-    const testUrl = `${window.location.origin}/api/print/test/${establishmentId}`;
-    
     // Detectar se é Android
     const isAndroid = /Android/i.test(navigator.userAgent);
     
-    if (isAndroid) {
-      // Usar app-link do ESC POS Wifi Print Service
-      const printUrl = `print://escpos.org/escpos/net/print?srcTp=uri&srcObj=html&numCopies=1&src=${encodeURIComponent(testUrl)}`;
-      window.location.href = printUrl;
-      toast.info("Enviando para impressora térmica...");
-    } else {
-      // Em outros dispositivos, abrir o recibo em nova aba
+    if (!isAndroid) {
+      const testUrl = `${window.location.origin}/api/print/test/${establishmentId}`;
       window.open(testUrl, '_blank');
-      toast.info("Recibo aberto em nova aba. Para impressão térmica, use um dispositivo Android com o app ESC POS Wifi Print Service.");
+      toast.info("Recibo aberto em nova aba. Para impressão térmica, use um dispositivo Android com o app Multi Printer Network Print Service.");
+      return;
+    }
+    
+    try {
+      // Buscar deep link do servidor (igual à página de Pedidos)
+      const response = await fetch(`${window.location.origin}/api/print/multiprinter-test/${establishmentId}`);
+      const data = await response.json();
+      
+      if (data.success && data.deepLink) {
+        // Abrir o deep link para o app Multi Printer
+        window.location.href = data.deepLink;
+        toast.success(`Enviando para ${data.printers.length} impressora(s)...`);
+      } else {
+        toast.error(data.error || "Erro ao gerar link de impressão. Verifique se há impressoras configuradas.");
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar com o servidor");
     }
   };
 
@@ -881,77 +890,55 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
         
         {/* Test Tab */}
         <TabsContent value="test" className="space-y-4 mt-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Botões de Teste */}
-            <div className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Imprimir Recibo de Teste</CardTitle>
-                  <CardDescription>
-                    Teste a impressão com um pedido de exemplo
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Button onClick={handleTestPrint} className="w-full" variant="outline">
-                    <Printer className="h-4 w-4 mr-2" />
-                    Teste Normal (Nova Aba)
-                  </Button>
-                  <Button onClick={handleTestThermalPrint} className="w-full">
-                    <Smartphone className="h-4 w-4 mr-2" />
-                    Teste Térmica (Android)
-                  </Button>
-                  <p className="text-xs text-muted-foreground">
-                    Para impressão térmica, use um dispositivo Android com o app ESC POS Wifi Print Service instalado.
-                  </p>
-                </CardContent>
-              </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Imprimir Recibo de Teste</CardTitle>
+              <CardDescription>
+                Teste a impressão com um pedido de exemplo
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Button onClick={handleTestPrint} variant="outline">
+                  <Printer className="h-4 w-4 mr-2" />
+                  Teste Normal (Nova Aba)
+                </Button>
+                <Button onClick={handleTestThermalPrint}>
+                  <Smartphone className="h-4 w-4 mr-2" />
+                  Teste Térmica (Android)
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Para impressão térmica, use um dispositivo Android com o app Multi Printer Network Print Service instalado.
+              </p>
+            </CardContent>
+          </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Texto Personalizado</CardTitle>
-                  <CardDescription>
-                    Imprima um texto personalizado para teste
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Textarea
-                    placeholder="Digite o texto que deseja imprimir..."
-                    value={customText}
-                    onChange={(e) => setCustomText(e.target.value)}
-                    rows={4}
-                  />
-                  <Button 
-                    onClick={handleTestCustomPrint}
-                    disabled={!customText.trim()}
-                    className="w-full"
-                    variant="outline"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Imprimir Texto
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Preview do Recibo */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Eye className="h-5 w-5" />
-                  Preview do Recibo
-                </CardTitle>
-                <CardDescription>
-                  Visualize como ficará o recibo impresso
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div 
-                  className="bg-white border rounded-lg overflow-auto max-h-[600px]"
-                  dangerouslySetInnerHTML={{ __html: generateReceiptHTML() }}
-                />
-              </CardContent>
-            </Card>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Texto Personalizado</CardTitle>
+              <CardDescription>
+                Imprima um texto personalizado para teste
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Textarea
+                placeholder="Digite o texto que deseja imprimir..."
+                value={customText}
+                onChange={(e) => setCustomText(e.target.value)}
+                rows={4}
+              />
+              <Button 
+                onClick={handleTestCustomPrint}
+                disabled={!customText.trim()}
+                className="w-full"
+                variant="outline"
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Imprimir Texto
+              </Button>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
