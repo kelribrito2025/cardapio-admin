@@ -176,7 +176,7 @@ export default function Pedidos() {
   const utils = trpc.useUtils();
   
   // Query para status do WhatsApp (com polling quando modal está aberto)
-  const { data: whatsappStatus, refetch: refetchWhatsappStatus } = trpc.whatsapp.getStatus.useQuery(undefined, {
+  const { data: whatsappStatus, refetch: refetchWhatsappStatus, isLoading: isWhatsappLoading, isFetched: isWhatsappFetched } = trpc.whatsapp.getStatus.useQuery(undefined, {
     refetchInterval: isPollingQrCode ? 3000 : 30000,
   });
   
@@ -703,34 +703,44 @@ export default function Pedidos() {
         <div className="hidden sm:flex items-center gap-3">
           <div className={cn(
             "flex items-center gap-3 px-4 py-2 rounded-xl border text-sm font-medium shadow-sm",
-            whatsappStatus?.status === 'connected'
-              ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-              : "bg-gray-50 border-gray-200 text-gray-600"
+            !isWhatsappFetched || isWhatsappLoading
+              ? "bg-gray-50 border-gray-200 text-gray-600"
+              : whatsappStatus?.status === 'connected'
+                ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                : "bg-red-50 border-red-200 text-red-700"
           )}>
             {/* Ícone de status */}
             <div className="flex items-center gap-2">
-              {whatsappStatus?.status === 'connected' ? (
-                <Wifi className="h-4 w-4 text-emerald-500" />
+              {!isWhatsappFetched || isWhatsappLoading ? (
+                /* Estado de carregamento */
+                <>
+                  <Loader2 className="h-4 w-4 text-gray-400 animate-spin" />
+                  <span className="w-2 h-2 rounded-full bg-gray-300 animate-pulse" />
+                  <span>Verificando...</span>
+                </>
+              ) : whatsappStatus?.status === 'connected' ? (
+                /* Conectado */
+                <>
+                  <Wifi className="h-4 w-4 text-emerald-500" />
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Conectado</span>
+                </>
               ) : (
-                <WifiOff className="h-4 w-4 text-gray-400" />
+                /* Desconectado */
+                <>
+                  <WifiOff className="h-4 w-4 text-red-500" />
+                  <span className="w-2 h-2 rounded-full bg-red-500" />
+                  <span>Desconectado</span>
+                </>
               )}
-              <span className={cn(
-                "w-2 h-2 rounded-full",
-                whatsappStatus?.status === 'connected'
-                  ? "bg-emerald-500 animate-pulse"
-                  : "bg-gray-400"
-              )} />
-              <span>
-                {whatsappStatus?.status === 'connected' ? 'Conectado' : 'Desconectado'}
-              </span>
             </div>
             
-            {/* Separador */}
-            <div className="w-px h-5 bg-gray-300" />
-            
-            {/* Botões de ação */}
-            <div className="flex items-center gap-1">
-              {whatsappStatus?.status === 'connected' ? (
+            {/* Botões de ação - só mostra após carregar */}
+            {isWhatsappFetched && !isWhatsappLoading && (
+              <>
+                <div className="w-px h-5 bg-gray-300" />
+                <div className="flex items-center gap-1">
+                  {whatsappStatus?.status === 'connected' ? (
                 /* Quando conectado: Atualizar e Desconectar */
                 <>
                   <TooltipProvider>
@@ -809,7 +819,9 @@ export default function Pedidos() {
                   </Tooltip>
                 </TooltipProvider>
               )}
-            </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
