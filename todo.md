@@ -3493,3 +3493,4 @@
 - [x] Substituir botão de som por componente com ícone amarelo + toggle switch em caixa arredondada
 - [x] Ajustar componente de som: reduzir ícone, remover sombra, usar cor cinza claro
 - [x] Ajustar toggle do som para usar o mesmo estilo do toggle de abrir/fechar restaurante
+- [x] Alterar toggle de som: cor verde quando ativado e ícone de som com 3 ondas de volume

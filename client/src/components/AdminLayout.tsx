@@ -627,10 +627,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       !isAudioUnlocked && "animate-pulse"
                     )}
                   >
-                    {/* Ícone de Som Amarelo */}
+                    {/* Ícone de Som com 3 ondas de volume */}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
                       <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#f59e0b" />
-                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                      <path d="M14 9a3 3 0 0 1 0 6" />
+                      <path d="M17 6a7 7 0 0 1 0 12" />
+                      <path d="M20 3a11 11 0 0 1 0 18" />
                     </svg>
                     
                     {/* Toggle Switch - mesmo estilo do toggle de abrir/fechar restaurante */}
@@ -656,7 +658,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           }
                         }
                       }}
-                      className="data-[state=checked]:bg-amber-400 data-[state=unchecked]:bg-red-300 scale-90"
+                      className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-red-300 scale-90"
                     />
                   </div>
                 </TooltipTrigger>
