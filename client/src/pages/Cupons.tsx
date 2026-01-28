@@ -184,8 +184,8 @@ export default function Cupons() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900">Cupons</h1>
-            <p className="text-sm text-gray-500 mt-0.5">Gerencie os cupons de desconto do seu estabelecimento</p>
+            <h1 className="text-2xl font-bold">Cupons</h1>
+            <p className="text-base text-muted-foreground">Gerencie os cupons de desconto do seu estabelecimento</p>
           </div>
           <Button onClick={() => navigate("/cupons/novo")} className="bg-red-600 hover:bg-red-700">
             <Plus className="h-4 w-4 mr-1.5" />

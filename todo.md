@@ -3442,3 +3442,4 @@
 - [x] Restaurar visual original do card de pedido no layout Kanban (header colorido, botões impressora/ver detalhes/aceitar/cancelar)
 - [x] Alterar cor de fundo do header do card para cinza fixo (#e3e3e3) apenas no status "completed"
 - [x] Ajustar altura dos cards do Kanban na página de Pedidos para igualar à altura dos cards de Estoque
+- [x] Padronizar cabeçalhos das páginas Catálogo, Pedidos e Cupons para ficarem iguais ao da página de Estoque
