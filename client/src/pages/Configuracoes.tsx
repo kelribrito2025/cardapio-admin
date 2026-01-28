@@ -71,6 +71,7 @@ import { AddressMapPicker } from "@/components/AddressMapPicker";
 import { LoyaltySettingsCard } from "@/components/LoyaltySettingsCard";
 import { NotificationsTab } from "@/components/NotificationsTab";
 import { WhatsAppTab } from "@/components/WhatsAppTab";
+import { PrintTestTab } from "@/components/PrintTestTab";
 
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
@@ -885,6 +886,10 @@ export default function Configuracoes() {
           <TabsTrigger value="whatsapp" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
             <MessageCircle className="h-4 w-4" />
             WhatsApp
+          </TabsTrigger>
+          <TabsTrigger value="teste-impressao" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
+            <TestTube className="h-4 w-4" />
+            Teste Impressão
           </TabsTrigger>
         </TabsList>
 
@@ -2700,6 +2705,11 @@ export default function Configuracoes() {
         {/* WhatsApp Tab */}
         <TabsContent value="whatsapp" className="space-y-5">
           <WhatsAppTab hideConnectionCard />
+        </TabsContent>
+        
+        {/* Teste Impressão Tab */}
+        <TabsContent value="teste-impressao" className="space-y-5">
+          <PrintTestTab establishmentId={establishment?.id || 0} />
         </TabsContent>
       </Tabs>
 
