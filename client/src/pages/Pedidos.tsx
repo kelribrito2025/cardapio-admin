@@ -653,23 +653,19 @@ export default function Pedidos() {
                 column.borderColor
               )}
             >
-              {/* Column Header */}
-              <div className="px-4 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={cn("p-2 rounded-xl", column.iconBg)}>
-                    <Icon className={cn("h-5 w-5", column.iconColor)} />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-800">{column.title}</h3>
-                    <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                      <span className={cn("w-2 h-2 rounded-full", column.dotColor)} />
-                      <span>{columnOrders.length} ativos</span>
-                    </div>
+              {/* Column Header - mesmo estilo dos cards de estoque */}
+              <div className="px-5 py-5 flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">{column.title}</p>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className={cn("w-2 h-2 rounded-full", column.dotColor)} />
+                    <span className="text-2xl font-bold tracking-tight">{columnOrders.length}</span>
+                    <span className="text-xs text-muted-foreground">ativos</span>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-600">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
+                <div className={cn("p-2.5 rounded-lg shrink-0", column.iconBg)}>
+                  <Icon className={cn("h-5 w-5", column.iconColor)} />
+                </div>
               </div>
 
               {/* Column Content */}
