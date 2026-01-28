@@ -123,10 +123,12 @@ export default function Dashboard() {
 
   return (
     <AdminLayout>
-      <PageHeader 
-        title="Dashboard" 
-        description="Visão geral do seu estabelecimento"
-      />
+      <div className="mb-6">
+        <PageHeader 
+          title="Dashboard" 
+          description="Visão geral do seu estabelecimento"
+        />
+      </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">

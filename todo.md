@@ -3449,3 +3449,4 @@
 - [x] BUG: Erro "ERRO AO CONECTAR COM AS IMPRESSORAS" ao aceitar pedido
 - [x] BUG: Pedidos não são impressos após clicar em Aceitar
 - [x] Remover opção "Impressora Térmica (1 impressora)" do dropdown de impressão
+- [x] Ajustar espaçamento entre cabeçalho e cards nas páginas Dashboard e Catálogo para ficar igual à página de Pedidos
