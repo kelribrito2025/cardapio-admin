@@ -56,6 +56,7 @@ import {
   Plus,
   MoreVertical,
   CheckCircle2,
+  ChevronDown,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
@@ -151,6 +152,8 @@ export default function Pedidos() {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState<number | null>(null);
   const [cancellationReason, setCancellationReason] = useState("");
+  // Estado para controlar expansão das colunas no mobile (acordeão)
+  const [expandedColumns, setExpandedColumns] = useState<Set<OrderStatus>>(() => new Set<OrderStatus>(["new"]));
 
   useEffect(() => {
     if (establishment) {
@@ -605,6 +608,19 @@ export default function Pedidos() {
     }
   };
 
+  // Função para toggle de expansão das colunas no mobile
+  const toggleColumnExpansion = (columnId: OrderStatus) => {
+    setExpandedColumns(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(columnId)) {
+        newSet.delete(columnId);
+      } else {
+        newSet.add(columnId);
+      }
+      return newSet;
+    });
+  };
+
   // Agrupar pedidos por status para o Kanban
   const ordersByStatus = {
     new: allOrders?.filter(o => o.status === "new") ?? [],
@@ -640,10 +656,11 @@ export default function Pedidos() {
       </div>
 
       {/* Kanban Board */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-[calc(100vh-200px)]">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:h-[calc(100vh-200px)]">
         {kanbanColumns.map((column) => {
           const columnOrders = ordersByStatus[column.id];
           const Icon = column.icon;
+          const isExpanded = expandedColumns.has(column.id);
           
           return (
             <div 
@@ -653,8 +670,11 @@ export default function Pedidos() {
                 column.borderColor
               )}
             >
-              {/* Column Header - mesmo estilo dos cards de estoque */}
-              <div className="px-5 py-5 flex items-start justify-between gap-2">
+              {/* Column Header - clicável no mobile para expandir/minimizar */}
+              <div 
+                className="px-5 py-5 flex items-start justify-between gap-2 cursor-pointer md:cursor-default select-none"
+                onClick={() => toggleColumnExpansion(column.id)}
+              >
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">{column.title}</p>
                   <div className="flex items-center gap-1.5 mt-1">
@@ -663,13 +683,24 @@ export default function Pedidos() {
                     <span className="text-xs text-muted-foreground">ativos</span>
                   </div>
                 </div>
-                <div className={cn("p-2.5 rounded-lg shrink-0", column.iconBg)}>
-                  <Icon className={cn("h-5 w-5", column.iconColor)} />
+                <div className="flex items-center gap-2">
+                  <div className={cn("p-2.5 rounded-lg shrink-0", column.iconBg)}>
+                    <Icon className={cn("h-5 w-5", column.iconColor)} />
+                  </div>
+                  {/* Seta de expansão - visível apenas no mobile */}
+                  <ChevronDown className={cn(
+                    "h-5 w-5 text-muted-foreground transition-transform duration-200 md:hidden",
+                    isExpanded && "rotate-180"
+                  )} />
                 </div>
               </div>
 
-              {/* Column Content */}
-              <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-3">
+              {/* Column Content - colapsável no mobile */}
+              <div className={cn(
+                "flex-1 overflow-y-auto px-3 pb-3 space-y-3 transition-all duration-200",
+                // No mobile: esconde se não expandido
+                !isExpanded && "max-h-0 pb-0 overflow-hidden md:max-h-none md:pb-3 md:overflow-y-auto"
+              )}>
                 {isLoading ? (
                   // Loading skeleton
                   <div className="space-y-3">

@@ -1,0 +1,37 @@
+{
+  "query": "SELECT o.id, o.establishmentId, o.status, o.customerName, o.total, o.createdAt, e.name as establishmentName FROM orders o LEFT JOIN establishments e ON o.establishmentId = e.id ORDER BY o.createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT o.id, o.establishmentId, o.status, o.customerName, o.total, o.createdAt, e.name as establishmentName FROM orders o LEFT JOIN establishments e ON o.establishmentId = e.id ORDER BY o.createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "180078",
+      "establishmentId": "30001",
+      "status": "pending_confirmation",
+      "customerName": "chico tripa",
+      "total": "23.00",
+      "createdAt": "2026-01-28 01:34:51",
+      "establishmentName": "Sushi Haruno"
+    },
+    {
+      "id": "180077",
+      "establishmentId": "30001",
+      "status": "completed",
+      "customerName": "chico tripa",
+      "total": "23.00",
+      "createdAt": "2026-01-28 00:39:24",
+      "establishmentName": "Sushi Haruno"
+    },
+    {
+      "id": "180076",
+      "establishmentId": "30001",
+      "status": "completed",
+      "customerName": "jjjjjj",
+      "total": "23.00",
+      "createdAt": "2026-01-27 23:40:57",
+      "establishmentName": "Sushi Haruno"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\tstatus\tcustomerName\ttotal\tcreatedAt\testablishmentName\n180078\t30001\tpending_confirmation\tchico tripa\t23.00\t2026-01-28 01:34:51\tSushi Haruno\n180077\t30001\tcompleted\tchico tripa\t23.00\t2026-01-28 00:39:24\tSushi Haruno\n180076\t30001\tcompleted\tjjjjjj\t23.00\t2026-01-27 23:40:57\tSushi Haruno\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

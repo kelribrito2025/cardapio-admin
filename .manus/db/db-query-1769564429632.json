@@ -1,0 +1,37 @@
+{
+  "query": "SELECT id, orderNumber, establishmentId, status, customerName, total, createdAt FROM orders ORDER BY id DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, establishmentId, status, customerName, total, createdAt FROM orders ORDER BY id DESC;",
+  "rows": [
+    {
+      "id": "180078",
+      "orderNumber": "#P3",
+      "establishmentId": "30001",
+      "status": "pending_confirmation",
+      "customerName": "chico tripa",
+      "total": "23.00",
+      "createdAt": "2026-01-28 01:34:51"
+    },
+    {
+      "id": "180077",
+      "orderNumber": "#P2",
+      "establishmentId": "30001",
+      "status": "completed",
+      "customerName": "chico tripa",
+      "total": "23.00",
+      "createdAt": "2026-01-28 00:39:24"
+    },
+    {
+      "id": "180076",
+      "orderNumber": "#P1",
+      "establishmentId": "30001",
+      "status": "completed",
+      "customerName": "jjjjjj",
+      "total": "23.00",
+      "createdAt": "2026-01-27 23:40:57"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\testablishmentId\tstatus\tcustomerName\ttotal\tcreatedAt\n180078\t#P3\t30001\tpending_confirmation\tchico tripa\t23.00\t2026-01-28 01:34:51\n180077\t#P2\t30001\tcompleted\tchico tripa\t23.00\t2026-01-28 00:39:24\n180076\t#P1\t30001\tcompleted\tjjjjjj\t23.00\t2026-01-27 23:40:57\n",
+  "stderr": "",
+  "execution_time_ms": 74
+}
