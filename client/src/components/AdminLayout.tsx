@@ -623,7 +623,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 <TooltipTrigger asChild>
                   <div 
                     className={cn(
-                      "flex items-center gap-2 px-3 py-2 bg-white rounded-xl shadow-sm border border-gray-100 cursor-pointer transition-all hover:shadow-md",
+                      "flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full cursor-pointer transition-all hover:bg-gray-200",
                       !isAudioUnlocked && "animate-pulse"
                     )}
                     onClick={async () => {
@@ -651,19 +651,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     }}
                   >
                     {/* Ícone de Som Amarelo */}
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
                       <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#f59e0b" />
                       <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
                     </svg>
                     
                     {/* Toggle Switch */}
                     <div className={cn(
-                      "relative w-12 h-6 rounded-full transition-colors duration-200",
+                      "relative w-11 h-6 rounded-full transition-colors duration-200",
                       isAudioUnlocked && isSoundEnabled ? "bg-amber-400" : "bg-red-400"
                     )}>
                       <div className={cn(
-                        "absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200",
-                        isAudioUnlocked && isSoundEnabled ? "translate-x-6" : "translate-x-0.5"
+                        "absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-200",
+                        isAudioUnlocked && isSoundEnabled ? "translate-x-5" : "translate-x-0.5"
                       )} />
                     </div>
                   </div>

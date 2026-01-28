@@ -3491,3 +3491,4 @@
 - [x] Substituir ícone de som pelo estilo amarelo com ondas sonoras
 - [ ] Criar componente de som com ícone amarelo + toggle switch dentro de uma caixa
 - [x] Substituir botão de som por componente com ícone amarelo + toggle switch em caixa arredondada
+- [x] Ajustar componente de som: reduzir ícone, remover sombra, usar cor cinza claro
