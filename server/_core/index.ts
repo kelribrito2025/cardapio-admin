@@ -455,9 +455,20 @@ function generateReceiptHTML(
   <div class="section-box">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/payment-icon.png" class="section-icon" /> Pagamento</span>
-      <span style="font-weight: ${headerFontWeight};">${paymentMethodText[order.paymentMethod] || order.paymentMethod}${order.paymentMethod === 'cash' && order.changeAmount ? ` | Troco para ${formatCurrency(order.changeAmount)}` : ''}</span>
+      <span style="font-weight: ${headerFontWeight};">${paymentMethodText[order.paymentMethod] || order.paymentMethod}</span>
     </div>
   </div>
+  
+  ${order.paymentMethod === 'cash' && order.changeAmount ? `
+  <div style="margin: 8px 0; text-align: center;">
+    <div style="border-top: 1px dashed #000; margin-bottom: 8px;"></div>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: ${baseFontSize}; font-weight: ${baseFontWeight};">
+      <span style="display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border: 1px solid #000; border-radius: 50%; font-size: 10px; font-weight: bold;">i</span>
+      <span>Obs: Troco para ${formatCurrency(order.changeAmount)}</span>
+    </div>
+    <div style="border-top: 1px dashed #000; margin-top: 8px;"></div>
+  </div>
+  ` : ''}
   
   <div class="section-box">
     <div style="display: flex; justify-content: space-between; align-items: center;">
