@@ -36,6 +36,23 @@ function generateReceiptHTML(
     });
   };
   
+  // Formatar telefone no formato (88) 9 9929-0000
+  const formatPhone = (phone: string | null | undefined): string => {
+    if (!phone) return '';
+    // Remove todos os caracteres não numéricos
+    const digits = phone.replace(/\D/g, '');
+    // Verifica se tem 11 dígitos (com 9 na frente) ou 10 dígitos
+    if (digits.length === 11) {
+      // Formato: (XX) 9 XXXX-XXXX
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 3)} ${digits.slice(3, 7)}-${digits.slice(7)}`;
+    } else if (digits.length === 10) {
+      // Formato: (XX) XXXX-XXXX
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    }
+    // Retorna o número original se não se encaixar nos formatos
+    return phone;
+  };
+  
   const deliveryTypeText = order.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA';
   const paymentMethodText: Record<string, string> = {
     'cash': 'Dinheiro',
@@ -446,7 +463,7 @@ function generateReceiptHTML(
   <div class="section-box">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/client-icon.png" style="width: 13px; height: 13px; margin-right: 4px;" /> Cliente</span>
-      <span style="font-weight: ${headerFontWeight};">${order.customerName || 'Nao informado'}${order.customerPhone ? ' - ' + order.customerPhone : ''}</span>
+      <span style="font-weight: ${headerFontWeight};">${order.customerName || 'Nao informado'}${order.customerPhone ? ' - ' + formatPhone(order.customerPhone) : ''}</span>
     </div>
   </div>
   
@@ -500,6 +517,18 @@ function generateSectorReceiptHTML(
   };
   
   const deliveryTypeText = order.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA';
+  
+  // Formatar telefone no formato (88) 9 9929-0000
+  const formatPhone = (phone: string | null | undefined): string => {
+    if (!phone) return '';
+    const digits = phone.replace(/\D/g, '');
+    if (digits.length === 11) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 3)} ${digits.slice(3, 7)}-${digits.slice(7)}`;
+    } else if (digits.length === 10) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    }
+    return phone;
+  };
   
   // Configurar largura do papel
   const is58mm = settings?.paperWidth === '58mm';
@@ -659,7 +688,7 @@ function generateSectorReceiptHTML(
   <hr class="divider">
   
   <div class="customer-info">
-    <div class="customer-name">${order.customerName || 'Cliente'}${order.customerPhone ? ' - ' + order.customerPhone : ''}</div>
+    <div class="customer-name">${order.customerName || 'Cliente'}${order.customerPhone ? ' - ' + formatPhone(order.customerPhone) : ''}</div>
     ${order.deliveryType === 'delivery' && order.customerAddress ? `<div style="font-size: ${smallFontSize}; margin-top: 4px;">${order.customerAddress}</div>` : ''}
   </div>
   
