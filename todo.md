@@ -3456,3 +3456,4 @@
 
 - [x] Alterar placeholders vazios do Kanban para serem informativos (ícone loading em Novos, textos descritivos nas outras colunas)
 - [x] Transformar badge da página de Pedidos em card de status de conexão WhatsApp (conectado/desconectado, botões atualizar e desconectar)
+- [x] Alterar botão do card de status WhatsApp: quando desconectado mostrar ícone de QR Code com ação "Conectar"
