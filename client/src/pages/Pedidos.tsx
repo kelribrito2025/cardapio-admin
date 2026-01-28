@@ -162,6 +162,9 @@ export default function Pedidos() {
   const [expandedColumns, setExpandedColumns] = useState<Set<OrderStatus>>(() => new Set<OrderStatus>(["new"]));
   // Estado para controlar loading do WhatsApp
   const [whatsappLoading, setWhatsappLoading] = useState(false);
+  // Estado para o modal de QR Code do WhatsApp
+  const [qrCodeModalOpen, setQrCodeModalOpen] = useState(false);
+  const [isPollingQrCode, setIsPollingQrCode] = useState(false);
 
   useEffect(() => {
     if (establishment) {
@@ -172,21 +175,48 @@ export default function Pedidos() {
   // All hooks MUST be called before any early return
   const utils = trpc.useUtils();
   
-  // Query para status do WhatsApp
+  // Query para status do WhatsApp (com polling quando modal está aberto)
   const { data: whatsappStatus, refetch: refetchWhatsappStatus } = trpc.whatsapp.getStatus.useQuery(undefined, {
-    refetchInterval: 30000, // Atualiza a cada 30 segundos
+    refetchInterval: isPollingQrCode ? 3000 : 30000,
+  });
+  
+  // Mutation para conectar WhatsApp (gera QR Code)
+  const connectWhatsapp = trpc.whatsapp.connect.useMutation({
+    onSuccess: (data) => {
+      if (data.qrcode) {
+        toast.success("QR Code gerado! Escaneie com seu WhatsApp.");
+        setIsPollingQrCode(true);
+      } else if (data.status === 'connected') {
+        toast.success("WhatsApp já está conectado!");
+        setQrCodeModalOpen(false);
+      }
+      refetchWhatsappStatus();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao conectar WhatsApp");
+    },
   });
   
   // Mutation para desconectar WhatsApp
   const disconnectWhatsapp = trpc.whatsapp.disconnect.useMutation({
     onSuccess: () => {
       toast.success("WhatsApp desconectado com sucesso");
+      setIsPollingQrCode(false);
       refetchWhatsappStatus();
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao desconectar WhatsApp");
     },
   });
+  
+  // Parar polling quando conectado
+  useEffect(() => {
+    if (whatsappStatus?.status === 'connected' && isPollingQrCode) {
+      setIsPollingQrCode(false);
+      setQrCodeModalOpen(false);
+      toast.success("WhatsApp conectado com sucesso!");
+    }
+  }, [whatsappStatus?.status, isPollingQrCode]);
   
   // Query para buscar todos os pedidos
   const { data: allOrdersData, refetch: refetchAll, isLoading } = trpc.orders.list.useQuery(
@@ -760,10 +790,16 @@ export default function Pedidos() {
                         size="sm"
                         className="h-7 px-2 hover:bg-white/50 gap-1.5"
                         onClick={() => {
-                          window.location.href = '/configuracoes?tab=whatsapp';
+                          setQrCodeModalOpen(true);
+                          connectWhatsapp.mutate();
                         }}
+                        disabled={connectWhatsapp.isPending}
                       >
-                        <QrCode className="h-4 w-4" />
+                        {connectWhatsapp.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <QrCode className="h-4 w-4" />
+                        )}
                         <span className="text-xs">Conectar</span>
                       </Button>
                     </TooltipTrigger>
@@ -1309,6 +1345,70 @@ export default function Pedidos() {
               className="rounded-xl"
             >
               {updateStatusMutation.isPending ? "Cancelando..." : "Cancelar Pedido"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de QR Code do WhatsApp */}
+      <Dialog open={qrCodeModalOpen} onOpenChange={(open) => {
+        setQrCodeModalOpen(open);
+        if (!open) {
+          setIsPollingQrCode(false);
+        }
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="flex flex-row items-start gap-3">
+            <div className="flex items-center gap-3">
+              <Loader2 className="h-6 w-6 text-amber-500 animate-spin" />
+              <div>
+                <DialogTitle className="text-amber-600 text-lg">Aguardando conexão...</DialogTitle>
+                <DialogDescription className="text-sm">
+                  Escaneie o QR Code com seu WhatsApp
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          
+          <div className="flex flex-col items-center py-6">
+            {/* QR Code */}
+            <div className="bg-gray-50 p-4 rounded-xl">
+              {(connectWhatsapp.data?.qrcode || whatsappStatus?.qrcode) ? (
+                <img 
+                  src={connectWhatsapp.data?.qrcode || whatsappStatus?.qrcode} 
+                  alt="QR Code WhatsApp"
+                  className="w-64 h-64"
+                />
+              ) : (
+                <div className="w-64 h-64 flex items-center justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
+              )}
+            </div>
+            
+            {/* Instruções */}
+            <p className="mt-6 text-sm text-muted-foreground text-center max-w-xs">
+              Abra o WhatsApp no seu celular, vá em <strong>Dispositivos conectados</strong> e escaneie o QR Code
+            </p>
+          </div>
+          
+          <DialogFooter className="flex justify-between sm:justify-between">
+            <Button
+              variant="outline"
+              onClick={() => {
+                connectWhatsapp.mutate();
+              }}
+              disabled={connectWhatsapp.isPending}
+              className="gap-2"
+            >
+              <RefreshCw className={cn("h-4 w-4", connectWhatsapp.isPending && "animate-spin")} />
+              Atualizar QR Code
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setQrCodeModalOpen(false)}
+            >
+              Fechar
             </Button>
           </DialogFooter>
         </DialogContent>

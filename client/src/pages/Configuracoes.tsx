@@ -70,7 +70,6 @@ import { ImageCropModal } from "@/components/ImageCropModal";
 import { AddressMapPicker } from "@/components/AddressMapPicker";
 import { LoyaltySettingsCard } from "@/components/LoyaltySettingsCard";
 import { NotificationsTab } from "@/components/NotificationsTab";
-import { WhatsAppTab } from "@/components/WhatsAppTab";
 
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
@@ -881,10 +880,6 @@ export default function Configuracoes() {
           <TabsTrigger value="notificacoes" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
             <Bell className="h-4 w-4" />
             Notificações
-          </TabsTrigger>
-          <TabsTrigger value="whatsapp" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
-            <MessageCircle className="h-4 w-4" />
-            WhatsApp
           </TabsTrigger>
         </TabsList>
 
@@ -2695,11 +2690,6 @@ export default function Configuracoes() {
         <TabsContent value="notificacoes" className="space-y-5">
           {/* Status das Notificações Push */}
           <NotificationsTab establishmentId={establishment?.id || 0} />
-        </TabsContent>
-        
-        {/* WhatsApp Tab */}
-        <TabsContent value="whatsapp" className="space-y-5">
-          <WhatsAppTab />
         </TabsContent>
       </Tabs>
 
