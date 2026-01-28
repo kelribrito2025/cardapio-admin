@@ -1002,9 +1002,8 @@ export default function Pedidos() {
                   // Empty state placeholder - informativo, não clicável
                   <div 
                     className={cn(
-                      "border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-default select-none min-h-[140px]",
-                      column.placeholderBorder,
-                      column.placeholderBg
+                      "border border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-default select-none min-h-[140px] bg-card shadow-soft",
+                      column.placeholderBorder
                     )}
                   >
                     {column.id === "new" ? (
