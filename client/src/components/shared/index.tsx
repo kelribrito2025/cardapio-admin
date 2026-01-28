@@ -54,7 +54,7 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className, 
   if (loading) {
     return (
       <div className={cn(
-        "bg-card rounded-xl overflow-hidden border border-border/50 border-t-4 shadow-sm",
+        "bg-gray-100/80 rounded-2xl overflow-hidden border-t-4",
         colors.borderColor,
         className
       )}>
@@ -71,7 +71,7 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className, 
 
   return (
     <div className={cn(
-      "bg-card rounded-xl overflow-hidden border border-border/50 border-t-4 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
+      "bg-gray-100/80 rounded-2xl overflow-hidden border-t-4 transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5",
       colors.borderColor,
       className
     )}>
