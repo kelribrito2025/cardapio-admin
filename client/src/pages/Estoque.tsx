@@ -348,23 +348,29 @@ export default function Estoque() {
         {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {/* Total */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-blue-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Total</p>
-                <p className="text-2xl font-bold mt-1 tracking-tight">{stockSummary?.total ?? 0}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500" />
+                  <span className="text-2xl font-bold tracking-tight">{stockSummary?.total ?? 0}</span>
+                </div>
               </div>
-              <div className="p-2.5 bg-muted/50 rounded-lg shrink-0">
-                <Package className="h-5 w-5 text-muted-foreground" />
+              <div className="p-2.5 bg-blue-100 rounded-lg shrink-0">
+                <Package className="h-5 w-5 text-blue-600" />
               </div>
             </div>
           </div>
           {/* OK */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-green-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">OK</p>
-                <p className="text-2xl font-bold mt-1 tracking-tight text-green-600">{stockSummary?.ok ?? 0}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-green-500" />
+                  <span className="text-2xl font-bold tracking-tight text-green-600">{stockSummary?.ok ?? 0}</span>
+                </div>
               </div>
               <div className="p-2.5 bg-green-100 rounded-lg shrink-0">
                 <CheckCircle className="h-5 w-5 text-green-600" />
@@ -372,11 +378,14 @@ export default function Estoque() {
             </div>
           </div>
           {/* Baixo */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-yellow-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Baixo</p>
-                <p className="text-2xl font-bold mt-1 tracking-tight text-yellow-600">{stockSummary?.low ?? 0}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-yellow-500" />
+                  <span className="text-2xl font-bold tracking-tight text-yellow-600">{stockSummary?.low ?? 0}</span>
+                </div>
               </div>
               <div className="p-2.5 bg-yellow-100 rounded-lg shrink-0">
                 <AlertTriangle className="h-5 w-5 text-yellow-600" />
@@ -384,11 +393,14 @@ export default function Estoque() {
             </div>
           </div>
           {/* Crítico */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-orange-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Crítico</p>
-                <p className="text-2xl font-bold mt-1 tracking-tight text-orange-600">{stockSummary?.critical ?? 0}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-orange-500" />
+                  <span className="text-2xl font-bold tracking-tight text-orange-600">{stockSummary?.critical ?? 0}</span>
+                </div>
               </div>
               <div className="p-2.5 bg-orange-100 rounded-lg shrink-0">
                 <AlertCircle className="h-5 w-5 text-orange-600" />
@@ -396,11 +408,14 @@ export default function Estoque() {
             </div>
           </div>
           {/* Em falta */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 border-red-200/50 bg-red-50/30">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-red-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Em falta</p>
-                <p className="text-2xl font-bold mt-1 tracking-tight text-red-600">{stockSummary?.outOfStock ?? 0}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-red-500" />
+                  <span className="text-2xl font-bold tracking-tight text-red-600">{stockSummary?.outOfStock ?? 0}</span>
+                </div>
               </div>
               <div className="p-2.5 bg-red-100 rounded-lg shrink-0">
                 <XCircle className="h-5 w-5 text-red-600" />

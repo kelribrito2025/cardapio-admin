@@ -3468,3 +3468,5 @@
 - [x] Melhorar card de status WhatsApp: mostrar loading inicial, só mostrar desconectado após confirmação da API
 - [x] Alterar cores do card de status WhatsApp: verde quando conectado, vermelho quando desconectado
 - [x] Atualizar cards da página de Cardápio para ter bordas coloridas no topo (estilo igual à página de Pedidos)
+- [x] Atualizar cards da página de Cupons para ter bordas coloridas no topo (estilo igual aos cards de métricas da Dashboard)
+- [x] Atualizar cards da página de Estoque para ter bordas coloridas no topo (estilo igual aos cards de métricas da Dashboard)

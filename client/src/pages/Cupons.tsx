@@ -196,11 +196,14 @@ export default function Cupons() {
         {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {/* Ativos */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-green-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Ativos</p>
-                <p className="text-2xl font-bold mt-1 tracking-tight text-green-600">{activeCoupons}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-green-500" />
+                  <span className="text-2xl font-bold tracking-tight text-green-600">{activeCoupons}</span>
+                </div>
               </div>
               <div className="p-2.5 bg-green-100 rounded-lg shrink-0">
                 <CheckCircle className="h-5 w-5 text-green-600" />
@@ -208,11 +211,14 @@ export default function Cupons() {
             </div>
           </div>
           {/* Inativos */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-gray-400 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Inativos</p>
-                <p className="text-2xl font-bold mt-1 tracking-tight text-gray-600">{inactiveCoupons}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-gray-400" />
+                  <span className="text-2xl font-bold tracking-tight text-gray-600">{inactiveCoupons}</span>
+                </div>
               </div>
               <div className="p-2.5 bg-gray-100 rounded-lg shrink-0">
                 <XCircle className="h-5 w-5 text-gray-600" />
@@ -220,11 +226,14 @@ export default function Cupons() {
             </div>
           </div>
           {/* Expirados */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-orange-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Expirados</p>
-                <p className="text-2xl font-bold mt-1 tracking-tight text-orange-600">{expiredCoupons}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-orange-500" />
+                  <span className="text-2xl font-bold tracking-tight text-orange-600">{expiredCoupons}</span>
+                </div>
               </div>
               <div className="p-2.5 bg-orange-100 rounded-lg shrink-0">
                 <AlertCircle className="h-5 w-5 text-orange-600" />
@@ -232,11 +241,14 @@ export default function Cupons() {
             </div>
           </div>
           {/* Esgotados */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 border-red-200/50 bg-red-50/30">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-red-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Esgotados</p>
-                <p className="text-2xl font-bold mt-1 tracking-tight text-red-600">{exhaustedCoupons}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-red-500" />
+                  <span className="text-2xl font-bold tracking-tight text-red-600">{exhaustedCoupons}</span>
+                </div>
               </div>
               <div className="p-2.5 bg-red-100 rounded-lg shrink-0">
                 <Ban className="h-5 w-5 text-red-600" />
