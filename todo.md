@@ -3482,3 +3482,4 @@
 - [x] Corrigir formatação do número de telefone no recibo de impressão para o formato (88) 9 9929-0000
 - [x] Corrigir recibo para mostrar troco solicitado quando pagamento for em dinheiro (formato: Dinheiro | Troco para R$X)
 - [x] Limitar campo de dados do usuário no modal do menu público para máximo 15 caracteres
+- [x] Implementar contador de caracteres no campo de nome do checkout (X/15)

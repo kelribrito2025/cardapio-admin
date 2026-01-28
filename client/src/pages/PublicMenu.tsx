@@ -3378,6 +3378,11 @@ export default function PublicMenu() {
                     maxLength={15}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                   />
+                  <div className="flex justify-end mt-1">
+                    <span className={`text-xs ${customerInfo.name.length >= 15 ? 'text-red-500 font-medium' : 'text-gray-400'}`}>
+                      {customerInfo.name.length}/15
+                    </span>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
