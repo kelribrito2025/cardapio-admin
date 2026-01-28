@@ -316,64 +316,74 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
     }
   };
 
-  // Gerar HTML do recibo com os mesmos estilos do servidor (generateReceiptHTML)
+  // Gerar HTML do recibo - USA EXATAMENTE O MESMO TEMPLATE DO SERVIDOR (generateReceiptHTML)
+  // Isso garante que o preview seja idêntico ao recibo real impresso ao aceitar pedidos
   const generateReceiptHTML = () => {
-    // Usar os mesmos estilos do servidor para garantir consistência
+    // Usar EXATAMENTE as mesmas variáveis do servidor
     const is58mm = paperWidth === '58mm';
     const paperWidthValue = is58mm ? '48mm' : '72mm';
+    const baseFontSize = `${fontSize}px`;
+    const baseFontWeight = fontWeight;
+    const headerFontSize = `${titleFontSize}px`;
+    const headerFontWeight = titleFontWeight;
     const orderNumberSize = `${titleFontSize + 4}px`;
+    const smallFontSize = `${obsFontSize}px`;
+    const smallFontWeight = obsFontWeight;
     
-    const itemsHtml = sampleOrder.items.map(item => {
-      const complementsHtml = item.complements.length > 0 
-        ? item.complements.map(c => `<div class="item-complement">+ ${c.name} (${formatCurrency(c.price)})</div>`).join('')
-        : '';
-      
-      const obsHtml = item.observation 
-        ? `<div class="item-obs">Obs: ${item.observation}</div>`
-        : '';
-      
+    // Gerar HTML dos itens EXATAMENTE como o servidor faz
+    let itemsHTML = '';
+    for (const item of sampleOrder.items) {
       const itemTotal = item.quantity * item.price + item.complements.reduce((sum, c) => sum + c.price, 0);
-      
-      return `
-        <div class="item">
-          <div class="item-header">
-            <span>${item.quantity}x ${item.name}</span>
-            <span>${formatCurrency(itemTotal)}</span>
-          </div>
-          ${complementsHtml}
-          ${obsHtml}
+      let itemHTML = `
+      <div class="item">
+        <div class="item-header">
+          <span>${item.quantity}x ${item.name}</span>
+          <span>${formatCurrency(itemTotal)}</span>
         </div>
-      `;
-    }).join('');
+    `;
+      if (item.observation) {
+        itemHTML += `<div class="item-obs">Obs: ${item.observation}</div>`;
+      }
+      // Complementos
+      for (const comp of item.complements) {
+        itemHTML += `<div class="item-complement">+ ${comp.name}${comp.price > 0 ? ` (${formatCurrency(comp.price)})` : ''}</div>`;
+      }
+      itemHTML += `</div>`;
+      itemsHTML += itemHTML;
+    }
 
+    // TEMPLATE EXATAMENTE IGUAL AO SERVIDOR (generateReceiptHTML em server/_core/index.ts)
     return `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Teste de Impressão</title>
+  <title>Pedido ${sampleOrder.orderNumber}</title>
   <style>
     @page {
       size: ${paperWidthValue} auto;
       margin: 0;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
     body { 
       font-family: 'Arial', 'Helvetica', sans-serif; 
-      font-size: ${fontSize}px; 
-      font-weight: ${fontWeight};
+      font-size: ${baseFontSize}; 
+      font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: 100%;
+      width: 100%; 
       max-width: 100%;
       padding: 8px;
       background: #fff;
       color: #000;
       -webkit-font-smoothing: antialiased;
     }
-    .receipt {
-      background: #fff;
-    }
+    
+    /* CABEÇALHO */
     .logo {
       text-align: center;
       padding-bottom: 12px;
@@ -382,12 +392,12 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
     }
     .logo h1 {
       font-size: ${orderNumberSize};
-      font-weight: ${titleFontWeight};
+      font-weight: ${headerFontWeight};
       margin: 0;
     }
     .logo p {
-      font-size: ${obsFontSize}px;
-      font-weight: ${obsFontWeight};
+      font-size: ${smallFontSize};
+      font-weight: ${smallFontWeight};
       text-transform: uppercase;
       letter-spacing: 1px;
       margin-top: 2px;
@@ -404,35 +414,69 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
     }
     .order-number {
       font-size: ${orderNumberSize};
-      font-weight: ${titleFontWeight};
+      font-weight: ${headerFontWeight};
       margin-bottom: 2px;
     }
     .order-date {
-      font-size: ${obsFontSize}px;
-      font-weight: ${titleFontWeight};
+      font-size: ${smallFontSize};
+      font-weight: ${headerFontWeight};
       display: inline-flex;
       align-items: center;
+    }
+    .date-icon {
+      width: 14px;
+      height: 14px;
+      margin-right: 4px;
+    }
+    .section-icon {
+      width: 14px;
+      height: 14px;
+      margin-right: 4px;
+      display: inline;
+      vertical-align: middle;
     }
     .delivery-badge {
       display: inline-block;
       background: #000;
       color: #fff;
-      font-size: ${obsFontSize}px;
-      font-weight: ${titleFontWeight};
+      font-size: ${smallFontSize};
+      font-weight: ${headerFontWeight};
       padding: 6px 12px;
       text-transform: uppercase;
       letter-spacing: 1px;
       align-self: center;
     }
-    .divider {
+    
+    /* DIVISOR */
+    .divider { 
       border: none;
-      ${showDividers ? 'border-top: 2px dashed #000;' : ''}
-      margin: 10px 0;
+      ${showDividers ? 'border-top: 2px dashed #000;' : ''} 
+      margin: 10px 0; 
     }
     .divider-double {
       ${showDividers ? 'border-top: 3px double #000;' : ''}
       margin: 12px 0;
     }
+    
+    /* CLIENTE */
+    .customer { 
+      margin: 10px 0; 
+      font-size: ${itemFontSize}px;
+    }
+    .customer-label {
+      font-weight: ${baseFontWeight};
+    }
+    .customer-value {
+      display: block;
+      margin-left: 0;
+      word-wrap: break-word;
+      font-weight: ${baseFontWeight};
+    }
+    .customer-row {
+      margin: 6px 0;
+    }
+    
+    /* ITENS */
     .item {
       margin: 8px 0;
       padding: ${itemBorderStyle === 'rounded' ? boxPadding + 'px' : '8px 0'};
@@ -445,91 +489,104 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
       font-weight: ${itemFontWeight};
     }
     .item-obs {
-      font-size: ${obsFontSize}px;
-      font-weight: ${obsFontWeight};
+      font-size: ${smallFontSize};
+      font-weight: ${smallFontWeight};
       margin-top: 2px;
       padding-left: 5px;
     }
     .item-complement {
-      font-size: ${obsFontSize}px;
-      font-weight: ${obsFontWeight};
+      font-size: ${smallFontSize};
+      font-weight: ${smallFontWeight};
       margin-top: 2px;
       padding-left: 10px;
     }
-    .totals {
-      margin: 12px 0;
+    
+    /* TOTAIS */
+    .totals { 
+      margin: 12px 0; 
     }
-    .total-row {
-      display: flex;
-      justify-content: space-between;
+    .total-row { 
+      display: flex; 
+      justify-content: space-between; 
       align-items: center;
-      margin: 6px 0;
+      margin: 6px 0; 
       font-size: ${itemFontSize}px;
     }
-    .total-final {
+    .total-final { 
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: #000;
       color: #fff;
-      font-weight: ${titleFontWeight};
-      font-size: ${titleFontSize - 2}px;
+      font-weight: ${headerFontWeight}; 
+      font-size: ${itemFontSize}px; 
       margin-top: 10px;
       padding: 8px 12px;
       text-transform: uppercase;
     }
-    .section {
+    
+    /* SEÇÕES (Entrega, Pagamento, Cliente) */
+    .section-box {
+      border: 2px solid #000;
+      border-radius: 8px;
+      padding: ${boxPadding}px;
       margin: 12px 0;
     }
     .section-title {
-      font-weight: ${titleFontWeight};
+      font-weight: ${headerFontWeight};
       font-size: ${itemFontSize}px;
-      margin-bottom: 4px;
-    }
-    .section-content {
-      font-size: ${fontSize}px;
-      font-weight: ${fontWeight};
-      line-height: 1.4;
-    }
-    .address-box {
-      border: 2px solid #000;
-      border-radius: 8px;
-      padding: ${boxPadding}px;
-      margin: 12px 0;
-    }
-    .address-box .section-title {
       margin-bottom: 8px;
     }
-    .payment-box {
-      border: 2px solid #000;
-      border-radius: 8px;
-      padding: ${boxPadding}px;
-      margin: 12px 0;
+    .section-content {
+      font-size: ${baseFontSize};
+      font-weight: ${baseFontWeight};
+      line-height: 1.4;
     }
-    .payment-row {
+    .section-inline {
+      font-size: ${baseFontSize};
+      font-weight: ${baseFontWeight};
+      line-height: 1.4;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .payment-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .payment-title {
-      font-weight: ${titleFontWeight};
-      font-size: ${obsFontSize}px;
-      text-transform: uppercase;
-      color: #666;
-    }
     .payment-badge {
-      font-weight: ${titleFontWeight};
+      background: #000;
+      color: #fff;
+      padding: 4px 10px;
+      font-weight: ${headerFontWeight};
+      font-size: ${smallFontSize};
+    }
+    
+    /* PAGAMENTO */
+    .payment {
+      margin: 10px 0;
       font-size: ${itemFontSize}px;
     }
-    .client-box {
+    .payment-method {
+      font-weight: ${baseFontWeight};
+      font-size: ${itemFontSize}px;
+    }
+    
+    /* OBSERVAÇÕES */
+    .notes { 
+      background: #f0f0f0; 
+      padding: 8px; 
+      margin: 10px 0; 
+      font-size: ${smallFontSize};
       border: 2px solid #000;
-      border-radius: 8px;
-      padding: ${boxPadding}px;
-      margin: 12px 0;
     }
-    .client-box .section-title {
-      margin-bottom: 8px;
+    .notes-title {
+      font-weight: ${baseFontWeight};
+      margin-bottom: 4px;
     }
+    
+    /* QR CODE */
     .qrcode-box {
       padding: 12px 0;
       margin: 12px 0;
@@ -544,104 +601,117 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
       display: block;
       margin: 0 auto;
     }
-    .footer {
-      text-align: center;
-      margin-top: 16px;
-      font-size: ${obsFontSize}px;
+    
+    /* RODAPÉ */
+    .footer { 
+      text-align: center; 
+      margin-top: 16px; 
+      font-size: ${smallFontSize}; 
     }
     .footer-thanks {
-      font-weight: ${titleFontWeight};
+      font-weight: ${headerFontWeight};
       font-size: ${itemFontSize}px;
       margin-top: 8px;
     }
+    
+    /* PRINT STYLES */
     @media print {
-      body { padding: 0; }
-      .receipt { page-break-inside: avoid; }
+      body {
+        width: ${paperWidthValue};
+        padding: 2mm;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="receipt">
-    <div class="logo">
-      <h1>Restaurante</h1>
-      <p>Sistema de Pedidos</p>
+  <div class="logo">
+    <h1>Restaurante</h1>
+    <p>Sistema de Pedidos</p>
+  </div>
+  
+  <div class="order-info">
+    <div class="order-text">
+      <div class="order-number">Pedido ${sampleOrder.orderNumber}</div>
+      <div class="order-date"><img src="/calendar-icon.png" class="date-icon" /> ${formatDate(sampleOrder.createdAt)}</div>
     </div>
-    
-    <div class="order-info">
-      <div class="order-text">
-        <div class="order-number">Pedido #${sampleOrder.orderNumber}</div>
-        <div class="order-date">${formatDate(sampleOrder.createdAt)}</div>
-      </div>
-      <div class="delivery-badge">${sampleOrder.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA'}</div>
+    <div class="delivery-badge">${sampleOrder.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA'}</div>
+  </div>
+  
+  <hr class="divider">
+  
+  <div class="items">
+    ${itemsHTML}
+  </div>
+  
+  <hr class="divider">
+  
+  <div class="totals">
+    <div class="total-row">
+      <span>Subtotal:</span>
+      <span>${formatCurrency(sampleOrder.subtotal)}</span>
     </div>
-    
-    <hr class="divider">
-    
-    ${itemsHtml}
-    
-    <hr class="divider">
-    
-    <div class="totals">
-      <div class="total-row">
-        <span>Valor dos produtos</span>
-        <span>${formatCurrency(sampleOrder.subtotal)}</span>
-      </div>
-      ${sampleOrder.deliveryFee > 0 ? `
-      <div class="total-row">
-        <span>Taxa de entrega</span>
-        <span>${formatCurrency(sampleOrder.deliveryFee)}</span>
-      </div>
-      ` : ''}
-      ${sampleOrder.discount > 0 ? `
-      <div class="total-row">
-        <span>Desconto</span>
-        <span>-${formatCurrency(sampleOrder.discount)}</span>
-      </div>
-      ` : ''}
-      <div class="total-row total-final">
-        <span>Total</span>
-        <span>${formatCurrency(sampleOrder.total)}</span>
-      </div>
-    </div>
-    
-    <hr class="divider">
-    
-    <div class="address-box">
-      <div class="section-title">Endereço</div>
-      <div class="section-content">
-        ${sampleOrder.address} - ${sampleOrder.neighborhood}${sampleOrder.addressComplement ? ' - ' + sampleOrder.addressComplement : ''}
-      </div>
-    </div>
-    
-    <div class="payment-box">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-weight: ${titleFontWeight};">Pagamento</span>
-        <span style="font-weight: ${titleFontWeight};">${sampleOrder.paymentMethod}</span>
-      </div>
-    </div>
-    
-    <div class="client-box">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-weight: ${titleFontWeight};">Cliente</span>
-        <span style="font-weight: ${titleFontWeight};">${sampleOrder.customerName} - ${sampleOrder.customerPhone}</span>
-      </div>
-    </div>
-    
-    ${showQrCode && qrCodeUrl ? `
-    <div class="qrcode-box">
-      <div class="section-title">PIX - Escaneie para pagar</div>
-      <img src="${qrCodeUrl}" alt="QR Code PIX" />
+    ${sampleOrder.deliveryFee > 0 ? `
+    <div class="total-row">
+      <span>Taxa entrega:</span>
+      <span>${formatCurrency(sampleOrder.deliveryFee)}</span>
     </div>
     ` : ''}
-    
-    <div class="footer">
-      <p>Pedido realizado via Cardapio Admin</p>
-      <p>manus.space</p>
+    ${sampleOrder.discount > 0 ? `
+    <div class="total-row">
+      <span>Desconto:</span>
+      <span>-${formatCurrency(sampleOrder.discount)}</span>
     </div>
+    ` : ''}
+    <div class="total-row total-final">
+      <span>TOTAL:</span>
+      <span>${formatCurrency(sampleOrder.total)}</span>
+    </div>
+  </div>
+  
+  <hr class="divider">
+  
+  ${sampleOrder.deliveryType === 'delivery' ? `
+  <div class="section-box">
+    <div class="section-title">Endereço:</div>
+    <div class="section-content">
+      ${sampleOrder.address} - ${sampleOrder.neighborhood}
+      ${sampleOrder.addressComplement ? '<br>' + sampleOrder.addressComplement : ''}
+    </div>
+  </div>
+  ` : `
+  <div class="section-box">
+    <div class="section-content"><strong>Retirada:</strong> Cliente irá retirar no estabelecimento</div>
+  </div>
+  `}
+  
+  <div class="section-box">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/payment-icon.png" class="section-icon" /> Pagamento</span>
+      <span style="font-weight: ${headerFontWeight};">${sampleOrder.paymentMethod}</span>
+    </div>
+  </div>
+  
+  <div class="section-box">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/client-icon.png" style="width: 13px; height: 13px; margin-right: 4px;" /> Cliente</span>
+      <span style="font-weight: ${headerFontWeight};">${sampleOrder.customerName} - ${sampleOrder.customerPhone}</span>
+    </div>
+  </div>
+  
+  ${showQrCode && qrCodeUrl ? `
+  <div class="qrcode-box">
+    <div class="section-title">PIX - Escaneie para pagar</div>
+    <img src="${qrCodeUrl}" alt="QR Code PIX" />
+  </div>
+  ` : ''}
+  
+  <div class="footer">
+    <p>Pedido realizado via Cardapio Admin</p>
+    <p>manus.space</p>
   </div>
 </body>
 </html>
-    `;
+    `.trim();
   };
 
   if (settingsLoading) {
