@@ -805,10 +805,6 @@ export default function Pedidos() {
                                   <Printer className="h-4 w-4 mr-2" />
                                   Impressão Normal
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handlePrintThermal(order.id)}>
-                                  <Smartphone className="h-4 w-4 mr-2" />
-                                  Impressora Térmica (1 impressora)
-                                </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => handlePrintMultiPrinter(order.id)}>
                                   <Printer className="h-4 w-4 mr-2" />
                                   Múltiplas Impressoras (Android)
@@ -1124,10 +1120,6 @@ export default function Pedidos() {
                 <DropdownMenuItem onClick={handlePrintOrder}>
                   <Printer className="h-4 w-4 mr-2" />
                   Impressão Normal
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => orderDetails && handlePrintThermal(orderDetails.id)}>
-                  <Smartphone className="h-4 w-4 mr-2" />
-                  Impressora Térmica (1 impressora)
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => orderDetails && handlePrintMultiPrinter(orderDetails.id)}>
                   <Printer className="h-4 w-4 mr-2" />
