@@ -3485,3 +3485,4 @@
 - [x] Implementar contador de caracteres no campo de nome do checkout (X/15)
 - [x] Alterar contador de caracteres para mostrar "X restantes" em vez de "X/15"
 - [x] Remover caixa com bordas redondas da tela de login na versão mobile
+- [x] Corrigir exibição do valor do troco no recibo quando pagamento é em dinheiro

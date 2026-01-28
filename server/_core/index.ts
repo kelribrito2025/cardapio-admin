@@ -455,7 +455,7 @@ function generateReceiptHTML(
   <div class="section-box">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/payment-icon.png" class="section-icon" /> Pagamento</span>
-      <span style="font-weight: ${headerFontWeight};">${paymentMethodText[order.paymentMethod] || order.paymentMethod}${order.paymentMethod === 'cash' && order.changeFor ? ` | Troco para ${formatCurrency(order.changeFor)}` : ''}</span>
+      <span style="font-weight: ${headerFontWeight};">${paymentMethodText[order.paymentMethod] || order.paymentMethod}${order.paymentMethod === 'cash' && order.changeAmount ? ` | Troco para ${formatCurrency(order.changeAmount)}` : ''}</span>
     </div>
   </div>
   
@@ -939,7 +939,7 @@ async function startServer() {
         discount: "0",
         total: "95.80",
         paymentMethod: "pix",
-        changeFor: null,
+        changeAmount: null,
         couponCode: null,
         notes: null,
       };
