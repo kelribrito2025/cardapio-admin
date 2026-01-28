@@ -3439,3 +3439,4 @@
 - [x] Comparar estilos dos modais de Avaliações e Meus Pedidos
 - [x] Ajustar o modal de Avaliações para seguir o mesmo padrão visual do modal de Meus Pedidos
 - [x] Layout Kanban na página de Pedidos com 4 colunas (Novos, Preparo, Prontos, Completos) seguindo estilo visual da referência
+- [x] Restaurar visual original do card de pedido no layout Kanban (header colorido, botões impressora/ver detalhes/aceitar/cancelar)

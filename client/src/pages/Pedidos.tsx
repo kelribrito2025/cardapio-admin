@@ -695,78 +695,122 @@ export default function Pedidos() {
                     return (
                       <div
                         key={order.id}
-                        className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                        onClick={() => setSelectedOrder(order.id)}
+                        className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-200"
                       >
-                        {/* Card Header */}
-                        <div className="px-4 py-3 border-b border-gray-100">
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-sm text-gray-800">
+                        {/* Header colorido com ícone - estilo original */}
+                        <div className={cn("px-4 py-3 flex items-center justify-between rounded-t-xl", config.bgColor)}>
+                          <div className="flex items-center gap-3">
+                            <div className={cn("p-2 rounded-full bg-white/90 shadow-sm", config.color)}>
+                              <config.icon className="h-4 w-4" />
+                            </div>
+                            <span className={cn("font-bold text-base", config.color)}>
                               {order.orderNumber?.startsWith('#') ? order.orderNumber : `#${order.orderNumber}`}
                             </span>
-                            <div className="flex items-center gap-1 text-xs text-gray-500">
-                              <Clock className="h-3 w-3" />
-                              {formatDistanceToNow(new Date(order.createdAt), {
-                                addSuffix: false,
-                                locale: ptBR,
-                              })}
-                            </div>
+                          </div>
+                          <div className={cn("flex items-center gap-1.5 text-sm font-medium", config.color)}>
+                            <Clock className="h-4 w-4" />
+                            {formatDistanceToNow(new Date(order.createdAt), {
+                              addSuffix: false,
+                              locale: ptBR,
+                            })}
                           </div>
                         </div>
 
-                        {/* Card Content */}
-                        <div className="px-4 py-3">
-                          {/* Customer name */}
-                          {order.customerName && (
-                            <p className="font-medium text-sm text-gray-800 truncate mb-2">
-                              {order.customerName}
-                            </p>
-                          )}
-                          
-                          {/* Info row */}
-                          <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
-                            <span className="flex items-center gap-1">
-                              <PaymentIcon className="h-3 w-3" />
-                              {paymentMethodLabels[order.paymentMethod]?.label}
-                            </span>
-                            <span className="text-gray-300">•</span>
-                            <span className="capitalize">
-                              {order.deliveryType === "delivery" ? "Entrega" : "Retirada"}
+                        {/* Content */}
+                        <div className="p-4">
+                          {/* Linha compacta com todas as informações */}
+                          <div className="flex items-center justify-between gap-2 flex-wrap">
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                              {/* Nome do cliente */}
+                              {order.customerName && (
+                                <span className="font-semibold text-sm truncate max-w-[100px] sm:max-w-[150px]">
+                                  {order.customerName}
+                                </span>
+                              )}
+                              
+                              {/* Separador */}
+                              {order.customerName && (
+                                <span className="text-muted-foreground/50">•</span>
+                              )}
+                              
+                              {/* Ícone e método de pagamento */}
+                              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <PaymentIcon className="h-3.5 w-3.5" />
+                                {paymentMethodLabels[order.paymentMethod]?.label}
+                              </span>
+                              
+                              {/* Tag de entrega/retirada */}
+                              <span className="px-1.5 py-0.5 bg-muted/50 rounded text-[10px] font-medium capitalize whitespace-nowrap">
+                                {order.deliveryType === "delivery" ? "Entrega" : "Retirada"}
+                              </span>
+                            </div>
+                            
+                            {/* Valor total */}
+                            <span className="text-base font-bold text-primary whitespace-nowrap">
+                              {formatCurrency(order.total)}
                             </span>
                           </div>
 
-                          {/* Total */}
-                          <div className="flex items-center justify-between">
-                            <span className="text-lg font-bold text-primary">
-                              {formatCurrency(order.total)}
-                            </span>
-                            
-                            {/* Quick actions */}
-                            <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                              {nextAction && (
+                          {/* Actions - Botões completos */}
+                          <div className="flex gap-2 mt-3">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
                                 <Button
-                                  size="sm"
-                                  className="h-7 px-3 text-xs rounded-lg"
-                                  onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
-                                  disabled={updateStatusMutation.isPending}
-                                >
-                                  {nextAction.label}
-                                </Button>
-                              )}
-                              {order.status !== "completed" && order.status !== "cancelled" && (
-                                <Button
-                                  variant="ghost"
+                                  variant="outline"
                                   size="icon"
-                                  className="h-7 w-7 text-red-500 hover:text-red-600 hover:bg-red-50"
-                                  onClick={() => {
-                                    setOrderToCancel(order.id);
-                                    setCancelDialogOpen(true);
-                                  }}
+                                  className="h-9 w-9 rounded-lg border-border/50 hover:bg-accent text-muted-foreground hover:text-foreground"
                                 >
-                                  <XCircle className="h-4 w-4" />
+                                  <Printer className="h-4 w-4" />
                                 </Button>
-                              )}
-                            </div>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="start">
+                                <DropdownMenuLabel>Imprimir</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => handlePrintOrderDirect(order.id)}>
+                                  <Printer className="h-4 w-4 mr-2" />
+                                  Impressão Normal
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handlePrintThermal(order.id)}>
+                                  <Smartphone className="h-4 w-4 mr-2" />
+                                  Impressora Térmica (1 impressora)
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handlePrintMultiPrinter(order.id)}>
+                                  <Printer className="h-4 w-4 mr-2" />
+                                  Múltiplas Impressoras (Android)
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex-1 h-9 rounded-lg border-border/50 hover:bg-accent text-sm"
+                              onClick={() => setSelectedOrder(order.id)}
+                            >
+                              Ver detalhes
+                            </Button>
+                            {nextAction && (
+                              <Button
+                                size="sm"
+                                className="flex-1 h-9 rounded-lg shadow-sm text-sm"
+                                onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
+                                disabled={updateStatusMutation.isPending}
+                              >
+                                {nextAction.label}
+                              </Button>
+                            )}
+                            {order.status !== "completed" && order.status !== "cancelled" && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-9 w-9 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20"
+                                onClick={() => {
+                                  setOrderToCancel(order.id);
+                                  setCancelDialogOpen(true);
+                                }}
+                              >
+                                <XCircle className="h-4 w-4" />
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </div>
