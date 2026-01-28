@@ -425,8 +425,8 @@ export default function Pedidos() {
     }
     
     try {
-      // Buscar deep link do servidor
-      const response = await fetch(`${window.location.origin}/api/print/multiprinter/${orderId}`);
+      // Buscar deep link do servidor - usa endpoint de setores para separar itens por impressora
+      const response = await fetch(`${window.location.origin}/api/print/multiprinter-sectors/${orderId}`);
       const data = await response.json();
       
       if (data.success && data.deepLink) {

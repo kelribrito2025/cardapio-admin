@@ -3448,3 +3448,4 @@
 - [x] Implementar acordeão (expandir/minimizar) nas colunas do Kanban para versão mobile
 - [x] BUG: Erro "ERRO AO CONECTAR COM AS IMPRESSORAS" ao aceitar pedido
 - [x] BUG: Pedidos não são impressos após clicar em Aceitar
+- [x] BUG: Ícone de múltiplas impressoras Android no dropdown não está imprimindo
