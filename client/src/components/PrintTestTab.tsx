@@ -316,45 +316,34 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
     }
   };
 
+  // Gerar HTML do recibo com os mesmos estilos do servidor (generateReceiptHTML)
   const generateReceiptHTML = () => {
-    const maxWidth = paperWidth === "58mm" ? "220px" : "300px";
+    // Usar os mesmos estilos do servidor para garantir consistência
+    const is58mm = paperWidth === '58mm';
+    const paperWidthValue = is58mm ? '48mm' : '72mm';
+    const orderNumberSize = `${titleFontSize + 4}px`;
     
     const itemsHtml = sampleOrder.items.map(item => {
       const complementsHtml = item.complements.length > 0 
-        ? item.complements.map(c => `<div class="complement">+ ${c.name} (${formatCurrency(c.price)})</div>`).join('')
+        ? item.complements.map(c => `<div class="item-complement">+ ${c.name} (${formatCurrency(c.price)})</div>`).join('')
         : '';
       
       const obsHtml = item.observation 
-        ? `<div class="observation">Obs: ${item.observation}</div>`
+        ? `<div class="item-obs">Obs: ${item.observation}</div>`
         : '';
       
       const itemTotal = item.quantity * item.price + item.complements.reduce((sum, c) => sum + c.price, 0);
       
-      if (itemBorderStyle === "rounded") {
-        return `
-          <div class="item-box">
-            <div class="item-header">
-              <span class="item-qty">${item.quantity}x</span>
-              <span class="item-name">${item.name}</span>
-              <span class="item-price">${formatCurrency(itemTotal)}</span>
-            </div>
-            ${complementsHtml}
-            ${obsHtml}
+      return `
+        <div class="item">
+          <div class="item-header">
+            <span>${item.quantity}x ${item.name}</span>
+            <span>${formatCurrency(itemTotal)}</span>
           </div>
-        `;
-      } else {
-        return `
-          <div class="item-dashed">
-            <div class="item-header">
-              <span class="item-qty">${item.quantity}x</span>
-              <span class="item-name">${item.name}</span>
-              <span class="item-price">${formatCurrency(itemTotal)}</span>
-            </div>
-            ${complementsHtml}
-            ${obsHtml}
-          </div>
-        `;
-      }
+          ${complementsHtml}
+          ${obsHtml}
+        </div>
+      `;
     }).join('');
 
     return `
@@ -362,165 +351,239 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste de Impressão</title>
   <style>
-    * {
+    @page {
+      size: ${paperWidthValue} auto;
       margin: 0;
-      padding: 0;
-      box-sizing: border-box;
     }
-    body {
-      font-family: 'Courier New', monospace;
-      font-size: ${fontSize}px;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Arial', 'Helvetica', sans-serif; 
+      font-size: ${fontSize}px; 
       font-weight: ${fontWeight};
       line-height: 1.4;
-      background: white;
-      color: black;
+      width: 100%;
+      max-width: 100%;
+      padding: 8px;
+      background: #fff;
+      color: #000;
+      -webkit-font-smoothing: antialiased;
     }
     .receipt {
-      width: ${maxWidth};
-      padding: 10px;
-      margin: 0 auto;
+      background: #fff;
     }
-    .header {
+    .logo {
       text-align: center;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      ${showDividers ? 'border-bottom: 1px dashed #000;' : ''}
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      ${showDividers ? 'border-bottom: 1px solid #000;' : ''}
+    }
+    .logo h1 {
+      font-size: ${orderNumberSize};
+      font-weight: ${titleFontWeight};
+      margin: 0;
+    }
+    .logo p {
+      font-size: ${obsFontSize}px;
+      font-weight: ${obsFontWeight};
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+    .order-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .order-text {
+      display: flex;
+      flex-direction: column;
     }
     .order-number {
-      font-size: ${titleFontSize}px;
+      font-size: ${orderNumberSize};
       font-weight: ${titleFontWeight};
-      margin-bottom: 5px;
-    }
-    .order-type {
-      display: inline-block;
-      padding: 2px 8px;
-      background: #000;
-      color: #fff;
-      font-size: ${fontSize - 2}px;
-      border-radius: 3px;
-      margin-bottom: 5px;
+      margin-bottom: 2px;
     }
     .order-date {
-      font-size: ${fontSize - 2}px;
-      color: #666;
+      font-size: ${obsFontSize}px;
+      font-weight: ${titleFontWeight};
+      display: inline-flex;
+      align-items: center;
     }
-    .items-section {
-      margin: 15px 0;
+    .delivery-badge {
+      display: inline-block;
+      background: #000;
+      color: #fff;
+      font-size: ${obsFontSize}px;
+      font-weight: ${titleFontWeight};
+      padding: 6px 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      align-self: center;
     }
-    .item-box {
-      background: #f5f5f5;
-      border-radius: 6px;
-      padding: ${boxPadding}px;
-      margin-bottom: 8px;
+    .divider {
+      border: none;
+      ${showDividers ? 'border-top: 2px dashed #000;' : ''}
+      margin: 10px 0;
     }
-    .item-dashed {
-      padding: ${boxPadding}px 0;
-      margin-bottom: 8px;
-      ${showDividers ? 'border-bottom: 1px dashed #ccc;' : ''}
+    .divider-double {
+      ${showDividers ? 'border-top: 3px double #000;' : ''}
+      margin: 12px 0;
+    }
+    .item {
+      margin: 8px 0;
+      padding: ${itemBorderStyle === 'rounded' ? boxPadding + 'px' : '8px 0'};
+      ${itemBorderStyle === 'rounded' ? 'border: 2px solid #000; border-radius: 8px;' : 'border: none; border-top: 1px dashed #000; border-bottom: 1px dashed #000;'}
     }
     .item-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      gap: 8px;
-    }
-    .item-qty {
-      font-weight: ${itemFontWeight};
       font-size: ${itemFontSize}px;
-      min-width: 25px;
-    }
-    .item-name {
-      flex: 1;
       font-weight: ${itemFontWeight};
-      font-size: ${itemFontSize}px;
     }
-    .item-price {
-      font-weight: ${itemFontWeight};
-      font-size: ${itemFontSize}px;
-      white-space: nowrap;
-    }
-    .complement {
+    .item-obs {
       font-size: ${obsFontSize}px;
       font-weight: ${obsFontWeight};
-      color: #666;
-      margin-left: 25px;
       margin-top: 2px;
+      padding-left: 5px;
     }
-    .observation {
+    .item-complement {
       font-size: ${obsFontSize}px;
       font-weight: ${obsFontWeight};
-      font-style: italic;
-      color: #666;
-      margin-left: 25px;
-      margin-top: 4px;
+      margin-top: 2px;
+      padding-left: 10px;
     }
     .totals {
-      margin: 15px 0;
-      padding-top: 10px;
-      ${showDividers ? 'border-top: 1px dashed #000;' : ''}
+      margin: 12px 0;
     }
     .total-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 4px;
+      align-items: center;
+      margin: 6px 0;
+      font-size: ${itemFontSize}px;
     }
     .total-final {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #000;
+      color: #fff;
       font-weight: ${titleFontWeight};
       font-size: ${titleFontSize - 2}px;
-      margin-top: 8px;
-      padding-top: 8px;
-      ${showDividers ? 'border-top: 1px solid #000;' : ''}
+      margin-top: 10px;
+      padding: 8px 12px;
+      text-transform: uppercase;
     }
     .section {
-      margin: 10px 0;
-      padding: 10px 0;
-      ${showDividers ? 'border-top: 1px dashed #000;' : ''}
+      margin: 12px 0;
     }
     .section-title {
       font-weight: ${titleFontWeight};
-      font-size: ${fontSize}px;
-      margin-bottom: 5px;
+      font-size: ${itemFontSize}px;
+      margin-bottom: 4px;
     }
     .section-content {
-      font-size: ${fontSize - 1}px;
+      font-size: ${fontSize}px;
+      font-weight: ${fontWeight};
+      line-height: 1.4;
     }
-    .qr-section {
+    .address-box {
+      border: 2px solid #000;
+      border-radius: 8px;
+      padding: ${boxPadding}px;
+      margin: 12px 0;
+    }
+    .address-box .section-title {
+      margin-bottom: 8px;
+    }
+    .payment-box {
+      border: 2px solid #000;
+      border-radius: 8px;
+      padding: ${boxPadding}px;
+      margin: 12px 0;
+    }
+    .payment-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .payment-title {
+      font-weight: ${titleFontWeight};
+      font-size: ${obsFontSize}px;
+      text-transform: uppercase;
+      color: #666;
+    }
+    .payment-badge {
+      font-weight: ${titleFontWeight};
+      font-size: ${itemFontSize}px;
+    }
+    .client-box {
+      border: 2px solid #000;
+      border-radius: 8px;
+      padding: ${boxPadding}px;
+      margin: 12px 0;
+    }
+    .client-box .section-title {
+      margin-bottom: 8px;
+    }
+    .qrcode-box {
+      padding: 12px 0;
+      margin: 12px 0;
       text-align: center;
-      margin: 15px 0;
-      padding: 10px;
-      ${showDividers ? 'border: 1px dashed #000;' : ''}
     }
-    .qr-section img {
-      width: 120px;
-      height: 120px;
-      margin-top: 8px;
+    .qrcode-box .section-title {
+      margin-bottom: 8px;
+    }
+    .qrcode-box img {
+      width: 144px;
+      height: 144px;
+      display: block;
+      margin: 0 auto;
     }
     .footer {
       text-align: center;
-      margin-top: 15px;
-      padding-top: 10px;
-      font-size: ${fontSize - 2}px;
-      color: #666;
-      ${showDividers ? 'border-top: 1px dashed #000;' : ''}
+      margin-top: 16px;
+      font-size: ${obsFontSize}px;
+    }
+    .footer-thanks {
+      font-weight: ${titleFontWeight};
+      font-size: ${itemFontSize}px;
+      margin-top: 8px;
+    }
+    @media print {
+      body { padding: 0; }
+      .receipt { page-break-inside: avoid; }
     }
   </style>
 </head>
 <body>
   <div class="receipt">
-    <div class="header">
-      <div class="order-number">Pedido #${sampleOrder.orderNumber}</div>
-      <div class="order-type">${sampleOrder.deliveryType === 'delivery' ? '🛵 ENTREGA' : '🏪 RETIRADA'}</div>
-      <div class="order-date">${formatDate(sampleOrder.createdAt)}</div>
+    <div class="logo">
+      <h1>Restaurante</h1>
+      <p>Sistema de Pedidos</p>
     </div>
     
-    <div class="items-section">
-      ${itemsHtml}
+    <div class="order-info">
+      <div class="order-text">
+        <div class="order-number">Pedido #${sampleOrder.orderNumber}</div>
+        <div class="order-date">${formatDate(sampleOrder.createdAt)}</div>
+      </div>
+      <div class="delivery-badge">${sampleOrder.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA'}</div>
     </div>
+    
+    <hr class="divider">
+    
+    ${itemsHtml}
+    
+    <hr class="divider">
     
     <div class="totals">
       <div class="total-row">
-        <span>Subtotal</span>
+        <span>Valor dos produtos</span>
         <span>${formatCurrency(sampleOrder.subtotal)}</span>
       </div>
       ${sampleOrder.deliveryFee > 0 ? `
@@ -536,30 +599,40 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
       </div>
       ` : ''}
       <div class="total-row total-final">
-        <span>TOTAL</span>
+        <span>Total</span>
         <span>${formatCurrency(sampleOrder.total)}</span>
       </div>
     </div>
     
+    <hr class="divider">
+    
+    <div class="address-box">
+      <div class="section-title">Endereço</div>
+      <div class="section-content">
+        ${sampleOrder.address} - ${sampleOrder.neighborhood}${sampleOrder.addressComplement ? ' - ' + sampleOrder.addressComplement : ''}
+      </div>
+    </div>
+    
+    <div class="payment-box">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: ${titleFontWeight};">Pagamento</span>
+        <span style="font-weight: ${titleFontWeight};">${sampleOrder.paymentMethod}</span>
+      </div>
+    </div>
+    
+    <div class="client-box">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: ${titleFontWeight};">Cliente</span>
+        <span style="font-weight: ${titleFontWeight};">${sampleOrder.customerName} - ${sampleOrder.customerPhone}</span>
+      </div>
+    </div>
+    
     ${showQrCode && qrCodeUrl ? `
-    <div class="qr-section">
-      <p><strong>Escaneie para pagar</strong></p>
+    <div class="qrcode-box">
+      <div class="section-title">PIX - Escaneie para pagar</div>
       <img src="${qrCodeUrl}" alt="QR Code PIX" />
     </div>
     ` : ''}
-    
-    <div class="section">
-      <div class="section-title">Pagamento</div>
-      <div class="section-content">${sampleOrder.paymentMethod}</div>
-    </div>
-    
-    <div class="section">
-      <div class="section-title">Cliente</div>
-      <div class="section-content">
-        ${sampleOrder.customerName}<br>
-        ${sampleOrder.customerPhone}
-      </div>
-    </div>
     
     <div class="footer">
       <p>Pedido realizado via Cardapio Admin</p>

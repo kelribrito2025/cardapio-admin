@@ -3477,3 +3477,4 @@
 - [x] Ajustar layout da aba Teste Impressão para seguir o mesmo padrão visual da aba WhatsApp
 - [x] Corrigir layout da aba Teste na versão mobile para ficar igual às outras abas (Layout, Fontes)
 - [x] Corrigir função de impressão térmica Android na aba de Teste Impressão (comparar com página de Pedidos)
+- [x] Sincronizar estilos do recibo de teste com o recibo de pedidos reais (mesma fonte Arial, mesmos pesos, mesmos tamanhos, mesmos estilos de caixas)
