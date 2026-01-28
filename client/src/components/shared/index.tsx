@@ -12,21 +12,58 @@ interface StatCardProps {
   };
   loading?: boolean;
   className?: string;
+  variant?: "blue" | "amber" | "emerald" | "gray" | "primary";
 }
 
-export function StatCard({ title, value, icon: Icon, trend, loading, className }: StatCardProps) {
+const statCardVariants = {
+  blue: {
+    borderColor: "border-t-blue-500",
+    iconBg: "bg-blue-100",
+    iconColor: "text-blue-600",
+    dotColor: "bg-blue-500",
+  },
+  amber: {
+    borderColor: "border-t-amber-500",
+    iconBg: "bg-amber-100",
+    iconColor: "text-amber-600",
+    dotColor: "bg-amber-500",
+  },
+  emerald: {
+    borderColor: "border-t-emerald-500",
+    iconBg: "bg-emerald-100",
+    iconColor: "text-emerald-600",
+    dotColor: "bg-emerald-500",
+  },
+  gray: {
+    borderColor: "border-t-gray-400",
+    iconBg: "bg-gray-100",
+    iconColor: "text-gray-500",
+    dotColor: "bg-gray-400",
+  },
+  primary: {
+    borderColor: "border-t-primary",
+    iconBg: "bg-primary/10",
+    iconColor: "text-primary",
+    dotColor: "bg-primary",
+  },
+};
+
+export function StatCard({ title, value, icon: Icon, trend, loading, className, variant = "primary" }: StatCardProps) {
+  const colors = statCardVariants[variant];
+  
   if (loading) {
     return (
       <div className={cn(
-        "bg-card rounded-xl p-5 border border-border/50 shadow-soft",
+        "bg-gray-100/80 rounded-2xl overflow-hidden border-t-4",
+        colors.borderColor,
         className
       )}>
-        <div className="flex items-start justify-between">
+        <div className="px-5 py-5 flex items-start justify-between">
           <div className="space-y-2.5 flex-1">
             <div className="skeleton h-3.5 w-28 rounded-md" />
-            <div className="skeleton h-8 w-32 rounded-md" />
+            <div className="skeleton h-8 w-20 rounded-md" />
           </div>
-          <div className="skeleton h-12 w-12 rounded-lg" />
+          <div className="skeleton h-10 w-10 rounded-lg" />
         </div>
       </div>
     );
@@ -34,15 +71,19 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className }
 
   return (
     <div className={cn(
-      "bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5",
+      "bg-gray-100/80 rounded-2xl overflow-hidden border-t-4 transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5",
+      colors.borderColor,
       className
     )}>
-      <div className="flex items-start justify-between gap-3.5">
+      <div className="px-5 py-5 flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-muted-foreground font-medium tracking-wide uppercase">
+          <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
             {title}
           </p>
-          <p className="text-3xl font-bold mt-2 tracking-tight">{value}</p>
+          <div className="flex items-center gap-1.5 mt-1">
+            <span className={cn("w-2 h-2 rounded-full", colors.dotColor)} />
+            <span className="text-2xl font-bold tracking-tight">{value}</span>
+          </div>
           {trend && (
             <div className={cn(
               "inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded-full text-xs font-semibold",
@@ -55,8 +96,8 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className }
             </div>
           )}
         </div>
-        <div className="p-3 bg-primary/10 rounded-lg shrink-0">
-          <Icon className="h-6 w-6 text-primary" />
+        <div className={cn("p-2.5 rounded-lg shrink-0", colors.iconBg)}>
+          <Icon className={cn("h-5 w-5", colors.iconColor)} />
         </div>
       </div>
     </div>

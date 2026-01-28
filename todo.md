@@ -3450,3 +3450,4 @@
 - [x] BUG: Pedidos não são impressos após clicar em Aceitar
 - [x] Remover opção "Impressora Térmica (1 impressora)" do dropdown de impressão
 - [x] Ajustar espaçamento entre cabeçalho e cards nas páginas Dashboard e Catálogo para ficar igual à página de Pedidos
+- [x] Ajustar cards de estatísticas da página de Dashboard para ter o mesmo estilo visual dos cards do Kanban (barra colorida no topo, título uppercase, número grande, ícone no canto)

@@ -137,25 +137,28 @@ export default function Dashboard() {
           value={stats?.ordersToday ?? 0}
           icon={ShoppingBag}
           loading={statsLoading}
+          variant="blue"
         />
         <StatCard
           title="Faturamento Hoje"
           value={formatCurrency(stats?.revenueToday ?? 0)}
           icon={DollarSign}
           loading={statsLoading}
+          variant="emerald"
         />
         <StatCard
           title="Ticket Médio"
           value={formatCurrency(stats?.avgTicket ?? 0)}
           icon={TrendingUp}
           loading={statsLoading}
+          variant="blue"
         />
         <StatCard
           title="Itens em Falta"
           value={stats?.lowStockCount ?? 0}
           icon={AlertTriangle}
           loading={statsLoading}
-          className={stats?.lowStockCount && stats.lowStockCount > 0 ? "border-amber-200/50 bg-amber-50/50" : ""}
+          variant="amber"
         />
       </div>
 
