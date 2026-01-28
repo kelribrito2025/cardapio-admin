@@ -1610,7 +1610,7 @@ export default function PublicMenu() {
                     <div className="relative flex-shrink-0" ref={ratingTooltipRef}>
                       <button
                         onClick={() => setShowReviewsModal(true)}
-                        className="flex items-center gap-0.5 hover:bg-gray-100 rounded-lg px-1.5 py-0.5 transition-colors cursor-pointer"
+                        className="flex items-center gap-0.5 hover:bg-gray-100 rounded-lg px-1.5 py-0.5 transition-colors cursor-pointer" style={{width: '49px', height: '22px'}}
                       >
                         {/* Ícone de estrela único */}
                         <Star className="h-3.5 w-3.5 md:h-4 md:w-4 text-yellow-400 fill-yellow-400" />
