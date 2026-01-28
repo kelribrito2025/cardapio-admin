@@ -589,7 +589,7 @@ export default function Pedidos() {
       </div>
 
       {/* Kanban Board */}
-      <div className="flex gap-4 overflow-x-auto pb-4" style={{ minHeight: 'calc(100vh - 280px)' }}>
+      <div className="grid grid-cols-4 gap-4 pb-4" style={{ minHeight: 'calc(100vh - 280px)' }}>
         {kanbanColumns.map((status) => {
           const config = statusConfig[status];
           const orders = ordersByStatus[status];
@@ -598,7 +598,7 @@ export default function Pedidos() {
           return (
             <div 
               key={status} 
-              className="flex-shrink-0 w-[320px] rounded-2xl bg-gray-50 flex flex-col overflow-hidden shadow-sm"
+              className="rounded-2xl bg-gray-50 flex flex-col overflow-hidden shadow-sm min-w-0"
             >
               {/* Column Header - Colorido */}
               <div className={cn("px-4 py-3", config.headerBg)}>

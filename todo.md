@@ -3459,3 +3459,7 @@
 - [x] Contador de pedidos em cada header
 - [x] Placeholder "Nenhum pedido novo" quando coluna vazia
 - [x] Barra de resumo na parte inferior com totais por status
+
+
+## Ajustar largura do Kanban
+- [x] Fazer colunas do Kanban ocuparem toda a largura disponível da página
