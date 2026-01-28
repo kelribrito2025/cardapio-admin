@@ -635,19 +635,25 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <Switch
                       checked={isAudioUnlocked && isSoundEnabled}
                       onCheckedChange={async (checked) => {
+                        // Função auxiliar para tocar som de teste
+                        const playTestSound = () => {
+                          // Pequeno delay para garantir que o áudio está pronto
+                          setTimeout(() => {
+                            const testAudio = new Audio("/notification.mp3");
+                            testAudio.volume = 0.5;
+                            testAudio.play().catch(err => {
+                              console.log("[Som] Erro ao tocar som de teste:", err);
+                            });
+                          }, 100);
+                        };
+                        
                         if (!isAudioUnlocked) {
                           const unlocked = await unlockAudio();
                           if (unlocked) {
                             setIsSoundEnabled(true);
                             localStorage.setItem("notificationSoundEnabled", "true");
-                            // Tocar som de teste breve ao ativar
-                            try {
-                              const testAudio = new Audio("/notification.mp3");
-                              testAudio.volume = 0.5;
-                              await testAudio.play();
-                            } catch (err) {
-                              console.log("[Som] Erro ao tocar som de teste:", err);
-                            }
+                            // Tocar som de teste breve ao ativar (após desbloqueio)
+                            playTestSound();
                             toast.success("Som ativado!", {
                               description: "Você receberá notificações sonoras para novos pedidos.",
                             });
@@ -657,13 +663,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           localStorage.setItem("notificationSoundEnabled", checked ? "true" : "false");
                           if (checked) {
                             // Tocar som de teste breve ao ativar
-                            try {
-                              const testAudio = new Audio("/notification.mp3");
-                              testAudio.volume = 0.5;
-                              await testAudio.play();
-                            } catch (err) {
-                              console.log("[Som] Erro ao tocar som de teste:", err);
-                            }
+                            playTestSound();
                             toast.success("Som ativado!");
                           } else {
                             toast.info("Som desativado");

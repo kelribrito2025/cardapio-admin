@@ -3498,3 +3498,4 @@
 - [x] Remover animação de pulso do card de som
 - [x] Alterar cor do ícone de som para verde quando ativado e vermelho quando desativado
 - [x] Implementar som de teste breve quando o usuário ativar o áudio
+- [x] BUG: Som de teste não toca na primeira ativação do toggle de áudio (só toca a partir da segunda vez)
