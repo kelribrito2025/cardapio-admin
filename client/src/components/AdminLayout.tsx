@@ -626,29 +626,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       "flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full cursor-pointer transition-all hover:bg-gray-200",
                       !isAudioUnlocked && "animate-pulse"
                     )}
-                    onClick={async () => {
-                      if (!isAudioUnlocked) {
-                        const unlocked = await unlockAudio();
-                        if (unlocked) {
-                          setIsSoundEnabled(true);
-                          localStorage.setItem("notificationSoundEnabled", "true");
-                          toast.success("Som ativado!", {
-                            description: "Você receberá notificações sonoras para novos pedidos.",
-                          });
-                        }
-                      } else {
-                        // Toggle som
-                        if (!isSoundEnabled) {
-                          setIsSoundEnabled(true);
-                          localStorage.setItem("notificationSoundEnabled", "true");
-                          toast.success("Som ativado!");
-                        } else {
-                          setIsSoundEnabled(false);
-                          localStorage.setItem("notificationSoundEnabled", "false");
-                          toast.info("Som desativado");
-                        }
-                      }
-                    }}
                   >
                     {/* Ícone de Som Amarelo */}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
@@ -656,16 +633,31 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
                     </svg>
                     
-                    {/* Toggle Switch */}
-                    <div className={cn(
-                      "relative w-11 h-6 rounded-full transition-colors duration-200",
-                      isAudioUnlocked && isSoundEnabled ? "bg-amber-400" : "bg-red-400"
-                    )}>
-                      <div className={cn(
-                        "absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-200",
-                        isAudioUnlocked && isSoundEnabled ? "translate-x-5" : "translate-x-0.5"
-                      )} />
-                    </div>
+                    {/* Toggle Switch - mesmo estilo do toggle de abrir/fechar restaurante */}
+                    <Switch
+                      checked={isAudioUnlocked && isSoundEnabled}
+                      onCheckedChange={async (checked) => {
+                        if (!isAudioUnlocked) {
+                          const unlocked = await unlockAudio();
+                          if (unlocked) {
+                            setIsSoundEnabled(true);
+                            localStorage.setItem("notificationSoundEnabled", "true");
+                            toast.success("Som ativado!", {
+                              description: "Você receberá notificações sonoras para novos pedidos.",
+                            });
+                          }
+                        } else {
+                          setIsSoundEnabled(checked);
+                          localStorage.setItem("notificationSoundEnabled", checked ? "true" : "false");
+                          if (checked) {
+                            toast.success("Som ativado!");
+                          } else {
+                            toast.info("Som desativado");
+                          }
+                        }
+                      }}
+                      className="data-[state=checked]:bg-amber-400 data-[state=unchecked]:bg-red-300 scale-90"
+                    />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
