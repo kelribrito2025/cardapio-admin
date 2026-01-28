@@ -165,6 +165,8 @@ export default function Pedidos() {
   // Estado para o modal de QR Code do WhatsApp
   const [qrCodeModalOpen, setQrCodeModalOpen] = useState(false);
   const [isPollingQrCode, setIsPollingQrCode] = useState(false);
+  // Estado para rastrear qual pedido está com loading de ação
+  const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null);
 
   useEffect(() => {
     if (establishment) {
@@ -628,7 +630,15 @@ export default function Pedidos() {
   };
 
   const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
-    updateStatusMutation.mutate({ id: orderId, status: newStatus });
+    setLoadingOrderId(orderId);
+    updateStatusMutation.mutate(
+      { id: orderId, status: newStatus },
+      {
+        onSettled: () => {
+          setLoadingOrderId(null);
+        },
+      }
+    );
     
     if (newStatus === "preparing") {
       toast.success("📦 Pedido aceito e enviado para impressão!", {
@@ -987,9 +997,13 @@ export default function Pedidos() {
                                 size="sm"
                                 className="flex-1 h-9 rounded-lg shadow-sm text-sm"
                                 onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
-                                disabled={updateStatusMutation.isPending}
+                                disabled={loadingOrderId !== null}
                               >
-                                {nextAction.label}
+                                {loadingOrderId === order.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  nextAction.label
+                                )}
                               </Button>
                             )}
                             {order.status !== "completed" && order.status !== "cancelled" && (
