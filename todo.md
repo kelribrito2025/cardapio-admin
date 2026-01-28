@@ -3464,3 +3464,4 @@
 - [x] Remover mensagem hardcoded "🔔 Você será notificado por aqui em cada atualização." das notificações de WhatsApp (usar apenas o template configurado)
 - [x] Ajustar altura dos placeholders vazios do Kanban para ter o mesmo tamanho dos cards de pedido
 - [x] Alterar placeholders do Kanban para ter fundo branco e mesma sombra dos cards da dashboard
+- [x] Reverter placeholders do Kanban para estilo anterior (com cores de fundo) e alterar os cards das colunas (área cinza) para fundo branco e sombra

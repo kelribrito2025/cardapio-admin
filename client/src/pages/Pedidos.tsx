@@ -825,7 +825,7 @@ export default function Pedidos() {
             <div 
               key={column.id}
               className={cn(
-                "bg-gray-100/80 rounded-2xl flex flex-col overflow-hidden border-t-4",
+                "bg-card rounded-2xl flex flex-col overflow-hidden border-t-4 shadow-soft",
                 column.borderColor
               )}
             >
@@ -1002,8 +1002,9 @@ export default function Pedidos() {
                   // Empty state placeholder - informativo, não clicável
                   <div 
                     className={cn(
-                      "border border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-default select-none min-h-[140px] bg-card shadow-soft",
-                      column.placeholderBorder
+                      "border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-default select-none min-h-[140px]",
+                      column.placeholderBorder,
+                      column.placeholderBg
                     )}
                   >
                     {column.id === "new" ? (
