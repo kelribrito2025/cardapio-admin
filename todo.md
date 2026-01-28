@@ -3488,3 +3488,4 @@
 - [x] Corrigir exibição do valor do troco no recibo quando pagamento é em dinheiro
 - [x] Alterar exibição do troco no recibo para linha separada com ícone (i), linhas tracejadas e texto Obs: Troco para R$ X
 - [x] Substituir ícone (i) circular pelo ícone SVG fornecido no recibo de impressão
+- [x] Substituir ícone de som pelo estilo amarelo com ondas sonoras
