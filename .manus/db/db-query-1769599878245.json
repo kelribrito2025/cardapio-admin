@@ -1,0 +1,34 @@
+{
+  "query": "SELECT u.id as userId, u.openId, u.name as userName, e.id as estId, e.name as estName, e.isOpen FROM users u LEFT JOIN establishments e ON e.userId = u.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT u.id as userId, u.openId, u.name as userName, e.id as estId, e.name as estName, e.isOpen FROM users u LEFT JOIN establishments e ON e.userId = u.id;",
+  "rows": [
+    {
+      "userId": "1",
+      "openId": "XyowEUaSnq6QoyWZjyJmNG",
+      "userName": "Kelri Brito",
+      "estId": "60001",
+      "estName": "Restaurante Kelri",
+      "isOpen": "1"
+    },
+    {
+      "userId": "180577",
+      "openId": "email_1768527278920_xin0nn24fu",
+      "userName": "admin",
+      "estId": "30001",
+      "estName": "Sushi Haruno",
+      "isOpen": "1"
+    },
+    {
+      "userId": "394315",
+      "openId": "email_1769383188034_swehujdjy7e",
+      "userName": "teste",
+      "estId": "NULL",
+      "estName": "NULL",
+      "isOpen": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "userId\topenId\tuserName\testId\testName\tisOpen\n1\tXyowEUaSnq6QoyWZjyJmNG\tKelri Brito\t60001\tRestaurante Kelri\t1\n180577\temail_1768527278920_xin0nn24fu\tadmin\t30001\tSushi Haruno\t1\n394315\temail_1769383188034_swehujdjy7e\tteste\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 68
+}

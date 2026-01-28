@@ -57,6 +57,8 @@ import {
   MoreVertical,
   CheckCircle2,
   ChevronDown,
+  Loader2,
+  Inbox,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
@@ -848,23 +850,37 @@ export default function Pedidos() {
                     );
                   })
                 ) : (
-                  // Empty state placeholder
+                  // Empty state placeholder - informativo, não clicável
                   <div 
                     className={cn(
-                      "border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center",
+                      "border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-default select-none",
                       column.placeholderBorder,
                       column.placeholderBg
                     )}
                   >
-                    {column.id === "completed" ? (
+                    {column.id === "new" ? (
+                      // Coluna Novos: ícone de loading animado
                       <>
-                        <CheckCircle2 className="h-8 w-8 text-gray-300 mb-2" />
-                        <span className="text-sm text-gray-400">Vazio</span>
+                        <Loader2 className="h-8 w-8 text-blue-400 mb-2 animate-spin" />
+                        <span className="text-sm text-blue-500">Aguardando pedidos…</span>
+                      </>
+                    ) : column.id === "preparing" ? (
+                      // Coluna Preparo: ícone de chef
+                      <>
+                        <ChefHat className="h-8 w-8 text-amber-300 mb-2" />
+                        <span className="text-sm text-amber-400">Nenhum pedido em preparo</span>
+                      </>
+                    ) : column.id === "ready" ? (
+                      // Coluna Prontos: ícone de pacote
+                      <>
+                        <Package className="h-8 w-8 text-emerald-300 mb-2" />
+                        <span className="text-sm text-emerald-400">Nenhum pedido pronto</span>
                       </>
                     ) : (
+                      // Coluna Completos: ícone de check
                       <>
-                        <Plus className={cn("h-8 w-8 mb-2", column.placeholderText)} />
-                        <span className={cn("text-sm font-medium", column.placeholderText)}>Adicionar</span>
+                        <CheckCircle2 className="h-8 w-8 text-gray-300 mb-2" />
+                        <span className="text-sm text-gray-400">Nenhum pedido finalizado</span>
                       </>
                     )}
                   </div>

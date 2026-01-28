@@ -1,0 +1,25 @@
+{
+  "query": "SELECT id, openId, name FROM users LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, openId, name FROM users LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "openId": "XyowEUaSnq6QoyWZjyJmNG",
+      "name": "Kelri Brito"
+    },
+    {
+      "id": "180577",
+      "openId": "email_1768527278920_xin0nn24fu",
+      "name": "admin"
+    },
+    {
+      "id": "394315",
+      "openId": "email_1769383188034_swehujdjy7e",
+      "name": "teste"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\n1\tXyowEUaSnq6QoyWZjyJmNG\tKelri Brito\n180577\temail_1768527278920_xin0nn24fu\tadmin\n394315\temail_1769383188034_swehujdjy7e\tteste\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

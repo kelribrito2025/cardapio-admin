@@ -1,0 +1,46 @@
+{
+  "query": "SELECT * FROM users;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM users;",
+  "rows": [
+    {
+      "id": "1",
+      "openId": "XyowEUaSnq6QoyWZjyJmNG",
+      "name": "Kelri Brito",
+      "email": "xkelrix@gmail.com",
+      "loginMethod": "google",
+      "role": "admin",
+      "createdAt": "2026-01-12 22:54:03",
+      "updatedAt": "2026-01-28 11:31:00",
+      "lastSignedIn": "2026-01-28 11:31:00",
+      "passwordHash": "NULL"
+    },
+    {
+      "id": "180577",
+      "openId": "email_1768527278920_xin0nn24fu",
+      "name": "admin",
+      "email": "admin@admin.com",
+      "loginMethod": "email",
+      "role": "user",
+      "createdAt": "2026-01-16 01:34:38",
+      "updatedAt": "2026-01-28 11:30:36",
+      "lastSignedIn": "2026-01-28 11:30:37",
+      "passwordHash": "$2b$10$ZWtA3d4WyOgYSr2B50nUCeYMvVPoVWd6fwiDSuMhvwTTJFVWVXWu."
+    },
+    {
+      "id": "394315",
+      "openId": "email_1769383188034_swehujdjy7e",
+      "name": "teste",
+      "email": "teste@admin.com",
+      "loginMethod": "email",
+      "role": "user",
+      "createdAt": "2026-01-25 23:19:48",
+      "updatedAt": "2026-01-25 23:23:24",
+      "lastSignedIn": "2026-01-25 23:23:25",
+      "passwordHash": "$2b$10$ScV.0C29LAxJIiuxfwWwZOOV3/i72BW2RvAfh5LGXLJtDADeTzhma"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\temail\tloginMethod\trole\tcreatedAt\tupdatedAt\tlastSignedIn\tpasswordHash\n1\tXyowEUaSnq6QoyWZjyJmNG\tKelri Brito\txkelrix@gmail.com\tgoogle\tadmin\t2026-01-12 22:54:03\t2026-01-28 11:31:00\t2026-01-28 11:31:00\tNULL\n180577\temail_1768527278920_xin0nn24fu\tadmin\tadmin@admin.com\temail\tuser\t2026-01-16 01:34:38\t2026-01-28 11:30:36\t2026-01-28 11:30:37\t$2b$10$ZWtA3d4WyOgYSr2B50nUCeYMvVPoVWd6fwiDSuMhvwTTJFVWVXWu.\n394315\temail_1769383188034_swehujdjy7e\tteste\tteste@admin.com\temail\tuser\t2026-01-25 23:19:48\t2026-01-25 23:23:24\t2026-01-25 23:23:25\t$2b$10$ScV.0C29LAxJIiuxfwWwZOOV3/i72BW2RvAfh5LGXLJtDADeTzhma\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}
