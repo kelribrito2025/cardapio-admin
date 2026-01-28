@@ -2,7 +2,6 @@ import { AdminLayout } from "@/components/AdminLayout";
 import { PageHeader, StatusBadge, EmptyState, SectionCard } from "@/components/shared";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Sheet,
   SheetContent,
@@ -54,6 +53,9 @@ import {
   Trash2,
   Edit,
   ArrowLeft,
+  Plus,
+  MoreVertical,
+  CheckCircle2,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
@@ -64,6 +66,62 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 type OrderStatus = "new" | "preparing" | "ready" | "completed" | "cancelled";
+
+// Configuração das colunas Kanban
+const kanbanColumns = [
+  {
+    id: "new" as OrderStatus,
+    title: "Novos",
+    color: "blue",
+    borderColor: "border-t-blue-500",
+    iconBg: "bg-blue-100",
+    iconColor: "text-blue-600",
+    dotColor: "bg-blue-500",
+    placeholderBorder: "border-blue-300",
+    placeholderBg: "bg-blue-50",
+    placeholderText: "text-blue-500",
+    icon: Clock,
+  },
+  {
+    id: "preparing" as OrderStatus,
+    title: "Preparo",
+    color: "amber",
+    borderColor: "border-t-amber-500",
+    iconBg: "bg-amber-100",
+    iconColor: "text-amber-600",
+    dotColor: "bg-amber-500",
+    placeholderBorder: "border-amber-300",
+    placeholderBg: "bg-amber-50/50",
+    placeholderText: "text-amber-500",
+    icon: ChefHat,
+  },
+  {
+    id: "ready" as OrderStatus,
+    title: "Prontos",
+    color: "emerald",
+    borderColor: "border-t-emerald-500",
+    iconBg: "bg-emerald-100",
+    iconColor: "text-emerald-600",
+    dotColor: "bg-emerald-500",
+    placeholderBorder: "border-emerald-300",
+    placeholderBg: "bg-emerald-50/50",
+    placeholderText: "text-emerald-500",
+    icon: Package,
+  },
+  {
+    id: "completed" as OrderStatus,
+    title: "Completos",
+    color: "gray",
+    borderColor: "border-t-gray-400",
+    iconBg: "bg-gray-100",
+    iconColor: "text-gray-500",
+    dotColor: "bg-gray-400",
+    placeholderBorder: "border-gray-300",
+    placeholderBg: "bg-gray-50",
+    placeholderText: "text-gray-400",
+    icon: CheckCircle2,
+  },
+];
 
 const statusConfig: Record<OrderStatus, { 
   label: string; 
@@ -89,7 +147,6 @@ const paymentMethodLabels: Record<string, { label: string; icon: typeof CreditCa
 export default function Pedidos() {
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<OrderStatus | "all">("new");
   const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState<number | null>(null);
@@ -104,49 +161,29 @@ export default function Pedidos() {
   // All hooks MUST be called before any early return
   const utils = trpc.useUtils();
   
-  // Query para buscar todos os pedidos (para contagem)
-  const { data: allOrdersData, refetch: refetchAll } = trpc.orders.list.useQuery(
+  // Query para buscar todos os pedidos
+  const { data: allOrdersData, refetch: refetchAll, isLoading } = trpc.orders.list.useQuery(
     { 
       establishmentId: establishmentId ?? 0,
     },
     { 
       enabled: !!establishmentId && establishmentId > 0,
-      // Polling como fallback apenas se SSE não estiver conectado
-      refetchInterval: false,
-    }
-  );
-
-  // Query para buscar pedidos filtrados por status
-  const { data: ordersData, refetch, isLoading } = trpc.orders.list.useQuery(
-    { 
-      establishmentId: establishmentId ?? 0,
-      status: activeTab !== "all" ? activeTab : undefined,
-    },
-    { 
-      enabled: !!establishmentId && establishmentId > 0,
-      // Polling como fallback apenas se SSE não estiver conectado
       refetchInterval: false,
     }
   );
 
   // Handlers para eventos SSE
   const handleNewOrder = useCallback(() => {
-    // Atualizar cache do tRPC quando novo pedido chegar
-    refetch();
     refetchAll();
-    // Som de notificação é gerenciado pelo NewOrdersContext
-    // Não tocar som aqui para evitar duplicação e respeitar preferência do usuário
     toast.success("Novo pedido recebido!", {
       description: "Um novo pedido acabou de chegar.",
       duration: 5000,
     });
-  }, [refetch, refetchAll]);
+  }, [refetchAll]);
 
   const handleOrderUpdate = useCallback(() => {
-    // Atualizar cache do tRPC quando pedido for atualizado
-    refetch();
     refetchAll();
-  }, [refetch, refetchAll]);
+  }, [refetchAll]);
 
   const handleSSEConnected = useCallback(() => {
     console.log("[Pedidos] SSE conectado - tempo real ativado");
@@ -154,13 +191,10 @@ export default function Pedidos() {
 
   const handleSSEDisconnected = useCallback(() => {
     console.log("[Pedidos] SSE desconectado - ativando fallback de polling");
-    // Quando SSE desconectar, fazer refetch manual
-    refetch();
     refetchAll();
-  }, [refetch, refetchAll]);
+  }, [refetchAll]);
 
   // Hook SSE para receber pedidos em tempo real
-  // IMPORTANTE: Passa establishmentId para garantir conexão única por estabelecimento
   const { status: sseStatus, isConnected: sseConnected } = useOrdersSSE({
     establishmentId: establishmentId ?? undefined,
     onNewOrder: handleNewOrder,
@@ -176,15 +210,13 @@ export default function Pedidos() {
     
     const interval = setInterval(() => {
       console.log("[Pedidos] Polling fallback - SSE não conectado");
-      refetch();
       refetchAll();
     }, 30000);
     
     return () => clearInterval(interval);
-  }, [establishmentId, sseConnected, refetch, refetchAll]);
+  }, [establishmentId, sseConnected, refetchAll]);
 
   const allOrders = allOrdersData?.orders || [];
-  const orders = ordersData?.orders || [];
 
   const { data: orderDetails } = trpc.orders.get.useQuery(
     { id: selectedOrder! },
@@ -195,21 +227,13 @@ export default function Pedidos() {
   const { decrementCount } = useNewOrders();
 
   const updateStatusMutation = trpc.orders.updateStatus.useMutation({
-    // Optimistic update: atualiza a UI instantaneamente antes da resposta do servidor
     onMutate: async (variables) => {
       console.log("[Pedidos] Optimistic update iniciado", { orderId: variables.id, newStatus: variables.status });
       
-      // Cancelar queries em andamento para evitar sobrescrever o optimistic update
       await utils.orders.list.cancel();
       
-      // Salvar estado anterior para rollback em caso de erro
       const previousAllOrders = utils.orders.list.getData({ establishmentId: establishmentId ?? 0 });
-      const previousFilteredOrders = utils.orders.list.getData({ 
-        establishmentId: establishmentId ?? 0,
-        status: activeTab !== "all" ? activeTab : undefined,
-      });
       
-      // Atualizar cache otimisticamente para todas as queries de pedidos
       utils.orders.list.setData(
         { establishmentId: establishmentId ?? 0 },
         (old) => {
@@ -225,118 +249,203 @@ export default function Pedidos() {
         }
       );
       
-      // Atualizar cache para TODAS as queries de status específico
-      // Isso garante que o pedido seja removido do card antigo e apareça no novo instantaneamente
-      const allStatuses: (OrderStatus | undefined)[] = ["new", "preparing", "ready", "completed", "cancelled", undefined];
-      
-      for (const status of allStatuses) {
-        utils.orders.list.setData(
-          { establishmentId: establishmentId ?? 0, status },
-          (old) => {
-            if (!old) return old;
-            
-            // Se este é o status ANTIGO do pedido, filtrar o pedido para removê-lo
-            // Se este é o status NOVO do pedido, adicionar o pedido
-            const orderInList = old.orders.find(o => o.id === variables.id);
-            
-            if (orderInList) {
-              // O pedido está nesta lista - atualizar seu status
-              // Se o novo status não corresponde ao filtro desta query, o pedido será filtrado naturalmente
-              return {
-                ...old,
-                orders: old.orders.map(order => 
-                  order.id === variables.id 
-                    ? { ...order, status: variables.status, cancellationReason: variables.cancellationReason || order.cancellationReason }
-                    : order
-                ).filter(order => {
-                  // Se a query tem filtro de status, filtrar pedidos que não correspondem
-                  if (status === undefined) return true; // Query sem filtro mostra todos
-                  return order.status === status;
-                }),
-              };
-            }
-            
-            // Se o pedido não está nesta lista mas o novo status corresponde ao filtro,
-            // precisamos buscar o pedido de outra lista e adicioná-lo
-            if (status === variables.status || status === undefined) {
-              // Buscar o pedido da lista principal
-              const mainList = utils.orders.list.getData({ establishmentId: establishmentId ?? 0 });
-              const orderToAdd = mainList?.orders.find(o => o.id === variables.id);
-              
-              if (orderToAdd && !old.orders.find(o => o.id === variables.id)) {
-                return {
-                  ...old,
-                  orders: [...old.orders, { ...orderToAdd, status: variables.status }],
-                };
-              }
-            }
-            
-            return old;
-          }
-        );
-      }
-      
       // Decrementar badge se estava como "new"
       const order = previousAllOrders?.orders?.find(o => o.id === variables.id);
       if (order?.status === "new" && variables.status !== "new") {
         decrementCount();
       }
       
-      console.log("[Pedidos] Optimistic update aplicado");
-      
-      return { previousAllOrders, previousFilteredOrders };
+      return { previousAllOrders };
     },
-    onSuccess: (_data, variables) => {
-      console.log("[Pedidos] Mutation sucesso - confirmando optimistic update");
-      toast.success("Status atualizado");
-      // Refetch para garantir sincronização com servidor
-      refetch();
-      refetchAll();
-    },
-    onError: (error, variables, context) => {
-      console.error("[Pedidos] Mutation erro - revertendo optimistic update", error);
-      toast.error("Erro ao atualizar status");
-      
-      // Rollback para estado anterior em caso de erro
+    onError: (err, variables, context) => {
+      console.error("[Pedidos] Erro ao atualizar status:", err);
       if (context?.previousAllOrders) {
         utils.orders.list.setData(
           { establishmentId: establishmentId ?? 0 },
           context.previousAllOrders
         );
       }
-      if (context?.previousFilteredOrders) {
-        utils.orders.list.setData(
-          { establishmentId: establishmentId ?? 0, status: activeTab !== "all" ? activeTab : undefined },
-          context.previousFilteredOrders
-        );
-      }
+      toast.error("Erro ao atualizar status do pedido");
+    },
+    onSettled: () => {
+      utils.orders.list.invalidate();
+    },
+    onSuccess: (_, variables) => {
+      const statusLabels: Record<string, string> = {
+        preparing: "Pedido aceito e em preparo!",
+        ready: "Pedido pronto para entrega!",
+        completed: "Pedido finalizado!",
+        cancelled: "Pedido cancelado.",
+      };
+      toast.success(statusLabels[variables.status] || "Status atualizado!");
     },
   });
 
-  // Função para imprimir pedido diretamente do card (sem precisar abrir detalhes)
-  const handlePrintOrderDirect = async (orderId: number) => {
-    // IMPORTANTE: Em PWA, window.open() só funciona em resposta direta a evento de usuário
-    // Se houver um await antes, o contexto de evento se perde e o popup é bloqueado
-    // Solução: abrir a janela ANTES de fazer o fetch
-    const printWindow = window.open('about:blank', '_blank');
+  // Função para imprimir pedido
+  const handlePrintOrder = () => {
+    if (!orderDetails) return;
+    
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
     if (!printWindow) {
-      toast.error("Erro ao abrir janela de impressão. Verifique se popups estão permitidos.");
+      toast.error("Não foi possível abrir a janela de impressão. Verifique se pop-ups estão permitidos.");
       return;
     }
     
-    // Mostrar loading na janela enquanto carrega
-    printWindow.document.write('<html><body style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:Arial;"><p>Carregando pedido...</p></body></html>');
+    const itemsHtml = orderDetails.items?.map(item => {
+      const unitPrice = Number(item.totalPrice) / item.quantity;
+      const complementsHtml = item.complements && item.complements.length > 0
+        ? item.complements.map((c: any) => {
+            const price = Number(c.price || 0);
+            const priceStr = price > 0 ? ` (R$ ${price.toFixed(2).replace('.', ',')})` : '';
+            return `<div class="item-complement">+ ${c.name}${priceStr}</div>`;
+          }).join('')
+        : '';
+      return `
+        <div class="item">
+          <div class="item-header">
+            <span class="item-qty">${item.quantity}x ${item.productName}</span>
+            <span class="item-price">R$ ${Number(item.totalPrice).toFixed(2).replace('.', ',')}</span>
+          </div>
+          ${complementsHtml}
+          ${item.notes ? `<div class="item-obs">Obs: ${item.notes}</div>` : ''}
+        </div>
+      `;
+    }).join('') || '';
     
+    const discount = orderDetails.discount ? Number(orderDetails.discount) : 0;
+    
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Pedido ${orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { 
+            font-family: Arial, sans-serif; 
+            font-size: 13px; 
+            padding: 20px; 
+            max-width: 320px; 
+            margin: 0 auto; 
+            background: #f5f5f0;
+            color: #333;
+          }
+          .receipt { background: #f5f5f0; padding: 10px; }
+          .logo { text-align: center; padding-bottom: 15px; margin-bottom: 15px; }
+          .logo h1 { font-size: 22px; font-weight: bold; margin: 0; letter-spacing: 1px; }
+          .logo p { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-top: 2px; }
+          .order-info { margin-bottom: 15px; }
+          .order-info h2 { font-size: 16px; font-weight: bold; margin-bottom: 2px; }
+          .order-info p { font-size: 12px; color: #666; }
+          .divider { border: none; border-top: 1px solid #ccc; margin: 12px 0; }
+          .divider-dashed { border: none; border-top: 1px dashed #bbb; margin: 10px 0; }
+          .item { margin-bottom: 10px; }
+          .item-header { display: flex; justify-content: space-between; font-weight: 500; }
+          .item-obs { font-size: 11px; color: #666; margin-top: 2px; padding-left: 5px; }
+          .item-complement { font-size: 11px; color: #555; margin-top: 2px; padding-left: 10px; }
+          .totals { margin: 15px 0; }
+          .total-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
+          .total-row.final { font-weight: bold; font-size: 15px; margin-top: 8px; }
+          .section { margin: 15px 0; }
+          .section-title { font-weight: bold; font-size: 14px; margin-bottom: 6px; }
+          .section-content { font-size: 13px; color: #444; line-height: 1.4; }
+          .footer { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #ccc; }
+          .footer p { font-size: 11px; color: #666; }
+          @media print { body { padding: 0; background: white; } .receipt { background: white; } }
+        </style>
+      </head>
+      <body>
+        <div class="receipt">
+          <div class="logo">
+            <h1>${establishment?.name || 'Cardápio'}</h1>
+            <p>Sistema de Pedidos</p>
+          </div>
+          <div class="order-info">
+            <h2>Pedido ${orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</h2>
+            <p>Realizado em: ${format(new Date(orderDetails.createdAt), "dd/MM/yyyy")} - ${format(new Date(orderDetails.createdAt), "HH:mm")}</p>
+          </div>
+          <hr class="divider">
+          <div class="items">${itemsHtml}</div>
+          <hr class="divider-dashed">
+          <div class="totals">
+            <div class="total-row"><span>Valor dos produtos</span><span>R$ ${Number(orderDetails.subtotal).toFixed(2).replace('.', ',')}</span></div>
+            ${orderDetails.couponCode ? `<div class="total-row"><span>Cupom aplicado</span><span>${orderDetails.couponCode}</span></div>` : ''}
+            ${discount > 0 ? `<div class="total-row"><span>Desconto</span><span>- R$ ${discount.toFixed(2).replace('.', ',')}</span></div>` : ''}
+            <div class="total-row"><span>Taxa de entrega</span><span>${Number(orderDetails.deliveryFee) > 0 ? `R$ ${Number(orderDetails.deliveryFee).toFixed(2).replace('.', ',')}` : 'Grátis'}</span></div>
+            <div class="total-row final"><span>Total</span><span>R$ ${Number(orderDetails.total).toFixed(2).replace('.', ',')}</span></div>
+          </div>
+          ${orderDetails.notes ? `<hr class="divider"><div class="section"><div class="section-title">Observações:</div><div class="section-content">${orderDetails.notes}</div></div>` : ''}
+          <hr class="divider">
+          <div class="section"><div class="section-title">Entrega</div><div class="section-content">${orderDetails.deliveryType === 'delivery' ? (orderDetails.customerAddress || 'Endereço não informado') : 'Retirada no local'}</div></div>
+          <hr class="divider">
+          <div class="section"><div class="section-title">Forma de pagamento</div><div class="section-content">${paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</div></div>
+          <hr class="divider">
+          <div class="section"><div class="section-title">Cliente</div><div class="section-content">${orderDetails.customerName || 'Não informado'}<br>${orderDetails.customerPhone || ''}</div></div>
+          <div class="footer"><p>Pedido realizado via Cardápio Admin</p><p>manus.space</p></div>
+        </div>
+        <script>window.onload = function() { window.print(); window.onafterprint = function() { window.close(); }; };</script>
+      </body>
+      </html>
+    `;
+    
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+  };
+
+  // Função para imprimir via API térmica
+  const handlePrintThermal = async (orderId: number) => {
     try {
-      // Buscar detalhes do pedido
-      const orderData = await utils.orders.get.fetch({ id: orderId });
+      const response = await fetch(`/api/print/order/${orderId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      
+      if (response.ok) {
+        toast.success("Pedido enviado para impressão térmica!");
+      } else {
+        const error = await response.json();
+        toast.error(error.message || "Erro ao enviar para impressão");
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar com a impressora");
+    }
+  };
+
+  // Função para imprimir via Multi Printer
+  const handlePrintMultiPrinter = async (orderId: number) => {
+    try {
+      const response = await fetch(`/api/print/multi/${orderId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        toast.success(`Pedido enviado para ${result.printerCount || 'múltiplas'} impressoras!`);
+      } else {
+        const error = await response.json();
+        toast.error(error.message || "Erro ao enviar para impressoras");
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar com as impressoras");
+    }
+  };
+
+  // Função para imprimir direto (sem abrir detalhes)
+  const handlePrintOrderDirect = async (orderId: number) => {
+    try {
+      const orderData = allOrders.find(o => o.id === orderId);
       if (!orderData) {
-        printWindow.close();
-        toast.error("Erro ao carregar pedido para impressão");
+        toast.error("Pedido não encontrado");
         return;
       }
       
-      // Gerar HTML dos itens com adicionais e observações
+      const printWindow = window.open('', '_blank', 'width=400,height=600');
+      if (!printWindow) {
+        toast.error("Não foi possível abrir a janela de impressão.");
+        return;
+      }
+      
       const itemsHtml = orderData.items?.map((item: any) => {
         const complementsHtml = item.complements && item.complements.length > 0
           ? item.complements.map((c: any) => {
@@ -393,14 +502,8 @@ export default function Pedidos() {
         </head>
         <body>
           <div class="receipt">
-            <div class="logo">
-              <h1>${establishment?.name || 'Cardápio'}</h1>
-              <p>Sistema de Pedidos</p>
-            </div>
-            <div class="order-info">
-              <h2>Pedido ${orderData.orderNumber?.startsWith('#') ? orderData.orderNumber : `#${orderData.orderNumber}`}</h2>
-              <p>Realizado em: ${format(new Date(orderData.createdAt), "dd/MM/yyyy")} - ${format(new Date(orderData.createdAt), "HH:mm")}</p>
-            </div>
+            <div class="logo"><h1>${establishment?.name || 'Cardápio'}</h1><p>Sistema de Pedidos</p></div>
+            <div class="order-info"><h2>Pedido ${orderData.orderNumber?.startsWith('#') ? orderData.orderNumber : `#${orderData.orderNumber}`}</h2><p>Realizado em: ${format(new Date(orderData.createdAt), "dd/MM/yyyy")} - ${format(new Date(orderData.createdAt), "HH:mm")}</p></div>
             <hr class="divider">
             <div class="items">${itemsHtml}</div>
             <hr class="divider-dashed">
@@ -413,20 +516,11 @@ export default function Pedidos() {
             </div>
             ${orderData.notes ? `<hr class="divider"><div class="section"><div class="section-title">Observações:</div><div class="section-content">${orderData.notes}</div></div>` : ''}
             <hr class="divider">
-            <div class="section">
-              <div class="section-title">${orderData.deliveryType === 'delivery' ? 'Endereço de Entrega' : 'Retirada no Local'}</div>
-              <div class="section-content">
-                ${orderData.deliveryType === 'delivery' ? `${(orderData as any).deliveryAddress || (orderData as any).address || ''}<br>${(orderData as any).deliveryNeighborhood || (orderData as any).neighborhood || ''}` : 'Cliente irá retirar no estabelecimento'}
-              </div>
-            </div>
-            <div class="section">
-              <div class="section-title">Pagamento</div>
-              <div class="section-content">${orderData.paymentMethod === 'pix' ? 'PIX' : orderData.paymentMethod === 'card' ? 'Cartão' : orderData.paymentMethod === 'cash' ? 'Dinheiro' : orderData.paymentMethod === 'boleto' ? 'Boleto' : orderData.paymentMethod}</div>
-            </div>
-            <div class="section">
-              <div class="section-title">Cliente</div>
-              <div class="section-content">${orderData.customerName || 'Não informado'}<br>${orderData.customerPhone || ''}</div>
-            </div>
+            <div class="section"><div class="section-title">Entrega</div><div class="section-content">${orderData.deliveryType === 'delivery' ? (orderData.customerAddress || 'Endereço não informado') : 'Retirada no local'}</div></div>
+            <hr class="divider">
+            <div class="section"><div class="section-title">Forma de pagamento</div><div class="section-content">${paymentMethodLabels[orderData.paymentMethod]?.label || orderData.paymentMethod}</div></div>
+            <hr class="divider">
+            <div class="section"><div class="section-title">Cliente</div><div class="section-content">${orderData.customerName || 'Não informado'}<br>${orderData.customerPhone || ''}</div></div>
             <div class="footer"><p>Pedido realizado via Cardápio Admin</p><p>manus.space</p></div>
           </div>
           <script>window.onload = function() { window.print(); window.onafterprint = function() { window.close(); }; };</script>
@@ -437,326 +531,8 @@ export default function Pedidos() {
       printWindow.document.write(printContent);
       printWindow.document.close();
     } catch (error) {
-      console.error("Erro ao imprimir pedido:", error);
       toast.error("Erro ao imprimir pedido");
     }
-  };
-
-  // Função para imprimir via app ESC POS Android (impressora térmica)
-  const handlePrintThermal = (orderId: number) => {
-    // Detectar se é Android
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    
-    // URL do recibo no servidor (precisa ser uma URL HTTP acessível, não blob)
-    const receiptUrl = `${window.location.origin}/api/print/receipt/${orderId}`;
-    
-    if (isAndroid) {
-      // Usar app-link do ESC POS Wifi Print Service
-      const printUrl = `print://escpos.org/escpos/net/print?srcTp=uri&srcObj=html&numCopies=1&src='${encodeURIComponent(receiptUrl)}'`;
-      window.location.href = printUrl;
-      toast.success("Enviando para impressora térmica...");
-    } else {
-      // Em outros dispositivos, abrir o recibo em nova aba
-      window.open(receiptUrl, '_blank');
-      toast.info("Recibo aberto em nova aba. Para impressão térmica, use um dispositivo Android com o app ESC POS Wifi Print Service.");
-    }
-  };
-
-  // Função para imprimir em múltiplas impressoras via Multi Printer app
-  // Usa separação por setor - cada impressora recebe apenas seus itens
-  const handlePrintMultiPrinter = async (orderId: number) => {
-    // Detectar se é Android
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    
-    if (!isAndroid) {
-      toast.info("Para impressão em múltiplas impressoras, use um dispositivo Android com o app Multi Printer Network Print Service.");
-      return;
-    }
-    
-    try {
-      // Buscar deep link do servidor - usa endpoint de setores para separar itens por impressora
-      const response = await fetch(`${window.location.origin}/api/print/multiprinter-sectors/${orderId}`);
-      const data = await response.json();
-      
-      if (data.success && data.deepLink) {
-        // Abrir o deep link para o app Multi Printer
-        window.location.href = data.deepLink;
-        toast.success(`Enviando para ${data.printers.length} impressora(s)...`);
-      } else {
-        toast.error(data.error || "Erro ao gerar link de impressão");
-      }
-    } catch (error) {
-      console.error("Erro ao imprimir em múltiplas impressoras:", error);
-      toast.error("Erro ao conectar com o servidor");
-    }
-  };
-
-  // Função para imprimir apenas o pedido (do modal de detalhes)
-  const handlePrintOrder = () => {
-    if (!orderDetails) return;
-    
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      toast.error("Erro ao abrir janela de impressão");
-      return;
-    }
-    
-    // Gerar HTML dos itens com adicionais e observações
-    const itemsHtml = orderDetails.items?.map(item => {
-      const unitPrice = Number(item.totalPrice) / item.quantity;
-      // Gerar HTML dos complementos com preço
-      const complementsHtml = item.complements && item.complements.length > 0
-        ? item.complements.map((c: any) => {
-            const price = Number(c.price || 0);
-            const priceStr = price > 0 ? ` (R$ ${price.toFixed(2).replace('.', ',')})` : '';
-            return `<div class="item-complement">+ ${c.name}${priceStr}</div>`;
-          }).join('')
-        : '';
-      return `
-        <div class="item">
-          <div class="item-header">
-            <span class="item-qty">${item.quantity}x ${item.productName}</span>
-            <span class="item-price">R$ ${Number(item.totalPrice).toFixed(2).replace('.', ',')}</span>
-          </div>
-          ${complementsHtml}
-          ${item.notes ? `<div class="item-obs">Obs: ${item.notes}</div>` : ''}
-        </div>
-      `;
-    }).join('') || '';
-    
-    // Calcular desconto se houver cupom
-    const discount = orderDetails.discount ? Number(orderDetails.discount) : 0;
-    
-    const printContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Pedido ${orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</title>
-        <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { 
-            font-family: Arial, sans-serif; 
-            font-size: 13px; 
-            padding: 20px; 
-            max-width: 320px; 
-            margin: 0 auto; 
-            background: #f5f5f0;
-            color: #333;
-          }
-          .receipt {
-            background: #f5f5f0;
-            padding: 10px;
-          }
-          .logo {
-            text-align: center;
-            padding-bottom: 15px;
-            margin-bottom: 15px;
-          }
-          .logo h1 {
-            font-size: 22px;
-            font-weight: bold;
-            margin: 0;
-            letter-spacing: 1px;
-          }
-          .logo p {
-            font-size: 10px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 2px;
-          }
-          .order-info {
-            margin-bottom: 15px;
-          }
-          .order-info h2 {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 2px;
-          }
-          .order-info p {
-            font-size: 12px;
-            color: #666;
-          }
-          .divider {
-            border: none;
-            border-top: 1px solid #ccc;
-            margin: 12px 0;
-          }
-          .divider-dashed {
-            border: none;
-            border-top: 1px dashed #bbb;
-            margin: 10px 0;
-          }
-          .item {
-            margin-bottom: 10px;
-          }
-          .item-header {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 500;
-          }
-          .item-obs {
-            font-size: 11px;
-            color: #666;
-            margin-top: 2px;
-            padding-left: 5px;
-          }
-          .item-complement {
-            font-size: 11px;
-            color: #555;
-            margin-top: 2px;
-            padding-left: 10px;
-          }
-          .totals {
-            margin: 15px 0;
-          }
-          .total-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 4px;
-            font-size: 13px;
-          }
-          .total-row.final {
-            font-weight: bold;
-            font-size: 15px;
-            margin-top: 8px;
-          }
-          .section {
-            margin: 15px 0;
-          }
-          .section-title {
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 6px;
-          }
-          .section-content {
-            font-size: 13px;
-            color: #444;
-            line-height: 1.4;
-          }
-          .footer {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #ccc;
-          }
-          .footer p {
-            font-size: 11px;
-            color: #666;
-          }
-          @media print { 
-            body { 
-              padding: 0; 
-              background: white;
-            }
-            .receipt {
-              background: white;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="receipt">
-          <div class="logo">
-            <h1>${establishment?.name || 'Cardápio'}</h1>
-            <p>Sistema de Pedidos</p>
-          </div>
-          
-          <div class="order-info">
-            <h2>Pedido ${orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</h2>
-            <p>Realizado em: ${format(new Date(orderDetails.createdAt), "dd/MM/yyyy")} - ${format(new Date(orderDetails.createdAt), "HH:mm")}</p>
-          </div>
-          
-          <hr class="divider">
-          
-          <div class="items">
-            ${itemsHtml}
-          </div>
-          
-          <hr class="divider-dashed">
-          
-          <div class="totals">
-            <div class="total-row">
-              <span>Valor dos produtos</span>
-              <span>R$ ${Number(orderDetails.subtotal).toFixed(2).replace('.', ',')}</span>
-            </div>
-            ${orderDetails.couponCode ? `
-            <div class="total-row">
-              <span>Cupom aplicado</span>
-              <span>${orderDetails.couponCode}</span>
-            </div>
-            ` : ''}
-            ${discount > 0 ? `
-            <div class="total-row">
-              <span>Desconto</span>
-              <span>- R$ ${discount.toFixed(2).replace('.', ',')}</span>
-            </div>
-            ` : ''}
-            <div class="total-row">
-              <span>Taxa de entrega</span>
-              <span>${Number(orderDetails.deliveryFee) > 0 ? `R$ ${Number(orderDetails.deliveryFee).toFixed(2).replace('.', ',')}` : 'Grátis'}</span>
-            </div>
-            <div class="total-row final">
-              <span>Total</span>
-              <span>R$ ${Number(orderDetails.total).toFixed(2).replace('.', ',')}</span>
-            </div>
-          </div>
-          
-          ${orderDetails.notes ? `
-          <hr class="divider">
-          <div class="section">
-            <div class="section-title">Observações:</div>
-            <div class="section-content">${orderDetails.notes}</div>
-          </div>
-          ` : ''}
-          
-          <hr class="divider">
-          
-          <div class="section">
-            <div class="section-title">Entrega</div>
-            <div class="section-content">
-              ${orderDetails.deliveryType === 'delivery' ? 
-                (orderDetails.customerAddress || 'Endereço não informado') : 
-                'Retirada no local'
-              }
-            </div>
-          </div>
-          
-          <hr class="divider">
-          
-          <div class="section">
-            <div class="section-title">Forma de pagamento</div>
-            <div class="section-content">${paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</div>
-          </div>
-          
-          <hr class="divider">
-          
-          <div class="section">
-            <div class="section-title">Cliente</div>
-            <div class="section-content">
-              ${orderDetails.customerName || 'Não informado'}<br>
-              ${orderDetails.customerPhone || ''}
-            </div>
-          </div>
-          
-          <div class="footer">
-            <p>Pedido realizado via Cardápio Admin</p>
-            <p>manus.space</p>
-          </div>
-        </div>
-        
-        <script>
-          window.onload = function() {
-            window.print();
-            window.onafterprint = function() { window.close(); };
-          };
-        </script>
-      </body>
-      </html>
-    `;
-    
-    printWindow.document.write(printContent);
-    printWindow.document.close();
   };
 
   // Se não há estabelecimento, mostrar tela de criação
@@ -789,17 +565,13 @@ export default function Pedidos() {
   const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
     updateStatusMutation.mutate({ id: orderId, status: newStatus });
     
-    // Se está aceitando o pedido (mudando de "new" para "preparing"), enviar para impressão automática
     if (newStatus === "preparing") {
-      // Mostrar notificação visual de pedido aceito e enviado para impressão
       toast.success("📦 Pedido aceito e enviado para impressão!", {
         description: "O pedido foi aceito e está sendo enviado para as impressoras.",
         duration: 4000,
       });
       
-      // Pequeno delay para garantir que a mutação foi processada
       setTimeout(() => {
-        // Usar Multi Printer para imprimir em todas as impressoras simultaneamente
         handlePrintMultiPrinter(orderId);
       }, 300);
     }
@@ -833,14 +605,13 @@ export default function Pedidos() {
     }
   };
 
-  // Count orders by status
-  // Calcular contagem usando todos os pedidos
-  const orderCounts = {
-    new: allOrders?.filter(o => o.status === "new").length ?? 0,
-    preparing: allOrders?.filter(o => o.status === "preparing").length ?? 0,
-    ready: allOrders?.filter(o => o.status === "ready").length ?? 0,
-    completed: allOrders?.filter(o => o.status === "completed").length ?? 0,
-    cancelled: allOrders?.filter(o => o.status === "cancelled").length ?? 0,
+  // Agrupar pedidos por status para o Kanban
+  const ordersByStatus = {
+    new: allOrders?.filter(o => o.status === "new") ?? [],
+    preparing: allOrders?.filter(o => o.status === "preparing") ?? [],
+    ready: allOrders?.filter(o => o.status === "ready") ?? [],
+    completed: allOrders?.filter(o => o.status === "completed") ?? [],
+    cancelled: allOrders?.filter(o => o.status === "cancelled") ?? [],
   };
 
   return (
@@ -868,259 +639,166 @@ export default function Pedidos() {
         </div>
       </div>
 
-      {/* Status Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-        {/* Novos */}
-        <div 
-          className={cn(
-            "bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
-            activeTab === "new" && "ring-2 ring-blue-500"
-          )}
-          onClick={() => setActiveTab("new")}
-        >
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1 min-w-0">
-              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Novos</p>
-              <p className="text-2xl font-bold mt-1 tracking-tight text-blue-600">{orderCounts.new}</p>
-            </div>
-            <div className="p-2.5 bg-blue-100 rounded-lg shrink-0">
-              <Clock className="h-5 w-5 text-blue-600" />
-            </div>
-          </div>
-        </div>
-        {/* Em Preparo */}
-        <div 
-          className={cn(
-            "bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
-            activeTab === "preparing" && "ring-2 ring-amber-500"
-          )}
-          onClick={() => setActiveTab("preparing")}
-        >
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1 min-w-0">
-              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Em Preparo</p>
-              <p className="text-2xl font-bold mt-1 tracking-tight text-amber-600">{orderCounts.preparing}</p>
-            </div>
-            <div className="p-2.5 bg-amber-100 rounded-lg shrink-0">
-              <ChefHat className="h-5 w-5 text-amber-600" />
-            </div>
-          </div>
-        </div>
-        {/* Prontos */}
-        <div 
-          className={cn(
-            "bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
-            activeTab === "ready" && "ring-2 ring-emerald-500"
-          )}
-          onClick={() => setActiveTab("ready")}
-        >
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1 min-w-0">
-              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Prontos</p>
-              <p className="text-2xl font-bold mt-1 tracking-tight text-emerald-600">{orderCounts.ready}</p>
-            </div>
-            <div className="p-2.5 bg-emerald-100 rounded-lg shrink-0">
-              <Package className="h-5 w-5 text-emerald-600" />
-            </div>
-          </div>
-        </div>
-        {/* Finalizados */}
-        <div 
-          className={cn(
-            "bg-card rounded-xl p-5 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer",
-            activeTab === "completed" && "ring-2 ring-gray-500"
-          )}
-          onClick={() => setActiveTab("completed")}
-        >
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1 min-w-0">
-              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Finalizados</p>
-              <p className="text-2xl font-bold mt-1 tracking-tight text-gray-600">{orderCounts.completed}</p>
-            </div>
-            <div className="p-2.5 bg-gray-100 rounded-lg shrink-0">
-              <CheckCircle className="h-5 w-5 text-gray-600" />
-            </div>
-          </div>
-        </div>
-        {/* Cancelados - Oculto no mobile */}
-        <div 
-          className={cn(
-            "hidden md:block bg-card rounded-xl p-4 border border-border/50 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5 cursor-pointer border-red-200/50 bg-red-50/30",
-            activeTab === "cancelled" && "ring-2 ring-red-500"
-          )}
-          onClick={() => setActiveTab("cancelled")}
-        >
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1 min-w-0">
-              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Cancelados</p>
-              <p className="text-2xl font-bold mt-1 tracking-tight text-red-600">{orderCounts.cancelled}</p>
-            </div>
-            <div className="p-2.5 bg-red-100 rounded-lg shrink-0">
-              <XCircle className="h-5 w-5 text-red-600" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as OrderStatus | "all")}>
-
-        <TabsContent value={activeTab} className="mt-0">
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-card rounded-xl border border-border/50 p-4 shadow-soft">
-                  <div className="skeleton h-5 w-24 rounded-md mb-3" />
-                  <div className="skeleton h-4 w-full rounded-md mb-2" />
-                  <div className="skeleton h-3 w-2/3 rounded-md mb-4" />
-                  <div className="skeleton h-9 w-full rounded-lg" />
-                </div>
-              ))}
-            </div>
-          ) : orders && orders.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {orders.map((order) => {
-                const config = statusConfig[order.status as OrderStatus];
-                const nextAction = getNextAction(order.status as OrderStatus);
-                const PaymentIcon = paymentMethodLabels[order.paymentMethod]?.icon || CreditCard;
-
-                return (
-                  <div
-                    key={order.id}
-                    className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-200"
-                  >
-                    {/* Header */}
-                    <div className={cn("px-4 py-3 flex items-center justify-between", config.bgColor)}>
-                      <div className="flex items-center gap-2">
-                        <div className={cn("p-1.5 rounded-lg bg-white/80", config.color)}>
-                          <config.icon className="h-3.5 w-3.5" />
-                        </div>
-                        <span className={cn("font-bold text-sm", config.color)}>{order.orderNumber?.startsWith('#') ? order.orderNumber : `#${order.orderNumber}`}</span>
-                      </div>
-                      <div className={cn("flex items-center gap-1 text-xs font-medium", config.color)}>
-                        <Clock className="h-3 w-3" />
-                        {formatDistanceToNow(new Date(order.createdAt), {
-                          addSuffix: false,
-                          locale: ptBR,
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-4">
-                      {/* Linha compacta com todas as informações (mobile e desktop) */}
-                      <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                          {/* Nome do cliente */}
-                          {order.customerName && (
-                            <span className="font-semibold text-sm truncate max-w-[100px] sm:max-w-[150px] md:max-w-[200px]">
-                              {order.customerName}
-                            </span>
-                          )}
-                          
-                          {/* Separador */}
-                          {order.customerName && (
-                            <span className="text-muted-foreground/50">•</span>
-                          )}
-                          
-                          {/* Ícone e método de pagamento */}
-                          <span className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground">
-                            <PaymentIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                            {paymentMethodLabels[order.paymentMethod]?.label}
-                          </span>
-                          
-                          {/* Tag de entrega/retirada */}
-                          <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-muted/50 rounded text-[10px] sm:text-xs font-medium capitalize whitespace-nowrap">
-                            {order.deliveryType === "delivery" ? "Entrega" : "Retirada"}
-                          </span>
-                        </div>
-                        
-                        {/* Valor total */}
-                        <span className="text-base sm:text-lg font-bold text-primary whitespace-nowrap">
-                          {formatCurrency(order.total)}
-                        </span>
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex gap-2 mt-3">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-9 w-9 rounded-lg border-border/50 hover:bg-accent text-muted-foreground hover:text-foreground"
-                            >
-                              <Printer className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start">
-                            <DropdownMenuLabel>Imprimir</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => handlePrintOrderDirect(order.id)}>
-                              <Printer className="h-4 w-4 mr-2" />
-                              Impressão Normal
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handlePrintThermal(order.id)}>
-                              <Smartphone className="h-4 w-4 mr-2" />
-                              Impressora Térmica (1 impressora)
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handlePrintMultiPrinter(order.id)}>
-                              <Printer className="h-4 w-4 mr-2" />
-                              Múltiplas Impressoras (Android)
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 h-9 rounded-lg border-border/50 hover:bg-accent text-sm"
-                          onClick={() => setSelectedOrder(order.id)}
-                        >
-                          Ver detalhes
-                        </Button>
-                        {nextAction && (
-                          <Button
-                            size="sm"
-                            className="flex-1 h-9 rounded-lg shadow-sm text-sm"
-                            onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
-                            disabled={updateStatusMutation.isPending}
-                          >
-                            {nextAction.label}
-                          </Button>
-                        )}
-                        {order.status !== "completed" && order.status !== "cancelled" && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-9 w-9 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20"
-                            onClick={() => {
-                              setOrderToCancel(order.id);
-                              setCancelDialogOpen(true);
-                            }}
-                          >
-                            <XCircle className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
+      {/* Kanban Board */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-[calc(100vh-200px)]">
+        {kanbanColumns.map((column) => {
+          const columnOrders = ordersByStatus[column.id];
+          const Icon = column.icon;
+          
+          return (
+            <div 
+              key={column.id}
+              className={cn(
+                "bg-gray-100/80 rounded-2xl flex flex-col overflow-hidden border-t-4",
+                column.borderColor
+              )}
+            >
+              {/* Column Header */}
+              <div className="px-4 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={cn("p-2 rounded-xl", column.iconBg)}>
+                    <Icon className={cn("h-5 w-5", column.iconColor)} />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800">{column.title}</h3>
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                      <span className={cn("w-2 h-2 rounded-full", column.dotColor)} />
+                      <span>{columnOrders.length} ativos</span>
                     </div>
                   </div>
-                );
-              })}
+                </div>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-600">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Column Content */}
+              <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-3">
+                {isLoading ? (
+                  // Loading skeleton
+                  <div className="space-y-3">
+                    {[1, 2].map((i) => (
+                      <div key={i} className="bg-white rounded-xl p-4 shadow-sm">
+                        <div className="skeleton h-4 w-20 rounded mb-2" />
+                        <div className="skeleton h-3 w-full rounded mb-1" />
+                        <div className="skeleton h-3 w-2/3 rounded" />
+                      </div>
+                    ))}
+                  </div>
+                ) : columnOrders.length > 0 ? (
+                  // Order cards
+                  columnOrders.map((order) => {
+                    const config = statusConfig[order.status as OrderStatus];
+                    const nextAction = getNextAction(order.status as OrderStatus);
+                    const PaymentIcon = paymentMethodLabels[order.paymentMethod]?.icon || CreditCard;
+
+                    return (
+                      <div
+                        key={order.id}
+                        className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => setSelectedOrder(order.id)}
+                      >
+                        {/* Card Header */}
+                        <div className="px-4 py-3 border-b border-gray-100">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-sm text-gray-800">
+                              {order.orderNumber?.startsWith('#') ? order.orderNumber : `#${order.orderNumber}`}
+                            </span>
+                            <div className="flex items-center gap-1 text-xs text-gray-500">
+                              <Clock className="h-3 w-3" />
+                              {formatDistanceToNow(new Date(order.createdAt), {
+                                addSuffix: false,
+                                locale: ptBR,
+                              })}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Card Content */}
+                        <div className="px-4 py-3">
+                          {/* Customer name */}
+                          {order.customerName && (
+                            <p className="font-medium text-sm text-gray-800 truncate mb-2">
+                              {order.customerName}
+                            </p>
+                          )}
+                          
+                          {/* Info row */}
+                          <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
+                            <span className="flex items-center gap-1">
+                              <PaymentIcon className="h-3 w-3" />
+                              {paymentMethodLabels[order.paymentMethod]?.label}
+                            </span>
+                            <span className="text-gray-300">•</span>
+                            <span className="capitalize">
+                              {order.deliveryType === "delivery" ? "Entrega" : "Retirada"}
+                            </span>
+                          </div>
+
+                          {/* Total */}
+                          <div className="flex items-center justify-between">
+                            <span className="text-lg font-bold text-primary">
+                              {formatCurrency(order.total)}
+                            </span>
+                            
+                            {/* Quick actions */}
+                            <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                              {nextAction && (
+                                <Button
+                                  size="sm"
+                                  className="h-7 px-3 text-xs rounded-lg"
+                                  onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
+                                  disabled={updateStatusMutation.isPending}
+                                >
+                                  {nextAction.label}
+                                </Button>
+                              )}
+                              {order.status !== "completed" && order.status !== "cancelled" && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-red-500 hover:text-red-600 hover:bg-red-50"
+                                  onClick={() => {
+                                    setOrderToCancel(order.id);
+                                    setCancelDialogOpen(true);
+                                  }}
+                                >
+                                  <XCircle className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  // Empty state placeholder
+                  <div 
+                    className={cn(
+                      "border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center",
+                      column.placeholderBorder,
+                      column.placeholderBg
+                    )}
+                  >
+                    {column.id === "completed" ? (
+                      <>
+                        <CheckCircle2 className="h-8 w-8 text-gray-300 mb-2" />
+                        <span className="text-sm text-gray-400">Vazio</span>
+                      </>
+                    ) : (
+                      <>
+                        <Plus className={cn("h-8 w-8 mb-2", column.placeholderText)} />
+                        <span className={cn("text-sm font-medium", column.placeholderText)}>Adicionar</span>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-          ) : (
-            <SectionCard>
-              <EmptyState
-                icon={ClipboardList}
-                title="Nenhum pedido"
-                description={
-                  activeTab === "new"
-                    ? "Novos pedidos aparecerão aqui"
-                    : `Nenhum pedido ${statusConfig[activeTab as OrderStatus]?.label.toLowerCase() || ""}`
-                }
-              />
-            </SectionCard>
-          )}
-        </TabsContent>
-      </Tabs>
+          );
+        })}
+      </div>
 
       {/* Order Details Sidebar */}
       <Sheet open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
