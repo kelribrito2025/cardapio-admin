@@ -21,7 +21,11 @@ import {
   Unplug
 } from "lucide-react";
 
-export function WhatsAppTab() {
+interface WhatsAppTabProps {
+  hideConnectionCard?: boolean;
+}
+
+export function WhatsAppTab({ hideConnectionCard = false }: WhatsAppTabProps) {
   const [testPhone, setTestPhone] = useState("");
   const [testMessage, setTestMessage] = useState("Olá! Esta é uma mensagem de teste do Cardápio Admin.");
   const [isPolling, setIsPolling] = useState(false);
@@ -177,116 +181,118 @@ export function WhatsAppTab() {
   
   return (
     <div className="space-y-6">
-      {/* Status Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MessageCircle className="h-5 w-5 text-green-500" />
-            Status da Conexão
-          </CardTitle>
-          <CardDescription>
-            Conecte seu WhatsApp para enviar notificações automáticas aos clientes
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {isConnected ? (
-                <>
-                  <CheckCircle2 className="h-8 w-8 text-green-500" />
-                  <div>
-                    <p className="font-medium text-green-600">Conectado</p>
-                    {statusQuery.data?.phone && (
+      {/* Status Card - oculto quando hideConnectionCard=true */}
+      {!hideConnectionCard && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MessageCircle className="h-5 w-5 text-green-500" />
+              Status da Conexão
+            </CardTitle>
+            <CardDescription>
+              Conecte seu WhatsApp para enviar notificações automáticas aos clientes
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {isConnected ? (
+                  <>
+                    <CheckCircle2 className="h-8 w-8 text-green-500" />
+                    <div>
+                      <p className="font-medium text-green-600">Conectado</p>
+                      {statusQuery.data?.phone && (
+                        <p className="text-sm text-muted-foreground">
+                          {statusQuery.data.phone}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                ) : isConnecting ? (
+                  <>
+                    <Loader2 className="h-8 w-8 text-yellow-500 animate-spin" />
+                    <div>
+                      <p className="font-medium text-yellow-600">Aguardando conexão...</p>
                       <p className="text-sm text-muted-foreground">
-                        {statusQuery.data.phone}
+                        Escaneie o QR Code com seu WhatsApp
                       </p>
-                    )}
-                  </div>
-                </>
-              ) : isConnecting ? (
-                <>
-                  <Loader2 className="h-8 w-8 text-yellow-500 animate-spin" />
-                  <div>
-                    <p className="font-medium text-yellow-600">Aguardando conexão...</p>
-                    <p className="text-sm text-muted-foreground">
-                      Escaneie o QR Code com seu WhatsApp
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <XCircle className="h-8 w-8 text-red-500" />
-                  <div>
-                    <p className="font-medium text-red-600">Desconectado</p>
-                    <p className="text-sm text-muted-foreground">
-                      Clique em Conectar para gerar o QR Code
-                    </p>
-                  </div>
-                </>
-              )}
-            </div>
-            
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => statusQuery.refetch()}
-                disabled={statusQuery.isRefetching}
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${statusQuery.isRefetching ? 'animate-spin' : ''}`} />
-                Atualizar
-              </Button>
-              
-              {isConnected ? (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={handleDisconnect}
-                  disabled={disconnectMutation.isPending}
-                >
-                  <Unplug className="h-4 w-4 mr-2" />
-                  Desconectar
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleConnect}
-                  disabled={connectMutation.isPending}
-                  size="sm"
-                >
-                  {connectMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <QrCode className="h-4 w-4 mr-2" />
-                  )}
-                  Conectar
-                </Button>
-              )}
-            </div>
-          </div>
-          
-          {/* QR Code Display */}
-          {(isConnecting || connectMutation.data?.qrcode || statusQuery.data?.qrcode) && !isConnected && (
-            <div className="mt-6 flex flex-col items-center">
-              <div className="bg-white p-4 rounded-lg shadow-inner">
-                {(connectMutation.data?.qrcode || statusQuery.data?.qrcode) ? (
-                  <img 
-                    src={connectMutation.data?.qrcode || statusQuery.data?.qrcode} 
-                    alt="QR Code WhatsApp"
-                    className="w-64 h-64"
-                  />
+                    </div>
+                  </>
                 ) : (
-                  <div className="w-64 h-64 flex items-center justify-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  </div>
+                  <>
+                    <XCircle className="h-8 w-8 text-red-500" />
+                    <div>
+                      <p className="font-medium text-red-600">Desconectado</p>
+                      <p className="text-sm text-muted-foreground">
+                        Clique em Conectar para gerar o QR Code
+                      </p>
+                    </div>
+                  </>
                 )}
               </div>
-              <p className="mt-4 text-sm text-muted-foreground text-center">
-                Abra o WhatsApp no seu celular, vá em <strong>Dispositivos conectados</strong> e escaneie o QR Code
-              </p>
+              
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => statusQuery.refetch()}
+                  disabled={statusQuery.isRefetching}
+                >
+                  <RefreshCw className={`h-4 w-4 mr-2 ${statusQuery.isRefetching ? 'animate-spin' : ''}`} />
+                  Atualizar
+                </Button>
+                
+                {isConnected ? (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleDisconnect}
+                    disabled={disconnectMutation.isPending}
+                  >
+                    <Unplug className="h-4 w-4 mr-2" />
+                    Desconectar
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleConnect}
+                    disabled={connectMutation.isPending}
+                    size="sm"
+                  >
+                    {connectMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <QrCode className="h-4 w-4 mr-2" />
+                    )}
+                    Conectar
+                  </Button>
+                )}
+              </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
+            
+            {/* QR Code Display */}
+            {(isConnecting || connectMutation.data?.qrcode || statusQuery.data?.qrcode) && !isConnected && (
+              <div className="mt-6 flex flex-col items-center">
+                <div className="bg-white p-4 rounded-lg shadow-inner">
+                  {(connectMutation.data?.qrcode || statusQuery.data?.qrcode) ? (
+                    <img 
+                      src={connectMutation.data?.qrcode || statusQuery.data?.qrcode} 
+                      alt="QR Code WhatsApp"
+                      className="w-64 h-64"
+                    />
+                  ) : (
+                    <div className="w-64 h-64 flex items-center justify-center">
+                      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    </div>
+                  )}
+                </div>
+                <p className="mt-4 text-sm text-muted-foreground text-center">
+                  Abra o WhatsApp no seu celular, vá em <strong>Dispositivos conectados</strong> e escaneie o QR Code
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
       
       <Tabs defaultValue="notifications" className="w-full">
         <TabsList className="grid w-full grid-cols-3">

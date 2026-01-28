@@ -3460,3 +3460,4 @@
 - [x] Criar modal de QR Code do WhatsApp que abre ao clicar em Conectar (com título "Aguardando conexão...", QR Code e instruções)
 - [x] Criar modal de QR Code do WhatsApp na página de Pedidos (com título "Aguardando conexão...", QR Code e instruções)
 - [x] Remover aba de WhatsApp da página de configurações (funcionalidade movida para Pedidos)
+- [x] Restaurar aba de WhatsApp nas configurações, removendo apenas o card de status de conexão (manter notificações, templates e teste)
