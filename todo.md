@@ -3494,3 +3494,5 @@
 - [x] Ajustar componente de som: reduzir ícone, remover sombra, usar cor cinza claro
 - [x] Ajustar toggle do som para usar o mesmo estilo do toggle de abrir/fechar restaurante
 - [x] Alterar toggle de som: cor verde quando ativado e ícone de som com 3 ondas de volume
+- [x] Alterar ícone de som para ter apenas 2 ondas igual à imagem de referência
+- [x] Remover animação de pulso do card de som

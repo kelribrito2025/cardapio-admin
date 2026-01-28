@@ -622,17 +622,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div 
-                    className={cn(
-                      "flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full cursor-pointer transition-all hover:bg-gray-200",
-                      !isAudioUnlocked && "animate-pulse"
-                    )}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full cursor-pointer transition-all hover:bg-gray-200"
                   >
-                    {/* Ícone de Som com 3 ondas de volume */}
+                    {/* Ícone de Som com 2 ondas de volume */}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
                       <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#f59e0b" />
-                      <path d="M14 9a3 3 0 0 1 0 6" />
-                      <path d="M17 6a7 7 0 0 1 0 12" />
-                      <path d="M20 3a11 11 0 0 1 0 18" />
+                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
                     </svg>
                     
                     {/* Toggle Switch - mesmo estilo do toggle de abrir/fechar restaurante */}
