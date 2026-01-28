@@ -690,10 +690,7 @@ export default function Pedidos() {
                   : "bg-gray-400"
               )} />
               <span>
-                {whatsappStatus?.status === 'connected' 
-                  ? `Conectado${whatsappStatus?.phone ? ` (${whatsappStatus.phone})` : ''}`
-                  : 'Desconectado'
-                }
+                {whatsappStatus?.status === 'connected' ? 'Conectado' : 'Desconectado'}
               </span>
             </div>
             
