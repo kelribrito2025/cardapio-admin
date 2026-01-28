@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Printer, Save, RotateCcw, Smartphone, Loader2, FileText } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Printer, Save, RotateCcw, Smartphone, Loader2, FileText, Settings, Eye, Type } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
@@ -313,7 +314,12 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
       const complementsHtml = item.complements.length > 0 
         ? item.complements.map(c => `<div class="complement">+ ${c.name} (${formatCurrency(c.price)})</div>`).join('')
         : '';
-      const obsHtml = item.observation ? `<div class="observation">Obs: ${item.observation}</div>` : '';
+      
+      const obsHtml = item.observation 
+        ? `<div class="observation">Obs: ${item.observation}</div>`
+        : '';
+      
+      const itemTotal = item.quantity * item.price + item.complements.reduce((sum, c) => sum + c.price, 0);
       
       if (itemBorderStyle === "rounded") {
         return `
@@ -321,7 +327,7 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
             <div class="item-header">
               <span class="item-qty">${item.quantity}x</span>
               <span class="item-name">${item.name}</span>
-              <span class="item-price">${formatCurrency(item.price * item.quantity)}</span>
+              <span class="item-price">${formatCurrency(itemTotal)}</span>
             </div>
             ${complementsHtml}
             ${obsHtml}
@@ -333,7 +339,7 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
             <div class="item-header">
               <span class="item-qty">${item.quantity}x</span>
               <span class="item-name">${item.name}</span>
-              <span class="item-price">${formatCurrency(item.price * item.quantity)}</span>
+              <span class="item-price">${formatCurrency(itemTotal)}</span>
             </div>
             ${complementsHtml}
             ${obsHtml}
@@ -348,13 +354,18 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
 <head>
   <meta charset="UTF-8">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
       font-family: 'Courier New', monospace;
       font-size: ${fontSize}px;
       font-weight: ${fontWeight};
       line-height: 1.4;
       background: white;
+      color: black;
     }
     .receipt {
       width: ${maxWidth};
@@ -367,32 +378,36 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
       padding-bottom: 10px;
       ${showDividers ? 'border-bottom: 1px dashed #000;' : ''}
     }
-    .header h1 {
+    .order-number {
       font-size: ${titleFontSize}px;
       font-weight: ${titleFontWeight};
       margin-bottom: 5px;
     }
-    .order-number {
-      font-size: ${titleFontSize + 4}px;
-      font-weight: ${titleFontWeight};
-      margin: 10px 0;
+    .order-type {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #000;
+      color: #fff;
+      font-size: ${fontSize - 2}px;
+      border-radius: 3px;
+      margin-bottom: 5px;
     }
-    .order-info {
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      ${showDividers ? 'border-bottom: 1px dashed #000;' : ''}
+    .order-date {
+      font-size: ${fontSize - 2}px;
+      color: #666;
     }
-    .items {
-      margin-bottom: 15px;
+    .items-section {
+      margin: 15px 0;
     }
     .item-box {
       background: #f5f5f5;
-      border-radius: 8px;
+      border-radius: 6px;
       padding: ${boxPadding}px;
       margin-bottom: 8px;
     }
     .item-dashed {
-      padding: 8px 0;
+      padding: ${boxPadding}px 0;
+      margin-bottom: 8px;
       ${showDividers ? 'border-bottom: 1px dashed #ccc;' : ''}
     }
     .item-header {
@@ -404,7 +419,7 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
     .item-qty {
       font-weight: ${itemFontWeight};
       font-size: ${itemFontSize}px;
-      min-width: 30px;
+      min-width: 25px;
     }
     .item-name {
       flex: 1;
@@ -416,78 +431,81 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
       font-size: ${itemFontSize}px;
       white-space: nowrap;
     }
-    .complement, .observation {
+    .complement {
       font-size: ${obsFontSize}px;
       font-weight: ${obsFontWeight};
       color: #666;
+      margin-left: 25px;
+      margin-top: 2px;
+    }
+    .observation {
+      font-size: ${obsFontSize}px;
+      font-weight: ${obsFontWeight};
+      font-style: italic;
+      color: #666;
+      margin-left: 25px;
       margin-top: 4px;
-      padding-left: 30px;
     }
     .totals {
-      margin-top: 15px;
+      margin: 15px 0;
       padding-top: 10px;
       ${showDividers ? 'border-top: 1px dashed #000;' : ''}
     }
     .total-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
     .total-final {
-      font-size: ${titleFontSize}px;
       font-weight: ${titleFontWeight};
-      margin-top: 10px;
-      padding-top: 10px;
-      ${showDividers ? 'border-top: 2px solid #000;' : ''}
+      font-size: ${titleFontSize - 2}px;
+      margin-top: 8px;
+      padding-top: 8px;
+      ${showDividers ? 'border-top: 1px solid #000;' : ''}
     }
     .section {
-      margin-bottom: 10px;
+      margin: 10px 0;
+      padding: 10px 0;
+      ${showDividers ? 'border-top: 1px dashed #000;' : ''}
     }
     .section-title {
       font-weight: ${titleFontWeight};
       font-size: ${fontSize}px;
-      margin-bottom: 3px;
+      margin-bottom: 5px;
     }
     .section-content {
-      font-size: ${fontSize}px;
-    }
-    .footer {
-      text-align: center;
-      margin-top: 20px;
-      padding-top: 10px;
-      ${showDividers ? 'border-top: 1px dashed #000;' : ''}
-      font-size: ${fontSize - 2}px;
-      color: #666;
+      font-size: ${fontSize - 1}px;
     }
     .qr-section {
       text-align: center;
       margin: 15px 0;
       padding: 10px;
-      ${showDividers ? 'border-top: 1px dashed #000; border-bottom: 1px dashed #000;' : ''}
+      ${showDividers ? 'border: 1px dashed #000;' : ''}
     }
     .qr-section img {
-      max-width: 150px;
-      margin: 10px auto;
+      width: 120px;
+      height: 120px;
+      margin-top: 8px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 15px;
+      padding-top: 10px;
+      font-size: ${fontSize - 2}px;
+      color: #666;
+      ${showDividers ? 'border-top: 1px dashed #000;' : ''}
     }
   </style>
 </head>
 <body>
   <div class="receipt">
     <div class="header">
-      <h1>Restaurante Exemplo</h1>
-      <p>Pedido de Teste</p>
+      <div class="order-number">Pedido #${sampleOrder.orderNumber}</div>
+      <div class="order-type">${sampleOrder.deliveryType === 'delivery' ? '🛵 ENTREGA' : '🏪 RETIRADA'}</div>
+      <div class="order-date">${formatDate(sampleOrder.createdAt)}</div>
     </div>
     
-    <div class="order-number">
-      #${sampleOrder.orderNumber}
-    </div>
-    
-    <div class="order-info">
-      <p>${formatDate(sampleOrder.createdAt)}</p>
-      <p><strong>${sampleOrder.deliveryType === 'delivery' ? '🛵 ENTREGA' : '🏪 RETIRADA'}</strong></p>
-    </div>
-    
-    <div class="items">
+    <div class="items-section">
       ${itemsHtml}
     </div>
     
@@ -554,141 +572,39 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Painel de Configurações */}
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Configurações de Fonte</CardTitle>
-              <CardDescription>Ajuste o tamanho e peso das fontes</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Fonte do corpo */}
-              <div className="space-y-3">
-                <Label>Texto geral: {fontSize}px / peso {fontWeight}</Label>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground">Tamanho</span>
-                    <Slider
-                      value={[fontSize]}
-                      onValueChange={(v) => setFontSize(v[0])}
-                      min={8}
-                      max={18}
-                      step={1}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Peso</span>
-                    <Slider
-                      value={[fontWeight]}
-                      onValueChange={(v) => setFontWeight(v[0])}
-                      min={300}
-                      max={900}
-                      step={100}
-                      className="mt-2"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Fonte do título */}
-              <div className="space-y-3">
-                <Label>Títulos/Pedido: {titleFontSize}px / peso {titleFontWeight}</Label>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground">Tamanho</span>
-                    <Slider
-                      value={[titleFontSize]}
-                      onValueChange={(v) => setTitleFontSize(v[0])}
-                      min={12}
-                      max={24}
-                      step={1}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Peso</span>
-                    <Slider
-                      value={[titleFontWeight]}
-                      onValueChange={(v) => setTitleFontWeight(v[0])}
-                      min={300}
-                      max={900}
-                      step={100}
-                      className="mt-2"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Fonte dos itens */}
-              <div className="space-y-3">
-                <Label>Nome dos itens: {itemFontSize}px / peso {itemFontWeight}</Label>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground">Tamanho</span>
-                    <Slider
-                      value={[itemFontSize]}
-                      onValueChange={(v) => setItemFontSize(v[0])}
-                      min={8}
-                      max={18}
-                      step={1}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Peso</span>
-                    <Slider
-                      value={[itemFontWeight]}
-                      onValueChange={(v) => setItemFontWeight(v[0])}
-                      min={300}
-                      max={900}
-                      step={100}
-                      className="mt-2"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Fonte das observações */}
-              <div className="space-y-3">
-                <Label>Observações/Complementos: {obsFontSize}px / peso {obsFontWeight}</Label>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground">Tamanho</span>
-                    <Slider
-                      value={[obsFontSize]}
-                      onValueChange={(v) => setObsFontSize(v[0])}
-                      min={8}
-                      max={16}
-                      step={1}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Peso</span>
-                    <Slider
-                      value={[obsFontWeight]}
-                      onValueChange={(v) => setObsFontWeight(v[0])}
-                      min={300}
-                      max={900}
-                      step={100}
-                      className="mt-2"
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
+      <Tabs defaultValue="layout" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="layout" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            <span className="hidden sm:inline">Layout</span>
+          </TabsTrigger>
+          <TabsTrigger value="fonts" className="flex items-center gap-2">
+            <Type className="h-4 w-4" />
+            <span className="hidden sm:inline">Fontes</span>
+          </TabsTrigger>
+          <TabsTrigger value="test" className="flex items-center gap-2">
+            <Printer className="h-4 w-4" />
+            <span className="hidden sm:inline">Teste</span>
+          </TabsTrigger>
+        </TabsList>
+        
+        {/* Layout Tab */}
+        <TabsContent value="layout" className="space-y-4 mt-4">
           <Card>
             <CardHeader>
               <CardTitle>Configurações de Layout</CardTitle>
-              <CardDescription>Ajuste o layout do recibo</CardDescription>
+              <CardDescription>
+                Ajuste o layout e aparência do recibo impresso
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label>Largura do papel</Label>
+                <div className="space-y-0.5">
+                  <Label>Largura do papel</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Selecione o tamanho da bobina térmica
+                  </p>
+                </div>
                 <Select value={paperWidth} onValueChange={setPaperWidth}>
                   <SelectTrigger className="w-32">
                     <SelectValue />
@@ -701,15 +617,40 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
               </div>
 
               <div className="flex items-center justify-between">
-                <Label>Mostrar divisores</Label>
+                <div className="space-y-0.5">
+                  <Label>Mostrar divisores</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Exibir linhas tracejadas entre seções
+                  </p>
+                </div>
                 <Switch
                   checked={showDividers}
                   onCheckedChange={setShowDividers}
                 />
               </div>
 
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Estilo dos itens</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Aparência das caixas de produtos
+                  </p>
+                </div>
+                <Select value={itemBorderStyle} onValueChange={(v) => setItemBorderStyle(v as "rounded" | "dashed")}>
+                  <SelectTrigger className="w-44">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="rounded">Caixas arredondadas</SelectItem>
+                    <SelectItem value="dashed">Linhas tracejadas</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="space-y-3">
-                <Label>Espaçamento interno das caixas: {boxPadding}px</Label>
+                <div className="flex items-center justify-between">
+                  <Label>Espaçamento interno: {boxPadding}px</Label>
+                </div>
                 <Slider
                   value={[boxPadding]}
                   onValueChange={(v) => setBoxPadding(v[0])}
@@ -720,20 +661,12 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
               </div>
 
               <div className="flex items-center justify-between">
-                <Label>Estilo dos itens</Label>
-                <Select value={itemBorderStyle} onValueChange={(v) => setItemBorderStyle(v as "rounded" | "dashed")}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="rounded">Caixas arredondadas</SelectItem>
-                    <SelectItem value="dashed">Linhas tracejadas</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label>Mostrar QR Code PIX</Label>
+                <div className="space-y-0.5">
+                  <Label>Mostrar QR Code PIX</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Exibir QR Code para pagamento no recibo
+                  </p>
+                </div>
                 <Switch
                   checked={showQrCode}
                   onCheckedChange={setShowQrCode}
@@ -741,9 +674,9 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
               </div>
 
               {showQrCode && (
-                <div className="space-y-2">
+                <div className="p-4 bg-muted/50 rounded-lg space-y-3">
                   <Label>Imagem do QR Code PIX</Label>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     <input
                       type="file"
                       accept="image/*"
@@ -775,74 +708,252 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
                     {qrCodeUploading && <Loader2 className="h-4 w-4 animate-spin" />}
                   </div>
                   {qrCodeUrl && (
-                    <img src={qrCodeUrl} alt="QR Code PIX" className="w-24 h-24 object-contain border rounded" />
+                    <img src={qrCodeUrl} alt="QR Code PIX" className="w-24 h-24 object-contain border rounded bg-white" />
                   )}
                 </div>
               )}
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Texto Personalizado</CardTitle>
-              <CardDescription>Imprima um texto personalizado para teste</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Textarea
-                placeholder="Digite o texto que deseja imprimir..."
-                value={customText}
-                onChange={(e) => setCustomText(e.target.value)}
-                rows={4}
-              />
-              <Button 
-                onClick={handleTestCustomPrint}
-                disabled={!customText.trim()}
-                className="w-full"
-                variant="outline"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Imprimir Texto Personalizado
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Botões de ação */}
-          <div className="flex flex-wrap gap-3">
+          <div className="flex gap-3">
             <Button onClick={handleSaveSettings} disabled={saveSettingsMutation.isPending}>
               <Save className="h-4 w-4 mr-2" />
-              {saveSettingsMutation.isPending ? "Salvando..." : "Salvar Configurações"}
+              {saveSettingsMutation.isPending ? "Salvando..." : "Salvar"}
             </Button>
             <Button variant="outline" onClick={resetToDefaults}>
               <RotateCcw className="h-4 w-4 mr-2" />
               Restaurar Padrão
             </Button>
-            <Button variant="secondary" onClick={handleTestPrint}>
-              <Printer className="h-4 w-4 mr-2" />
-              Teste Normal
-            </Button>
-            <Button variant="secondary" onClick={handleTestThermalPrint}>
-              <Smartphone className="h-4 w-4 mr-2" />
-              Teste Térmica (Android)
-            </Button>
           </div>
-        </div>
-
-        {/* Preview do Recibo */}
-        <div>
+        </TabsContent>
+        
+        {/* Fonts Tab */}
+        <TabsContent value="fonts" className="space-y-4 mt-4">
           <Card>
             <CardHeader>
-              <CardTitle>Preview do Recibo</CardTitle>
-              <CardDescription>Visualize como ficará o recibo impresso</CardDescription>
+              <CardTitle>Configurações de Fonte</CardTitle>
+              <CardDescription>
+                Ajuste o tamanho e peso das fontes do recibo
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div 
-                className="bg-white border rounded-lg overflow-auto max-h-[800px]"
-                dangerouslySetInnerHTML={{ __html: generateReceiptHTML() }}
-              />
+            <CardContent className="space-y-6">
+              {/* Fonte do corpo */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Texto geral</Label>
+                  <span className="text-sm text-muted-foreground">{fontSize}px / peso {fontWeight}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-xs text-muted-foreground">Tamanho</span>
+                    <Slider
+                      value={[fontSize]}
+                      onValueChange={(v) => setFontSize(v[0])}
+                      min={8}
+                      max={18}
+                      step={1}
+                      className="mt-2"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Peso</span>
+                    <Slider
+                      value={[fontWeight]}
+                      onValueChange={(v) => setFontWeight(v[0])}
+                      min={300}
+                      max={900}
+                      step={100}
+                      className="mt-2"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Fonte do título */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Títulos/Pedido</Label>
+                  <span className="text-sm text-muted-foreground">{titleFontSize}px / peso {titleFontWeight}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-xs text-muted-foreground">Tamanho</span>
+                    <Slider
+                      value={[titleFontSize]}
+                      onValueChange={(v) => setTitleFontSize(v[0])}
+                      min={12}
+                      max={24}
+                      step={1}
+                      className="mt-2"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Peso</span>
+                    <Slider
+                      value={[titleFontWeight]}
+                      onValueChange={(v) => setTitleFontWeight(v[0])}
+                      min={300}
+                      max={900}
+                      step={100}
+                      className="mt-2"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Fonte dos itens */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Nome dos itens</Label>
+                  <span className="text-sm text-muted-foreground">{itemFontSize}px / peso {itemFontWeight}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-xs text-muted-foreground">Tamanho</span>
+                    <Slider
+                      value={[itemFontSize]}
+                      onValueChange={(v) => setItemFontSize(v[0])}
+                      min={8}
+                      max={18}
+                      step={1}
+                      className="mt-2"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Peso</span>
+                    <Slider
+                      value={[itemFontWeight]}
+                      onValueChange={(v) => setItemFontWeight(v[0])}
+                      min={300}
+                      max={900}
+                      step={100}
+                      className="mt-2"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Fonte das observações */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Observações/Complementos</Label>
+                  <span className="text-sm text-muted-foreground">{obsFontSize}px / peso {obsFontWeight}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-xs text-muted-foreground">Tamanho</span>
+                    <Slider
+                      value={[obsFontSize]}
+                      onValueChange={(v) => setObsFontSize(v[0])}
+                      min={8}
+                      max={16}
+                      step={1}
+                      className="mt-2"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Peso</span>
+                    <Slider
+                      value={[obsFontWeight]}
+                      onValueChange={(v) => setObsFontWeight(v[0])}
+                      min={300}
+                      max={900}
+                      step={100}
+                      className="mt-2"
+                    />
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
-        </div>
-      </div>
+
+          <div className="flex gap-3">
+            <Button onClick={handleSaveSettings} disabled={saveSettingsMutation.isPending}>
+              <Save className="h-4 w-4 mr-2" />
+              {saveSettingsMutation.isPending ? "Salvando..." : "Salvar"}
+            </Button>
+            <Button variant="outline" onClick={resetToDefaults}>
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Restaurar Padrão
+            </Button>
+          </div>
+        </TabsContent>
+        
+        {/* Test Tab */}
+        <TabsContent value="test" className="space-y-4 mt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Botões de Teste */}
+            <div className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Imprimir Recibo de Teste</CardTitle>
+                  <CardDescription>
+                    Teste a impressão com um pedido de exemplo
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Button onClick={handleTestPrint} className="w-full" variant="outline">
+                    <Printer className="h-4 w-4 mr-2" />
+                    Teste Normal (Nova Aba)
+                  </Button>
+                  <Button onClick={handleTestThermalPrint} className="w-full">
+                    <Smartphone className="h-4 w-4 mr-2" />
+                    Teste Térmica (Android)
+                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    Para impressão térmica, use um dispositivo Android com o app ESC POS Wifi Print Service instalado.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Texto Personalizado</CardTitle>
+                  <CardDescription>
+                    Imprima um texto personalizado para teste
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Textarea
+                    placeholder="Digite o texto que deseja imprimir..."
+                    value={customText}
+                    onChange={(e) => setCustomText(e.target.value)}
+                    rows={4}
+                  />
+                  <Button 
+                    onClick={handleTestCustomPrint}
+                    disabled={!customText.trim()}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Imprimir Texto
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Preview do Recibo */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-5 w-5" />
+                  Preview do Recibo
+                </CardTitle>
+                <CardDescription>
+                  Visualize como ficará o recibo impresso
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div 
+                  className="bg-white border rounded-lg overflow-auto max-h-[600px]"
+                  dangerouslySetInnerHTML={{ __html: generateReceiptHTML() }}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

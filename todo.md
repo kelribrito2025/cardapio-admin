@@ -3474,3 +3474,4 @@
 - [x] Corrigir link do WhatsApp no modal de detalhes do pedido para incluir código do país (55)
 - [x] Remover texto "cerca de" dos cards do Kanban na página de Pedidos
 - [x] Mover menu 'Teste Impressão' do sidebar para a página de Configurações como nova aba
+- [x] Ajustar layout da aba Teste Impressão para seguir o mesmo padrão visual da aba WhatsApp
