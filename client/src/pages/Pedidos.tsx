@@ -59,6 +59,9 @@ import {
   ChevronDown,
   Loader2,
   Inbox,
+  Wifi,
+  WifiOff,
+  Link2Off,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
@@ -156,6 +159,8 @@ export default function Pedidos() {
   const [cancellationReason, setCancellationReason] = useState("");
   // Estado para controlar expansão das colunas no mobile (acordeão)
   const [expandedColumns, setExpandedColumns] = useState<Set<OrderStatus>>(() => new Set<OrderStatus>(["new"]));
+  // Estado para controlar loading do WhatsApp
+  const [whatsappLoading, setWhatsappLoading] = useState(false);
 
   useEffect(() => {
     if (establishment) {
@@ -165,6 +170,22 @@ export default function Pedidos() {
 
   // All hooks MUST be called before any early return
   const utils = trpc.useUtils();
+  
+  // Query para status do WhatsApp
+  const { data: whatsappStatus, refetch: refetchWhatsappStatus } = trpc.whatsapp.getStatus.useQuery(undefined, {
+    refetchInterval: 30000, // Atualiza a cada 30 segundos
+  });
+  
+  // Mutation para desconectar WhatsApp
+  const disconnectWhatsapp = trpc.whatsapp.disconnect.useMutation({
+    onSuccess: () => {
+      toast.success("WhatsApp desconectado com sucesso");
+      refetchWhatsappStatus();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao desconectar WhatsApp");
+    },
+  });
   
   // Query para buscar todos os pedidos
   const { data: allOrdersData, refetch: refetchAll, isLoading } = trpc.orders.list.useQuery(
@@ -647,20 +668,89 @@ export default function Pedidos() {
           title="Pedidos"
           description="Gerencie os pedidos do seu estabelecimento"
         />
-        <div className="hidden sm:flex items-center gap-2">
+        {/* Card de Status de Conexão WhatsApp */}
+        <div className="hidden sm:flex items-center gap-3">
           <div className={cn(
-            "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium",
-            sseConnected 
-              ? "bg-emerald-100 text-emerald-700" 
-              : "bg-amber-100 text-amber-700"
+            "flex items-center gap-3 px-4 py-2 rounded-xl border text-sm font-medium shadow-sm",
+            whatsappStatus?.status === 'connected'
+              ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+              : "bg-gray-50 border-gray-200 text-gray-600"
           )}>
-            <span className={cn(
-              "w-2 h-2 rounded-full",
-              sseConnected 
-                ? "bg-emerald-500 animate-pulse" 
-                : "bg-amber-500"
-            )} />
-            {sseConnected ? "Tempo real" : "Polling"}
+            {/* Ícone de status */}
+            <div className="flex items-center gap-2">
+              {whatsappStatus?.status === 'connected' ? (
+                <Wifi className="h-4 w-4 text-emerald-500" />
+              ) : (
+                <WifiOff className="h-4 w-4 text-gray-400" />
+              )}
+              <span className={cn(
+                "w-2 h-2 rounded-full",
+                whatsappStatus?.status === 'connected'
+                  ? "bg-emerald-500 animate-pulse"
+                  : "bg-gray-400"
+              )} />
+              <span>
+                {whatsappStatus?.status === 'connected' 
+                  ? `Conectado${whatsappStatus?.phone ? ` (${whatsappStatus.phone})` : ''}`
+                  : 'Desconectado'
+                }
+              </span>
+            </div>
+            
+            {/* Separador */}
+            <div className="w-px h-5 bg-gray-300" />
+            
+            {/* Botões de ação */}
+            <div className="flex items-center gap-1">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 hover:bg-white/50"
+                      onClick={async () => {
+                        setWhatsappLoading(true);
+                        await refetchWhatsappStatus();
+                        setWhatsappLoading(false);
+                        toast.success("Status atualizado");
+                      }}
+                      disabled={whatsappLoading}
+                    >
+                      <RefreshCw className={cn("h-4 w-4", whatsappLoading && "animate-spin")} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Atualizar status</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              {whatsappStatus?.status === 'connected' && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 hover:bg-red-100 text-red-500"
+                        onClick={() => {
+                          if (confirm('Tem certeza que deseja desconectar o WhatsApp?')) {
+                            disconnectWhatsapp.mutate();
+                          }
+                        }}
+                        disabled={disconnectWhatsapp.isPending}
+                      >
+                        <Link2Off className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Desconectar WhatsApp</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+            </div>
           </div>
         </div>
       </div>
