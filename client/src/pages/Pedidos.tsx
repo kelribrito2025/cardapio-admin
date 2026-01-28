@@ -1321,8 +1321,12 @@ export default function Pedidos() {
             <Button 
               className="gap-2 bg-emerald-600 hover:bg-emerald-700"
               onClick={() => {
-                const phone = orderDetails?.customerPhone?.replace(/\D/g, '');
+                let phone = orderDetails?.customerPhone?.replace(/\D/g, '');
                 if (phone) {
+                  // Adicionar código do país (55) se não estiver presente
+                  if (!phone.startsWith('55')) {
+                    phone = '55' + phone;
+                  }
                   window.open(`https://wa.me/${phone}?text=Olá! Sobre seu pedido %23${orderDetails?.orderNumber}...`, '_blank');
                 } else {
                   toast.error("Cliente não possui telefone cadastrado");

@@ -3471,3 +3471,4 @@
 - [x] Atualizar cards da página de Cupons para ter bordas coloridas no topo (estilo igual aos cards de métricas da Dashboard)
 - [x] Atualizar cards da página de Estoque para ter bordas coloridas no topo (estilo igual aos cards de métricas da Dashboard)
 - [x] Adicionar indicador de loading nos botões de ação dos cards de pedido (Aceitar, Pronto, Finalizar)
+- [x] Corrigir link do WhatsApp no modal de detalhes do pedido para incluir código do país (55)
