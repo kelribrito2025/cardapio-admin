@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { 
   Store, 
@@ -160,6 +160,25 @@ export default function Onboarding() {
   
   // Form state - Step 4 (Planos)
   const [selectedPlan, setSelectedPlan] = useState("free");
+  const [slugToCheck, setSlugToCheck] = useState("");
+
+  // Debounce slug check
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (menuSlug.trim().length >= 3) {
+        setSlugToCheck(menuSlug.trim());
+      } else {
+        setSlugToCheck("");
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [menuSlug]);
+
+  // Check slug availability
+  const slugAvailabilityQuery = trpc.establishment.checkSlugAvailability.useQuery(
+    { slug: slugToCheck },
+    { enabled: slugToCheck.length >= 3 }
+  );
 
   const createEstablishmentMutation = trpc.establishment.create.useMutation({
     onSuccess: async () => {
@@ -219,8 +238,9 @@ export default function Onboarding() {
     return "@" + cleaned;
   };
 
-  // Validation for Step 1
-  const isStep1Valid = name.trim() !== "" && menuSlug.trim() !== "" && deliveryType !== "";
+  // Validation for Step 1 - includes slug availability check
+  const isSlugAvailable = menuSlug.length >= 3 && slugAvailabilityQuery.data?.available === true;
+  const isStep1Valid = name.trim() !== "" && menuSlug.trim() !== "" && deliveryType !== "" && isSlugAvailable;
 
   // Validation for Step 2
   const isStep2Valid = address.trim() !== "" && openingTime !== "" && closingTime !== "" && selectedPaymentMethods.length > 0;
@@ -543,10 +563,32 @@ export default function Onboarding() {
                         placeholder="seu-restaurante"
                         value={menuSlug}
                         onChange={(e) => setMenuSlug(generateSlug(e.target.value))}
-                        className="h-10 lg:h-12 rounded-l-none rounded-r-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base"
+                        className={`h-10 lg:h-12 rounded-l-none rounded-r-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base pr-10 ${
+                          menuSlug.length >= 3 && slugAvailabilityQuery.data?.available === false ? 'border-red-300 focus:border-red-500' : ''
+                        } ${
+                          menuSlug.length >= 3 && slugAvailabilityQuery.data?.available === true ? 'border-green-300 focus:border-green-500' : ''
+                        }`}
                       />
+                      {/* Slug availability indicator */}
+                      {menuSlug.length >= 3 && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          {slugAvailabilityQuery.isLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                          ) : slugAvailabilityQuery.data?.available ? (
+                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                          ) : (
+                            <X className="h-5 w-5 text-red-500" />
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
+                  {menuSlug.length >= 3 && slugAvailabilityQuery.data?.available === false && (
+                    <p className="text-xs text-red-500 mt-1">Este link já está em uso. Escolha outro.</p>
+                  )}
+                  {menuSlug.length >= 3 && slugAvailabilityQuery.data?.available === true && (
+                    <p className="text-xs text-green-500 mt-1">Link disponível!</p>
+                  )}
                 </div>
 
                 {/* WhatsApp e Instagram lado a lado */}

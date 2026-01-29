@@ -3630,3 +3630,12 @@
 - [x] Adicionar código do país 55 no link do WhatsApp no menu público
 - [x] Adicionar código do país 55 no link do WhatsApp na página de Configurações
 - [x] Adicionar código do país 55 no link do WhatsApp na página de Pedidos
+
+
+## Verificação Disponibilidade Slug
+- [x] Criar endpoint para verificar se o slug está disponível (já existia)
+- [x] Adicionar ícone de check verde quando disponível
+- [x] Adicionar ícone de X vermelho quando indisponível
+- [x] Verificação em tempo real enquanto o usuário digita (debounce 500ms)
+- [x] Mensagem de feedback abaixo do campo
+- [x] Botão Continuar só habilitado quando slug disponível
