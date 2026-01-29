@@ -3515,3 +3515,4 @@
 - [x] Adicionar ícone de X para fechar as notificações toast
 - [x] Permitir que novos utilizadores vejam Dashboard e Pedidos normalmente mesmo sem estabelecimento configurado
 - [x] BUG: Card de WhatsApp com layout quebrado na página de Pedidos para novos utilizadores
+- [x] Remover botão de atualizar status do card de WhatsApp (manter apenas desconectar)

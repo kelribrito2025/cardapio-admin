@@ -733,55 +733,29 @@ export default function Pedidos() {
                 <div className="w-px h-5 bg-gray-300" />
                 <div className="flex items-center gap-1">
                   {whatsappStatus?.status === 'connected' ? (
-                /* Quando conectado: Atualizar e Desconectar */
-                <>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 hover:bg-white/50"
-                          onClick={async () => {
-                            setWhatsappLoading(true);
-                            await refetchWhatsappStatus();
-                            setWhatsappLoading(false);
-                            toast.success("Status atualizado");
-                          }}
-                          disabled={whatsappLoading}
-                        >
-                          <RefreshCw className={cn("h-4 w-4", whatsappLoading && "animate-spin")} />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Atualizar status</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 hover:bg-red-100 text-red-500"
-                          onClick={() => {
-                            if (confirm('Tem certeza que deseja desconectar o WhatsApp?')) {
-                              disconnectWhatsapp.mutate();
-                            }
-                          }}
-                          disabled={disconnectWhatsapp.isPending}
-                        >
-                          <Link2Off className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Desconectar WhatsApp</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </>
+                /* Quando conectado: Desconectar */
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 hover:bg-red-100 text-red-500"
+                        onClick={() => {
+                          if (confirm('Tem certeza que deseja desconectar o WhatsApp?')) {
+                            disconnectWhatsapp.mutate();
+                          }
+                        }}
+                        disabled={disconnectWhatsapp.isPending}
+                      >
+                        <Link2Off className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Desconectar WhatsApp</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ) : (
                 /* Quando desconectado: Conectar via QR Code */
                 <TooltipProvider>
