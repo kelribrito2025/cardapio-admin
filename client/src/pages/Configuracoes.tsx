@@ -935,8 +935,8 @@ export default function Configuracoes() {
                 />
               </div>
 
-              {/* Profile Info Section */}
-              <div className="relative px-6 pb-6">
+              {/* Profile Info Section - PIXEL PERFECT igual ao menu público */}
+              <div className="relative px-6" style={{paddingBottom: '4px'}}>
                 {/* Logo - positioned to overlap cover */}
                 <div className="absolute -top-16 left-6">
                   <div className="relative">
@@ -988,11 +988,11 @@ export default function Configuracoes() {
                   </div>
                 </div>
 
-                {/* Restaurant Info */}
-                <div className="pt-20 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                {/* Restaurant Info - PIXEL PERFECT igual ao menu público */}
+                <div className="pt-20 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                   <div className="flex-1">
                     {/* Restaurant Name and Rating */}
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-1 flex-wrap">
                       {isEditingName ? (
                         <div className="flex items-center gap-1.5">
                           <Input
@@ -1072,7 +1072,7 @@ export default function Configuracoes() {
                       </div>
                     </div>
 
-                    {/* Address and More Info */}
+                    {/* Address and More Info - PIXEL PERFECT igual ao menu público */}
                     <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
                       {fullAddress && (
                         <>
@@ -1089,8 +1089,8 @@ export default function Configuracoes() {
                       </button>
                     </div>
                     
-                    {/* Status and Delivery Types - CÓPIA FIEL do menu público */}
-                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                    {/* Status and Delivery Types - PIXEL PERFECT igual ao menu público */}
+                    <div className="flex flex-wrap items-center gap-3 mt-2">
                       {/* Open Status with Pulsing Icon - igual ao menu público */}
                       <span className="flex items-center gap-1.5 text-green-600 font-medium text-sm">
                         <span className="relative flex h-2.5 w-2.5">
