@@ -58,7 +58,7 @@ export default function Register() {
 
   return (
     <AuthLayout>
-      <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 p-8 border border-gray-100">
+      <div className="p-6 md:p-8">
         {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Criar Conta</h2>

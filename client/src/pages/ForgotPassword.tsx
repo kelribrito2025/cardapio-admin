@@ -36,7 +36,7 @@ export default function ForgotPassword() {
   if (emailSent) {
     return (
       <AuthLayout>
-        <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 p-8 border border-gray-100">
+        <div className="p-6 md:p-8">
           {/* Success state */}
           <div className="text-center">
             <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
@@ -73,7 +73,7 @@ export default function ForgotPassword() {
 
   return (
     <AuthLayout>
-      <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 p-8 border border-gray-100">
+      <div className="p-6 md:p-8">
         {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Esqueceu a senha?</h2>

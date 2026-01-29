@@ -40,7 +40,7 @@ export default function Login() {
 
   return (
     <AuthLayout>
-      <div className="md:bg-white md:rounded-2xl md:shadow-xl md:shadow-gray-200/50 p-6 md:p-8 md:border md:border-gray-100">
+      <div className="p-6 md:p-8">
         {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Acessar Conta</h2>
