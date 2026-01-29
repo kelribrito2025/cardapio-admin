@@ -466,7 +466,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           sidebarCollapsed ? "px-1.5" : "px-3"
         )}>
           {menuSections.map((section, sectionIndex) => (
-            <div key={section.title} className={sectionIndex > 0 ? "mt-6" : ""}>
+            <div key={section.title} className={sectionIndex > 0 ? "mt-6" : ""} style={{marginBottom: '-5px'}}>
               {/* Título da seção */}
               {!sidebarCollapsed && (
                 <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-3 mb-3">

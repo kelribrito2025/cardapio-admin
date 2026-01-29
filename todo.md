@@ -3689,3 +3689,4 @@
 - [x] Remover botão "Nova Categoria" da página Catálogo
 - [x] Manter apenas botões "Novo Item" e "Reordenar" na página Catálogo
 - [ ] Remover botão Reordenar da página Catálogo (funcionalidade movida para página Categorias)
+- [ ] Adicionar botão Reordenar na página de Categorias
