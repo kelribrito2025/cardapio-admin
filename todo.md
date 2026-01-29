@@ -3527,3 +3527,4 @@
 - [x] Remover sombra da barra de menu lateral
 - [x] Criar degradê vertical para sidebar - claro no topo, escuro embaixo
 - [x] Aplicar degradê do sidebar ao background da página Dashboard
+- [x] Ajustar degradê do background principal com cores mais vibrantes

@@ -579,7 +579,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <div 
         className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] min-h-screen", mainPadding)}
         style={{
-          background: "linear-gradient(180deg, oklch(0.99 0 0) 0%, oklch(0.96 0.008 250) 50%, oklch(0.92 0.015 250) 100%)"
+          background: "linear-gradient(135deg, oklch(0.98 0.02 25) 0%, oklch(0.95 0.04 340) 25%, oklch(0.93 0.05 280) 50%, oklch(0.90 0.06 220) 75%, oklch(0.88 0.07 200) 100%)"
         }}
       >
         {/* Topbar */}
