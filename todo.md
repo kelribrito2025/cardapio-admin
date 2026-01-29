@@ -3575,3 +3575,4 @@
 - [x] Adicionar 3 cards compactos: Gratuito (15 dias teste), Lite, Pro
 - [x] Destacar principais features de cada plano
 - [x] Cards um abaixo do outro (não grandes)
+- [x] Ajustar botões de status do WhatsApp (Conectado/Desconectado) para terem o mesmo tamanho do card Verificando na página de pedidos
