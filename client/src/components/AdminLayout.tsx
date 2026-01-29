@@ -67,6 +67,12 @@ const menuSections = [
       { icon: Package, label: "Estoque", href: "/estoque" },
     ]
   },
+  {
+    title: "SISTEMA",
+    items: [
+      { icon: Settings, label: "Configurações", href: "/configuracoes" },
+    ]
+  },
 ];
 
 // Lista plana para compatibilidade

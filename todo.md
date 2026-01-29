@@ -3690,3 +3690,5 @@
 - [x] Manter apenas botões "Novo Item" e "Reordenar" na página Catálogo
 - [ ] Remover botão Reordenar da página Catálogo (funcionalidade movida para página Categorias)
 - [ ] Adicionar botão Reordenar na página de Categorias
+- [x] Adicionar seção SISTEMA no menu lateral
+- [x] Criar página de Configurações com abas: Estabelecimento, Atendimento, Impressoras, Notificações, WhatsApp, Teste Impressão
