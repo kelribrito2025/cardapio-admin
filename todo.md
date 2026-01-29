@@ -3507,3 +3507,4 @@
 - [x] Adicionar logo do sistema nas páginas de login e criação de conta
 - [x] BUG: Logo e header sobem ao navegar para página de criar conta (devem ficar fixos)
 - [x] Adicionar logo na página de Esqueci Senha
+- [x] Adicionar nome "Mindi" abaixo do logo nas páginas de autenticação

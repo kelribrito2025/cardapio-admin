@@ -42,10 +42,11 @@ export default function Login() {
     <AuthLayout>
       <div className="p-6 md:p-8">
         {/* Logo */}
-        <div className="flex justify-center mb-6">
+        <div className="flex flex-col items-center mb-6">
           <div className="w-[70px] h-[70px] bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-500/30">
             <UtensilsCrossed className="h-10 w-10 text-white" />
           </div>
+          <span className="mt-3 text-2xl font-bold text-gray-900">Mindi</span>
         </div>
 
         {/* Header */}
