@@ -3552,3 +3552,13 @@
 - [x] Corrigir layout do onboarding para igualar ao login (h-14 nos inputs, pl-12, text-base, p-8 no container, mb-8 no header)
 - [x] Ocultar card "Conta criada com sucesso" na segunda etapa do onboarding (Objetivos)
 - [x] Remover opção "Outros" da pergunta "Como você conheceu nossa plataforma?" no onboarding
+
+## Nova Etapa Onboarding - Configurações de Atendimento
+- [x] Criar Step 2 - Configurações de Atendimento (entre Dados do estabelecimento e Objetivos)
+- [x] Campo de endereço do estabelecimento
+- [x] Campo de horário de atendimento (padrão 18:00 às 23:00)
+- [x] Seleção múltipla de formas de pagamento (Pix, Dinheiro, Cartão)
+- [x] Campos de tempo de entrega (de X min até Y min)
+- [x] Toggle de pedido mínimo com campo de valor
+- [x] Seleção de taxa de entrega (Grátis, Fixa, Por bairros)
+- [x] Mensagem informativa quando selecionar "Por bairros"
