@@ -62,6 +62,9 @@ import {
   Loader2,
   CheckCircle,
   XCircle,
+  Bike,
+  Package,
+  ShoppingBag,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -1086,9 +1089,9 @@ export default function Configuracoes() {
                       </button>
                     </div>
                     
-                    {/* Status and Delivery Types - igual ao menu público */}
+                    {/* Status and Delivery Types - CÓPIA FIEL do menu público */}
                     <div className="flex flex-wrap items-center gap-2 mt-2">
-                      {/* Open Status with Pulsing Icon */}
+                      {/* Open Status with Pulsing Icon - igual ao menu público */}
                       <span className="flex items-center gap-1.5 text-green-600 font-medium text-sm">
                         <span className="relative flex h-2.5 w-2.5">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -1097,26 +1100,39 @@ export default function Configuracoes() {
                         Aberto agora
                       </span>
                       
-                      {/* Tempo de Entrega Badge */}
+                      {/* Tempo de Entrega Badge - CÓPIA FIEL do menu público */}
                       {deliveryTimeEnabled && (
-                        <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-gray-700 text-xs font-medium rounded-full border border-gray-200">
-                          <Clock className="h-3.5 w-3.5 text-gray-500" />
+                        <span 
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full border border-blue-200" 
+                          style={{paddingRight: '9px', paddingLeft: '8px', paddingTop: '3px', paddingBottom: '3px', height: '21px', borderRadius: '8px'}}
+                        >
+                          <Clock className="h-3 w-3" />
                           {deliveryTimeMin} - {deliveryTimeMax} min
                         </span>
                       )}
                       
-                      {/* Pedido Mínimo Badge */}
+                      {/* Pedido Mínimo Badge - CÓPIA FIEL do menu público */}
                       {minimumOrderEnabled && Number(minimumOrderValue) > 0 && (
-                        <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-orange-600 text-xs font-medium rounded-full border border-orange-200">
-                          <CreditCard className="h-3.5 w-3.5" />
+                        <span 
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded-full border border-amber-200" 
+                          style={{paddingRight: '9px', paddingLeft: '8px', paddingTop: '3px', paddingBottom: '3px', height: '21px', borderRadius: '8px'}}
+                        >
+                          <ShoppingBag className="h-3 w-3" />
                           R$ {Number(minimumOrderValue).toFixed(2).replace('.', ',')}
                         </span>
                       )}
                       
-                      {/* Tipo de Entrega Badge */}
+                      {/* Tipo de Entrega Badge - CÓPIA FIEL do menu público */}
                       {deliveryTypes.length > 0 && (
-                        <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-gray-700 text-xs font-medium rounded-full border border-gray-200">
-                          <Truck className="h-3.5 w-3.5 text-gray-500" />
+                        <span 
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200" 
+                          style={{paddingRight: '9px', paddingLeft: '8px', paddingTop: '3px', paddingBottom: '3px', height: '21px', borderRadius: '8px'}}
+                        >
+                          {deliveryTypes.includes("Entrega") ? (
+                            <Bike className="h-3 w-3" />
+                          ) : (
+                            <Package className="h-3 w-3" />
+                          )}
                           {deliveryTypes.includes("Entrega") && deliveryTypes.includes("Retirada") 
                             ? "Delivery e Retirada" 
                             : deliveryTypes.includes("Entrega") 

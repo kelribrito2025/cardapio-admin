@@ -3577,3 +3577,4 @@
 - [x] Cards um abaixo do outro (não grandes)
 - [x] Ajustar botões de status do WhatsApp (Conectado/Desconectado) para terem o mesmo tamanho do card Verificando na página de pedidos
 - [x] Corrigir card Preview do Perfil Público na página de configurações para ficar igual ao menu público (adicionar badges de tempo de entrega, pedido mínimo, tipo de entrega)
+- [x] Padronizar 100% badges do Preview do Perfil Público no admin (cores, ícones, border-radius, estilos) para serem cópia fiel do menu público
