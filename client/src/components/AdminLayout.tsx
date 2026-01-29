@@ -380,7 +380,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           "lg:translate-x-0"
         )}
         style={{
-          background: "linear-gradient(180deg, oklch(0.99 0 0) 0%, oklch(0.96 0.008 250) 50%, oklch(0.92 0.015 250) 100%)"
+          background: "linear-gradient(180deg, oklch(0.99 0 0 / 0.5) 0%, oklch(0.96 0.008 250 / 0.5) 50%, oklch(0.92 0.015 250 / 0.5) 100%)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)"
         }}
       >
         {/* Logo + Toggle button na mesma linha */}
@@ -579,7 +581,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <div 
         className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] min-h-screen", mainPadding)}
         style={{
-          background: "linear-gradient(180deg, oklch(0.99 0 0) 0%, oklch(0.96 0.008 250) 50%, oklch(0.92 0.015 250) 100%)"
+          background: "linear-gradient(180deg, oklch(0.99 0 0 / 0.5) 0%, oklch(0.96 0.008 250 / 0.5) 50%, oklch(0.92 0.015 250 / 0.5) 100%)"
         }}
       >
         {/* Topbar */}
