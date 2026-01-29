@@ -3643,3 +3643,15 @@
 
 ## Validação Instagram Obrigatório
 - [x] Adicionar campo Instagram como obrigatório na validação do Step 1
+
+
+## Validação WhatsApp Obrigatório
+- [x] Adicionar campo WhatsApp como obrigatório na validação do Step 1 (mínimo 10 dígitos)
+
+## Responsividade Onboarding Telas Grandes
+- [x] Container do onboarding com max-width responsivo (até 2xl:max-w-2xl)
+- [x] Tipografia responsiva com breakpoints xl/2xl
+- [x] Espaçamentos proporcionais em telas grandes (xl:p-10, 2xl:p-12)
+- [x] Títulos e textos maiores em desktop (2xl:text-3xl, 2xl:text-xl)
+- [x] Inputs maiores em telas grandes (xl:h-14, 2xl:h-16)
+- [x] StepIndicator maior em telas grandes (2xl:w-10 h-10)
