@@ -54,6 +54,49 @@ const clearCartFromStorage = (slug: string) => {
   }
 };
 
+// Função para obter a chave do localStorage de pedidos baseada no establishmentId
+const getOrdersStorageKey = (establishmentId: number) => `orders_${establishmentId}`;
+
+// Tipo de pedido do usuário
+type UserOrder = {
+  id: string;
+  date: string;
+  items: Array<{ name: string; quantity: number; price: string; complements: Array<{ name: string; price: string }> }>;
+  total: string;
+  status: "sent" | "accepted" | "delivering" | "delivered" | "cancelled";
+  deliveryType: "pickup" | "delivery";
+  paymentMethod: "cash" | "card" | "pix";
+  address?: { street: string; number: string; neighborhood: string; complement: string; reference: string };
+  customerName: string;
+  customerPhone: string;
+  observation: string;
+};
+
+// Função para carregar pedidos do localStorage por establishmentId
+const loadOrdersFromStorage = (establishmentId: number): UserOrder[] => {
+  try {
+    const stored = localStorage.getItem(getOrdersStorageKey(establishmentId));
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.error('Erro ao carregar pedidos do localStorage:', e);
+  }
+  return [];
+};
+
+// Função para salvar pedidos no localStorage por establishmentId
+const saveOrdersToStorage = (establishmentId: number, orders: UserOrder[]) => {
+  try {
+    localStorage.setItem(getOrdersStorageKey(establishmentId), JSON.stringify(orders));
+  } catch (e) {
+    console.error('Erro ao salvar pedidos no localStorage:', e);
+  }
+};
+
 export default function PublicMenu() {
   const { slug } = useParams<{ slug: string }>();
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
@@ -122,19 +165,7 @@ export default function PublicMenu() {
   const [cancellationReasonDisplay, setCancellationReasonDisplay] = useState<string | null>(null);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
   const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set());
-  const [userOrders, setUserOrders] = useState<Array<{
-    id: string;
-    date: string;
-    items: Array<{ name: string; quantity: number; price: string; complements: Array<{ name: string; price: string }> }>;
-    total: string;
-    status: "sent" | "accepted" | "delivering" | "delivered" | "cancelled";
-    deliveryType: "pickup" | "delivery";
-    paymentMethod: "cash" | "card" | "pix";
-    address?: { street: string; number: string; neighborhood: string; complement: string; reference: string };
-    customerName: string;
-    customerPhone: string;
-    observation: string;
-  }>>([]);
+  const [userOrders, setUserOrders] = useState<UserOrder[]>([]);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   
 
@@ -320,11 +351,14 @@ export default function PublicMenu() {
         observation: orderObservation
       };
       
-      // Salvar no localStorage
-      const existingOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
-      const updatedOrders = [newOrder, ...existingOrders];
-      localStorage.setItem('userOrders', JSON.stringify(updatedOrders));
-      setUserOrders(updatedOrders);
+      // Salvar no localStorage (por establishmentId)
+      const establishmentId = data?.establishment?.id;
+      if (establishmentId) {
+        const existingOrders = loadOrdersFromStorage(establishmentId);
+        const updatedOrders = [newOrder, ...existingOrders];
+        saveOrdersToStorage(establishmentId, updatedOrders);
+        setUserOrders(updatedOrders);
+      }
       setSelectedOrderId(newOrder.id);
       setCurrentOrderNumber(result.orderNumber);
       
@@ -341,7 +375,10 @@ export default function PublicMenu() {
             }
             return order;
           });
-          localStorage.setItem('userOrders', JSON.stringify(newOrders));
+          // Salvar no localStorage por establishmentId
+          if (data?.establishment?.id) {
+            saveOrdersToStorage(data.establishment.id, newOrders);
+          }
           return newOrders;
         });
         
@@ -543,7 +580,10 @@ export default function PublicMenu() {
         const updatedOrders = prevOrders.map(order => 
           order.id === selectedOrderId ? { ...order, status: mappedStatus } : order
         );
-        localStorage.setItem('userOrders', JSON.stringify(updatedOrders));
+        // Salvar no localStorage por establishmentId
+        if (data?.establishment?.id) {
+          saveOrdersToStorage(data.establishment.id, updatedOrders);
+        }
         return updatedOrders;
       });
       
@@ -670,18 +710,13 @@ export default function PublicMenu() {
     }
   }, [data?.categories, activeCategory]);
 
-  // Carregar pedidos salvos do localStorage
+  // Carregar pedidos salvos do localStorage (por establishmentId)
   useEffect(() => {
-    const savedOrders = localStorage.getItem('userOrders');
-    if (savedOrders) {
-      try {
-        const parsed = JSON.parse(savedOrders);
-        setUserOrders(parsed);
-      } catch (e) {
-        console.error('Erro ao carregar pedidos salvos:', e);
-      }
+    if (data?.establishment?.id) {
+      const savedOrders = loadOrdersFromStorage(data.establishment.id);
+      setUserOrders(savedOrders);
     }
-  }, []);
+  }, [data?.establishment?.id]);
 
   // Sincronizar status dos pedidos quando o modal Meus Pedidos é aberto
   // E também periodicamente enquanto o modal estiver aberto
@@ -729,7 +764,10 @@ export default function PublicMenu() {
             const updated = updatedOrders.find(u => u.id === order.id);
             return updated || order;
           });
-          localStorage.setItem('userOrders', JSON.stringify(newOrders));
+          // Salvar no localStorage por establishmentId
+          if (data?.establishment?.id) {
+            saveOrdersToStorage(data.establishment.id, newOrders);
+          }
           return newOrders;
         });
       } catch (e) {
@@ -783,7 +821,10 @@ export default function PublicMenu() {
             }
             return order;
           });
-          localStorage.setItem('userOrders', JSON.stringify(newOrders));
+          // Salvar no localStorage por establishmentId
+          if (data?.establishment?.id) {
+            saveOrdersToStorage(data.establishment.id, newOrders);
+          }
           return newOrders;
         });
         
@@ -842,7 +883,10 @@ export default function PublicMenu() {
           }
           return order;
         });
-        localStorage.setItem('userOrders', JSON.stringify(newOrders));
+        // Salvar no localStorage por establishmentId
+        if (data?.establishment?.id) {
+          saveOrdersToStorage(data.establishment.id, newOrders);
+        }
         return newOrders;
       });
       
@@ -899,7 +943,10 @@ export default function PublicMenu() {
           }
           return order;
         });
-        localStorage.setItem('userOrders', JSON.stringify(newOrders));
+        // Salvar no localStorage por establishmentId
+        if (data?.establishment?.id) {
+          saveOrdersToStorage(data.establishment.id, newOrders);
+        }
         return newOrders;
       });
       
