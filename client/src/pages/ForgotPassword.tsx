@@ -89,18 +89,18 @@ export default function ForgotPassword() {
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Email */}
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+          <Label htmlFor="email" className="text-sm font-semibold text-gray-900">
             Email
           </Label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <Input
               id="email"
               type="email"
               placeholder="seu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-12 pl-10 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20"
+              className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
             />
           </div>
         </div>
@@ -109,7 +109,7 @@ export default function ForgotPassword() {
         <Button
           type="submit"
           disabled={forgotPasswordMutation.isPending}
-          className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200"
+          className="w-full h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-base"
         >
           {forgotPasswordMutation.isPending ? (
             <>

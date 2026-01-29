@@ -56,83 +56,85 @@ export default function Login() {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email */}
-          <div className="space-y-2">
-            <Label htmlFor="email" className="flex items-center gap-2 text-sm font-medium text-gray-700">
-              <Mail className="h-4 w-4 text-gray-500" />
-              Email
-            </Label>
+        {/* Email */}
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-sm font-semibold text-gray-900">
+            Email
+          </Label>
+          <div className="relative">
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <Input
               id="email"
               type="email"
               placeholder="seu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20"
+              className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
             />
           </div>
+        </div>
 
-          {/* Password */}
-          <div className="space-y-2">
-            <Label htmlFor="password" className="flex items-center gap-2 text-sm font-medium text-gray-700">
-              <Lock className="h-4 w-4 text-gray-500" />
+        {/* Password */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password" className="text-sm font-semibold text-gray-900">
               Senha
             </Label>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Digite sua senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 pr-11"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Remember me & Forgot password */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="remember"
-                checked={rememberMe}
-                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                className="border-gray-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-              />
-              <Label htmlFor="remember" className="text-sm text-gray-600 cursor-pointer">
-                Lembrar-me
-              </Label>
-            </div>
             <Link href="/esqueci-senha" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
               Esqueceu a senha?
             </Link>
           </div>
+          <div className="relative">
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="h-14 pl-12 pr-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
 
-          {/* Submit button */}
-          <Button
-            type="submit"
-            disabled={loginMutation.isPending}
-            className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200"
-          >
-            {loginMutation.isPending ? (
-              <>
-                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                Entrando...
-              </>
-            ) : (
-              <>
-                Entrar
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </>
-            )}
-          </Button>
+        {/* Remember me */}
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="remember"
+            checked={rememberMe}
+            onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+            className="border-gray-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+          />
+          <Label htmlFor="remember" className="text-sm text-gray-600 cursor-pointer">
+            Lembrar-me
+          </Label>
+        </div>
+
+        {/* Submit button */}
+        <Button
+          type="submit"
+          disabled={loginMutation.isPending}
+          className="w-full h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-base"
+        >
+          {loginMutation.isPending ? (
+            <>
+              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+              Entrando...
+            </>
+          ) : (
+            <>
+              Entrar
+              <ArrowRight className="h-5 w-5 ml-2" />
+            </>
+          )}
+        </Button>
       </form>
 
       {/* Sign up link */}

@@ -3539,3 +3539,4 @@
 - [x] Redesenhar tela de Login com novo layout
 - [x] Redesenhar tela de Criar Conta com novo layout
 - [x] Redesenhar tela de Esqueci Senha com novo layout
+- [x] Ajustar estilo dos campos de email e senha conforme referência
