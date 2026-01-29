@@ -602,25 +602,7 @@ export default function Pedidos() {
     }
   };
 
-  // Se não há estabelecimento, mostrar tela de criação
-  if (!establishmentLoading && !establishment) {
-    return (
-      <AdminLayout>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-          <div className="p-6 bg-muted/30 rounded-3xl mb-6">
-            <ClipboardList className="h-16 w-16 text-muted-foreground" />
-          </div>
-          <h2 className="text-2xl font-bold mb-2">Configure seu estabelecimento</h2>
-          <p className="text-muted-foreground mb-6 max-w-md">
-            Antes de gerenciar pedidos, você precisa configurar as informações do seu estabelecimento.
-          </p>
-          <Button onClick={() => window.location.href = "/configuracoes"} className="rounded-xl">
-            Ir para Configurações
-          </Button>
-        </div>
-      </AdminLayout>
-    );
-  }
+  // Nota: Removido bloqueio para usuários sem estabelecimento - agora a página de Pedidos mostra normalmente
 
   const formatCurrency = (value: string | number) => {
     return new Intl.NumberFormat("pt-BR", {

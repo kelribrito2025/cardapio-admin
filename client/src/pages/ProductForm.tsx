@@ -496,25 +496,7 @@ export default function ProductForm() {
     }
   }, [existingGroups]);
 
-  // Se não há estabelecimento, redirecionar para configurações
-  if (!establishmentLoading && !establishment) {
-    return (
-      <AdminLayout>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-          <div className="p-6 bg-muted/30 rounded-3xl mb-6">
-            <ImagePlus className="h-16 w-16 text-muted-foreground" />
-          </div>
-          <h2 className="text-2xl font-bold mb-2">Configure seu estabelecimento</h2>
-          <p className="text-muted-foreground mb-6 max-w-md">
-            Antes de adicionar produtos, você precisa configurar as informações do seu estabelecimento.
-          </p>
-          <Button onClick={() => navigate("/configuracoes")} className="rounded-xl">
-            Ir para Configurações
-          </Button>
-        </div>
-      </AdminLayout>
-    );
-  }
+  // Nota: Removido bloqueio para usuários sem estabelecimento - agora a página de ProductForm mostra normalmente
 
   const validate = () => {
     const newErrors: Record<string, string> = {};

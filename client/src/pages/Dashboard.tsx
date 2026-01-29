@@ -77,25 +77,7 @@ export default function Dashboard() {
     enabled: !!establishmentId && establishmentId > 0,
   });
 
-  // Se não há estabelecimento, redirecionar para configurações
-  if (!establishmentLoading && !establishment) {
-    return (
-      <AdminLayout>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-          <div className="p-6 bg-muted/30 rounded-3xl mb-6">
-            <ShoppingBag className="h-16 w-16 text-muted-foreground" />
-          </div>
-          <h2 className="text-2xl font-bold mb-2">Bem-vindo ao Cardápio Admin!</h2>
-          <p className="text-muted-foreground mb-6 max-w-md">
-            Para começar, configure as informações do seu estabelecimento.
-          </p>
-          <a href="/configuracoes" className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90">
-            Configurar Estabelecimento
-          </a>
-        </div>
-      </AdminLayout>
-    );
-  }
+  // Nota: Removido bloqueio para usuários sem estabelecimento - agora o Dashboard mostra normalmente
 
   // Format currency
   const formatCurrency = (value: number) => {
