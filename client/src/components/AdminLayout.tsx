@@ -576,7 +576,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       </aside>
 
       {/* Main content */}
-      <div className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]", mainPadding)}>
+      <div 
+        className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] min-h-screen", mainPadding)}
+        style={{
+          background: "linear-gradient(180deg, oklch(0.99 0 0) 0%, oklch(0.96 0.008 250) 50%, oklch(0.92 0.015 250) 100%)"
+        }}
+      >
         {/* Topbar */}
         <header className="sticky top-0 z-30 h-[58px] bg-card/80 backdrop-blur-md border-b border-border/50">
           <div className="flex items-center justify-between h-full px-3 lg:px-6">

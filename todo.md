@@ -3526,3 +3526,4 @@
 - [x] Corrigir localStorage de pedidos para isolar por establishmentId
 - [x] Remover sombra da barra de menu lateral
 - [x] Criar degradê vertical para sidebar - claro no topo, escuro embaixo
+- [x] Aplicar degradê do sidebar ao background da página Dashboard
