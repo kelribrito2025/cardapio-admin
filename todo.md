@@ -3616,3 +3616,11 @@
 - [x] Copiar exatamente o estilo da seção lateral esquerda da tela de login para o onboarding
 - [x] Incluir a mesma imagem/foto que aparece na tela de login
 - [x] Manter mesma posição dos textos e elementos
+
+
+## Validação Onboarding
+- [x] Step 1: Botão Continuar só habilitado quando todos os campos estiverem preenchidos
+- [x] Step 1: Instagram com @ automático no início
+- [x] Step 2: Validação de campos obrigatórios
+- [x] Step 3: Validação de campos obrigatórios
+- [x] Step 4: Validação de campos obrigatórios

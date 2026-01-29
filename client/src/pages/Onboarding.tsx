@@ -209,6 +209,28 @@ export default function Onboarding() {
     }
   };
 
+  // Format Instagram with @ prefix
+  const formatInstagram = (value: string) => {
+    // Remove any existing @ and spaces
+    let cleaned = value.replace(/^@+/, "").replace(/\s/g, "");
+    // If empty, return empty
+    if (!cleaned) return "";
+    // Always add @ prefix
+    return "@" + cleaned;
+  };
+
+  // Validation for Step 1
+  const isStep1Valid = name.trim() !== "" && menuSlug.trim() !== "" && deliveryType !== "";
+
+  // Validation for Step 2
+  const isStep2Valid = address.trim() !== "" && openingTime !== "" && closingTime !== "" && selectedPaymentMethods.length > 0;
+
+  // Validation for Step 3
+  const isStep3Valid = selectedObjectives.length > 0 && howFound !== "";
+
+  // Validation for Step 4
+  const isStep4Valid = selectedPlan !== "";
+
   const handleObjectiveToggle = (objectiveId: string) => {
     setSelectedObjectives(prev => 
       prev.includes(objectiveId) 
@@ -559,7 +581,7 @@ export default function Onboarding() {
                         type="text"
                         placeholder="@seu_restaurante"
                         value={instagram}
-                        onChange={(e) => setInstagram(e.target.value)}
+                        onChange={(e) => setInstagram(formatInstagram(e.target.value))}
                         className="h-10 lg:h-12 pl-10 rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base"
                       />
                     </div>
@@ -599,7 +621,8 @@ export default function Onboarding() {
                   <Button
                     type="button"
                     onClick={handleNextStep}
-                    className="w-full h-10 lg:h-12 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base"
+                    disabled={!isStep1Valid}
+                    className="w-full h-10 lg:h-12 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                   >
                     Continuar
                     <ArrowRight className="h-4 w-4 lg:h-5 lg:w-5 ml-2" />
@@ -804,7 +827,8 @@ export default function Onboarding() {
                   <Button
                     type="button"
                     onClick={handleNextStep}
-                    className="flex-1 h-10 lg:h-12 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base"
+                    disabled={!isStep2Valid}
+                    className="flex-1 h-10 lg:h-12 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                   >
                     Continuar
                     <ArrowRight className="h-4 w-4 ml-1" />
@@ -920,7 +944,8 @@ export default function Onboarding() {
                   <Button
                     type="button"
                     onClick={handleNextStep}
-                    className="flex-1 h-10 lg:h-12 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base"
+                    disabled={!isStep3Valid}
+                    className="flex-1 h-10 lg:h-12 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                   >
                     Continuar
                     <ArrowRight className="h-4 w-4 ml-1" />
@@ -1017,8 +1042,8 @@ export default function Onboarding() {
                   </Button>
                   <Button
                     type="submit"
-                    disabled={createEstablishmentMutation.isPending}
-                    className="flex-1 h-10 lg:h-12 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base"
+                    disabled={createEstablishmentMutation.isPending || !isStep4Valid}
+                    className="flex-1 h-10 lg:h-12 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                   >
                     {createEstablishmentMutation.isPending ? (
                       <>
