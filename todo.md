@@ -3506,3 +3506,4 @@
 - [x] Remover checkbox de termos de uso e política de privacidade da página de criar conta
 - [x] Adicionar logo do sistema nas páginas de login e criação de conta
 - [x] BUG: Logo e header sobem ao navegar para página de criar conta (devem ficar fixos)
+- [x] Adicionar logo na página de Esqueci Senha
