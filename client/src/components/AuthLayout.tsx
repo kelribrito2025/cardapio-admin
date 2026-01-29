@@ -9,7 +9,14 @@ export function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <div className="min-h-screen flex">
       {/* Left side - Background with promotional content */}
-      <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 bg-gradient-to-br from-red-600 via-red-700 to-red-900 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative overflow-hidden">
+        {/* Background image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url(/gerente-restaurante.png)' }}
+        />
+        {/* Red overlay with 60% opacity (40% transparency) */}
+        <div className="absolute inset-0 bg-gradient-to-br from-red-600/60 via-red-700/60 to-red-900/60" />
         {/* Decorative circles */}
         <div className="absolute top-20 left-20 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
         <div className="absolute bottom-40 right-10 w-96 h-96 bg-white/5 rounded-full blur-3xl" />

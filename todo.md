@@ -3579,3 +3579,4 @@
 - [x] Corrigir card Preview do Perfil Público na página de configurações para ficar igual ao menu público (adicionar badges de tempo de entrega, pedido mínimo, tipo de entrega)
 - [x] Padronizar 100% badges do Preview do Perfil Público no admin (cores, ícones, border-radius, estilos) para serem cópia fiel do menu público
 - [x] Ajuste fino pixel perfect do Preview do Perfil Público: altura/padding do container, alinhamento vertical dos pills, espaçamento entre nome/endereço/status
+- [x] Adicionar imagem de background na seção vermelha da tela de login com sobreposição vermelha de 40% de transparência
