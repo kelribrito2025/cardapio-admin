@@ -3581,3 +3581,4 @@
 - [x] Ajuste fino pixel perfect do Preview do Perfil Público: altura/padding do container, alinhamento vertical dos pills, espaçamento entre nome/endereço/status
 - [x] Adicionar imagem de background na seção vermelha da tela de login com sobreposição vermelha de 40% de transparência
 - [x] Remover ícones decorativos (marca d'água) da seção vermelha do AuthLayout
+- [x] Corrigir responsividade do lado direito do onboarding para evitar barra de rolagem horizontal em telas menores

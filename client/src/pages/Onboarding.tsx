@@ -279,7 +279,7 @@ export default function Onboarding() {
 
   // Step indicator component
   const StepIndicator = () => (
-    <div className="flex items-center justify-center gap-2 mb-8">
+    <div className="flex items-center justify-center gap-1 sm:gap-2 mb-8 flex-wrap">
       {/* Step 1 */}
       <div className="flex items-center gap-2">
         <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
@@ -297,7 +297,7 @@ export default function Onboarding() {
       </div>
 
       {/* Connector 1-2 */}
-      <div className={`w-6 h-0.5 transition-all ${
+      <div className={`w-4 sm:w-6 h-0.5 transition-all ${
         currentStep > 1 ? "bg-primary" : "bg-gray-200"
       }`} />
 
@@ -318,7 +318,7 @@ export default function Onboarding() {
       </div>
 
       {/* Connector 2-3 */}
-      <div className={`w-6 h-0.5 transition-all ${
+      <div className={`w-4 sm:w-6 h-0.5 transition-all ${
         currentStep > 2 ? "bg-primary" : "bg-gray-200"
       }`} />
 
@@ -339,7 +339,7 @@ export default function Onboarding() {
       </div>
 
       {/* Connector 3-4 */}
-      <div className={`w-6 h-0.5 transition-all ${
+      <div className={`w-4 sm:w-6 h-0.5 transition-all ${
         currentStep > 3 ? "bg-primary" : "bg-gray-200"
       }`} />
 
@@ -432,8 +432,8 @@ export default function Onboarding() {
       </div>
       
       {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 xl:w-2/5 bg-gray-50 flex items-center justify-center p-8 overflow-y-auto">
-        <div className="w-full max-w-md">
+      <div className="w-full lg:w-1/2 xl:w-2/5 bg-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 overflow-y-auto overflow-x-hidden">
+        <div className="w-full max-w-md mx-auto">
           {/* Success Badge - Only show on Step 1 */}
           {showSuccessBadge && currentStep === 1 && (
             <div className="mb-6 bg-green-50 border border-green-200 rounded-xl p-4 relative">
@@ -528,7 +528,7 @@ export default function Onboarding() {
                 </div>
 
                 {/* WhatsApp e Instagram lado a lado */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {/* WhatsApp */}
                   <div className="space-y-2">
                     <Label htmlFor="whatsapp" className="text-sm font-semibold text-gray-900">
@@ -571,7 +571,7 @@ export default function Onboarding() {
                   <Label className="text-sm font-semibold text-gray-900">
                     Tipo de entrega
                   </Label>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                     {DELIVERY_TYPES.map((type) => {
                       const Icon = type.icon;
                       const isSelected = deliveryType === type.id;
@@ -660,7 +660,7 @@ export default function Onboarding() {
                   <Label className="text-sm font-semibold text-gray-900">
                     Formas de pagamento aceitas
                   </Label>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                     {PAYMENT_METHODS.map((method) => {
                       const Icon = method.icon;
                       const isSelected = selectedPaymentMethods.includes(method.id);
@@ -743,7 +743,7 @@ export default function Onboarding() {
                   <Label className="text-sm font-semibold text-gray-900">
                     Taxa de entrega
                   </Label>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                     {DELIVERY_FEE_TYPES.map((type) => {
                       const isSelected = deliveryFeeType === type.id;
                       return (
@@ -821,7 +821,7 @@ export default function Onboarding() {
                     Quais são seus objetivos com a nossa plataforma? <span className="text-red-500">*</span>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                     {OBJECTIVES.map((objective) => {
                       const isSelected = selectedObjectives.includes(objective.id);
                       return (
@@ -871,7 +871,7 @@ export default function Onboarding() {
                     Como você conheceu nossa plataforma? <span className="text-red-500">*</span>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                     {HOW_FOUND.map((option) => {
                       const isSelected = howFound === option.id;
                       return (
