@@ -3599,3 +3599,10 @@
 - [x] Testar em telas com altura reduzida (notebooks menores)
 - [x] Reduzir tamanhos de elementos para caber em telas menores (inputs h-10, badges menores, stepper compacto)
 - [x] Usar 100dvh para altura dinâmica da viewport
+
+
+## Responsividade Steps 2, 3 e 4 do Onboarding
+- [x] Aplicar mesmas correções de responsividade do Step 1 para Step 2 (Atendimento)
+- [x] Aplicar mesmas correções de responsividade do Step 1 para Step 3 (Objetivos)
+- [x] Aplicar mesmas correções de responsividade do Step 1 para Step 4 (Plano)
+- [x] Testar todos os steps em telas menores
