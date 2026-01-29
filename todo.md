@@ -3676,3 +3676,4 @@
 - [x] Criar seção OPERAÇÕES com Dashboard
 - [x] Criar seção GESTÃO com Pedidos, Cardápio, Cupons, Estoque
 - [x] Adicionar títulos de seção no menu lateral
+- [x] Botão Voltar como link de texto abaixo do Continuar em todas as etapas do onboarding (Steps 2, 3 e 4)
