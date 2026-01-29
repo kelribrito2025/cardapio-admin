@@ -1086,8 +1086,8 @@ export default function Configuracoes() {
                       </button>
                     </div>
                     
-                    {/* Status and Delivery Types */}
-                    <div className="flex flex-wrap items-center gap-3 mt-2">
+                    {/* Status and Delivery Types - igual ao menu público */}
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
                       {/* Open Status with Pulsing Icon */}
                       <span className="flex items-center gap-1.5 text-green-600 font-medium text-sm">
                         <span className="relative flex h-2.5 w-2.5">
@@ -1096,9 +1096,32 @@ export default function Configuracoes() {
                         </span>
                         Aberto agora
                       </span>
+                      
+                      {/* Tempo de Entrega Badge */}
+                      {deliveryTimeEnabled && (
+                        <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-gray-700 text-xs font-medium rounded-full border border-gray-200">
+                          <Clock className="h-3.5 w-3.5 text-gray-500" />
+                          {deliveryTimeMin} - {deliveryTimeMax} min
+                        </span>
+                      )}
+                      
+                      {/* Pedido Mínimo Badge */}
+                      {minimumOrderEnabled && Number(minimumOrderValue) > 0 && (
+                        <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-orange-600 text-xs font-medium rounded-full border border-orange-200">
+                          <CreditCard className="h-3.5 w-3.5" />
+                          R$ {Number(minimumOrderValue).toFixed(2).replace('.', ',')}
+                        </span>
+                      )}
+                      
+                      {/* Tipo de Entrega Badge */}
                       {deliveryTypes.length > 0 && (
-                        <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200">
-                          {deliveryTypes.join(" e ")}
+                        <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-gray-700 text-xs font-medium rounded-full border border-gray-200">
+                          <Truck className="h-3.5 w-3.5 text-gray-500" />
+                          {deliveryTypes.includes("Entrega") && deliveryTypes.includes("Retirada") 
+                            ? "Delivery e Retirada" 
+                            : deliveryTypes.includes("Entrega") 
+                              ? "Delivery" 
+                              : "Retirada"}
                         </span>
                       )}
                     </div>
