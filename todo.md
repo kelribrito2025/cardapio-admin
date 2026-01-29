@@ -3568,3 +3568,4 @@
 - [x] Atualizar Onboarding para enviar os novos dados na mutation
 - [x] Criar horários de funcionamento automaticamente ao criar estabelecimento
 - [x] Verificar que página de configurações já carrega os dados salvos (useEffect já implementado)
+- [x] Ajustar botões de status do WhatsApp (Conectado/Desconectado) para terem o mesmo tamanho do card Verificando na página de pedidos

@@ -712,13 +712,13 @@ export default function Pedidos() {
               ) : whatsappStatus?.status === 'connected' ? (
                 /* Conectado */
                 <>
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="w-4 h-4 rounded-full bg-emerald-500 animate-pulse" />
                   <span>Conectado</span>
                 </>
               ) : (
                 /* Desconectado */
                 <>
-                  <span className="w-2 h-2 rounded-full bg-red-500" />
+                  <span className="w-4 h-4 rounded-full bg-red-500" />
                   <span>Desconectado</span>
                 </>
               )}
