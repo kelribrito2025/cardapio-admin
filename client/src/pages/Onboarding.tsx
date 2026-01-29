@@ -472,11 +472,13 @@ export default function Onboarding() {
               {currentStep === 1 && "Cadastre seu Restaurante"}
               {currentStep === 2 && "Configurações de Atendimento"}
               {currentStep === 3 && "Seus Objetivos"}
+              {currentStep === 4 && "Escolha seu Plano"}
             </h2>
             <p className="text-xs lg:text-sm text-gray-600">
               {currentStep === 1 && "Preencha os dados básicos do seu estabelecimento"}
               {currentStep === 2 && "Configure como seu restaurante vai atender"}
               {currentStep === 3 && "Conte-nos mais sobre seus objetivos"}
+              {currentStep === 4 && "Comece gratuitamente e faça upgrade quando quiser"}
             </p>
           </div>
 
@@ -933,17 +935,6 @@ export default function Onboarding() {
             {/* Step 4: Planos */}
             {currentStep === 4 && (
               <div className="space-y-2 lg:space-y-3">
-                {/* Header */}
-                <div className="text-center mb-2 lg:mb-4">
-                  <div className="flex items-center justify-center gap-1.5 text-xs lg:text-sm font-semibold text-gray-900 mb-1">
-                    <Crown className="h-4 w-4 text-primary" />
-                    Escolha seu plano
-                  </div>
-                  <p className="text-xs lg:text-sm text-gray-500">
-                    Comece gratuitamente e faça upgrade quando quiser
-                  </p>
-                </div>
-
                 {/* Plans */}
                 <div className="space-y-2">
                   {PLANS.map((plan) => {

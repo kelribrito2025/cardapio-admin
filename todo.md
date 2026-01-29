@@ -3606,3 +3606,7 @@
 - [x] Aplicar mesmas correções de responsividade do Step 1 para Step 3 (Objetivos)
 - [x] Aplicar mesmas correções de responsividade do Step 1 para Step 4 (Plano)
 - [x] Testar todos os steps em telas menores
+
+
+## Consistência Layout Step 4
+- [x] Ajustar Step 4 para ter título e descrição na mesma posição das etapas anteriores
