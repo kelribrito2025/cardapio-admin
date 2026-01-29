@@ -3517,3 +3517,5 @@
 - [x] BUG: Card de WhatsApp com layout quebrado na página de Pedidos para novos utilizadores
 - [x] Remover botão de atualizar status do card de WhatsApp (manter apenas desconectar)
 - [x] Remover ícone de rede (WiFi) do card de WhatsApp
+- [ ] Remover largura fixa do card de WhatsApp (voltar ao tamanho automático)
+- [x] Remover largura fixa do card de WhatsApp (voltar ao tamanho automático)
