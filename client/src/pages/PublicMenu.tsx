@@ -1572,26 +1572,23 @@ export default function PublicMenu() {
                 : establishment.publicNoteCreatedAt && new Date().getTime() - new Date(establishment.publicNoteCreatedAt).getTime() < 24 * 60 * 60 * 1000
             ) && (
               <div className="absolute -top-14 md:-top-16 left-0 z-20 animate-float-balloon">
-                <div className="relative isolate">
+                <div className="relative">
                   {/* Balão estilo bolha com estilo personalizado */}
-                  <div 
-                    className={cn(
-                      "rounded-[20px] px-3 py-1.5 shadow-md max-w-[140px] md:max-w-[160px]",
-                      (!establishment.noteStyle || establishment.noteStyle === "default") ? "border border-gray-200" : "",
-                      establishment.noteStyle === "sunset" && "bg-gradient-to-r from-orange-400 to-pink-500",
-                      establishment.noteStyle === "ocean" && "bg-gradient-to-r from-cyan-400 to-blue-500",
-                      establishment.noteStyle === "forest" && "bg-gradient-to-r from-green-400 to-emerald-500",
-                      establishment.noteStyle === "purple" && "bg-gradient-to-r from-purple-400 to-pink-500",
-                      establishment.noteStyle === "fire" && "bg-gradient-to-r from-red-500 to-orange-500",
-                      establishment.noteStyle === "gold" && "bg-gradient-to-r from-yellow-400 to-amber-500",
-                      establishment.noteStyle === "night" && "bg-gradient-to-r from-gray-700 to-gray-900",
-                      establishment.noteStyle === "candy" && "bg-gradient-to-r from-pink-400 to-rose-400",
-                      establishment.noteStyle === "mint" && "bg-gradient-to-r from-teal-400 to-cyan-400",
-                      establishment.noteStyle === "peach" && "bg-gradient-to-r from-orange-300 to-rose-300",
-                      establishment.noteStyle === "royal" && "bg-gradient-to-r from-indigo-500 to-purple-600"
-                    )}
-                    style={(!establishment.noteStyle || establishment.noteStyle === "default") ? { backgroundColor: '#ffffff' } : undefined}
-                  >
+                  <div className={cn(
+                    "rounded-[20px] px-3 py-1.5 shadow-md max-w-[140px] md:max-w-[160px]",
+                    (!establishment.noteStyle || establishment.noteStyle === "default") && "bg-white border border-gray-200",
+                    establishment.noteStyle === "sunset" && "bg-gradient-to-r from-orange-400 to-pink-500",
+                    establishment.noteStyle === "ocean" && "bg-gradient-to-r from-cyan-400 to-blue-500",
+                    establishment.noteStyle === "forest" && "bg-gradient-to-r from-green-400 to-emerald-500",
+                    establishment.noteStyle === "purple" && "bg-gradient-to-r from-purple-400 to-pink-500",
+                    establishment.noteStyle === "fire" && "bg-gradient-to-r from-red-500 to-orange-500",
+                    establishment.noteStyle === "gold" && "bg-gradient-to-r from-yellow-400 to-amber-500",
+                    establishment.noteStyle === "night" && "bg-gradient-to-r from-gray-700 to-gray-900",
+                    establishment.noteStyle === "candy" && "bg-gradient-to-r from-pink-400 to-rose-400",
+                    establishment.noteStyle === "mint" && "bg-gradient-to-r from-teal-400 to-cyan-400",
+                    establishment.noteStyle === "peach" && "bg-gradient-to-r from-orange-300 to-rose-300",
+                    establishment.noteStyle === "royal" && "bg-gradient-to-r from-indigo-500 to-purple-600"
+                  )}>
                     <p className={cn(
                       "text-xs text-center leading-tight break-words",
                       (!establishment.noteStyle || establishment.noteStyle === "default") ? "text-gray-700" : 
