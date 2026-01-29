@@ -3527,3 +3527,4 @@
 - [x] Remover sombra da barra de menu lateral
 - [x] Criar degradê vertical para sidebar - claro no topo, escuro embaixo
 - [x] Aplicar degradê do sidebar ao background da página Dashboard
+- [x] Implementar glassmorphism no sidebar: transparência 20%, degradê e bolhas desfocadas
