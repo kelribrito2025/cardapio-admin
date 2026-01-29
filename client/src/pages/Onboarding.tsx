@@ -255,8 +255,8 @@ export default function Onboarding() {
       {/* Right side - Form */}
       <div className="w-full lg:w-1/2 xl:w-2/5 bg-gray-50 flex items-center justify-center p-8 overflow-y-auto">
         <div className="w-full max-w-md">
-          {/* Success Badge */}
-          {showSuccessBadge && (
+          {/* Success Badge - Only show on Step 1 */}
+          {showSuccessBadge && currentStep === 1 && (
             <div className="mb-6 bg-green-50 border border-green-200 rounded-xl p-4 relative">
               <button
                 onClick={() => setShowSuccessBadge(false)}

@@ -3550,3 +3550,4 @@
 
 ## Correção Layout Onboarding
 - [x] Corrigir layout do onboarding para igualar ao login (h-14 nos inputs, pl-12, text-base, p-8 no container, mb-8 no header)
+- [x] Ocultar card "Conta criada com sucesso" na segunda etapa do onboarding (Objetivos)
