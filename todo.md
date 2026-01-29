@@ -3665,3 +3665,8 @@
 
 ## Navegação Suave Voltar ao Login
 - [x] Alterar link "Voltar ao login" para usar Link do wouter em vez de tag <a> para evitar reload da página
+
+
+## Corrigir Reload Voltar ao Login
+- [x] Investigar por que a página ainda recarrega ao clicar em Voltar ao login
+- [x] Usar useLocation do wouter para navegação programática via setLocation

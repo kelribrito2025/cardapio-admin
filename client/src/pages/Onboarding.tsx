@@ -888,13 +888,14 @@ export default function Onboarding() {
                   </Button>
                   
                   {/* Link para voltar ao login */}
-                  <Link
-                    href="/login"
+                  <button
+                    type="button"
+                    onClick={() => setLocation("/login")}
                     className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-gray-500 hover:text-gray-700 transition-colors mt-3 lg:mt-4"
                   >
                     <ArrowLeft className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
                     Voltar ao login
-                  </Link>
+                  </button>
                 </div>
               </div>
             )}
