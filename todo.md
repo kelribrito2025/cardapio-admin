@@ -3624,3 +3624,9 @@
 - [x] Step 2: Validação de campos obrigatórios
 - [x] Step 3: Validação de campos obrigatórios
 - [x] Step 4: Validação de campos obrigatórios
+
+
+## Correção Link WhatsApp
+- [x] Adicionar código do país 55 no link do WhatsApp no menu público
+- [x] Adicionar código do país 55 no link do WhatsApp na página de Configurações
+- [x] Adicionar código do país 55 no link do WhatsApp na página de Pedidos

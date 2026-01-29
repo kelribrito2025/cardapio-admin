@@ -1160,7 +1160,7 @@ export default function Configuracoes() {
                         <div className="absolute left-0 bottom-full mb-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 min-w-[160px]">
                           {whatsapp && (
                             <a 
-                              href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`}
+                              href={`https://wa.me/55${whatsapp.replace(/\D/g, '')}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors"

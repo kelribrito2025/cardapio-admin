@@ -1075,7 +1075,7 @@ export default function Pedidos() {
                       <Button variant="outline" size="sm" className="flex-1 h-8 text-xs" onClick={() => window.open(`tel:${orderDetails.customerPhone}`)}>
                         Ligar
                       </Button>
-                      <Button variant="outline" size="sm" className="flex-1 h-8 text-xs" onClick={() => window.open(`https://wa.me/${orderDetails.customerPhone?.replace(/\D/g, '')}`, '_blank')}>
+                      <Button variant="outline" size="sm" className="flex-1 h-8 text-xs" onClick={() => window.open(`https://wa.me/55${orderDetails.customerPhone?.replace(/\D/g, '')}`, '_blank')}>
                         Mensagem
                       </Button>
                     </div>

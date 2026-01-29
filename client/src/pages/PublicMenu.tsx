@@ -1786,7 +1786,7 @@ export default function PublicMenu() {
                     <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-[60] min-w-[160px]">
                       {establishment.whatsapp && (
                         <a 
-                          href={`https://wa.me/${establishment.whatsapp.replace(/\D/g, '')}`}
+                          href={`https://wa.me/55${establishment.whatsapp.replace(/\D/g, '')}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors"
