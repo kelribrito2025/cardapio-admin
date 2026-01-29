@@ -72,7 +72,8 @@ export default function Onboarding() {
       toast.success("Restaurante cadastrado com sucesso!");
       await utils.establishment.get.invalidate();
       await utils.auth.me.invalidate();
-      window.location.href = "/";
+      // Redirecionar para seleção de planos
+      window.location.href = "/onboarding/planos";
     },
     onError: (error: { message?: string }) => {
       toast.error(error.message || "Erro ao cadastrar restaurante. Tente novamente.");
