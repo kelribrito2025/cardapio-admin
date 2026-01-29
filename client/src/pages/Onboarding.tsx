@@ -43,7 +43,6 @@ const HOW_FOUND = [
   { id: "google", label: "Pelo Google" },
   { id: "other_menu", label: "Vi em outro estabelecimento" },
   { id: "social_media", label: "Pelas redes sociais" },
-  { id: "others", label: "Outros" },
 ];
 
 // Opções de tipo de entrega
@@ -516,15 +515,6 @@ export default function Onboarding() {
                     })}
                   </div>
 
-                  {/* Campo condicional para "Outros" */}
-                  {howFound === "others" && (
-                    <Input
-                      placeholder="Como você nos conheceu?"
-                      value={otherHowFound}
-                      onChange={(e) => setOtherHowFound(e.target.value)}
-                      className="h-14 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
-                    />
-                  )}
                 </div>
 
                 {/* Buttons */}
