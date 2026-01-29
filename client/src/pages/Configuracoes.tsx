@@ -1271,17 +1271,11 @@ export default function Configuracoes() {
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                   {[
                     { id: "default", name: "Padrão", bg: "bg-white", text: "text-gray-700", border: "border-gray-200" },
-                    { id: "sunset", name: "Pôr do Sol", bg: "bg-gradient-to-r from-orange-400 to-pink-500", text: "text-white", border: "border-transparent" },
                     { id: "ocean", name: "Oceano", bg: "bg-gradient-to-r from-cyan-400 to-blue-500", text: "text-white", border: "border-transparent" },
                     { id: "forest", name: "Floresta", bg: "bg-gradient-to-r from-green-400 to-emerald-500", text: "text-white", border: "border-transparent" },
-                    { id: "purple", name: "Roxo", bg: "bg-gradient-to-r from-purple-400 to-pink-500", text: "text-white", border: "border-transparent" },
                     { id: "fire", name: "Fogo", bg: "bg-gradient-to-r from-red-500 to-orange-500", text: "text-white", border: "border-transparent" },
                     { id: "gold", name: "Dourado", bg: "bg-gradient-to-r from-yellow-400 to-amber-500", text: "text-white", border: "border-transparent" },
                     { id: "night", name: "Noite", bg: "bg-gradient-to-r from-gray-700 to-gray-900", text: "text-white", border: "border-transparent" },
-                    { id: "candy", name: "Doce", bg: "bg-gradient-to-r from-pink-400 to-rose-400", text: "text-white", border: "border-transparent" },
-                    { id: "mint", name: "Menta", bg: "bg-gradient-to-r from-teal-400 to-cyan-400", text: "text-white", border: "border-transparent" },
-                    { id: "peach", name: "Pêssego", bg: "bg-gradient-to-r from-orange-300 to-rose-300", text: "text-gray-800", border: "border-transparent" },
-                    { id: "royal", name: "Real", bg: "bg-gradient-to-r from-indigo-500 to-purple-600", text: "text-white", border: "border-transparent" },
                   ].map((style) => (
                     <button
                       key={style.id}
@@ -1320,39 +1314,26 @@ export default function Configuracoes() {
                       <div className={cn(
                         "rounded-[20px] px-3 py-1.5 shadow-md max-w-[140px]",
                         noteStyle === "default" && "bg-white border border-gray-200",
-                        noteStyle === "sunset" && "bg-gradient-to-r from-orange-400 to-pink-500",
                         noteStyle === "ocean" && "bg-gradient-to-r from-cyan-400 to-blue-500",
                         noteStyle === "forest" && "bg-gradient-to-r from-green-400 to-emerald-500",
-                        noteStyle === "purple" && "bg-gradient-to-r from-purple-400 to-pink-500",
                         noteStyle === "fire" && "bg-gradient-to-r from-red-500 to-orange-500",
                         noteStyle === "gold" && "bg-gradient-to-r from-yellow-400 to-amber-500",
-                        noteStyle === "night" && "bg-gradient-to-r from-gray-700 to-gray-900",
-                        noteStyle === "candy" && "bg-gradient-to-r from-pink-400 to-rose-400",
-                        noteStyle === "mint" && "bg-gradient-to-r from-teal-400 to-cyan-400",
-                        noteStyle === "peach" && "bg-gradient-to-r from-orange-300 to-rose-300",
-                        noteStyle === "royal" && "bg-gradient-to-r from-indigo-500 to-purple-600"
+                        noteStyle === "night" && "bg-gradient-to-r from-gray-700 to-gray-900"
                       )}>
                         <p className={cn(
                           "text-xs text-center leading-tight break-words",
-                          noteStyle === "default" ? "text-gray-700" : 
-                          noteStyle === "peach" ? "text-gray-800" : "text-white"
+                          noteStyle === "default" ? "text-gray-700" : "text-white"
                         )}>{publicNote}</p>
                       </div>
                       {/* Seta do balão no canto inferior esquerdo */}
                       <div className={cn(
                         "absolute -bottom-1.5 left-4 w-3 h-3 transform rotate-45",
                         noteStyle === "default" && "bg-white border-r border-b border-gray-200",
-                        noteStyle === "sunset" && "bg-pink-500",
                         noteStyle === "ocean" && "bg-blue-500",
                         noteStyle === "forest" && "bg-emerald-500",
-                        noteStyle === "purple" && "bg-pink-500",
                         noteStyle === "fire" && "bg-orange-500",
                         noteStyle === "gold" && "bg-amber-500",
-                        noteStyle === "night" && "bg-gray-900",
-                        noteStyle === "candy" && "bg-rose-400",
-                        noteStyle === "mint" && "bg-cyan-400",
-                        noteStyle === "peach" && "bg-rose-300",
-                        noteStyle === "royal" && "bg-purple-600"
+                        noteStyle === "night" && "bg-gray-900"
                       )}></div>
                     </div>
                   </div>
