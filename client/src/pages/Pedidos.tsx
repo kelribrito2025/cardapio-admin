@@ -694,13 +694,13 @@ export default function Pedidos() {
         {/* Card de Status de Conexão WhatsApp */}
         <div className="hidden sm:flex items-center gap-3">
           <div className={cn(
-            "flex items-center gap-3 px-4 py-2 rounded-xl border text-sm font-medium shadow-sm",
+            "flex items-center gap-3 px-4 py-2 rounded-xl border text-sm font-medium shadow-sm whitespace-nowrap",
             !isWhatsappFetched || isWhatsappLoading
               ? "bg-gray-50 border-gray-200 text-gray-600"
               : whatsappStatus?.status === 'connected'
                 ? "bg-emerald-50 border-emerald-200 text-emerald-700"
                 : "bg-red-50 border-red-200 text-red-700"
-          )} style={{width: '224px', height: '41px'}}>
+          )}>
             {/* Ícone de status */}
             <div className="flex items-center gap-2">
               {!isWhatsappFetched || isWhatsappLoading ? (
