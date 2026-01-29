@@ -3503,3 +3503,4 @@
 - [x] Adicionar borda vermelha arredondada nos cards de resultados de busca do menu público
 - [x] Alterar limite de itens na pré-visualização de busca de 6 para 10
 - [x] Ajustar tela de login desktop para ficar igual à versão mobile (sem container redondo)
+- [x] Remover checkbox de termos de uso e política de privacidade da página de criar conta

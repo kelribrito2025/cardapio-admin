@@ -5,7 +5,7 @@ import { AuthLayout } from "@/components/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -16,7 +16,7 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [acceptTerms, setAcceptTerms] = useState(false);
+
 
   const registerMutation = trpc.auth.register.useMutation({
     onSuccess: () => {
@@ -43,11 +43,6 @@ export default function Register() {
 
     if (password.length < 6) {
       toast.error("A senha deve ter pelo menos 6 caracteres.");
-      return;
-    }
-
-    if (!acceptTerms) {
-      toast.error("Você deve aceitar os termos de uso.");
       return;
     }
 
@@ -131,22 +126,6 @@ export default function Register() {
                 {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
-          </div>
-
-          {/* Terms */}
-          <div className="flex items-start gap-2 pt-2">
-            <Checkbox
-              id="terms"
-              checked={acceptTerms}
-              onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
-              className="mt-0.5 border-gray-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-            />
-            <Label htmlFor="terms" className="text-sm text-gray-600 cursor-pointer leading-relaxed">
-              Eu aceito os{" "}
-              <a href="#" className="text-primary hover:underline">Termos de Uso</a>
-              {" "}e a{" "}
-              <a href="#" className="text-primary hover:underline">Política de Privacidade</a>
-            </Label>
           </div>
 
           {/* Submit button */}
