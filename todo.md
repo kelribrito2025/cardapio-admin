@@ -3545,3 +3545,4 @@
 - [x] Etapa 1: nome, link público, WhatsApp, Instagram, tipo de entrega
 - [x] Etapa 2: objetivos com a plataforma, como conheceu
 - [x] Mover onboarding para usar AuthLayout com layout de 2 seções
+- [x] Colocar campos WhatsApp e Instagram lado a lado no onboarding

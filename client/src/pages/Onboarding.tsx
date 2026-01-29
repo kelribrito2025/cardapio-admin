@@ -346,39 +346,42 @@ export default function Onboarding() {
                   </div>
                 </div>
 
-                {/* WhatsApp */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="whatsapp" className="text-sm font-semibold text-gray-900">
-                    WhatsApp do restaurante
-                  </Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="whatsapp"
-                      type="tel"
-                      placeholder="(11) 99999-9999"
-                      value={whatsapp}
-                      onChange={(e) => setWhatsapp(formatWhatsApp(e.target.value))}
-                      className="h-12 pl-10 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm"
-                    />
+                {/* WhatsApp e Instagram lado a lado */}
+                <div className="grid grid-cols-2 gap-3">
+                  {/* WhatsApp */}
+                  <div className="space-y-1.5">
+                    <Label htmlFor="whatsapp" className="text-sm font-semibold text-gray-900">
+                      WhatsApp
+                    </Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="whatsapp"
+                        type="tel"
+                        placeholder="(11) 99999-9999"
+                        value={whatsapp}
+                        onChange={(e) => setWhatsapp(formatWhatsApp(e.target.value))}
+                        className="h-12 pl-10 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                {/* Instagram */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="instagram" className="text-sm font-semibold text-gray-900">
-                    Instagram do restaurante
-                  </Label>
-                  <div className="relative">
-                    <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="instagram"
-                      type="text"
-                      placeholder="@seu_restaurante"
-                      value={instagram}
-                      onChange={(e) => setInstagram(e.target.value)}
-                      className="h-12 pl-10 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm"
-                    />
+                  {/* Instagram */}
+                  <div className="space-y-1.5">
+                    <Label htmlFor="instagram" className="text-sm font-semibold text-gray-900">
+                      Instagram
+                    </Label>
+                    <div className="relative">
+                      <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="instagram"
+                        type="text"
+                        placeholder="@seu_restaurante"
+                        value={instagram}
+                        onChange={(e) => setInstagram(e.target.value)}
+                        className="h-12 pl-10 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm"
+                      />
+                    </div>
                   </div>
                 </div>
 
