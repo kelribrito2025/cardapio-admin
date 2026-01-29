@@ -3643,3 +3643,13 @@
 
 ## Validação Instagram Obrigatório
 - [x] Adicionar campo Instagram como obrigatório na validação do Step 1
+
+
+## Responsividade Onboarding Telas Grandes v2
+- [x] Container do formulário com max-width responsivo e centralizado (xl:max-w-lg, 2xl:max-w-xl)
+- [x] Espaçamentos laterais, superior e inferior máximos (xl:p-8, 2xl:p-10, py-4/6/8)
+- [x] Tipografia responsiva com breakpoints xl/2xl (títulos até 2xl:text-3xl)
+- [x] Padding e gaps proporcionais em telas grandes (space-y-5/6)
+- [x] Layout equilibrado que funciona em todas as larguras de tela
+- [x] StepIndicator maior em telas grandes (2xl:w-8 h-8)
+- [x] Inputs maiores em telas grandes (xl:h-13, 2xl:h-14)
