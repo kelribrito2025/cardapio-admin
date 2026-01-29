@@ -3696,3 +3696,4 @@
 - [x] Remover seção Validade da Nota do card de Nota do Restaurante
 - [x] Remover sugestões rápidas específicas do card de Nota do Restaurante
 - [x] Remover estilos de balão: Pêssego, Menta, Roxo, Doce, Real, Pôr do Sol
+- [x] Remover card de preview do balão e mostrar preview temporário sobre a cor selecionada

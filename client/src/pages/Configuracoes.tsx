@@ -136,6 +136,7 @@ export default function Configuracoes() {
   
   // Note style state
   const [noteStyle, setNoteStyle] = useState("default");
+  const [showPreviewForStyle, setShowPreviewForStyle] = useState<string | null>(null);
   
   // Delivery time state
   const [deliveryTimeEnabled, setDeliveryTimeEnabled] = useState(false);
@@ -1270,17 +1271,23 @@ export default function Configuracoes() {
                 <Label className="text-sm font-semibold">Estilo do Balão</Label>
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                   {[
-                    { id: "default", name: "Padrão", bg: "bg-white", text: "text-gray-700", border: "border-gray-200" },
-                    { id: "ocean", name: "Oceano", bg: "bg-gradient-to-r from-cyan-400 to-blue-500", text: "text-white", border: "border-transparent" },
-                    { id: "forest", name: "Floresta", bg: "bg-gradient-to-r from-green-400 to-emerald-500", text: "text-white", border: "border-transparent" },
-                    { id: "fire", name: "Fogo", bg: "bg-gradient-to-r from-red-500 to-orange-500", text: "text-white", border: "border-transparent" },
-                    { id: "gold", name: "Dourado", bg: "bg-gradient-to-r from-yellow-400 to-amber-500", text: "text-white", border: "border-transparent" },
-                    { id: "night", name: "Noite", bg: "bg-gradient-to-r from-gray-700 to-gray-900", text: "text-white", border: "border-transparent" },
+                    { id: "default", name: "Padrão", bg: "bg-white", text: "text-gray-700", border: "border-gray-200", arrowBg: "bg-white border-r border-b border-gray-200" },
+                    { id: "ocean", name: "Oceano", bg: "bg-gradient-to-r from-cyan-400 to-blue-500", text: "text-white", border: "border-transparent", arrowBg: "bg-blue-500" },
+                    { id: "forest", name: "Floresta", bg: "bg-gradient-to-r from-green-400 to-emerald-500", text: "text-white", border: "border-transparent", arrowBg: "bg-emerald-500" },
+                    { id: "fire", name: "Fogo", bg: "bg-gradient-to-r from-red-500 to-orange-500", text: "text-white", border: "border-transparent", arrowBg: "bg-orange-500" },
+                    { id: "gold", name: "Dourado", bg: "bg-gradient-to-r from-yellow-400 to-amber-500", text: "text-white", border: "border-transparent", arrowBg: "bg-amber-500" },
+                    { id: "night", name: "Noite", bg: "bg-gradient-to-r from-gray-700 to-gray-900", text: "text-white", border: "border-transparent", arrowBg: "bg-gray-900" },
                   ].map((style) => (
                     <button
                       key={style.id}
                       type="button"
-                      onClick={() => setNoteStyle(style.id)}
+                      onClick={() => {
+                        setNoteStyle(style.id);
+                        if (publicNote) {
+                          setShowPreviewForStyle(style.id);
+                          setTimeout(() => setShowPreviewForStyle(null), 5000);
+                        }
+                      }}
                       className={cn(
                         "relative p-2 rounded-xl transition-all duration-200 border-2",
                         noteStyle === style.id 
@@ -1299,46 +1306,31 @@ export default function Configuracoes() {
                           <Check className="h-2.5 w-2.5 text-white" />
                         </div>
                       )}
+                      {/* Preview temporário do balão */}
+                      {showPreviewForStyle === style.id && publicNote && (
+                        <div className="absolute -top-20 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                          <div className="relative">
+                            <div className={cn(
+                              "rounded-[20px] px-3 py-1.5 shadow-lg max-w-[140px] whitespace-nowrap",
+                              style.bg,
+                              style.border !== "border-transparent" && "border " + style.border
+                            )}>
+                              <p className={cn(
+                                "text-xs text-center leading-tight",
+                                style.text
+                              )}>{publicNote.length > 25 ? publicNote.substring(0, 25) + "..." : publicNote}</p>
+                            </div>
+                            <div className={cn(
+                              "absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 transform rotate-45",
+                              style.arrowBg
+                            )}></div>
+                          </div>
+                        </div>
+                      )}
                     </button>
                   ))}
                 </div>
               </div>
-              
-              {/* Preview do balão */}
-              {publicNote && (
-                <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                  <Label className="text-xs font-medium text-muted-foreground mb-2 block">Preview do balão:</Label>
-                  <div className="flex justify-start pl-8">
-                    <div className="relative">
-                      {/* Balão estilo bolha com estilo selecionado */}
-                      <div className={cn(
-                        "rounded-[20px] px-3 py-1.5 shadow-md max-w-[140px]",
-                        noteStyle === "default" && "bg-white border border-gray-200",
-                        noteStyle === "ocean" && "bg-gradient-to-r from-cyan-400 to-blue-500",
-                        noteStyle === "forest" && "bg-gradient-to-r from-green-400 to-emerald-500",
-                        noteStyle === "fire" && "bg-gradient-to-r from-red-500 to-orange-500",
-                        noteStyle === "gold" && "bg-gradient-to-r from-yellow-400 to-amber-500",
-                        noteStyle === "night" && "bg-gradient-to-r from-gray-700 to-gray-900"
-                      )}>
-                        <p className={cn(
-                          "text-xs text-center leading-tight break-words",
-                          noteStyle === "default" ? "text-gray-700" : "text-white"
-                        )}>{publicNote}</p>
-                      </div>
-                      {/* Seta do balão no canto inferior esquerdo */}
-                      <div className={cn(
-                        "absolute -bottom-1.5 left-4 w-3 h-3 transform rotate-45",
-                        noteStyle === "default" && "bg-white border-r border-b border-gray-200",
-                        noteStyle === "ocean" && "bg-blue-500",
-                        noteStyle === "forest" && "bg-emerald-500",
-                        noteStyle === "fire" && "bg-orange-500",
-                        noteStyle === "gold" && "bg-amber-500",
-                        noteStyle === "night" && "bg-gray-900"
-                      )}></div>
-                    </div>
-                  </div>
-                </div>
-              )}
               
               {/* Status da nota atual */}
               {publicNoteCreatedAt && (
