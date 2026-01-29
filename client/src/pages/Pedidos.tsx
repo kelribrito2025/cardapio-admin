@@ -701,26 +701,23 @@ export default function Pedidos() {
                 ? "bg-emerald-50 border-emerald-200 text-emerald-700"
                 : "bg-red-50 border-red-200 text-red-700"
           )}>
-            {/* Ícone de status */}
+            {/* Status */}
             <div className="flex items-center gap-2">
               {!isWhatsappFetched || isWhatsappLoading ? (
                 /* Estado de carregamento */
                 <>
                   <Loader2 className="h-4 w-4 text-gray-400 animate-spin" />
-                  <span className="w-2 h-2 rounded-full bg-gray-300 animate-pulse" />
                   <span>Verificando...</span>
                 </>
               ) : whatsappStatus?.status === 'connected' ? (
                 /* Conectado */
                 <>
-                  <Wifi className="h-4 w-4 text-emerald-500" />
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span>Conectado</span>
                 </>
               ) : (
                 /* Desconectado */
                 <>
-                  <WifiOff className="h-4 w-4 text-red-500" />
                   <span className="w-2 h-2 rounded-full bg-red-500" />
                   <span>Desconectado</span>
                 </>
