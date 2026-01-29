@@ -3528,3 +3528,4 @@
 - [x] Criar degradê vertical para sidebar - claro no topo, escuro embaixo
 - [x] Aplicar degradê do sidebar ao background da página Dashboard
 - [x] Ajustar degradê do background principal com cores mais vibrantes
+- [x] Criar painel flutuante Theme Lab para configurar visual do app em tempo real

@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
+import { ThemeLabFloatingPanel } from "@/components/ThemeLabFloatingPanel";
 
 const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed";
 
@@ -374,13 +375,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col",
+          "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col sidebar-theme-lab",
           sidebarWidth,
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
           "lg:translate-x-0"
         )}
         style={{
-          background: "linear-gradient(180deg, oklch(0.99 0 0) 0%, oklch(0.96 0.008 250) 50%, oklch(0.92 0.015 250) 100%)"
+          background: "var(--theme-lab-sidebar-bg, linear-gradient(180deg, oklch(0.99 0 0) 0%, oklch(0.96 0.008 250) 50%, oklch(0.92 0.015 250) 100%))",
+          backdropFilter: "var(--theme-lab-sidebar-blur, none)",
+          WebkitBackdropFilter: "var(--theme-lab-sidebar-blur, none)"
         }}
       >
         {/* Logo + Toggle button na mesma linha */}
@@ -577,9 +580,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Main content */}
       <div 
-        className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] min-h-screen", mainPadding)}
+        className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] min-h-screen main-content-theme-lab", mainPadding)}
         style={{
-          background: "linear-gradient(135deg, oklch(0.98 0.02 25) 0%, oklch(0.95 0.04 340) 25%, oklch(0.93 0.05 280) 50%, oklch(0.90 0.06 220) 75%, oklch(0.88 0.07 200) 100%)"
+          background: "var(--theme-lab-bg, linear-gradient(135deg, oklch(0.98 0.02 25) 0%, oklch(0.95 0.04 340) 25%, oklch(0.93 0.05 280) 50%, oklch(0.90 0.06 220) 75%, oklch(0.88 0.07 200) 100%))"
         }}
       >
         {/* Topbar */}
@@ -796,6 +799,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           {children}
         </main>
       </div>
+
+      {/* Theme Lab - Painel flutuante para configuração visual */}
+      <ThemeLabFloatingPanel />
     </div>
   );
 }
