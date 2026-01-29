@@ -5,16 +5,18 @@ import {
   Link as LinkIcon, 
   Phone, 
   Instagram, 
-  MapPin, 
   Target, 
   Users,
   ArrowRight, 
+  ArrowLeft,
   Loader2, 
   UtensilsCrossed,
   CheckCircle2,
-  X
+  X,
+  Truck,
+  ShoppingBag,
+  Check
 } from "lucide-react";
-import { AuthLayout } from "@/components/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,30 +38,36 @@ const OBJECTIVES = [
 
 // Opções de como conheceu
 const HOW_FOUND = [
-  { id: "referral", label: "Indicação" },
-  { id: "google", label: "Google" },
-  { id: "other_menu", label: "Vi em outro menu digital" },
-  { id: "social_media", label: "Redes sociais" },
+  { id: "referral", label: "Por indicação" },
+  { id: "google", label: "Pelo Google" },
+  { id: "other_menu", label: "Vi em outro estabelecimento" },
+  { id: "social_media", label: "Pelas redes sociais" },
   { id: "others", label: "Outros" },
+];
+
+// Opções de tipo de entrega
+const DELIVERY_TYPES = [
+  { id: "delivery", label: "Delivery", icon: Truck, description: "Entrega no endereço do cliente" },
+  { id: "pickup", label: "Retirada", icon: ShoppingBag, description: "Cliente retira no local" },
+  { id: "both", label: "Ambos", icon: Check, description: "Delivery e retirada" },
 ];
 
 export default function Onboarding() {
   const [, setLocation] = useLocation();
   const [showSuccessBadge, setShowSuccessBadge] = useState(true);
+  const [currentStep, setCurrentStep] = useState(1);
   const utils = trpc.useUtils();
   
-  // Form state
+  // Form state - Step 1
   const [name, setName] = useState("");
   const [menuSlug, setMenuSlug] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [instagram, setInstagram] = useState("");
-  const [area, setArea] = useState("");
+  const [deliveryType, setDeliveryType] = useState("");
   
-  // Objectives
+  // Form state - Step 2
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
   const [otherObjective, setOtherObjective] = useState("");
-  
-  // How found
   const [howFound, setHowFound] = useState("");
   const [otherHowFound, setOtherHowFound] = useState("");
 
@@ -111,13 +119,20 @@ export default function Onboarding() {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleNextStep = () => {
     if (!name.trim()) {
       toast.error("Por favor, informe o nome do estabelecimento.");
       return;
     }
+    setCurrentStep(2);
+  };
+
+  const handlePrevStep = () => {
+    setCurrentStep(1);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
 
     createEstablishmentMutation.mutate({
       name: name.trim(),
@@ -126,9 +141,51 @@ export default function Onboarding() {
     });
   };
 
+  // Step indicator component
+  const StepIndicator = () => (
+    <div className="flex items-center justify-center gap-3 mb-8">
+      {/* Step 1 */}
+      <div className="flex items-center gap-2">
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+          currentStep >= 1 
+            ? "bg-primary text-white" 
+            : "bg-gray-200 text-gray-500"
+        }`}>
+          {currentStep > 1 ? <Check className="h-4 w-4" /> : "1"}
+        </div>
+        <span className={`text-sm font-medium hidden sm:block ${
+          currentStep >= 1 ? "text-gray-900" : "text-gray-500"
+        }`}>
+          Dados do estabelecimento
+        </span>
+      </div>
+
+      {/* Connector */}
+      <div className={`w-12 h-0.5 transition-all ${
+        currentStep > 1 ? "bg-primary" : "bg-gray-200"
+      }`} />
+
+      {/* Step 2 */}
+      <div className="flex items-center gap-2">
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+          currentStep >= 2 
+            ? "bg-primary text-white" 
+            : "bg-gray-200 text-gray-500"
+        }`}>
+          2
+        </div>
+        <span className={`text-sm font-medium hidden sm:block ${
+          currentStep >= 2 ? "text-gray-900" : "text-gray-500"
+        }`}>
+          Objetivos
+        </span>
+      </div>
+    </div>
+  );
+
   return (
-    <AuthLayout>
-      <div className="p-6 md:p-8 max-h-[90vh] overflow-y-auto">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-6 md:p-8">
         {/* Success Badge */}
         {showSuccessBadge && (
           <div className="mb-6 bg-green-50 border border-green-200 rounded-xl p-4 relative">
@@ -138,13 +195,13 @@ export default function Onboarding() {
             >
               <X className="h-4 w-4" />
             </button>
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <CheckCircle2 className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-green-800">Conta criada com sucesso! 🎉</h3>
-                <p className="text-sm text-green-700 mt-0.5">
+                <h3 className="font-semibold text-green-800">Conta criada com sucesso!</h3>
+                <p className="text-sm text-green-700">
                   Agora vamos cadastrar seu restaurante
                 </p>
               </div>
@@ -153,209 +210,288 @@ export default function Onboarding() {
         )}
 
         {/* Logo */}
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="w-[50px] h-[50px] bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30">
-            <UtensilsCrossed className="h-7 w-7 text-white" />
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30">
+            <UtensilsCrossed className="h-6 w-6 text-white" />
           </div>
-          <span className="text-3xl font-bold text-gray-900">Mindi</span>
+          <span className="text-2xl font-bold text-gray-900">Mindi</span>
         </div>
 
         {/* Header */}
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Cadastre seu Restaurante</h2>
-          <p className="text-gray-600">Preencha os dados básicos para começar</p>
+        <div className="text-center mb-2">
+          <h2 className="text-xl font-bold text-primary">
+            {currentStep === 1 ? "Cadastre seu Restaurante" : "Seus Objetivos"}
+          </h2>
+          <p className="text-gray-500 text-sm">
+            {currentStep === 1 
+              ? "Preencha os dados básicos do seu estabelecimento" 
+              : "Conte-nos mais sobre seus objetivos"}
+          </p>
         </div>
 
+        {/* Step Indicator */}
+        <StepIndicator />
+
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Dados do estabelecimento */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-800 uppercase tracking-wide">
-              <Store className="h-4 w-4" />
-              Dados do Estabelecimento
-            </div>
-
-            {/* Nome */}
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium text-gray-700">
-                Nome do estabelecimento *
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Ex: Pizzaria do João"
-                value={name}
-                onChange={(e) => handleNameChange(e.target.value)}
-                className="h-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20"
-              />
-            </div>
-
-            {/* Link público */}
-            <div className="space-y-2">
-              <Label htmlFor="menuSlug" className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                <LinkIcon className="h-4 w-4 text-gray-500" />
-                Link público do cardápio
-              </Label>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-500 bg-gray-100 px-3 py-2.5 rounded-l-xl border border-r-0 border-gray-200">
-                  mindi.com.br/
-                </span>
-                <Input
-                  id="menuSlug"
-                  type="text"
-                  placeholder="seu-restaurante"
-                  value={menuSlug}
-                  onChange={(e) => setMenuSlug(generateSlug(e.target.value))}
-                  className="h-11 rounded-l-none rounded-r-xl border-gray-200 focus:border-primary focus:ring-primary/20"
-                />
-              </div>
-            </div>
-
-            {/* WhatsApp */}
-            <div className="space-y-2">
-              <Label htmlFor="whatsapp" className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                <Phone className="h-4 w-4 text-gray-500" />
-                WhatsApp do restaurante
-              </Label>
-              <Input
-                id="whatsapp"
-                type="tel"
-                placeholder="(11) 99999-9999"
-                value={whatsapp}
-                onChange={(e) => setWhatsapp(formatWhatsApp(e.target.value))}
-                className="h-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20"
-              />
-            </div>
-
-            {/* Instagram */}
-            <div className="space-y-2">
-              <Label htmlFor="instagram" className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                <Instagram className="h-4 w-4 text-gray-500" />
-                Instagram do restaurante
-              </Label>
-              <Input
-                id="instagram"
-                type="text"
-                placeholder="@seu_restaurante"
-                value={instagram}
-                onChange={(e) => setInstagram(e.target.value)}
-                className="h-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20"
-              />
-            </div>
-
-            {/* Área de atuação */}
-            <div className="space-y-2">
-              <Label htmlFor="area" className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                <MapPin className="h-4 w-4 text-gray-500" />
-                Área de atuação
-              </Label>
-              <Input
-                id="area"
-                type="text"
-                placeholder="Ex: Centro, São Paulo - SP"
-                value={area}
-                onChange={(e) => setArea(e.target.value)}
-                className="h-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20"
-              />
-            </div>
-          </div>
-
-          {/* Objetivos */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-800 uppercase tracking-wide">
-              <Target className="h-4 w-4" />
-              Objetivos com a plataforma
-            </div>
-            <p className="text-sm text-gray-600">Quais são seus objetivos com a nossa plataforma?</p>
-            
-            <div className="space-y-3">
-              {OBJECTIVES.map((objective) => (
-                <div key={objective.id} className="flex items-center space-x-3">
-                  <Checkbox
-                    id={objective.id}
-                    checked={selectedObjectives.includes(objective.id)}
-                    onCheckedChange={() => handleObjectiveToggle(objective.id)}
+        <form onSubmit={handleSubmit}>
+          {/* Step 1: Dados do estabelecimento */}
+          {currentStep === 1 && (
+            <div className="space-y-5">
+              {/* Nome */}
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm font-semibold text-gray-900">
+                  Nome do estabelecimento <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Store className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Ex: Pizzaria do João"
+                    value={name}
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                   />
-                  <label
-                    htmlFor={objective.id}
-                    className="text-sm font-medium text-gray-700 cursor-pointer"
-                  >
-                    {objective.label}
-                  </label>
                 </div>
-              ))}
-            </div>
+              </div>
 
-            {/* Campo condicional para "Outros" */}
-            {selectedObjectives.includes("others") && (
-              <Textarea
-                placeholder="Descreva brevemente seu objetivo"
-                value={otherObjective}
-                onChange={(e) => setOtherObjective(e.target.value)}
-                className="mt-2 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20"
-                rows={2}
-              />
-            )}
-          </div>
-
-          {/* Como conheceu */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-800 uppercase tracking-wide">
-              <Users className="h-4 w-4" />
-              Como nos conheceu
-            </div>
-            <p className="text-sm text-gray-600">Como você conheceu nossa plataforma?</p>
-            
-            <RadioGroup value={howFound} onValueChange={setHowFound} className="space-y-3">
-              {HOW_FOUND.map((option) => (
-                <div key={option.id} className="flex items-center space-x-3">
-                  <RadioGroupItem value={option.id} id={`how-${option.id}`} />
-                  <label
-                    htmlFor={`how-${option.id}`}
-                    className="text-sm font-medium text-gray-700 cursor-pointer"
-                  >
-                    {option.label}
-                  </label>
+              {/* Link público */}
+              <div className="space-y-2">
+                <Label htmlFor="menuSlug" className="text-sm font-semibold text-gray-900">
+                  Link público do cardápio
+                </Label>
+                <div className="flex items-center">
+                  <span className="text-sm text-gray-500 bg-gray-100 px-4 py-4 rounded-l-xl border border-r-0 border-gray-200">
+                    mindi.com.br/
+                  </span>
+                  <div className="relative flex-1">
+                    <Input
+                      id="menuSlug"
+                      type="text"
+                      placeholder="seu-restaurante"
+                      value={menuSlug}
+                      onChange={(e) => setMenuSlug(generateSlug(e.target.value))}
+                      className="h-14 rounded-l-none rounded-r-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                    />
+                  </div>
                 </div>
-              ))}
-            </RadioGroup>
+              </div>
 
-            {/* Campo condicional para "Outros" */}
-            {howFound === "others" && (
-              <Input
-                placeholder="Como você nos conheceu?"
-                value={otherHowFound}
-                onChange={(e) => setOtherHowFound(e.target.value)}
-                className="mt-2 h-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20"
-              />
-            )}
-          </div>
+              {/* WhatsApp */}
+              <div className="space-y-2">
+                <Label htmlFor="whatsapp" className="text-sm font-semibold text-gray-900">
+                  WhatsApp do restaurante
+                </Label>
+                <div className="relative">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="whatsapp"
+                    type="tel"
+                    placeholder="(11) 99999-9999"
+                    value={whatsapp}
+                    onChange={(e) => setWhatsapp(formatWhatsApp(e.target.value))}
+                    className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                  />
+                </div>
+              </div>
 
-          {/* Submit button */}
-          <div className="space-y-3 pt-2">
-            <Button
-              type="submit"
-              disabled={createEstablishmentMutation.isPending}
-              className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200"
-            >
-              {createEstablishmentMutation.isPending ? (
-                <>
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                  Cadastrando...
-                </>
-              ) : (
-                <>
-                  Continuar
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </>
-              )}
-            </Button>
-            <p className="text-xs text-center text-gray-500">
-              Você poderá editar todas essas informações depois
-            </p>
-          </div>
+              {/* Instagram */}
+              <div className="space-y-2">
+                <Label htmlFor="instagram" className="text-sm font-semibold text-gray-900">
+                  Instagram do restaurante
+                </Label>
+                <div className="relative">
+                  <Instagram className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="instagram"
+                    type="text"
+                    placeholder="@seu_restaurante"
+                    value={instagram}
+                    onChange={(e) => setInstagram(e.target.value)}
+                    className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                  />
+                </div>
+              </div>
+
+              {/* Tipo de entrega */}
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold text-gray-900">
+                  Tipo de entrega
+                </Label>
+                <div className="grid grid-cols-3 gap-3">
+                  {DELIVERY_TYPES.map((type) => {
+                    const Icon = type.icon;
+                    const isSelected = deliveryType === type.id;
+                    return (
+                      <button
+                        key={type.id}
+                        type="button"
+                        onClick={() => setDeliveryType(type.id)}
+                        className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
+                          isSelected 
+                            ? "border-primary bg-primary/5 text-primary" 
+                            : "border-gray-200 hover:border-gray-300 text-gray-600"
+                        }`}
+                      >
+                        <Icon className={`h-6 w-6 ${isSelected ? "text-primary" : "text-gray-400"}`} />
+                        <span className="text-sm font-medium">{type.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Next button */}
+              <Button
+                type="button"
+                onClick={handleNextStep}
+                className="w-full h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-base mt-4"
+              >
+                Continuar
+                <ArrowRight className="h-5 w-5 ml-2" />
+              </Button>
+            </div>
+          )}
+
+          {/* Step 2: Objetivos */}
+          {currentStep === 2 && (
+            <div className="space-y-6">
+              {/* Objetivos */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+                  <Target className="h-4 w-4 text-primary" />
+                  Quais são seus objetivos com a nossa plataforma? <span className="text-red-500">*</span>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  {OBJECTIVES.map((objective) => {
+                    const isSelected = selectedObjectives.includes(objective.id);
+                    return (
+                      <button
+                        key={objective.id}
+                        type="button"
+                        onClick={() => handleObjectiveToggle(objective.id)}
+                        className={`p-4 rounded-xl border-2 transition-all text-left ${
+                          isSelected 
+                            ? "border-primary bg-primary/5" 
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                            isSelected 
+                              ? "border-primary bg-primary" 
+                              : "border-gray-300"
+                          }`}>
+                            {isSelected && <Check className="h-3 w-3 text-white" />}
+                          </div>
+                          <span className={`text-sm font-medium ${isSelected ? "text-gray-900" : "text-gray-700"}`}>
+                            {objective.label}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Campo condicional para "Outros" */}
+                {selectedObjectives.includes("others") && (
+                  <Textarea
+                    placeholder="Descreva brevemente seu objetivo"
+                    value={otherObjective}
+                    onChange={(e) => setOtherObjective(e.target.value)}
+                    className="rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20"
+                    rows={2}
+                  />
+                )}
+              </div>
+
+              {/* Como conheceu */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+                  <Users className="h-4 w-4 text-primary" />
+                  Como você conheceu nossa plataforma? <span className="text-red-500">*</span>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  {HOW_FOUND.map((option) => {
+                    const isSelected = howFound === option.id;
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => setHowFound(option.id)}
+                        className={`p-4 rounded-xl border-2 transition-all text-left ${
+                          isSelected 
+                            ? "border-primary bg-primary/5" 
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                            isSelected 
+                              ? "border-primary" 
+                              : "border-gray-300"
+                          }`}>
+                            {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                          </div>
+                          <span className={`text-sm font-medium ${isSelected ? "text-gray-900" : "text-gray-700"}`}>
+                            {option.label}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Campo condicional para "Outros" */}
+                {howFound === "others" && (
+                  <Input
+                    placeholder="Como você nos conheceu?"
+                    value={otherHowFound}
+                    onChange={(e) => setOtherHowFound(e.target.value)}
+                    className="h-14 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                  />
+                )}
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handlePrevStep}
+                  className="flex-1 h-14 rounded-xl border-gray-200 text-gray-700 font-semibold text-base"
+                >
+                  <ArrowLeft className="h-5 w-5 mr-2" />
+                  Voltar
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={createEstablishmentMutation.isPending}
+                  className="flex-1 h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-base"
+                >
+                  {createEstablishmentMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                      Cadastrando...
+                    </>
+                  ) : (
+                    <>
+                      Finalizar
+                      <ArrowRight className="h-5 w-5 ml-2" />
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              <p className="text-xs text-center text-gray-500">
+                Você poderá editar todas essas informações depois
+              </p>
+            </div>
+          )}
         </form>
       </div>
-    </AuthLayout>
+    </div>
   );
 }

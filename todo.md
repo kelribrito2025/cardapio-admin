@@ -3541,3 +3541,6 @@
 - [x] Redesenhar tela de Esqueci Senha com novo layout
 - [x] Ajustar estilo dos campos de email e senha conforme referência
 - [x] Ajustar posicionamento do conteúdo no lado esquerdo da tela de login
+- [x] Dividir onboarding em 2 etapas com indicador de progresso
+- [x] Etapa 1: nome, link público, WhatsApp, Instagram, tipo de entrega
+- [x] Etapa 2: objetivos com a plataforma, como conheceu
