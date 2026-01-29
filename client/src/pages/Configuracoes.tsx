@@ -1270,36 +1270,6 @@ export default function Configuracoes() {
                 </div>
               </div>
               
-              {/* Seleção de Validade da Nota */}
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold">Validade da Nota</Label>
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5, 6, 7].map((days) => (
-                      <button
-                        key={days}
-                        type="button"
-                        onClick={() => setNoteValidityDays(days)}
-                        className={cn(
-                          "w-9 h-9 rounded-lg text-sm font-medium transition-all duration-200",
-                          noteValidityDays === days
-                            ? "bg-primary text-white shadow-md"
-                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                        )}
-                      >
-                        {days}
-                      </button>
-                    ))}
-                  </div>
-                  <span className="text-sm text-muted-foreground">
-                    {noteValidityDays === 1 ? "dia" : "dias"}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  A nota será exibida por {noteValidityDays} {noteValidityDays === 1 ? "dia" : "dias"} a partir do momento em que for salva.
-                </p>
-              </div>
-              
               {/* Seleção de Estilo do Balão */}
               <div className="space-y-2">
                 <Label className="text-sm font-semibold">Estilo do Balão</Label>
