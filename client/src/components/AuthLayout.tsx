@@ -22,14 +22,6 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         <div className="absolute bottom-40 right-10 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
         <div className="absolute top-1/2 left-1/3 w-48 h-48 bg-white/5 rounded-full blur-2xl" />
         
-        {/* Decorative icons */}
-        <div className="absolute top-1/4 right-1/4 text-white/10">
-          <Utensils className="w-32 h-32" />
-        </div>
-        <div className="absolute bottom-1/3 left-1/4 text-white/10">
-          <Smartphone className="w-24 h-24" />
-        </div>
-        
         {/* Logo - Fixed at top */}
         <div className="absolute top-12 left-12 z-20 flex items-center gap-3">
           <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
