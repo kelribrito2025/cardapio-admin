@@ -671,6 +671,15 @@ export default function Onboarding() {
                     Continuar
                     <ArrowRight className="h-4 w-4 lg:h-5 lg:w-5 ml-2" />
                   </Button>
+                  
+                  {/* Link para voltar ao login */}
+                  <a
+                    href="/login"
+                    className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-gray-500 hover:text-gray-700 transition-colors mt-3 lg:mt-4"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
+                    Voltar
+                  </a>
                 </div>
               </div>
             )}
@@ -868,15 +877,24 @@ export default function Onboarding() {
                     <ArrowLeft className="h-4 w-4 mr-1" />
                     Voltar
                   </Button>
-                  <Button
+<Button
                     type="button"
                     onClick={handleNextStep}
-                    disabled={!isStep2Valid}
-                    className="flex-1 h-10 lg:h-12 xl:h-13 2xl:h-14 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base xl:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                    disabled={!isStep1Valid}
+                    className="w-full h-10 lg:h-12 xl:h-13 2xl:h-14 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base xl:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                   >
                     Continuar
-                    <ArrowRight className="h-4 w-4 ml-1" />
+                    <ArrowRight className="h-4 w-4 lg:h-5 lg:w-5 ml-2" />
                   </Button>
+                  
+                  {/* Link para voltar ao login */}
+                  <a
+                    href="/login"
+                    className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-gray-500 hover:text-gray-700 transition-colors mt-3 lg:mt-4"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
+                    Voltar ao login
+                  </a>
                 </div>
               </div>
             )}

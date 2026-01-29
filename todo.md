@@ -3657,3 +3657,7 @@
 
 ## Validação WhatsApp Obrigatório
 - [x] Adicionar campo WhatsApp como obrigatório na validação do Step 1 (mínimo 10 dígitos)
+
+
+## Link Voltar no Step 1
+- [x] Adicionar link "Voltar ao login" com ícone de seta abaixo do botão Continuar no Step 1
