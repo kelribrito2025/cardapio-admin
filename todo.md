@@ -3501,3 +3501,4 @@
 - [x] BUG: Som de teste não toca na primeira ativação do toggle de áudio (só toca a partir da segunda vez)
 - [x] BUG: establishment.get retorna undefined para novos utilizadores sem estabelecimento
 - [x] Adicionar borda vermelha arredondada nos cards de resultados de busca do menu público
+- [x] Alterar limite de itens na pré-visualização de busca de 6 para 10

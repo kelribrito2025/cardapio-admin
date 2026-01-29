@@ -1362,7 +1362,7 @@ export default function PublicMenu() {
               {/* Dropdown de pré-visualização da busca */}
               {isSearchFocused && searchQuery.trim() && filteredProducts.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-200 max-h-80 overflow-y-auto z-[60] p-2 space-y-1">
-                  {filteredProducts.slice(0, 6).map((product) => (
+                  {filteredProducts.slice(0, 10).map((product) => (
                     <button
                       key={product.id}
                       onClick={() => {
@@ -1392,9 +1392,9 @@ export default function PublicMenu() {
                       )}
                     </button>
                   ))}
-                  {filteredProducts.length > 6 && (
+                  {filteredProducts.length > 10 && (
                     <div className="px-4 py-2 text-center text-xs text-gray-500 bg-gray-50 rounded-lg">
-                      +{filteredProducts.length - 6} outros resultados
+                      +{filteredProducts.length - 10} outros resultados
                     </div>
                   )}
                 </div>
