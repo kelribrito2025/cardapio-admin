@@ -3661,3 +3661,7 @@
 
 ## Link Voltar no Step 1
 - [x] Adicionar link "Voltar ao login" com ícone de seta abaixo do botão Continuar no Step 1
+
+
+## Navegação Suave Voltar ao Login
+- [x] Alterar link "Voltar ao login" para usar Link do wouter em vez de tag <a> para evitar reload da página
