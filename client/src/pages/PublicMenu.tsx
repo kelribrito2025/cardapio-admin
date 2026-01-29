@@ -1361,7 +1361,7 @@ export default function PublicMenu() {
               
               {/* Dropdown de pré-visualização da busca */}
               {isSearchFocused && searchQuery.trim() && filteredProducts.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 max-h-80 overflow-y-auto z-[60]">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-200 max-h-80 overflow-y-auto z-[60] p-2 space-y-1">
                   {filteredProducts.slice(0, 6).map((product) => (
                     <button
                       key={product.id}
@@ -1377,7 +1377,7 @@ export default function PublicMenu() {
                         setSearchQuery("");
                         setIsSearchFocused(false);
                       }}
-                      className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 text-left"
+                      className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left bg-white rounded-lg border border-gray-100 border-l-[3px] border-l-red-500"
                     >
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-gray-900 text-sm truncate">{product.name}</p>
@@ -1393,7 +1393,7 @@ export default function PublicMenu() {
                     </button>
                   ))}
                   {filteredProducts.length > 6 && (
-                    <div className="px-4 py-2 text-center text-xs text-gray-500 bg-gray-50">
+                    <div className="px-4 py-2 text-center text-xs text-gray-500 bg-gray-50 rounded-lg">
                       +{filteredProducts.length - 6} outros resultados
                     </div>
                   )}
