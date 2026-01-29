@@ -3639,3 +3639,7 @@
 - [x] Verificação em tempo real enquanto o usuário digita (debounce 500ms)
 - [x] Mensagem de feedback abaixo do campo
 - [x] Botão Continuar só habilitado quando slug disponível
+
+
+## Validação Instagram Obrigatório
+- [x] Adicionar campo Instagram como obrigatório na validação do Step 1

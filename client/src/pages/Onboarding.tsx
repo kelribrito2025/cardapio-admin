@@ -238,9 +238,10 @@ export default function Onboarding() {
     return "@" + cleaned;
   };
 
-  // Validation for Step 1 - includes slug availability check
+  // Validation for Step 1 - includes slug availability check and Instagram
   const isSlugAvailable = menuSlug.length >= 3 && slugAvailabilityQuery.data?.available === true;
-  const isStep1Valid = name.trim() !== "" && menuSlug.trim() !== "" && deliveryType !== "" && isSlugAvailable;
+  const isInstagramValid = instagram.trim() !== "" && instagram.trim() !== "@";
+  const isStep1Valid = name.trim() !== "" && menuSlug.trim() !== "" && deliveryType !== "" && isSlugAvailable && isInstagramValid;
 
   // Validation for Step 2
   const isStep2Valid = address.trim() !== "" && openingTime !== "" && closingTime !== "" && selectedPaymentMethods.length > 0;
