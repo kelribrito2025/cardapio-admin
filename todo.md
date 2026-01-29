@@ -3522,3 +3522,4 @@
 - [x] Configurar templates de WhatsApp padrão para novos utilizadores
 - [x] Ativar confirmação via botões por padrão
 - [x] Ativar todas as notificações de status por padrão
+- [x] Criar categoria e item de teste padrão para novos utilizadores ao criar conta

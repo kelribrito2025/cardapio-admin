@@ -145,6 +145,28 @@ export const appRouter = router({
           ...input,
           userId: ctx.user.id,
         });
+        
+        // Criar categoria e item de teste padrão para novos estabelecimentos
+        try {
+          const categoryId = await db.createCategory({
+            establishmentId: id,
+            name: 'Categoria teste',
+            sortOrder: 0,
+          });
+          
+          await db.createProduct({
+            establishmentId: id,
+            categoryId: categoryId,
+            name: 'Item de teste',
+            description: 'Este é apenas um item de teste. Edite para adicionar um produto real do seu restaurante.',
+            price: '10.00',
+            sortOrder: 0,
+          });
+        } catch (error) {
+          // Não falhar a criação do estabelecimento se a criação do item de teste falhar
+          console.error('Erro ao criar categoria/item de teste:', error);
+        }
+        
         return { id };
       }),
     
