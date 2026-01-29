@@ -3525,3 +3525,4 @@
 - [x] Criar categoria e item de teste padrão para novos utilizadores ao criar conta
 - [x] Corrigir localStorage de pedidos para isolar por establishmentId
 - [x] Remover sombra da barra de menu lateral
+- [x] Criar degradê vertical para sidebar - claro no topo, escuro embaixo
