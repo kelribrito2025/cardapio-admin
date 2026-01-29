@@ -3670,3 +3670,9 @@
 ## Corrigir Reload Voltar ao Login
 - [x] Investigar por que a página ainda recarrega ao clicar em Voltar ao login
 - [x] Usar useLocation do wouter para navegação programática via setLocation
+
+
+## Reorganizar Menu Lateral
+- [x] Criar seção OPERAÇÕES com Dashboard
+- [x] Criar seção GESTÃO com Pedidos, Cardápio, Cupons, Estoque
+- [x] Adicionar títulos de seção no menu lateral

@@ -48,13 +48,27 @@ import { toast } from "sonner";
 
 const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed";
 
-const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/" },
-  { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo" },
-  { icon: ClipboardList, label: "Pedidos", href: "/pedidos" },
-  { icon: Package, label: "Estoque", href: "/estoque" },
-  { icon: Ticket, label: "Cupons", href: "/cupons" },
+// Seções do menu lateral
+const menuSections = [
+  {
+    title: "OPERAÇÕES",
+    items: [
+      { icon: LayoutDashboard, label: "Dashboard", href: "/" },
+    ]
+  },
+  {
+    title: "GESTÃO",
+    items: [
+      { icon: ClipboardList, label: "Pedidos", href: "/pedidos" },
+      { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo" },
+      { icon: Ticket, label: "Cupons", href: "/cupons" },
+      { icon: Package, label: "Estoque", href: "/estoque" },
+    ]
+  },
 ];
+
+// Lista plana para compatibilidade
+const navItems = menuSections.flatMap(section => section.items);
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -446,83 +460,100 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Navigation */}
         <nav className={cn(
-          "flex-1 py-1.5 space-y-1 overflow-y-auto transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
+          "flex-1 py-1.5 overflow-y-auto transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
           sidebarCollapsed ? "px-1.5" : "px-3"
         )}>
-          {navItems.map((item) => {
-            const isActive = location === item.href || 
-              (item.href !== "/" && location.startsWith(item.href));
-            
-            // Verificar se é o item de Pedidos e se tem pedidos novos
-            const showBadge = item.href === "/pedidos" && newOrdersCount > 0;
-            
-            const navContent = (
-              <>
-                <div className="relative">
-                  <item.icon className={cn("h-4 w-4 flex-shrink-0", sidebarCollapsed && "mx-auto")} />
-                  {showBadge && sidebarCollapsed && (
-                    <span className={cn(
-                      "absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse",
-                      isActive ? "bg-white text-primary" : "bg-red-500 text-white"
-                    )}>
-                      {newOrdersCount > 9 ? "9+" : newOrdersCount}
-                    </span>
-                  )}
-                </div>
-                {!sidebarCollapsed && (
-                  <span className="text-sm flex items-center gap-2">
-                    {item.label}
-                    {showBadge && (
-                      <span className={cn(
-                        "text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center animate-pulse",
-                        isActive ? "bg-white text-primary" : "bg-red-500 text-white"
-                      )}>
-                        {newOrdersCount > 99 ? "99+" : newOrdersCount}
-                      </span>
-                    )}
-                  </span>
-                )}
-              </>
-            );
+          {menuSections.map((section, sectionIndex) => (
+            <div key={section.title} className={sectionIndex > 0 ? "mt-4" : ""}>
+              {/* Título da seção */}
+              {!sidebarCollapsed && (
+                <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">
+                  {section.title}
+                </h3>
+              )}
+              {sidebarCollapsed && sectionIndex > 0 && (
+                <div className="border-t border-gray-200 my-2 mx-2" />
+              )}
+              
+              {/* Itens da seção */}
+              <div className="space-y-1">
+                {section.items.map((item) => {
+                  const isActive = location === item.href || 
+                    (item.href !== "/" && location.startsWith(item.href));
+                  
+                  // Verificar se é o item de Pedidos e se tem pedidos novos
+                  const showBadge = item.href === "/pedidos" && newOrdersCount > 0;
+                  
+                  const navContent = (
+                    <>
+                      <div className="relative">
+                        <item.icon className={cn("h-4 w-4 flex-shrink-0", sidebarCollapsed && "mx-auto")} />
+                        {showBadge && sidebarCollapsed && (
+                          <span className={cn(
+                            "absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse",
+                            isActive ? "bg-white text-primary" : "bg-red-500 text-white"
+                          )}>
+                            {newOrdersCount > 9 ? "9+" : newOrdersCount}
+                          </span>
+                        )}
+                      </div>
+                      {!sidebarCollapsed && (
+                        <span className="text-sm flex items-center gap-2">
+                          {item.label}
+                          {showBadge && (
+                            <span className={cn(
+                              "text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center animate-pulse",
+                              isActive ? "bg-white text-primary" : "bg-red-500 text-white"
+                            )}>
+                              {newOrdersCount > 99 ? "99+" : newOrdersCount}
+                            </span>
+                          )}
+                        </span>
+                      )}
+                    </>
+                  );
 
-            const navClassName = cn(
-              "flex items-center gap-2.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
-              sidebarCollapsed ? "px-0 justify-center" : "px-3",
-              isActive
-                ? "bg-primary text-white shadow-md shadow-primary/20"
-                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-            );
+                  const navClassName = cn(
+                    "flex items-center gap-2.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
+                    sidebarCollapsed ? "px-0 justify-center" : "px-3",
+                    isActive
+                      ? "bg-primary text-white shadow-md shadow-primary/20"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                  );
 
-            if (sidebarCollapsed) {
-              return (
-                <Tooltip key={item.href} delayDuration={0}>
-                  <TooltipTrigger asChild>
+                  if (sidebarCollapsed) {
+                    return (
+                      <Tooltip key={item.href} delayDuration={0}>
+                        <TooltipTrigger asChild>
+                          <Link
+                            href={item.href}
+                            onClick={handleNavClick}
+                            className={navClassName}
+                          >
+                            {navContent}
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="font-medium">
+                          {item.label}
+                        </TooltipContent>
+                      </Tooltip>
+                    );
+                  }
+
+                  return (
                     <Link
+                      key={item.href}
                       href={item.href}
                       onClick={handleNavClick}
-                      className={navClassName}
+                      className={navClassName} style={{borderRadius: '12px'}}
                     >
                       {navContent}
                     </Link>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" className="font-medium">
-                    {item.label}
-                  </TooltipContent>
-                </Tooltip>
-              );
-            }
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={handleNavClick}
-                className={navClassName} style={{borderRadius: '12px'}}
-              >
-                {navContent}
-              </Link>
-            );
-          })}
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
 
