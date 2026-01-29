@@ -380,9 +380,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           "lg:translate-x-0"
         )}
         style={{
-          background: "linear-gradient(180deg, oklch(0.99 0 0 / 0.5) 0%, oklch(0.96 0.008 250 / 0.5) 50%, oklch(0.92 0.015 250 / 0.5) 100%)",
-          backdropFilter: "blur(10px)",
-          WebkitBackdropFilter: "blur(10px)"
+          background: "linear-gradient(180deg, oklch(0.99 0 0 / 0.5) 0%, oklch(0.96 0.008 250 / 0.5) 50%, oklch(0.92 0.015 250 / 0.5) 100%)"
         }}
       >
         {/* Logo + Toggle button na mesma linha */}
