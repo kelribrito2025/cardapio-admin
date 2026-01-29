@@ -364,55 +364,52 @@ export default function Onboarding() {
   return (
     <div className="h-[100dvh] flex overflow-hidden">
       {/* Left side - Background with promotional content */}
-      <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 bg-gradient-to-br from-red-600 via-red-700 to-red-900 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative overflow-hidden">
+        {/* Background image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url(/gerente-restaurante.png)' }}
+        />
+        {/* Red overlay with 60% opacity (40% transparency) */}
+        <div className="absolute inset-0 bg-gradient-to-br from-red-600/60 via-red-700/60 to-red-900/60" />
         {/* Decorative circles */}
         <div className="absolute top-20 left-20 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
         <div className="absolute bottom-40 right-10 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
         <div className="absolute top-1/2 left-1/3 w-48 h-48 bg-white/5 rounded-full blur-2xl" />
         
-        {/* Decorative icons */}
-        <div className="absolute top-1/4 right-1/4 text-white/10">
-          <Utensils className="w-32 h-32" />
-        </div>
-        <div className="absolute bottom-1/3 left-1/4 text-white/10">
-          <Smartphone className="w-24 h-24" />
-        </div>
-        <div className="absolute top-2/3 right-1/3 text-white/10">
-          <BarChart3 className="w-20 h-20" />
+        {/* Logo - Fixed at top */}
+        <div className="absolute top-12 left-12 z-20 flex items-center gap-3">
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+            <Utensils className="w-6 h-6 text-red-600" />
+          </div>
+          <span className="text-white text-2xl font-bold">Mindi</span>
         </div>
         
-        {/* Content */}
-        <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20">
-          {/* Logo */}
-          <div className="flex items-center gap-3 mb-12">
-            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-              <UtensilsCrossed className="h-6 w-6 text-white" />
-            </div>
-            <span className="text-3xl font-bold text-white">Mindi</span>
-          </div>
-          
-          {/* Main headline */}
-          <h1 className="text-4xl xl:text-5xl font-bold text-white leading-tight mb-6">
-            Gerencie seu restaurante de um jeito simples e inteligente.
-          </h1>
-          
-          <p className="text-lg text-white/80 mb-8 max-w-lg">
-            Cardápio digital, gestão de pedidos, controle de estoque e muito mais — tudo em uma única plataforma pensada para o seu negócio crescer.
-          </p>
-          
-          {/* Features list */}
-          <div className="flex flex-wrap gap-3 mb-8">
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-              <Smartphone className="h-4 w-4 text-white" />
-              <span className="text-white text-sm font-medium">Cardápio Digital</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-              <BarChart3 className="h-4 w-4 text-white" />
-              <span className="text-white text-sm font-medium">Relatórios Completos</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-              <Clock className="h-4 w-4 text-white" />
-              <span className="text-white text-sm font-medium">Gestão de Pedidos</span>
+        {/* Content - Bottom aligned */}
+        <div className="relative z-10 flex flex-col justify-end p-12 w-full h-full">
+          {/* Main text */}
+          <div className="max-w-lg">
+            <h1 className="text-4xl xl:text-5xl font-bold text-white leading-tight mb-6" style={{marginRight: '-130px'}}>
+              Gerencie seu restaurante de um jeito simples e inteligente.
+            </h1>
+            <p className="text-white/80 text-lg mb-8" style={{marginRight: '-130px'}}>
+              Cardápio digital, gestão de pedidos, controle de estoque e muito mais — tudo em uma única plataforma pensada para o seu negócio crescer.
+            </p>
+            
+            {/* Feature badges */}
+            <div className="flex flex-wrap gap-3" style={{marginRight: '-123px'}}>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm">
+                <Smartphone className="w-4 h-4" />
+                <span>Cardápio Digital</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm">
+                <BarChart3 className="w-4 h-4" />
+                <span>Relatórios Completos</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm">
+                <Clock className="w-4 h-4" />
+                <span>Gestão de Pedidos</span>
+              </div>
             </div>
           </div>
           

@@ -3610,3 +3610,9 @@
 
 ## Consistência Layout Step 4
 - [x] Ajustar Step 4 para ter título e descrição na mesma posição das etapas anteriores
+
+
+## Consistência Visual Onboarding x Login
+- [x] Copiar exatamente o estilo da seção lateral esquerda da tela de login para o onboarding
+- [x] Incluir a mesma imagem/foto que aparece na tela de login
+- [x] Manter mesma posição dos textos e elementos
