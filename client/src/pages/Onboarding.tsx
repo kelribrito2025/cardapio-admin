@@ -238,10 +238,11 @@ export default function Onboarding() {
     return "@" + cleaned;
   };
 
-  // Validation for Step 1 - includes slug availability check and Instagram
+  // Validation for Step 1 - includes slug availability check, Instagram and WhatsApp
   const isSlugAvailable = menuSlug.length >= 3 && slugAvailabilityQuery.data?.available === true;
   const isInstagramValid = instagram.trim() !== "" && instagram.trim() !== "@";
-  const isStep1Valid = name.trim() !== "" && menuSlug.trim() !== "" && deliveryType !== "" && isSlugAvailable && isInstagramValid;
+  const isWhatsAppValid = whatsapp.replace(/\D/g, "").length >= 10; // At least 10 digits (DDD + number)
+  const isStep1Valid = name.trim() !== "" && menuSlug.trim() !== "" && deliveryType !== "" && isSlugAvailable && isInstagramValid && isWhatsAppValid;
 
   // Validation for Step 2
   const isStep2Valid = address.trim() !== "" && openingTime !== "" && closingTime !== "" && selectedPaymentMethods.length > 0;

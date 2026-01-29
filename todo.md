@@ -3653,3 +3653,7 @@
 - [x] Layout equilibrado que funciona em todas as larguras de tela
 - [x] StepIndicator maior em telas grandes (2xl:w-8 h-8)
 - [x] Inputs maiores em telas grandes (xl:h-13, 2xl:h-14)
+
+
+## Validação WhatsApp Obrigatório
+- [x] Adicionar campo WhatsApp como obrigatório na validação do Step 1 (mínimo 10 dígitos)
