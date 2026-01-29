@@ -3512,3 +3512,4 @@
 - [x] Reverter campo de senha do Cartão Fidelidade para formato original (campo único)
 - [x] Mover nome Mindi para ao lado do logo nas páginas de autenticação
 - [x] Implementar animação de entrada suave para o logo e nome Mindi nas páginas de autenticação (removida a pedido do usuário)
+- [x] Adicionar ícone de X para fechar as notificações toast
