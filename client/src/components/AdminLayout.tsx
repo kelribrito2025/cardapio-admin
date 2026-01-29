@@ -380,8 +380,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           "lg:translate-x-0"
         )}
         style={{
-          background: "linear-gradient(180deg, oklch(0.99 0.002 250) 0%, oklch(0.96 0.005 250) 100%)",
-          boxShadow: "4px 0 25px rgba(0, 0, 0, 0.06), 1px 0 10px rgba(0, 0, 0, 0.04)"
+          background: "linear-gradient(180deg, oklch(0.99 0.002 250) 0%, oklch(0.96 0.005 250) 100%)"
         }}
       >
         {/* Logo + Toggle button na mesma linha */}
