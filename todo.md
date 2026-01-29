@@ -3692,3 +3692,4 @@
 - [ ] Adicionar botão Reordenar na página de Categorias
 - [x] Adicionar seção SISTEMA no menu lateral
 - [x] Criar página de Configurações com abas: Estabelecimento, Atendimento, Impressoras, Notificações, WhatsApp, Teste Impressão
+- [x] Remover aba Teste da seção WhatsApp nas configurações

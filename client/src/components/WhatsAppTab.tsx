@@ -295,7 +295,7 @@ export function WhatsAppTab({ hideConnectionCard = false }: WhatsAppTabProps) {
       )}
       
       <Tabs defaultValue="notifications" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="notifications" className="flex items-center gap-2">
             <Smartphone className="h-4 w-4" />
             <span className="hidden sm:inline">Notificações</span>
@@ -303,10 +303,6 @@ export function WhatsAppTab({ hideConnectionCard = false }: WhatsAppTabProps) {
           <TabsTrigger value="templates" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             <span className="hidden sm:inline">Templates</span>
-          </TabsTrigger>
-          <TabsTrigger value="test" className="flex items-center gap-2">
-            <Send className="h-4 w-4" />
-            <span className="hidden sm:inline">Teste</span>
           </TabsTrigger>
         </TabsList>
         
@@ -530,62 +526,7 @@ export function WhatsAppTab({ hideConnectionCard = false }: WhatsAppTabProps) {
             </CardContent>
           </Card>
         </TabsContent>
-        
-        {/* Test Tab */}
-        <TabsContent value="test" className="space-y-4 mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Enviar Mensagem de Teste</CardTitle>
-              <CardDescription>
-                Teste a conexão enviando uma mensagem
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {!isConnected && (
-                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                  <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                    Conecte seu WhatsApp primeiro para enviar mensagens de teste
-                  </p>
-                </div>
-              )}
-              
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="testPhone">Telefone</Label>
-                  <Input
-                    id="testPhone"
-                    placeholder="(11) 99999-9999"
-                    value={testPhone}
-                    onChange={(e) => setTestPhone(e.target.value)}
-                    disabled={!isConnected}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="testMessage">Mensagem</Label>
-                  <Input
-                    id="testMessage"
-                    value={testMessage}
-                    onChange={(e) => setTestMessage(e.target.value)}
-                    disabled={!isConnected}
-                  />
-                </div>
-              </div>
-              
-              <Button 
-                onClick={handleSendTest}
-                disabled={sendTestMutation.isPending || !isConnected}
-                variant="outline"
-              >
-                {sendTestMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Send className="h-4 w-4 mr-2" />
-                )}
-                Enviar Teste
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
+
       </Tabs>
     </div>
   );
