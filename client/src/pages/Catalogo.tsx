@@ -229,58 +229,6 @@ function SortableProductItem({
   );
 }
 
-// Sortable Category Item Component (for reorder mode)
-function SortableCategoryItem({
-  category,
-  productCount,
-}: {
-  category: any;
-  productCount: number;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: category.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 1000 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={cn(
-        "flex items-center gap-4 p-5 bg-card border border-border/50 rounded-xl hover:bg-muted/30 transition-colors",
-        isDragging && "shadow-lg"
-      )}
-    >
-      <button
-        {...attributes}
-        {...listeners}
-        className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded-md touch-none"
-      >
-        <GripVertical className="h-5 w-5 text-muted-foreground" />
-      </button>
-      <div className="flex-1">
-        <h4 className="font-semibold">{category.name}</h4>
-        {category.description && (
-          <p className="text-sm text-muted-foreground mt-0.5">{category.description}</p>
-        )}
-      </div>
-      <span className="text-sm text-muted-foreground font-medium">
-        {productCount} {productCount === 1 ? "item" : "itens"}
-      </span>
-    </div>
-  );
-}
 
 // Droppable Category Drop Zone Component
 function CategoryDropZone({ categoryId, categoryName, isActive }: { categoryId: number | null; categoryName: string; isActive: boolean }) {
@@ -325,8 +273,7 @@ export default function Catalogo() {
   const [deleteCategoryDialogOpen, setDeleteCategoryDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<{ id: number; name: string; productCount: number } | null>(null);
   
-  // Reorder mode
-  const [reorderCategoriesMode, setReorderCategoriesMode] = useState(false);
+  // Local state for drag and drop
   const [localCategories, setLocalCategories] = useState<any[]>([]);
   const [localProductsByCategory, setLocalProductsByCategory] = useState<Record<number, any[]>>({});
   
@@ -648,39 +595,6 @@ export default function Catalogo() {
     });
   };
 
-  // Handle category drag end
-  const handleCategoryDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = localCategories.findIndex((c) => c.id === active.id);
-    const newIndex = localCategories.findIndex((c) => c.id === over.id);
-
-    if (oldIndex === -1 || newIndex === -1) return;
-
-    // Optimistic update
-    const newCategories = arrayMove(localCategories, oldIndex, newIndex);
-    setLocalCategories(newCategories);
-
-    // Persist to server
-    const updates = newCategories.map((category, index) => ({
-      id: category.id,
-      sortOrder: index,
-    }));
-    
-    reorderCategoriesMutation.mutate(updates, {
-      onSuccess: () => {
-        toast.success("Ordem das categorias atualizada");
-      },
-    });
-  };
-
-  const handleExitReorderMode = () => {
-    setReorderCategoriesMode(false);
-    refetchCategories();
-    refetchProducts();
-  };
 
   const products = productsData?.products || [];
 
@@ -694,75 +608,6 @@ export default function Catalogo() {
     return counts;
   }, [products]);
 
-  // Reorder Categories Mode View
-  if (reorderCategoriesMode) {
-    return (
-      <AdminLayout>
-        <PageHeader
-          title="Reordenar Categorias"
-          description="Arraste as categorias para reorganizar a ordem de exibição"
-          actions={
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                onClick={handleExitReorderMode}
-                className="rounded-xl border-border/50"
-              >
-                <X className="h-4 w-4 mr-2" />
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleExitReorderMode}
-                className="rounded-xl shadow-sm"
-              >
-                <Check className="h-4 w-4 mr-2" />
-                Concluir
-              </Button>
-            </div>
-          }
-        />
-
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleCategoryDragEnd}
-        >
-          <SortableContext
-            items={localCategories.map((c) => c.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="space-y-3">
-              {localCategories.map((category) => (
-                <SortableCategoryItem
-                  key={category.id}
-                  category={category}
-                  productCount={productCountByCategory[category.id] || 0}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
-
-        {localCategories.length === 0 && (
-          <SectionCard>
-            <EmptyState
-              icon={Layers}
-              title="Nenhuma categoria encontrada"
-              description="Crie categorias para organizar seus produtos"
-              action={{
-                label: "Criar Categoria",
-                onClick: () => {
-                  setReorderCategoriesMode(false);
-                  setCategoryDialogOpen(true);
-                }
-              }}
-            />
-          </SectionCard>
-        )}
-      </AdminLayout>
-    );
-  }
-
   return (
     <AdminLayout>
       <div className="mb-6">
@@ -770,37 +615,10 @@ export default function Catalogo() {
           title="Cardápio"
           description="Gerencie seus produtos e categorias"
           actions={
-            <TooltipProvider>
-              <div className="flex items-center gap-2">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      onClick={() => setReorderCategoriesMode(true)}
-                      className="rounded-lg border-border/50 hover:bg-accent h-9 px-3 text-xs sm:text-sm sm:px-3.5"
-                    >
-                      <Layers className="h-4 w-4 mr-1.5 sm:mr-2" />
-                      <span className="text-xs sm:text-sm">Reordenar</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="sm:hidden">
-                    <p>Reordenar</p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
-                      <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
-                      <span className="text-xs sm:text-sm">item</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="sm:hidden">
-                    <p>Novo Item</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </TooltipProvider>
+<Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
+              <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
+              <span className="text-xs sm:text-sm">item</span>
+            </Button>
           }
         />
       </div>

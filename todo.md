@@ -3688,3 +3688,4 @@
 - [x] Implementar drag and drop para reordenar categorias
 - [x] Remover botão "Nova Categoria" da página Catálogo
 - [x] Manter apenas botões "Novo Item" e "Reordenar" na página Catálogo
+- [ ] Remover botão Reordenar da página Catálogo (funcionalidade movida para página Categorias)
