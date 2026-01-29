@@ -75,11 +75,11 @@ export default function ForgotPassword() {
     <AuthLayout>
       <div className="p-6 md:p-8">
         {/* Logo */}
-        <div className="flex flex-col items-center mb-6">
-          <div className="w-[70px] h-[70px] bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-500/30">
-            <UtensilsCrossed className="h-10 w-10 text-white" />
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <div className="w-[50px] h-[50px] bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30">
+            <UtensilsCrossed className="h-7 w-7 text-white" />
           </div>
-          <span className="mt-3 text-2xl font-bold text-gray-900">Mindi</span>
+          <span className="text-3xl font-bold text-gray-900">Mindi</span>
         </div>
 
         {/* Header */}

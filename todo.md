@@ -3509,3 +3509,5 @@
 - [x] Adicionar logo na página de Esqueci Senha
 - [x] Adicionar nome "Mindi" abaixo do logo nas páginas de autenticação
 - [x] Alterar campo de senha no modal de Cartão Fidelidade para 4 caixas separadas (estilo PIN)
+- [x] Reverter campo de senha do Cartão Fidelidade para formato original (campo único)
+- [x] Mover nome Mindi para ao lado do logo nas páginas de autenticação

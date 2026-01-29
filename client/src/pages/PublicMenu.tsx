@@ -5644,38 +5644,16 @@ function LoyaltyLoginForm({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Senha (4 dígitos)
           </label>
-          <div className="flex justify-center gap-3">
-            {[0, 1, 2, 3].map((index) => (
-              <input
-                key={index}
-                id={`pin-login-${index}`}
-                type="password"
-                inputMode="numeric"
-                maxLength={1}
-                value={password[index] || ''}
-                onChange={(e) => {
-                  const digit = e.target.value.replace(/\D/g, '').slice(0, 1);
-                  const newPassword = password.split('');
-                  newPassword[index] = digit;
-                  setPassword(newPassword.join('').slice(0, 4));
-                  // Auto-focus próximo campo
-                  if (digit && index < 3) {
-                    const nextInput = document.getElementById(`pin-login-${index + 1}`);
-                    nextInput?.focus();
-                  }
-                }}
-                onKeyDown={(e) => {
-                  // Voltar para campo anterior ao apagar
-                  if (e.key === 'Backspace' && !password[index] && index > 0) {
-                    const prevInput = document.getElementById(`pin-login-${index - 1}`);
-                    prevInput?.focus();
-                  }
-                }}
-                className="w-14 h-14 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-                autoComplete="off"
-              />
-            ))}
-          </div>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value.replace(/\D/g, '').slice(0, 4))}
+            placeholder="••••"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-center text-2xl tracking-[0.5em]"
+            maxLength={4}
+            autoComplete="new-password"
+            name="loyalty-password-login"
+          />
         </div>
         
         {error && (
@@ -5776,39 +5754,17 @@ function LoyaltyRegisterForm({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Crie uma senha (4 dígitos)
           </label>
-          <div className="flex justify-center gap-3">
-            {[0, 1, 2, 3].map((index) => (
-              <input
-                key={index}
-                id={`pin-register-${index}`}
-                type="password"
-                inputMode="numeric"
-                maxLength={1}
-                value={password[index] || ''}
-                onChange={(e) => {
-                  const digit = e.target.value.replace(/\D/g, '').slice(0, 1);
-                  const newPassword = password.split('');
-                  newPassword[index] = digit;
-                  setPassword(newPassword.join('').slice(0, 4));
-                  // Auto-focus próximo campo
-                  if (digit && index < 3) {
-                    const nextInput = document.getElementById(`pin-register-${index + 1}`);
-                    nextInput?.focus();
-                  }
-                }}
-                onKeyDown={(e) => {
-                  // Voltar para campo anterior ao apagar
-                  if (e.key === 'Backspace' && !password[index] && index > 0) {
-                    const prevInput = document.getElementById(`pin-register-${index - 1}`);
-                    prevInput?.focus();
-                  }
-                }}
-                className="w-14 h-14 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-                autoComplete="off"
-              />
-            ))}
-          </div>
-          <p className="text-xs text-gray-500 mt-2 text-center">Use apenas números</p>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value.replace(/\D/g, '').slice(0, 4))}
+            placeholder="••••"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-center text-2xl tracking-[0.5em]"
+            maxLength={4}
+            autoComplete="new-password"
+            name="loyalty-password-register"
+          />
+          <p className="text-xs text-gray-500 mt-1">Use apenas números</p>
         </div>
         
         {error && (
