@@ -3401,6 +3401,37 @@ export async function upsertWhatsappConfig(data: {
     return existing.id;
   }
   
+  // Templates padrão para novos estabelecimentos
+  const defaultTemplateNewOrder = `Olá *{{customerName}}!* 👋🏻  {{greeting}}, Tudo bem?
+
+Seu pedido *{{orderNumber}}* foi recebido com sucesso!
+
+{{itensPedido}}`;
+  
+  const defaultTemplatePreparing = `👨‍🍳 *{{customerName}},* seu pedido *{{orderNumber}}* está sendo preparado!
+
+🔔 Você será notificado por aqui em cada etapa.`;
+  
+  const defaultTemplateReady = `✅ Seu pedido *{{orderNumber}}* está pronto!
+
+{{deliveryMessage}}`;
+  
+  const defaultTemplateCompleted = `Seu pedido {{orderNumber}} foi finalizado!
+
+📌 Atualização de fidelidade
+
+*+1 carimbo* adicionado ao seu cartão.
+
+❤️ Obrigado pela preferência! 
+
+*{{establishmentName}}*`;
+  
+  const defaultTemplateCancelled = `Olá *{{customerName}}!*
+
+❌ Infelizmente seu pedido {{orderNumber}} foi cancelado.
+
+Motivo: *{{cancellationReason}}*`;
+
   const result = await db.insert(whatsappConfig).values({
     establishmentId: data.establishmentId,
     instanceId: data.instanceId || null,
@@ -3409,17 +3440,17 @@ export async function upsertWhatsappConfig(data: {
     connectedPhone: data.connectedPhone || null,
     lastQrCode: data.lastQrCode || null,
     qrCodeExpiresAt: data.qrCodeExpiresAt || null,
-    requireOrderConfirmation: data.requireOrderConfirmation ?? false,
+    requireOrderConfirmation: data.requireOrderConfirmation ?? true, // Ativado por padrão
     notifyOnNewOrder: data.notifyOnNewOrder ?? true,
     notifyOnPreparing: data.notifyOnPreparing ?? true,
     notifyOnReady: data.notifyOnReady ?? true,
-    notifyOnCompleted: data.notifyOnCompleted ?? false,
+    notifyOnCompleted: data.notifyOnCompleted ?? true, // Ativado por padrão
     notifyOnCancelled: data.notifyOnCancelled ?? true,
-    templateNewOrder: data.templateNewOrder || null,
-    templatePreparing: data.templatePreparing || null,
-    templateReady: data.templateReady || null,
-    templateCompleted: data.templateCompleted || null,
-    templateCancelled: data.templateCancelled || null,
+    templateNewOrder: data.templateNewOrder || defaultTemplateNewOrder,
+    templatePreparing: data.templatePreparing || defaultTemplatePreparing,
+    templateReady: data.templateReady || defaultTemplateReady,
+    templateCompleted: data.templateCompleted || defaultTemplateCompleted,
+    templateCancelled: data.templateCancelled || defaultTemplateCancelled,
   });
   
   return result[0].insertId;

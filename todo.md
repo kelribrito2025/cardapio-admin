@@ -3519,3 +3519,6 @@
 - [x] Remover ícone de rede (WiFi) do card de WhatsApp
 - [ ] Remover largura fixa do card de WhatsApp (voltar ao tamanho automático)
 - [x] Remover largura fixa do card de WhatsApp (voltar ao tamanho automático)
+- [x] Configurar templates de WhatsApp padrão para novos utilizadores
+- [x] Ativar confirmação via botões por padrão
+- [x] Ativar todas as notificações de status por padrão
