@@ -682,7 +682,7 @@ export default function Onboarding() {
                     <div className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl">
                       <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
                       <p className="text-sm text-blue-800">
-                        Você poderá configurar as taxas por bairro nas <strong>Configurações do Estabelecimento</strong> dentro da dashboard.
+                        Você poderá configurar as taxas por bairro nas <strong>Configurações do Estabelecimento</strong>.
                       </p>
                     </div>
                   )}
