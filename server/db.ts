@@ -195,10 +195,10 @@ export async function updateUserLastSignedIn(userId: number) {
 // ============ ESTABLISHMENT FUNCTIONS ============
 export async function getEstablishmentByUserId(userId: number) {
   const db = await getDb();
-  if (!db) return undefined;
+  if (!db) return null;
   
   const result = await db.select().from(establishments).where(eq(establishments.userId, userId)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
+  return result.length > 0 ? result[0] : null;
 }
 
 export async function getEstablishmentById(id: number) {
