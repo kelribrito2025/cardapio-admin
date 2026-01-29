@@ -53,124 +53,125 @@ export default function Register() {
 
   return (
     <AuthLayout>
-      <div className="p-6 md:p-8">
-        {/* Logo */}
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="w-[50px] h-[50px] bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30">
-            <UtensilsCrossed className="h-7 w-7 text-white" />
-          </div>
-          <span className="text-3xl font-bold text-gray-900">Mindi</span>
+      {/* Logo - visible on mobile */}
+      <div className="flex items-center gap-3 mb-8 lg:mb-6">
+        <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
+          <UtensilsCrossed className="h-5 w-5 text-white" />
         </div>
+        <span className="text-2xl font-bold text-gray-900">Mindi</span>
+      </div>
 
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Criar Conta</h2>
-          <p className="text-gray-600">Preencha os dados para começar</p>
-        </div>
+      {/* Header */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Criar sua conta</h2>
+        <p className="text-gray-500">Preencha os dados abaixo para começar</p>
+      </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email */}
-          <div className="space-y-2">
-            <Label htmlFor="email" className="flex items-center gap-2 text-sm font-medium text-gray-700">
-              <Mail className="h-4 w-4 text-gray-500" />
-              Email
-            </Label>
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Email */}
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+            Email
+          </Label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <Input
               id="email"
               type="email"
               placeholder="seu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20"
+              className="h-12 pl-10 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20"
             />
           </div>
-
-          {/* Password */}
-          <div className="space-y-2">
-            <Label htmlFor="password" className="flex items-center gap-2 text-sm font-medium text-gray-700">
-              <Lock className="h-4 w-4 text-gray-500" />
-              Senha
-            </Label>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Mínimo 6 caracteres"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 pr-11"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Confirm Password */}
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="flex items-center gap-2 text-sm font-medium text-gray-700">
-              <Lock className="h-4 w-4 text-gray-500" />
-              Confirmar senha
-            </Label>
-            <div className="relative">
-              <Input
-                id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Repita a senha"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="h-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 pr-11"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Submit button */}
-          <Button
-            type="submit"
-            disabled={registerMutation.isPending}
-            className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 mt-2"
-          >
-            {registerMutation.isPending ? (
-              <>
-                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                Criando conta...
-              </>
-            ) : (
-              <>
-                Criar conta
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </>
-            )}
-          </Button>
-        </form>
-
-        {/* Login link */}
-        <div className="mt-6 text-center">
-          <p className="text-gray-600">
-            Já tem uma conta?{" "}
-            <Link href="/login" className="font-semibold text-primary hover:text-primary/80 transition-colors">
-              Fazer login
-            </Link>
-          </p>
         </div>
+
+        {/* Password */}
+        <div className="space-y-2">
+          <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+            Senha
+          </Label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Mínimo 6 caracteres"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="h-12 pl-10 pr-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Confirm Password */}
+        <div className="space-y-2">
+          <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+            Confirmar senha
+          </Label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Input
+              id="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="Repita a senha"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="h-12 pl-10 pr-11 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Submit button */}
+        <Button
+          type="submit"
+          disabled={registerMutation.isPending}
+          className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 mt-2"
+        >
+          {registerMutation.isPending ? (
+            <>
+              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+              Criando conta...
+            </>
+          ) : (
+            <>
+              Criar conta
+              <ArrowRight className="h-5 w-5 ml-2" />
+            </>
+          )}
+        </Button>
+      </form>
+
+      {/* Login link */}
+      <div className="mt-6 text-center">
+        <p className="text-gray-500">
+          Já tem uma conta?{" "}
+          <Link href="/login" className="font-semibold text-primary hover:text-primary/80 transition-colors">
+            Fazer login
+          </Link>
+        </p>
       </div>
 
-      {/* Mobile logo */}
-      <div className="lg:hidden mt-8 text-center">
-        <p className="text-sm text-gray-500">© 2025 Cardápio Admin</p>
-      </div>
+      {/* Privacy policy */}
+      <p className="mt-4 text-center text-xs text-gray-400">
+        Ao continuar, você concorda com nossa{" "}
+        <a href="#" className="text-primary hover:underline">Política de Privacidade</a>
+      </p>
     </AuthLayout>
   );
 }

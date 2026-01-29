@@ -40,23 +40,22 @@ export default function Login() {
 
   return (
     <AuthLayout>
-      <div className="p-6 md:p-8">
-        {/* Logo */}
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="w-[50px] h-[50px] bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30">
-            <UtensilsCrossed className="h-7 w-7 text-white" />
-          </div>
-          <span className="text-3xl font-bold text-gray-900">Mindi</span>
+      {/* Logo - visible on mobile */}
+      <div className="flex items-center gap-3 mb-8 lg:mb-6">
+        <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
+          <UtensilsCrossed className="h-5 w-5 text-white" />
         </div>
+        <span className="text-2xl font-bold text-gray-900">Mindi</span>
+      </div>
 
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Acessar Conta</h2>
-          <p className="text-gray-600">Digite suas credenciais para acessar</p>
-        </div>
+      {/* Header */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Acessar sua conta</h2>
+        <p className="text-gray-500">Entre com suas credenciais para acessar sua conta</p>
+      </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div className="space-y-2">
             <Label htmlFor="email" className="flex items-center gap-2 text-sm font-medium text-gray-700">
@@ -134,20 +133,23 @@ export default function Login() {
               </>
             )}
           </Button>
-        </form>
+      </form>
 
-        {/* Sign up link */}
-        <div className="mt-6 text-center">
-          <p className="text-gray-600">
-            Ainda não tem uma conta?{" "}
-            <Link href="/criar-conta" className="font-semibold text-primary hover:text-primary/80 transition-colors">
-              Criar conta
-            </Link>
-          </p>
-        </div>
+      {/* Sign up link */}
+      <div className="mt-6 text-center">
+        <p className="text-gray-500">
+          Não tem uma conta?{" "}
+          <Link href="/criar-conta" className="font-semibold text-primary hover:text-primary/80 transition-colors">
+            Registre-se aqui
+          </Link>
+        </p>
       </div>
 
-
+      {/* Privacy policy */}
+      <p className="mt-4 text-center text-xs text-gray-400">
+        Ao continuar, você concorda com nossa{" "}
+        <a href="#" className="text-primary hover:underline">Política de Privacidade</a>
+      </p>
     </AuthLayout>
   );
 }

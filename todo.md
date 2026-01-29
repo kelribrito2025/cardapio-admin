@@ -3535,3 +3535,7 @@
 - [x] Campo "Como conheceu a plataforma"
 - [x] Campos condicionais para "Outros"
 - [x] Redirecionar para dashboard após finalizar onboarding
+- [x] Criar layout compartilhado para telas de autenticação (2 seções)
+- [x] Redesenhar tela de Login com novo layout
+- [x] Redesenhar tela de Criar Conta com novo layout
+- [x] Redesenhar tela de Esqueci Senha com novo layout
