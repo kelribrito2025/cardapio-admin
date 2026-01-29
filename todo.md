@@ -3508,3 +3508,4 @@
 - [x] BUG: Logo e header sobem ao navegar para página de criar conta (devem ficar fixos)
 - [x] Adicionar logo na página de Esqueci Senha
 - [x] Adicionar nome "Mindi" abaixo do logo nas páginas de autenticação
+- [x] Alterar campo de senha no modal de Cartão Fidelidade para 4 caixas separadas (estilo PIN)
