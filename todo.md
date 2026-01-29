@@ -3505,3 +3505,4 @@
 - [x] Ajustar tela de login desktop para ficar igual à versão mobile (sem container redondo)
 - [x] Remover checkbox de termos de uso e política de privacidade da página de criar conta
 - [x] Adicionar logo do sistema nas páginas de login e criação de conta
+- [x] BUG: Logo e header sobem ao navegar para página de criar conta (devem ficar fixos)
