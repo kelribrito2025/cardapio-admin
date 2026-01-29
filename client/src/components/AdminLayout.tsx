@@ -374,52 +374,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full border-r border-white/20 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col overflow-hidden",
+          "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col",
           sidebarWidth,
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
           "lg:translate-x-0"
         )}
         style={{
-          background: "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(250,250,252,0.85) 50%, rgba(240,242,248,0.80) 100%)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)"
+          background: "linear-gradient(180deg, oklch(0.99 0 0) 0%, oklch(0.96 0.008 250) 50%, oklch(0.92 0.015 250) 100%)"
         }}
       >
-        {/* Bolhas decorativas de fundo - glassmorphism */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* Bolha 1 - Grande, topo esquerdo */}
-          <div 
-            className="absolute -top-20 -left-20 w-[400px] h-[400px] rounded-full"
-            style={{
-              background: "radial-gradient(circle, rgba(239,68,68,0.12) 0%, transparent 70%)",
-              filter: "blur(100px)"
-            }}
-          />
-          {/* Bolha 2 - Média, centro direito */}
-          <div 
-            className="absolute top-1/3 -right-16 w-[300px] h-[300px] rounded-full"
-            style={{
-              background: "radial-gradient(circle, rgba(239,68,68,0.10) 0%, transparent 70%)",
-              filter: "blur(80px)"
-            }}
-          />
-          {/* Bolha 3 - Grande, parte inferior */}
-          <div 
-            className="absolute -bottom-32 -left-10 w-[500px] h-[500px] rounded-full"
-            style={{
-              background: "radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)",
-              filter: "blur(120px)"
-            }}
-          />
-          {/* Bolha 4 - Pequena, meio */}
-          <div 
-            className="absolute top-1/2 left-1/4 w-[200px] h-[200px] rounded-full"
-            style={{
-              background: "radial-gradient(circle, rgba(239,68,68,0.08) 0%, transparent 70%)",
-              filter: "blur(60px)"
-            }}
-          />
-        </div>
         {/* Logo + Toggle button na mesma linha */}
         <div className={cn(
           "flex items-center h-[58px] border-b border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
