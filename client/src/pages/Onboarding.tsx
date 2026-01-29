@@ -279,17 +279,17 @@ export default function Onboarding() {
 
   // Step indicator component
   const StepIndicator = () => (
-    <div className="flex items-center justify-center gap-1 sm:gap-2 mb-4 lg:mb-6 flex-wrap">
+    <div className="flex items-center justify-center gap-0.5 sm:gap-1 mb-2 lg:mb-4 flex-wrap">
       {/* Step 1 */}
-      <div className="flex items-center gap-2">
-        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+      <div className="flex items-center gap-1">
+        <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center text-[10px] lg:text-xs font-semibold transition-all ${
           currentStep >= 1 
             ? "bg-primary text-white" 
             : "bg-gray-200 text-gray-500"
         }`}>
-          {currentStep > 1 ? <Check className="h-3.5 w-3.5" /> : "1"}
+          {currentStep > 1 ? <Check className="h-3 w-3" /> : "1"}
         </div>
-        <span className={`text-xs font-medium hidden sm:block ${
+        <span className={`text-[10px] lg:text-xs font-medium hidden sm:block ${
           currentStep >= 1 ? "text-gray-900" : "text-gray-500"
         }`}>
           Dados
@@ -297,20 +297,20 @@ export default function Onboarding() {
       </div>
 
       {/* Connector 1-2 */}
-      <div className={`w-4 sm:w-6 h-0.5 transition-all ${
+      <div className={`w-3 sm:w-4 lg:w-6 h-0.5 transition-all ${
         currentStep > 1 ? "bg-primary" : "bg-gray-200"
       }`} />
 
       {/* Step 2 */}
-      <div className="flex items-center gap-2">
-        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+      <div className="flex items-center gap-1">
+        <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center text-[10px] lg:text-xs font-semibold transition-all ${
           currentStep >= 2 
             ? "bg-primary text-white" 
             : "bg-gray-200 text-gray-500"
         }`}>
-          {currentStep > 2 ? <Check className="h-3.5 w-3.5" /> : "2"}
+          {currentStep > 2 ? <Check className="h-3 w-3" /> : "2"}
         </div>
-        <span className={`text-xs font-medium hidden sm:block ${
+        <span className={`text-[10px] lg:text-xs font-medium hidden sm:block ${
           currentStep >= 2 ? "text-gray-900" : "text-gray-500"
         }`}>
           Atendimento
@@ -318,20 +318,20 @@ export default function Onboarding() {
       </div>
 
       {/* Connector 2-3 */}
-      <div className={`w-4 sm:w-6 h-0.5 transition-all ${
+      <div className={`w-3 sm:w-4 lg:w-6 h-0.5 transition-all ${
         currentStep > 2 ? "bg-primary" : "bg-gray-200"
       }`} />
 
       {/* Step 3 */}
-      <div className="flex items-center gap-2">
-        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+      <div className="flex items-center gap-1">
+        <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center text-[10px] lg:text-xs font-semibold transition-all ${
           currentStep >= 3 
             ? "bg-primary text-white" 
             : "bg-gray-200 text-gray-500"
         }`}>
-          {currentStep > 3 ? <Check className="h-3.5 w-3.5" /> : "3"}
+          {currentStep > 3 ? <Check className="h-3 w-3" /> : "3"}
         </div>
-        <span className={`text-xs font-medium hidden sm:block ${
+        <span className={`text-[10px] lg:text-xs font-medium hidden sm:block ${
           currentStep >= 3 ? "text-gray-900" : "text-gray-500"
         }`}>
           Objetivos
@@ -339,20 +339,20 @@ export default function Onboarding() {
       </div>
 
       {/* Connector 3-4 */}
-      <div className={`w-4 sm:w-6 h-0.5 transition-all ${
+      <div className={`w-3 sm:w-4 lg:w-6 h-0.5 transition-all ${
         currentStep > 3 ? "bg-primary" : "bg-gray-200"
       }`} />
 
       {/* Step 4 */}
-      <div className="flex items-center gap-2">
-        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+      <div className="flex items-center gap-1">
+        <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center text-[10px] lg:text-xs font-semibold transition-all ${
           currentStep >= 4 
             ? "bg-primary text-white" 
             : "bg-gray-200 text-gray-500"
         }`}>
           4
         </div>
-        <span className={`text-xs font-medium hidden sm:block ${
+        <span className={`text-[10px] lg:text-xs font-medium hidden sm:block ${
           currentStep >= 4 ? "text-gray-900" : "text-gray-500"
         }`}>
           Plano
@@ -362,7 +362,7 @@ export default function Onboarding() {
   );
 
   return (
-    <div className="h-screen flex overflow-hidden">
+    <div className="h-[100dvh] flex overflow-hidden">
       {/* Left side - Background with promotional content */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 bg-gradient-to-br from-red-600 via-red-700 to-red-900 relative overflow-hidden">
         {/* Decorative circles */}
@@ -432,25 +432,25 @@ export default function Onboarding() {
       </div>
       
       {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 xl:w-2/5 bg-gray-50 flex flex-col h-full overflow-hidden">
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 lg:p-8">
-          <div className="w-full max-w-md mx-auto">
+      <div className="w-full lg:w-1/2 xl:w-2/5 bg-gray-50 h-full flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-4 lg:p-6">
+          <div className="w-full max-w-md mx-auto pb-4">
           {/* Success Badge - Only show on Step 1 */}
           {showSuccessBadge && currentStep === 1 && (
-            <div className="mb-3 lg:mb-6 bg-green-50 border border-green-200 rounded-xl p-3 lg:p-4 relative">
+            <div className="mb-2 lg:mb-4 bg-green-50 border border-green-200 rounded-lg p-2 lg:p-3 relative">
               <button
                 onClick={() => setShowSuccessBadge(false)}
-                className="absolute top-2 right-2 lg:top-3 lg:right-3 text-green-600 hover:text-green-800 transition-colors"
+                className="absolute top-1.5 right-1.5 lg:top-2 lg:right-2 text-green-600 hover:text-green-800 transition-colors"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
               </button>
-              <div className="flex items-center gap-2 lg:gap-3">
-                <div className="w-8 h-8 lg:w-10 lg:h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <CheckCircle2 className="h-4 w-4 lg:h-5 lg:w-5 text-green-600" />
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 lg:w-8 lg:h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-green-800 text-sm lg:text-base">Conta criada com sucesso!</h3>
-                  <p className="text-xs lg:text-sm text-green-700">
+                  <h3 className="font-semibold text-green-800 text-xs lg:text-sm">Conta criada com sucesso!</h3>
+                  <p className="text-[10px] lg:text-xs text-green-700">
                     Agora vamos cadastrar seu restaurante
                   </p>
                 </div>
@@ -459,21 +459,21 @@ export default function Onboarding() {
           )}
 
           {/* Logo - Mobile only */}
-          <div className="flex items-center gap-3 mb-4 lg:mb-6 lg:hidden">
-            <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30">
-              <UtensilsCrossed className="h-5 w-5 text-white" />
+          <div className="flex items-center gap-2 mb-2 lg:mb-4 lg:hidden">
+            <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center shadow-md shadow-red-500/30">
+              <UtensilsCrossed className="h-4 w-4 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">Mindi</span>
+            <span className="text-xl font-bold text-gray-900">Mindi</span>
           </div>
 
           {/* Header */}
-          <div className="mb-3 lg:mb-6">
-            <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-1 lg:mb-2">
+          <div className="mb-2 lg:mb-4">
+            <h2 className="text-lg lg:text-xl font-bold text-gray-900 mb-0.5 lg:mb-1">
               {currentStep === 1 && "Cadastre seu Restaurante"}
               {currentStep === 2 && "Configurações de Atendimento"}
               {currentStep === 3 && "Seus Objetivos"}
             </h2>
-            <p className="text-sm lg:text-base text-gray-600">
+            <p className="text-xs lg:text-sm text-gray-600">
               {currentStep === 1 && "Preencha os dados básicos do seu estabelecimento"}
               {currentStep === 2 && "Configure como seu restaurante vai atender"}
               {currentStep === 3 && "Conte-nos mais sobre seus objetivos"}
@@ -487,32 +487,32 @@ export default function Onboarding() {
           <form onSubmit={handleSubmit}>
             {/* Step 1: Dados do estabelecimento */}
             {currentStep === 1 && (
-              <div className="space-y-3 lg:space-y-5">
+              <div className="space-y-2 lg:space-y-4">
                 {/* Nome */}
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-semibold text-gray-900">
+                <div className="space-y-1">
+                  <Label htmlFor="name" className="text-xs lg:text-sm font-semibold text-gray-900">
                     Nome do estabelecimento <span className="text-red-500">*</span>
                   </Label>
                   <div className="relative">
-                    <Store className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Store className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="name"
                       type="text"
                       placeholder="Ex: Pizzaria do João"
                       value={name}
                       onChange={(e) => handleNameChange(e.target.value)}
-                      className="h-12 lg:h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                      className="h-10 lg:h-12 pl-10 rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base"
                     />
                   </div>
                 </div>
 
                 {/* Link público */}
-                <div className="space-y-2">
-                  <Label htmlFor="menuSlug" className="text-sm font-semibold text-gray-900">
+                <div className="space-y-1">
+                  <Label htmlFor="menuSlug" className="text-xs lg:text-sm font-semibold text-gray-900">
                     Link público do cardápio
                   </Label>
                   <div className="flex items-center">
-                    <span className="text-sm text-gray-500 bg-gray-100 px-4 h-12 lg:h-14 flex items-center rounded-l-xl border border-r-0 border-gray-200">
+                    <span className="text-xs lg:text-sm text-gray-500 bg-gray-100 px-3 h-10 lg:h-12 flex items-center rounded-l-lg border border-r-0 border-gray-200">
                       mindi.com.br/
                     </span>
                     <div className="relative flex-1">
@@ -522,57 +522,57 @@ export default function Onboarding() {
                         placeholder="seu-restaurante"
                         value={menuSlug}
                         onChange={(e) => setMenuSlug(generateSlug(e.target.value))}
-                        className="h-12 lg:h-14 rounded-l-none rounded-r-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                        className="h-10 lg:h-12 rounded-l-none rounded-r-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* WhatsApp e Instagram lado a lado */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="grid grid-cols-2 gap-2 lg:gap-3">
                   {/* WhatsApp */}
-                  <div className="space-y-2">
-                    <Label htmlFor="whatsapp" className="text-sm font-semibold text-gray-900">
+                  <div className="space-y-1">
+                    <Label htmlFor="whatsapp" className="text-xs lg:text-sm font-semibold text-gray-900">
                       WhatsApp
                     </Label>
                     <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                       <Input
                         id="whatsapp"
                         type="tel"
                         placeholder="(11) 99999-9999"
                         value={whatsapp}
                         onChange={(e) => setWhatsapp(formatWhatsApp(e.target.value))}
-                        className="h-12 lg:h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                        className="h-10 lg:h-12 pl-10 rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base"
                       />
                     </div>
                   </div>
 
                   {/* Instagram */}
-                  <div className="space-y-2">
-                    <Label htmlFor="instagram" className="text-sm font-semibold text-gray-900">
+                  <div className="space-y-1">
+                    <Label htmlFor="instagram" className="text-xs lg:text-sm font-semibold text-gray-900">
                       Instagram
                     </Label>
                     <div className="relative">
-                      <Instagram className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                       <Input
                         id="instagram"
                         type="text"
                         placeholder="@seu_restaurante"
                         value={instagram}
                         onChange={(e) => setInstagram(e.target.value)}
-                        className="h-12 lg:h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                        className="h-10 lg:h-12 pl-10 rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Tipo de entrega */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-gray-900">
+                <div className="space-y-1">
+                  <Label className="text-xs lg:text-sm font-semibold text-gray-900">
                     Tipo de entrega
                   </Label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                  <div className="grid grid-cols-3 gap-1.5 lg:gap-2">
                     {DELIVERY_TYPES.map((type) => {
                       const Icon = type.icon;
                       const isSelected = deliveryType === type.id;
@@ -581,14 +581,14 @@ export default function Onboarding() {
                           key={type.id}
                           type="button"
                           onClick={() => setDeliveryType(type.id)}
-                          className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
+                          className={`p-2 lg:p-3 rounded-lg border-2 transition-all flex flex-col items-center gap-1 ${
                             isSelected 
                               ? "border-primary bg-primary/5 text-primary" 
                               : "border-gray-200 hover:border-gray-300 text-gray-600"
                           }`}
                         >
-                          <Icon className={`h-6 w-6 ${isSelected ? "text-primary" : "text-gray-400"}`} />
-                          <span className="text-sm font-medium">{type.label}</span>
+                          <Icon className={`h-4 w-4 lg:h-5 lg:w-5 ${isSelected ? "text-primary" : "text-gray-400"}`} />
+                          <span className="text-xs lg:text-sm font-medium">{type.label}</span>
                         </button>
                       );
                     })}
@@ -596,14 +596,16 @@ export default function Onboarding() {
                 </div>
 
                 {/* Next button */}
-                <Button
-                  type="button"
-                  onClick={handleNextStep}
-                  className="w-full h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-base"
-                >
-                  Continuar
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </Button>
+                <div className="pt-2 lg:pt-4">
+                  <Button
+                    type="button"
+                    onClick={handleNextStep}
+                    className="w-full h-10 lg:h-12 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base"
+                  >
+                    Continuar
+                    <ArrowRight className="h-4 w-4 lg:h-5 lg:w-5 ml-2" />
+                  </Button>
+                </div>
               </div>
             )}
 

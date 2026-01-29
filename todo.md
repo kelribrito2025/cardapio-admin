@@ -3591,3 +3591,11 @@
 - [x] Reduzir espaçamentos verticais em telas menores
 - [x] Garantir que stepper, badge e botão fiquem sempre acessíveis
 - [x] Layout funciona corretamente em notebooks menores e resoluções reduzidas
+
+
+## Correção Scroll Interno Onboarding
+- [x] Garantir que o scroll interno funcione corretamente no container do formulário
+- [x] Botão Continuar deve estar sempre acessível (via scroll ou fixo)
+- [x] Testar em telas com altura reduzida (notebooks menores)
+- [x] Reduzir tamanhos de elementos para caber em telas menores (inputs h-10, badges menores, stepper compacto)
+- [x] Usar 100dvh para altura dinâmica da viewport
