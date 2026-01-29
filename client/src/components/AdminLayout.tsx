@@ -24,6 +24,7 @@ import {
   Volume2,
   VolumeX,
   Printer,
+  Tag,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -61,6 +62,7 @@ const menuSections = [
     items: [
       { icon: ClipboardList, label: "Pedidos", href: "/pedidos" },
       { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo" },
+      { icon: Tag, label: "Categorias", href: "/categorias" },
       { icon: Ticket, label: "Cupons", href: "/cupons" },
       { icon: Package, label: "Estoque", href: "/estoque" },
     ]

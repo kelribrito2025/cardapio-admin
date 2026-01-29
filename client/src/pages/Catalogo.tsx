@@ -787,21 +787,7 @@ export default function Catalogo() {
                     <p>Reordenar</p>
                   </TooltipContent>
                 </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      onClick={() => setCategoryDialogOpen(true)}
-                      className="rounded-lg border-border/50 hover:bg-accent h-9 px-3 text-xs sm:text-sm sm:px-3.5"
-                    >
-                      <FolderPlus className="h-4 w-4 mr-1.5 sm:mr-2" />
-                      <span className="text-xs sm:text-sm">Categoria</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="sm:hidden">
-                    <p>Nova Categoria</p>
-                  </TooltipContent>
-                </Tooltip>
+
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">

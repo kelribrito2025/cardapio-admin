@@ -3678,3 +3678,13 @@
 - [x] Adicionar títulos de seção no menu lateral
 - [x] Botão Voltar como link de texto abaixo do Continuar em todas as etapas do onboarding (Steps 2, 3 e 4)
 - [x] Ajustar espaçamentos das seções do menu lateral (OPERAÇÕES, GESTÃO) para melhor hierarquia visual
+
+## Página de Categorias
+- [x] Adicionar item "Categorias" no menu lateral (seção GESTÃO, abaixo de Cardápio)
+- [x] Criar página /categorias com visual similar ao modo reordenar
+- [x] Implementar funcionalidade de criar nova categoria
+- [x] Implementar funcionalidade de editar categoria (inline)
+- [x] Implementar funcionalidade de excluir categoria
+- [x] Implementar drag and drop para reordenar categorias
+- [x] Remover botão "Nova Categoria" da página Catálogo
+- [x] Manter apenas botões "Novo Item" e "Reordenar" na página Catálogo
