@@ -279,7 +279,7 @@ export default function Onboarding() {
 
   // Step indicator component
   const StepIndicator = () => (
-    <div className="flex items-center justify-center gap-1 sm:gap-2 mb-8 flex-wrap">
+    <div className="flex items-center justify-center gap-1 sm:gap-2 mb-4 lg:mb-6 flex-wrap">
       {/* Step 1 */}
       <div className="flex items-center gap-2">
         <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
@@ -362,7 +362,7 @@ export default function Onboarding() {
   );
 
   return (
-    <div className="min-h-screen flex">
+    <div className="h-screen flex overflow-hidden">
       {/* Left side - Background with promotional content */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 bg-gradient-to-br from-red-600 via-red-700 to-red-900 relative overflow-hidden">
         {/* Decorative circles */}
@@ -432,24 +432,25 @@ export default function Onboarding() {
       </div>
       
       {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 xl:w-2/5 bg-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 overflow-y-auto overflow-x-hidden">
-        <div className="w-full max-w-md mx-auto">
+      <div className="w-full lg:w-1/2 xl:w-2/5 bg-gray-50 flex flex-col h-full overflow-hidden">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 lg:p-8">
+          <div className="w-full max-w-md mx-auto">
           {/* Success Badge - Only show on Step 1 */}
           {showSuccessBadge && currentStep === 1 && (
-            <div className="mb-6 bg-green-50 border border-green-200 rounded-xl p-4 relative">
+            <div className="mb-3 lg:mb-6 bg-green-50 border border-green-200 rounded-xl p-3 lg:p-4 relative">
               <button
                 onClick={() => setShowSuccessBadge(false)}
-                className="absolute top-3 right-3 text-green-600 hover:text-green-800 transition-colors"
+                className="absolute top-2 right-2 lg:top-3 lg:right-3 text-green-600 hover:text-green-800 transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+              <div className="flex items-center gap-2 lg:gap-3">
+                <div className="w-8 h-8 lg:w-10 lg:h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="h-4 w-4 lg:h-5 lg:w-5 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-green-800 text-base">Conta criada com sucesso!</h3>
-                  <p className="text-sm text-green-700">
+                  <h3 className="font-semibold text-green-800 text-sm lg:text-base">Conta criada com sucesso!</h3>
+                  <p className="text-xs lg:text-sm text-green-700">
                     Agora vamos cadastrar seu restaurante
                   </p>
                 </div>
@@ -458,7 +459,7 @@ export default function Onboarding() {
           )}
 
           {/* Logo - Mobile only */}
-          <div className="flex items-center gap-3 mb-8 lg:hidden">
+          <div className="flex items-center gap-3 mb-4 lg:mb-6 lg:hidden">
             <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30">
               <UtensilsCrossed className="h-5 w-5 text-white" />
             </div>
@@ -466,13 +467,13 @@ export default function Onboarding() {
           </div>
 
           {/* Header */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <div className="mb-3 lg:mb-6">
+            <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-1 lg:mb-2">
               {currentStep === 1 && "Cadastre seu Restaurante"}
               {currentStep === 2 && "Configurações de Atendimento"}
               {currentStep === 3 && "Seus Objetivos"}
             </h2>
-            <p className="text-gray-600">
+            <p className="text-sm lg:text-base text-gray-600">
               {currentStep === 1 && "Preencha os dados básicos do seu estabelecimento"}
               {currentStep === 2 && "Configure como seu restaurante vai atender"}
               {currentStep === 3 && "Conte-nos mais sobre seus objetivos"}
@@ -486,7 +487,7 @@ export default function Onboarding() {
           <form onSubmit={handleSubmit}>
             {/* Step 1: Dados do estabelecimento */}
             {currentStep === 1 && (
-              <div className="space-y-5">
+              <div className="space-y-3 lg:space-y-5">
                 {/* Nome */}
                 <div className="space-y-2">
                   <Label htmlFor="name" className="text-sm font-semibold text-gray-900">
@@ -500,7 +501,7 @@ export default function Onboarding() {
                       placeholder="Ex: Pizzaria do João"
                       value={name}
                       onChange={(e) => handleNameChange(e.target.value)}
-                      className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                      className="h-12 lg:h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                     />
                   </div>
                 </div>
@@ -511,7 +512,7 @@ export default function Onboarding() {
                     Link público do cardápio
                   </Label>
                   <div className="flex items-center">
-                    <span className="text-sm text-gray-500 bg-gray-100 px-4 h-14 flex items-center rounded-l-xl border border-r-0 border-gray-200">
+                    <span className="text-sm text-gray-500 bg-gray-100 px-4 h-12 lg:h-14 flex items-center rounded-l-xl border border-r-0 border-gray-200">
                       mindi.com.br/
                     </span>
                     <div className="relative flex-1">
@@ -521,7 +522,7 @@ export default function Onboarding() {
                         placeholder="seu-restaurante"
                         value={menuSlug}
                         onChange={(e) => setMenuSlug(generateSlug(e.target.value))}
-                        className="h-14 rounded-l-none rounded-r-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                        className="h-12 lg:h-14 rounded-l-none rounded-r-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                       />
                     </div>
                   </div>
@@ -542,7 +543,7 @@ export default function Onboarding() {
                         placeholder="(11) 99999-9999"
                         value={whatsapp}
                         onChange={(e) => setWhatsapp(formatWhatsApp(e.target.value))}
-                        className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                        className="h-12 lg:h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                       />
                     </div>
                   </div>
@@ -560,7 +561,7 @@ export default function Onboarding() {
                         placeholder="@seu_restaurante"
                         value={instagram}
                         onChange={(e) => setInstagram(e.target.value)}
-                        className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                        className="h-12 lg:h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                       />
                     </div>
                   </div>
@@ -608,7 +609,7 @@ export default function Onboarding() {
 
             {/* Step 2: Configurações de Atendimento */}
             {currentStep === 2 && (
-              <div className="space-y-5">
+              <div className="space-y-3 lg:space-y-5">
                 {/* Endereço */}
                 <div className="space-y-2">
                   <Label htmlFor="address" className="text-sm font-semibold text-gray-900">
@@ -622,7 +623,7 @@ export default function Onboarding() {
                       placeholder="Rua, número, bairro - Cidade/UF"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
-                      className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                      className="h-12 lg:h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                     />
                   </div>
                 </div>
@@ -639,7 +640,7 @@ export default function Onboarding() {
                         type="time"
                         value={openingTime}
                         onChange={(e) => setOpeningTime(e.target.value)}
-                        className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                        className="h-12 lg:h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                       />
                     </div>
                     <span className="text-gray-500 font-medium">às</span>
@@ -649,7 +650,7 @@ export default function Onboarding() {
                         type="time"
                         value={closingTime}
                         onChange={(e) => setClosingTime(e.target.value)}
-                        className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                        className="h-12 lg:h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                       />
                     </div>
                   </div>
@@ -696,7 +697,7 @@ export default function Onboarding() {
                         placeholder="20"
                         value={minDeliveryTime}
                         onChange={(e) => setMinDeliveryTime(e.target.value)}
-                        className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                        className="h-12 lg:h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                       />
                     </div>
                     <span className="text-gray-500 font-medium">até</span>
@@ -706,7 +707,7 @@ export default function Onboarding() {
                         placeholder="50"
                         value={maxDeliveryTime}
                         onChange={(e) => setMaxDeliveryTime(e.target.value)}
-                        className="h-14 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                        className="h-12 lg:h-14 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                       />
                     </div>
                     <span className="text-gray-500 font-medium text-sm">min</span>
@@ -732,7 +733,7 @@ export default function Onboarding() {
                         placeholder="R$ 0,00"
                         value={minOrderValue}
                         onChange={(e) => setMinOrderValue(formatCurrency(e.target.value))}
-                        className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                        className="h-12 lg:h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                       />
                     </div>
                   )}
@@ -772,7 +773,7 @@ export default function Onboarding() {
                         placeholder="R$ 0,00"
                         value={fixedDeliveryFee}
                         onChange={(e) => setFixedDeliveryFee(formatCurrency(e.target.value))}
-                        className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+                        className="h-12 lg:h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                       />
                     </div>
                   )}
@@ -813,7 +814,7 @@ export default function Onboarding() {
 
             {/* Step 3: Objetivos */}
             {currentStep === 3 && (
-              <div className="space-y-5">
+              <div className="space-y-3 lg:space-y-5">
                 {/* Objetivos */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
@@ -929,7 +930,7 @@ export default function Onboarding() {
 
             {/* Step 4: Planos */}
             {currentStep === 4 && (
-              <div className="space-y-5">
+              <div className="space-y-3 lg:space-y-5">
                 {/* Header */}
                 <div className="text-center mb-6">
                   <div className="flex items-center justify-center gap-2 text-sm font-semibold text-gray-900 mb-2">
@@ -1049,6 +1050,7 @@ export default function Onboarding() {
               </div>
             )}
           </form>
+          </div>
         </div>
       </div>
     </div>

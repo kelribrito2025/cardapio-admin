@@ -3582,3 +3582,12 @@
 - [x] Adicionar imagem de background na seção vermelha da tela de login com sobreposição vermelha de 40% de transparência
 - [x] Remover ícones decorativos (marca d'água) da seção vermelha do AuthLayout
 - [x] Corrigir responsividade do lado direito do onboarding para evitar barra de rolagem horizontal em telas menores
+
+
+## Responsividade Completa do Onboarding
+- [x] Container principal com height: 100vh e overflow: hidden
+- [x] Área do formulário com overflow-y: auto e scroll interno
+- [x] Remover qualquer scroll lateral/horizontal da página
+- [x] Reduzir espaçamentos verticais em telas menores
+- [x] Garantir que stepper, badge e botão fiquem sempre acessíveis
+- [x] Layout funciona corretamente em notebooks menores e resoluções reduzidas
