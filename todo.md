@@ -3535,3 +3535,4 @@
 - [x] Campo "Como conheceu a plataforma"
 - [x] Campos condicionais para "Outros"
 - [x] Redirecionar para dashboard após finalizar onboarding
+- [x] Redesenhar onboarding com layout amplo e grid de 2 colunas
