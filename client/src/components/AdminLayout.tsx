@@ -380,7 +380,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           "lg:translate-x-0"
         )}
         style={{
-          background: "linear-gradient(180deg, oklch(0.99 0 0) 0%, oklch(0.96 0.008 250) 50%, oklch(0.92 0.015 250) 100%)"
+          background: "#ffffff"
         }}
       >
         {/* Logo + Toggle button na mesma linha */}
@@ -577,10 +577,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Main content */}
       <div 
-        className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] min-h-screen", mainPadding)}
-        style={{
-          background: "linear-gradient(180deg, oklch(0.99 0 0) 0%, oklch(0.96 0.008 250) 50%, oklch(0.92 0.015 250) 100%)"
-        }}
+        className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] min-h-screen bg-gray-50", mainPadding)}
       >
         {/* Topbar */}
         <header className="sticky top-0 z-30 h-[58px] bg-card/80 backdrop-blur-md border-b border-border/50">
