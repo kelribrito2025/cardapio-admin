@@ -3528,3 +3528,10 @@
 - [x] Criar degradê vertical para sidebar - claro no topo, escuro embaixo
 - [x] Aplicar degradê do sidebar ao background da página Dashboard
 - [x] Remover degradê do sidebar e página principal
+- [x] Implementar fluxo de onboarding após criação de conta
+- [x] Badge de sucesso "Conta criada com sucesso"
+- [x] Formulário de cadastro do restaurante (nome, link, whatsapp, instagram, área)
+- [x] Multi-select de objetivos com a plataforma
+- [x] Campo "Como conheceu a plataforma"
+- [x] Campos condicionais para "Outros"
+- [x] Redirecionar para dashboard após finalizar onboarding

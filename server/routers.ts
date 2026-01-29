@@ -30,7 +30,7 @@ export const appRouter = router({
         email: z.string().email("Email inválido"),
         password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         // Check if user already exists
         const existingUser = await db.getUserByEmail(input.email);
         if (existingUser) {
@@ -50,7 +50,27 @@ export const appRouter = router({
           passwordHash,
         });
         
-        return { success: true, userId: user?.id };
+        if (!user) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Erro ao criar usuário.",
+          });
+        }
+        
+        // Login automático após criar conta
+        const token = await sdk.createSessionToken(user.openId, {
+          name: user.name || user.email?.split('@')[0] || 'User',
+          expiresInMs: 7 * 24 * 60 * 60 * 1000, // 7 dias
+        });
+        
+        // Set cookie
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, {
+          ...cookieOptions,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        
+        return { success: true, userId: user.id };
       }),
     
     // Login with email/password

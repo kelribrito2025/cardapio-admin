@@ -20,8 +20,8 @@ export default function Register() {
 
   const registerMutation = trpc.auth.register.useMutation({
     onSuccess: () => {
-      toast.success("Conta criada com sucesso! Faça login para continuar.");
-      setLocation("/login");
+      // Redirecionar para onboarding em vez de login
+      setLocation("/onboarding");
     },
     onError: (error: { message?: string }) => {
       toast.error(error.message || "Erro ao criar conta. Tente novamente.");

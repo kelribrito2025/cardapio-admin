@@ -26,6 +26,7 @@ import Impressoras from "./pages/Impressoras";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
+import Onboarding from "./pages/Onboarding";
 
 // Componente wrapper para rotas do admin que precisam do NewOrdersProvider
 function AdminRoutes() {
@@ -62,6 +63,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/criar-conta" component={Register} />
       <Route path="/esqueci-senha" component={ForgotPassword} />
+      <Route path="/onboarding" component={Onboarding} />
       
       {/* Public menu route - sem NewOrdersProvider (não deve ter som de notificação) */}
       <Route path="/menu/:slug" component={PublicMenu} />
