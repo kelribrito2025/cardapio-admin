@@ -460,23 +460,23 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Navigation */}
         <nav className={cn(
-          "flex-1 py-1.5 overflow-y-auto transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
+          "flex-1 py-4 overflow-y-auto transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
           sidebarCollapsed ? "px-1.5" : "px-3"
         )}>
           {menuSections.map((section, sectionIndex) => (
-            <div key={section.title} className={sectionIndex > 0 ? "mt-4" : ""}>
+            <div key={section.title} className={sectionIndex > 0 ? "mt-6" : ""}>
               {/* Título da seção */}
               {!sidebarCollapsed && (
-                <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">
+                <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-3 mb-3">
                   {section.title}
                 </h3>
               )}
               {sidebarCollapsed && sectionIndex > 0 && (
-                <div className="border-t border-gray-200 my-2 mx-2" />
+                <div className="border-t border-gray-200 my-3 mx-2" />
               )}
               
               {/* Itens da seção */}
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {section.items.map((item) => {
                   const isActive = location === item.href || 
                     (item.href !== "/" && location.startsWith(item.href));
