@@ -191,10 +191,32 @@ export default function Onboarding() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Mapear deliveryFeeType para o formato do banco
+    const mappedDeliveryFeeType = deliveryFeeType === "neighborhood" ? "byNeighborhood" : deliveryFeeType as "free" | "fixed" | "byNeighborhood";
+
     createEstablishmentMutation.mutate({
+      // Step 1 - Dados do estabelecimento
       name: name.trim(),
       menuSlug: menuSlug.trim() || undefined,
       whatsapp: whatsapp.replace(/\D/g, "") || undefined,
+      instagram: instagram.trim() || undefined,
+      allowsDelivery: deliveryType === "delivery" || deliveryType === "both",
+      allowsPickup: deliveryType === "pickup" || deliveryType === "both",
+      
+      // Step 2 - Configurações de Atendimento
+      address: address.trim() || undefined,
+      openingTime: openingTime || undefined,
+      closingTime: closingTime || undefined,
+      acceptsPix: selectedPaymentMethods.includes("pix"),
+      acceptsCash: selectedPaymentMethods.includes("cash"),
+      acceptsCard: selectedPaymentMethods.includes("card"),
+      deliveryTimeEnabled: true,
+      deliveryTimeMin: parseInt(minDeliveryTime) || 20,
+      deliveryTimeMax: parseInt(maxDeliveryTime) || 50,
+      minimumOrderEnabled: hasMinOrder,
+      minimumOrderValue: hasMinOrder && minOrderValue ? minOrderValue.replace(/[^\d,]/g, "").replace(",", ".") : "0",
+      deliveryFeeType: mappedDeliveryFeeType,
+      deliveryFeeFixed: deliveryFeeType === "fixed" && fixedDeliveryFee ? fixedDeliveryFee.replace(/[^\d,]/g, "").replace(",", ".") : "0",
     });
   };
 

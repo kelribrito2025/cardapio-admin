@@ -37,6 +37,7 @@ vi.mock("./db", () => ({
   getDashboardStats: vi.fn(),
   getWeeklyStats: vi.fn(),
   getRecentOrders: vi.fn(),
+  saveBusinessHours: vi.fn(),
 }));
 
 import * as db from "./db";

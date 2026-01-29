@@ -159,12 +159,36 @@ export const appRouter = router({
         longitude: z.string().optional(),
         menuSlug: z.string().optional(),
         whatsapp: z.string().optional(),
+        instagram: z.string().optional(),
+        // Novos campos do onboarding Step 2
+        address: z.string().optional(), // Endereço completo (será parseado para street)
+        openingTime: z.string().optional(), // Horário de abertura (HH:MM)
+        closingTime: z.string().optional(), // Horário de fechamento (HH:MM)
+        acceptsPix: z.boolean().optional(),
+        acceptsCash: z.boolean().optional(),
+        acceptsCard: z.boolean().optional(),
+        deliveryTimeMin: z.number().optional(),
+        deliveryTimeMax: z.number().optional(),
+        deliveryTimeEnabled: z.boolean().optional(),
+        minimumOrderEnabled: z.boolean().optional(),
+        minimumOrderValue: z.string().optional(),
+        deliveryFeeType: z.enum(["free", "fixed", "byNeighborhood"]).optional(),
+        deliveryFeeFixed: z.string().optional(),
+        allowsDelivery: z.boolean().optional(),
+        allowsPickup: z.boolean().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const id = await db.createEstablishment({
-          ...input,
+        // Separar campos que vão para businessHours
+        const { address, openingTime, closingTime, ...establishmentData } = input;
+        
+        // Se tiver endereço, colocar no campo street
+        const dataToSave = {
+          ...establishmentData,
+          street: address || establishmentData.street,
           userId: ctx.user.id,
-        });
+        };
+        
+        const id = await db.createEstablishment(dataToSave);
         
         // Criar categoria e item de teste padrão para novos estabelecimentos
         try {
@@ -185,6 +209,25 @@ export const appRouter = router({
         } catch (error) {
           // Não falhar a criação do estabelecimento se a criação do item de teste falhar
           console.error('Erro ao criar categoria/item de teste:', error);
+        }
+        
+        // Criar horários de funcionamento se fornecidos
+        if (openingTime && closingTime) {
+          try {
+            // Criar horários para todos os dias da semana (0=Domingo a 6=Sábado)
+            const businessHoursData = [];
+            for (let day = 0; day <= 6; day++) {
+              businessHoursData.push({
+                dayOfWeek: day,
+                isActive: true,
+                openTime: openingTime,
+                closeTime: closingTime,
+              });
+            }
+            await db.saveBusinessHours(id, businessHoursData);
+          } catch (error) {
+            console.error('Erro ao criar horários de funcionamento:', error);
+          }
         }
         
         return { id };

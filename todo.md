@@ -3562,3 +3562,9 @@
 - [x] Toggle de pedido mínimo com campo de valor
 - [x] Seleção de taxa de entrega (Grátis, Fixa, Por bairros)
 - [x] Mensagem informativa quando selecionar "Por bairros"
+
+## Salvar Dados do Onboarding Step 2 no Banco
+- [x] Atualizar endpoint establishment.create para aceitar novos campos (address, openingTime, closingTime, acceptsPix, acceptsCash, acceptsCard, deliveryTimeMin, deliveryTimeMax, minimumOrderEnabled, minimumOrderValue, deliveryFeeType, deliveryFeeFixed, allowsDelivery, allowsPickup)
+- [x] Atualizar Onboarding para enviar os novos dados na mutation
+- [x] Criar horários de funcionamento automaticamente ao criar estabelecimento
+- [x] Verificar que página de configurações já carrega os dados salvos (useEffect já implementado)
