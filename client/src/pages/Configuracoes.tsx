@@ -1228,14 +1228,9 @@ export default function Configuracoes() {
                   {[
                     "Promoção válida hoje!",
                     "Temos novidades no cardápio 👀",
-                    "Combo especial disponível!",
                     "Hoje o tempo de entrega está reduzido 🚀",
-                    "Aproveite nossas ofertas do dia!",
                     "Obrigado por pedir com a gente ❤️",
                     "Estamos com alta demanda, pedimos paciência 🙏",
-                    "Sugestão do chef disponível!",
-                    "Recomendado: experimente nosso prato mais vendido!",
-                    "Cupom especial disponível — pergunte no WhatsApp!",
                   ].map((suggestion) => (
                     <button
                       key={suggestion}

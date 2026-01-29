@@ -3694,3 +3694,4 @@
 - [x] Criar página de Configurações com abas: Estabelecimento, Atendimento, Impressoras, Notificações, WhatsApp, Teste Impressão
 - [x] Remover aba Teste da seção WhatsApp nas configurações
 - [x] Remover seção Validade da Nota do card de Nota do Restaurante
+- [x] Remover sugestões rápidas específicas do card de Nota do Restaurante
