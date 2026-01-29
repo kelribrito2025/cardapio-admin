@@ -35,15 +35,15 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         <div className="relative z-10 flex flex-col justify-end p-12 w-full h-full">
           {/* Main text */}
           <div className="max-w-lg">
-            <h1 className="text-4xl xl:text-5xl font-bold text-white leading-tight mb-6">
+            <h1 className="text-4xl xl:text-5xl font-bold text-white leading-tight mb-6" style={{marginRight: '-130px'}}>
               Gerencie seu restaurante de um jeito simples e inteligente.
             </h1>
-            <p className="text-white/80 text-lg mb-8">
+            <p className="text-white/80 text-lg mb-8" style={{marginRight: '-130px'}}>
               Cardápio digital, gestão de pedidos, controle de estoque e muito mais — tudo em uma única plataforma pensada para o seu negócio crescer.
             </p>
             
             {/* Feature badges */}
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3" style={{marginRight: '-123px'}}>
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm">
                 <Smartphone className="w-4 h-4" />
                 <span>Cardápio Digital</span>
