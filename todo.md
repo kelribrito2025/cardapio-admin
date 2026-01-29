@@ -3569,3 +3569,9 @@
 - [x] Criar horários de funcionamento automaticamente ao criar estabelecimento
 - [x] Verificar que página de configurações já carrega os dados salvos (useEffect já implementado)
 - [x] Ajustar botões de status do WhatsApp (Conectado/Desconectado) para terem o mesmo tamanho do card Verificando na página de pedidos
+
+## Etapa de Seleção de Planos no Onboarding
+- [x] Criar Step 4 - Seleção de Planos (última etapa do onboarding)
+- [x] Adicionar 3 cards compactos: Gratuito (15 dias teste), Lite, Pro
+- [x] Destacar principais features de cada plano
+- [x] Cards um abaixo do outro (não grandes)

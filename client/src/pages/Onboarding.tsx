@@ -26,7 +26,10 @@ import {
   Timer,
   DollarSign,
   Info,
-  Building2
+  Building2,
+  Crown,
+  Zap,
+  Gift
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,6 +78,55 @@ const DELIVERY_FEE_TYPES = [
   { id: "neighborhood", label: "Por bairros" },
 ];
 
+// Opções de planos
+const PLANS = [
+  { 
+    id: "free", 
+    name: "Gratuito", 
+    price: "R$ 0",
+    period: "15 dias de teste",
+    icon: Gift,
+    features: [
+      "Cardápio digital ilimitado",
+      "Gestão de pedidos",
+      "Relatórios básicos",
+    ],
+    highlight: false,
+    badge: "Teste grátis"
+  },
+  { 
+    id: "lite", 
+    name: "Lite", 
+    price: "R$ 49,90",
+    period: "/mês",
+    icon: Zap,
+    features: [
+      "Tudo do Gratuito +",
+      "WhatsApp integrado",
+      "Cupons de desconto",
+      "Suporte prioritário",
+    ],
+    highlight: false,
+    badge: null
+  },
+  { 
+    id: "pro", 
+    name: "Pro", 
+    price: "R$ 99,90",
+    period: "/mês",
+    icon: Crown,
+    features: [
+      "Tudo do Lite +",
+      "Múltiplas impressoras",
+      "Programa de fidelidade",
+      "Relatórios avançados",
+      "API personalizada",
+    ],
+    highlight: true,
+    badge: "Mais popular"
+  },
+];
+
 export default function Onboarding() {
   const [, setLocation] = useLocation();
   const [showSuccessBadge, setShowSuccessBadge] = useState(true);
@@ -105,6 +157,9 @@ export default function Onboarding() {
   const [otherObjective, setOtherObjective] = useState("");
   const [howFound, setHowFound] = useState("");
   const [otherHowFound, setOtherHowFound] = useState("");
+  
+  // Form state - Step 4 (Planos)
+  const [selectedPlan, setSelectedPlan] = useState("free");
 
   const createEstablishmentMutation = trpc.establishment.create.useMutation({
     onSuccess: async () => {
@@ -179,6 +234,8 @@ export default function Onboarding() {
       setCurrentStep(2);
     } else if (currentStep === 2) {
       setCurrentStep(3);
+    } else if (currentStep === 3) {
+      setCurrentStep(4);
     }
   };
 
@@ -225,12 +282,12 @@ export default function Onboarding() {
     <div className="flex items-center justify-center gap-2 mb-8">
       {/* Step 1 */}
       <div className="flex items-center gap-2">
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
           currentStep >= 1 
             ? "bg-primary text-white" 
             : "bg-gray-200 text-gray-500"
         }`}>
-          {currentStep > 1 ? <Check className="h-4 w-4" /> : "1"}
+          {currentStep > 1 ? <Check className="h-3.5 w-3.5" /> : "1"}
         </div>
         <span className={`text-xs font-medium hidden sm:block ${
           currentStep >= 1 ? "text-gray-900" : "text-gray-500"
@@ -240,18 +297,18 @@ export default function Onboarding() {
       </div>
 
       {/* Connector 1-2 */}
-      <div className={`w-8 h-0.5 transition-all ${
+      <div className={`w-6 h-0.5 transition-all ${
         currentStep > 1 ? "bg-primary" : "bg-gray-200"
       }`} />
 
       {/* Step 2 */}
       <div className="flex items-center gap-2">
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
           currentStep >= 2 
             ? "bg-primary text-white" 
             : "bg-gray-200 text-gray-500"
         }`}>
-          {currentStep > 2 ? <Check className="h-4 w-4" /> : "2"}
+          {currentStep > 2 ? <Check className="h-3.5 w-3.5" /> : "2"}
         </div>
         <span className={`text-xs font-medium hidden sm:block ${
           currentStep >= 2 ? "text-gray-900" : "text-gray-500"
@@ -261,23 +318,44 @@ export default function Onboarding() {
       </div>
 
       {/* Connector 2-3 */}
-      <div className={`w-8 h-0.5 transition-all ${
+      <div className={`w-6 h-0.5 transition-all ${
         currentStep > 2 ? "bg-primary" : "bg-gray-200"
       }`} />
 
       {/* Step 3 */}
       <div className="flex items-center gap-2">
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
           currentStep >= 3 
             ? "bg-primary text-white" 
             : "bg-gray-200 text-gray-500"
         }`}>
-          3
+          {currentStep > 3 ? <Check className="h-3.5 w-3.5" /> : "3"}
         </div>
         <span className={`text-xs font-medium hidden sm:block ${
           currentStep >= 3 ? "text-gray-900" : "text-gray-500"
         }`}>
           Objetivos
+        </span>
+      </div>
+
+      {/* Connector 3-4 */}
+      <div className={`w-6 h-0.5 transition-all ${
+        currentStep > 3 ? "bg-primary" : "bg-gray-200"
+      }`} />
+
+      {/* Step 4 */}
+      <div className="flex items-center gap-2">
+        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+          currentStep >= 4 
+            ? "bg-primary text-white" 
+            : "bg-gray-200 text-gray-500"
+        }`}>
+          4
+        </div>
+        <span className={`text-xs font-medium hidden sm:block ${
+          currentStep >= 4 ? "text-gray-900" : "text-gray-500"
+        }`}>
+          Plano
         </span>
       </div>
     </div>
@@ -838,6 +916,115 @@ export default function Onboarding() {
                     Voltar
                   </Button>
                   <Button
+                    type="button"
+                    onClick={handleNextStep}
+                    className="flex-1 h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-base"
+                  >
+                    Continuar
+                    <ArrowRight className="h-5 w-5 ml-2" />
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Planos */}
+            {currentStep === 4 && (
+              <div className="space-y-5">
+                {/* Header */}
+                <div className="text-center mb-6">
+                  <div className="flex items-center justify-center gap-2 text-sm font-semibold text-gray-900 mb-2">
+                    <Crown className="h-5 w-5 text-primary" />
+                    Escolha seu plano
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    Comece gratuitamente e faça upgrade quando quiser
+                  </p>
+                </div>
+
+                {/* Plans */}
+                <div className="space-y-3">
+                  {PLANS.map((plan) => {
+                    const isSelected = selectedPlan === plan.id;
+                    const Icon = plan.icon;
+                    return (
+                      <button
+                        key={plan.id}
+                        type="button"
+                        onClick={() => setSelectedPlan(plan.id)}
+                        className={`w-full p-4 rounded-xl border-2 transition-all text-left relative ${
+                          isSelected 
+                            ? "border-primary bg-primary/5" 
+                            : plan.highlight
+                              ? "border-amber-300 bg-amber-50/50 hover:border-amber-400"
+                              : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
+                        {/* Badge */}
+                        {plan.badge && (
+                          <span className={`absolute -top-2.5 right-4 px-2 py-0.5 text-xs font-semibold rounded-full ${
+                            plan.id === "pro" 
+                              ? "bg-amber-500 text-white" 
+                              : "bg-emerald-500 text-white"
+                          }`}>
+                            {plan.badge}
+                          </span>
+                        )}
+
+                        <div className="flex items-start gap-4">
+                          {/* Radio */}
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${
+                            isSelected 
+                              ? "border-primary" 
+                              : "border-gray-300"
+                          }`}>
+                            {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                          </div>
+
+                          {/* Icon */}
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                            plan.id === "pro" 
+                              ? "bg-amber-100 text-amber-600" 
+                              : plan.id === "lite"
+                                ? "bg-blue-100 text-blue-600"
+                                : "bg-emerald-100 text-emerald-600"
+                          }`}>
+                            <Icon className="h-5 w-5" />
+                          </div>
+
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-baseline gap-2 mb-1">
+                              <span className="font-semibold text-gray-900">{plan.name}</span>
+                              <span className="text-lg font-bold text-gray-900">{plan.price}</span>
+                              <span className="text-sm text-gray-500">{plan.period}</span>
+                            </div>
+                            <div className="flex flex-wrap gap-x-3 gap-y-1">
+                              {plan.features.map((feature, idx) => (
+                                <span key={idx} className="text-xs text-gray-600 flex items-center gap-1">
+                                  <Check className="h-3 w-3 text-emerald-500" />
+                                  {feature}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Buttons */}
+                <div className="flex gap-4 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handlePrevStep}
+                    className="flex-1 h-14 rounded-xl border-gray-200 text-gray-700 font-semibold text-base"
+                  >
+                    <ArrowLeft className="h-5 w-5 mr-2" />
+                    Voltar
+                  </Button>
+                  <Button
                     type="submit"
                     disabled={createEstablishmentMutation.isPending}
                     className="flex-1 h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-base"
@@ -857,7 +1044,7 @@ export default function Onboarding() {
                 </div>
 
                 <p className="text-sm text-center text-gray-500">
-                  Você poderá editar todas essas informações depois
+                  Você poderá alterar seu plano a qualquer momento
                 </p>
               </div>
             )}
