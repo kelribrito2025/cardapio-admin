@@ -23,16 +23,16 @@ export function AuthLayout({ children }: AuthLayoutProps) {
           <Smartphone className="w-24 h-24" />
         </div>
         
-        {/* Content */}
-        <div className="relative z-10 flex flex-col justify-between p-12 w-full">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-              <Utensils className="w-6 h-6 text-red-600" />
-            </div>
-            <span className="text-white text-2xl font-bold">Mindi</span>
+        {/* Logo - Fixed at top */}
+        <div className="absolute top-12 left-12 z-20 flex items-center gap-3">
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+            <Utensils className="w-6 h-6 text-red-600" />
           </div>
-          
+          <span className="text-white text-2xl font-bold">Mindi</span>
+        </div>
+        
+        {/* Content - Bottom aligned */}
+        <div className="relative z-10 flex flex-col justify-end p-12 w-full h-full">
           {/* Main text */}
           <div className="max-w-lg">
             <h1 className="text-4xl xl:text-5xl font-bold text-white leading-tight mb-6">
@@ -60,7 +60,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
           </div>
           
           {/* Social proof */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 mt-8">
             <div className="flex -space-x-3">
               <div className="w-10 h-10 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center text-white text-xs font-bold">JM</div>
               <div className="w-10 h-10 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center text-white text-xs font-bold">AS</div>
