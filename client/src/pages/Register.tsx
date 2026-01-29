@@ -56,7 +56,7 @@ export default function Register() {
       <div className="p-6 md:p-8">
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-500/30">
+          <div className="w-[70px] h-[70px] bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-500/30">
             <UtensilsCrossed className="h-10 w-10 text-white" />
           </div>
         </div>
