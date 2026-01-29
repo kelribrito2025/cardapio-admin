@@ -1,0 +1,30 @@
+{
+  "query": "SELECT id, name, menuSlug FROM establishments LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, menuSlug FROM establishments LIMIT 5;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "menuSlug": "sushi_haruno"
+    },
+    {
+      "id": "60001",
+      "name": "Restaurante Kelri",
+      "menuSlug": "NULL"
+    },
+    {
+      "id": "60002",
+      "name": "Sushi Haruno",
+      "menuSlug": "dsfdsfsd"
+    },
+    {
+      "id": "60003",
+      "name": "fdsfdsfs",
+      "menuSlug": "fdsfdsf"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tmenuSlug\n30001\tSushi Haruno\tsushi_haruno\n60001\tRestaurante Kelri\tNULL\n60002\tSushi Haruno\tdsfdsfsd\n60003\tfdsfdsfs\tfdsfdsf\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}
