@@ -1966,7 +1966,7 @@ export default function PublicMenu() {
                       </button>
                     )}
                     {establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed && (
-                      <span className="px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded-xl">
+                      <span className="px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded-xl" style={{paddingTop: '6px', paddingBottom: '0px', height: '36px'}}>
                         Fixo
                       </span>
                     )}
