@@ -3546,3 +3546,7 @@
 - [x] Etapa 2: objetivos com a plataforma, como conheceu
 - [x] Mover onboarding para usar AuthLayout com layout de 2 seções
 - [x] Colocar campos WhatsApp e Instagram lado a lado no onboarding
+- [ ] Corrigir layout do onboarding para igualar ao login
+
+## Correção Layout Onboarding
+- [x] Corrigir layout do onboarding para igualar ao login (h-14 nos inputs, pl-12, text-base, p-8 no container, mb-8 no header)

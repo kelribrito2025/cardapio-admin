@@ -144,17 +144,17 @@ export default function Onboarding() {
 
   // Step indicator component
   const StepIndicator = () => (
-    <div className="flex items-center justify-center gap-3 mb-6">
+    <div className="flex items-center justify-center gap-3 mb-8">
       {/* Step 1 */}
       <div className="flex items-center gap-2">
-        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
           currentStep >= 1 
             ? "bg-primary text-white" 
             : "bg-gray-200 text-gray-500"
         }`}>
-          {currentStep > 1 ? <Check className="h-3.5 w-3.5" /> : "1"}
+          {currentStep > 1 ? <Check className="h-4 w-4" /> : "1"}
         </div>
-        <span className={`text-xs font-medium hidden sm:block ${
+        <span className={`text-sm font-medium hidden sm:block ${
           currentStep >= 1 ? "text-gray-900" : "text-gray-500"
         }`}>
           Dados do estabelecimento
@@ -162,20 +162,20 @@ export default function Onboarding() {
       </div>
 
       {/* Connector */}
-      <div className={`w-8 h-0.5 transition-all ${
+      <div className={`w-12 h-0.5 transition-all ${
         currentStep > 1 ? "bg-primary" : "bg-gray-200"
       }`} />
 
       {/* Step 2 */}
       <div className="flex items-center gap-2">
-        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
           currentStep >= 2 
             ? "bg-primary text-white" 
             : "bg-gray-200 text-gray-500"
         }`}>
           2
         </div>
-        <span className={`text-xs font-medium hidden sm:block ${
+        <span className={`text-sm font-medium hidden sm:block ${
           currentStep >= 2 ? "text-gray-900" : "text-gray-500"
         }`}>
           Objetivos
@@ -253,24 +253,24 @@ export default function Onboarding() {
       </div>
       
       {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 xl:w-2/5 bg-gray-50 flex items-center justify-center p-6 overflow-y-auto">
+      <div className="w-full lg:w-1/2 xl:w-2/5 bg-gray-50 flex items-center justify-center p-8 overflow-y-auto">
         <div className="w-full max-w-md">
           {/* Success Badge */}
           {showSuccessBadge && (
-            <div className="mb-4 bg-green-50 border border-green-200 rounded-xl p-3 relative">
+            <div className="mb-6 bg-green-50 border border-green-200 rounded-xl p-4 relative">
               <button
                 onClick={() => setShowSuccessBadge(false)}
-                className="absolute top-2 right-2 text-green-600 hover:text-green-800 transition-colors"
+                className="absolute top-3 right-3 text-green-600 hover:text-green-800 transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                   <CheckCircle2 className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-green-800 text-sm">Conta criada com sucesso!</h3>
-                  <p className="text-xs text-green-700">
+                  <h3 className="font-semibold text-green-800 text-base">Conta criada com sucesso!</h3>
+                  <p className="text-sm text-green-700">
                     Agora vamos cadastrar seu restaurante
                   </p>
                 </div>
@@ -279,19 +279,19 @@ export default function Onboarding() {
           )}
 
           {/* Logo - Mobile only */}
-          <div className="flex items-center justify-center gap-3 mb-4 lg:hidden">
+          <div className="flex items-center gap-3 mb-8 lg:hidden">
             <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30">
               <UtensilsCrossed className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">Mindi</span>
+            <span className="text-2xl font-bold text-gray-900">Mindi</span>
           </div>
 
           {/* Header */}
-          <div className="text-center mb-2">
-            <h2 className="text-lg font-bold text-primary">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
               {currentStep === 1 ? "Cadastre seu Restaurante" : "Seus Objetivos"}
             </h2>
-            <p className="text-gray-500 text-xs">
+            <p className="text-gray-500">
               {currentStep === 1 
                 ? "Preencha os dados básicos do seu estabelecimento" 
                 : "Conte-nos mais sobre seus objetivos"}
@@ -305,32 +305,32 @@ export default function Onboarding() {
           <form onSubmit={handleSubmit}>
             {/* Step 1: Dados do estabelecimento */}
             {currentStep === 1 && (
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {/* Nome */}
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label htmlFor="name" className="text-sm font-semibold text-gray-900">
                     Nome do estabelecimento <span className="text-red-500">*</span>
                   </Label>
                   <div className="relative">
-                    <Store className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Store className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <Input
                       id="name"
                       type="text"
                       placeholder="Ex: Pizzaria do João"
                       value={name}
                       onChange={(e) => handleNameChange(e.target.value)}
-                      className="h-12 pl-10 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm"
+                      className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                     />
                   </div>
                 </div>
 
                 {/* Link público */}
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label htmlFor="menuSlug" className="text-sm font-semibold text-gray-900">
                     Link público do cardápio
                   </Label>
                   <div className="flex items-center">
-                    <span className="text-xs text-gray-500 bg-gray-100 px-3 py-3.5 rounded-l-xl border border-r-0 border-gray-200">
+                    <span className="text-sm text-gray-500 bg-gray-100 px-4 h-14 flex items-center rounded-l-xl border border-r-0 border-gray-200">
                       mindi.com.br/
                     </span>
                     <div className="relative flex-1">
@@ -340,46 +340,46 @@ export default function Onboarding() {
                         placeholder="seu-restaurante"
                         value={menuSlug}
                         onChange={(e) => setMenuSlug(generateSlug(e.target.value))}
-                        className="h-12 rounded-l-none rounded-r-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm"
+                        className="h-14 rounded-l-none rounded-r-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* WhatsApp e Instagram lado a lado */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   {/* WhatsApp */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <Label htmlFor="whatsapp" className="text-sm font-semibold text-gray-900">
                       WhatsApp
                     </Label>
                     <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                       <Input
                         id="whatsapp"
                         type="tel"
                         placeholder="(11) 99999-9999"
                         value={whatsapp}
                         onChange={(e) => setWhatsapp(formatWhatsApp(e.target.value))}
-                        className="h-12 pl-10 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm"
+                        className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                       />
                     </div>
                   </div>
 
                   {/* Instagram */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <Label htmlFor="instagram" className="text-sm font-semibold text-gray-900">
                       Instagram
                     </Label>
                     <div className="relative">
-                      <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Instagram className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                       <Input
                         id="instagram"
                         type="text"
                         placeholder="@seu_restaurante"
                         value={instagram}
                         onChange={(e) => setInstagram(e.target.value)}
-                        className="h-12 pl-10 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm"
+                        className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                       />
                     </div>
                   </div>
@@ -390,7 +390,7 @@ export default function Onboarding() {
                   <Label className="text-sm font-semibold text-gray-900">
                     Tipo de entrega
                   </Label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-3">
                     {DELIVERY_TYPES.map((type) => {
                       const Icon = type.icon;
                       const isSelected = deliveryType === type.id;
@@ -399,14 +399,14 @@ export default function Onboarding() {
                           key={type.id}
                           type="button"
                           onClick={() => setDeliveryType(type.id)}
-                          className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1.5 ${
+                          className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
                             isSelected 
                               ? "border-primary bg-primary/5 text-primary" 
                               : "border-gray-200 hover:border-gray-300 text-gray-600"
                           }`}
                         >
-                          <Icon className={`h-5 w-5 ${isSelected ? "text-primary" : "text-gray-400"}`} />
-                          <span className="text-xs font-medium">{type.label}</span>
+                          <Icon className={`h-6 w-6 ${isSelected ? "text-primary" : "text-gray-400"}`} />
+                          <span className="text-sm font-medium">{type.label}</span>
                         </button>
                       );
                     })}
@@ -417,10 +417,10 @@ export default function Onboarding() {
                 <Button
                   type="button"
                   onClick={handleNextStep}
-                  className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm mt-2"
+                  className="w-full h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-base"
                 >
                   Continuar
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                  <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
               </div>
             )}
@@ -430,12 +430,12 @@ export default function Onboarding() {
               <div className="space-y-5">
                 {/* Objetivos */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
-                    <Target className="h-4 w-4 text-primary" />
+                  <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+                    <Target className="h-5 w-5 text-primary" />
                     Quais são seus objetivos com a nossa plataforma? <span className="text-red-500">*</span>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-3">
                     {OBJECTIVES.map((objective) => {
                       const isSelected = selectedObjectives.includes(objective.id);
                       return (
@@ -443,21 +443,21 @@ export default function Onboarding() {
                           key={objective.id}
                           type="button"
                           onClick={() => handleObjectiveToggle(objective.id)}
-                          className={`p-3 rounded-xl border-2 transition-all text-left ${
+                          className={`p-4 rounded-xl border-2 transition-all text-left ${
                             isSelected 
                               ? "border-primary bg-primary/5" 
                               : "border-gray-200 hover:border-gray-300"
                           }`}
                         >
-                          <div className="flex items-center gap-2">
-                            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
+                          <div className="flex items-center gap-3">
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                               isSelected 
                                 ? "border-primary bg-primary" 
                                 : "border-gray-300"
                             }`}>
-                              {isSelected && <Check className="h-2.5 w-2.5 text-white" />}
+                              {isSelected && <Check className="h-3 w-3 text-white" />}
                             </div>
-                            <span className={`text-xs font-medium ${isSelected ? "text-gray-900" : "text-gray-700"}`}>
+                            <span className={`text-sm font-medium ${isSelected ? "text-gray-900" : "text-gray-700"}`}>
                               {objective.label}
                             </span>
                           </div>
@@ -472,7 +472,7 @@ export default function Onboarding() {
                       placeholder="Descreva brevemente seu objetivo"
                       value={otherObjective}
                       onChange={(e) => setOtherObjective(e.target.value)}
-                      className="rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm"
+                      className="rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                       rows={2}
                     />
                   )}
@@ -480,12 +480,12 @@ export default function Onboarding() {
 
                 {/* Como conheceu */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
-                    <Users className="h-4 w-4 text-primary" />
+                  <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+                    <Users className="h-5 w-5 text-primary" />
                     Como você conheceu nossa plataforma? <span className="text-red-500">*</span>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-3">
                     {HOW_FOUND.map((option) => {
                       const isSelected = howFound === option.id;
                       return (
@@ -493,21 +493,21 @@ export default function Onboarding() {
                           key={option.id}
                           type="button"
                           onClick={() => setHowFound(option.id)}
-                          className={`p-3 rounded-xl border-2 transition-all text-left ${
+                          className={`p-4 rounded-xl border-2 transition-all text-left ${
                             isSelected 
                               ? "border-primary bg-primary/5" 
                               : "border-gray-200 hover:border-gray-300"
                           }`}
                         >
-                          <div className="flex items-center gap-2">
-                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
+                          <div className="flex items-center gap-3">
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
                               isSelected 
                                 ? "border-primary" 
                                 : "border-gray-300"
                             }`}>
-                              {isSelected && <div className="w-2 h-2 rounded-full bg-primary" />}
+                              {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
                             </div>
-                            <span className={`text-xs font-medium ${isSelected ? "text-gray-900" : "text-gray-700"}`}>
+                            <span className={`text-sm font-medium ${isSelected ? "text-gray-900" : "text-gray-700"}`}>
                               {option.label}
                             </span>
                           </div>
@@ -522,42 +522,42 @@ export default function Onboarding() {
                       placeholder="Como você nos conheceu?"
                       value={otherHowFound}
                       onChange={(e) => setOtherHowFound(e.target.value)}
-                      className="h-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm"
+                      className="h-14 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
                     />
                   )}
                 </div>
 
                 {/* Buttons */}
-                <div className="flex gap-3 pt-1">
+                <div className="flex gap-4 pt-2">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={handlePrevStep}
-                    className="flex-1 h-12 rounded-xl border-gray-200 text-gray-700 font-semibold text-sm"
+                    className="flex-1 h-14 rounded-xl border-gray-200 text-gray-700 font-semibold text-base"
                   >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    <ArrowLeft className="h-5 w-5 mr-2" />
                     Voltar
                   </Button>
                   <Button
                     type="submit"
                     disabled={createEstablishmentMutation.isPending}
-                    className="flex-1 h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm"
+                    className="flex-1 h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-base"
                   >
                     {createEstablishmentMutation.isPending ? (
                       <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
                         Cadastrando...
                       </>
                     ) : (
                       <>
                         Finalizar
-                        <ArrowRight className="h-4 w-4 ml-2" />
+                        <ArrowRight className="h-5 w-5 ml-2" />
                       </>
                     )}
                   </Button>
                 </div>
 
-                <p className="text-xs text-center text-gray-500">
+                <p className="text-sm text-center text-gray-500">
                   Você poderá editar todas essas informações depois
                 </p>
               </div>
