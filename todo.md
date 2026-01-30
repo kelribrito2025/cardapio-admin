@@ -3706,3 +3706,4 @@
 - [x] Remover sugestão rápida 'Promoção válida hoje!' do card de Nota
 - [x] Remover aba Notificações da página de Configurações
 - [x] Ajustar espaçamento das abas na página de Configurações para ficar na mesma altura das demais páginas
+- [x] Implementar badge de status (Aberto/Fechado) abaixo do nome do restaurante no header da sidebar

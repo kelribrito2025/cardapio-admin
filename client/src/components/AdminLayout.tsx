@@ -439,9 +439,22 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <Store className="h-4 w-4 text-primary-foreground" />
                   </div>
                 )}
-                <span className="font-semibold text-base text-gray-800 whitespace-nowrap truncate max-w-[140px]">
-                  {establishment?.name || "Cardápio"}
-                </span>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-base text-gray-800 whitespace-nowrap truncate max-w-[140px]">
+                    {establishment?.name || "Cardápio"}
+                  </span>
+                  {/* Badge de status Aberto/Fechado */}
+                  <span className={cn(
+                    "text-[10px] font-medium flex items-center gap-1",
+                    calculatedIsOpen ? "text-green-600" : "text-red-500"
+                  )}>
+                    <span className={cn(
+                      "h-1.5 w-1.5 rounded-full",
+                      calculatedIsOpen ? "bg-green-500 animate-pulse" : "bg-red-500"
+                    )} />
+                    {calculatedIsOpen ? "Aberto" : "Fechado"}
+                  </span>
+                </div>
               </Link>
               <div className="flex items-center gap-1">
                 {/* Toggle button - Desktop only */}
