@@ -2530,7 +2530,7 @@ export async function getEstablishmentOpenStatus(establishmentId: number): Promi
   // Lógica de status:
   // 1. Se manuallyClosed E não deve reabrir automaticamente → Fechado
   // 2. Se manuallyClosed E deve reabrir automaticamente → Aberto (se dentro do horário)
-  // 3. Se não manuallyClosed → Segue horário normal
+  // 3. Se não manuallyClosed → Segue horário configurado (ignora toggle isOpen)
   
   let isOpen = false;
   let manuallyClosed = establishment.manuallyClosed;
@@ -2543,8 +2543,9 @@ export async function getEstablishmentOpenStatus(establishmentId: number): Promi
     // Permanece fechado manualmente
     isOpen = false;
   } else {
-    // Segue horário normal (isOpen do banco indica se o toggle está ligado)
-    isOpen = establishment.isOpen && (isWithinSchedule || false);
+    // Segue horário configurado - se estiver dentro do horário, está aberto
+    // O toggle isOpen não é mais usado para controlar abertura/fechamento
+    isOpen = isWithinSchedule || false;
   }
   
   return {

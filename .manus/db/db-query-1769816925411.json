@@ -1,0 +1,87 @@
+{
+  "query": "SELECT e.id, e.name, e.menuSlug, e.isOpen, e.manuallyClosed, b.dayOfWeek, b.isActive, b.openTime, b.closeTime FROM establishments e LEFT JOIN businessHours b ON e.id = b.establishmentId WHERE e.id = 60018 ORDER BY b.dayOfWeek;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT e.id, e.name, e.menuSlug, e.isOpen, e.manuallyClosed, b.dayOfWeek, b.isActive, b.openTime, b.closeTime FROM establishments e LEFT JOIN businessHours b ON e.id = b.establishmentId WHERE e.id = 60018 ORDER BY b.dayOfWeek;",
+  "rows": [
+    {
+      "id": "60018",
+      "name": "Big Lanches Do Norte",
+      "menuSlug": "big-norte",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "dayOfWeek": "0",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00"
+    },
+    {
+      "id": "60018",
+      "name": "Big Lanches Do Norte",
+      "menuSlug": "big-norte",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "dayOfWeek": "1",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00"
+    },
+    {
+      "id": "60018",
+      "name": "Big Lanches Do Norte",
+      "menuSlug": "big-norte",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "dayOfWeek": "2",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00"
+    },
+    {
+      "id": "60018",
+      "name": "Big Lanches Do Norte",
+      "menuSlug": "big-norte",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "dayOfWeek": "3",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00"
+    },
+    {
+      "id": "60018",
+      "name": "Big Lanches Do Norte",
+      "menuSlug": "big-norte",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "dayOfWeek": "4",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00"
+    },
+    {
+      "id": "60018",
+      "name": "Big Lanches Do Norte",
+      "menuSlug": "big-norte",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "dayOfWeek": "5",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "00:00"
+    },
+    {
+      "id": "60018",
+      "name": "Big Lanches Do Norte",
+      "menuSlug": "big-norte",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "dayOfWeek": "6",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "00:00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tmenuSlug\tisOpen\tmanuallyClosed\tdayOfWeek\tisActive\topenTime\tcloseTime\n60018\tBig Lanches Do Norte\tbig-norte\t0\t0\t0\t1\t18:00\t23:00\n60018\tBig Lanches Do Norte\tbig-norte\t0\t0\t1\t1\t18:00\t23:00\n60018\tBig Lanches Do Norte\tbig-norte\t0\t0\t2\t1\t18:00\t23:00\n60018\tBig Lanches Do Norte\tbig-norte\t0\t0\t3\t1\t18:00\t23:00\n60018\tBig Lanches Do Norte\tbig-norte\t0\t0\t4\t1\t18:00\t23:00\n60018\tBig Lanches Do Norte\tbig-norte\t0\t0\t5\t1\t18:00\t00:00\n60018\tBig Lanches Do Norte\tbig-norte\t0\t0\t6\t1\t18:00\t00:00\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

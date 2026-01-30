@@ -3803,3 +3803,13 @@
 
 ## Correção de Erro useOrdersSSE
 - [x] Corrigir erro TypeError: Cannot read properties of undefined (reading 'substring') na linha 17
+
+## Problema de Notificações SSE
+- [ ] Investigar por que notificações de novos pedidos não estão sendo recebidas
+- [ ] Verificar se o novo domínio v2.mindi.com.br está afetando a conexão SSE
+
+
+## Correção da Lógica de Status Aberto/Fechado
+- [x] Corrigir lógica para usar apenas horários configurados (sem depender do toggle isOpen)
+- [x] Se estiver dentro do horário de funcionamento configurado, mostrar como Aberto
+- [x] O campo manuallyClosed deve ser usado apenas para fechamento manual temporário

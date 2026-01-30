@@ -1,0 +1,394 @@
+{
+  "query": "DESCRIBE establishments;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute DESCRIBE establishments;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "userId",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "name",
+      "Type": "varchar(255)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "logo",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "coverImage",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "street",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "number",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "complement",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "neighborhood",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "city",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "state",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "zipCode",
+      "Type": "varchar(20)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "isOpen",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "menuSlug",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "UNI",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "whatsapp",
+      "Type": "varchar(30)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "acceptsCash",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "1",
+      "Extra": ""
+    },
+    {
+      "Field": "acceptsCard",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "1",
+      "Extra": ""
+    },
+    {
+      "Field": "acceptsPix",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "acceptsBoleto",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "allowsDelivery",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "1",
+      "Extra": ""
+    },
+    {
+      "Field": "allowsPickup",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "1",
+      "Extra": ""
+    },
+    {
+      "Field": "createdAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "updatedAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    },
+    {
+      "Field": "rating",
+      "Type": "decimal(2,1)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "reviewCount",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "instagram",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "pixKey",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "publicNote",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "publicNoteCreatedAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "smsEnabled",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "noteStyle",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "default",
+      "Extra": ""
+    },
+    {
+      "Field": "noteExpiresAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "latitude",
+      "Type": "decimal(10,7)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "longitude",
+      "Type": "decimal(10,7)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "deliveryTimeEnabled",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "deliveryTimeMin",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "20",
+      "Extra": ""
+    },
+    {
+      "Field": "deliveryTimeMax",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "60",
+      "Extra": ""
+    },
+    {
+      "Field": "minimumOrderEnabled",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "minimumOrderValue",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "deliveryFeeType",
+      "Type": "enum('free','fixed','byNeighborhood')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "free",
+      "Extra": ""
+    },
+    {
+      "Field": "deliveryFeeFixed",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "manuallyClosed",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "manuallyClosedAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "loyaltyEnabled",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "loyaltyStampsRequired",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "6",
+      "Extra": ""
+    },
+    {
+      "Field": "loyaltyCouponType",
+      "Type": "enum('fixed','percentage','free_delivery')",
+      "Null": "YES",
+      "Key": "",
+      "Default": "fixed",
+      "Extra": ""
+    },
+    {
+      "Field": "loyaltyCouponValue",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "10.00",
+      "Extra": ""
+    },
+    {
+      "Field": "loyaltyMinOrderValue",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0.00",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint(11)\tNO\tPRI\tNULL\tauto_increment\nuserId\tint(11)\tNO\t\tNULL\t\nname\tvarchar(255)\tNO\t\tNULL\t\nlogo\ttext\tYES\t\tNULL\t\ncoverImage\ttext\tYES\t\tNULL\t\nstreet\tvarchar(255)\tYES\t\tNULL\t\nnumber\tvarchar(50)\tYES\t\tNULL\t\ncomplement\tvarchar(255)\tYES\t\tNULL\t\nneighborhood\tvarchar(255)\tYES\t\tNULL\t\ncity\tvarchar(255)\tYES\t\tNULL\t\nstate\tvarchar(100)\tYES\t\tNULL\t\nzipCode\tvarchar(20)\tYES\t\tNULL\t\nisOpen\ttinyint(1)\tNO\t\t0\t\nmenuSlug\tvarchar(100)\tYES\tUNI\tNULL\t\nwhatsapp\tvarchar(30)\tYES\t\tNULL\t\nacceptsCash\ttinyint(1)\tNO\t\t1\t\nacceptsCard\ttinyint(1)\tNO\t\t1\t\nacceptsPix\ttinyint(1)\tNO\t\t0\t\nacceptsBoleto\ttinyint(1)\tNO\t\t0\t\nallowsDelivery\ttinyint(1)\tNO\t\t1\t\nallowsPickup\ttinyint(1)\tNO\t\t1\t\ncreatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\nupdatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\nrating\tdecimal(2,1)\tYES\t\t0\t\nreviewCount\tint(11)\tNO\t\t0\t\ninstagram\tvarchar(100)\tYES\t\tNULL\t\npixKey\tvarchar(255)\tYES\t\tNULL\t\npublicNote\tvarchar(100)\tYES\t\tNULL\t\npublicNoteCreatedAt\ttimestamp\tYES\t\tNULL\t\nsmsEnabled\ttinyint(1)\tNO\t\t0\t\nnoteStyle\tvarchar(50)\tYES\t\tdefault\t\nnoteExpiresAt\ttimestamp\tYES\t\tNULL\t\nlatitude\tdecimal(10,7)\tYES\t\tNULL\t\nlongitude\tdecimal(10,7)\tYES\t\tNULL\t\ndeliveryTimeEnabled\ttinyint(1)\tNO\t\t0\t\ndeliveryTimeMin\tint(11)\tYES\t\t20\t\ndeliveryTimeMax\tint(11)\tYES\t\t60\t\nminimumOrderEnabled\ttinyint(1)\tNO\t\t0\t\nminimumOrderValue\tdecimal(10,2)\tYES\t\t0\t\ndeliveryFeeType\tenum('free','fixed','byNeighborhood')\tNO\t\tfree\t\ndeliveryFeeFixed\tdecimal(10,2)\tYES\t\t0\t\nmanuallyClosed\ttinyint(1)\tNO\t\t0\t\nmanuallyClosedAt\ttimestamp\tYES\t\tNULL\t\nloyaltyEnabled\ttinyint(1)\tNO\t\t0\t\nloyaltyStampsRequired\tint(11)\tYES\t\t6\t\nloyaltyCouponType\tenum('fixed','percentage','free_delivery')\tYES\t\tfixed\t\nloyaltyCouponValue\tdecimal(10,2)\tYES\t\t10.00\t\nloyaltyMinOrderValue\tdecimal(10,2)\tYES\t\t0.00\t\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}

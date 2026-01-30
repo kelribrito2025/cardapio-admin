@@ -1,0 +1,210 @@
+{
+  "query": "SELECT * FROM businessHours LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM businessHours LIMIT 20;",
+  "rows": [
+    {
+      "id": "60092",
+      "establishmentId": "30001",
+      "dayOfWeek": "0",
+      "isActive": "1",
+      "openTime": "08:00",
+      "closeTime": "02:00",
+      "createdAt": "2026-01-27 16:06:56",
+      "updatedAt": "2026-01-27 16:06:56"
+    },
+    {
+      "id": "60093",
+      "establishmentId": "30001",
+      "dayOfWeek": "1",
+      "isActive": "1",
+      "openTime": "08:00",
+      "closeTime": "02:07",
+      "createdAt": "2026-01-27 16:06:56",
+      "updatedAt": "2026-01-27 16:06:56"
+    },
+    {
+      "id": "60094",
+      "establishmentId": "30001",
+      "dayOfWeek": "2",
+      "isActive": "1",
+      "openTime": "11:00",
+      "closeTime": "02:00",
+      "createdAt": "2026-01-27 16:06:56",
+      "updatedAt": "2026-01-27 16:06:56"
+    },
+    {
+      "id": "60095",
+      "establishmentId": "30001",
+      "dayOfWeek": "3",
+      "isActive": "1",
+      "openTime": "01:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-27 16:06:56",
+      "updatedAt": "2026-01-27 16:06:56"
+    },
+    {
+      "id": "60096",
+      "establishmentId": "30001",
+      "dayOfWeek": "4",
+      "isActive": "1",
+      "openTime": "01:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-27 16:06:56",
+      "updatedAt": "2026-01-27 16:06:56"
+    },
+    {
+      "id": "60097",
+      "establishmentId": "30001",
+      "dayOfWeek": "5",
+      "isActive": "1",
+      "openTime": "01:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-27 16:06:56",
+      "updatedAt": "2026-01-27 16:06:56"
+    },
+    {
+      "id": "60098",
+      "establishmentId": "30001",
+      "dayOfWeek": "6",
+      "isActive": "1",
+      "openTime": "01:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-27 16:06:56",
+      "updatedAt": "2026-01-27 16:06:56"
+    },
+    {
+      "id": "90001",
+      "establishmentId": "60010",
+      "dayOfWeek": "0",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-29 15:26:20",
+      "updatedAt": "2026-01-29 15:26:20"
+    },
+    {
+      "id": "90002",
+      "establishmentId": "60010",
+      "dayOfWeek": "1",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-29 15:26:20",
+      "updatedAt": "2026-01-29 15:26:20"
+    },
+    {
+      "id": "90003",
+      "establishmentId": "60010",
+      "dayOfWeek": "2",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-29 15:26:20",
+      "updatedAt": "2026-01-29 15:26:20"
+    },
+    {
+      "id": "90004",
+      "establishmentId": "60010",
+      "dayOfWeek": "3",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-29 15:26:20",
+      "updatedAt": "2026-01-29 15:26:20"
+    },
+    {
+      "id": "90005",
+      "establishmentId": "60010",
+      "dayOfWeek": "4",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-29 15:26:20",
+      "updatedAt": "2026-01-29 15:26:20"
+    },
+    {
+      "id": "90006",
+      "establishmentId": "60010",
+      "dayOfWeek": "5",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-29 15:26:20",
+      "updatedAt": "2026-01-29 15:26:20"
+    },
+    {
+      "id": "90007",
+      "establishmentId": "60010",
+      "dayOfWeek": "6",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-29 15:26:20",
+      "updatedAt": "2026-01-29 15:26:20"
+    },
+    {
+      "id": "90008",
+      "establishmentId": "60011",
+      "dayOfWeek": "0",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-29 15:47:39",
+      "updatedAt": "2026-01-29 15:47:39"
+    },
+    {
+      "id": "90009",
+      "establishmentId": "60011",
+      "dayOfWeek": "1",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-29 15:47:39",
+      "updatedAt": "2026-01-29 15:47:39"
+    },
+    {
+      "id": "90010",
+      "establishmentId": "60011",
+      "dayOfWeek": "2",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-29 15:47:39",
+      "updatedAt": "2026-01-29 15:47:39"
+    },
+    {
+      "id": "90011",
+      "establishmentId": "60011",
+      "dayOfWeek": "3",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-29 15:47:39",
+      "updatedAt": "2026-01-29 15:47:39"
+    },
+    {
+      "id": "90012",
+      "establishmentId": "60011",
+      "dayOfWeek": "4",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-29 15:47:39",
+      "updatedAt": "2026-01-29 15:47:39"
+    },
+    {
+      "id": "90013",
+      "establishmentId": "60011",
+      "dayOfWeek": "5",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-29 15:47:39",
+      "updatedAt": "2026-01-29 15:47:39"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\tdayOfWeek\tisActive\topenTime\tcloseTime\tcreatedAt\tupdatedAt\n60092\t30001\t0\t1\t08:00\t02:00\t2026-01-27 16:06:56\t2026-01-27 16:06:56\n60093\t30001\t1\t1\t08:00\t02:07\t2026-01-27 16:06:56\t2026-01-27 16:06:56\n60094\t30001\t2\t1\t11:00\t02:00\t2026-01-27 16:06:56\t2026-01-27 16:06:56\n60095\t30001\t3\t1\t01:00\t23:00\t2026-01-27 16:06:56\t2026-01-27 16:06:56\n60096\t30001\t4\t1\t01:00\t23:00\t2026-01-27 16:06:56\t2026-01-27 16:06:56\n60097\t30001\t5\t1\t01:00\t23:00\t2026-01-27 16:06:56\t2026-01-27 16:06:56\n60098\t30001\t6\t1\t01:00\t23:00\t2026-01-27 16:06:56\t2026-01-27 16:06:56\n90001\t60010\t0\t1\t18:00\t23:00\t2026-01-29 15:26:20\t2026-01-29 15:26:20\n90002\t60010\t1\t1\t18:00\t23:00\t2026-01-29 15:26:20\t2026-01-29 15:26:20\n90003\t60010\t2\t1\t18:00\t23:00\t2026-01-29 15:26:20\t2026-01-29 15:26:20\n90004\t60010\t3\t1\t18:00\t23:00\t2026-01-29 15:26:20\t2026-01-29 15:26:20\n90005\t60010\t4\t1\t18:00\t23:00\t2026-01-29 15:26:20\t2026-01-29 15:26:20\n90006\t60010\t5\t1\t18:00\t23:00\t2026-01-29 15:26:20\t2026-01-29 15:26:20\n90007\t60010\t6\t1\t18:00\t23:00\t2026-01-29 15:26:20\t2026-01-29 15:26:20\n90008\t60011\t0\t1\t18:00\t23:00\t2026-01-29 15:47:39\t2026-01-29 15:47:39\n90009\t60011\t1\t1\t18:00\t23:00\t2026-01-29 15:47:39\t2026-01-29 15:47:39\n90010\t60011\t2\t1\t18:00\t23:00\t2026-01-29 15:47:39\t2026-01-29 15:47:39\n90011\t60011\t3\t1\t18:00\t23:00\t2026-01-29 15:47:39\t2026-01-29 15:47:39\n90012\t60011\t4\t1\t18:00\t23:00\t2026-01-29 15:47:39\t2026-01-29 15:47:39\n90013\t60011\t5\t1\t18:00\t23:00\t2026-01-29 15:47:39\t2026-01-29 15:47:39\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}

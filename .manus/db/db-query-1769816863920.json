@@ -1,0 +1,80 @@
+{
+  "query": "SELECT * FROM businessHours WHERE establishmentId = 60018;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM businessHours WHERE establishmentId = 60018;",
+  "rows": [
+    {
+      "id": "90071",
+      "establishmentId": "60018",
+      "dayOfWeek": "0",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-30 23:38:49",
+      "updatedAt": "2026-01-30 23:38:49"
+    },
+    {
+      "id": "90072",
+      "establishmentId": "60018",
+      "dayOfWeek": "1",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-30 23:38:49",
+      "updatedAt": "2026-01-30 23:38:49"
+    },
+    {
+      "id": "90073",
+      "establishmentId": "60018",
+      "dayOfWeek": "2",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-30 23:38:49",
+      "updatedAt": "2026-01-30 23:38:49"
+    },
+    {
+      "id": "90074",
+      "establishmentId": "60018",
+      "dayOfWeek": "3",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-30 23:38:49",
+      "updatedAt": "2026-01-30 23:38:49"
+    },
+    {
+      "id": "90075",
+      "establishmentId": "60018",
+      "dayOfWeek": "4",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "23:00",
+      "createdAt": "2026-01-30 23:38:49",
+      "updatedAt": "2026-01-30 23:38:49"
+    },
+    {
+      "id": "90076",
+      "establishmentId": "60018",
+      "dayOfWeek": "5",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "00:00",
+      "createdAt": "2026-01-30 23:38:49",
+      "updatedAt": "2026-01-30 23:38:49"
+    },
+    {
+      "id": "90077",
+      "establishmentId": "60018",
+      "dayOfWeek": "6",
+      "isActive": "1",
+      "openTime": "18:00",
+      "closeTime": "00:00",
+      "createdAt": "2026-01-30 23:38:49",
+      "updatedAt": "2026-01-30 23:38:49"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\tdayOfWeek\tisActive\topenTime\tcloseTime\tcreatedAt\tupdatedAt\n90071\t60018\t0\t1\t18:00\t23:00\t2026-01-30 23:38:49\t2026-01-30 23:38:49\n90072\t60018\t1\t1\t18:00\t23:00\t2026-01-30 23:38:49\t2026-01-30 23:38:49\n90073\t60018\t2\t1\t18:00\t23:00\t2026-01-30 23:38:49\t2026-01-30 23:38:49\n90074\t60018\t3\t1\t18:00\t23:00\t2026-01-30 23:38:49\t2026-01-30 23:38:49\n90075\t60018\t4\t1\t18:00\t23:00\t2026-01-30 23:38:49\t2026-01-30 23:38:49\n90076\t60018\t5\t1\t18:00\t00:00\t2026-01-30 23:38:49\t2026-01-30 23:38:49\n90077\t60018\t6\t1\t18:00\t00:00\t2026-01-30 23:38:49\t2026-01-30 23:38:49\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}
