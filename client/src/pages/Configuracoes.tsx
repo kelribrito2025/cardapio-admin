@@ -945,10 +945,8 @@ export default function Configuracoes() {
                 {/* Logo - positioned to overlap cover */}
                 <div className="absolute -top-16 left-6">
                   <div className="relative">
-                    {/* Balão de Nota - exibe apenas se existir nota e estiver dentro de 24h */}
+                    {/* Balão de Nota - exibe sempre que existir nota ativa */}
                     {publicNote && publicNoteCreatedAt && (
-                      new Date().getTime() - new Date(publicNoteCreatedAt).getTime() < 24 * 60 * 60 * 1000
-                    ) && (
                       <div className="absolute -top-14 left-0 z-20 animate-float-balloon">
                         <div className="relative">
                           {/* Balão estilo bolha */}
@@ -1486,16 +1484,6 @@ export default function Configuracoes() {
                   ))}
                 </div>
               </div>
-              
-              {/* Status da nota atual */}
-              {publicNoteCreatedAt && (
-                <div className="p-3 bg-amber-50 rounded-xl border border-amber-200">
-                  <p className="text-sm text-amber-800">
-                    <strong>Nota ativa:</strong> Criada em {publicNoteCreatedAt.toLocaleString('pt-BR')}. 
-                    Expira em {new Date(publicNoteCreatedAt.getTime() + 24 * 60 * 60 * 1000).toLocaleString('pt-BR')}.
-                  </p>
-                </div>
-              )}
               
               {/* Botões */}
               <div className="flex gap-3">

@@ -1564,13 +1564,8 @@ export default function PublicMenu() {
           )}
           {/* Profile Image with Note Balloon */}
           <div className="relative z-10 ml-4 md:ml-6">
-            {/* Balão de Nota - exibe apenas se existir nota e não estiver expirada */}
+            {/* Balão de Nota - exibe sempre que existir nota ativa */}
             {establishment.publicNote && (
-              // Verifica se a nota não expirou (usa noteExpiresAt se disponível, senão fallback para 24h)
-              establishment.noteExpiresAt 
-                ? new Date().getTime() < new Date(establishment.noteExpiresAt).getTime()
-                : establishment.publicNoteCreatedAt && new Date().getTime() - new Date(establishment.publicNoteCreatedAt).getTime() < 24 * 60 * 60 * 1000
-            ) && (
               <div className="absolute -top-14 md:-top-16 left-0 z-20 animate-float-balloon">
                 <div className="relative">
                   {/* Balão estilo bolha com estilo personalizado */}

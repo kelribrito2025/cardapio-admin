@@ -3699,3 +3699,4 @@
 - [x] Remover card de preview do balão e mostrar preview temporário sobre a cor selecionada
 - [x] Corrigir tempo de exibição (5s) e quebra de linha no preview do balão
 - [x] Reorganizar aba Estabelecimento: Preview (60%) ao lado do Endereço (40%) com campos verticais
+- [x] Remover validade de 24h da nota - nota fica permanente até ser removida manualmente
