@@ -1628,8 +1628,8 @@ export default function Configuracoes() {
             {/* Formas de pagamento */}
             <SectionCard title="Formas de pagamento">
               <div className="space-y-3">
-                <div className="space-y-2">
-                  <label className="flex items-center gap-3 p-3 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
+                <div className="flex gap-2">
+                  <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
                     <Checkbox
                       checked={acceptsCash}
                       onCheckedChange={(checked) => setAcceptsCash(checked as boolean)}
@@ -1637,7 +1637,7 @@ export default function Configuracoes() {
                     />
                     <span className="font-medium text-sm">Dinheiro</span>
                   </label>
-                  <label className="flex items-center gap-3 p-3 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
+                  <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
                     <Checkbox
                       checked={acceptsCard}
                       onCheckedChange={(checked) => setAcceptsCard(checked as boolean)}
@@ -1645,7 +1645,7 @@ export default function Configuracoes() {
                     />
                     <span className="font-medium text-sm">Cartão</span>
                   </label>
-                  <label className="flex items-center gap-3 p-3 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
+                  <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
                     <Checkbox
                       checked={acceptsPix}
                       onCheckedChange={(checked) => setAcceptsPix(checked as boolean)}
