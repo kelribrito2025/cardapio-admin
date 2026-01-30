@@ -127,8 +127,8 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
       )}>
         {/* Linha com campos de configuração do cupom */}
         <div className={cn(
-          "grid gap-4",
-          couponType === "free_delivery" ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 md:grid-cols-3"
+          "grid gap-4 grid-cols-1",
+          couponType === "free_delivery" ? "md:grid-cols-2" : "md:grid-cols-3"
         )}>
           {/* Tipo de cupom */}
           <div>
