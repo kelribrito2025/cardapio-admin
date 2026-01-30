@@ -451,7 +451,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <span className={cn(
                       "h-1.5 w-1.5 rounded-full",
                       calculatedIsOpen ? "bg-green-500 animate-pulse" : "bg-red-500"
-                    )} />
+                    )} style={{width: '7px', height: '7px'}} />
                     {calculatedIsOpen ? "Aberto" : "Fechado"}
                   </span>
                 </div>
