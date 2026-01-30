@@ -137,6 +137,7 @@ export default function Configuracoes() {
   // Note style state
   const [noteStyle, setNoteStyle] = useState("default");
   const [showPreviewForStyle, setShowPreviewForStyle] = useState<string | null>(null);
+  const previewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Delivery time state
   const [deliveryTimeEnabled, setDeliveryTimeEnabled] = useState(false);
@@ -1284,8 +1285,16 @@ export default function Configuracoes() {
                       onClick={() => {
                         setNoteStyle(style.id);
                         if (publicNote) {
+                          // Limpar timeout anterior se existir
+                          if (previewTimeoutRef.current) {
+                            clearTimeout(previewTimeoutRef.current);
+                          }
                           setShowPreviewForStyle(style.id);
-                          setTimeout(() => setShowPreviewForStyle(null), 5000);
+                          // Definir novo timeout de 5 segundos
+                          previewTimeoutRef.current = setTimeout(() => {
+                            setShowPreviewForStyle(null);
+                            previewTimeoutRef.current = null;
+                          }, 5000);
                         }
                       }}
                       className={cn(
@@ -1308,17 +1317,17 @@ export default function Configuracoes() {
                       )}
                       {/* Preview temporário do balão */}
                       {showPreviewForStyle === style.id && publicNote && (
-                        <div className="absolute -top-20 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <div className="absolute -top-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-2 duration-300">
                           <div className="relative">
                             <div className={cn(
-                              "rounded-[20px] px-3 py-1.5 shadow-lg max-w-[140px] whitespace-nowrap",
+                              "rounded-[20px] px-3 py-2 shadow-lg w-[160px]",
                               style.bg,
                               style.border !== "border-transparent" && "border " + style.border
                             )}>
                               <p className={cn(
-                                "text-xs text-center leading-tight",
+                                "text-xs text-center leading-tight break-words",
                                 style.text
-                              )}>{publicNote.length > 25 ? publicNote.substring(0, 25) + "..." : publicNote}</p>
+                              )}>{publicNote}</p>
                             </div>
                             <div className={cn(
                               "absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 transform rotate-45",
