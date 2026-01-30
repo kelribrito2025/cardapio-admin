@@ -3748,5 +3748,3 @@
 - [x] Mover card Taxa de entrega para ao lado do card Informações e entrega
 - [x] Deixar card Taxa de entrega em formato compacto e retangular
 - [x] Remover card "Como funciona a impressão" da aba Impressoras em Configurações
-- [x] Remover texto descritivo "Configure como os pedidos serão impressos automaticamente" do card de Configurações de Impressão
-- [x] Remover texto descritivo "Gerencie suas impressoras térmicas" do card de Impressoras Cadastradas
