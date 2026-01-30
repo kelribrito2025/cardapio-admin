@@ -656,7 +656,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div 
-                    className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full cursor-pointer transition-all hover:bg-gray-200"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full cursor-pointer transition-all hover:bg-gray-200" style={{backgroundColor: '#ffffff'}}
                   >
                     {/* Ícone de Som com 2 ondas de volume - cor dinâmica */}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke={isSoundEnabled ? "#10b981" : "#f87171"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 transition-colors">
