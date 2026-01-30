@@ -6,16 +6,21 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Printer, Save, RotateCcw, Smartphone, Loader2, FileText, Settings, Eye, Type } from "lucide-react";
+import { Printer, Save, RotateCcw, Smartphone, Loader2, FileText, Settings, Eye, Type, Plus, Pencil, Trash2, Star } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
 interface PrintTestTabProps {
   establishmentId: number;
+  printers?: any[];
+  onAddPrinter?: () => void;
+  onEditPrinter?: (printer: any) => void;
+  onDeletePrinter?: (printer: any) => void;
 }
 
-export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
+export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPrinter, onDeletePrinter }: PrintTestTabProps) {
   // Buscar configurações salvas
   const { data: savedSettings, isLoading: settingsLoading, refetch: refetchSettings } = trpc.printer.getSettings.useQuery(
     { establishmentId },
@@ -724,6 +729,84 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
 
   return (
     <div className="space-y-6">
+      {/* Card de Impressoras Cadastradas */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          <div>
+            <CardTitle>Impressoras Cadastradas</CardTitle>
+            <CardDescription>Gerencie suas impressoras térmicas</CardDescription>
+          </div>
+          {onAddPrinter && (
+            <Button onClick={onAddPrinter} size="sm" className="rounded-xl">
+              <Plus className="h-4 w-4 mr-2" />
+              Adicionar Impressora
+            </Button>
+          )}
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {!printers || printers.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Printer className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                <p>Nenhuma impressora cadastrada</p>
+                <p className="text-sm">Clique em "Adicionar Impressora" para começar</p>
+              </div>
+            ) : (
+              printers.map((printer) => (
+                <div
+                  key={printer.id}
+                  className="flex items-center justify-between p-4 bg-muted/30 rounded-xl"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "p-2 rounded-lg",
+                      printer.isActive ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"
+                    )}>
+                      <Printer className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{printer.name}</span>
+                        {printer.isDefault && (
+                          <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <Star className="h-3 w-3" />
+                            Padrão
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {printer.ipAddress}:{printer.port}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {onEditPrinter && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onEditPrinter(printer)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    )}
+                    {onDeletePrinter && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onDeletePrinter(printer)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       <Tabs defaultValue="layout" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="layout" className="flex items-center gap-2">

@@ -880,9 +880,6 @@ export default function Configuracoes() {
           <TabsTrigger value="atendimento" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-[#3730a3] data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-[#3730a3]">
             Atendimento
           </TabsTrigger>
-          <TabsTrigger value="impressoras" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-[#3730a3] data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-[#3730a3]">
-            Impressoras
-          </TabsTrigger>
 
           <TabsTrigger value="whatsapp" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-[#3730a3] data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-[#3730a3]">
             WhatsApp
@@ -2095,81 +2092,6 @@ export default function Configuracoes() {
           </SectionCard>
         </TabsContent>
 
-        {/* Impressoras Tab */}
-        <TabsContent value="impressoras" className="space-y-5">
-
-          {/* Lista de Impressoras */}
-          <SectionCard
-            title="Impressoras Cadastradas"
-            description="Gerencie suas impressoras térmicas"
-            actions={
-              <Button onClick={openAddPrinterModal} size="sm" className="rounded-xl">
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar Impressora
-              </Button>
-            }
-          >
-            <div className="space-y-3">
-              {!printers || printers.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Printer className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p>Nenhuma impressora cadastrada</p>
-                  <p className="text-sm">Clique em "Adicionar Impressora" para começar</p>
-                </div>
-              ) : (
-                printers.map((printer) => (
-                  <div
-                    key={printer.id}
-                    className="flex items-center justify-between p-4 bg-muted/30 rounded-xl"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "p-2 rounded-lg",
-                        printer.isActive ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"
-                      )}>
-                        <Printer className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{printer.name}</span>
-                          {printer.isDefault && (
-                            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
-                              <Star className="h-3 w-3" />
-                              Padrão
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {printer.ipAddress}:{printer.port}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => openEditPrinterModal(printer)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeletePrinter(printer)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </SectionCard>
-
-
-        </TabsContent>
-
         
         {/* WhatsApp Tab */}
         <TabsContent value="whatsapp" className="space-y-5">
@@ -2178,7 +2100,13 @@ export default function Configuracoes() {
         
         {/* Teste Impressão Tab */}
         <TabsContent value="teste-impressao" className="space-y-5">
-          <PrintTestTab establishmentId={establishment?.id || 0} />
+          <PrintTestTab 
+            establishmentId={establishment?.id || 0}
+            printers={printers}
+            onAddPrinter={openAddPrinterModal}
+            onEditPrinter={openEditPrinterModal}
+            onDeletePrinter={handleDeletePrinter}
+          />
         </TabsContent>
       </Tabs>
 
