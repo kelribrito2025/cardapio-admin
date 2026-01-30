@@ -429,11 +429,11 @@ export function generateStatusMessage(
 ): string {
   // Default templates
   const defaultTemplates: Record<string, string> = {
-    new: `Olá *{{customerName}}*! 🎉 {{greeting}}!\n\nSeu pedido *{{orderNumber}}* foi recebido com sucesso!\n\nAguarde, em breve começaremos a preparar.\n\n{{establishmentName}}`,
-    preparing: `Olá *{{customerName}}*! 👨‍🍳\n\nSeu pedido *{{orderNumber}}* está sendo preparado!\n\nEm breve estará pronto.\n\n{{establishmentName}}`,
-    ready: `Olá *{{customerName}}*! ✅\n\nSeu pedido *{{orderNumber}}* está pronto!\n\nVocê já pode retirar ou aguardar a entrega.\n\n{{establishmentName}}`,
-    completed: `Olá *{{customerName}}*! 🙏\n\nSeu pedido *{{orderNumber}}* foi finalizado!\n\nObrigado pela preferência!\n\n{{establishmentName}}`,
-    cancelled: `Olá *{{customerName}}*! ❌\n\nInfelizmente seu pedido *{{orderNumber}}* foi cancelado.\n\nMotivo: *{{cancellationReason}}*\n\n{{establishmentName}}`,
+    new: `Olá {{customerName}}! 🎉 {{greeting}}!\n\nSeu pedido {{orderNumber}} foi recebido com sucesso!\n\nAguarde, em breve começaremos a preparar.\n\n{{establishmentName}}`,
+    preparing: `Olá {{customerName}}! 👨‍🍳\n\nSeu pedido {{orderNumber}} está sendo preparado!\n\nEm breve estará pronto.\n\n{{establishmentName}}`,
+    ready: `Olá {{customerName}}! ✅\n\nSeu pedido {{orderNumber}} está pronto!\n\nVocê já pode retirar ou aguardar a entrega.\n\n{{establishmentName}}`,
+    completed: `Olá {{customerName}}! 🙏\n\nSeu pedido {{orderNumber}} foi finalizado!\n\nObrigado pela preferência!\n\n{{establishmentName}}`,
+    cancelled: `Olá {{customerName}}! ❌\n\nInfelizmente seu pedido {{orderNumber}} foi cancelado.\n\nMotivo: {{cancellationReason}}\n\n{{establishmentName}}`,
   };
   
   let messageTemplate = template || defaultTemplates[status] || defaultTemplates.new;
@@ -579,23 +579,13 @@ export async function sendButtonMessage(
     // Format buttons for UAZAPI: "texto|id"
     const choices = buttons.map(btn => `${btn.text}|${btn.id}`);
     
-    // Remove formatação de negrito da primeira linha do texto
-    // O WhatsApp aplica negrito automaticamente na primeira linha de mensagens com botões
-    let processedText = text;
-    const lines = text.split('\n');
-    if (lines.length > 0) {
-      // Remove asteriscos de formatação da primeira linha
-      lines[0] = lines[0].replace(/\*([^*]+)\*/g, '$1');
-      processedText = lines.join('\n');
-    }
-    
     const response = await makeInstanceRequest<{
       id?: string;
       message?: string;
     }>(instanceToken, '/send/menu', 'POST', {
       number: formattedPhone,
       type: 'button',
-      text: processedText,
+      text: text,
       choices: choices,
       footerText: footerText || '',
       delay: 1000,

@@ -3402,7 +3402,7 @@ export async function upsertWhatsappConfig(data: {
   }
   
   // Templates padrão para novos estabelecimentos
-  const defaultTemplateNewOrder = `Olá *{{customerName}}*! 👋🏻 {{greeting}}, Tudo bem?
+  const defaultTemplateNewOrder = `Olá *{{customerName}}!* 👋🏻  {{greeting}}, Tudo bem?
 
 Seu pedido *{{orderNumber}}* foi recebido com sucesso!
 
@@ -3426,7 +3426,7 @@ Seu pedido *{{orderNumber}}* foi recebido com sucesso!
 
 *{{establishmentName}}*`;
   
-  const defaultTemplateCancelled = `Olá *{{customerName}}*!
+  const defaultTemplateCancelled = `Olá *{{customerName}}!*
 
 ❌ Infelizmente seu pedido {{orderNumber}} foi cancelado.
 

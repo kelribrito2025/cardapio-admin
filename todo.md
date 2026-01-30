@@ -3721,7 +3721,3 @@
 - [ ] Corrigir erro intermitente 'The string did not match the expected pattern' no login
 - [ ] Corrigir erro intermitente 'The string did not match the expected pattern' no login
 - [x] Corrigir erro intermitente 'The string did not match the expected pattern' no login (Safari/iOS)
-- [x] Corrigir formatação de negrito nas mensagens do WhatsApp - apenas nome do cliente deve ficar em negrito
-- [x] Corrigir formatação de negrito nos templates padrão do WhatsApp (asterisco antes da exclamação)
-- [x] Investigar por que template de novo pedido tem primeira linha toda em negrito (comparar com template preparando que funciona)
-- [x] Corrigir formatação de negrito em mensagens com botões - remover asteriscos da primeira linha (WhatsApp aplica negrito automaticamente)

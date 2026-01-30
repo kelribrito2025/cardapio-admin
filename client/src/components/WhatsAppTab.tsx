@@ -40,11 +40,11 @@ export function WhatsAppTab({ hideConnectionCard = false }: WhatsAppTabProps) {
   
   // Templates padrão
   const DEFAULT_TEMPLATES = {
-    newOrder: `Olá *{{customerName}}*! 👋🏻 {{greeting}}! Tudo bem?\n\nSeu pedido *{{orderNumber}}* foi recebido com sucesso!\n\n🔔 Você será notificado por aqui em cada atualização.`,
+    newOrder: `Olá *{{customerName}}!* 👋🏻 {{greeting}}! Tudo bem?\n\nSeu pedido *{{orderNumber}}* foi recebido com sucesso!\n\n🔔 Você será notificado por aqui em cada atualização.`,
     preparing: `👨‍🍳 *{{customerName}},* seu pedido *{{orderNumber}}* está sendo preparado!`,
     ready: `✅ Seu pedido *{{orderNumber}}* está pronto!\n\n{{deliveryMessage}}`,
     completed: `Seu pedido {{orderNumber}} foi finalizado!\n\n📌 Atualização de fidelidade\n\n*+1 carimbo* adicionado ao seu cartão.\n\n❤️ Obrigado pela preferência!\n\n*{{establishmentName}}*`,
-    cancelled: `Olá *{{customerName}}*!\n\n❌ Infelizmente seu pedido {{orderNumber}} foi cancelado.\n\nMotivo: *{{cancellationReason}}*`,
+    cancelled: `Olá *{{customerName}}!*\n\n❌ Infelizmente seu pedido {{orderNumber}} foi cancelado.\n\nMotivo: *{{cancellationReason}}*`,
   };
   
   // Templates
