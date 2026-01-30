@@ -3723,3 +3723,4 @@
 - [x] Corrigir erro intermitente 'The string did not match the expected pattern' no login (Safari/iOS)
 - [x] Adicionar estrela ao lado da nota de avaliação no menu público
 - [x] Mostrar quantidade de avaliações apenas na versão desktop (ocultar no mobile)
+- [x] Mostrar texto completo "(X avaliações)" na versão desktop, manter apenas número no mobile
