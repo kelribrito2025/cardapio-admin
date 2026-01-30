@@ -3702,3 +3702,4 @@
 - [x] Remover validade de 24h da nota - nota fica permanente até ser removida manualmente
 - [x] Reorganizar campos do Endereço: Número/Bairro/Cidade/UF juntos, Complemento/CEP juntos
 - [x] Ajustar altura do card de Endereço para igualar ao Preview do Perfil Público
+- [x] Alterar estilo das abas em Configurações para texto simples com aba ativa em azul

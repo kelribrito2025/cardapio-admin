@@ -871,29 +871,23 @@ export default function Configuracoes() {
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-6 bg-muted/50 p-1.5 rounded-xl">
-          <TabsTrigger value="estabelecimento" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
-            <Store className="h-4 w-4" />
+        <TabsList className="mb-6 bg-transparent border-b border-border/50 rounded-none p-0 h-auto gap-0">
+          <TabsTrigger value="estabelecimento" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-[#3730a3] data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-[#3730a3]">
             Estabelecimento
           </TabsTrigger>
-          <TabsTrigger value="atendimento" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
-            <Settings2 className="h-4 w-4" />
+          <TabsTrigger value="atendimento" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-[#3730a3] data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-[#3730a3]">
             Atendimento
           </TabsTrigger>
-          <TabsTrigger value="impressoras" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
-            <Printer className="h-4 w-4" />
+          <TabsTrigger value="impressoras" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-[#3730a3] data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-[#3730a3]">
             Impressoras
           </TabsTrigger>
-          <TabsTrigger value="notificacoes" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
-            <Bell className="h-4 w-4" />
+          <TabsTrigger value="notificacoes" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-[#3730a3] data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-[#3730a3]">
             Notificações
           </TabsTrigger>
-          <TabsTrigger value="whatsapp" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
-            <MessageCircle className="h-4 w-4" />
+          <TabsTrigger value="whatsapp" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-[#3730a3] data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-[#3730a3]">
             WhatsApp
           </TabsTrigger>
-          <TabsTrigger value="teste-impressao" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 min-w-[140px] data-[state=active]:bg-card data-[state=active]:shadow-sm" style={{height: '29px'}}>
-            <TestTube className="h-4 w-4" />
+          <TabsTrigger value="teste-impressao" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-[#3730a3] data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-[#3730a3]">
             Teste Impressão
           </TabsTrigger>
         </TabsList>
