@@ -2135,28 +2135,26 @@ export default function Configuracoes() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="ipAddress">Endereço IP</Label>
-              <Input
-                id="ipAddress"
-                value={printerIpAddress}
-                onChange={(e) => setPrinterIpAddress(e.target.value)}
-                placeholder="Ex: 192.168.1.100"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="port">Porta</Label>
-              <Input
-                id="port"
-                type="number"
-                value={printerPort}
-                onChange={(e) => setPrinterPort(parseInt(e.target.value) || 9100)}
-                placeholder="9100"
-              />
-              <p className="text-xs text-muted-foreground">
-                A porta padrão para impressoras ESC/POS é 9100
-              </p>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="col-span-2 space-y-2">
+                <Label htmlFor="ipAddress">Endereço IP</Label>
+                <Input
+                  id="ipAddress"
+                  value={printerIpAddress}
+                  onChange={(e) => setPrinterIpAddress(e.target.value)}
+                  placeholder="Ex: 192.168.1.100"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="port">Porta</Label>
+                <Input
+                  id="port"
+                  type="number"
+                  value={printerPort}
+                  onChange={(e) => setPrinterPort(parseInt(e.target.value) || 9100)}
+                  placeholder="9100"
+                />
+              </div>
             </div>
 
             {/* Tipo de Impressora */}
@@ -2219,46 +2217,7 @@ export default function Configuracoes() {
               />
             </div>
 
-            {/* Botão de Teste de Conexão */}
-            <div className="pt-2 border-t">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={handleTestConnection}
-                disabled={isTestingConnection || !printerIpAddress.trim()}
-              >
-                {isTestingConnection ? (
-                  <>
-                    <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    Testando conexão...
-                  </>
-                ) : (
-                  <>
-                    <Wifi className="h-4 w-4 mr-2" />
-                    Testar Conexão
-                  </>
-                )}
-              </Button>
-              
-              {/* Resultado do Teste */}
-              {testConnectionResult && (
-                <div className={`mt-3 p-3 rounded-lg text-sm ${
-                  testConnectionResult.success 
-                    ? 'bg-green-50 text-green-700 border border-green-200' 
-                    : 'bg-red-50 text-red-700 border border-red-200'
-                }`}>
-                  <div className="flex items-start gap-2">
-                    {testConnectionResult.success ? (
-                      <Wifi className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                    ) : (
-                      <WifiOff className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                    )}
-                    <span>{testConnectionResult.message}</span>
-                  </div>
-                </div>
-              )}
-            </div>
+
           </div>
 
           <DialogFooter>

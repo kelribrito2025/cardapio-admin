@@ -3757,3 +3757,7 @@
 - [x] Mover card "Impressoras Cadastradas" da aba Impressoras para aba Teste Impressão
 - [x] Posicionar card acima de "Configurações de Layout"
 - [x] Remover aba Impressoras (ficará vazia)
+
+## Ajustes no Modal de Impressora
+- [x] Remover botão "Testar Conexão" do modal de Editar Impressora
+- [x] Colocar campo Porta na mesma linha do campo Endereço IP
