@@ -3761,3 +3761,6 @@
 ## Ajustes no Modal de Impressora
 - [x] Remover botão "Testar Conexão" do modal de Editar Impressora
 - [x] Colocar campo Porta na mesma linha do campo Endereço IP
+
+## Renomear Aba de Impressão
+- [x] Renomear aba "Teste Impressão" para "Impressora e Teste"
