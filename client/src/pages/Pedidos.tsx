@@ -1088,7 +1088,8 @@ export default function Pedidos() {
                   </div>
                   {orderDetails.customerPhone && (
                     <div className="flex gap-2 mt-3">
-                      <Button variant="outline" size="sm" className="flex-1 h-8 text-xs" onClick={() => window.open(`tel:${orderDetails.customerPhone}`)}>
+                      <Button variant="outline" size="sm" className="flex-1 h-8 text-xs gap-1.5" onClick={() => window.open(`tel:${orderDetails.customerPhone}`)}>
+                        <Phone className="h-3.5 w-3.5" />
                         Ligar
                       </Button>
                       <Button 
@@ -1102,7 +1103,7 @@ export default function Pedidos() {
                           window.open(`https://wa.me/${phone}?text=Olá! Sobre seu pedido %23${orderDetails.orderNumber}...`, '_blank');
                         }}
                       >
-                        <MessageCircle className="h-3.5 w-3.5" />
+                        <img src="/icons8-whatsapp.svg" alt="WhatsApp" className="h-4 w-4" />
                         Mensagem
                       </Button>
                     </div>

@@ -3714,3 +3714,4 @@
 - [x] Corrigir toast e som de notificação não funcionando no Android (logs de debug adicionados)
 - [x] Corrigir notificação de novo pedido para aparecer em todas as páginas do dashboard, não apenas na página de Pedidos
 - [x] Ajustar modal de detalhes do pedido: remover botão WhatsApp do rodapé, estilizar botão Mensagem com verde e ícone WhatsApp, mover Imprimir para linha do título, remover X de fechar
+- [x] Adicionar ícone do WhatsApp no botão de mensagem e ícone de telefone no botão de ligar no modal de detalhes do pedido
