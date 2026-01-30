@@ -3726,3 +3726,4 @@
 - [x] Mostrar texto completo "(X avaliações)" na versão desktop, manter apenas número no mobile
 - [x] Mostrar quantidade de avaliações no mobile apenas com número ex: (5)
 - [x] Reorganizar campos WhatsApp e Instagram na mesma linha que Link do Cardápio em Configurações básicas
+- [x] Remover opção de boleto do card de Formas de pagamento

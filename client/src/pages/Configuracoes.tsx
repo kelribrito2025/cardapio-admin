@@ -1607,7 +1607,7 @@ export default function Configuracoes() {
           {/* Formas de pagamento */}
           <SectionCard title="Formas de pagamento">
             <div className="space-y-4">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <label className="flex flex-col items-center gap-2 p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
                   <Checkbox
                     checked={acceptsCash}
@@ -1631,14 +1631,6 @@ export default function Configuracoes() {
                     className="h-5 w-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
                   <span className="font-semibold text-sm">Pix</span>
-                </label>
-                <label className="flex flex-col items-center gap-2 p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
-                  <Checkbox
-                    checked={acceptsBoleto}
-                    onCheckedChange={(checked) => setAcceptsBoleto(checked as boolean)}
-                    className="h-5 w-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
-                  <span className="font-semibold text-sm">Boleto</span>
                 </label>
               </div>
 
