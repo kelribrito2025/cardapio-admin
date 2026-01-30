@@ -3717,3 +3717,7 @@
 - [x] Adicionar ícone do WhatsApp no botão de mensagem e ícone de telefone no botão de ligar no modal de detalhes do pedido
 - [ ] Corrigir notificação de novo pedido não aparecendo na versão mobile fora da página de pedidos
 - [x] Corrigir persistência do estado do toggle de som após refresh da página
+- [ ] Corrigir erro intermitente 'The string did not match the expected pattern' no fluxo de login
+- [ ] Corrigir erro intermitente 'The string did not match the expected pattern' no login
+- [ ] Corrigir erro intermitente 'The string did not match the expected pattern' no login
+- [x] Corrigir erro intermitente 'The string did not match the expected pattern' no login (Safari/iOS)

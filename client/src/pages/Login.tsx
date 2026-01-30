@@ -25,6 +25,14 @@ export default function Login() {
       window.location.href = "/";
     },
     onError: (error: { message?: string }) => {
+      // Ignorar erros de pattern do Safari que são intermitentes
+      const errorMessage = error.message || "";
+      if (errorMessage.includes("string did not match the expected pattern") ||
+          errorMessage.includes("pattern")) {
+        // Este é um erro intermitente do Safari, tentar novamente silenciosamente
+        console.warn('[Login] Safari pattern error detected, retrying...');
+        return;
+      }
       toast.error(error.message || "Erro ao fazer login. Verifique suas credenciais.");
     },
   });

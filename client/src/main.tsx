@@ -21,9 +21,23 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
   window.location.href = getLoginUrl();
 };
 
+// Verificar se é um erro de pattern do Safari (intermitente)
+const isSafariPatternError = (error: unknown): boolean => {
+  if (error instanceof Error) {
+    return error.message.includes('string did not match the expected pattern') ||
+           error.message.includes('The string did not match');
+  }
+  return false;
+};
+
 queryClient.getQueryCache().subscribe(event => {
   if (event.type === "updated" && event.action.type === "error") {
     const error = event.query.state.error;
+    // Ignorar erros de pattern do Safari
+    if (isSafariPatternError(error)) {
+      console.warn('[API] Safari pattern error ignored:', error);
+      return;
+    }
     redirectToLoginIfUnauthorized(error);
     console.error("[API Query Error]", error);
   }
@@ -32,6 +46,11 @@ queryClient.getQueryCache().subscribe(event => {
 queryClient.getMutationCache().subscribe(event => {
   if (event.type === "updated" && event.action.type === "error") {
     const error = event.mutation.state.error;
+    // Ignorar erros de pattern do Safari
+    if (isSafariPatternError(error)) {
+      console.warn('[API] Safari pattern error ignored:', error);
+      return;
+    }
     redirectToLoginIfUnauthorized(error);
     console.error("[API Mutation Error]", error);
   }
