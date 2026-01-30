@@ -1381,8 +1381,9 @@ export default function Configuracoes() {
                     type="button"
                     variant="outline"
                     onClick={() => setShowSuggestions(!showSuggestions)}
-                    className="h-11 rounded-xl border-border/50 hover:bg-primary/10 hover:text-primary hover:border-primary/30"
+                    className="h-11 rounded-xl border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 hover:border-red-600"
                   >
+                    <MessageCircle className="h-4 w-4 mr-2" />
                     Ver sugestões de notas
                   </Button>
                 </div>
