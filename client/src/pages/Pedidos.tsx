@@ -556,7 +556,7 @@ export default function Pedidos() {
         return `
           <div class="item">
             <div class="item-header">
-              <span class="item-qty">${item.quantity}x ${item.productName}</span>
+              <span class="item-qty">${item.quantity}x ${item.productName.toUpperCase()}</span>
               <span class="item-price">R$ ${Number(item.totalPrice).toFixed(2).replace('.', ',')}</span>
             </div>
             ${complementsHtml}
@@ -566,6 +566,10 @@ export default function Pedidos() {
       }).join('') || '';
       
       const discount = orderData.discount ? Number(orderData.discount) : 0;
+      const deliveryBadge = orderData.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA';
+      const deliveryText = orderData.deliveryType === 'delivery' 
+        ? `Entrega: ${orderData.customerAddress || 'Endereço não informado'}` 
+        : 'Retirada: Cliente irá retirar no estabelecimento';
       
       const printContent = `
         <!DOCTYPE html>
@@ -574,53 +578,91 @@ export default function Pedidos() {
           <title>Pedido ${orderData.orderNumber?.startsWith('#') ? orderData.orderNumber : `#${orderData.orderNumber}`}</title>
           <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: Arial, sans-serif; font-size: 13px; padding: 20px; max-width: 320px; margin: 0 auto; background: #f5f5f0; color: #333; }
-            .receipt { background: #f5f5f0; padding: 10px; }
-            .logo { text-align: center; padding-bottom: 15px; margin-bottom: 15px; }
-            .logo h1 { font-size: 22px; font-weight: bold; margin: 0; letter-spacing: 1px; }
-            .logo p { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-top: 2px; }
-            .order-info { margin-bottom: 15px; }
-            .order-info h2 { font-size: 16px; font-weight: bold; margin-bottom: 2px; }
-            .order-info p { font-size: 12px; color: #666; }
-            .divider { border: none; border-top: 1px solid #ccc; margin: 12px 0; }
-            .divider-dashed { border: none; border-top: 1px dashed #bbb; margin: 10px 0; }
-            .item { margin-bottom: 10px; }
-            .item-header { display: flex; justify-content: space-between; font-weight: 500; }
+            body { font-family: Arial, sans-serif; font-size: 13px; padding: 15px; max-width: 320px; margin: 0 auto; background: #fff; color: #333; }
+            .receipt { background: #fff; padding: 5px; }
+            .logo { text-align: center; padding-bottom: 15px; margin-bottom: 10px; }
+            .logo h1 { font-size: 20px; font-weight: bold; margin: 0; }
+            .logo p { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-top: 3px; }
+            .order-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+            .order-header h2 { font-size: 16px; font-weight: bold; margin: 0; }
+            .badge { background: #333; color: #fff; padding: 4px 10px; font-size: 10px; font-weight: bold; border-radius: 3px; }
+            .order-date { font-size: 11px; color: #666; margin-bottom: 12px; display: flex; align-items: center; gap: 5px; }
+            .divider-dashed { border: none; border-top: 1px dashed #ccc; margin: 12px 0; }
+            .item { margin-bottom: 8px; }
+            .item-header { display: flex; justify-content: space-between; font-weight: 500; font-size: 13px; }
             .item-obs { font-size: 11px; color: #666; margin-top: 2px; padding-left: 5px; }
             .item-complement { font-size: 11px; color: #555; margin-top: 2px; padding-left: 10px; }
-            .totals { margin: 15px 0; }
-            .total-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
-            .total-row.final { font-weight: bold; font-size: 15px; margin-top: 8px; }
-            .section { margin: 15px 0; }
-            .section-title { font-weight: bold; font-size: 14px; margin-bottom: 6px; }
-            .section-content { font-size: 13px; color: #444; line-height: 1.4; }
-            .footer { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #ccc; }
-            .footer p { font-size: 11px; color: #666; }
-            @media print { body { padding: 0; background: white; } .receipt { background: white; } }
+            .totals { margin: 12px 0; }
+            .total-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 13px; }
+            .total-highlight { background: #333; color: #fff; padding: 8px 12px; display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; margin-top: 8px; }
+            .info-card { border: 1px solid #ddd; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+            .info-card-row { display: flex; justify-content: space-between; align-items: center; }
+            .info-card-label { font-size: 12px; color: #666; display: flex; align-items: center; gap: 6px; }
+            .info-card-value { font-size: 13px; font-weight: 500; }
+            .info-card-text { font-size: 12px; color: #444; margin-top: 2px; }
+            .footer { text-align: center; margin-top: 20px; padding-top: 10px; }
+            .footer p { font-size: 11px; color: #666; line-height: 1.5; }
+            @media print { body { padding: 5px; } }
           </style>
         </head>
         <body>
           <div class="receipt">
-            <div class="logo"><h1>${establishment?.name || 'Cardápio'}</h1><p>Sistema de Pedidos</p></div>
-            <div class="order-info"><h2>Pedido ${orderData.orderNumber?.startsWith('#') ? orderData.orderNumber : `#${orderData.orderNumber}`}</h2><p>Realizado em: ${format(new Date(orderData.createdAt), "dd/MM/yyyy")} - ${format(new Date(orderData.createdAt), "HH:mm")}</p></div>
-            <hr class="divider">
-            <div class="items">${itemsHtml}</div>
-            <hr class="divider-dashed">
-            <div class="totals">
-              <div class="total-row"><span>Valor dos produtos</span><span>R$ ${Number(orderData.subtotal).toFixed(2).replace('.', ',')}</span></div>
-              ${orderData.couponCode ? `<div class="total-row"><span>Cupom aplicado</span><span>${orderData.couponCode}</span></div>` : ''}
-              ${discount > 0 ? `<div class="total-row"><span>Desconto</span><span>- R$ ${discount.toFixed(2).replace('.', ',')}</span></div>` : ''}
-              <div class="total-row"><span>Taxa de entrega</span><span>${Number(orderData.deliveryFee) > 0 ? `R$ ${Number(orderData.deliveryFee).toFixed(2).replace('.', ',')}` : 'Grátis'}</span></div>
-              <div class="total-row final"><span>Total</span><span>R$ ${Number(orderData.total).toFixed(2).replace('.', ',')}</span></div>
+            <div class="logo">
+              <h1>${establishment?.name || 'Cardápio'}</h1>
+              <p>Sistema de Pedidos</p>
             </div>
-            ${orderData.notes ? `<hr class="divider"><div class="section"><div class="section-title">Observações:</div><div class="section-content">${orderData.notes}</div></div>` : ''}
-            <hr class="divider">
-            <div class="section"><div class="section-title">Entrega</div><div class="section-content">${orderData.deliveryType === 'delivery' ? (orderData.customerAddress || 'Endereço não informado') : 'Retirada no local'}</div></div>
-            <hr class="divider">
-            <div class="section"><div class="section-title">Forma de pagamento</div><div class="section-content">${paymentMethodLabels[orderData.paymentMethod]?.label || orderData.paymentMethod}</div></div>
-            <hr class="divider">
-            <div class="section"><div class="section-title">Cliente</div><div class="section-content">${orderData.customerName || 'Não informado'}<br>${orderData.customerPhone || ''}</div></div>
-            <div class="footer"><p>Pedido realizado via Cardápio Admin</p><p>manus.space</p></div>
+            
+            <div class="order-header">
+              <h2>Pedido ${orderData.orderNumber?.startsWith('#') ? orderData.orderNumber : `#${orderData.orderNumber}`}</h2>
+              <span class="badge">${deliveryBadge}</span>
+            </div>
+            <div class="order-date">
+              📅 ${format(new Date(orderData.createdAt), "dd/MM/yyyy")}, ${format(new Date(orderData.createdAt), "HH:mm")}
+            </div>
+            
+            <hr class="divider-dashed">
+            
+            <div class="items">${itemsHtml}</div>
+            
+            <hr class="divider-dashed">
+            
+            <div class="totals">
+              <div class="total-row"><span>Subtotal:</span><span>R$ ${Number(orderData.subtotal).toFixed(2).replace('.', ',')}</span></div>
+              ${orderData.couponCode ? `<div class="total-row"><span>Cupom:</span><span>${orderData.couponCode}</span></div>` : ''}
+              ${discount > 0 ? `<div class="total-row"><span>Desconto:</span><span>- R$ ${discount.toFixed(2).replace('.', ',')}</span></div>` : ''}
+              ${Number(orderData.deliveryFee) > 0 ? `<div class="total-row"><span>Taxa entrega:</span><span>R$ ${Number(orderData.deliveryFee).toFixed(2).replace('.', ',')}</span></div>` : ''}
+            </div>
+            
+            <div class="total-highlight">
+              <span>TOTAL:</span>
+              <span>R$ ${Number(orderData.total).toFixed(2).replace('.', ',')}</span>
+            </div>
+            
+            <div style="margin-top: 15px;">
+              <div class="info-card">
+                <div class="info-card-text">${deliveryText}</div>
+              </div>
+              
+              <div class="info-card">
+                <div class="info-card-row">
+                  <span class="info-card-label">💰 Pagamento</span>
+                  <span class="info-card-value">${(paymentMethodLabels[orderData.paymentMethod]?.label || orderData.paymentMethod).toUpperCase()}</span>
+                </div>
+              </div>
+              
+              <div class="info-card">
+                <div class="info-card-row">
+                  <span class="info-card-label">☆ Cliente</span>
+                  <span class="info-card-value">${orderData.customerName || 'Não informado'} - ${orderData.customerPhone || ''}</span>
+                </div>
+              </div>
+            </div>
+            
+            ${orderData.notes ? `<div class="info-card" style="margin-top: 10px;"><div class="info-card-label">📝 Observações</div><div class="info-card-text">${orderData.notes}</div></div>` : ''}
+            
+            <div class="footer">
+              <p>Pedido realizado via Cardápio Admin<br>manus.space</p>
+            </div>
           </div>
           <script>window.onload = function() { window.print(); window.onafterprint = function() { window.close(); }; };</script>
         </body>

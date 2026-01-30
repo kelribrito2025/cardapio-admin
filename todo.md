@@ -3782,3 +3782,9 @@
 - [x] Corrigir lógica de impressão ao aceitar pedido - usar método favorito correto (normal ou android)
 - [x] Quando favorito é "normal", abrir tela de impressão do navegador
 - [x] Quando favorito é "android", mostrar mensagem para usar app Android
+
+## Layout de Impressão Normal
+- [x] Atualizar layout da impressão normal para ficar idêntico ao modelo Android
+- [x] Adicionar badge RETIRADA/ENTREGA ao lado do número do pedido
+- [x] Usar cards arredondados para Retirada, Pagamento e Cliente
+- [x] Manter mesma estrutura visual: cabeçalho, itens, subtotal, total destacado, cards de info
