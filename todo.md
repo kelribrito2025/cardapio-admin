@@ -3748,3 +3748,6 @@
 - [x] Mover card Taxa de entrega para ao lado do card Informações e entrega
 - [x] Deixar card Taxa de entrega em formato compacto e retangular
 - [x] Remover card "Como funciona a impressão" da aba Impressoras em Configurações
+
+## Remoção do Card Configurações de Impressão
+- [x] Remover card "Configurações de Impressão" da aba Impressoras (manter apenas "Impressoras Cadastradas")
