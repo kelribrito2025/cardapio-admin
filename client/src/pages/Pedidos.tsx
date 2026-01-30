@@ -234,10 +234,8 @@ export default function Pedidos() {
   // Handlers para eventos SSE
   const handleNewOrder = useCallback(() => {
     refetchAll();
-    toast.success("Novo pedido recebido!", {
-      description: "Um novo pedido acabou de chegar.",
-      duration: 5000,
-    });
+    // Toast agora é disparado globalmente pelo AdminLayout via evento 'new-order-notification'
+    // Não duplicar aqui
   }, [refetchAll]);
 
   const handleOrderUpdate = useCallback(() => {

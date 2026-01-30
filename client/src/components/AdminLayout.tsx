@@ -117,6 +117,35 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     return () => window.removeEventListener("storage", syncSoundState);
   }, []);
   
+  // Listener global para notificação de novo pedido - funciona em todas as páginas
+  useEffect(() => {
+    const handleNewOrderNotification = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      console.log("[AdminLayout] Evento de novo pedido recebido:", customEvent.detail);
+      
+      // Mostrar toast de notificação global
+      toast.success("Novo pedido recebido!", {
+        description: "Um novo pedido acabou de chegar.",
+        duration: 5000,
+        action: {
+          label: "Ver pedidos",
+          onClick: () => {
+            window.location.href = "/pedidos";
+          },
+        },
+      });
+    };
+    
+    // Registrar listener
+    window.addEventListener("new-order-notification", handleNewOrderNotification);
+    console.log("[AdminLayout] Listener de notificação global registrado");
+    
+    return () => {
+      window.removeEventListener("new-order-notification", handleNewOrderNotification);
+      console.log("[AdminLayout] Listener de notificação global removido");
+    };
+  }, []);
+  
   // Sidebar collapsed state with localStorage persistence
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window !== "undefined") {

@@ -3712,3 +3712,4 @@
 - [x] Corrigir som de notificação não tocando em dispositivos Android
 - [x] Adicionar vibração como feedback adicional em dispositivos Android
 - [x] Corrigir toast e som de notificação não funcionando no Android (logs de debug adicionados)
+- [x] Corrigir notificação de novo pedido para aparecer em todas as páginas do dashboard, não apenas na página de Pedidos
