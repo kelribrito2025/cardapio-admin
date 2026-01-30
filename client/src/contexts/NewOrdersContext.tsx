@@ -5,26 +5,38 @@ import { useLocation } from "wouter";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
 
 // Singleton para gerenciar o áudio de notificação
+// Otimizado para funcionar em dispositivos móveis (iOS/Android)
 class NotificationAudioManager {
   private static instance: NotificationAudioManager;
   private audio: HTMLAudioElement | null = null;
+  private audioContext: AudioContext | null = null;
+  private audioBuffer: AudioBuffer | null = null;
   private isUnlocked = false;
   private pendingPlay = false;
-  private soundStateLoaded = false; // Flag para garantir que o estado foi carregado
+  private soundStateLoaded = false;
+  private isMobile = false;
+  private userHasInteracted = false;
 
   private constructor() {
+    this.detectMobile();
     this.initAudio();
   }
 
+  // Detectar se é dispositivo móvel
+  private detectMobile() {
+    if (typeof window !== "undefined") {
+      this.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      console.log("[NotificationAudio] Dispositivo móvel:", this.isMobile);
+    }
+  }
+
   // Verificar se o som está habilitado nas configurações
-  // IMPORTANTE: O padrão é FALSE (desativado) até o usuário clicar para ativar
   private isSoundEnabled(): boolean {
     const soundEnabled = localStorage.getItem("notificationSoundEnabled");
-    // Só retorna true se explicitamente definido como "true"
     return soundEnabled === "true";
   }
 
-  // Verificar se estamos no menu público (onde o som nunca deve tocar)
+  // Verificar se estamos no menu público
   private isInPublicMenu(): boolean {
     if (typeof window !== "undefined") {
       return window.location.pathname.startsWith('/menu/');
@@ -39,134 +51,213 @@ class NotificationAudioManager {
     return NotificationAudioManager.instance;
   }
 
-  private initAudio() {
+  private async initAudio() {
     if (typeof window === "undefined") return;
     
+    // Criar elemento de áudio HTML (funciona melhor no desktop)
     this.audio = new Audio("/notification.mp3");
-    // IMPORTANTE: Inicializar SEMPRE mutado para evitar vazamento de áudio
     this.audio.muted = true;
     this.audio.volume = 0;
     this.audio.preload = "auto";
     
-    // Marcar que o estado foi carregado após um pequeno delay
-    // para garantir que o localStorage foi lido
+    // Para mobile, também preparar Web Audio API (mais confiável em iOS/Android)
+    if (this.isMobile) {
+      try {
+        // @ts-ignore - webkitAudioContext para Safari
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          this.audioContext = new AudioContextClass();
+          // Pré-carregar o áudio como buffer
+          this.loadAudioBuffer();
+        }
+      } catch (e) {
+        console.log("[NotificationAudio] Web Audio API não disponível:", e);
+      }
+    }
+    
+    // Marcar estado como carregado
     setTimeout(() => {
       this.soundStateLoaded = true;
-      // Só desmuta se o som estiver explicitamente habilitado
       if (this.audio && this.isSoundEnabled()) {
         this.audio.muted = false;
         this.audio.volume = 0.7;
       }
-      console.log("[NotificationAudio] Estado de som carregado, habilitado:", this.isSoundEnabled());
+      console.log("[NotificationAudio] Estado carregado, habilitado:", this.isSoundEnabled());
     }, 100);
     
-    // Tentar desbloquear o áudio em qualquer interação do usuário
-    const unlockAudio = () => {
-      if (this.isUnlocked) return;
+    // Configurar listeners para interação do usuário
+    this.setupInteractionListeners();
+  }
+
+  // Carregar áudio como buffer para Web Audio API
+  private async loadAudioBuffer() {
+    if (!this.audioContext) return;
+    
+    try {
+      const response = await fetch("/notification.mp3");
+      const arrayBuffer = await response.arrayBuffer();
+      this.audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+      console.log("[NotificationAudio] Buffer de áudio carregado para mobile");
+    } catch (e) {
+      console.log("[NotificationAudio] Erro ao carregar buffer:", e);
+    }
+  }
+
+  // Configurar listeners de interação
+  private setupInteractionListeners() {
+    const handleInteraction = () => {
+      this.userHasInteracted = true;
       
-      // NÃO desbloquear se o som não estiver habilitado
-      if (!this.isSoundEnabled()) {
-        console.log("[NotificationAudio] Som desabilitado, não desbloqueando");
-        return;
+      // Resumir AudioContext se estiver suspenso (necessário para iOS)
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        this.audioContext.resume().then(() => {
+          console.log("[NotificationAudio] AudioContext resumido");
+        });
       }
       
-      if (this.audio) {
-        // Garantir que está mutado antes de tentar desbloquear
-        const wasMuted = this.audio.muted;
-        this.audio.muted = true;
-        this.audio.volume = 0;
-        
-        // Tocar e pausar imediatamente para desbloquear
-        const playPromise = this.audio.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              this.audio?.pause();
-              this.audio!.currentTime = 0;
-              this.isUnlocked = true;
-              
-              // Restaurar volume APENAS se o som estiver habilitado
-              if (this.isSoundEnabled()) {
-                this.audio!.muted = false;
-                this.audio!.volume = 0.7;
-              }
-              
-              console.log("[NotificationAudio] Áudio desbloqueado com sucesso!");
-              
-              // Se tinha um play pendente, executar agora APENAS se o som estiver habilitado
-              // E se NÃO estiver no menu público
-              if (this.pendingPlay && this.isSoundEnabled() && !this.isInPublicMenu()) {
-                this.pendingPlay = false;
-                this.play();
-              } else {
-                this.pendingPlay = false; // Limpar pendingPlay mesmo se som desabilitado ou no menu público
-              }
-            })
-            .catch(() => {
-              // Ainda não conseguiu desbloquear, tentar novamente na próxima interação
-              // Restaurar estado de mute
-              if (this.audio) {
-                this.audio.muted = wasMuted;
-              }
-            });
-        }
+      // Tentar desbloquear áudio HTML
+      if (!this.isUnlocked && this.isSoundEnabled()) {
+        this.unlockHtmlAudio();
       }
     };
 
-    // Adicionar listeners para desbloquear o áudio
+    // Eventos de interação - importante para mobile
     const events = ["click", "touchstart", "touchend", "keydown"];
     events.forEach(event => {
-      document.addEventListener(event, unlockAudio, { once: false, passive: true });
+      document.addEventListener(event, handleInteraction, { passive: true });
     });
   }
 
+  // Desbloquear áudio HTML
+  private unlockHtmlAudio() {
+    if (!this.audio || this.isUnlocked) return;
+    
+    // Salvar estado atual
+    const wasMuted = this.audio.muted;
+    this.audio.muted = true;
+    this.audio.volume = 0;
+    
+    const playPromise = this.audio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          this.audio?.pause();
+          this.audio!.currentTime = 0;
+          this.isUnlocked = true;
+          
+          if (this.isSoundEnabled()) {
+            this.audio!.muted = false;
+            this.audio!.volume = 0.7;
+          }
+          
+          console.log("[NotificationAudio] Áudio HTML desbloqueado!");
+          
+          // Executar play pendente
+          if (this.pendingPlay && this.isSoundEnabled() && !this.isInPublicMenu()) {
+            this.pendingPlay = false;
+            setTimeout(() => this.play(), 50);
+          } else {
+            this.pendingPlay = false;
+          }
+        })
+        .catch(() => {
+          if (this.audio) {
+            this.audio.muted = wasMuted;
+          }
+        });
+    }
+  }
+
+  // Tocar usando Web Audio API (melhor para mobile)
+  private playWithWebAudio(): boolean {
+    if (!this.audioContext || !this.audioBuffer) return false;
+    
+    try {
+      // Resumir contexto se necessário
+      if (this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+      
+      const source = this.audioContext.createBufferSource();
+      source.buffer = this.audioBuffer;
+      
+      const gainNode = this.audioContext.createGain();
+      gainNode.gain.value = 0.7;
+      
+      source.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+      
+      source.start(0);
+      console.log("[NotificationAudio] Som tocado via Web Audio API!");
+      return true;
+    } catch (e) {
+      console.log("[NotificationAudio] Erro ao tocar via Web Audio:", e);
+      return false;
+    }
+  }
+
+  // Tocar usando HTML Audio
+  private playWithHtmlAudio(): boolean {
+    if (!this.audio) return false;
+    
+    this.audio.muted = false;
+    this.audio.volume = 0.7;
+    this.audio.currentTime = 0;
+    
+    const playPromise = this.audio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          console.log("[NotificationAudio] Som tocado via HTML Audio!");
+          this.isUnlocked = true;
+        })
+        .catch((err) => {
+          console.log("[NotificationAudio] Erro HTML Audio:", err.message);
+          if (!this.isUnlocked) {
+            this.pendingPlay = true;
+          }
+        });
+      return true;
+    }
+    return false;
+  }
+
   play() {
-    // Verificar se estamos no menu público - NUNCA tocar som lá
+    // Verificar se estamos no menu público
     if (this.isInPublicMenu()) {
       console.log("[NotificationAudio] No menu público, som bloqueado");
       return;
     }
 
-    // Verificar se o estado de som já foi carregado
+    // Verificar se o estado foi carregado
     if (!this.soundStateLoaded) {
-      console.log("[NotificationAudio] Estado de som ainda não carregado, ignorando");
+      console.log("[NotificationAudio] Estado ainda não carregado");
       return;
     }
 
-    // Verificar se o som está habilitado nas configurações
+    // Verificar se o som está habilitado
     if (!this.isSoundEnabled()) {
-      console.log("[NotificationAudio] Som desabilitado, não tocando");
+      console.log("[NotificationAudio] Som desabilitado");
       return;
     }
 
-    if (!this.audio) {
-      this.initAudio();
-    }
+    console.log("[NotificationAudio] Tentando tocar som...", {
+      isMobile: this.isMobile,
+      userHasInteracted: this.userHasInteracted,
+      isUnlocked: this.isUnlocked,
+      hasAudioContext: !!this.audioContext,
+      hasAudioBuffer: !!this.audioBuffer
+    });
 
-    if (this.audio) {
-      // Garantir que o áudio não está mutado antes de tocar
-      this.audio.muted = false;
-      this.audio.volume = 0.7;
-      
-      // Resetar o áudio para o início
-      this.audio.currentTime = 0;
-      
-      const playPromise = this.audio.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            console.log("[NotificationAudio] Som tocado com sucesso!");
-            this.isUnlocked = true;
-          })
-          .catch((err) => {
-            console.log("[NotificationAudio] Não foi possível tocar o som:", err.message);
-            // Marcar como pendente para tocar quando desbloquear
-            if (!this.isUnlocked) {
-              this.pendingPlay = true;
-            }
-          });
+    // Em mobile, tentar Web Audio API primeiro (mais confiável)
+    if (this.isMobile && this.userHasInteracted) {
+      if (this.playWithWebAudio()) {
+        return;
       }
     }
+
+    // Fallback para HTML Audio
+    this.playWithHtmlAudio();
   }
 
   // Método para verificar se o áudio está desbloqueado
@@ -176,13 +267,29 @@ class NotificationAudioManager {
 
   // Método para forçar desbloqueio (chamado em interação do usuário)
   unlock(): Promise<boolean> {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
+      this.userHasInteracted = true;
+      
+      // Resumir AudioContext para mobile
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        try {
+          await this.audioContext.resume();
+          console.log("[NotificationAudio] AudioContext resumido no unlock");
+        } catch (e) {
+          console.log("[NotificationAudio] Erro ao resumir AudioContext:", e);
+        }
+      }
+      
       if (this.isUnlocked) {
         resolve(true);
         return;
       }
 
       if (this.audio) {
+        // Garantir que está mutado durante o desbloqueio
+        this.audio.muted = true;
+        this.audio.volume = 0;
+        
         const playPromise = this.audio.play();
         if (playPromise !== undefined) {
           playPromise
@@ -190,6 +297,13 @@ class NotificationAudioManager {
               this.audio?.pause();
               this.audio!.currentTime = 0;
               this.isUnlocked = true;
+              
+              // Restaurar volume se som habilitado
+              if (this.isSoundEnabled()) {
+                this.audio!.muted = false;
+                this.audio!.volume = 0.7;
+              }
+              
               console.log("[NotificationAudio] Áudio desbloqueado manualmente!");
               resolve(true);
             })
