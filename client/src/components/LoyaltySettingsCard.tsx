@@ -80,23 +80,44 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
         </div>
       </div>
       
-      {/* Toggle Ativar */}
-      <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl border border-border/50">
-        <div>
-          <p className="font-medium">Ativar Cartão Fidelidade</p>
-          <p className="text-sm text-muted-foreground">
-            Clientes ganham carimbos a cada pedido
-          </p>
+      {/* Toggle Ativar + Carimbos necessários na mesma linha */}
+      <div className="flex flex-col md:flex-row md:items-center gap-4 p-4 bg-muted/30 rounded-xl border border-border/50">
+        <div className="flex items-center justify-between flex-1">
+          <div>
+            <p className="font-medium">Ativar Cartão Fidelidade</p>
+            <p className="text-sm text-muted-foreground">
+              Clientes ganham carimbos a cada pedido
+            </p>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={loyaltyEnabled}
+              onChange={(e) => setLoyaltyEnabled(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+          </label>
         </div>
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            checked={loyaltyEnabled}
-            onChange={(e) => setLoyaltyEnabled(e.target.checked)}
-            className="sr-only peer"
+        
+        {/* Carimbos necessários */}
+        <div className={cn(
+          "md:border-l md:border-border/50 md:pl-4 transition-all duration-300",
+          !loyaltyEnabled && "opacity-50 pointer-events-none"
+        )}>
+          <Label htmlFor="stampsRequired" className="text-sm font-semibold">
+            Carimbos necessários
+          </Label>
+          <Input
+            id="stampsRequired"
+            type="number"
+            min={1}
+            max={20}
+            value={stampsRequired}
+            onChange={(e) => setStampsRequired(parseInt(e.target.value) || 6)}
+            className="mt-1 h-10 rounded-xl border-border/50 w-full md:w-32"
           />
-          <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
-        </label>
+        </div>
       </div>
       
       {/* Settings (only show when enabled) */}
@@ -104,27 +125,11 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
         "space-y-4 transition-all duration-300",
         !loyaltyEnabled && "opacity-50 pointer-events-none"
       )}>
-        {/* Linha com todos os campos de configuração */}
+        {/* Linha com campos de configuração do cupom */}
         <div className={cn(
           "grid gap-4",
-          couponType === "free_delivery" ? "grid-cols-1 md:grid-cols-3" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+          couponType === "free_delivery" ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 md:grid-cols-3"
         )}>
-          {/* Carimbos necessários */}
-          <div>
-            <Label htmlFor="stampsRequired" className="text-sm font-semibold">
-              Carimbos necessários
-            </Label>
-            <Input
-              id="stampsRequired"
-              type="number"
-              min={1}
-              max={20}
-              value={stampsRequired}
-              onChange={(e) => setStampsRequired(parseInt(e.target.value) || 6)}
-              className="mt-2 h-10 rounded-xl border-border/50"
-            />
-          </div>
-          
           {/* Tipo de cupom */}
           <div>
             <Label htmlFor="couponType" className="text-sm font-semibold">

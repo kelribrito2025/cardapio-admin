@@ -3729,3 +3729,4 @@
 - [x] Remover opção de boleto do card de Formas de pagamento
 - [x] Mover card de Cartão Fidelidade para a aba de Estabelecimento
 - [x] Reorganizar campos do Cartão Fidelidade (tipo cupom, valor desconto, valor mínimo) na mesma linha dos carimbos
+- [x] Mover campo de Carimbos necessários para a mesma linha do toggle Ativar Cartão Fidelidade
