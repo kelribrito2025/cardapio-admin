@@ -3738,3 +3738,4 @@
 - [x] Alterar texto do botão de sugestões para "Ver sugestões de notas"
 - [x] Alterar botão "Ver sugestões de notas" para cor vermelha e adicionar ícone de balão
 - [x] Mover tempo de entrega e pedido mínimo para card de Tipo de entrega e renomear para "Informações e entrega"
+- [x] Simplificar textos descritivos de tempo de entrega e pedido mínimo

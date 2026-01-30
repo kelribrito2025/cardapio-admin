@@ -1748,7 +1748,7 @@ export default function Configuracoes() {
                     <div>
                       <h4 className="font-semibold text-sm">Exibir tempo de entrega</h4>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Quando ativado, o tempo de entrega será exibido no menu público ao lado do status "Aberto agora".
+                        O tempo de entrega será exibido no menu público.
                       </p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -1803,7 +1803,7 @@ export default function Configuracoes() {
                     <div>
                       <h4 className="font-semibold text-sm">Pedido mínimo</h4>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Quando ativado, o valor mínimo do pedido será exibido no menu público.
+                        O valor mínimo do pedido será exibido no menu público.
                       </p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
