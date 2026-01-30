@@ -497,6 +497,15 @@ function generateReceiptHTML(
     <p>manus.space</p>
   </div>
 </body>
+<script>
+  // Auto-print quando a página carregar
+  window.onload = function() {
+    // Pequeno delay para garantir que o conteúdo foi renderizado
+    setTimeout(function() {
+      window.print();
+    }, 300);
+  };
+</script>
 </html>
   `.trim();
 }

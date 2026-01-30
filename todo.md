@@ -3793,3 +3793,7 @@
 - [x] Usar endpoint existente /api/print/receipt/:orderId (HTML otimizado)
 - [x] Ajustar função handlePrintOrderDirect para abrir recibo em nova aba
 - [x] Garantir que funcione em celular (abrir em nova aba para imprimir/salvar PDF)
+
+## Impressão Normal com Janela de Impressão Automática
+- [x] Modificar endpoint de recibo para incluir window.print() automático ao carregar
+- [x] Garantir que a janela de impressão abra automaticamente no celular e desktop
