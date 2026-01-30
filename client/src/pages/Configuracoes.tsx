@@ -871,7 +871,7 @@ export default function Configuracoes() {
         />
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} style={{marginTop: '-3px'}}>
+      <Tabs value={activeTab} onValueChange={setActiveTab} style={{marginTop: '-14px'}}>
         <TabsList className="mb-6 bg-transparent border-b border-border/50 rounded-none p-0 h-auto gap-0">
           <TabsTrigger value="estabelecimento" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-[#3730a3] data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-[#3730a3]">
             Estabelecimento
