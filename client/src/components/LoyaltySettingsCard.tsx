@@ -54,79 +54,68 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
     });
   };
   
-  // Format currency input
-  const formatCurrency = (value: string) => {
-    const num = value.replace(/[^\d]/g, "");
-    const formatted = (parseInt(num || "0") / 100).toFixed(2);
-    return formatted;
-  };
-  
   return (
     <div className="space-y-6">
-      {/* Header with icon and toggle */}
+      {/* Header with icon */}
       <div className="flex items-start gap-4">
         <div className="p-3 bg-emerald-100 rounded-xl">
           <Gift className="h-6 w-6 text-emerald-600" />
         </div>
         <div className="flex-1">
-          <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-lg">Cartão Fidelidade</h3>
+          <p className="text-sm text-muted-foreground">
+            Configure o programa de fidelidade do seu restaurante
+          </p>
+        </div>
+      </div>
+      
+      {/* Card único com todas as configurações */}
+      <div className="p-4 bg-muted/30 rounded-xl border border-border/50 space-y-4">
+        {/* Primeira linha: Toggle + Carimbos necessários */}
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <div className="flex items-center justify-between flex-1">
             <div>
-              <h3 className="font-semibold text-lg">Cartão Fidelidade</h3>
+              <p className="font-medium">Ativar Cartão Fidelidade</p>
               <p className="text-sm text-muted-foreground">
-                Configure o programa de fidelidade do seu restaurante
+                Clientes ganham carimbos a cada pedido
               </p>
             </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={loyaltyEnabled}
+                onChange={(e) => setLoyaltyEnabled(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+            </label>
           </div>
-        </div>
-      </div>
-      
-      {/* Toggle Ativar + Carimbos necessários na mesma linha */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4 p-4 bg-muted/30 rounded-xl border border-border/50">
-        <div className="flex items-center justify-between flex-1">
-          <div>
-            <p className="font-medium">Ativar Cartão Fidelidade</p>
-            <p className="text-sm text-muted-foreground">
-              Clientes ganham carimbos a cada pedido
-            </p>
-          </div>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={loyaltyEnabled}
-              onChange={(e) => setLoyaltyEnabled(e.target.checked)}
-              className="sr-only peer"
+          
+          {/* Carimbos necessários */}
+          <div className={cn(
+            "md:border-l md:border-border/50 md:pl-4 transition-all duration-300",
+            !loyaltyEnabled && "opacity-50 pointer-events-none"
+          )}>
+            <Label htmlFor="stampsRequired" className="text-sm font-semibold">
+              Carimbos necessários
+            </Label>
+            <Input
+              id="stampsRequired"
+              type="number"
+              min={1}
+              max={20}
+              value={stampsRequired}
+              onChange={(e) => setStampsRequired(parseInt(e.target.value) || 6)}
+              className="mt-1 h-10 rounded-xl border-border/50 w-full md:w-32"
             />
-            <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
-          </label>
+          </div>
         </div>
         
-        {/* Carimbos necessários */}
+        {/* Segunda linha: Tipo de cupom, Desconto, Valor mínimo */}
         <div className={cn(
-          "md:border-l md:border-border/50 md:pl-4 transition-all duration-300",
+          "flex flex-col md:flex-row gap-4 pt-4 border-t border-border/30 transition-all duration-300",
           !loyaltyEnabled && "opacity-50 pointer-events-none"
         )}>
-          <Label htmlFor="stampsRequired" className="text-sm font-semibold">
-            Carimbos necessários
-          </Label>
-          <Input
-            id="stampsRequired"
-            type="number"
-            min={1}
-            max={20}
-            value={stampsRequired}
-            onChange={(e) => setStampsRequired(parseInt(e.target.value) || 6)}
-            className="mt-1 h-10 rounded-xl border-border/50 w-full md:w-32"
-          />
-        </div>
-      </div>
-      
-      {/* Settings (only show when enabled) */}
-      <div className={cn(
-        "transition-all duration-300",
-        !loyaltyEnabled && "opacity-50 pointer-events-none"
-      )}>
-        {/* Linha com campos de configuração do cupom */}
-        <div className="flex flex-col md:flex-row gap-4">
           {/* Tipo de cupom */}
           <div className="flex-1">
             <Label htmlFor="couponType" className="text-sm font-semibold">

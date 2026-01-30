@@ -3733,3 +3733,4 @@
 - [x] Adicionar botão "Sugestões" na mesma linha do campo de nota do restaurante que exibe as 4 sugestões ao clicar
 - [x] Ajustar layout do Cartão Fidelidade - campos Tipo de cupom, Desconto e Valor mínimo na mesma linha
 - [x] Corrigir layout do Cartão Fidelidade - garantir 3 campos na mesma linha em desktop sem quebra
+- [x] Reorganizar Cartão Fidelidade - todos os 4 campos dentro do card Ativar (carimbos, tipo cupom, desconto, valor mínimo)
