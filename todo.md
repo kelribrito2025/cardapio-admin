@@ -3797,3 +3797,6 @@
 ## Impressão Normal com Janela de Impressão Automática
 - [x] Modificar endpoint de recibo para incluir window.print() automático ao carregar
 - [x] Garantir que a janela de impressão abra automaticamente no celular e desktop
+
+## Remoção do Card de Avaliação Gratuita
+- [x] Remover card "Avaliação gratuita" da barra lateral
