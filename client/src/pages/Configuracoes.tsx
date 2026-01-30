@@ -72,7 +72,6 @@ import { cn } from "@/lib/utils";
 import { ImageCropModal } from "@/components/ImageCropModal";
 import { AddressMapPicker } from "@/components/AddressMapPicker";
 import { LoyaltySettingsCard } from "@/components/LoyaltySettingsCard";
-import { NotificationsTab } from "@/components/NotificationsTab";
 import { WhatsAppTab } from "@/components/WhatsAppTab";
 import { PrintTestTab } from "@/components/PrintTestTab";
 
@@ -881,9 +880,7 @@ export default function Configuracoes() {
           <TabsTrigger value="impressoras" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-[#3730a3] data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-[#3730a3]">
             Impressoras
           </TabsTrigger>
-          <TabsTrigger value="notificacoes" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-[#3730a3] data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-[#3730a3]">
-            Notificações
-          </TabsTrigger>
+
           <TabsTrigger value="whatsapp" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-[#3730a3] data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-[#3730a3]">
             WhatsApp
           </TabsTrigger>
@@ -2671,11 +2668,6 @@ export default function Configuracoes() {
           </SectionCard>
         </TabsContent>
 
-        {/* Notificações Tab */}
-        <TabsContent value="notificacoes" className="space-y-5">
-          {/* Status das Notificações Push */}
-          <NotificationsTab establishmentId={establishment?.id || 0} />
-        </TabsContent>
         
         {/* WhatsApp Tab */}
         <TabsContent value="whatsapp" className="space-y-5">

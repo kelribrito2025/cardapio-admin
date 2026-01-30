@@ -3704,3 +3704,4 @@
 - [x] Ajustar altura do card de Endereço para igualar ao Preview do Perfil Público
 - [x] Alterar estilo das abas em Configurações para texto simples com aba ativa em azul
 - [x] Remover sugestão rápida 'Promoção válida hoje!' do card de Nota
+- [x] Remover aba Notificações da página de Configurações
