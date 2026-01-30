@@ -3426,7 +3426,7 @@ Seu pedido *{{orderNumber}}* foi recebido com sucesso!
 
 *{{establishmentName}}*`;
   
-  const defaultTemplateCancelled = `Olá *{{customerName}}!*
+  const defaultTemplateCancelled = `Olá *{{customerName}}*!
 
 ❌ Infelizmente seu pedido {{orderNumber}} foi cancelado.
 
