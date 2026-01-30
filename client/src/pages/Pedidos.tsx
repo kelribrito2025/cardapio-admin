@@ -531,7 +531,23 @@ export default function Pedidos() {
   };
 
   // Função para imprimir direto (sem abrir detalhes)
+  // Usa o endpoint /api/print/receipt/:orderId que funciona em celular e desktop
   const handlePrintOrderDirect = async (orderId: number) => {
+    try {
+      // Abrir o recibo em uma nova aba - funciona em celular e desktop
+      const receiptUrl = `${window.location.origin}/api/print/receipt/${orderId}`;
+      window.open(receiptUrl, '_blank');
+      toast.success("Recibo aberto em nova aba", {
+        description: "Use a opção de imprimir do navegador ou salve como PDF.",
+        duration: 4000,
+      });
+    } catch (error) {
+      toast.error("Erro ao abrir recibo");
+    }
+  };
+
+  // Função antiga mantida para referência (não utilizada)
+  const handlePrintOrderDirectOld = async (orderId: number) => {
     try {
       const orderData = allOrders.find(o => o.id === orderId);
       if (!orderData) {

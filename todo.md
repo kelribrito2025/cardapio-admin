@@ -3788,3 +3788,8 @@
 - [x] Adicionar badge RETIRADA/ENTREGA ao lado do número do pedido
 - [x] Usar cards arredondados para Retirada, Pagamento e Cliente
 - [x] Manter mesma estrutura visual: cabeçalho, itens, subtotal, total destacado, cards de info
+
+## Impressão Normal em PDF
+- [x] Usar endpoint existente /api/print/receipt/:orderId (HTML otimizado)
+- [x] Ajustar função handlePrintOrderDirect para abrir recibo em nova aba
+- [x] Garantir que funcione em celular (abrir em nova aba para imprimir/salvar PDF)
