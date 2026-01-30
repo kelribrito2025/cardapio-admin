@@ -122,16 +122,13 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
       
       {/* Settings (only show when enabled) */}
       <div className={cn(
-        "space-y-4 transition-all duration-300",
+        "transition-all duration-300",
         !loyaltyEnabled && "opacity-50 pointer-events-none"
       )}>
         {/* Linha com campos de configuração do cupom */}
-        <div className={cn(
-          "grid gap-4 grid-cols-1",
-          couponType === "free_delivery" ? "md:grid-cols-2" : "md:grid-cols-3"
-        )}>
+        <div className="flex flex-col md:flex-row gap-4">
           {/* Tipo de cupom */}
-          <div>
+          <div className="flex-1">
             <Label htmlFor="couponType" className="text-sm font-semibold">
               Tipo de cupom
             </Label>
@@ -149,7 +146,7 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
           
           {/* Valor do desconto (hidden for free_delivery) */}
           {couponType !== "free_delivery" && (
-            <div>
+            <div className="flex-1">
               <Label htmlFor="couponValue" className="text-sm font-semibold">
                 {couponType === "percentage" ? "Desconto (%)" : "Desconto (R$)"}
               </Label>
@@ -166,7 +163,7 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
           )}
           
           {/* Valor mínimo por pedido */}
-          <div>
+          <div className="flex-1">
             <Label htmlFor="minOrderValue" className="text-sm font-semibold">
               Valor mínimo (R$)
             </Label>
