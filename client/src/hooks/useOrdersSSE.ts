@@ -72,7 +72,7 @@ const callbacks: Set<{
 function notifyAll(event: "newOrder" | "orderUpdate" | "connected" | "disconnected" | "error" | "status", data?: unknown) {
   const timestamp = new Date().toISOString();
   console.log(`[SSE-NotifyAll] [${timestamp}] Notificando ${callbacks.size} listeners sobre evento: ${event}`);
-  console.log(`[SSE-NotifyAll] [${timestamp}] Dados do evento:`, JSON.stringify(data).substring(0, 200));
+  console.log(`[SSE-NotifyAll] [${timestamp}] Dados do evento:`, data ? JSON.stringify(data).substring(0, 200) : 'undefined');
   
   // Verificar se estamos em Android
   const isAndroid = /Android/i.test(navigator.userAgent);

@@ -3800,3 +3800,6 @@
 
 ## Remoção do Card de Avaliação Gratuita
 - [x] Remover card "Avaliação gratuita" da barra lateral
+
+## Correção de Erro useOrdersSSE
+- [x] Corrigir erro TypeError: Cannot read properties of undefined (reading 'substring') na linha 17
