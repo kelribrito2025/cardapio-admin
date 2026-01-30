@@ -2100,7 +2100,6 @@ export default function Configuracoes() {
           {/* Configurações de Impressão */}
           <SectionCard
             title="Configurações de Impressão"
-            description="Configure como os pedidos serão impressos automaticamente"
           >
             <div className="space-y-6">
               {/* Toggle de Impressão Automática */}
@@ -2479,7 +2478,6 @@ export default function Configuracoes() {
           {/* Lista de Impressoras */}
           <SectionCard
             title="Impressoras Cadastradas"
-            description="Gerencie suas impressoras térmicas"
             actions={
               <Button onClick={openAddPrinterModal} size="sm" className="rounded-xl">
                 <Plus className="h-4 w-4 mr-2" />
