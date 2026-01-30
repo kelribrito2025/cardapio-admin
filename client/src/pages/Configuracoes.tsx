@@ -864,10 +864,12 @@ export default function Configuracoes() {
 
   return (
     <AdminLayout>
-      <PageHeader
-        title="Configurações"
-        description="Gerencie as configurações do seu estabelecimento"
-      />
+      <div className="mb-6">
+        <PageHeader
+          title="Configurações"
+          description="Gerencie as configurações do seu estabelecimento"
+        />
+      </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-6 bg-transparent border-b border-border/50 rounded-none p-0 h-auto gap-0">
