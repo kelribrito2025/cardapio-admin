@@ -70,12 +70,24 @@ const callbacks: Set<{
 }> = new Set();
 
 function notifyAll(event: "newOrder" | "orderUpdate" | "connected" | "disconnected" | "error" | "status", data?: unknown) {
-  console.log(`[SSE-NotifyAll] Notificando ${callbacks.size} listeners sobre evento: ${event}`);
+  const timestamp = new Date().toISOString();
+  console.log(`[SSE-NotifyAll] [${timestamp}] Notificando ${callbacks.size} listeners sobre evento: ${event}`);
+  console.log(`[SSE-NotifyAll] [${timestamp}] Dados do evento:`, JSON.stringify(data).substring(0, 200));
+  
+  // Verificar se estamos em Android
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  console.log(`[SSE-NotifyAll] [${timestamp}] Plataforma: ${isAndroid ? 'Android' : 'Outro'}`);
+  
   callbacks.forEach((cb, index) => {
     switch (event) {
       case "newOrder":
-        console.log(`[SSE-NotifyAll] Chamando onNewOrder do listener`, cb.onNewOrder ? 'existe' : 'não existe');
-        cb.onNewOrder?.(data as SSEOrder);
+        console.log(`[SSE-NotifyAll] [${timestamp}] Chamando onNewOrder do listener`, cb.onNewOrder ? 'existe' : 'não existe');
+        try {
+          cb.onNewOrder?.(data as SSEOrder);
+          console.log(`[SSE-NotifyAll] [${timestamp}] onNewOrder executado com sucesso`);
+        } catch (e) {
+          console.error(`[SSE-NotifyAll] [${timestamp}] Erro ao executar onNewOrder:`, e);
+        }
         break;
       case "orderUpdate":
         cb.onOrderUpdate?.(data as SSEOrderUpdate);
@@ -102,9 +114,26 @@ function notifyAll(event: "newOrder" | "orderUpdate" | "connected" | "disconnect
 function initBroadcastChannel(establishmentId: number) {
   if (bc) return; // Já inicializado
 
+  const isAndroid = /Android/i.test(navigator.userAgent);
   console.log(`[SSE-Tab] Aba aberta: ${TAB_ID}`);
+  console.log(`[SSE-Tab] Plataforma: ${isAndroid ? 'Android' : 'Outro'}`);
   
-  bc = new BroadcastChannel("mindi-orders-channel");
+  // Verificar se BroadcastChannel é suportado
+  if (typeof BroadcastChannel === 'undefined') {
+    console.log('[SSE-Tab] BroadcastChannel não suportado - assumindo liderança diretamente');
+    becomeLeader(establishmentId);
+    return;
+  }
+  
+  try {
+    bc = new BroadcastChannel("mindi-orders-channel");
+  } catch (e) {
+    console.error('[SSE-Tab] Erro ao criar BroadcastChannel:', e);
+    // Fallback: assumir liderança diretamente
+    becomeLeader(establishmentId);
+    return;
+  }
+  
   currentEstablishmentId = establishmentId;
 
   bc.onmessage = (msg) => {
@@ -197,30 +226,45 @@ function tryBecomeLeader(establishmentId: number) {
 }
 
 function becomeLeader(establishmentId: number) {
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  const timestamp = new Date().toISOString();
+  
+  console.log(`[SSE-Leader] [${timestamp}] ========== INICIANDO LIDERANÇA ==========`);
+  console.log(`[SSE-Leader] [${timestamp}] Plataforma: ${isAndroid ? 'Android' : 'Outro'}`);
+  console.log(`[SSE-Leader] [${timestamp}] EstablishmentId: ${establishmentId}`);
+  
   // Verificar se já existe conexão SSE (previne múltiplas conexões)
   if (eventSource) {
-    console.log("[SSE-Leader] Conexão já existe, não criando outra");
+    console.log(`[SSE-Leader] [${timestamp}] Conexão já existe, não criando outra`);
     return;
   }
 
   isLeader = true;
-  console.log(`[SSE-Tab] Líder atual: ${TAB_ID} (sou eu)`);
+  console.log(`[SSE-Tab] [${timestamp}] Líder atual: ${TAB_ID} (sou eu)`);
   
   // Anunciar que somos o líder
   bc?.postMessage({ type: "leader-exists", tabId: TAB_ID });
 
-  console.log("[SSE-Leader] Criando conexão SSE...");
+  console.log(`[SSE-Leader] [${timestamp}] Criando conexão SSE...`);
   
   status = "connecting";
   notifyAll("status", "connecting");
   bc?.postMessage({ type: "status-update", status: "connecting" });
 
-  eventSource = new EventSource("/api/orders/stream", {
-    withCredentials: true,
-  });
+  try {
+    eventSource = new EventSource("/api/orders/stream", {
+      withCredentials: true,
+    });
+    console.log(`[SSE-Leader] [${timestamp}] EventSource criado com sucesso`);
+  } catch (e) {
+    console.error(`[SSE-Leader] [${timestamp}] Erro ao criar EventSource:`, e);
+    return;
+  }
 
   eventSource.onopen = () => {
-    console.log("[SSE-Leader] Conexão estabelecida.");
+    const openTimestamp = new Date().toISOString();
+    console.log(`[SSE-Leader] [${openTimestamp}] Conexão estabelecida.`);
+    console.log(`[SSE-Leader] [${openTimestamp}] Plataforma: ${isAndroid ? 'Android' : 'Outro'}`);
     status = "connected";
     reconnectAttempts = 0;
     notifyAll("connected");
@@ -279,15 +323,27 @@ function becomeLeader(establishmentId: number) {
 
   // Evento de novo pedido
   eventSource.addEventListener("new_order", (event) => {
+    const eventTimestamp = new Date().toISOString();
+    const isAndroidDevice = /Android/i.test(navigator.userAgent);
+    
+    console.log(`[SSE-Orders] [${eventTimestamp}] ========== EVENTO NEW_ORDER RECEBIDO ==========`);
+    console.log(`[SSE-Orders] [${eventTimestamp}] Plataforma: ${isAndroidDevice ? 'Android' : 'Outro'}`);
+    console.log(`[SSE-Orders] [${eventTimestamp}] Raw event data:`, event.data?.substring(0, 200));
+    
     try {
       const order = JSON.parse(event.data) as SSEOrder;
-      console.log("[SSE-Orders] Evento recebido:", order.orderNumber, "status:", order.status);
+      console.log(`[SSE-Orders] [${eventTimestamp}] Pedido parseado:`, order.orderNumber, "status:", order.status);
+      console.log(`[SSE-Orders] [${eventTimestamp}] Chamando notifyAll...`);
       notifyAll("newOrder", order);
+      console.log(`[SSE-Orders] [${eventTimestamp}] notifyAll executado`);
       // Broadcast para outras abas
       bc?.postMessage({ type: "order-update", payload: order });
+      console.log(`[SSE-Orders] [${eventTimestamp}] Broadcast enviado`);
     } catch (e) {
-      console.error("[SSE-Error] Erro ao parsear novo pedido:", e);
+      console.error(`[SSE-Error] [${eventTimestamp}] Erro ao parsear novo pedido:`, e);
     }
+    
+    console.log(`[SSE-Orders] [${eventTimestamp}] ========== FIM EVENTO NEW_ORDER ==========`);
   });
 
   // Evento de atualização de pedido

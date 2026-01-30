@@ -529,19 +529,43 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
 
   // Callback para novo pedido - usando ref para evitar stale closure
   const handleNewOrder = useCallback((order: unknown) => {
+    const timestamp = new Date().toISOString();
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    
+    console.log(`[NewOrders] [${timestamp}] ========== NOVO PEDIDO RECEBIDO ==========`);
+    console.log(`[NewOrders] [${timestamp}] Plataforma: ${isAndroid ? 'Android' : 'Outro'}`);
+    console.log(`[NewOrders] [${timestamp}] Pedido:`, order);
+    console.log(`[NewOrders] [${timestamp}] Location atual:`, locationRef.current);
+    
     // Incrementar usando ref para garantir valor atualizado
     countRef.current = countRef.current + 1;
     setNewOrdersCount(countRef.current);
-    console.log("[NewOrders] Novo pedido recebido via SSE:", order);
-    console.log("[NewOrders] Nova contagem:", countRef.current);
+    console.log(`[NewOrders] [${timestamp}] Nova contagem:`, countRef.current);
+    
+    // Mostrar toast de notificação
+    // Importar toast se necessário
+    try {
+      // Disparar evento customizado para toast (será capturado pelo componente de toast)
+      const toastEvent = new CustomEvent('new-order-notification', {
+        detail: { order, timestamp }
+      });
+      window.dispatchEvent(toastEvent);
+      console.log(`[NewOrders] [${timestamp}] Evento de toast disparado`);
+    } catch (e) {
+      console.error(`[NewOrders] [${timestamp}] Erro ao disparar evento de toast:`, e);
+    }
     
     // Tocar som de notificação APENAS se não estiver no menu público
     // O menu público usa a rota /menu/:slug
     if (!locationRef.current.startsWith('/menu/')) {
+      console.log(`[NewOrders] [${timestamp}] Chamando playNotificationSound...`);
       playNotificationSound();
+      console.log(`[NewOrders] [${timestamp}] playNotificationSound chamado`);
     } else {
-      console.log("[NewOrders] Som não tocado - usuário está no menu público");
+      console.log(`[NewOrders] [${timestamp}] Som não tocado - usuário está no menu público`);
     }
+    
+    console.log(`[NewOrders] [${timestamp}] ========== FIM PROCESSAMENTO ==========`);
   }, []);
 
   // Callback para update de pedido
