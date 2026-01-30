@@ -1,0 +1,35 @@
+{
+  "query": "SELECT id, orderNumber, status FROM orders WHERE establishmentId = 30001 AND status IN ('pending', 'preparing', 'ready') ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, status FROM orders WHERE establishmentId = 30001 AND status IN ('pending', 'preparing', 'ready') ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "210065",
+      "orderNumber": "#P81",
+      "status": "preparing"
+    },
+    {
+      "id": "210064",
+      "orderNumber": "#P80",
+      "status": "preparing"
+    },
+    {
+      "id": "210063",
+      "orderNumber": "#P79",
+      "status": "preparing"
+    },
+    {
+      "id": "210062",
+      "orderNumber": "#P78",
+      "status": "preparing"
+    },
+    {
+      "id": "210061",
+      "orderNumber": "#P77",
+      "status": "preparing"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tstatus\n210065\t#P81\tpreparing\n210064\t#P80\tpreparing\n210063\t#P79\tpreparing\n210062\t#P78\tpreparing\n210061\t#P77\tpreparing\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

@@ -300,7 +300,14 @@ export default function Pedidos() {
 
   // Função para alternar o método de impressão favorito
   const handleToggleFavoritePrintMethod = (method: 'normal' | 'android') => {
-    if (!establishmentId) return;
+    console.log('[Favorito] Clicou para mudar para:', method);
+    console.log('[Favorito] establishmentId:', establishmentId);
+    console.log('[Favorito] printerSettings atual:', printerSettings);
+    if (!establishmentId) {
+      console.log('[Favorito] Sem establishmentId, retornando');
+      return;
+    }
+    console.log('[Favorito] Chamando mutation...');
     updatePrintMethodMutation.mutate({
       establishmentId,
       defaultPrintMethod: method,
@@ -648,14 +655,29 @@ export default function Pedidos() {
     );
     
     if (newStatus === "preparing") {
-      toast.success("📦 Pedido aceito e enviado para impressão!", {
-        description: "O pedido foi aceito e está sendo enviado para as impressoras.",
-        duration: 4000,
-      });
+      // Verificar método de impressão favorito
+      const printMethod = printerSettings?.defaultPrintMethod || 'normal';
       
-      setTimeout(() => {
-        handlePrintMultiPrinter(orderId);
-      }, 300);
+      if (printMethod === 'android') {
+        toast.success("📦 Pedido aceito e enviado para impressão!", {
+          description: "O pedido foi aceito e está sendo enviado para as impressoras Android.",
+          duration: 4000,
+        });
+        
+        setTimeout(() => {
+          handlePrintMultiPrinter(orderId);
+        }, 300);
+      } else {
+        // Impressão normal - abrir tela de impressão do navegador
+        toast.success("📦 Pedido aceito!", {
+          description: "Abrindo tela de impressão...",
+          duration: 4000,
+        });
+        
+        setTimeout(() => {
+          handlePrintOrderDirect(orderId);
+        }, 300);
+      }
     }
   };
 

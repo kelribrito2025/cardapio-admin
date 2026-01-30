@@ -3134,6 +3134,7 @@ export async function upsertPrinterSettings(data: {
   showDividers?: boolean;
   boxPadding?: number;
   itemBorderStyle?: string;
+  defaultPrintMethod?: 'normal' | 'android';
 }): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -3171,6 +3172,7 @@ export async function upsertPrinterSettings(data: {
         showDividers: data.showDividers ?? (existing as any).showDividers ?? true,
         boxPadding: data.boxPadding ?? (existing as any).boxPadding ?? 12,
         itemBorderStyle: data.itemBorderStyle ?? (existing as any).itemBorderStyle ?? 'rounded',
+        defaultPrintMethod: data.defaultPrintMethod ?? (existing as any).defaultPrintMethod ?? 'normal',
       })
       .where(eq(printerSettings.establishmentId, data.establishmentId));
   } else {
@@ -3204,6 +3206,7 @@ export async function upsertPrinterSettings(data: {
       showDividers: data.showDividers ?? true,
       boxPadding: data.boxPadding ?? 12,
       itemBorderStyle: data.itemBorderStyle ?? 'rounded',
+      defaultPrintMethod: data.defaultPrintMethod ?? 'normal',
     });
   }
 }

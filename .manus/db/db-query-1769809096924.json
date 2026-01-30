@@ -1,0 +1,35 @@
+{
+  "query": "SELECT id, orderNumber, status FROM orders WHERE establishmentId = 30001 ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, status FROM orders WHERE establishmentId = 30001 ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "210079",
+      "orderNumber": "#P95",
+      "status": "completed"
+    },
+    {
+      "id": "210078",
+      "orderNumber": "#P94",
+      "status": "completed"
+    },
+    {
+      "id": "210077",
+      "orderNumber": "#P93",
+      "status": "pending_confirmation"
+    },
+    {
+      "id": "210076",
+      "orderNumber": "#P92",
+      "status": "pending_confirmation"
+    },
+    {
+      "id": "210075",
+      "orderNumber": "#P91",
+      "status": "pending_confirmation"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tstatus\n210079\t#P95\tcompleted\n210078\t#P94\tcompleted\n210077\t#P93\tpending_confirmation\n210076\t#P92\tpending_confirmation\n210075\t#P91\tpending_confirmation\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

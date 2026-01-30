@@ -3774,3 +3774,11 @@
 
 ## Ajuste no Ícone de Favorito
 - [x] Trocar ícone de coração por estrela no menu de impressão favorita
+
+## Correção do Favorito de Impressão
+- [ ] Corrigir comportamento de seleção exclusiva do favorito (clicar na estrela não está mudando)
+
+## Correção da Impressão ao Aceitar Pedido
+- [x] Corrigir lógica de impressão ao aceitar pedido - usar método favorito correto (normal ou android)
+- [x] Quando favorito é "normal", abrir tela de impressão do navegador
+- [x] Quando favorito é "android", mostrar mensagem para usar app Android

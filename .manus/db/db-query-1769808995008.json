@@ -1,0 +1,14 @@
+{
+  "query": "SELECT establishmentId, defaultPrintMethod FROM printerSettings WHERE establishmentId = 30001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT establishmentId, defaultPrintMethod FROM printerSettings WHERE establishmentId = 30001;",
+  "rows": [
+    {
+      "establishmentId": "30001",
+      "defaultPrintMethod": "normal"
+    }
+  ],
+  "messages": [],
+  "stdout": "establishmentId\tdefaultPrintMethod\n30001\tnormal\n",
+  "stderr": "",
+  "execution_time_ms": 77
+}
