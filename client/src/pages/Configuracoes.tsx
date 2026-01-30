@@ -901,10 +901,10 @@ export default function Configuracoes() {
         {/* Estabelecimento Tab */}
         <TabsContent value="estabelecimento" className="space-y-5">
           {/* Preview do Perfil Público + Endereço lado a lado */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 items-stretch">
             {/* Preview do Perfil Público - 60% */}
-            <div className="lg:col-span-3">
-              <SectionCard title="Preview do Perfil Público">
+            <div className="lg:col-span-3 h-full">
+              <SectionCard title="Preview do Perfil Público" className="h-full">
             <div className="bg-white rounded-2xl overflow-hidden border border-border/30 shadow-sm">
               {/* Cover Image */}
               <div className="relative h-48 bg-gradient-to-br from-red-100 to-red-50">
@@ -1219,8 +1219,8 @@ export default function Configuracoes() {
             </div>
 
             {/* Endereço do Estabelecimento - 40% */}
-            <div className="lg:col-span-2">
-              <SectionCard title="Endereço do Estabelecimento">
+            <div className="lg:col-span-2 h-full">
+              <SectionCard title="Endereço do Estabelecimento" className="h-full">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-muted-foreground">Campos com <span className="text-red-500">*</span> são obrigatórios</p>

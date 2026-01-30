@@ -3701,3 +3701,4 @@
 - [x] Reorganizar aba Estabelecimento: Preview (60%) ao lado do Endereço (40%) com campos verticais
 - [x] Remover validade de 24h da nota - nota fica permanente até ser removida manualmente
 - [x] Reorganizar campos do Endereço: Número/Bairro/Cidade/UF juntos, Complemento/CEP juntos
+- [x] Ajustar altura do card de Endereço para igualar ao Preview do Perfil Público
