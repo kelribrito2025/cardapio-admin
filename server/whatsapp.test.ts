@@ -113,4 +113,58 @@ describe('WhatsApp Integration', () => {
       expect(message).toContain('Restaurante');
     });
   });
+  
+  describe('Button message formatting', () => {
+    // Função auxiliar para simular a remoção de formatação da primeira linha
+    // (mesma lógica usada em sendButtonMessage)
+    function removeFirstLineBoldFormatting(text: string): string {
+      const lines = text.split('\n');
+      if (lines.length > 0) {
+        lines[0] = lines[0].replace(/\*([^*]+)\*/g, '$1');
+      }
+      return lines.join('\n');
+    }
+    
+    it('should remove bold formatting from first line only', () => {
+      const text = 'Olá *João*! 👋🏻 Boa tarde!\n\nSeu pedido *#P123* foi recebido!';
+      const processed = removeFirstLineBoldFormatting(text);
+      
+      expect(processed).toBe('Olá João! 👋🏻 Boa tarde!\n\nSeu pedido *#P123* foi recebido!');
+    });
+    
+    it('should remove multiple bold sections from first line', () => {
+      const text = '*Nome*: *João* - *Pedido*: *#123*\n\nDetalhes do pedido';
+      const processed = removeFirstLineBoldFormatting(text);
+      
+      expect(processed).toBe('Nome: João - Pedido: #123\n\nDetalhes do pedido');
+    });
+    
+    it('should not affect lines after the first', () => {
+      const text = 'Primeira linha sem negrito\n*Segunda* linha com *negrito*\n*Terceira* também';
+      const processed = removeFirstLineBoldFormatting(text);
+      
+      expect(processed).toBe('Primeira linha sem negrito\n*Segunda* linha com *negrito*\n*Terceira* também');
+    });
+    
+    it('should handle text without bold formatting', () => {
+      const text = 'Texto simples sem formatação\nSegunda linha';
+      const processed = removeFirstLineBoldFormatting(text);
+      
+      expect(processed).toBe('Texto simples sem formatação\nSegunda linha');
+    });
+    
+    it('should handle single line text', () => {
+      const text = 'Olá *Cliente*! Bem-vindo!';
+      const processed = removeFirstLineBoldFormatting(text);
+      
+      expect(processed).toBe('Olá Cliente! Bem-vindo!');
+    });
+    
+    it('should handle empty text', () => {
+      const text = '';
+      const processed = removeFirstLineBoldFormatting(text);
+      
+      expect(processed).toBe('');
+    });
+  });
 });
