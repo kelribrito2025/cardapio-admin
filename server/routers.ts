@@ -1811,6 +1811,7 @@ export const appRouter = router({
           obsFontSize: 11,
           obsFontWeight: 500,
           showDividers: true,
+          defaultPrintMethod: 'normal' as const,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -1848,6 +1849,7 @@ export const appRouter = router({
         showDividers: z.boolean().optional(),
         boxPadding: z.number().min(4).max(20).optional(),
         itemBorderStyle: z.enum(['rounded', 'dashed']).optional(),
+        defaultPrintMethod: z.enum(['normal', 'android']).optional(),
       }))
       .mutation(async ({ input }) => {
         await db.upsertPrinterSettings(input);

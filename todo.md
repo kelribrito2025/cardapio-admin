@@ -3764,3 +3764,10 @@
 
 ## Renomear Aba de Impressão
 - [x] Renomear aba "Teste Impressão" para "Impressora e Teste"
+
+## Botão de Favorito nas Opções de Impressão
+- [x] Adicionar campo de preferência de impressão padrão no banco de dados (normal ou android)
+- [x] Adicionar botão de favorito (coração vermelho vazado/preenchido) ao lado de cada opção no menu Imprimir
+- [x] Implementar lógica para apenas uma opção ser favorita por vez
+- [x] Salvar preferência do usuário no banco de dados
+- [ ] Usar opção favorita automaticamente ao aceitar pedidos

@@ -63,6 +63,7 @@ import {
   WifiOff,
   Link2Off,
   QrCode,
+  Heart,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
@@ -279,6 +280,32 @@ export default function Pedidos() {
     { id: selectedOrder! },
     { enabled: !!selectedOrder }
   );
+
+  // Query para buscar configurações de impressão (para saber o método favorito)
+  const { data: printerSettings } = trpc.printer.getSettings.useQuery(
+    { establishmentId: establishmentId ?? 0 },
+    { enabled: !!establishmentId && establishmentId > 0 }
+  );
+
+  // Mutation para atualizar método de impressão favorito
+  const updatePrintMethodMutation = trpc.printer.saveSettings.useMutation({
+    onSuccess: () => {
+      utils.printer.getSettings.invalidate();
+      toast.success("Método de impressão favorito atualizado!");
+    },
+    onError: () => {
+      toast.error("Erro ao atualizar método de impressão");
+    },
+  });
+
+  // Função para alternar o método de impressão favorito
+  const handleToggleFavoritePrintMethod = (method: 'normal' | 'android') => {
+    if (!establishmentId) return;
+    updatePrintMethodMutation.mutate({
+      establishmentId,
+      defaultPrintMethod: method,
+    });
+  };
 
   // Hook para gerenciar contagem de pedidos novos na sidebar
   const { decrementCount } = useNewOrders();
@@ -927,17 +954,53 @@ export default function Pedidos() {
                                   <Printer className="h-4 w-4" />
                                 </Button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="start">
+                              <DropdownMenuContent align="start" className="w-72">
                                 <DropdownMenuLabel>Imprimir</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => handlePrintOrderDirect(order.id)}>
-                                  <Printer className="h-4 w-4 mr-2" />
-                                  Impressão Normal
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handlePrintMultiPrinter(order.id)}>
-                                  <Printer className="h-4 w-4 mr-2" />
-                                  Múltiplas Impressoras (Android)
-                                </DropdownMenuItem>
+                                <div className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" onClick={() => handlePrintOrderDirect(order.id)}>
+                                  <div className="flex items-center">
+                                    <Printer className="h-4 w-4 mr-2" />
+                                    <span className="text-sm">Impressão Normal</span>
+                                  </div>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleToggleFavoritePrintMethod('normal');
+                                    }}
+                                    className="p-1 hover:bg-accent-foreground/10 rounded"
+                                  >
+                                    <Heart 
+                                      className={cn(
+                                        "h-4 w-4 transition-colors",
+                                        printerSettings?.defaultPrintMethod === 'normal' 
+                                          ? "fill-red-500 text-red-500" 
+                                          : "text-red-500"
+                                      )} 
+                                    />
+                                  </button>
+                                </div>
+                                <div className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" onClick={() => handlePrintMultiPrinter(order.id)}>
+                                  <div className="flex items-center">
+                                    <Printer className="h-4 w-4 mr-2" />
+                                    <span className="text-sm">Múltiplas Impressoras (Android)</span>
+                                  </div>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleToggleFavoritePrintMethod('android');
+                                    }}
+                                    className="p-1 hover:bg-accent-foreground/10 rounded"
+                                  >
+                                    <Heart 
+                                      className={cn(
+                                        "h-4 w-4 transition-colors",
+                                        printerSettings?.defaultPrintMethod === 'android' 
+                                          ? "fill-red-500 text-red-500" 
+                                          : "text-red-500"
+                                      )} 
+                                    />
+                                  </button>
+                                </div>
                               </DropdownMenuContent>
                             </DropdownMenu>
                             <Button
@@ -1040,15 +1103,51 @@ export default function Pedidos() {
                   Imprimir
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handlePrintOrder}>
-                  <Printer className="h-4 w-4 mr-2" />
-                  Impressão Normal
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => orderDetails && handlePrintMultiPrinter(orderDetails.id)}>
-                  <Printer className="h-4 w-4 mr-2" />
-                  Múltiplas Impressoras (Android)
-                </DropdownMenuItem>
+              <DropdownMenuContent align="end" className="w-72">
+                <div className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" onClick={handlePrintOrder}>
+                  <div className="flex items-center">
+                    <Printer className="h-4 w-4 mr-2" />
+                    <span className="text-sm">Impressão Normal</span>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleFavoritePrintMethod('normal');
+                    }}
+                    className="p-1 hover:bg-accent-foreground/10 rounded"
+                  >
+                    <Heart 
+                      className={cn(
+                        "h-4 w-4 transition-colors",
+                        printerSettings?.defaultPrintMethod === 'normal' 
+                          ? "fill-red-500 text-red-500" 
+                          : "text-red-500"
+                      )} 
+                    />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" onClick={() => orderDetails && handlePrintMultiPrinter(orderDetails.id)}>
+                  <div className="flex items-center">
+                    <Printer className="h-4 w-4 mr-2" />
+                    <span className="text-sm">Múltiplas Impressoras (Android)</span>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleFavoritePrintMethod('android');
+                    }}
+                    className="p-1 hover:bg-accent-foreground/10 rounded"
+                  >
+                    <Heart 
+                      className={cn(
+                        "h-4 w-4 transition-colors",
+                        printerSettings?.defaultPrintMethod === 'android' 
+                          ? "fill-red-500 text-red-500" 
+                          : "text-red-500"
+                      )} 
+                    />
+                  </button>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

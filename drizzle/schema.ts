@@ -403,6 +403,8 @@ export const printerSettings = mysqlTable("printerSettings", {
   showDividers: boolean("showDividers").default(true).notNull(), // Mostrar divisores
   boxPadding: int("boxPadding").default(12).notNull(), // Espaçamento interno das caixas com bordas redondas
   itemBorderStyle: varchar("itemBorderStyle", { length: 20 }).default("rounded").notNull(), // Estilo de borda dos itens: rounded ou dashed
+  // Preferência de impressão padrão ao aceitar pedidos
+  defaultPrintMethod: mysqlEnum("defaultPrintMethod", ["normal", "android"]).default("normal").notNull(), // Método de impressão favorito
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
