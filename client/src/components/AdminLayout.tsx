@@ -432,7 +432,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   <img 
                     src={establishment.logo} 
                     alt={establishment.name || "Logo"}
-                    className="h-8 w-8 rounded-lg object-cover flex-shrink-0"
+                    className="h-8 w-8 rounded-lg object-cover flex-shrink-0" style={{width: '37px', height: '37px'}}
                   />
                 ) : (
                   <div className="p-1.5 bg-primary rounded-lg flex-shrink-0">
