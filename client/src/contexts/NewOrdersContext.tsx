@@ -15,18 +15,28 @@ class NotificationAudioManager {
   private pendingPlay = false;
   private soundStateLoaded = false;
   private isMobile = false;
+  private isAndroid = false;
+  private isIOS = false;
   private userHasInteracted = false;
+  private audioPool: HTMLAudioElement[] = []; // Pool de áudios para Android
 
   private constructor() {
     this.detectMobile();
     this.initAudio();
   }
 
-  // Detectar se é dispositivo móvel
+  // Detectar se é dispositivo móvel e qual sistema
   private detectMobile() {
     if (typeof window !== "undefined") {
-      this.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      console.log("[NotificationAudio] Dispositivo móvel:", this.isMobile);
+      const ua = navigator.userAgent;
+      this.isAndroid = /Android/i.test(ua);
+      this.isIOS = /iPhone|iPad|iPod/i.test(ua);
+      this.isMobile = this.isAndroid || this.isIOS;
+      console.log("[NotificationAudio] Dispositivo:", {
+        isMobile: this.isMobile,
+        isAndroid: this.isAndroid,
+        isIOS: this.isIOS
+      });
     }
   }
 
@@ -54,13 +64,25 @@ class NotificationAudioManager {
   private async initAudio() {
     if (typeof window === "undefined") return;
     
-    // Criar elemento de áudio HTML (funciona melhor no desktop)
+    // Criar elemento de áudio HTML principal
     this.audio = new Audio("/notification.mp3");
     this.audio.muted = true;
     this.audio.volume = 0;
     this.audio.preload = "auto";
     
-    // Para mobile, também preparar Web Audio API (mais confiável em iOS/Android)
+    // Para Android, criar um pool de áudios pré-carregados
+    // Android Chrome tem problemas com reutilização de elementos de áudio
+    if (this.isAndroid) {
+      console.log("[NotificationAudio] Criando pool de áudios para Android");
+      for (let i = 0; i < 3; i++) {
+        const poolAudio = new Audio("/notification.mp3");
+        poolAudio.preload = "auto";
+        poolAudio.volume = 0.7;
+        this.audioPool.push(poolAudio);
+      }
+    }
+    
+    // Para mobile, também preparar Web Audio API
     if (this.isMobile) {
       try {
         // @ts-ignore - webkitAudioContext para Safari
@@ -108,11 +130,16 @@ class NotificationAudioManager {
     const handleInteraction = () => {
       this.userHasInteracted = true;
       
-      // Resumir AudioContext se estiver suspenso (necessário para iOS)
+      // Resumir AudioContext se estiver suspenso (necessário para iOS/Android)
       if (this.audioContext && this.audioContext.state === 'suspended') {
         this.audioContext.resume().then(() => {
           console.log("[NotificationAudio] AudioContext resumido");
         });
+      }
+      
+      // Para Android, desbloquear o pool de áudios
+      if (this.isAndroid && this.audioPool.length > 0) {
+        this.unlockAndroidAudioPool();
       }
       
       // Tentar desbloquear áudio HTML
@@ -125,6 +152,30 @@ class NotificationAudioManager {
     const events = ["click", "touchstart", "touchend", "keydown"];
     events.forEach(event => {
       document.addEventListener(event, handleInteraction, { passive: true });
+    });
+  }
+
+  // Desbloquear pool de áudios para Android
+  private unlockAndroidAudioPool() {
+    console.log("[NotificationAudio] Desbloqueando pool de áudios Android");
+    this.audioPool.forEach((audio, index) => {
+      // Tocar silenciosamente para desbloquear
+      audio.muted = true;
+      audio.volume = 0;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.muted = false;
+            audio.volume = 0.7;
+            console.log(`[NotificationAudio] Áudio pool[${index}] desbloqueado`);
+          })
+          .catch((e) => {
+            console.log(`[NotificationAudio] Erro ao desbloquear pool[${index}]:`, e.message);
+          });
+      }
     });
   }
 
@@ -222,6 +273,40 @@ class NotificationAudioManager {
     return false;
   }
 
+  // Tocar usando pool de áudios (específico para Android)
+  private playWithAndroidPool(): boolean {
+    if (this.audioPool.length === 0) return false;
+    
+    // Encontrar um áudio disponível no pool (que não está tocando)
+    for (const audio of this.audioPool) {
+      if (audio.paused || audio.ended) {
+        audio.currentTime = 0;
+        audio.muted = false;
+        audio.volume = 0.7;
+        
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log("[NotificationAudio] Som tocado via Android Pool!");
+            })
+            .catch((err) => {
+              console.log("[NotificationAudio] Erro Android Pool:", err.message);
+            });
+          return true;
+        }
+      }
+    }
+    
+    // Se todos estão ocupados, usar o primeiro e resetar
+    const audio = this.audioPool[0];
+    audio.currentTime = 0;
+    audio.muted = false;
+    audio.volume = 0.7;
+    audio.play().catch(() => {});
+    return true;
+  }
+
   play() {
     // Verificar se estamos no menu público
     if (this.isInPublicMenu()) {
@@ -243,14 +328,41 @@ class NotificationAudioManager {
 
     console.log("[NotificationAudio] Tentando tocar som...", {
       isMobile: this.isMobile,
+      isAndroid: this.isAndroid,
+      isIOS: this.isIOS,
       userHasInteracted: this.userHasInteracted,
       isUnlocked: this.isUnlocked,
       hasAudioContext: !!this.audioContext,
-      hasAudioBuffer: !!this.audioBuffer
+      hasAudioBuffer: !!this.audioBuffer,
+      audioPoolSize: this.audioPool.length
     });
 
-    // Em mobile, tentar Web Audio API primeiro (mais confiável)
-    if (this.isMobile && this.userHasInteracted) {
+    // Para Android, tentar múltiplas estratégias
+    if (this.isAndroid && this.userHasInteracted) {
+      // Estratégia 1: Pool de áudios (mais confiável no Android)
+      if (this.playWithAndroidPool()) {
+        console.log("[NotificationAudio] Android: Usando pool de áudios");
+        return;
+      }
+      
+      // Estratégia 2: Web Audio API
+      if (this.playWithWebAudio()) {
+        console.log("[NotificationAudio] Android: Usando Web Audio API");
+        return;
+      }
+      
+      // Estratégia 3: Criar novo elemento de áudio
+      console.log("[NotificationAudio] Android: Criando novo elemento de áudio");
+      const newAudio = new Audio("/notification.mp3");
+      newAudio.volume = 0.7;
+      newAudio.play().catch((e) => {
+        console.log("[NotificationAudio] Android: Erro no novo áudio:", e.message);
+      });
+      return;
+    }
+
+    // Para iOS, usar Web Audio API primeiro
+    if (this.isIOS && this.userHasInteracted) {
       if (this.playWithWebAudio()) {
         return;
       }
