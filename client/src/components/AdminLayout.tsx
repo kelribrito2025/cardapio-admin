@@ -707,15 +707,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full cursor-pointer transition-all hover:bg-gray-200"
                   >
                     {/* Ícone de Som com 2 ondas de volume - cor dinâmica */}
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke={isAudioUnlocked && isSoundEnabled ? "#10b981" : "#f87171"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 transition-colors">
-                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill={isAudioUnlocked && isSoundEnabled ? "#10b981" : "#f87171"} />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke={isSoundEnabled ? "#10b981" : "#f87171"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 transition-colors">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill={isSoundEnabled ? "#10b981" : "#f87171"} />
                       <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
                       <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
                     </svg>
                     
                     {/* Toggle Switch - mesmo estilo do toggle de abrir/fechar restaurante */}
                     <Switch
-                      checked={isAudioUnlocked && isSoundEnabled}
+                      checked={isSoundEnabled}
                       onCheckedChange={async (checked) => {
                         // Função auxiliar para tocar som de teste
                         const playTestSound = () => {
@@ -729,27 +729,24 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           }, 100);
                         };
                         
-                        if (!isAudioUnlocked) {
-                          const unlocked = await unlockAudio();
-                          if (unlocked) {
-                            setIsSoundEnabled(true);
-                            localStorage.setItem("notificationSoundEnabled", "true");
-                            // Tocar som de teste breve ao ativar (após desbloqueio)
-                            playTestSound();
-                            toast.success("Som ativado!", {
-                              description: "Você receberá notificações sonoras para novos pedidos.",
-                            });
+                        if (checked) {
+                          // Ativando o som
+                          // Sempre tentar desbloquear o áudio ao ativar (necessário para mobile)
+                          if (!isAudioUnlocked) {
+                            await unlockAudio();
                           }
+                          setIsSoundEnabled(true);
+                          localStorage.setItem("notificationSoundEnabled", "true");
+                          // Tocar som de teste breve ao ativar
+                          playTestSound();
+                          toast.success("Som ativado!", {
+                            description: "Você receberá notificações sonoras para novos pedidos.",
+                          });
                         } else {
-                          setIsSoundEnabled(checked);
-                          localStorage.setItem("notificationSoundEnabled", checked ? "true" : "false");
-                          if (checked) {
-                            // Tocar som de teste breve ao ativar
-                            playTestSound();
-                            toast.success("Som ativado!");
-                          } else {
-                            toast.info("Som desativado");
-                          }
+                          // Desativando o som
+                          setIsSoundEnabled(false);
+                          localStorage.setItem("notificationSoundEnabled", "false");
+                          toast.info("Som desativado");
                         }
                       }}
                       className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-red-300 scale-90"
@@ -757,11 +754,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
-                  {!isAudioUnlocked 
-                    ? "Clique para ativar som de notificação" 
-                    : isSoundEnabled
-                      ? "Som ativado - clique para desativar"
-                      : "Som desativado - clique para ativar"
+                  {isSoundEnabled
+                    ? "Som ativado - clique para desativar"
+                    : "Som desativado - clique para ativar"
                   }
                 </TooltipContent>
               </Tooltip>
