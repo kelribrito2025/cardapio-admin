@@ -3771,3 +3771,6 @@
 - [x] Implementar lógica para apenas uma opção ser favorita por vez
 - [x] Salvar preferência do usuário no banco de dados
 - [ ] Usar opção favorita automaticamente ao aceitar pedidos
+
+## Ajuste no Ícone de Favorito
+- [x] Trocar ícone de coração por estrela no menu de impressão favorita

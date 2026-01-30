@@ -63,7 +63,7 @@ import {
   WifiOff,
   Link2Off,
   QrCode,
-  Heart,
+  Star,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
@@ -969,12 +969,12 @@ export default function Pedidos() {
                                     }}
                                     className="p-1 hover:bg-accent-foreground/10 rounded"
                                   >
-                                    <Heart 
+                                    <Star 
                                       className={cn(
                                         "h-4 w-4 transition-colors",
                                         printerSettings?.defaultPrintMethod === 'normal' 
-                                          ? "fill-red-500 text-red-500" 
-                                          : "text-red-500"
+                                          ? "fill-amber-500 text-amber-500" 
+                                          : "text-amber-500"
                                       )} 
                                     />
                                   </button>
@@ -991,12 +991,12 @@ export default function Pedidos() {
                                     }}
                                     className="p-1 hover:bg-accent-foreground/10 rounded"
                                   >
-                                    <Heart 
+                                    <Star 
                                       className={cn(
                                         "h-4 w-4 transition-colors",
                                         printerSettings?.defaultPrintMethod === 'android' 
-                                          ? "fill-red-500 text-red-500" 
-                                          : "text-red-500"
+                                          ? "fill-amber-500 text-amber-500" 
+                                          : "text-amber-500"
                                       )} 
                                     />
                                   </button>
@@ -1116,12 +1116,12 @@ export default function Pedidos() {
                     }}
                     className="p-1 hover:bg-accent-foreground/10 rounded"
                   >
-                    <Heart 
+                    <Star 
                       className={cn(
                         "h-4 w-4 transition-colors",
                         printerSettings?.defaultPrintMethod === 'normal' 
-                          ? "fill-red-500 text-red-500" 
-                          : "text-red-500"
+                          ? "fill-amber-500 text-amber-500" 
+                          : "text-amber-500"
                       )} 
                     />
                   </button>
@@ -1138,12 +1138,12 @@ export default function Pedidos() {
                     }}
                     className="p-1 hover:bg-accent-foreground/10 rounded"
                   >
-                    <Heart 
+                    <Star 
                       className={cn(
                         "h-4 w-4 transition-colors",
                         printerSettings?.defaultPrintMethod === 'android' 
-                          ? "fill-red-500 text-red-500" 
-                          : "text-red-500"
+                          ? "fill-amber-500 text-amber-500" 
+                          : "text-amber-500"
                       )} 
                     />
                   </button>
