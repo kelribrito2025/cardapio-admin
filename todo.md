@@ -3751,3 +3751,4 @@
 
 ## Remoção do Card Configurações de Impressão
 - [x] Remover card "Configurações de Impressão" da aba Impressoras (manter apenas "Impressoras Cadastradas")
+- [x] Remover card "Texto Personalizado" da aba Teste Impressão em Configurações

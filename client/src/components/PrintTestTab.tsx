@@ -1057,31 +1057,7 @@ export function PrintTestTab({ establishmentId }: PrintTestTabProps) {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Texto Personalizado</CardTitle>
-              <CardDescription>
-                Imprima um texto personalizado para teste
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Textarea
-                placeholder="Digite o texto que deseja imprimir..."
-                value={customText}
-                onChange={(e) => setCustomText(e.target.value)}
-                rows={4}
-              />
-              <Button 
-                onClick={handleTestCustomPrint}
-                disabled={!customText.trim()}
-                className="w-full"
-                variant="outline"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Imprimir Texto
-              </Button>
-            </CardContent>
-          </Card>
+
         </TabsContent>
       </Tabs>
     </div>
