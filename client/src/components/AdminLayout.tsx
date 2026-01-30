@@ -447,7 +447,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   <span className={cn(
                     "text-[10px] font-medium flex items-center gap-1",
                     calculatedIsOpen ? "text-green-600" : "text-red-500"
-                  )}>
+                  )} style={{fontSize: '12px'}}>
                     <span className={cn(
                       "h-1.5 w-1.5 rounded-full",
                       calculatedIsOpen ? "bg-green-500 animate-pulse" : "bg-red-500"
