@@ -1362,7 +1362,6 @@ export default function Configuracoes() {
                 <Label className="text-sm font-semibold">Sugestões rápidas</Label>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    "Promoção válida hoje!",
                     "Temos novidades no cardápio 👀",
                     "Hoje o tempo de entrega está reduzido 🚀",
                     "Obrigado por pedir com a gente ❤️",
