@@ -69,18 +69,18 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
         </div>
       </div>
       
-      {/* Card único com todas as configurações */}
-      <div className="p-4 bg-muted/30 rounded-xl border border-border/50 space-y-4">
-        {/* Primeira linha: Toggle + Carimbos necessários */}
-        <div className="flex flex-col md:flex-row md:items-center gap-4">
-          <div className="flex items-center justify-between flex-1">
+      {/* Card único com toggle + todos os 4 campos na mesma linha */}
+      <div className="p-4 bg-muted/30 rounded-xl border border-border/50">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+          {/* Toggle Ativar */}
+          <div className="flex items-center gap-3 shrink-0">
             <div>
               <p className="font-medium">Ativar Cartão Fidelidade</p>
               <p className="text-sm text-muted-foreground">
                 Clientes ganham carimbos a cada pedido
               </p>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
+            <label className="relative inline-flex items-center cursor-pointer shrink-0">
               <input
                 type="checkbox"
                 checked={loyaltyEnabled}
@@ -91,80 +91,80 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
             </label>
           </div>
           
-          {/* Carimbos necessários */}
+          {/* Separador vertical em desktop */}
+          <div className="hidden lg:block w-px h-12 bg-border/50" />
+          
+          {/* 4 campos em linha */}
           <div className={cn(
-            "md:border-l md:border-border/50 md:pl-4 transition-all duration-300",
+            "flex flex-col sm:flex-row flex-1 gap-3 transition-all duration-300",
             !loyaltyEnabled && "opacity-50 pointer-events-none"
           )}>
-            <Label htmlFor="stampsRequired" className="text-sm font-semibold">
-              Carimbos necessários
-            </Label>
-            <Input
-              id="stampsRequired"
-              type="number"
-              min={1}
-              max={20}
-              value={stampsRequired}
-              onChange={(e) => setStampsRequired(parseInt(e.target.value) || 6)}
-              className="mt-1 h-10 rounded-xl border-border/50 w-full md:w-32"
-            />
-          </div>
-        </div>
-        
-        {/* Segunda linha: Tipo de cupom, Desconto, Valor mínimo */}
-        <div className={cn(
-          "flex flex-col md:flex-row gap-4 pt-4 border-t border-border/30 transition-all duration-300",
-          !loyaltyEnabled && "opacity-50 pointer-events-none"
-        )}>
-          {/* Tipo de cupom */}
-          <div className="flex-1">
-            <Label htmlFor="couponType" className="text-sm font-semibold">
-              Tipo de cupom
-            </Label>
-            <Select value={couponType} onValueChange={(v) => setCouponType(v as typeof couponType)}>
-              <SelectTrigger className="mt-2 h-10 rounded-xl border-border/50">
-                <SelectValue placeholder="Selecione o tipo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="fixed">Valor fixo (R$)</SelectItem>
-                <SelectItem value="percentage">Porcentagem (%)</SelectItem>
-                <SelectItem value="free_delivery">Frete grátis</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          {/* Valor do desconto (hidden for free_delivery) */}
-          {couponType !== "free_delivery" && (
-            <div className="flex-1">
-              <Label htmlFor="couponValue" className="text-sm font-semibold">
-                {couponType === "percentage" ? "Desconto (%)" : "Desconto (R$)"}
+            {/* Carimbos necessários */}
+            <div className="flex-1 min-w-0">
+              <Label htmlFor="stampsRequired" className="text-xs font-semibold text-muted-foreground">
+                Carimbos
               </Label>
               <Input
-                id="couponValue"
+                id="stampsRequired"
                 type="number"
                 min={1}
-                max={couponType === "percentage" ? 100 : 1000}
-                value={couponValue}
-                onChange={(e) => setCouponValue(e.target.value)}
-                className="mt-2 h-10 rounded-xl border-border/50"
+                max={20}
+                value={stampsRequired}
+                onChange={(e) => setStampsRequired(parseInt(e.target.value) || 6)}
+                className="mt-1 h-9 rounded-lg border-border/50 text-sm"
               />
             </div>
-          )}
-          
-          {/* Valor mínimo por pedido */}
-          <div className="flex-1">
-            <Label htmlFor="minOrderValue" className="text-sm font-semibold">
-              Valor mínimo (R$)
-            </Label>
-            <Input
-              id="minOrderValue"
-              type="number"
-              min={0}
-              value={minOrderValue}
-              onChange={(e) => setMinOrderValue(e.target.value)}
-              className="mt-2 h-10 rounded-xl border-border/50"
-              placeholder="0 = sem mínimo"
-            />
+            
+            {/* Tipo de cupom */}
+            <div className="flex-1 min-w-0">
+              <Label htmlFor="couponType" className="text-xs font-semibold text-muted-foreground">
+                Tipo de cupom
+              </Label>
+              <Select value={couponType} onValueChange={(v) => setCouponType(v as typeof couponType)}>
+                <SelectTrigger className="mt-1 h-9 rounded-lg border-border/50 text-sm">
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fixed">Valor fixo (R$)</SelectItem>
+                  <SelectItem value="percentage">Porcentagem (%)</SelectItem>
+                  <SelectItem value="free_delivery">Frete grátis</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Valor do desconto (hidden for free_delivery) */}
+            {couponType !== "free_delivery" && (
+              <div className="flex-1 min-w-0">
+                <Label htmlFor="couponValue" className="text-xs font-semibold text-muted-foreground">
+                  {couponType === "percentage" ? "Desconto (%)" : "Desconto (R$)"}
+                </Label>
+                <Input
+                  id="couponValue"
+                  type="number"
+                  min={1}
+                  max={couponType === "percentage" ? 100 : 1000}
+                  value={couponValue}
+                  onChange={(e) => setCouponValue(e.target.value)}
+                  className="mt-1 h-9 rounded-lg border-border/50 text-sm"
+                />
+              </div>
+            )}
+            
+            {/* Valor mínimo por pedido */}
+            <div className="flex-1 min-w-0">
+              <Label htmlFor="minOrderValue" className="text-xs font-semibold text-muted-foreground">
+                Valor mínimo (R$)
+              </Label>
+              <Input
+                id="minOrderValue"
+                type="number"
+                min={0}
+                value={minOrderValue}
+                onChange={(e) => setMinOrderValue(e.target.value)}
+                className="mt-1 h-9 rounded-lg border-border/50 text-sm"
+                placeholder="0"
+              />
+            </div>
           </div>
         </div>
       </div>
