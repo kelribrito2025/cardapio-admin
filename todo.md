@@ -3713,3 +3713,4 @@
 - [x] Adicionar vibração como feedback adicional em dispositivos Android
 - [x] Corrigir toast e som de notificação não funcionando no Android (logs de debug adicionados)
 - [x] Corrigir notificação de novo pedido para aparecer em todas as páginas do dashboard, não apenas na página de Pedidos
+- [x] Ajustar modal de detalhes do pedido: remover botão WhatsApp do rodapé, estilizar botão Mensagem com verde e ícone WhatsApp, mover Imprimir para linha do título, remover X de fechar

@@ -1024,7 +1024,7 @@ export default function Pedidos() {
 
       {/* Order Details Sidebar */}
       <Sheet open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-md p-0 overflow-hidden flex flex-col">
+        <SheetContent side="right" className="w-full sm:max-w-md p-0 overflow-hidden flex flex-col" hideCloseButton>
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
             <div className="flex items-center gap-3">
@@ -1033,6 +1033,24 @@ export default function Pedidos() {
               </Button>
               <span className="font-semibold text-lg">Detalhes do Pedido</span>
             </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Printer className="h-4 w-4" />
+                  Imprimir
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handlePrintOrder}>
+                  <Printer className="h-4 w-4 mr-2" />
+                  Impressão Normal
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => orderDetails && handlePrintMultiPrinter(orderDetails.id)}>
+                  <Printer className="h-4 w-4 mr-2" />
+                  Múltiplas Impressoras (Android)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {orderDetails && (
@@ -1073,7 +1091,18 @@ export default function Pedidos() {
                       <Button variant="outline" size="sm" className="flex-1 h-8 text-xs" onClick={() => window.open(`tel:${orderDetails.customerPhone}`)}>
                         Ligar
                       </Button>
-                      <Button variant="outline" size="sm" className="flex-1 h-8 text-xs" onClick={() => window.open(`https://wa.me/55${orderDetails.customerPhone?.replace(/\D/g, '')}`, '_blank')}>
+                      <Button 
+                        size="sm" 
+                        className="flex-1 h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5" 
+                        onClick={() => {
+                          let phone = orderDetails.customerPhone?.replace(/\D/g, '');
+                          if (phone && !phone.startsWith('55')) {
+                            phone = '55' + phone;
+                          }
+                          window.open(`https://wa.me/${phone}?text=Olá! Sobre seu pedido %23${orderDetails.orderNumber}...`, '_blank');
+                        }}
+                      >
+                        <MessageCircle className="h-3.5 w-3.5" />
                         Mensagem
                       </Button>
                     </div>
@@ -1254,45 +1283,7 @@ export default function Pedidos() {
             </div>
           )}
 
-          {/* Footer */}
-          <div className="px-6 py-4 border-t border-border/50 flex items-center justify-between mt-auto">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  <Printer className="h-4 w-4" />
-                  Imprimir Pedido
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem onClick={handlePrintOrder}>
-                  <Printer className="h-4 w-4 mr-2" />
-                  Impressão Normal
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => orderDetails && handlePrintMultiPrinter(orderDetails.id)}>
-                  <Printer className="h-4 w-4 mr-2" />
-                  Múltiplas Impressoras (Android)
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button 
-              className="gap-2 bg-emerald-600 hover:bg-emerald-700"
-              onClick={() => {
-                let phone = orderDetails?.customerPhone?.replace(/\D/g, '');
-                if (phone) {
-                  // Adicionar código do país (55) se não estiver presente
-                  if (!phone.startsWith('55')) {
-                    phone = '55' + phone;
-                  }
-                  window.open(`https://wa.me/${phone}?text=Olá! Sobre seu pedido %23${orderDetails?.orderNumber}...`, '_blank');
-                } else {
-                  toast.error("Cliente não possui telefone cadastrado");
-                }
-              }}
-            >
-              <MessageCircle className="h-4 w-4" />
-              Mensagem no WhatsApp
-            </Button>
-          </div>
+
         </SheetContent>
       </Sheet>
 
