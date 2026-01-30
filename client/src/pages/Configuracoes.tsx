@@ -1623,57 +1623,105 @@ export default function Configuracoes() {
             </div>
           </SectionCard>
 
-          {/* Formas de pagamento */}
-          <SectionCard title="Formas de pagamento">
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-3">
-                <label className="flex flex-col items-center gap-2 p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
-                  <Checkbox
-                    checked={acceptsCash}
-                    onCheckedChange={(checked) => setAcceptsCash(checked as boolean)}
-                    className="h-5 w-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
-                  <span className="font-semibold text-sm">Dinheiro</span>
-                </label>
-                <label className="flex flex-col items-center gap-2 p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
-                  <Checkbox
-                    checked={acceptsCard}
-                    onCheckedChange={(checked) => setAcceptsCard(checked as boolean)}
-                    className="h-5 w-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
-                  <span className="font-semibold text-sm">Cartão</span>
-                </label>
-                <label className="flex flex-col items-center gap-2 p-4 border border-border/50 rounded-xl hover:bg-muted/30 cursor-pointer transition-colors">
-                  <Checkbox
-                    checked={acceptsPix}
-                    onCheckedChange={(checked) => setAcceptsPix(checked as boolean)}
-                    className="h-5 w-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
-                  <span className="font-semibold text-sm">Pix</span>
-                </label>
-              </div>
-
-              {/* Campo de Chave Pix */}
-              {acceptsPix && (
+          {/* Formas de pagamento e Notificações SMS lado a lado */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Formas de pagamento */}
+            <SectionCard title="Formas de pagamento">
+              <div className="space-y-3">
                 <div className="space-y-2">
-                  <Label htmlFor="pixKey" className="text-sm font-medium">Chave Pix</Label>
-                  <Input
-                    id="pixKey"
-                    value={pixKey}
-                    onChange={(e) => setPixKey(e.target.value)}
-                    placeholder="CPF, CNPJ, email, telefone ou chave aleatória"
-                    className="rounded-xl"
-                  />
-                  <p className="text-xs text-muted-foreground">Esta chave será exibida para o cliente copiar ao selecionar Pix como forma de pagamento.</p>
+                  <label className="flex items-center gap-3 p-3 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
+                    <Checkbox
+                      checked={acceptsCash}
+                      onCheckedChange={(checked) => setAcceptsCash(checked as boolean)}
+                      className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <span className="font-medium text-sm">Dinheiro</span>
+                  </label>
+                  <label className="flex items-center gap-3 p-3 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
+                    <Checkbox
+                      checked={acceptsCard}
+                      onCheckedChange={(checked) => setAcceptsCard(checked as boolean)}
+                      className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <span className="font-medium text-sm">Cartão</span>
+                  </label>
+                  <label className="flex items-center gap-3 p-3 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
+                    <Checkbox
+                      checked={acceptsPix}
+                      onCheckedChange={(checked) => setAcceptsPix(checked as boolean)}
+                      className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <span className="font-medium text-sm">Pix</span>
+                  </label>
                 </div>
-              )}
 
-              <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
-                <Save className="h-4 w-4 mr-2" />
-                {isPending ? "Salvando..." : "Salvar"}
-              </Button>
-            </div>
-          </SectionCard>
+                {/* Campo de Chave Pix */}
+                {acceptsPix && (
+                  <div className="space-y-2 pt-2">
+                    <Label htmlFor="pixKey" className="text-sm font-medium">Chave Pix</Label>
+                    <Input
+                      id="pixKey"
+                      value={pixKey}
+                      onChange={(e) => setPixKey(e.target.value)}
+                      placeholder="CPF, CNPJ, email, telefone ou chave aleatória"
+                      className="rounded-lg h-9"
+                    />
+                    <p className="text-xs text-muted-foreground">Esta chave será exibida para o cliente copiar.</p>
+                  </div>
+                )}
+
+                <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-lg shadow-sm h-9 mt-2">
+                  <Save className="h-4 w-4 mr-2" />
+                  {isPending ? "Salvando..." : "Salvar"}
+                </Button>
+              </div>
+            </SectionCard>
+
+            {/* Notificações SMS */}
+            <SectionCard title="Notificações SMS">
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg border border-border/30">
+                  <div className={cn(
+                    "p-2 rounded-lg shrink-0",
+                    smsEnabled ? "bg-emerald-100" : "bg-muted/50"
+                  )}>
+                    <MessageSquare className={cn("h-5 w-5", smsEnabled ? "text-emerald-600" : "text-muted-foreground")} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <div>
+                        <h4 className="font-semibold text-sm">SMS pedido saindo</h4>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Cliente recebe SMS quando status mudar para "Pronto".
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={smsEnabled}
+                          onChange={(e) => setSmsEnabled(e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-10 h-5 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                      </label>
+                    </div>
+                    {smsEnabled && (
+                      <div className="mt-2 p-2 bg-emerald-50 rounded border border-emerald-200">
+                        <p className="text-xs text-emerald-700">
+                          <strong>Mensagem:</strong> "{name || 'Restaurante'}: Seu pedido está saindo para entrega."
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-lg shadow-sm h-9">
+                  <Save className="h-4 w-4 mr-2" />
+                  {isPending ? "Salvando..." : "Salvar"}
+                </Button>
+              </div>
+            </SectionCard>
+          </div>
 
           {/* Informações e entrega */}
           <SectionCard title="Informações e entrega">
@@ -1830,52 +1878,6 @@ export default function Configuracoes() {
               </Button>
             </div>
           </SectionCard>
-
-          {/* Notificações SMS */}
-          <SectionCard title="Notificações SMS">
-            <div className="space-y-5">
-              <div className="flex items-start gap-4 p-4 bg-muted/30 rounded-xl border border-border/30">
-                <div className={cn(
-                  "p-3 rounded-xl",
-                  smsEnabled ? "bg-emerald-100" : "bg-muted/50"
-                )}>
-                  <MessageSquare className={cn("h-6 w-6", smsEnabled ? "text-emerald-600" : "text-muted-foreground")} />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-semibold text-sm">SMS de pedido saindo para entrega</h4>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Quando ativado, o cliente receberá um SMS automático quando o status do pedido mudar para "Pronto".
-                      </p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={smsEnabled}
-                        onChange={(e) => setSmsEnabled(e.target.checked)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-                    </label>
-                  </div>
-                  {smsEnabled && (
-                    <div className="mt-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
-                      <p className="text-xs text-emerald-700">
-                        <strong>Mensagem enviada:</strong> "{name || 'Seu Restaurante'}: Seu pedido está saindo para entrega."
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
-                <Save className="h-4 w-4 mr-2" />
-                {isPending ? "Salvando..." : "Salvar"}
-              </Button>
-            </div>
-          </SectionCard>
-          
 
 
           {/* Taxa de Entrega */}
