@@ -1678,160 +1678,149 @@ export default function Configuracoes() {
           {/* Informações e entrega */}
           <SectionCard title="Informações e entrega">
             <div className="space-y-5">
-              {/* Tipo de entrega */}
-              <div className="flex gap-5 flex-wrap">
-                <label
-                  className={cn(
-                    "relative flex flex-col items-center gap-3 p-6 border-2 rounded-2xl cursor-pointer transition-all duration-200 min-w-[140px]",
-                    allowsDelivery
-                      ? "border-primary bg-primary/5 shadow-soft"
-                      : "border-border/50 hover:border-muted-foreground/30 hover:bg-muted/30"
-                  )}
-                >
-                  <div className={cn(
-                    "p-3 rounded-xl",
-                    allowsDelivery ? "bg-primary/10" : "bg-muted/50"
-                  )}>
-                    <Truck className={cn("h-7 w-7", allowsDelivery ? "text-primary" : "text-muted-foreground")} />
-                  </div>
-                  <span className={cn("font-semibold", allowsDelivery ? "text-primary" : "text-muted-foreground")}>
-                    Entrega
-                  </span>
-                  <Checkbox
-                    checked={allowsDelivery}
-                    onCheckedChange={(checked) => setAllowsDelivery(checked as boolean)}
-                    className="sr-only"
-                  />
-                  {allowsDelivery && (
-                    <span className="absolute top-3 right-3 h-3 w-3 bg-primary rounded-full ring-2 ring-white" />
-                  )}
-                </label>
+              {/* Layout principal - todos os elementos na mesma linha em desktop */}
+              <div className="flex flex-col lg:flex-row gap-4 lg:items-stretch">
+                {/* Tipo de entrega */}
+                <div className="flex gap-3 shrink-0">
+                  <label
+                    className={cn(
+                      "relative flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 min-w-[100px]",
+                      allowsDelivery
+                        ? "border-primary bg-primary/5 shadow-soft"
+                        : "border-border/50 hover:border-muted-foreground/30 hover:bg-muted/30"
+                    )}
+                  >
+                    <div className={cn(
+                      "p-2 rounded-lg",
+                      allowsDelivery ? "bg-primary/10" : "bg-muted/50"
+                    )}>
+                      <Truck className={cn("h-5 w-5", allowsDelivery ? "text-primary" : "text-muted-foreground")} />
+                    </div>
+                    <span className={cn("font-medium text-sm", allowsDelivery ? "text-primary" : "text-muted-foreground")}>
+                      Entrega
+                    </span>
+                    <Checkbox
+                      checked={allowsDelivery}
+                      onCheckedChange={(checked) => setAllowsDelivery(checked as boolean)}
+                      className="sr-only"
+                    />
+                    {allowsDelivery && (
+                      <span className="absolute top-2 right-2 h-2.5 w-2.5 bg-primary rounded-full ring-2 ring-white" />
+                    )}
+                  </label>
 
-                <label
-                  className={cn(
-                    "relative flex flex-col items-center gap-3 p-6 border-2 rounded-2xl cursor-pointer transition-all duration-200 min-w-[140px]",
-                    allowsPickup
-                      ? "border-primary bg-primary/5 shadow-soft"
-                      : "border-border/50 hover:border-muted-foreground/30 hover:bg-muted/30"
-                  )}
-                >
-                  <div className={cn(
-                    "p-3 rounded-xl",
-                    allowsPickup ? "bg-primary/10" : "bg-muted/50"
-                  )}>
-                    <Store className={cn("h-7 w-7", allowsPickup ? "text-primary" : "text-muted-foreground")} />
-                  </div>
-                  <span className={cn("font-semibold", allowsPickup ? "text-primary" : "text-muted-foreground")}>
-                    Retirada
-                  </span>
-                  <Checkbox
-                    checked={allowsPickup}
-                    onCheckedChange={(checked) => setAllowsPickup(checked as boolean)}
-                    className="sr-only"
-                  />
-                  {allowsPickup && (
-                    <span className="absolute top-3 right-3 h-3 w-3 bg-primary rounded-full ring-2 ring-white" />
-                  )}
-                </label>
-              </div>
+                  <label
+                    className={cn(
+                      "relative flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 min-w-[100px]",
+                      allowsPickup
+                        ? "border-primary bg-primary/5 shadow-soft"
+                        : "border-border/50 hover:border-muted-foreground/30 hover:bg-muted/30"
+                    )}
+                  >
+                    <div className={cn(
+                      "p-2 rounded-lg",
+                      allowsPickup ? "bg-primary/10" : "bg-muted/50"
+                    )}>
+                      <Store className={cn("h-5 w-5", allowsPickup ? "text-primary" : "text-muted-foreground")} />
+                    </div>
+                    <span className={cn("font-medium text-sm", allowsPickup ? "text-primary" : "text-muted-foreground")}>
+                      Retirada
+                    </span>
+                    <Checkbox
+                      checked={allowsPickup}
+                      onCheckedChange={(checked) => setAllowsPickup(checked as boolean)}
+                      className="sr-only"
+                    />
+                    {allowsPickup && (
+                      <span className="absolute top-2 right-2 h-2.5 w-2.5 bg-primary rounded-full ring-2 ring-white" />
+                    )}
+                  </label>
+                </div>
 
-              {/* Exibir tempo de entrega */}
-              <div className="flex items-start gap-4 p-4 bg-muted/30 rounded-xl border border-border/30">
-                <div className={cn(
-                  "p-3 rounded-xl",
-                  deliveryTimeEnabled ? "bg-primary/10" : "bg-muted/50"
-                )}>
-                  <Clock className={cn("h-6 w-6", deliveryTimeEnabled ? "text-primary" : "text-muted-foreground")} />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-semibold text-sm">Exibir tempo de entrega</h4>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        O tempo de entrega será exibido no menu público.
-                      </p>
+                {/* Tempo de entrega e Pedido mínimo lado a lado */}
+                <div className="flex flex-col md:flex-row gap-4 flex-1">
+                  {/* Exibir tempo de entrega */}
+                  <div className="flex-1 flex items-start gap-3 p-4 bg-muted/30 rounded-xl border border-border/30">
+                    <div className={cn(
+                      "p-2 rounded-lg shrink-0",
+                      deliveryTimeEnabled ? "bg-primary/10" : "bg-muted/50"
+                    )}>
+                      <Clock className={cn("h-5 w-5", deliveryTimeEnabled ? "text-primary" : "text-muted-foreground")} />
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={deliveryTimeEnabled}
-                        onChange={(e) => setDeliveryTimeEnabled(e.target.checked)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                    </label>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="font-semibold text-sm">Tempo de entrega</h4>
+                        <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                          <input
+                            type="checkbox"
+                            checked={deliveryTimeEnabled}
+                            onChange={(e) => setDeliveryTimeEnabled(e.target.checked)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-10 h-5 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                      </div>
+                      {deliveryTimeEnabled && (
+                        <div className="mt-2 flex items-center gap-2 flex-wrap">
+                          <div className="flex items-center gap-1">
+                            <Input
+                              type="number"
+                              value={deliveryTimeMin}
+                              onChange={(e) => setDeliveryTimeMin(parseInt(e.target.value) || 0)}
+                              className="w-16 h-8 rounded-lg text-sm"
+                              min={0}
+                            />
+                            <span className="text-xs text-muted-foreground">-</span>
+                            <Input
+                              type="number"
+                              value={deliveryTimeMax}
+                              onChange={(e) => setDeliveryTimeMax(parseInt(e.target.value) || 0)}
+                              className="w-16 h-8 rounded-lg text-sm"
+                              min={0}
+                            />
+                            <span className="text-xs text-muted-foreground">min</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  {deliveryTimeEnabled && (
-                    <div className="mt-4 flex items-center gap-4">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm">De:</Label>
-                        <Input
-                          type="number"
-                          value={deliveryTimeMin}
-                          onChange={(e) => setDeliveryTimeMin(parseInt(e.target.value) || 0)}
-                          className="w-20 h-9 rounded-lg text-sm"
-                          min={0}
-                        />
-                        <span className="text-sm text-muted-foreground">min</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm">Até:</Label>
-                        <Input
-                          type="number"
-                          value={deliveryTimeMax}
-                          onChange={(e) => setDeliveryTimeMax(parseInt(e.target.value) || 0)}
-                          className="w-20 h-9 rounded-lg text-sm"
-                          min={0}
-                        />
-                        <span className="text-sm text-muted-foreground">min</span>
-                      </div>
+                  
+                  {/* Pedido Mínimo */}
+                  <div className="flex-1 flex items-start gap-3 p-4 bg-muted/30 rounded-xl border border-border/30">
+                    <div className={cn(
+                      "p-2 rounded-lg shrink-0",
+                      minimumOrderEnabled ? "bg-primary/10" : "bg-muted/50"
+                    )}>
+                      <CreditCard className={cn("h-5 w-5", minimumOrderEnabled ? "text-primary" : "text-muted-foreground")} />
                     </div>
-                  )}
-                </div>
-              </div>
-              
-              {/* Pedido Mínimo */}
-              <div className="flex items-start gap-4 p-4 bg-muted/30 rounded-xl border border-border/30">
-                <div className={cn(
-                  "p-3 rounded-xl",
-                  minimumOrderEnabled ? "bg-primary/10" : "bg-muted/50"
-                )}>
-                  <CreditCard className={cn("h-6 w-6", minimumOrderEnabled ? "text-primary" : "text-muted-foreground")} />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-semibold text-sm">Pedido mínimo</h4>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        O valor mínimo do pedido será exibido no menu público.
-                      </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="font-semibold text-sm">Pedido mínimo</h4>
+                        <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                          <input
+                            type="checkbox"
+                            checked={minimumOrderEnabled}
+                            onChange={(e) => setMinimumOrderEnabled(e.target.checked)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-10 h-5 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                      </div>
+                      {minimumOrderEnabled && (
+                        <div className="mt-2 flex items-center gap-1">
+                          <span className="text-sm text-muted-foreground">R$</span>
+                          <Input
+                            type="number"
+                            value={minimumOrderValue}
+                            onChange={(e) => setMinimumOrderValue(e.target.value)}
+                            className="w-20 h-8 rounded-lg text-sm"
+                            min={0}
+                            step="0.01"
+                          />
+                        </div>
+                      )}
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={minimumOrderEnabled}
-                        onChange={(e) => setMinimumOrderEnabled(e.target.checked)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                    </label>
                   </div>
-                  {minimumOrderEnabled && (
-                    <div className="mt-4 flex items-center gap-2">
-                      <Label className="text-sm">Valor:</Label>
-                      <div className="flex items-center">
-                        <span className="text-sm text-muted-foreground mr-1">R$</span>
-                        <Input
-                          type="number"
-                          value={minimumOrderValue}
-                          onChange={(e) => setMinimumOrderValue(e.target.value)}
-                          className="w-24 h-9 rounded-lg text-sm"
-                          min={0}
-                          step="0.01"
-                        />
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
 
