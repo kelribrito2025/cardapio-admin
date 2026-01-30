@@ -1659,8 +1659,12 @@ export default function PublicMenu() {
                         <span className="text-xs md:text-sm font-semibold text-gray-800">
                           {establishment.rating ? Number(establishment.rating).toFixed(1) : '0.0'}
                         </span>
-                        {/* Quantidade de avaliações - texto completo apenas no desktop */}
-                        <span className="text-xs md:text-sm text-gray-500 hidden md:inline">
+                        {/* Quantidade de avaliações - apenas número no mobile */}
+                        <span className="text-xs text-gray-500 md:hidden">
+                          ({establishment.reviewCount || 0})
+                        </span>
+                        {/* Quantidade de avaliações - texto completo no desktop */}
+                        <span className="text-sm text-gray-500 hidden md:inline">
                           ({establishment.reviewCount || 0} {(establishment.reviewCount || 0) === 1 ? 'avaliação' : 'avaliações'})
                         </span>
                       </button>
