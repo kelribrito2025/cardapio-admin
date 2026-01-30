@@ -1,0 +1,17 @@
+{
+  "query": "SELECT u.id, u.email, u.name, e.id as estId, e.name as estName FROM users u JOIN establishments e ON u.id = e.userId WHERE e.name LIKE '%Big%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT u.id, u.email, u.name, e.id as estId, e.name as estName FROM users u JOIN establishments e ON u.id = e.userId WHERE e.name LIKE '%Big%';",
+  "rows": [
+    {
+      "id": "550919",
+      "email": "big@lanches.com.br",
+      "name": "big",
+      "estId": "60018",
+      "estName": "Big Lanches Do Norte"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tname\testId\testName\n550919\tbig@lanches.com.br\tbig\t60018\tBig Lanches Do Norte\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

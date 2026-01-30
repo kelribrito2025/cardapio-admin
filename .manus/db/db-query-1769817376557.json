@@ -1,0 +1,30 @@
+{
+  "query": "SELECT e.id, e.name, e.isOpen, e.manuallyClosed, bh.dayOfWeek, bh.isActive, bh.openTime, bh.closeTime \nFROM establishments e \nLEFT JOIN businessHours bh ON e.id = bh.establishmentId \nWHERE e.name LIKE '%Kelri%' \nORDER BY bh.dayOfWeek;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT e.id, e.name, e.isOpen, e.manuallyClosed, bh.dayOfWeek, bh.isActive, bh.openTime, bh.closeTime \nFROM establishments e \nLEFT JOIN businessHours bh ON e.id = bh.establishmentId \nWHERE e.name LIKE '%Kelri%' \nORDER BY bh.dayOfWeek;",
+  "rows": [
+    {
+      "id": "60001",
+      "name": "Restaurante Kelri",
+      "isOpen": "1",
+      "manuallyClosed": "0",
+      "dayOfWeek": "NULL",
+      "isActive": "NULL",
+      "openTime": "NULL",
+      "closeTime": "NULL"
+    },
+    {
+      "id": "60004",
+      "name": "Kelri",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "dayOfWeek": "NULL",
+      "isActive": "NULL",
+      "openTime": "NULL",
+      "closeTime": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tisOpen\tmanuallyClosed\tdayOfWeek\tisActive\topenTime\tcloseTime\n60001\tRestaurante Kelri\t1\t0\tNULL\tNULL\tNULL\tNULL\n60004\tKelri\t0\t0\tNULL\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 73
+}

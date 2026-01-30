@@ -174,9 +174,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   // Calculate if store is currently open based on business hours
   const isCurrentlyOpen = () => {
-    // Se não temos dados de horários, usar o valor do banco (isOpen)
+    // Se não temos dados de horários, considerar fechado
+    // Não usamos mais o campo isOpen do banco
     if (!businessHoursData || businessHoursData.length === 0) {
-      return establishment?.isOpen ?? false;
+      return false;
     }
     
     const now = new Date();
@@ -295,11 +296,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   // Valor calculado de se está aberto:
-  // Lógica completa:
+  // Lógica simplificada:
   // 1. Se manuallyClosed E não deve reabrir automaticamente → Fechado
   // 2. Se manuallyClosed E deve reabrir automaticamente → Aberto (se dentro do horário)
-  // 3. Se não manuallyClosed E isOpen (toggle ligado) → Segue horário normal
-  // 4. Se não manuallyClosed E !isOpen (toggle desligado) → Fechado manualmente
+  // 3. Se não manuallyClosed → Segue horário configurado (ignora toggle isOpen)
   const isWithinBusinessHours = isCurrentlyOpen();
   const autoReopen = shouldAutoReopen();
   const nextOpening = getNextOpeningTime();
@@ -326,21 +326,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     // Deve reabrir automaticamente
     calculatedIsOpen = isWithinBusinessHours;
     isForcedClosed = false;
-  } else if (!establishment?.isOpen) {
-    // Toggle desligado (fechado manualmente)
-    calculatedIsOpen = false;
-    isForcedClosed = isWithinBusinessHours; // Só mostra "fechado manualmente" se estiver dentro do horário
-    if (nextOpening) {
-      if (nextOpening.isToday) {
-        statusMessage = `Abriremos hoje às ${nextOpening.time}`;
-      } else if (nextOpening.isTomorrow) {
-        statusMessage = `Abriremos amanhã às ${nextOpening.time}`;
-      } else {
-        statusMessage = `Abriremos ${nextOpening.dayName} às ${nextOpening.time}`;
-      }
-    }
   } else {
-    // Toggle ligado - segue horário normal
+    // Segue horário configurado - se estiver dentro do horário, está aberto
+    // O toggle isOpen não é mais usado para controlar abertura/fechamento
     calculatedIsOpen = isWithinBusinessHours;
     isForcedClosed = false;
     if (!isWithinBusinessHours && nextOpening) {
