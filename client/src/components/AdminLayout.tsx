@@ -445,11 +445,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   </span>
                   {/* Badge de status Aberto/Fechado */}
                   <span className={cn(
-                    "text-[10px] font-medium flex items-center gap-1",
-                    calculatedIsOpen ? "text-green-600" : "text-red-500"
-                  )} style={{fontSize: '12px'}}>
+                    "text-xs font-medium flex items-center gap-1.5 px-2 py-0.5 rounded-full",
+                    calculatedIsOpen 
+                      ? "text-green-600 bg-green-50" 
+                      : "text-red-600 bg-red-50"
+                  )}>
                     <span className={cn(
-                      "h-1.5 w-1.5 rounded-full",
+                      "h-2 w-2 rounded-full",
                       calculatedIsOpen ? "bg-green-500 animate-pulse" : "bg-red-500"
                     )} />
                     {calculatedIsOpen ? "Aberto" : "Fechado"}
