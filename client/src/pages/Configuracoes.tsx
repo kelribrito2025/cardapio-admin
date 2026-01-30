@@ -900,8 +900,11 @@ export default function Configuracoes() {
 
         {/* Estabelecimento Tab */}
         <TabsContent value="estabelecimento" className="space-y-5">
-          {/* Preview do Perfil Público */}
-          <SectionCard title="Preview do Perfil Público">
+          {/* Preview do Perfil Público + Endereço lado a lado */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+            {/* Preview do Perfil Público - 60% */}
+            <div className="lg:col-span-3">
+              <SectionCard title="Preview do Perfil Público">
             <div className="bg-white rounded-2xl overflow-hidden border border-border/30 shadow-sm">
               {/* Cover Image */}
               <div className="relative h-48 bg-gradient-to-br from-red-100 to-red-50">
@@ -1214,7 +1217,150 @@ export default function Configuracoes() {
 
               </div>
             </div>
-          </SectionCard>
+              </SectionCard>
+            </div>
+
+            {/* Endereço do Estabelecimento - 40% */}
+            <div className="lg:col-span-2">
+              <SectionCard title="Endereço do Estabelecimento">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground">Campos com <span className="text-red-500">*</span> são obrigatórios</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowMapPicker(true)}
+                      className="rounded-xl gap-2"
+                    >
+                      <MapPin className="h-4 w-4" />
+                      {latitude && longitude ? "Mapa" : "Mapa"}
+                    </Button>
+                  </div>
+
+                  {latitude && longitude && (
+                    <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-xl">
+                      <Check className="h-3 w-3 text-green-600" />
+                      <span className="text-xs text-green-700">Localização definida</span>
+                    </div>
+                  )}
+                  
+                  {/* Rua */}
+                  <div>
+                    <Label htmlFor="street" className="text-sm font-semibold">Rua <span className="text-red-500">*</span></Label>
+                    <Input
+                      id="street"
+                      value={street}
+                      onChange={(e) => setStreet(e.target.value)}
+                      placeholder="Nome da rua"
+                      required
+                      className={cn(
+                        "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                        !street.trim() && "border-red-300 focus:border-red-500"
+                      )}
+                    />
+                  </div>
+
+                  {/* Número e Bairro */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="number" className="text-sm font-semibold">Número <span className="text-red-500">*</span></Label>
+                      <Input
+                        id="number"
+                        value={number}
+                        onChange={(e) => setNumber(e.target.value)}
+                        placeholder="123"
+                        required
+                        className={cn(
+                          "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                          !number.trim() && "border-red-300 focus:border-red-500"
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="neighborhood" className="text-sm font-semibold">Bairro <span className="text-red-500">*</span></Label>
+                      <Input
+                        id="neighborhood"
+                        value={neighborhood}
+                        onChange={(e) => setNeighborhood(e.target.value)}
+                        placeholder="Bairro"
+                        required
+                        className={cn(
+                          "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                          !neighborhood.trim() && "border-red-300 focus:border-red-500"
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Complemento */}
+                  <div>
+                    <Label htmlFor="complement" className="text-sm font-semibold">Complemento <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
+                    <Input
+                      id="complement"
+                      value={complement}
+                      onChange={(e) => setComplement(e.target.value)}
+                      placeholder="Sala, Bloco, etc."
+                      className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
+                    />
+                  </div>
+
+                  {/* Cidade e Estado */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="col-span-2">
+                      <Label htmlFor="city" className="text-sm font-semibold">Cidade <span className="text-red-500">*</span></Label>
+                      <Input
+                        id="city"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        placeholder="Cidade"
+                        required
+                        className={cn(
+                          "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                          !city.trim() && "border-red-300 focus:border-red-500"
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="state" className="text-sm font-semibold">UF <span className="text-red-500">*</span></Label>
+                      <Input
+                        id="state"
+                        value={state}
+                        onChange={(e) => setState(e.target.value)}
+                        placeholder="UF"
+                        required
+                        className={cn(
+                          "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                          !state.trim() && "border-red-300 focus:border-red-500"
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* CEP */}
+                  <div>
+                    <Label htmlFor="zipCode" className="text-sm font-semibold">CEP <span className="text-red-500">*</span></Label>
+                    <Input
+                      id="zipCode"
+                      value={zipCode}
+                      onChange={(e) => setZipCode(e.target.value)}
+                      placeholder="00000-000"
+                      required
+                      className={cn(
+                        "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                        !zipCode.trim() && "border-red-300 focus:border-red-500"
+                      )}
+                    />
+                  </div>
+
+                  <Button onClick={handleSaveEstablishment} disabled={isPending} className="w-full rounded-xl shadow-sm">
+                    <Save className="h-4 w-4 mr-2" />
+                    {isPending ? "Salvando..." : "Salvar Endereço"}
+                  </Button>
+                </div>
+              </SectionCard>
+            </div>
+          </div>
 
           {/* Nota do Restaurante */}
           <SectionCard title="Nota do Restaurante">
@@ -1402,140 +1548,6 @@ export default function Configuracoes() {
             </div>
           </SectionCard>
 
-          {/* Endereço */}
-          <SectionCard 
-            title="Endereço do Estabelecimento"
-          >
-            <div className="space-y-5">
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground">Campos marcados com <span className="text-red-500">*</span> são obrigatórios</p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowMapPicker(true)}
-                  className="rounded-xl gap-2"
-                >
-                  <MapPin className="h-4 w-4" />
-                  {latitude && longitude ? "Alterar no Mapa" : "Selecionar no Mapa"}
-                </Button>
-              </div>
-
-              {latitude && longitude && (
-                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl">
-                  <Check className="h-4 w-4 text-green-600" />
-                  <span className="text-sm text-green-700">Localização definida: {latitude}, {longitude}</span>
-                </div>
-              )}
-              
-              {/* Linha 1: Rua, Número, Bairro */}
-              <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
-                <div className="sm:col-span-3">
-                  <Label htmlFor="street" className="text-sm font-semibold">Rua <span className="text-red-500">*</span></Label>
-                  <Input
-                    id="street"
-                    value={street}
-                    onChange={(e) => setStreet(e.target.value)}
-                    placeholder="Nome da rua"
-                    required
-                    className={cn(
-                      "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
-                      !street.trim() && "border-red-300 focus:border-red-500"
-                    )}
-                  />
-                </div>
-                <div className="sm:col-span-1">
-                  <Label htmlFor="number" className="text-sm font-semibold">Número <span className="text-red-500">*</span></Label>
-                  <Input
-                    id="number"
-                    value={number}
-                    onChange={(e) => setNumber(e.target.value)}
-                    placeholder="123"
-                    required
-                    className={cn(
-                      "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
-                      !number.trim() && "border-red-300 focus:border-red-500"
-                    )}
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <Label htmlFor="neighborhood" className="text-sm font-semibold">Bairro <span className="text-red-500">*</span></Label>
-                  <Input
-                    id="neighborhood"
-                    value={neighborhood}
-                    onChange={(e) => setNeighborhood(e.target.value)}
-                    placeholder="Nome do bairro"
-                    required
-                    className={cn(
-                      "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
-                      !neighborhood.trim() && "border-red-300 focus:border-red-500"
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* Linha 2: Complemento, Cidade, Estado, CEP */}
-              <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
-                <div className="sm:col-span-2">
-                  <Label htmlFor="complement" className="text-sm font-semibold">Complemento <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
-                  <Input
-                    id="complement"
-                    value={complement}
-                    onChange={(e) => setComplement(e.target.value)}
-                    placeholder="Sala, Bloco, etc."
-                    className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <Label htmlFor="city" className="text-sm font-semibold">Cidade <span className="text-red-500">*</span></Label>
-                  <Input
-                    id="city"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    placeholder="Nome da cidade"
-                    required
-                    className={cn(
-                      "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
-                      !city.trim() && "border-red-300 focus:border-red-500"
-                    )}
-                  />
-                </div>
-                <div className="sm:col-span-1">
-                  <Label htmlFor="state" className="text-sm font-semibold">Estado <span className="text-red-500">*</span></Label>
-                  <Input
-                    id="state"
-                    value={state}
-                    onChange={(e) => setState(e.target.value)}
-                    placeholder="UF"
-                    required
-                    className={cn(
-                      "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
-                      !state.trim() && "border-red-300 focus:border-red-500"
-                    )}
-                  />
-                </div>
-                <div className="sm:col-span-1">
-                  <Label htmlFor="zipCode" className="text-sm font-semibold">CEP <span className="text-red-500">*</span></Label>
-                  <Input
-                    id="zipCode"
-                    value={zipCode}
-                    onChange={(e) => setZipCode(e.target.value)}
-                    placeholder="00000-000"
-                    required
-                    className={cn(
-                      "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
-                      !zipCode.trim() && "border-red-300 focus:border-red-500"
-                    )}
-                  />
-                </div>
-              </div>
-
-              <Button onClick={handleSaveEstablishment} disabled={isPending} className="rounded-xl shadow-sm">
-                <Save className="h-4 w-4 mr-2" />
-                {isPending ? "Salvando..." : "Salvar"}
-              </Button>
-            </div>
-          </SectionCard>
         </TabsContent>
 
         {/* Atendimento Tab */}
