@@ -1259,10 +1259,10 @@ export default function Configuracoes() {
                     />
                   </div>
 
-                  {/* Número e Bairro */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="number" className="text-sm font-semibold">Número <span className="text-red-500">*</span></Label>
+                  {/* Número, Bairro, Cidade e UF */}
+                  <div className="grid grid-cols-12 gap-2">
+                    <div className="col-span-3">
+                      <Label htmlFor="number" className="text-xs font-semibold">Nº <span className="text-red-500">*</span></Label>
                       <Input
                         id="number"
                         value={number}
@@ -1270,13 +1270,13 @@ export default function Configuracoes() {
                         placeholder="123"
                         required
                         className={cn(
-                          "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                          "mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm",
                           !number.trim() && "border-red-300 focus:border-red-500"
                         )}
                       />
                     </div>
-                    <div>
-                      <Label htmlFor="neighborhood" className="text-sm font-semibold">Bairro <span className="text-red-500">*</span></Label>
+                    <div className="col-span-3">
+                      <Label htmlFor="neighborhood" className="text-xs font-semibold">Bairro <span className="text-red-500">*</span></Label>
                       <Input
                         id="neighborhood"
                         value={neighborhood}
@@ -1284,29 +1284,13 @@ export default function Configuracoes() {
                         placeholder="Bairro"
                         required
                         className={cn(
-                          "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                          "mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm",
                           !neighborhood.trim() && "border-red-300 focus:border-red-500"
                         )}
                       />
                     </div>
-                  </div>
-
-                  {/* Complemento */}
-                  <div>
-                    <Label htmlFor="complement" className="text-sm font-semibold">Complemento <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
-                    <Input
-                      id="complement"
-                      value={complement}
-                      onChange={(e) => setComplement(e.target.value)}
-                      placeholder="Sala, Bloco, etc."
-                      className="mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20"
-                    />
-                  </div>
-
-                  {/* Cidade e Estado */}
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="col-span-2">
-                      <Label htmlFor="city" className="text-sm font-semibold">Cidade <span className="text-red-500">*</span></Label>
+                    <div className="col-span-4">
+                      <Label htmlFor="city" className="text-xs font-semibold">Cidade <span className="text-red-500">*</span></Label>
                       <Input
                         id="city"
                         value={city}
@@ -1314,13 +1298,13 @@ export default function Configuracoes() {
                         placeholder="Cidade"
                         required
                         className={cn(
-                          "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                          "mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm",
                           !city.trim() && "border-red-300 focus:border-red-500"
                         )}
                       />
                     </div>
-                    <div>
-                      <Label htmlFor="state" className="text-sm font-semibold">UF <span className="text-red-500">*</span></Label>
+                    <div className="col-span-2">
+                      <Label htmlFor="state" className="text-xs font-semibold">UF <span className="text-red-500">*</span></Label>
                       <Input
                         id="state"
                         value={state}
@@ -1328,27 +1312,39 @@ export default function Configuracoes() {
                         placeholder="UF"
                         required
                         className={cn(
-                          "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
+                          "mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm",
                           !state.trim() && "border-red-300 focus:border-red-500"
                         )}
                       />
                     </div>
                   </div>
 
-                  {/* CEP */}
-                  <div>
-                    <Label htmlFor="zipCode" className="text-sm font-semibold">CEP <span className="text-red-500">*</span></Label>
-                    <Input
-                      id="zipCode"
-                      value={zipCode}
-                      onChange={(e) => setZipCode(e.target.value)}
-                      placeholder="00000-000"
-                      required
-                      className={cn(
-                        "mt-2 h-10 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20",
-                        !zipCode.trim() && "border-red-300 focus:border-red-500"
-                      )}
-                    />
+                  {/* Complemento e CEP */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="complement" className="text-xs font-semibold">Complemento <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
+                      <Input
+                        id="complement"
+                        value={complement}
+                        onChange={(e) => setComplement(e.target.value)}
+                        placeholder="Sala, Bloco, etc."
+                        className="mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="zipCode" className="text-xs font-semibold">CEP <span className="text-red-500">*</span></Label>
+                      <Input
+                        id="zipCode"
+                        value={zipCode}
+                        onChange={(e) => setZipCode(e.target.value)}
+                        placeholder="00000-000"
+                        required
+                        className={cn(
+                          "mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm",
+                          !zipCode.trim() && "border-red-300 focus:border-red-500"
+                        )}
+                      />
+                    </div>
                   </div>
 
                   <Button onClick={handleSaveEstablishment} disabled={isPending} className="w-full rounded-xl shadow-sm">
