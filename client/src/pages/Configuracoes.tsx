@@ -1524,6 +1524,11 @@ export default function Configuracoes() {
             </div>
           </SectionCard>
 
+          {/* Cartão Fidelidade */}
+          <SectionCard title="Cartão Fidelidade">
+            <LoyaltySettingsCard establishmentId={establishment?.id || 0} />
+          </SectionCard>
+
         </TabsContent>
 
         {/* Atendimento Tab */}
@@ -2071,11 +2076,6 @@ export default function Configuracoes() {
                 {isPending ? "Salvando..." : "Salvar"}
               </Button>
             </div>
-          </SectionCard>
-
-          {/* Cartão Fidelidade */}
-          <SectionCard title="Cartão Fidelidade">
-            <LoyaltySettingsCard establishmentId={establishment?.id || 0} />
           </SectionCard>
 
           {/* Horários de Funcionamento */}
