@@ -3747,3 +3747,4 @@
 - [x] Colocar Pedido mínimo abaixo de Tempo de entrega no card Informações e entrega
 - [x] Mover card Taxa de entrega para ao lado do card Informações e entrega
 - [x] Deixar card Taxa de entrega em formato compacto e retangular
+- [x] Remover card "Como funciona a impressão" da aba Impressoras em Configurações

@@ -2545,29 +2545,7 @@ export default function Configuracoes() {
             </div>
           </SectionCard>
 
-          {/* Informações sobre Impressão */}
-          <SectionCard
-            title="Como funciona a impressão"
-            description="Entenda como configurar sua impressora térmica"
-          >
-            <div className="space-y-4 text-sm text-muted-foreground">
-              <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                <Info className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-medium text-blue-700 mb-1">Requisitos</p>
-                  <p className="text-blue-600">
-                    Para impressão automática funcionar, você precisa de uma impressora térmica 
-                    conectada à mesma rede Wi-Fi e um aplicativo de impressão rodando no computador 
-                    ou dispositivo que receberá os pedidos.
-                  </p>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <p><strong>Impressoras compatíveis:</strong> Epson TM-T20, Elgin i9, Bematech MP-4200, e outras com suporte ESC/POS.</p>
-                <p><strong>Porta padrão:</strong> A maioria das impressoras térmicas usa a porta 9100 para comunicação de rede.</p>
-              </div>
-            </div>
-          </SectionCard>
+
         </TabsContent>
 
         
