@@ -1652,14 +1652,15 @@ export default function PublicMenu() {
                     <div className="relative flex-shrink-0" ref={ratingTooltipRef}>
                       <button
                         onClick={() => setShowReviewsModal(true)}
-                        className="flex items-center gap-0.5 hover:bg-gray-100 rounded-lg px-1.5 py-0.5 transition-colors cursor-pointer" style={{width: '49px', height: '22px'}}
+                        className="flex items-center gap-1 hover:bg-gray-100 rounded-lg px-1.5 py-0.5 transition-colors cursor-pointer"
                       >
-                        {/* Ícone de estrela único */}
+                        {/* Ícone de estrela */}
                         <Star className="h-3.5 w-3.5 md:h-4 md:w-4 text-yellow-400 fill-yellow-400" />
                         <span className="text-xs md:text-sm font-semibold text-gray-800">
                           {establishment.rating ? Number(establishment.rating).toFixed(1) : '0.0'}
                         </span>
-                        <span className="text-xs md:text-sm text-gray-500 hidden sm:inline">
+                        {/* Quantidade de avaliações - apenas desktop */}
+                        <span className="text-xs md:text-sm text-gray-500 hidden md:inline">
                           ({establishment.reviewCount || 0})
                         </span>
                       </button>

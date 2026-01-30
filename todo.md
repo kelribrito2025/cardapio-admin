@@ -3721,3 +3721,5 @@
 - [ ] Corrigir erro intermitente 'The string did not match the expected pattern' no login
 - [ ] Corrigir erro intermitente 'The string did not match the expected pattern' no login
 - [x] Corrigir erro intermitente 'The string did not match the expected pattern' no login (Safari/iOS)
+- [x] Adicionar estrela ao lado da nota de avaliação no menu público
+- [x] Mostrar quantidade de avaliações apenas na versão desktop (ocultar no mobile)
