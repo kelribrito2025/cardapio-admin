@@ -3737,3 +3737,4 @@
 - [x] Colocar todos os 4 campos do Cartão Fidelidade na mesma linha após o toggle de ativação
 - [x] Alterar texto do botão de sugestões para "Ver sugestões de notas"
 - [x] Alterar botão "Ver sugestões de notas" para cor vermelha e adicionar ícone de balão
+- [x] Mover tempo de entrega e pedido mínimo para card de Tipo de entrega e renomear para "Informações e entrega"

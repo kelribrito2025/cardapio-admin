@@ -1675,9 +1675,10 @@ export default function Configuracoes() {
             </div>
           </SectionCard>
 
-          {/* Tipo de entrega */}
-          <SectionCard title="Tipo de entrega">
+          {/* Informações e entrega */}
+          <SectionCard title="Informações e entrega">
             <div className="space-y-5">
+              {/* Tipo de entrega */}
               <div className="flex gap-5 flex-wrap">
                 <label
                   className={cn(
@@ -1734,61 +1735,7 @@ export default function Configuracoes() {
                 </label>
               </div>
 
-              <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
-                <Save className="h-4 w-4 mr-2" />
-                {isPending ? "Salvando..." : "Salvar"}
-              </Button>
-            </div>
-          </SectionCard>
-
-          {/* Notificações SMS */}
-          <SectionCard title="Notificações SMS">
-            <div className="space-y-5">
-              <div className="flex items-start gap-4 p-4 bg-muted/30 rounded-xl border border-border/30">
-                <div className={cn(
-                  "p-3 rounded-xl",
-                  smsEnabled ? "bg-emerald-100" : "bg-muted/50"
-                )}>
-                  <MessageSquare className={cn("h-6 w-6", smsEnabled ? "text-emerald-600" : "text-muted-foreground")} />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-semibold text-sm">SMS de pedido saindo para entrega</h4>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Quando ativado, o cliente receberá um SMS automático quando o status do pedido mudar para "Pronto".
-                      </p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={smsEnabled}
-                        onChange={(e) => setSmsEnabled(e.target.checked)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-                    </label>
-                  </div>
-                  {smsEnabled && (
-                    <div className="mt-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
-                      <p className="text-xs text-emerald-700">
-                        <strong>Mensagem enviada:</strong> "{name || 'Seu Restaurante'}: Seu pedido está saindo para entrega."
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
-                <Save className="h-4 w-4 mr-2" />
-                {isPending ? "Salvando..." : "Salvar"}
-              </Button>
-            </div>
-          </SectionCard>
-          
-          {/* Tempo de Entrega */}
-          <SectionCard title="Tempo de entrega">
-            <div className="space-y-5">
+              {/* Exibir tempo de entrega */}
               <div className="flex items-start gap-4 p-4 bg-muted/30 rounded-xl border border-border/30">
                 <div className={cn(
                   "p-3 rounded-xl",
@@ -1894,6 +1841,53 @@ export default function Configuracoes() {
               </Button>
             </div>
           </SectionCard>
+
+          {/* Notificações SMS */}
+          <SectionCard title="Notificações SMS">
+            <div className="space-y-5">
+              <div className="flex items-start gap-4 p-4 bg-muted/30 rounded-xl border border-border/30">
+                <div className={cn(
+                  "p-3 rounded-xl",
+                  smsEnabled ? "bg-emerald-100" : "bg-muted/50"
+                )}>
+                  <MessageSquare className={cn("h-6 w-6", smsEnabled ? "text-emerald-600" : "text-muted-foreground")} />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold text-sm">SMS de pedido saindo para entrega</h4>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Quando ativado, o cliente receberá um SMS automático quando o status do pedido mudar para "Pronto".
+                      </p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={smsEnabled}
+                        onChange={(e) => setSmsEnabled(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                    </label>
+                  </div>
+                  {smsEnabled && (
+                    <div className="mt-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                      <p className="text-xs text-emerald-700">
+                        <strong>Mensagem enviada:</strong> "{name || 'Seu Restaurante'}: Seu pedido está saindo para entrega."
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
+                <Save className="h-4 w-4 mr-2" />
+                {isPending ? "Salvando..." : "Salvar"}
+              </Button>
+            </div>
+          </SectionCard>
+          
+
 
           {/* Taxa de Entrega */}
           <SectionCard title="Taxa de entrega">
