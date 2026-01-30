@@ -3707,3 +3707,4 @@
 - [x] Remover aba Notificações da página de Configurações
 - [x] Ajustar espaçamento das abas na página de Configurações para ficar na mesma altura das demais páginas
 - [x] Implementar badge de status (Aberto/Fechado) abaixo do nome do restaurante no header da sidebar
+- [x] Corrigir bug de vazamento de áudio ao recarregar página com som desativado
