@@ -3735,3 +3735,4 @@
 - [x] Corrigir layout do Cartão Fidelidade - garantir 3 campos na mesma linha em desktop sem quebra
 - [x] Reorganizar Cartão Fidelidade - todos os 4 campos dentro do card Ativar (carimbos, tipo cupom, desconto, valor mínimo)
 - [x] Colocar todos os 4 campos do Cartão Fidelidade na mesma linha após o toggle de ativação
+- [x] Alterar texto do botão de sugestões para "Ver sugestões de notas"

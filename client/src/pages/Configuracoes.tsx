@@ -1383,7 +1383,7 @@ export default function Configuracoes() {
                     onClick={() => setShowSuggestions(!showSuggestions)}
                     className="h-11 rounded-xl border-border/50 hover:bg-primary/10 hover:text-primary hover:border-primary/30"
                   >
-                    Sugestões
+                    Ver sugestões de notas
                   </Button>
                 </div>
               </div>
