@@ -3728,3 +3728,4 @@
 - [x] Reorganizar campos WhatsApp e Instagram na mesma linha que Link do Cardápio em Configurações básicas
 - [x] Remover opção de boleto do card de Formas de pagamento
 - [x] Mover card de Cartão Fidelidade para a aba de Estabelecimento
+- [x] Reorganizar campos do Cartão Fidelidade (tipo cupom, valor desconto, valor mínimo) na mesma linha dos carimbos
