@@ -3710,3 +3710,4 @@
 - [x] Corrigir bug de vazamento de áudio ao recarregar página com som desativado
 - [x] Corrigir som de notificação não tocando na versão mobile
 - [x] Corrigir som de notificação não tocando em dispositivos Android
+- [x] Adicionar vibração como feedback adicional em dispositivos Android

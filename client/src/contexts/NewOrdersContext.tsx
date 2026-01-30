@@ -307,6 +307,22 @@ class NotificationAudioManager {
     return true;
   }
 
+  // Vibrar o dispositivo (funciona em Android e alguns iOS)
+  private vibrate() {
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      try {
+        // Padrão de vibração: vibra 200ms, pausa 100ms, vibra 200ms
+        // Isso cria um padrão distinto para notificações de pedido
+        navigator.vibrate([200, 100, 200]);
+        console.log("[NotificationAudio] Vibração ativada");
+      } catch (e) {
+        console.log("[NotificationAudio] Erro ao vibrar:", e);
+      }
+    } else {
+      console.log("[NotificationAudio] Vibração não suportada neste dispositivo");
+    }
+  }
+
   play() {
     // Verificar se estamos no menu público
     if (this.isInPublicMenu()) {
@@ -336,6 +352,12 @@ class NotificationAudioManager {
       hasAudioBuffer: !!this.audioBuffer,
       audioPoolSize: this.audioPool.length
     });
+
+    // Vibrar em dispositivos móveis (principalmente Android)
+    // A vibração funciona como feedback adicional ao som
+    if (this.isMobile && this.userHasInteracted) {
+      this.vibrate();
+    }
 
     // Para Android, tentar múltiplas estratégias
     if (this.isAndroid && this.userHasInteracted) {
