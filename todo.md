@@ -3730,3 +3730,4 @@
 - [x] Mover card de Cartão Fidelidade para a aba de Estabelecimento
 - [x] Reorganizar campos do Cartão Fidelidade (tipo cupom, valor desconto, valor mínimo) na mesma linha dos carimbos
 - [x] Mover campo de Carimbos necessários para a mesma linha do toggle Ativar Cartão Fidelidade
+- [x] Adicionar botão "Sugestões" na mesma linha do campo de nota do restaurante que exibe as 4 sugestões ao clicar

@@ -137,6 +137,7 @@ export default function Configuracoes() {
   const [noteStyle, setNoteStyle] = useState("default");
   const [showPreviewForStyle, setShowPreviewForStyle] = useState<string | null>(null);
   const previewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   
   // Delivery time state
   const [deliveryTimeEnabled, setDeliveryTimeEnabled] = useState(false);
@@ -1356,10 +1357,40 @@ export default function Configuracoes() {
                 Deixe uma nota temporária para seus clientes. Ela aparecerá como um balão acima da foto de perfil no cardápio público e ficará visível por 24 horas.
               </p>
               
-              {/* Sugestões rápidas */}
+              {/* Campo de texto + Botão Sugestões */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold">Sugestões rápidas</Label>
-                <div className="flex flex-wrap gap-2">
+                <Label htmlFor="publicNote" className="text-sm font-semibold flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4 text-primary" />
+                  Nota do Restaurante (opcional)
+                </Label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Input
+                      id="publicNote"
+                      value={publicNote}
+                      onChange={(e) => setPublicNote(e.target.value.slice(0, 80))}
+                      placeholder="Deixe uma nota temporária para seus clientes..."
+                      maxLength={80}
+                      className="h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 pr-16"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                      {publicNote.length}/80
+                    </span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowSuggestions(!showSuggestions)}
+                    className="h-11 rounded-xl border-border/50 hover:bg-primary/10 hover:text-primary hover:border-primary/30"
+                  >
+                    Sugestões
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Sugestões rápidas - exibidas ao clicar no botão */}
+              {showSuggestions && (
+                <div className="flex flex-wrap gap-2 p-3 bg-muted/30 rounded-xl border border-border/50 animate-in fade-in slide-in-from-top-2 duration-200">
                   {[
                     "Temos novidades no cardápio 👀",
                     "Hoje o tempo de entrega está reduzido 🚀",
@@ -1369,35 +1400,17 @@ export default function Configuracoes() {
                     <button
                       key={suggestion}
                       type="button"
-                      onClick={() => setPublicNote(suggestion)}
-                      className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-primary/10 hover:text-primary rounded-full transition-colors border border-gray-200 hover:border-primary/30"
+                      onClick={() => {
+                        setPublicNote(suggestion);
+                        setShowSuggestions(false);
+                      }}
+                      className="px-3 py-1.5 text-xs bg-white hover:bg-primary/10 hover:text-primary rounded-full transition-colors border border-gray-200 hover:border-primary/30 shadow-sm"
                     >
                       {suggestion}
                     </button>
                   ))}
                 </div>
-              </div>
-              
-              {/* Campo de texto */}
-              <div className="space-y-2">
-                <Label htmlFor="publicNote" className="text-sm font-semibold flex items-center gap-2">
-                  <MessageCircle className="h-4 w-4 text-primary" />
-                  Nota do Restaurante (opcional)
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="publicNote"
-                    value={publicNote}
-                    onChange={(e) => setPublicNote(e.target.value.slice(0, 80))}
-                    placeholder="Deixe uma nota temporária para seus clientes..."
-                    maxLength={80}
-                    className="h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 pr-16"
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                    {publicNote.length}/80
-                  </span>
-                </div>
-              </div>
+              )}
               
               {/* Seleção de Estilo do Balão */}
               <div className="space-y-2">
