@@ -3402,7 +3402,7 @@ export async function upsertWhatsappConfig(data: {
   }
   
   // Templates padrão para novos estabelecimentos
-  const defaultTemplateNewOrder = `Olá *{{customerName}}!* 👋🏻  {{greeting}}, Tudo bem?
+  const defaultTemplateNewOrder = `Olá *{{customerName}}*! 👋🏻 {{greeting}}, Tudo bem?
 
 Seu pedido *{{orderNumber}}* foi recebido com sucesso!
 
