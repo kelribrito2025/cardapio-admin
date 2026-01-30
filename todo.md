@@ -3744,3 +3744,6 @@
 - [x] Mover card Notificações SMS para ficar ao lado do card Formas de pagamento
 - [x] Colocar opções Dinheiro, Cartão e Pix na mesma linha no card de Formas de pagamento
 - [x] Redesenhar card Informações e entrega com formato compacto (checkbox à esquerda, texto à direita)
+- [x] Colocar Pedido mínimo abaixo de Tempo de entrega no card Informações e entrega
+- [x] Mover card Taxa de entrega para ao lado do card Informações e entrega
+- [x] Deixar card Taxa de entrega em formato compacto e retangular

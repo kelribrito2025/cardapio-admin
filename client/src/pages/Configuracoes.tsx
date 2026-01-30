@@ -1723,36 +1723,35 @@ export default function Configuracoes() {
             </SectionCard>
           </div>
 
-          {/* Informações e entrega */}
-          <SectionCard title="Informações e entrega">
-            <div className="space-y-4">
-              {/* Layout compacto - tipo de entrega e configurações */}
-              <div className="flex flex-wrap gap-2">
+          {/* Informações e entrega + Taxa de entrega lado a lado */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Informações e entrega */}
+            <SectionCard title="Informações e entrega">
+              <div className="space-y-3">
                 {/* Tipo de entrega - checkboxes compactos */}
-                <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
-                  <Checkbox
-                    checked={allowsDelivery}
-                    onCheckedChange={(checked) => setAllowsDelivery(checked as boolean)}
-                    className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
-                  <Truck className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium text-sm">Entrega</span>
-                </label>
-                <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
-                  <Checkbox
-                    checked={allowsPickup}
-                    onCheckedChange={(checked) => setAllowsPickup(checked as boolean)}
-                    className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
-                  <Store className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium text-sm">Retirada</span>
-                </label>
-              </div>
+                <div className="flex flex-wrap gap-2">
+                  <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
+                    <Checkbox
+                      checked={allowsDelivery}
+                      onCheckedChange={(checked) => setAllowsDelivery(checked as boolean)}
+                      className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <Truck className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium text-sm">Entrega</span>
+                  </label>
+                  <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
+                    <Checkbox
+                      checked={allowsPickup}
+                      onCheckedChange={(checked) => setAllowsPickup(checked as boolean)}
+                      className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <Store className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium text-sm">Retirada</span>
+                  </label>
+                </div>
 
-              {/* Tempo de entrega e Pedido mínimo - compactos lado a lado */}
-              <div className="flex flex-col sm:flex-row gap-3">
                 {/* Tempo de entrega */}
-                <div className="flex-1 flex items-center gap-3 p-3 bg-muted/30 rounded-lg border border-border/30">
+                <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg border border-border/30">
                   <Checkbox
                     checked={deliveryTimeEnabled}
                     onCheckedChange={(checked) => setDeliveryTimeEnabled(checked as boolean)}
@@ -1761,7 +1760,7 @@ export default function Configuracoes() {
                   <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
                   <span className="font-medium text-sm whitespace-nowrap">Tempo</span>
                   {deliveryTimeEnabled && (
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 ml-auto">
                       <Input
                         type="number"
                         value={deliveryTimeMin}
@@ -1783,7 +1782,7 @@ export default function Configuracoes() {
                 </div>
                 
                 {/* Pedido Mínimo */}
-                <div className="flex-1 flex items-center gap-3 p-3 bg-muted/30 rounded-lg border border-border/30">
+                <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg border border-border/30">
                   <Checkbox
                     checked={minimumOrderEnabled}
                     onCheckedChange={(checked) => setMinimumOrderEnabled(checked as boolean)}
@@ -1792,7 +1791,7 @@ export default function Configuracoes() {
                   <CreditCard className="h-4 w-4 text-muted-foreground shrink-0" />
                   <span className="font-medium text-sm whitespace-nowrap">Ped. mín.</span>
                   {minimumOrderEnabled && (
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 ml-auto">
                       <span className="text-sm text-muted-foreground">R$</span>
                       <Input
                         type="number"
@@ -1805,212 +1804,185 @@ export default function Configuracoes() {
                     </div>
                   )}
                 </div>
+
+                <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
+                  <Save className="h-4 w-4 mr-2" />
+                  {isPending ? "Salvando..." : "Salvar"}
+                </Button>
               </div>
+            </SectionCard>
 
-              <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
-                <Save className="h-4 w-4 mr-2" />
-                {isPending ? "Salvando..." : "Salvar"}
-              </Button>
-            </div>
-          </SectionCard>
-
-
-          {/* Taxa de Entrega */}
-          <SectionCard title="Taxa de entrega">
-            <div className="space-y-5">
-              <p className="text-sm text-muted-foreground">
-                Configure como a taxa de entrega será calculada para seus clientes.
-              </p>
-              
-              <div className="flex gap-3 flex-wrap">
-                {/* Opção Grátis */}
-                <label
-                  className={cn(
-                    "relative flex flex-col items-center gap-3 p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200 min-w-[120px]  flex-1",
+            {/* Taxa de Entrega */}
+            <SectionCard title="Taxa de entrega">
+              <div className="space-y-3">
+                {/* Opções de taxa - formato compacto */}
+                <div className="flex flex-wrap gap-2">
+                  <label className={cn(
+                    "flex items-center gap-2 px-3 py-2 border rounded-lg cursor-pointer transition-colors",
                     deliveryFeeType === "free"
                       ? "border-emerald-500 bg-emerald-50"
-                      : "border-border/50 hover:border-muted-foreground/30 hover:bg-muted/30"
-                  )}
-                >
-                  <div className={cn(
-                    "p-3 rounded-xl",
-                    deliveryFeeType === "free" ? "bg-emerald-100" : "bg-muted/50"
+                      : "border-border/50 hover:bg-muted/30"
                   )}>
-                    <Truck className={cn("h-6 w-6", deliveryFeeType === "free" ? "text-emerald-600" : "text-muted-foreground")} />
-                  </div>
-                  <span className={cn("font-semibold text-sm", deliveryFeeType === "free" ? "text-emerald-700" : "text-muted-foreground")}>
-                    Grátis
-                  </span>
-                  <input
-                    type="radio"
-                    name="deliveryFeeType"
-                    value="free"
-                    checked={deliveryFeeType === "free"}
-                    onChange={() => setDeliveryFeeType("free")}
-                    className="sr-only"
-                  />
-                  {deliveryFeeType === "free" && (
-                    <span className="absolute top-2 right-2 h-3 w-3 bg-emerald-500 rounded-full ring-2 ring-white" />
-                  )}
-                </label>
+                    <input
+                      type="radio"
+                      name="deliveryFeeType"
+                      value="free"
+                      checked={deliveryFeeType === "free"}
+                      onChange={() => setDeliveryFeeType("free")}
+                      className="sr-only"
+                    />
+                    <div className={cn(
+                      "h-4 w-4 rounded-full border-2 flex items-center justify-center",
+                      deliveryFeeType === "free" ? "border-emerald-500" : "border-muted-foreground/50"
+                    )}>
+                      {deliveryFeeType === "free" && <div className="h-2 w-2 rounded-full bg-emerald-500" />}
+                    </div>
+                    <Truck className={cn("h-4 w-4", deliveryFeeType === "free" ? "text-emerald-600" : "text-muted-foreground")} />
+                    <span className={cn("font-medium text-sm", deliveryFeeType === "free" ? "text-emerald-700" : "text-foreground")}>Grátis</span>
+                  </label>
 
-                {/* Opção Fixa */}
-                <label
-                  className={cn(
-                    "relative flex flex-col items-center gap-3 p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200 min-w-[120px] flex-1",
+                  <label className={cn(
+                    "flex items-center gap-2 px-3 py-2 border rounded-lg cursor-pointer transition-colors",
                     deliveryFeeType === "fixed"
                       ? "border-primary bg-primary/5"
-                      : "border-border/50 hover:border-muted-foreground/30 hover:bg-muted/30"
-                  )}
-                >
-                  <div className={cn(
-                    "p-3 rounded-xl",
-                    deliveryFeeType === "fixed" ? "bg-primary/10" : "bg-muted/50"
+                      : "border-border/50 hover:bg-muted/30"
                   )}>
-                    <CreditCard className={cn("h-6 w-6", deliveryFeeType === "fixed" ? "text-primary" : "text-muted-foreground")} />
-                  </div>
-                  <span className={cn("font-semibold text-sm", deliveryFeeType === "fixed" ? "text-primary" : "text-muted-foreground")}>
-                    Fixa
-                  </span>
-                  <input
-                    type="radio"
-                    name="deliveryFeeType"
-                    value="fixed"
-                    checked={deliveryFeeType === "fixed"}
-                    onChange={() => setDeliveryFeeType("fixed")}
-                    className="sr-only"
-                  />
-                  {deliveryFeeType === "fixed" && (
-                    <span className="absolute top-2 right-2 h-3 w-3 bg-primary rounded-full ring-2 ring-white" />
-                  )}
-                </label>
+                    <input
+                      type="radio"
+                      name="deliveryFeeType"
+                      value="fixed"
+                      checked={deliveryFeeType === "fixed"}
+                      onChange={() => setDeliveryFeeType("fixed")}
+                      className="sr-only"
+                    />
+                    <div className={cn(
+                      "h-4 w-4 rounded-full border-2 flex items-center justify-center",
+                      deliveryFeeType === "fixed" ? "border-primary" : "border-muted-foreground/50"
+                    )}>
+                      {deliveryFeeType === "fixed" && <div className="h-2 w-2 rounded-full bg-primary" />}
+                    </div>
+                    <CreditCard className={cn("h-4 w-4", deliveryFeeType === "fixed" ? "text-primary" : "text-muted-foreground")} />
+                    <span className={cn("font-medium text-sm", deliveryFeeType === "fixed" ? "text-primary" : "text-foreground")}>Fixa</span>
+                  </label>
 
-                {/* Opção Por Bairros */}
-                <label
-                  className={cn(
-                    "relative flex flex-col items-center gap-3 p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200 min-w-[120px] flex-1",
+                  <label className={cn(
+                    "flex items-center gap-2 px-3 py-2 border rounded-lg cursor-pointer transition-colors",
                     deliveryFeeType === "byNeighborhood"
                       ? "border-blue-500 bg-blue-50"
-                      : "border-border/50 hover:border-muted-foreground/30 hover:bg-muted/30"
-                  )}
-                >
-                  <div className={cn(
-                    "p-3 rounded-xl",
-                    deliveryFeeType === "byNeighborhood" ? "bg-blue-100" : "bg-muted/50"
+                      : "border-border/50 hover:bg-muted/30"
                   )}>
-                    <MapPin className={cn("h-6 w-6", deliveryFeeType === "byNeighborhood" ? "text-blue-600" : "text-muted-foreground")} />
-                  </div>
-                  <span className={cn("font-semibold text-sm", deliveryFeeType === "byNeighborhood" ? "text-blue-700" : "text-muted-foreground")}>
-                    Por Bairros
-                  </span>
-                  <input
-                    type="radio"
-                    name="deliveryFeeType"
-                    value="byNeighborhood"
-                    checked={deliveryFeeType === "byNeighborhood"}
-                    onChange={() => setDeliveryFeeType("byNeighborhood")}
-                    className="sr-only"
-                  />
-                  {deliveryFeeType === "byNeighborhood" && (
-                    <span className="absolute top-2 right-2 h-3 w-3 bg-blue-500 rounded-full ring-2 ring-white" />
-                  )}
-                </label>
-              </div>
+                    <input
+                      type="radio"
+                      name="deliveryFeeType"
+                      value="byNeighborhood"
+                      checked={deliveryFeeType === "byNeighborhood"}
+                      onChange={() => setDeliveryFeeType("byNeighborhood")}
+                      className="sr-only"
+                    />
+                    <div className={cn(
+                      "h-4 w-4 rounded-full border-2 flex items-center justify-center",
+                      deliveryFeeType === "byNeighborhood" ? "border-blue-500" : "border-muted-foreground/50"
+                    )}>
+                      {deliveryFeeType === "byNeighborhood" && <div className="h-2 w-2 rounded-full bg-blue-500" />}
+                    </div>
+                    <MapPin className={cn("h-4 w-4", deliveryFeeType === "byNeighborhood" ? "text-blue-600" : "text-muted-foreground")} />
+                    <span className={cn("font-medium text-sm", deliveryFeeType === "byNeighborhood" ? "text-blue-700" : "text-foreground")}>Por Bairros</span>
+                  </label>
+                </div>
 
-              {/* Campo de valor fixo */}
-              {deliveryFeeType === "fixed" && (
-                <div className="p-4 bg-muted/30 rounded-xl border border-border/30">
-                  <div className="flex items-center gap-2">
-                    <Label className="text-sm font-medium">Valor da taxa:</Label>
-                    <div className="flex items-center">
-                      <span className="text-sm text-muted-foreground mr-1">R$</span>
+                {/* Campo de valor fixo */}
+                {deliveryFeeType === "fixed" && (
+                  <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg border border-border/30">
+                    <Label className="text-sm font-medium">Valor:</Label>
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm text-muted-foreground">R$</span>
                       <Input
                         type="number"
                         value={deliveryFeeFixed}
                         onChange={(e) => setDeliveryFeeFixed(e.target.value)}
-                        className="w-24 h-9 rounded-lg text-sm"
+                        className="w-20 h-7 rounded text-sm px-2"
                         min={0}
                         step="0.01"
                       />
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Lista de bairros */}
-              {deliveryFeeType === "byNeighborhood" && (
-                <div className="p-4 bg-muted/30 rounded-xl border border-border/30 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-sm font-medium">Bairros e taxas</Label>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setNeighborhoodFees([...neighborhoodFees, { neighborhood: "", fee: "0" }])}
-                      className="rounded-lg"
-                    >
-                      + Adicionar bairro
-                    </Button>
-                  </div>
-                  
-                  {neighborhoodFees.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                      Nenhum bairro cadastrado. Clique em "Adicionar bairro" para começar.
-                    </p>
-                  ) : (
-                    <div className="space-y-3">
-                      {neighborhoodFees.map((item, index) => (
-                        <div key={index} className="flex items-center gap-3">
-                          <Input
-                            placeholder="Nome do bairro"
-                            value={item.neighborhood}
-                            onChange={(e) => {
-                              const updated = [...neighborhoodFees];
-                              updated[index].neighborhood = e.target.value;
-                              setNeighborhoodFees(updated);
-                            }}
-                            className="flex-1 h-9 rounded-lg text-sm"
-                          />
-                          <div className="flex items-center gap-1">
-                            <span className="text-sm text-muted-foreground">R$</span>
+                {/* Lista de bairros */}
+                {deliveryFeeType === "byNeighborhood" && (
+                  <div className="p-3 bg-muted/30 rounded-lg border border-border/30 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-medium">Bairros e taxas</Label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setNeighborhoodFees([...neighborhoodFees, { neighborhood: "", fee: "0" }])}
+                        className="rounded-lg h-7 text-xs"
+                      >
+                        + Adicionar
+                      </Button>
+                    </div>
+                    
+                    {neighborhoodFees.length === 0 ? (
+                      <p className="text-xs text-muted-foreground text-center py-2">
+                        Nenhum bairro cadastrado.
+                      </p>
+                    ) : (
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {neighborhoodFees.map((item, index) => (
+                          <div key={index} className="flex items-center gap-2">
                             <Input
-                              type="number"
-                              placeholder="0,00"
-                              value={item.fee}
+                              placeholder="Bairro"
+                              value={item.neighborhood}
                               onChange={(e) => {
                                 const updated = [...neighborhoodFees];
-                                updated[index].fee = e.target.value;
+                                updated[index].neighborhood = e.target.value;
                                 setNeighborhoodFees(updated);
                               }}
-                              className="w-20 h-9 rounded-lg text-sm"
-                              min={0}
-                              step="0.01"
+                              className="flex-1 h-7 rounded text-sm px-2"
                             />
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs text-muted-foreground">R$</span>
+                              <Input
+                                type="number"
+                                placeholder="0"
+                                value={item.fee}
+                                onChange={(e) => {
+                                  const updated = [...neighborhoodFees];
+                                  updated[index].fee = e.target.value;
+                                  setNeighborhoodFees(updated);
+                                }}
+                                className="w-16 h-7 rounded text-sm px-2"
+                                min={0}
+                                step="0.01"
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setNeighborhoodFees(neighborhoodFees.filter((_, i) => i !== index));
+                              }}
+                              className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
                           </div>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                              setNeighborhoodFees(neighborhoodFees.filter((_, i) => i !== index));
-                            }}
-                            className="h-9 w-9 text-destructive hover:text-destructive hover:bg-destructive/10"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
 
-              <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
-                <Save className="h-4 w-4 mr-2" />
-                {isPending ? "Salvando..." : "Salvar"}
-              </Button>
-            </div>
-          </SectionCard>
+                <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
+                  <Save className="h-4 w-4 mr-2" />
+                  {isPending ? "Salvando..." : "Salvar"}
+                </Button>
+              </div>
+            </SectionCard>
+          </div>
 
           {/* Horários de Funcionamento */}
           <SectionCard title="Horários de funcionamento">
