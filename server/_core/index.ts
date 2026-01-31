@@ -106,10 +106,17 @@ function generateReceiptHTML(
         const complements = typeof item.complements === 'string' ? JSON.parse(item.complements) : item.complements;
         if (Array.isArray(complements)) {
           for (const comp of complements) {
+            // Suporta duas estruturas:
+            // 1. Estrutura antiga com grupos: {items: [{name, price}]}
+            // 2. Estrutura nova direta: {name, price}
             if (comp.items && Array.isArray(comp.items)) {
+              // Estrutura antiga com grupos de complementos
               for (const ci of comp.items) {
                 itemHTML += `<div class="item-complement">+ ${ci.name}${ci.price > 0 ? ` (${formatCurrency(ci.price)})` : ''}</div>`;
               }
+            } else if (comp.name) {
+              // Estrutura nova: array direto de complementos {name, price}
+              itemHTML += `<div class="item-complement">+ ${comp.name}${comp.price > 0 ? ` (${formatCurrency(comp.price)})` : ''}</div>`;
             }
           }
         }
