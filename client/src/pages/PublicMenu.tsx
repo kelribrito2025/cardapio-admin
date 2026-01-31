@@ -2231,7 +2231,7 @@ export default function PublicMenu() {
             Desenvolvido por <span className="font-bold">Bigteck</span>
           </p>
           <span className="text-white/60">•</span>
-          <button className="px-4 py-1 bg-white text-orange-600 rounded-lg text-sm font-bold hover:scale-105 transition-transform">
+          <button className="px-4 py-1 bg-white text-orange-600 rounded-lg text-sm font-bold hover:scale-105 transition-transform" style={{paddingTop: '2px', paddingBottom: '2px', width: '174px', height: '25px'}}>
             Experimente grátis
           </button>
         </div>
