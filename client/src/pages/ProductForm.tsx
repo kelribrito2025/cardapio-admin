@@ -1135,7 +1135,7 @@ export default function ProductForm() {
                           {({ attributes, listeners }: { attributes: Record<string, unknown>; listeners: Record<string, unknown> | undefined }) => (
                           <>
                           <div className="flex items-start justify-between gap-3 flex-1">
-                            <div className="flex-1 space-y-3">
+                            <div className="flex-1 space-y-3" style={{marginBottom: '6px'}}>
                               <div className="flex items-center gap-2">
                                 <button
                                   type="button"
