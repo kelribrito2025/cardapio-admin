@@ -1164,12 +1164,24 @@ export default function PublicMenu() {
     );
   }
 
-  const { establishment, categories, products } = data;
+  const { establishment, categories: allCategories, products } = data;
   const filteredProducts = filterProducts(products);
 
   const getProductsByCategory = (categoryId: number) => {
     return filteredProducts.filter((p) => p.categoryId === categoryId);
   };
+
+  // Filtrar categorias: apenas ativas E com pelo menos 1 produto ativo
+  const categories = allCategories.filter((category) => {
+    // Categoria precisa estar ativa
+    if (category.isActive === false) return false;
+    
+    // Categoria precisa ter pelo menos 1 produto ativo (visível no menu)
+    const activeProducts = filteredProducts.filter(
+      (p) => p.categoryId === category.id && p.status === 'active' && p.hasStock
+    );
+    return activeProducts.length > 0;
+  });
 
   // Calcular se o restaurante está aberto baseado nos horários configurados
   const isWithinBusinessHours = () => {

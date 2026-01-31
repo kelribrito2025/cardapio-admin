@@ -3855,3 +3855,13 @@
 - [x] Adicionar link WhatsApp no rodapé do menu público (Bigteck e Experimente grátis) - 5588999290000
 - [x] Migrar sistema de storage para S3 próprio do usuário
 - [x] Mostrar quantidade de itens ao lado do nome da categoria na página /categorias
+
+## Toggle e Exclusão de Categorias
+- [x] Adicionar campo isActive no schema de categorias
+- [x] Remover menu de 3 pontinhos das categorias
+- [x] Adicionar toggle ativar/pausar categoria
+- [x] Adicionar ícone de lixeira para excluir categoria
+- [x] Implementar regra: categoria pausada não aparece no menu público
+- [x] Implementar regra: categoria ativa sem itens ativos não aparece no menu público
+- [x] Implementar regra: categoria ativa com pelo menos 1 item ativo aparece no menu público
+- [x] Exibir confirmação ao excluir categoria

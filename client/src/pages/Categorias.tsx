@@ -3,6 +3,7 @@ import { PageHeader, EmptyState, SectionCard } from "@/components/shared";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -26,19 +27,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Plus,
   GripVertical,
-  Layers,
   Check,
   X,
   Pencil,
-  MoreVertical,
   Trash2,
   Tag,
 } from "lucide-react";
@@ -84,23 +77,27 @@ function SortableCategoryItem({
   productCount,
   onEdit,
   onDelete,
+  onToggleActive,
   isEditing,
   editingName,
   onEditNameChange,
   onSaveEdit,
   onCancelEdit,
   isMobile,
+  isTogglingActive,
 }: {
   category: any;
   productCount: number;
   onEdit: (id: number, name: string) => void;
   onDelete: (category: { id: number; name: string; productCount: number }) => void;
+  onToggleActive: (id: number, isActive: boolean) => void;
   isEditing: boolean;
   editingName: string;
   onEditNameChange: (name: string) => void;
   onSaveEdit: () => void;
   onCancelEdit: () => void;
   isMobile: boolean;
+  isTogglingActive: boolean;
 }) {
   const {
     attributes,
@@ -118,6 +115,8 @@ function SortableCategoryItem({
     zIndex: isDragging ? 1000 : 1,
   };
 
+  const isActive = category.isActive !== false; // default to true if undefined
+
   return (
     <div
       ref={setNodeRef}
@@ -125,14 +124,8 @@ function SortableCategoryItem({
       className={cn(
         "flex items-center gap-4 p-4 bg-card border border-border/50 rounded-xl hover:bg-muted/30 transition-colors",
         isDragging && "shadow-lg",
-        isMobile && "cursor-pointer"
+        !isActive && "opacity-60"
       )}
-      onClick={() => {
-        // No mobile, clicar em qualquer lugar abre o bottom sheet
-        if (isMobile && !isDragging) {
-          onEdit(category.id, category.name);
-        }
-      }}
     >
       <button
         {...attributes}
@@ -143,7 +136,14 @@ function SortableCategoryItem({
         <GripVertical className="h-5 w-5 text-muted-foreground" />
       </button>
       
-      <div className="flex-1 min-w-0">
+      <div 
+        className="flex-1 min-w-0 cursor-pointer"
+        onClick={() => {
+          if (!isDragging) {
+            onEdit(category.id, category.name);
+          }
+        }}
+      >
         {/* No desktop, permite edição inline. No mobile, apenas mostra o nome */}
         {!isMobile && isEditing ? (
           <div className="flex items-center gap-2">
@@ -159,11 +159,15 @@ function SortableCategoryItem({
                   onCancelEdit();
                 }
               }}
+              onClick={(e) => e.stopPropagation()}
             />
             <Button
               variant="ghost"
               size="icon"
-              onClick={onSaveEdit}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSaveEdit();
+              }}
               disabled={!editingName.trim()}
               className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
             >
@@ -172,66 +176,68 @@ function SortableCategoryItem({
             <Button
               variant="ghost"
               size="icon"
-              onClick={onCancelEdit}
+              onClick={(e) => {
+                e.stopPropagation();
+                onCancelEdit();
+              }}
               className="h-8 w-8 text-muted-foreground hover:text-foreground"
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
         ) : (
-          <div 
-            className={cn(
-              "flex items-center gap-2 group",
-              !isMobile && "cursor-pointer"
-            )}
-            onClick={(e) => {
-              if (!isMobile) {
-                e.stopPropagation();
-                onEdit(category.id, category.name);
-              }
-            }}
-          >
+          <div className="flex items-center gap-2 group">
             <h4 className={cn(
-              "font-semibold text-base transition-colors",
-              !isMobile && "group-hover:text-primary"
+              "font-semibold text-base transition-colors group-hover:text-primary",
+              !isActive && "text-muted-foreground"
             )}>
               {category.name} <span className="text-muted-foreground font-normal">({productCount} {productCount === 1 ? "item" : "itens"})</span>
             </h4>
-            {!isMobile && (
-              <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-            )}
+            <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
         )}
       </div>
       
-      {/* Menu de ações - apenas no desktop */}
-      {!isMobile && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+      {/* Toggle ativar/pausar */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div onClick={(e) => e.stopPropagation()}>
+              <Switch
+                checked={isActive}
+                onCheckedChange={(checked) => onToggleActive(category.id, checked)}
+                disabled={isTogglingActive}
+                className="data-[state=checked]:bg-green-500"
+              />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{isActive ? "Categoria ativa" : "Categoria pausada"}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      
+      {/* Botão de excluir */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-md"
-              onClick={(e) => e.stopPropagation()}
+              className="h-8 w-8 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete({ id: category.id, name: category.name, productCount });
+              }}
             >
-              <MoreVertical className="h-4 w-4" />
+              <Trash2 className="h-4 w-4" />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => onEdit(category.id, category.name)}>
-              <Pencil className="h-4 w-4 mr-2" />
-              Editar
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => onDelete({ id: category.id, name: category.name, productCount })}
-              className="text-destructive focus:text-destructive"
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Excluir
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Excluir categoria</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 }
@@ -256,7 +262,7 @@ export default function Categorias() {
   
   // Bottom sheet state for mobile edit
   const [editSheetOpen, setEditSheetOpen] = useState(false);
-  const [editSheetCategory, setEditSheetCategory] = useState<{ id: number; name: string; productCount: number } | null>(null);
+  const [editSheetCategory, setEditSheetCategory] = useState<{ id: number; name: string; productCount: number; isActive: boolean } | null>(null);
   const [editSheetName, setEditSheetName] = useState("");
 
   // Set establishment ID when data is loaded
@@ -342,6 +348,15 @@ export default function Categorias() {
     onError: () => toast.error("Erro ao atualizar categoria"),
   });
 
+  const toggleActiveMutation = trpc.category.update.useMutation({
+    onSuccess: (_, variables) => {
+      refetchCategories();
+      const action = variables.isActive ? "ativada" : "pausada";
+      toast.success(`Categoria ${action}`);
+    },
+    onError: () => toast.error("Erro ao atualizar categoria"),
+  });
+
   const deleteCategoryMutation = trpc.category.delete.useMutation({
     onSuccess: () => {
       refetchCategories();
@@ -384,7 +399,7 @@ export default function Categorias() {
       // No mobile, abre o bottom sheet
       const category = localCategories.find(c => c.id === id);
       const productCount = productCountByCategory[id] || 0;
-      setEditSheetCategory({ id, name, productCount });
+      setEditSheetCategory({ id, name, productCount, isActive: category?.isActive !== false });
       setEditSheetName(name);
       setEditSheetOpen(true);
     } else {
@@ -412,6 +427,14 @@ export default function Categorias() {
     setDeleteCategoryDialogOpen(true);
   };
 
+  const handleToggleActive = (id: number, isActive: boolean) => {
+    // Atualização otimista
+    setLocalCategories(prev => 
+      prev.map(c => c.id === id ? { ...c, isActive } : c)
+    );
+    toggleActiveMutation.mutate({ id, isActive });
+  };
+
   // Handlers para o bottom sheet mobile
   const handleSaveEditSheet = () => {
     if (!editSheetCategory || !editSheetName.trim()) return;
@@ -425,6 +448,12 @@ export default function Categorias() {
     if (!editSheetCategory) return;
     setCategoryToDelete(editSheetCategory);
     setDeleteCategoryDialogOpen(true);
+  };
+
+  const handleToggleActiveFromSheet = (isActive: boolean) => {
+    if (!editSheetCategory) return;
+    setEditSheetCategory({ ...editSheetCategory, isActive });
+    handleToggleActive(editSheetCategory.id, isActive);
   };
 
   // Handler para abrir o dialog/sheet de nova categoria
@@ -512,12 +541,14 @@ export default function Categorias() {
                   productCount={productCountByCategory[category.id] || 0}
                   onEdit={handleEditCategory}
                   onDelete={handleDeleteCategory}
+                  onToggleActive={handleToggleActive}
                   isEditing={editingCategoryId === category.id}
                   editingName={editingCategoryName}
                   onEditNameChange={setEditingCategoryName}
                   onSaveEdit={handleSaveEdit}
                   onCancelEdit={handleCancelEdit}
                   isMobile={isMobile}
+                  isTogglingActive={toggleActiveMutation.isPending}
                 />
               ))}
             </div>
@@ -622,6 +653,21 @@ export default function Categorias() {
               className="h-12 rounded-xl text-base"
               autoFocus
             />
+            
+            {/* Toggle ativar/pausar no mobile */}
+            <div className="flex items-center justify-between p-4 bg-muted/50 rounded-xl">
+              <div>
+                <p className="font-medium">Categoria ativa</p>
+                <p className="text-sm text-muted-foreground">
+                  {editSheetCategory?.isActive ? "Visível no menu público" : "Oculta do menu público"}
+                </p>
+              </div>
+              <Switch
+                checked={editSheetCategory?.isActive ?? true}
+                onCheckedChange={handleToggleActiveFromSheet}
+                className="data-[state=checked]:bg-green-500"
+              />
+            </div>
           </div>
           <SheetFooter className="p-0 mt-6 flex-col gap-3">
             <div className="flex gap-3 w-full">
@@ -658,13 +704,11 @@ export default function Categorias() {
           <DialogHeader>
             <DialogTitle>Excluir categoria</DialogTitle>
             <DialogDescription>
-              {categoryToDelete?.productCount && categoryToDelete.productCount > 0 ? (
-                <>
-                  A categoria <strong>"{categoryToDelete?.name}"</strong> possui <strong>{categoryToDelete?.productCount} {categoryToDelete?.productCount === 1 ? 'produto' : 'produtos'}</strong>. 
-                  Ao excluir, os produtos serão movidos para "Sem categoria".
-                </>
-              ) : (
-                <>Tem certeza que deseja excluir a categoria <strong>"{categoryToDelete?.name}"</strong>?</>
+              Tem certeza que deseja excluir a categoria <strong>"{categoryToDelete?.name}"</strong>?
+              {categoryToDelete?.productCount && categoryToDelete.productCount > 0 && (
+                <span className="block mt-2">
+                  Os <strong>{categoryToDelete.productCount} {categoryToDelete.productCount === 1 ? 'produto' : 'produtos'}</strong> serão movidos para "Sem categoria".
+                </span>
               )}
             </DialogDescription>
           </DialogHeader>
