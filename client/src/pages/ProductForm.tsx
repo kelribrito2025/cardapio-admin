@@ -408,7 +408,7 @@ export default function ProductForm() {
               await updateItemMutation.mutateAsync({
                 id: item.id,
                 name: item.name,
-                price: item.price,
+                price: parsePriceInput(item.price),
                 imageUrl: item.imageUrl,
                 sortOrder: itemIndex,
               });
@@ -417,7 +417,7 @@ export default function ProductForm() {
               await createItemMutation.mutateAsync({
                 groupId,
                 name: item.name,
-                price: item.price,
+                price: parsePriceInput(item.price),
                 imageUrl: item.imageUrl,
                 sortOrder: itemIndex,
               });
@@ -732,9 +732,19 @@ export default function ProductForm() {
     });
   };
 
-  // Formata para exibição no input (5.00 -> 5,00)
+  // Formata para exibição no input (5.00 -> 5,00 ou 5,00 -> 5,00)
   const displayPrice = (value: string): string => {
-    const num = parseFloat(value || "0");
+    // Detecta se o valor já está no formato brasileiro (tem vírgula como separador decimal)
+    // ou no formato americano (tem ponto como separador decimal)
+    let num: number;
+    if (value.includes(',')) {
+      // Formato brasileiro: remove pontos de milhar, troca vírgula por ponto
+      const normalized = value.replace(/\./g, '').replace(',', '.');
+      num = parseFloat(normalized || '0');
+    } else {
+      // Formato americano ou número puro
+      num = parseFloat(value || '0');
+    }
     return num.toFixed(2).replace(".", ",");
   };
 

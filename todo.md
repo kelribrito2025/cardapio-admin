@@ -3821,3 +3821,7 @@
 
 ## Correção de Formatação de Preço
 - [x] Corrigir problema onde preço 22,00 digitado no catálogo aparece como 2,200.00 no menu público
+
+## Correção do Campo de Preço dos Complementos
+- [x] Campo de preço dos complementos não aceita digitação
+- [x] Erro ao salvar complementos com preço no formato brasileiro (0,00)
