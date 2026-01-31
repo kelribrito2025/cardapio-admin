@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, orderNumber, status, customerName, total, createdAt FROM orders WHERE establishmentId = 60018 ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, status, customerName, total, createdAt FROM orders WHERE establishmentId = 60018 ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "210084",
+      "orderNumber": "#P1",
+      "status": "pending_confirmation",
+      "customerName": "Brito",
+      "total": "31.00",
+      "createdAt": "2026-01-31 14:36:49"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tstatus\tcustomerName\ttotal\tcreatedAt\n210084\t#P1\tpending_confirmation\tBrito\t31.00\t2026-01-31 14:36:49\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}
