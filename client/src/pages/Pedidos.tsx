@@ -445,7 +445,25 @@ export default function Pedidos() {
           .item-complement { font-size: 11px; color: #555; margin-top: 2px; padding-left: 10px; }
           .totals { margin: 15px 0; }
           .total-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
-          .total-row.final { font-weight: bold; font-size: 15px; margin-top: 8px; }
+          .total-row.final { 
+            font-weight: bold; 
+            font-size: 15px; 
+            margin-top: 8px; 
+            background: #333; 
+            color: white; 
+            padding: 8px 12px; 
+            border-radius: 4px;
+          }
+          .delivery-badge {
+            display: inline-block;
+            background: #333;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1px;
+          }
           .section { margin: 15px 0; }
           .section-title { font-weight: bold; font-size: 14px; margin-bottom: 6px; }
           .section-content { font-size: 13px; color: #444; line-height: 1.4; }
@@ -473,8 +491,11 @@ export default function Pedidos() {
             <p>Sistema de Pedidos</p>
           </div>
           <div class="order-info">
-            <h2>Pedido ${orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</h2>
-            <p>Realizado em: ${format(new Date(orderDetails.createdAt), "dd/MM/yyyy")} - ${format(new Date(orderDetails.createdAt), "HH:mm")}</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h2>Pedido ${orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</h2>
+              <span class="delivery-badge">${orderDetails.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA'}</span>
+            </div>
+            <p>📅 ${format(new Date(orderDetails.createdAt), "dd/MM/yyyy")}, ${format(new Date(orderDetails.createdAt), "HH:mm")}</p>
           </div>
           <hr class="divider">
           <div class="items">${itemsHtml}</div>
@@ -484,7 +505,7 @@ export default function Pedidos() {
             ${orderDetails.couponCode ? `<div class="total-row"><span>Cupom aplicado</span><span>${orderDetails.couponCode}</span></div>` : ''}
             ${discount > 0 ? `<div class="total-row"><span>Desconto</span><span>- R$ ${discount.toFixed(2).replace('.', ',')}</span></div>` : ''}
             <div class="total-row"><span>Taxa de entrega</span><span>${Number(orderDetails.deliveryFee) > 0 ? `R$ ${Number(orderDetails.deliveryFee).toFixed(2).replace('.', ',')}` : 'Grátis'}</span></div>
-            <div class="total-row final"><span>Total</span><span>R$ ${Number(orderDetails.total).toFixed(2).replace('.', ',')}</span></div>
+            <div class="total-row final"><span>TOTAL:</span><span>R$ ${Number(orderDetails.total).toFixed(2).replace('.', ',')}</span></div>
           </div>
           ${orderDetails.notes ? `<hr class="divider"><div class="section"><div class="section-title">Observações:</div><div class="section-content">${orderDetails.notes}</div></div>` : ''}
           <hr class="divider">
