@@ -3818,3 +3818,6 @@
 - [x] Implementar modal estilo bottom sheet na página de categorias para versão mobile
 - [x] Abrir bottom sheet ao clicar em categoria para editar
 - [x] Abrir bottom sheet ao adicionar nova categoria
+
+## Correção de Formatação de Preço
+- [x] Corrigir problema onde preço 22,00 digitado no catálogo aparece como 2,200.00 no menu público

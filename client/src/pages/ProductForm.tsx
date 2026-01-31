@@ -719,13 +719,17 @@ export default function ProductForm() {
   };
 
   // Formata preço em centavos (500 -> 5,00)
-  const formatPriceInput = (value: string): string => {
+  const formatPriceInputLocal = (value: string): string => {
     // Remove tudo que não é número
     const numbers = value.replace(/\D/g, "");
     // Converte para centavos e formata
     const cents = parseInt(numbers || "0", 10);
-    const reais = (cents / 100).toFixed(2);
-    return reais;
+    const reais = cents / 100;
+    // Retorna com vírgula como separador decimal (formato brasileiro)
+    return reais.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   };
 
   // Formata para exibição no input (5.00 -> 5,00)
@@ -740,7 +744,7 @@ export default function ProductForm() {
     itemIndex: number,
     inputValue: string
   ) => {
-    const formatted = formatPriceInput(inputValue);
+    const formatted = formatPriceInputLocal(inputValue);
     updateComplementItem(groupIndex, itemIndex, { price: formatted });
   };
 
@@ -829,7 +833,7 @@ export default function ProductForm() {
                         inputMode="numeric"
                         value={price}
                         onChange={(e) => {
-                          const formatted = formatPriceInput(e.target.value);
+                          const formatted = formatPriceInputLocal(e.target.value);
                           setPrice(formatted);
                         }}
                         placeholder="0,00"
