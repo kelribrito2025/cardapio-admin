@@ -184,7 +184,7 @@ export const orderItems = mysqlTable("orderItems", {
   quantity: int("quantity").default(1).notNull(),
   unitPrice: decimal("unitPrice", { precision: 10, scale: 2 }).notNull(),
   totalPrice: decimal("totalPrice", { precision: 10, scale: 2 }).notNull(),
-  complements: json("complements").$type<{ name: string; price: number }[]>(),
+  complements: json("complements").$type<{ name: string; price: number; quantity: number }[]>(),
   notes: text("notes"),
   printerId: int("printerId"), // ID da impressora/setor deste item (copiado do produto)
   createdAt: timestamp("createdAt").defaultNow().notNull(),

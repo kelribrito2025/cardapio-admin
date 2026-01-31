@@ -14,7 +14,7 @@ type CartItem = {
   quantity: number;
   observation: string;
   image: string | null;
-  complements: Array<{ id: number; name: string; price: string }>;
+  complements: Array<{ id: number; name: string; price: string; quantity: number }>;
 };
 
 // Função para obter a chave do localStorage baseada no slug
@@ -61,7 +61,7 @@ const getOrdersStorageKey = (establishmentId: number) => `orders_${establishment
 type UserOrder = {
   id: string;
   date: string;
-  items: Array<{ name: string; quantity: number; price: string; complements: Array<{ name: string; price: string }> }>;
+  items: Array<{ name: string; quantity: number; price: string; complements: Array<{ name: string; price: string; quantity: number }> }>;
   total: string;
   status: "sent" | "accepted" | "delivering" | "delivered" | "cancelled";
   deliveryType: "pickup" | "delivery";
@@ -123,7 +123,8 @@ export default function PublicMenu() {
     }
     return [];
   });
-  const [selectedComplements, setSelectedComplements] = useState<Map<number, Set<number>>>(new Map());
+  // Map<groupId, Map<itemId, quantity>>
+  const [selectedComplements, setSelectedComplements] = useState<Map<number, Map<number, number>>>(new Map());
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState("");
@@ -335,11 +336,11 @@ export default function PublicMenu() {
           name: item.name,
           quantity: item.quantity,
           price: item.price,
-          complements: item.complements.map(c => ({ name: c.name, price: c.price }))
+          complements: item.complements.map(c => ({ name: c.name, price: c.price, quantity: c.quantity || 1 }))
         })),
         total: cart.reduce((sum, item) => {
           const itemTotal = parseFloat(item.price) * item.quantity;
-          const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
+          const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price) * (c.quantity || 1), 0) * item.quantity;
           return sum + itemTotal + complementsTotal;
         }, 0).toFixed(2),
         status: "sent" as const,
@@ -2497,7 +2498,7 @@ export default function PublicMenu() {
               {productComplements && productComplements.length > 0 && (
                 <div className="space-y-4">
                   {productComplements.map((group) => {
-                    const selectedInGroup = selectedComplements.get(group.id) || new Set<number>();
+                    const selectedInGroup = selectedComplements.get(group.id) || new Map<number, number>();
                     const isRadio = group.maxQuantity === 1;
                     
                     return (
@@ -2523,73 +2524,150 @@ export default function PublicMenu() {
                         {/* Itens do Grupo */}
                         <div className="divide-y divide-gray-100">
                           {group.items.map((item) => {
-                            const isSelected = selectedInGroup.has(item.id);
-                            const hasImage = !!(item as any).imageUrl;
+                            const itemQuantity = selectedInGroup.get(item.id) || 0;
+                            const isSelected = itemQuantity > 0;
+                            const itemImageUrl = (item as any).imageUrl;
+                            const displayPrice = item.priceMode === 'free' ? 0 : Number(item.price);
+                            
+                            // Função para adicionar/incrementar complemento
+                            const handleIncrement = (e: React.MouseEvent) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setSelectedComplements((prev) => {
+                                const newMap = new Map(prev);
+                                const currentGroupMap = new Map(prev.get(group.id) || []);
+                                const currentQty = currentGroupMap.get(item.id) || 0;
+                                
+                                // Verificar limite do grupo
+                                const totalInGroup = Array.from(currentGroupMap.values()).reduce((a, b) => a + b, 0);
+                                if (totalInGroup < group.maxQuantity) {
+                                  currentGroupMap.set(item.id, currentQty + 1);
+                                  newMap.set(group.id, currentGroupMap);
+                                  if (itemImageUrl) setSelectedComplementImage(itemImageUrl);
+                                }
+                                return newMap;
+                              });
+                            };
+                            
+                            // Função para decrementar/remover complemento
+                            const handleDecrement = (e: React.MouseEvent) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setSelectedComplements((prev) => {
+                                const newMap = new Map(prev);
+                                const currentGroupMap = new Map(prev.get(group.id) || []);
+                                const currentQty = currentGroupMap.get(item.id) || 0;
+                                
+                                if (currentQty > 1) {
+                                  currentGroupMap.set(item.id, currentQty - 1);
+                                } else {
+                                  currentGroupMap.delete(item.id);
+                                  if (itemImageUrl && selectedComplementImage === itemImageUrl) {
+                                    setSelectedComplementImage(null);
+                                  }
+                                }
+                                newMap.set(group.id, currentGroupMap);
+                                return newMap;
+                              });
+                            };
+                            
+                            // Função para toggle (checkbox/radio)
+                            const handleToggle = () => {
+                              setSelectedComplements((prev) => {
+                                const newMap = new Map(prev);
+                                const currentGroupMap = new Map(prev.get(group.id) || []);
+                                
+                                if (isRadio) {
+                                  // Radio: substitui a seleção com quantidade 1
+                                  const newGroupMap = new Map<number, number>();
+                                  newGroupMap.set(item.id, 1);
+                                  newMap.set(group.id, newGroupMap);
+                                  if (itemImageUrl) {
+                                    setSelectedComplementImage(itemImageUrl);
+                                  } else {
+                                    setSelectedComplementImage(null);
+                                  }
+                                } else {
+                                  // Checkbox: toggle
+                                  if (isSelected) {
+                                    currentGroupMap.delete(item.id);
+                                    if (itemImageUrl && selectedComplementImage === itemImageUrl) {
+                                      setSelectedComplementImage(null);
+                                    }
+                                  } else {
+                                    const totalInGroup = Array.from(currentGroupMap.values()).reduce((a, b) => a + b, 0);
+                                    if (totalInGroup < group.maxQuantity) {
+                                      currentGroupMap.set(item.id, 1);
+                                      if (itemImageUrl) {
+                                        setSelectedComplementImage(itemImageUrl);
+                                      }
+                                    }
+                                  }
+                                  newMap.set(group.id, currentGroupMap);
+                                }
+                                return newMap;
+                              });
+                            };
                             
                             return (
-                              <label
+                              <div
                                 key={item.id}
-                                className={`flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors ${
-                                  isSelected ? 'bg-red-50' : ''
+                                className={`flex items-center justify-between px-4 py-3 transition-colors ${
+                                  isSelected ? 'bg-red-50' : 'hover:bg-gray-50'
                                 }`}
                               >
-                                <div className="flex items-center gap-3">
+                                <label className="flex items-center gap-3 cursor-pointer flex-1">
                                   <input
                                     type={isRadio ? 'radio' : 'checkbox'}
                                     name={`group-${group.id}`}
                                     checked={isSelected}
-                                    onChange={() => {
-                                      const itemImageUrl = (item as any).imageUrl;
-                                      
-                                      setSelectedComplements((prev) => {
-                                        const newMap = new Map(prev);
-                                        const currentSet = new Set(prev.get(group.id) || []);
-                                        
-                                        if (isRadio) {
-                                          // Radio: substitui a seleção
-                                          newMap.set(group.id, new Set([item.id]));
-                                          // Atualizar imagem do complemento se tiver
-                                          if (itemImageUrl) {
-                                            setSelectedComplementImage(itemImageUrl);
-                                          } else {
-                                            setSelectedComplementImage(null);
-                                          }
-                                        } else {
-                                          // Checkbox: toggle
-                                          if (currentSet.has(item.id)) {
-                                            currentSet.delete(item.id);
-                                            // Se desmarcar, voltar para imagem do produto
-                                            if (itemImageUrl && selectedComplementImage === itemImageUrl) {
-                                              setSelectedComplementImage(null);
-                                            }
-                                          } else if (currentSet.size < group.maxQuantity) {
-                                            currentSet.add(item.id);
-                                            // Atualizar imagem do complemento se tiver
-                                            if (itemImageUrl) {
-                                              setSelectedComplementImage(itemImageUrl);
-                                            }
-                                          }
-                                          newMap.set(group.id, currentSet);
-                                        }
-                                        
-                                        return newMap;
-                                      });
-                                    }}
+                                    onChange={handleToggle}
                                     className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500"
                                   />
-
                                   <span className="text-sm text-gray-900">{item.name}</span>
+                                </label>
+                                
+                                <div className="flex items-center gap-3">
+                                  {/* Controles de quantidade - aparecem quando selecionado */}
+                                  {isSelected && !isRadio && (
+                                    <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1">
+                                      <button
+                                        type="button"
+                                        onClick={handleDecrement}
+                                        className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
+                                      >
+                                        <Minus className="w-4 h-4" />
+                                      </button>
+                                      <span className="w-6 text-center text-sm font-medium text-gray-900">{itemQuantity}</span>
+                                      <button
+                                        type="button"
+                                        onClick={handleIncrement}
+                                        className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
+                                      >
+                                        <Plus className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Preço */}
+                                  {(() => {
+                                    if (displayPrice > 0) {
+                                      const totalItemPrice = displayPrice * (itemQuantity || 1);
+                                      return (
+                                        <span className="text-sm text-gray-600 min-w-[70px] text-right">
+                                          {isSelected && itemQuantity > 1 
+                                            ? `+ ${formatPrice(totalItemPrice)}` 
+                                            : `+ ${formatPrice(displayPrice)}`
+                                          }
+                                        </span>
+                                      );
+                                    } else if (item.priceMode === 'free' && Number(item.price) > 0) {
+                                      return <span className="text-sm text-green-600 font-medium">GRÁTIS</span>;
+                                    }
+                                    return null;
+                                  })()}
                                 </div>
-                                {(() => {
-                                  const displayPrice = item.priceMode === 'free' ? 0 : Number(item.price);
-                                  if (displayPrice > 0) {
-                                    return <span className="text-sm text-gray-600">+ {formatPrice(displayPrice)}</span>;
-                                  } else if (item.priceMode === 'free' && Number(item.price) > 0) {
-                                    return <span className="text-sm text-green-600 font-medium">GRÁTIS</span>;
-                                  }
-                                  return null;
-                                })()}
-                              </label>
+                              </div>
                             );
                           })}
                         </div>
@@ -2640,23 +2718,25 @@ export default function PublicMenu() {
 
               {/* Botão Adicionar */}
               {(() => {
-                // Calcular preço total com complementos
+                // Calcular preço total com complementos (considerando quantidade)
                 let complementsTotal = 0;
-                const selectedComplementsList: Array<{ id: number; name: string; price: string }> = [];
+                const selectedComplementsList: Array<{ id: number; name: string; price: string; quantity: number }> = [];
                 
                 if (productComplements) {
                   productComplements.forEach((group) => {
                     const selectedInGroup = selectedComplements.get(group.id);
                     if (selectedInGroup) {
                       group.items.forEach((item) => {
-                        if (selectedInGroup.has(item.id)) {
+                        const qty = selectedInGroup.get(item.id);
+                        if (qty && qty > 0) {
                           // Considerar priceMode: se for 'free', o preço é 0
                           const itemPrice = item.priceMode === 'free' ? 0 : Number(item.price);
-                          complementsTotal += itemPrice;
+                          complementsTotal += itemPrice * qty;
                           selectedComplementsList.push({
                             id: item.id,
                             name: item.name,
                             price: String(itemPrice),
+                            quantity: qty,
                           });
                         }
                       });
@@ -2673,7 +2753,8 @@ export default function PublicMenu() {
                   productComplements.forEach((group) => {
                     if (group.isRequired || group.minQuantity > 0) {
                       const selectedInGroup = selectedComplements.get(group.id);
-                      const selectedCount = selectedInGroup?.size || 0;
+                      // Contar total de itens selecionados no grupo
+                      const selectedCount = selectedInGroup ? Array.from(selectedInGroup.values()).reduce((a, b) => a + b, 0) : 0;
                       if (selectedCount < (group.minQuantity || 1)) {
                         requiredGroupsMet = false;
                       }
@@ -3139,7 +3220,7 @@ export default function PublicMenu() {
                                   // Calcular total do carrinho para validação
                                   const cartTotal = cart.reduce((sum, item) => {
                                     const itemTotal = parseFloat(item.price) * item.quantity;
-                                    const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
+                                    const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price) * (c.quantity || 1), 0) * item.quantity;
                                     return sum + itemTotal + complementsTotal;
                                   }, 0) - (appliedCoupon?.discount || 0);
                                   
@@ -3579,7 +3660,7 @@ export default function PublicMenu() {
                       const changeValue = parseFloat(changeAmount.replace(/\./g, '').replace(',', '.'));
                       const orderTotal = cart.reduce((sum, item) => {
                         const itemTotal = parseFloat(item.price) * item.quantity;
-                        const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
+                        const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price) * (c.quantity || 1), 0) * item.quantity;
                         return sum + itemTotal + complementsTotal;
                       }, 0) - (appliedCoupon?.discount || 0);
                       
@@ -3596,7 +3677,7 @@ export default function PublicMenu() {
                     // Calcular totais
                     const subtotal = cart.reduce((sum, item) => {
                       const itemTotal = parseFloat(item.price) * item.quantity;
-                      const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
+                      const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price) * (c.quantity || 1), 0) * item.quantity;
                       return sum + itemTotal + complementsTotal;
                     }, 0);
                     
@@ -3640,8 +3721,8 @@ export default function PublicMenu() {
                         productName: item.name,
                         quantity: item.quantity,
                         unitPrice: item.price,
-                        totalPrice: ((parseFloat(item.price) + item.complements.reduce((s, c) => s + parseFloat(c.price), 0)) * item.quantity).toFixed(2),
-                        complements: item.complements.map(c => ({ name: c.name, price: parseFloat(c.price) })),
+                        totalPrice: ((parseFloat(item.price) + item.complements.reduce((s, c) => s + parseFloat(c.price) * (c.quantity || 1), 0)) * item.quantity).toFixed(2),
+                        complements: item.complements.map(c => ({ name: c.name, price: parseFloat(c.price), quantity: c.quantity || 1 })),
                         notes: item.observation || undefined,
                       })),
                     });
@@ -3882,7 +3963,7 @@ export default function PublicMenu() {
                 {(() => {
                   const subtotal = cart.reduce((sum, item) => {
                     const itemTotal = parseFloat(item.price) * item.quantity;
-                    const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
+                    const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price) * (c.quantity || 1), 0) * item.quantity;
                     return sum + itemTotal + complementsTotal;
                   }, 0);
                   const discount = appliedCoupon?.discount || 0;
@@ -3948,7 +4029,7 @@ export default function PublicMenu() {
                 {(() => {
                   const subtotal = cart.reduce((sum, item) => {
                     const itemTotal = parseFloat(item.price) * item.quantity;
-                    const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price), 0) * item.quantity;
+                    const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price) * (c.quantity || 1), 0) * item.quantity;
                     return sum + itemTotal + complementsTotal;
                   }, 0);
                   const discount = appliedCoupon?.discount || 0;
@@ -4325,7 +4406,8 @@ export default function PublicMenu() {
                                         complements: item.complements.map((c, idx) => ({
                                           id: idx,
                                           name: c.name,
-                                          price: c.price
+                                          price: c.price,
+                                          quantity: c.quantity || 1
                                         }))
                                       }));
                                       setCart(newCartItems);

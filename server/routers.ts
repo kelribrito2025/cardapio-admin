@@ -701,6 +701,7 @@ export const appRouter = router({
           complements: z.array(z.object({
             name: z.string(),
             price: z.number(),
+            quantity: z.number().default(1),
           })).optional(),
           notes: z.string().optional(),
         })),
@@ -964,6 +965,7 @@ export const appRouter = router({
           complements: z.array(z.object({
             name: z.string(),
             price: z.number(),
+            quantity: z.number().default(1),
           })).optional(),
           notes: z.string().optional(),
         })),
@@ -1022,7 +1024,7 @@ export const appRouter = router({
             quantity: item.quantity,
             unitPrice: item.unitPrice,
             totalPrice: item.totalPrice,
-            complements: item.complements || [],
+            complements: (item.complements || []).map(c => ({ ...c, quantity: c.quantity || 1 })),
             notes: item.notes || null,
           }))
         );

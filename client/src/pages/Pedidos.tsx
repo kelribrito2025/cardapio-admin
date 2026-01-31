@@ -386,9 +386,12 @@ export default function Pedidos() {
       const unitPrice = Number(item.totalPrice) / item.quantity;
       const complementsHtml = item.complements && item.complements.length > 0
         ? item.complements.map((c: any) => {
+            const qty = c.quantity || 1;
             const price = Number(c.price || 0);
-            const priceStr = price > 0 ? ` (R$ ${price.toFixed(2).replace('.', ',')})` : '';
-            return `<div class="item-complement">+ ${c.name}${priceStr}</div>`;
+            const totalPrice = price * qty;
+            const priceStr = totalPrice > 0 ? ` R$ ${totalPrice.toFixed(2).replace('.', ',')}` : '';
+            const qtyStr = qty > 1 ? `${qty}x ` : '';
+            return `<div class="item-complement">+ ${qtyStr}${c.name}${priceStr}</div>`;
           }).join('')
         : '';
       return `
@@ -606,9 +609,12 @@ export default function Pedidos() {
       const itemsHtml = orderData.items?.map((item: any) => {
         const complementsHtml = item.complements && item.complements.length > 0
           ? item.complements.map((c: any) => {
+              const qty = c.quantity || 1;
               const price = Number(c.price || 0);
-              const priceStr = price > 0 ? ` (R$ ${price.toFixed(2).replace('.', ',')})` : '';
-              return `<div class="item-complement">+ ${c.name}${priceStr}</div>`;
+              const totalPrice = price * qty;
+              const priceStr = totalPrice > 0 ? ` R$ ${totalPrice.toFixed(2).replace('.', ',')}` : '';
+              const qtyStr = qty > 1 ? `${qty}x ` : '';
+              return `<div class="item-complement">+ ${qtyStr}${c.name}${priceStr}</div>`;
             }).join('')
           : '';
         return `
@@ -1344,14 +1350,18 @@ export default function Pedidos() {
                         {/* Complementos do item */}
                         {item.complements && item.complements.length > 0 && (
                           <div className="mt-1.5 pl-2 border-l-2 border-primary/30">
-                            {item.complements.map((complement: { name: string; price: number }, compIndex: number) => (
-                              <div key={compIndex} className="flex justify-between text-xs text-muted-foreground">
-                                <span className="text-foreground/70">+ {complement.name}</span>
-                                {complement.price > 0 && (
-                                  <span className="text-foreground/70">+ {formatCurrency(complement.price)}</span>
-                                )}
-                              </div>
-                            ))}
+                            {item.complements.map((complement: { name: string; price: number; quantity?: number }, compIndex: number) => {
+                              const qty = complement.quantity || 1;
+                              const totalPrice = complement.price * qty;
+                              return (
+                                <div key={compIndex} className="flex justify-between text-xs text-muted-foreground">
+                                  <span className="text-foreground/70">+ {qty > 1 ? `${qty}x ` : ''}{complement.name}</span>
+                                  {totalPrice > 0 && (
+                                    <span className="text-foreground/70">+ {formatCurrency(totalPrice)}</span>
+                                  )}
+                                </div>
+                              );
+                            })}
                           </div>
                         )}
                         {(Number(item.unitPrice) > 0 || item.notes) && (

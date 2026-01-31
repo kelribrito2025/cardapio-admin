@@ -3879,3 +3879,10 @@
 - [ ] Migrar dados existentes de complementos para o novo modelo
 - [ ] Corrigir página de Complementos para mostrar itens de complemento, não produtos
 - [x] Adicionar edição de preço na página de Complementos Globais
+
+## Controle de Quantidade por Complemento
+- [ ] Atualizar schema do banco para quantidade de complemento no pedido
+- [ ] Atualizar UI do modal de detalhes do item com controle de quantidade (+/-)
+- [x] Atualizar cálculo de preço dos complementos (preço × quantidade)
+- [ ] Atualizar exibição dos complementos nos detalhes do pedido (admin)
+- [x] Atualizar impressão do pedido com quantidade (ex: 3x Bacon R$ 16,50)
