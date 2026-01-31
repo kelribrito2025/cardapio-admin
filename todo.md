@@ -3843,3 +3843,4 @@
 - [x] Bug: Preços dos complementos multiplicam por 100 ao salvar (problema na conversão de formato)
 - [x] Desabilitar menu Estoque na sidebar com badge 'Breve' e sem navegação
 - [x] Desabilitar menu Planos no dropdown do usuário com badge 'Breve' e sem navegação
+- [x] Alterar cor das abas de navegação em Configurações de azul escuro para vermelho (cor primária)
