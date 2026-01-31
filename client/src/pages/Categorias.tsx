@@ -12,6 +12,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+} from "@/components/ui/sheet";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -56,6 +64,20 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { cn, capitalizeFirst } from "@/lib/utils";
 
+// Hook para detectar se é mobile
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  return isMobile;
+}
+
 // Sortable Category Item Component
 function SortableCategoryItem({
   category,
@@ -67,6 +89,7 @@ function SortableCategoryItem({
   onEditNameChange,
   onSaveEdit,
   onCancelEdit,
+  isMobile,
 }: {
   category: any;
   productCount: number;
@@ -77,6 +100,7 @@ function SortableCategoryItem({
   onEditNameChange: (name: string) => void;
   onSaveEdit: () => void;
   onCancelEdit: () => void;
+  isMobile: boolean;
 }) {
   const {
     attributes,
@@ -100,19 +124,28 @@ function SortableCategoryItem({
       style={style}
       className={cn(
         "flex items-center gap-4 p-4 bg-card border border-border/50 rounded-xl hover:bg-muted/30 transition-colors",
-        isDragging && "shadow-lg"
+        isDragging && "shadow-lg",
+        isMobile && "cursor-pointer"
       )}
+      onClick={() => {
+        // No mobile, clicar em qualquer lugar abre o bottom sheet
+        if (isMobile && !isDragging) {
+          onEdit(category.id, category.name);
+        }
+      }}
     >
       <button
         {...attributes}
         {...listeners}
         className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded-md touch-none"
+        onClick={(e) => e.stopPropagation()}
       >
         <GripVertical className="h-5 w-5 text-muted-foreground" />
       </button>
       
       <div className="flex-1 min-w-0">
-        {isEditing ? (
+        {/* No desktop, permite edição inline. No mobile, apenas mostra o nome */}
+        {!isMobile && isEditing ? (
           <div className="flex items-center gap-2">
             <Input
               value={editingName}
@@ -147,13 +180,26 @@ function SortableCategoryItem({
           </div>
         ) : (
           <div 
-            className="flex items-center gap-2 cursor-pointer group"
-            onClick={() => onEdit(category.id, category.name)}
+            className={cn(
+              "flex items-center gap-2 group",
+              !isMobile && "cursor-pointer"
+            )}
+            onClick={(e) => {
+              if (!isMobile) {
+                e.stopPropagation();
+                onEdit(category.id, category.name);
+              }
+            }}
           >
-            <h4 className="font-semibold text-base group-hover:text-primary transition-colors">
+            <h4 className={cn(
+              "font-semibold text-base transition-colors",
+              !isMobile && "group-hover:text-primary"
+            )}>
               {category.name}
             </h4>
-            <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+            {!isMobile && (
+              <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+            )}
           </div>
         )}
       </div>
@@ -162,31 +208,34 @@ function SortableCategoryItem({
         {productCount} {productCount === 1 ? "item" : "itens"}
       </span>
       
-      {/* Menu de ações */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-md"
-          >
-            <MoreVertical className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => onEdit(category.id, category.name)}>
-            <Pencil className="h-4 w-4 mr-2" />
-            Editar
-          </DropdownMenuItem>
-          <DropdownMenuItem 
-            onClick={() => onDelete({ id: category.id, name: category.name, productCount })}
-            className="text-destructive focus:text-destructive"
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Excluir
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {/* Menu de ações - apenas no desktop */}
+      {!isMobile && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onEdit(category.id, category.name)}>
+              <Pencil className="h-4 w-4 mr-2" />
+              Editar
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => onDelete({ id: category.id, name: category.name, productCount })}
+              className="text-destructive focus:text-destructive"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Excluir
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
     </div>
   );
 }
@@ -194,6 +243,7 @@ function SortableCategoryItem({
 export default function Categorias() {
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
+  const isMobile = useIsMobile();
   
   // Local state for categories
   const [localCategories, setLocalCategories] = useState<any[]>([]);
@@ -202,11 +252,16 @@ export default function Categorias() {
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
   const [editingCategoryName, setEditingCategoryName] = useState("");
   
-  // Dialog state
+  // Dialog/Sheet state
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [deleteCategoryDialogOpen, setDeleteCategoryDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<{ id: number; name: string; productCount: number } | null>(null);
+  
+  // Bottom sheet state for mobile edit
+  const [editSheetOpen, setEditSheetOpen] = useState(false);
+  const [editSheetCategory, setEditSheetCategory] = useState<{ id: number; name: string; productCount: number } | null>(null);
+  const [editSheetName, setEditSheetName] = useState("");
 
   // Set establishment ID when data is loaded
   useEffect(() => {
@@ -283,6 +338,9 @@ export default function Categorias() {
       refetchCategories();
       setEditingCategoryId(null);
       setEditingCategoryName("");
+      setEditSheetOpen(false);
+      setEditSheetCategory(null);
+      setEditSheetName("");
       toast.success("Categoria atualizada");
     },
     onError: () => toast.error("Erro ao atualizar categoria"),
@@ -293,6 +351,8 @@ export default function Categorias() {
       refetchCategories();
       setCategoryToDelete(null);
       setDeleteCategoryDialogOpen(false);
+      setEditSheetOpen(false);
+      setEditSheetCategory(null);
       toast.success("Categoria excluída com sucesso");
     },
     onError: () => toast.error("Erro ao excluir categoria"),
@@ -324,8 +384,18 @@ export default function Categorias() {
   };
 
   const handleEditCategory = (id: number, name: string) => {
-    setEditingCategoryId(id);
-    setEditingCategoryName(name);
+    if (isMobile) {
+      // No mobile, abre o bottom sheet
+      const category = localCategories.find(c => c.id === id);
+      const productCount = productCountByCategory[id] || 0;
+      setEditSheetCategory({ id, name, productCount });
+      setEditSheetName(name);
+      setEditSheetOpen(true);
+    } else {
+      // No desktop, edição inline
+      setEditingCategoryId(id);
+      setEditingCategoryName(name);
+    }
   };
 
   const handleSaveEdit = () => {
@@ -344,6 +414,27 @@ export default function Categorias() {
   const handleDeleteCategory = (category: { id: number; name: string; productCount: number }) => {
     setCategoryToDelete(category);
     setDeleteCategoryDialogOpen(true);
+  };
+
+  // Handlers para o bottom sheet mobile
+  const handleSaveEditSheet = () => {
+    if (!editSheetCategory || !editSheetName.trim()) return;
+    updateCategoryMutation.mutate({
+      id: editSheetCategory.id,
+      name: editSheetName.trim(),
+    });
+  };
+
+  const handleDeleteFromSheet = () => {
+    if (!editSheetCategory) return;
+    setCategoryToDelete(editSheetCategory);
+    setDeleteCategoryDialogOpen(true);
+  };
+
+  // Handler para abrir o dialog/sheet de nova categoria
+  const handleOpenNewCategory = () => {
+    setNewCategoryName("");
+    setCategoryDialogOpen(true);
   };
 
   // Loading state
@@ -380,7 +471,7 @@ export default function Categorias() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  onClick={() => setCategoryDialogOpen(true)}
+                  onClick={handleOpenNewCategory}
                   className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5"
                 >
                   <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
@@ -403,7 +494,7 @@ export default function Categorias() {
             description="Crie categorias para organizar os produtos do seu cardápio"
             action={{
               label: "Criar Categoria",
-              onClick: () => setCategoryDialogOpen(true)
+              onClick: handleOpenNewCategory
             }}
           />
         </SectionCard>
@@ -430,6 +521,7 @@ export default function Categorias() {
                   onEditNameChange={setEditingCategoryName}
                   onSaveEdit={handleSaveEdit}
                   onCancelEdit={handleCancelEdit}
+                  isMobile={isMobile}
                 />
               ))}
             </div>
@@ -437,42 +529,132 @@ export default function Categorias() {
         </DndContext>
       )}
 
-      {/* Create Category Dialog */}
-      <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
-        <DialogContent className="rounded-2xl">
-          <DialogHeader>
-            <DialogTitle>Nova categoria</DialogTitle>
-            <DialogDescription>
-              Crie uma nova categoria para organizar seus produtos.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
+      {/* Create Category - Dialog no desktop, Bottom Sheet no mobile */}
+      {isMobile ? (
+        <Sheet open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
+          <SheetContent side="bottom" className="rounded-t-3xl px-6 pb-8">
+            <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-4" />
+            <SheetHeader className="p-0 mb-6">
+              <SheetTitle className="text-xl">Nova categoria</SheetTitle>
+              <SheetDescription>
+                Crie uma nova categoria para organizar seus produtos.
+              </SheetDescription>
+            </SheetHeader>
+            <div className="space-y-4">
+              <Input
+                placeholder="Nome da categoria"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(capitalizeFirst(e.target.value))}
+                className="h-12 rounded-xl text-base"
+                autoFocus
+              />
+            </div>
+            <SheetFooter className="p-0 mt-6 flex-row gap-3">
+              <Button 
+                variant="outline" 
+                onClick={() => setCategoryDialogOpen(false)} 
+                className="flex-1 h-12 rounded-xl"
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleCreateCategory}
+                disabled={!newCategoryName.trim() || createCategoryMutation.isPending}
+                className="flex-1 h-12 rounded-xl"
+              >
+                {createCategoryMutation.isPending ? "Criando..." : "Criar"}
+              </Button>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
+          <DialogContent className="rounded-2xl">
+            <DialogHeader>
+              <DialogTitle>Nova categoria</DialogTitle>
+              <DialogDescription>
+                Crie uma nova categoria para organizar seus produtos.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <Input
+                placeholder="Nome da categoria"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(capitalizeFirst(e.target.value))}
+                className="h-11 rounded-xl"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && newCategoryName.trim()) {
+                    handleCreateCategory();
+                  }
+                }}
+              />
+            </div>
+            <DialogFooter className="gap-2">
+              <Button variant="outline" onClick={() => setCategoryDialogOpen(false)} className="rounded-xl">
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleCreateCategory}
+                disabled={!newCategoryName.trim() || createCategoryMutation.isPending}
+                className="rounded-xl"
+              >
+                {createCategoryMutation.isPending ? "Criando..." : "Criar"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Edit Category Bottom Sheet - apenas mobile */}
+      <Sheet open={editSheetOpen} onOpenChange={setEditSheetOpen}>
+        <SheetContent side="bottom" className="rounded-t-3xl px-6 pb-8">
+          <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-4" />
+          <SheetHeader className="p-0 mb-6">
+            <SheetTitle className="text-xl">Editar categoria</SheetTitle>
+            <SheetDescription>
+              {editSheetCategory?.productCount 
+                ? `${editSheetCategory.productCount} ${editSheetCategory.productCount === 1 ? 'produto' : 'produtos'} nesta categoria`
+                : 'Nenhum produto nesta categoria'
+              }
+            </SheetDescription>
+          </SheetHeader>
+          <div className="space-y-4">
             <Input
               placeholder="Nome da categoria"
-              value={newCategoryName}
-              onChange={(e) => setNewCategoryName(capitalizeFirst(e.target.value))}
-              className="h-11 rounded-xl"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && newCategoryName.trim()) {
-                  handleCreateCategory();
-                }
-              }}
+              value={editSheetName}
+              onChange={(e) => setEditSheetName(capitalizeFirst(e.target.value))}
+              className="h-12 rounded-xl text-base"
+              autoFocus
             />
           </div>
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setCategoryDialogOpen(false)} className="rounded-xl">
-              Cancelar
-            </Button>
+          <SheetFooter className="p-0 mt-6 flex-col gap-3">
+            <div className="flex gap-3 w-full">
+              <Button 
+                variant="outline" 
+                onClick={() => setEditSheetOpen(false)} 
+                className="flex-1 h-12 rounded-xl"
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleSaveEditSheet}
+                disabled={!editSheetName.trim() || updateCategoryMutation.isPending}
+                className="flex-1 h-12 rounded-xl"
+              >
+                {updateCategoryMutation.isPending ? "Salvando..." : "Salvar"}
+              </Button>
+            </div>
             <Button
-              onClick={handleCreateCategory}
-              disabled={!newCategoryName.trim() || createCategoryMutation.isPending}
-              className="rounded-xl"
+              variant="ghost"
+              onClick={handleDeleteFromSheet}
+              className="w-full h-12 rounded-xl text-destructive hover:text-destructive hover:bg-destructive/10"
             >
-              {createCategoryMutation.isPending ? "Criando..." : "Criar"}
+              <Trash2 className="h-4 w-4 mr-2" />
+              Excluir categoria
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
 
       {/* Delete Category Dialog */}
       <Dialog open={deleteCategoryDialogOpen} onOpenChange={setDeleteCategoryDialogOpen}>

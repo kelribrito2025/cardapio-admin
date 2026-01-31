@@ -3813,3 +3813,8 @@
 - [x] Corrigir lógica para usar apenas horários configurados (sem depender do toggle isOpen)
 - [x] Se estiver dentro do horário de funcionamento configurado, mostrar como Aberto
 - [x] O campo manuallyClosed deve ser usado apenas para fechamento manual temporário
+
+## Bottom Sheet para Categorias Mobile
+- [x] Implementar modal estilo bottom sheet na página de categorias para versão mobile
+- [x] Abrir bottom sheet ao clicar em categoria para editar
+- [x] Abrir bottom sheet ao adicionar nova categoria
