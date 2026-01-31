@@ -1554,7 +1554,7 @@ export default function Configuracoes() {
                   <Label htmlFor="menuSlug" className="text-sm font-semibold">Link do cardápio</Label>
                   <div className="flex gap-2 mt-2">
                     <div className="flex items-center px-2 bg-muted/50 rounded-l-xl border border-r-0 border-border/50 text-xs text-muted-foreground font-medium whitespace-nowrap">
-                      mindi.manus.space/menu/
+                      v2.mindi.com.br/menu/
                     </div>
                     <Input
                       id="menuSlug"
