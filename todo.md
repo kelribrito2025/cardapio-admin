@@ -3825,3 +3825,6 @@
 ## Correção do Campo de Preço dos Complementos
 - [x] Campo de preço dos complementos não aceita digitação
 - [x] Erro ao salvar complementos com preço no formato brasileiro (0,00)
+
+## Correção do Estado do Formulário ao Trocar de Aba
+- [x] Estado do formulário de edição é perdido ao trocar de aba do navegador e voltar

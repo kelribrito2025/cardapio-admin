@@ -241,6 +241,11 @@ export default function ProductForm() {
   
   // Complement image upload
   const [uploadingComplementImage, setUploadingComplementImage] = useState<string | null>(null);
+  
+  // Flag para controlar se os dados já foram carregados inicialmente
+  // Evita que o useEffect sobrescreva as alterações do usuário ao trocar de aba
+  const [initialDataLoaded, setInitialDataLoaded] = useState(false);
+  const [initialComplementsLoaded, setInitialComplementsLoaded] = useState(false);
 
   // Drag & Drop sensors for complement items
   const sensors = useSensors(
@@ -447,9 +452,9 @@ export default function ProductForm() {
     }
   };
 
-  // Load product data when editing
+  // Load product data when editing - apenas na primeira vez
   useEffect(() => {
-    if (product) {
+    if (product && !initialDataLoaded) {
       setName(product.name);
       setDescription(product.description || "");
       // Garantir que categoryId seja convertido corretamente
@@ -472,12 +477,13 @@ export default function ProductForm() {
       } else {
         setPrinterId("none");
       }
+      setInitialDataLoaded(true);
     }
-  }, [product]);
+  }, [product, initialDataLoaded]);
 
-  // Load existing complement groups when editing
+  // Load existing complement groups when editing - apenas na primeira vez
   useEffect(() => {
-    if (existingGroups && existingGroups.length > 0) {
+    if (existingGroups && existingGroups.length > 0 && !initialComplementsLoaded) {
       const formattedGroups = existingGroups.map((group: any) => ({
         id: group.id,
         name: group.name,
@@ -493,8 +499,9 @@ export default function ProductForm() {
         })) || [],
       }));
       setComplementGroups(formattedGroups);
+      setInitialComplementsLoaded(true);
     }
-  }, [existingGroups]);
+  }, [existingGroups, initialComplementsLoaded]);
 
   // Nota: Removido bloqueio para usuários sem estabelecimento - agora a página de ProductForm mostra normalmente
 
