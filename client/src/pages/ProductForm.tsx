@@ -74,7 +74,7 @@ function SortableComplementGroup({
   children,
 }: {
   groupIndex: number;
-  children: React.ReactNode;
+  children: React.ReactNode | ((props: { attributes: Record<string, unknown>; listeners: Record<string, unknown> | undefined }) => React.ReactNode);
 }) {
   const {
     attributes,
@@ -101,17 +101,7 @@ function SortableComplementGroup({
         isDragging && "shadow-xl ring-2 ring-primary/30"
       )}
     >
-      <div className="flex items-center gap-2 mb-4">
-        <button
-          type="button"
-          {...attributes}
-          {...listeners}
-          className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded-md touch-none"
-        >
-          <GripVertical className="h-4 w-4 text-muted-foreground/50" />
-        </button>
-      </div>
-      {children}
+      {typeof children === 'function' ? children({ attributes, listeners }) : children}
     </div>
   );
 }
@@ -1142,16 +1132,28 @@ export default function ProductForm() {
                           key={`group-${groupIndex}`}
                           groupIndex={groupIndex}
                         >
+                          {({ attributes, listeners }: { attributes: Record<string, unknown>; listeners: Record<string, unknown> | undefined }) => (
+                          <>
                           <div className="flex items-start justify-between gap-3 flex-1">
                             <div className="flex-1 space-y-3">
-                              <Input
-                                value={group.name}
-                                onChange={(e) =>
-                                  updateComplementGroup(groupIndex, { name: capitalizeFirst(e.target.value) })
-                                }
-                                placeholder="Nome do grupo (ex: Adicionais)"
-                                className="h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
-                              />
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  {...attributes}
+                                  {...listeners}
+                                  className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded-md touch-none"
+                                >
+                                  <GripVertical className="h-4 w-4 text-muted-foreground/50" />
+                                </button>
+                                <Input
+                                  value={group.name}
+                                  onChange={(e) =>
+                                    updateComplementGroup(groupIndex, { name: capitalizeFirst(e.target.value) })
+                                  }
+                                  placeholder="Nome do grupo (ex: Adicionais)"
+                                  className="h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20 flex-1"
+                                />
+                              </div>
                               <div className="flex items-center gap-4 flex-wrap">
                                 <div className="flex items-center gap-1.5">
                                   <Label className="text-[10px] font-semibold text-muted-foreground">Mín:</Label>
@@ -1250,6 +1252,8 @@ export default function ProductForm() {
                               Adicionar item
                             </Button>
                           </div>
+                          </>
+                          )}
                         </SortableComplementGroup>
                       ))}
                     </div>
