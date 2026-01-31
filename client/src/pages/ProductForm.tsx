@@ -68,6 +68,54 @@ interface ComplementItem {
   imageUrl?: string | null;
 }
 
+// Sortable Complement Group Component
+function SortableComplementGroup({
+  groupIndex,
+  children,
+}: {
+  groupIndex: number;
+  children: React.ReactNode;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: `group-${groupIndex}` });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "border border-border/50 rounded-xl p-4 bg-muted/20 overflow-x-auto",
+        isDragging && "shadow-xl ring-2 ring-primary/30"
+      )}
+    >
+      <div className="flex items-center gap-2 mb-4">
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded-md touch-none"
+        >
+          <GripVertical className="h-4 w-4 text-muted-foreground/50" />
+        </button>
+      </div>
+      {children}
+    </div>
+  );
+}
+
 // Sortable Complement Item Component
 function SortableComplementItem({
   item,
@@ -285,6 +333,24 @@ export default function ProductForm() {
           };
         }
         return newGroups;
+      });
+    }
+  }, []);
+
+  // Handle drag end for complement groups
+  const handleGroupDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setComplementGroups((groups) => {
+        // Extract group index from id (format: "group-0", "group-1", etc.)
+        const activeIndex = parseInt(String(active.id).replace('group-', ''));
+        const overIndex = parseInt(String(over.id).replace('group-', ''));
+        
+        if (!isNaN(activeIndex) && !isNaN(overIndex)) {
+          return arrayMove(groups, activeIndex, overIndex);
+        }
+        return groups;
       });
     }
   }, []);
@@ -1061,76 +1127,88 @@ export default function ProductForm() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {complementGroups.map((group, groupIndex) => (
-                    <div key={groupIndex} className="border border-border/50 rounded-xl p-4 bg-muted/20 overflow-x-auto">
-                      <div className="flex items-start justify-between gap-3 mb-4">
-                        <div className="flex-1 space-y-3">
-                          <Input
-                            value={group.name}
-                            onChange={(e) =>
-                              updateComplementGroup(groupIndex, { name: capitalizeFirst(e.target.value) })
-                            }
-                            placeholder="Nome do grupo (ex: Adicionais)"
-                            className="h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
-                          />
-                          <div className="flex items-center gap-4 flex-wrap">
-                            <div className="flex items-center gap-1.5">
-                              <Label className="text-[10px] font-semibold text-muted-foreground">Mín:</Label>
-                              <Input
-                                type="number"
-                                min="0"
-                                value={group.minQuantity}
-                                onChange={(e) =>
-                                  updateComplementGroup(groupIndex, {
-                                    minQuantity: Number(e.target.value),
-                                  })
-                                }
-                                className="w-14 h-8 text-sm rounded-md border-border/50"
-                              />
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <Label className="text-[10px] font-semibold text-muted-foreground">Máx:</Label>
-                              <Input
-                                type="number"
-                                min="1"
-                                max={group.items.length || 1}
-                                value={group.maxQuantity}
-                                onChange={(e) => {
-                                  const value = Number(e.target.value);
-                                  const maxAllowed = group.items.length || 1;
-                                  updateComplementGroup(groupIndex, {
-                                    maxQuantity: Math.min(value, maxAllowed),
-                                  });
-                                }}
-                                className="w-14 h-8 text-sm rounded-md border-border/50"
-                              />
-                            </div>
-                            <label className="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={group.isRequired}
-                                onChange={(e) =>
-                                  updateComplementGroup(groupIndex, {
-                                    isRequired: e.target.checked,
-                                  })
-                                }
-                                className="rounded h-3.5 w-3.5 border-border/50"
-                              />
-                              Obrigatório
-                            </label>
-                          </div>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeComplementGroup(groupIndex)}
-                          className="rounded-lg h-8 w-8 hover:bg-destructive/10"
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleGroupDragEnd}
+                >
+                  <SortableContext
+                    items={complementGroups.map((_, idx) => `group-${idx}`)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="space-y-3">
+                      {complementGroups.map((group, groupIndex) => (
+                        <SortableComplementGroup
+                          key={`group-${groupIndex}`}
+                          groupIndex={groupIndex}
                         >
-                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                        </Button>
-                      </div>
+                          <div className="flex items-start justify-between gap-3 flex-1">
+                            <div className="flex-1 space-y-3">
+                              <Input
+                                value={group.name}
+                                onChange={(e) =>
+                                  updateComplementGroup(groupIndex, { name: capitalizeFirst(e.target.value) })
+                                }
+                                placeholder="Nome do grupo (ex: Adicionais)"
+                                className="h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20"
+                              />
+                              <div className="flex items-center gap-4 flex-wrap">
+                                <div className="flex items-center gap-1.5">
+                                  <Label className="text-[10px] font-semibold text-muted-foreground">Mín:</Label>
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    value={group.minQuantity}
+                                    onChange={(e) =>
+                                      updateComplementGroup(groupIndex, {
+                                        minQuantity: Number(e.target.value),
+                                      })
+                                    }
+                                    className="w-14 h-8 text-sm rounded-md border-border/50"
+                                  />
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <Label className="text-[10px] font-semibold text-muted-foreground">Máx:</Label>
+                                  <Input
+                                    type="number"
+                                    min="1"
+                                    max={group.items.length || 1}
+                                    value={group.maxQuantity}
+                                    onChange={(e) => {
+                                      const value = Number(e.target.value);
+                                      const maxAllowed = group.items.length || 1;
+                                      updateComplementGroup(groupIndex, {
+                                        maxQuantity: Math.min(value, maxAllowed),
+                                      });
+                                    }}
+                                    className="w-14 h-8 text-sm rounded-md border-border/50"
+                                  />
+                                </div>
+                                <label className="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={group.isRequired}
+                                    onChange={(e) =>
+                                      updateComplementGroup(groupIndex, {
+                                        isRequired: e.target.checked,
+                                      })
+                                    }
+                                    className="rounded h-3.5 w-3.5 border-border/50"
+                                  />
+                                  Obrigatório
+                                </label>
+                              </div>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeComplementGroup(groupIndex)}
+                              className="rounded-lg h-8 w-8 hover:bg-destructive/10"
+                            >
+                              <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                            </Button>
+                          </div>
 
                       {/* Items */}
                       <DndContext
@@ -1160,21 +1238,23 @@ export default function ProductForm() {
                           </div>
                         </SortableContext>
                       </DndContext>
-                      <div className="mt-2">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => addComplementItem(groupIndex)}
-                          className="w-full h-8 text-xs rounded-lg border border-dashed border-border/50 hover:border-primary hover:bg-primary/5"
-                        >
-                          <Plus className="h-3.5 w-3.5 mr-1.5" />
-                          Adicionar item
-                        </Button>
-                      </div>
+                          <div className="mt-2">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => addComplementItem(groupIndex)}
+                              className="w-full h-8 text-xs rounded-lg border border-dashed border-border/50 hover:border-primary hover:bg-primary/5"
+                            >
+                              <Plus className="h-3.5 w-3.5 mr-1.5" />
+                              Adicionar item
+                            </Button>
+                          </div>
+                        </SortableComplementGroup>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </SortableContext>
+                </DndContext>
               )}
             </SectionCard>
           </div>

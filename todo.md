@@ -3765,6 +3765,7 @@
 ## Renomear Aba de Impressão
 - [x] Renomear aba "Teste Impressão" para "Impressora e Teste"
 
+<<<<<<< Updated upstream
 ## Botão de Favorito nas Opções de Impressão
 - [x] Adicionar campo de preferência de impressão padrão no banco de dados (normal ou android)
 - [x] Adicionar botão de favorito (coração vermelho vazado/preenchido) ao lado de cada opção no menu Imprimir
@@ -3828,3 +3829,14 @@
 
 ## Correção do Estado do Formulário ao Trocar de Aba
 - [x] Estado do formulário de edição é perdido ao trocar de aba do navegador e voltar
+=======
+## Drag and Drop para Grupos de Opções
+- [ ] Implementar arrastar e soltar para reordenar grupos de opções na tela Editar Item
+- [ ] Feedback visual ao arrastar (sombra, opacity, placeholder)
+- [ ] Salvar nova ordem no backend automaticamente
+>>>>>>> Stashed changes
+
+## Drag and Drop para Grupos de Opções
+- [x] Implementar drag and drop para reordenar grupos de complementos na tela de Editar Item
+- [x] Feedback visual ao arrastar (sombra, opacity, placeholder)
+- [x] Salvar nova ordem no backend
