@@ -21,6 +21,7 @@ import PrinterApp from "./pages/PrinterApp";
 import TesteImpressao from "./pages/TesteImpressao";
 import Impressoras from "./pages/Impressoras";
 import Categorias from "./pages/Categorias";
+import Complementos from "./pages/Complementos";
 
 
 // Auth Pages
@@ -40,6 +41,7 @@ function AdminRoutes() {
         <Route path="/catalogo/novo" component={ProductForm} />
         <Route path="/catalogo/editar/:id" component={ProductForm} />
         <Route path="/categorias" component={Categorias} />
+        <Route path="/complementos" component={Complementos} />
         <Route path="/pedidos" component={Pedidos} />
         <Route path="/estoque" component={Estoque} />
         <Route path="/configuracoes" component={Configuracoes} />

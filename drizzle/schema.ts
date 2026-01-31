@@ -138,6 +138,8 @@ export const complementItems = mysqlTable("complementItems", {
   price: decimal("price", { precision: 10, scale: 2 }).default("0").notNull(),
   imageUrl: text("imageUrl"),
   isActive: boolean("isActive").default(true).notNull(),
+  // Complementos Globais - novos campos
+  priceMode: mysqlEnum("priceMode", ["normal", "free"]).default("normal").notNull(), // normal = preço base, free = grátis
   sortOrder: int("sortOrder").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

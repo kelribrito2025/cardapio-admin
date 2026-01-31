@@ -3866,3 +3866,14 @@
 - [x] Implementar regra: categoria ativa com pelo menos 1 item ativo aparece no menu público
 - [x] Exibir confirmação ao excluir categoria
 - [x] Toggle de categoria deve mostrar desativado quando todos os itens estão pausados
+
+## Sistema de Complementos Globais
+- [x] Atualizar schema: adicionar campos status, priceMode na tabela complements
+- [ ] Criar tabela de vínculo produto-complemento (product_complements)
+- [x] Criar endpoints CRUD para complementos globais
+- [x] Criar página de gestão de Complementos no admin
+- [ ] Implementar toggle ativo/pausado para complementos
+- [ ] Implementar toggle preço normal/grátis para complementos
+- [ ] Atualizar vinculação produto-complemento para usar IDs
+- [x] Atualizar menu público para respeitar status e priceMode dos complementos
+- [ ] Migrar dados existentes de complementos para o novo modelo

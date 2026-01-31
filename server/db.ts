@@ -1,4 +1,4 @@
-import { eq, desc, asc, and, like, sql, gte, lte, or, ne } from "drizzle-orm";
+import { eq, desc, asc, and, like, sql, gte, lte, or, ne, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate, notifyPrintOrder } from "./_core/sse";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
@@ -612,6 +612,109 @@ export async function deleteComplementItem(id: number) {
   if (!db) throw new Error("Database not available");
   
   await db.delete(complementItems).where(eq(complementItems.id, id));
+}
+
+// Buscar todos os complementos de um estabelecimento (para gestão global)
+export async function getAllComplementItemsByEstablishment(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Buscar todos os produtos do estabelecimento
+  const establishmentProducts = await db.select({ id: products.id })
+    .from(products)
+    .where(eq(products.establishmentId, establishmentId));
+  
+  if (establishmentProducts.length === 0) return [];
+  
+  const productIds = establishmentProducts.map(p => p.id);
+  
+  // Buscar todos os grupos de complementos desses produtos
+  const allGroups = await db.select()
+    .from(complementGroups)
+    .where(inArray(complementGroups.productId, productIds));
+  
+  if (allGroups.length === 0) return [];
+  
+  const groupIds = allGroups.map(g => g.id);
+  
+  // Buscar todos os itens de complemento desses grupos
+  const allItems = await db.select()
+    .from(complementItems)
+    .where(inArray(complementItems.groupId, groupIds))
+    .orderBy(asc(complementItems.name));
+  
+  // Agrupar por nome para identificar complementos únicos
+  // (mesmo complemento pode estar em vários grupos/produtos)
+  const uniqueComplements = new Map<string, {
+    id: number;
+    name: string;
+    price: string;
+    isActive: boolean;
+    priceMode: "normal" | "free";
+    usageCount: number;
+    groupIds: number[];
+  }>();
+  
+  for (const item of allItems) {
+    const key = item.name.toLowerCase().trim();
+    if (uniqueComplements.has(key)) {
+      const existing = uniqueComplements.get(key)!;
+      existing.usageCount++;
+      if (!existing.groupIds.includes(item.groupId)) {
+        existing.groupIds.push(item.groupId);
+      }
+    } else {
+      uniqueComplements.set(key, {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        isActive: item.isActive,
+        priceMode: (item.priceMode as "normal" | "free") || "normal",
+        usageCount: 1,
+        groupIds: [item.groupId],
+      });
+    }
+  }
+  
+  return Array.from(uniqueComplements.values()).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// Atualizar todos os complementos com o mesmo nome (para propagar alterações globais)
+export async function updateComplementItemsByName(
+  establishmentId: number,
+  complementName: string,
+  data: { isActive?: boolean; priceMode?: "normal" | "free" }
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Buscar todos os produtos do estabelecimento
+  const establishmentProducts = await db.select({ id: products.id })
+    .from(products)
+    .where(eq(products.establishmentId, establishmentId));
+  
+  if (establishmentProducts.length === 0) return;
+  
+  const productIds = establishmentProducts.map(p => p.id);
+  
+  // Buscar todos os grupos de complementos desses produtos
+  const allGroups = await db.select()
+    .from(complementGroups)
+    .where(inArray(complementGroups.productId, productIds));
+  
+  if (allGroups.length === 0) return;
+  
+  const groupIds = allGroups.map(g => g.id);
+  
+  // Atualizar todos os itens com o mesmo nome nesses grupos
+  await db.update(complementItems)
+    .set(data)
+    .where(
+      and(
+        inArray(complementItems.groupId, groupIds),
+        eq(complementItems.name, complementName)
+      )
+    );
 }
 
 // ============ ORDER FUNCTIONS ============

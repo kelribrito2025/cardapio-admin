@@ -2580,9 +2580,15 @@ export default function PublicMenu() {
 
                                   <span className="text-sm text-gray-900">{item.name}</span>
                                 </div>
-                                {Number(item.price) > 0 && (
-                                  <span className="text-sm text-gray-600">+ {formatPrice(item.price)}</span>
-                                )}
+                                {(() => {
+                                  const displayPrice = item.priceMode === 'free' ? 0 : Number(item.price);
+                                  if (displayPrice > 0) {
+                                    return <span className="text-sm text-gray-600">+ {formatPrice(displayPrice)}</span>;
+                                  } else if (item.priceMode === 'free' && Number(item.price) > 0) {
+                                    return <span className="text-sm text-green-600 font-medium">GRÁTIS</span>;
+                                  }
+                                  return null;
+                                })()}
                               </label>
                             );
                           })}
@@ -2644,11 +2650,13 @@ export default function PublicMenu() {
                     if (selectedInGroup) {
                       group.items.forEach((item) => {
                         if (selectedInGroup.has(item.id)) {
-                          complementsTotal += Number(item.price);
+                          // Considerar priceMode: se for 'free', o preço é 0
+                          const itemPrice = item.priceMode === 'free' ? 0 : Number(item.price);
+                          complementsTotal += itemPrice;
                           selectedComplementsList.push({
                             id: item.id,
                             name: item.name,
-                            price: item.price,
+                            price: String(itemPrice),
                           });
                         }
                       });

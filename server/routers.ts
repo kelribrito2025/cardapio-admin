@@ -588,11 +588,55 @@ export const appRouter = router({
         price: z.string().optional(),
         imageUrl: z.string().nullable().optional(),
         isActive: z.boolean().optional(),
+        priceMode: z.enum(["normal", "free"]).optional(),
         sortOrder: z.number().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
         await db.updateComplementItem(id, data);
+        return { success: true };
+      }),
+    
+    // Listar todos os complementos do estabelecimento (para gestão global)
+    listAllByEstablishment: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getAllComplementItemsByEstablishment(input.establishmentId);
+      }),
+    
+    // Atualizar status (ativo/pausado) de um complemento
+    toggleActive: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        isActive: z.boolean(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateComplementItem(input.id, { isActive: input.isActive });
+        return { success: true };
+      }),
+    
+    // Atualizar modo de preço (normal/grátis) de um complemento
+    togglePriceMode: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        priceMode: z.enum(["normal", "free"]),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateComplementItem(input.id, { priceMode: input.priceMode });
+        return { success: true };
+      }),
+    
+    // Atualizar complemento globalmente (propaga para todos os produtos)
+    updateGlobal: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        complementName: z.string(),
+        isActive: z.boolean().optional(),
+        priceMode: z.enum(["normal", "free"]).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { establishmentId, complementName, ...data } = input;
+        await db.updateComplementItemsByName(establishmentId, complementName, data);
         return { success: true };
       }),
     
