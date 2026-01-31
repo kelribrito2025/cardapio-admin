@@ -2061,7 +2061,7 @@ export default function PublicMenu() {
                 {/* Totals */}
                 {(() => {
                   const subtotal = cart.reduce((sum, item) => {
-                    const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
+                    const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price) * (c.quantity || 1), 0);
                     return sum + (Number(item.price) + complementsTotal) * item.quantity;
                   }, 0);
                   const discount = appliedCoupon?.discount || 0;
@@ -2112,7 +2112,7 @@ export default function PublicMenu() {
                 {/* Alerta de Pedido Mínimo - Desktop */}
                 {(() => {
                   const subtotalDesktop = cart.reduce((sum, item) => {
-                    const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
+                    const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price) * (c.quantity || 1), 0);
                     return sum + (Number(item.price) + complementsTotal) * item.quantity;
                   }, 0);
                   const minOrderValue = Number(establishment?.minimumOrderValue || 0);
@@ -2176,7 +2176,7 @@ export default function PublicMenu() {
                 {/* Button - Desktop */}
                 {(() => {
                   const subtotalBtn = cart.reduce((sum, item) => {
-                    const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
+                    const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price) * (c.quantity || 1), 0);
                     return sum + (Number(item.price) + complementsTotal) * item.quantity;
                   }, 0);
                   const minOrderValueBtn = Number(establishment?.minimumOrderValue || 0);
@@ -2957,8 +2957,8 @@ export default function PublicMenu() {
                           <div className="mt-1">
                             {item.complements.map((c) => (
                               <div key={c.id} className="flex justify-between items-center text-xs">
-                                <span className="text-gray-500">+ {c.name}</span>
-                                <span className="text-red-500 font-medium">{formatPrice(c.price)}</span>
+                                <span className="text-gray-500">+ {(c.quantity || 1) > 1 ? `${c.quantity}x ` : ''}{c.name}</span>
+                                <span className="text-red-500 font-medium">{formatPrice(parseFloat(c.price) * (c.quantity || 1))}</span>
                               </div>
                             ))}
                           </div>
@@ -2975,7 +2975,7 @@ export default function PublicMenu() {
                 <div className="border-t border-dashed border-gray-200 pt-4 space-y-2">
                   {(() => {
                     const subtotal = cart.reduce((sum, item) => {
-                      const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
+                      const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price) * (c.quantity || 1), 0);
                       return sum + (Number(item.price) + complementsTotal) * item.quantity;
                     }, 0);
                     const discount = appliedCoupon?.discount || 0;
@@ -3376,8 +3376,8 @@ export default function PublicMenu() {
                           <div className="mt-1">
                             {item.complements.map((c, cIdx) => (
                               <div key={cIdx} className="flex justify-between items-center text-xs">
-                                <span className="text-gray-500">+ {c.name}</span>
-                                <span className="text-red-500 font-medium">{formatPrice(c.price)}</span>
+                                <span className="text-gray-500">+ {(c.quantity || 1) > 1 ? `${c.quantity}x ` : ''}{c.name}</span>
+                                <span className="text-red-500 font-medium">{formatPrice(parseFloat(c.price) * (c.quantity || 1))}</span>
                               </div>
                             ))}
                           </div>
@@ -3451,7 +3451,7 @@ export default function PublicMenu() {
                 <div className="border-t border-dashed border-gray-200 pt-4 space-y-2">
                   {(() => {
                     const subtotal = cart.reduce((sum, item) => {
-                      const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
+                      const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price) * (c.quantity || 1), 0);
                       return sum + (Number(item.price) + complementsTotal) * item.quantity;
                     }, 0);
                     const discount = appliedCoupon?.discount || 0;
@@ -3826,7 +3826,7 @@ export default function PublicMenu() {
                     try {
                       // Calcular subtotal
                       const subtotal = cart.reduce((sum, item) => {
-                        const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
+                        const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price) * (c.quantity || 1), 0);
                         return sum + (Number(item.price) + complementsTotal) * item.quantity;
                       }, 0);
                       
@@ -3931,8 +3931,8 @@ export default function PublicMenu() {
                           <div className="mt-1">
                             {item.complements.map((c, cIdx) => (
                               <div key={cIdx} className="flex justify-between items-center text-xs">
-                                <span className="text-gray-500">+ {c.name}</span>
-                                <span className="text-red-500 font-medium">{formatPrice(c.price)}</span>
+                                <span className="text-gray-500">+ {(c.quantity || 1) > 1 ? `${c.quantity}x ` : ''}{c.name}</span>
+                                <span className="text-red-500 font-medium">{formatPrice(parseFloat(c.price) * (c.quantity || 1))}</span>
                               </div>
                             ))}
                           </div>
@@ -5317,7 +5317,7 @@ export default function PublicMenu() {
                   onApplyCoupon={(couponCode, couponType, couponValue, loyaltyCardId) => {
                     // Calcular o desconto baseado no tipo de cupom
                     const subtotal = cart.reduce((sum, item) => {
-                      const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price), 0);
+                      const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price) * (c.quantity || 1), 0);
                       return sum + (Number(item.price) + complementsTotal) * item.quantity;
                     }, 0);
                     

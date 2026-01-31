@@ -477,7 +477,7 @@ export function generateStatusMessage(
       
       // Adicionar complementos se existirem
       if (item.complements) {
-        let complementsArray: Array<{ name: string; price: number }> = [];
+        let complementsArray: Array<{ name: string; price: number; quantity?: number }> = [];
         if (typeof item.complements === 'string') {
           try {
             complementsArray = JSON.parse(item.complements);
@@ -489,7 +489,13 @@ export function generateStatusMessage(
         }
         
         if (complementsArray.length > 0) {
-          const complementsText = complementsArray.map(c => `  + ${c.name}`).join('\n');
+          const complementsText = complementsArray.map(c => {
+            const qty = c.quantity || 1;
+            if (qty > 1) {
+              return `  + ${qty}x ${c.name}`;
+            }
+            return `  + ${c.name}`;
+          }).join('\n');
           itemText += '\n' + complementsText;
         }
       }

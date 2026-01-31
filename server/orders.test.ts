@@ -54,7 +54,7 @@ describe('Order Functions', () => {
           quantity: 2,
           unitPrice: '25.00',
           totalPrice: '50.00',
-          complements: [],
+          complements: [] as { name: string; price: number; quantity: number }[],
           notes: null,
         },
       ];

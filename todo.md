@@ -3886,3 +3886,8 @@
 - [x] Atualizar cálculo de preço dos complementos (preço × quantidade)
 - [ ] Atualizar exibição dos complementos nos detalhes do pedido (admin)
 - [x] Atualizar impressão do pedido com quantidade (ex: 3x Bacon R$ 16,50)
+- [x] Corrigir exibição de quantidade de complemento no Modal Sua Sacola
+- [x] Corrigir exibição de quantidade de complemento no Modal Resumo do Pedido
+- [x] Corrigir exibição de quantidade de complemento no Modal Confirmar Endereço
+- [x] Corrigir exibição de quantidade de complemento na Impressão
+- [x] Corrigir exibição de quantidade de complemento na Notificação WhatsApp
