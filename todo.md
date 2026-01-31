@@ -3841,3 +3841,4 @@
 - [x] Feedback visual ao arrastar (sombra, opacity, placeholder)
 - [x] Salvar nova ordem no backend
 - [x] Bug: Preços dos complementos multiplicam por 100 ao salvar (problema na conversão de formato)
+- [x] Desabilitar menu Estoque na sidebar com badge 'Breve' e sem navegação

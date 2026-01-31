@@ -63,63 +63,16 @@ export function formatPriceInput(value: string): string {
 }
 
 /**
- * Converte valor formatado de moeda para número decimal
- * Detecta automaticamente se o valor está em formato brasileiro (vírgula) ou americano (ponto)
- * @param value - Valor formatado (ex: "10,50", "1.234,56", "10.50", "1234.56")
+ * Converte valor formatado de moeda brasileira para número decimal
+ * Formato esperado: brasileiro com vírgula (ex: "10,50" ou "1.234,56")
+ * @param value - Valor formatado em formato brasileiro
  * @returns Número decimal como string (ex: "10.50", "1234.56")
  */
 export function parsePriceInput(value: string): string {
   if (!value) return '0';
   
-  // Detectar o formato do valor
-  // Formato brasileiro: usa vírgula como separador decimal (ex: "10,50" ou "1.234,56")
-  // Formato americano: usa ponto como separador decimal (ex: "10.50" ou "1,234.56")
-  
-  const hasComma = value.includes(',');
-  const hasDot = value.includes('.');
-  
-  let num: number;
-  
-  if (hasComma && hasDot) {
-    // Tem ambos: verificar qual é o separador decimal
-    const lastCommaIndex = value.lastIndexOf(',');
-    const lastDotIndex = value.lastIndexOf('.');
-    
-    if (lastCommaIndex > lastDotIndex) {
-      // Vírgula é o separador decimal (formato brasileiro: "1.234,56")
-      const normalized = value.replace(/\./g, '').replace(',', '.');
-      num = parseFloat(normalized);
-    } else {
-      // Ponto é o separador decimal (formato americano: "1,234.56")
-      const normalized = value.replace(/,/g, '');
-      num = parseFloat(normalized);
-    }
-  } else if (hasComma) {
-    // Só tem vírgula: é separador decimal brasileiro (ex: "10,50")
-    const normalized = value.replace(',', '.');
-    num = parseFloat(normalized);
-  } else if (hasDot) {
-    // Só tem ponto: verificar se é separador decimal ou de milhar
-    // Se tem exatamente 2 dígitos após o ponto, é decimal (ex: "10.50")
-    // Se tem 3 dígitos após o ponto, é milhar (ex: "1.000")
-    const parts = value.split('.');
-    const afterDot = parts[parts.length - 1];
-    
-    if (afterDot.length === 2) {
-      // É separador decimal (ex: "10.50")
-      num = parseFloat(value);
-    } else if (afterDot.length === 3 && parts.length === 2 && parts[0].length <= 3) {
-      // É separador de milhar (ex: "1.000" = mil)
-      const normalized = value.replace(/\./g, '');
-      num = parseFloat(normalized);
-    } else {
-      // Assume que é separador decimal
-      num = parseFloat(value);
-    }
-  } else {
-    // Não tem separadores, é um número inteiro
-    num = parseFloat(value);
-  }
-  
+  // Remove pontos de milhar e substitui vírgula por ponto
+  const normalized = value.replace(/\./g, '').replace(',', '.');
+  const num = parseFloat(normalized);
   return isNaN(num) ? '0' : num.toString();
 }

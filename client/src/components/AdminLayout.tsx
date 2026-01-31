@@ -54,23 +54,23 @@ const menuSections = [
   {
     title: "OPERAÇÕES",
     items: [
-      { icon: LayoutDashboard, label: "Dashboard", href: "/" },
+      { icon: LayoutDashboard, label: "Dashboard", href: "/", disabled: false },
     ]
   },
   {
     title: "GESTÃO",
     items: [
-      { icon: ClipboardList, label: "Pedidos", href: "/pedidos" },
-      { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo" },
-      { icon: Tag, label: "Categorias", href: "/categorias" },
-      { icon: Ticket, label: "Cupons", href: "/cupons" },
-      { icon: Package, label: "Estoque", href: "/estoque" },
+      { icon: ClipboardList, label: "Pedidos", href: "/pedidos", disabled: false },
+      { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo", disabled: false },
+      { icon: Tag, label: "Categorias", href: "/categorias", disabled: false },
+      { icon: Ticket, label: "Cupons", href: "/cupons", disabled: false },
+      { icon: Package, label: "Estoque", href: "/estoque", disabled: true, comingSoon: true },
     ]
   },
   {
     title: "SISTEMA",
     items: [
-      { icon: Settings, label: "Configurações", href: "/configuracoes" },
+      { icon: Settings, label: "Configurações", href: "/configuracoes", disabled: false },
     ]
   },
 ];
@@ -548,17 +548,24 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               {/* Itens da seção */}
               <div className="space-y-1.5">
                 {section.items.map((item) => {
-                  const isActive = location === item.href || 
-                    (item.href !== "/" && location.startsWith(item.href));
+                  const isActive = !item.disabled && (location === item.href || 
+                    (item.href !== "/" && location.startsWith(item.href)));
                   
                   // Verificar se é o item de Pedidos e se tem pedidos novos
-                  const showBadge = item.href === "/pedidos" && newOrdersCount > 0;
+                  const showOrderBadge = item.href === "/pedidos" && newOrdersCount > 0;
+                  
+                  // Verificar se é item "Em breve"
+                  const isComingSoon = item.comingSoon === true;
                   
                   const navContent = (
                     <>
                       <div className="relative">
-                        <item.icon className={cn("h-4 w-4 flex-shrink-0", sidebarCollapsed && "mx-auto")} />
-                        {showBadge && sidebarCollapsed && (
+                        <item.icon className={cn(
+                          "h-4 w-4 flex-shrink-0", 
+                          sidebarCollapsed && "mx-auto",
+                          isComingSoon && "opacity-50"
+                        )} />
+                        {showOrderBadge && sidebarCollapsed && (
                           <span className={cn(
                             "absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse",
                             isActive ? "bg-white text-primary" : "bg-red-500 text-white"
@@ -568,14 +575,22 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                         )}
                       </div>
                       {!sidebarCollapsed && (
-                        <span className="text-sm flex items-center gap-2">
+                        <span className={cn(
+                          "text-sm flex items-center gap-2",
+                          isComingSoon && "opacity-50"
+                        )}>
                           {item.label}
-                          {showBadge && (
+                          {showOrderBadge && (
                             <span className={cn(
                               "text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center animate-pulse",
                               isActive ? "bg-white text-primary" : "bg-red-500 text-white"
                             )}>
                               {newOrdersCount > 99 ? "99+" : newOrdersCount}
+                            </span>
+                          )}
+                          {isComingSoon && (
+                            <span className="text-[9px] font-semibold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">
+                              Breve
                             </span>
                           )}
                         </span>
@@ -586,10 +601,39 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   const navClassName = cn(
                     "flex items-center gap-2.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
                     sidebarCollapsed ? "px-0 justify-center" : "px-3",
-                    isActive
-                      ? "bg-primary text-white shadow-md shadow-primary/20"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    isComingSoon 
+                      ? "text-gray-400 cursor-default"
+                      : isActive
+                        ? "bg-primary text-white shadow-md shadow-primary/20"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                   );
+
+                  // Se o item está desabilitado, renderizar como div sem navegação
+                  if (item.disabled) {
+                    if (sidebarCollapsed) {
+                      return (
+                        <Tooltip key={item.href} delayDuration={0}>
+                          <TooltipTrigger asChild>
+                            <div className={navClassName}>
+                              {navContent}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="right" className="font-medium">
+                            {item.label} (Em breve)
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    }
+                    return (
+                      <div
+                        key={item.href}
+                        className={navClassName}
+                        style={{borderRadius: '12px'}}
+                      >
+                        {navContent}
+                      </div>
+                    );
+                  }
 
                   if (sidebarCollapsed) {
                     return (
