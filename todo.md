@@ -3877,3 +3877,5 @@
 - [ ] Atualizar vinculação produto-complemento para usar IDs
 - [x] Atualizar menu público para respeitar status e priceMode dos complementos
 - [ ] Migrar dados existentes de complementos para o novo modelo
+- [ ] Corrigir página de Complementos para mostrar itens de complemento, não produtos
+- [x] Adicionar edição de preço na página de Complementos Globais

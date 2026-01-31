@@ -633,6 +633,7 @@ export const appRouter = router({
         complementName: z.string(),
         isActive: z.boolean().optional(),
         priceMode: z.enum(["normal", "free"]).optional(),
+        price: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         const { establishmentId, complementName, ...data } = input;

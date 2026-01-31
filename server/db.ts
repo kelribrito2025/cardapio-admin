@@ -683,7 +683,7 @@ export async function getAllComplementItemsByEstablishment(establishmentId: numb
 export async function updateComplementItemsByName(
   establishmentId: number,
   complementName: string,
-  data: { isActive?: boolean; priceMode?: "normal" | "free" }
+  data: { isActive?: boolean; priceMode?: "normal" | "free"; price?: string }
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");

@@ -15,6 +15,9 @@ import {
   Gift,
   DollarSign,
   Search,
+  Pencil,
+  Check,
+  X,
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
@@ -83,6 +86,18 @@ export default function Complementos() {
     toast.success(priceMode === "free" ? "Complemento marcado como GRÁTIS em todos os produtos" : "Complemento voltou ao preço normal");
   };
 
+  const handleUpdatePrice = (complementName: string, price: string) => {
+    if (!establishmentId) return;
+    
+    updateGlobalMutation.mutate({
+      establishmentId,
+      complementName,
+      price,
+    });
+    
+    toast.success("Preço atualizado em todos os produtos");
+  };
+
   // Loading state
   if (establishmentLoading || isLoading) {
     return (
@@ -131,6 +146,7 @@ export default function Complementos() {
                   complement={complement}
                   onToggleActive={handleToggleActive}
                   onTogglePriceMode={handleTogglePriceMode}
+                  onUpdatePrice={handleUpdatePrice}
                   isUpdating={updateGlobalMutation.isPending}
                 />
               ))}
@@ -144,6 +160,7 @@ export default function Complementos() {
           <ul className="space-y-1 list-disc list-inside">
             <li><strong>Toggle Ativo/Pausado:</strong> Complemento pausado não aparece em nenhum produto no menu público</li>
             <li><strong>Botão GRÁTIS:</strong> Quando ativo, o complemento aparece com R$ 0,00 em todos os produtos</li>
+            <li><strong>Editar preço:</strong> Clique no lápis para alterar o preço em todos os produtos</li>
             <li><strong>Uso em X produtos:</strong> Indica em quantos grupos de complementos esse item está presente</li>
           </ul>
         </div>
@@ -157,6 +174,7 @@ function ComplementRow({
   complement,
   onToggleActive,
   onTogglePriceMode,
+  onUpdatePrice,
   isUpdating,
 }: {
   complement: {
@@ -169,11 +187,30 @@ function ComplementRow({
   };
   onToggleActive: (name: string, isActive: boolean) => void;
   onTogglePriceMode: (name: string, priceMode: "normal" | "free") => void;
+  onUpdatePrice: (name: string, price: string) => void;
   isUpdating: boolean;
 }) {
+  const [isEditingPrice, setIsEditingPrice] = useState(false);
+  const [editedPrice, setEditedPrice] = useState(complement.price);
+  
   const isFree = complement.priceMode === "free";
   const isActive = complement.isActive;
   const price = parseFloat(complement.price);
+
+  const handleSavePrice = () => {
+    const numericPrice = parseFloat(editedPrice);
+    if (isNaN(numericPrice) || numericPrice < 0) {
+      toast.error("Preço inválido");
+      return;
+    }
+    onUpdatePrice(complement.name, numericPrice.toFixed(2));
+    setIsEditingPrice(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditedPrice(complement.price);
+    setIsEditingPrice(false);
+  };
 
   return (
     <div
@@ -203,15 +240,71 @@ function ComplementRow({
             </Badge>
           )}
         </div>
-        <p className="text-sm text-muted-foreground">
-          {isFree ? (
-            <span className="line-through">R$ {price.toFixed(2)}</span>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          {isEditingPrice ? (
+            <div className="flex items-center gap-1">
+              <span>R$</span>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                value={editedPrice}
+                onChange={(e) => setEditedPrice(e.target.value)}
+                className="w-20 h-7 text-sm px-2"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSavePrice();
+                  if (e.key === "Escape") handleCancelEdit();
+                }}
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-green-600 hover:text-green-700 hover:bg-green-50"
+                onClick={handleSavePrice}
+                disabled={isUpdating}
+              >
+                <Check className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-red-600 hover:text-red-700 hover:bg-red-50"
+                onClick={handleCancelEdit}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           ) : (
-            <span>R$ {price.toFixed(2)}</span>
+            <div className="flex items-center gap-1">
+              {isFree ? (
+                <span className="line-through">R$ {price.toFixed(2)}</span>
+              ) : (
+                <span>R$ {price.toFixed(2)}</span>
+              )}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                      onClick={() => setIsEditingPrice(true)}
+                      disabled={isUpdating}
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Editar preço em todos os produtos</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           )}
-          {" · "}
+          <span className="mx-1">·</span>
           <span>Usado em {complement.usageCount} {complement.usageCount === 1 ? "produto" : "produtos"}</span>
-        </p>
+        </div>
       </div>
 
       {/* Botão GRÁTIS */}
