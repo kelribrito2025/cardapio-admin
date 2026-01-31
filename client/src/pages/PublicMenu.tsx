@@ -2,7 +2,7 @@ import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, Rocket } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -2224,12 +2224,16 @@ export default function PublicMenu() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t py-6 mt-8">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-sm text-gray-500">
-            Cardápio digital por{" "}
-            <span className="font-semibold text-red-500">Mindi</span>
+      <footer className="border-t border-orange-200 bg-gradient-to-r from-orange-500 to-red-500 py-6 mt-8">
+        <div className="container mx-auto px-4 flex items-center justify-center gap-3 text-white">
+          <Rocket className="w-5 h-5" />
+          <p className="text-sm font-medium">
+            Desenvolvido por <span className="font-bold">Bigteck</span>
           </p>
+          <span className="text-white/60">•</span>
+          <button className="px-4 py-1 bg-white text-orange-600 rounded-lg text-sm font-bold hover:scale-105 transition-transform">
+            Experimente grátis
+          </button>
         </div>
       </footer>
 

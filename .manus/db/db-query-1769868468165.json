@@ -1,0 +1,105 @@
+{
+  "query": "SELECT id, name, menuSlug FROM establishments;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, menuSlug FROM establishments;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "menuSlug": "sushi_haruno"
+    },
+    {
+      "id": "60001",
+      "name": "Restaurante Kelri",
+      "menuSlug": "NULL"
+    },
+    {
+      "id": "60002",
+      "name": "Sushi Haruno",
+      "menuSlug": "dsfdsfsd"
+    },
+    {
+      "id": "60003",
+      "name": "fdsfdsfs",
+      "menuSlug": "fdsfdsf"
+    },
+    {
+      "id": "60004",
+      "name": "Kelri",
+      "menuSlug": "kkk"
+    },
+    {
+      "id": "60005",
+      "name": "fdfsdfsf",
+      "menuSlug": "fdfsdfsf"
+    },
+    {
+      "id": "60006",
+      "name": "fgdfgdf",
+      "menuSlug": "fgdfgdf"
+    },
+    {
+      "id": "60007",
+      "name": "sushi hahuno",
+      "menuSlug": "sushi-hahuno"
+    },
+    {
+      "id": "60008",
+      "name": "65464565fdfd",
+      "menuSlug": "65464565fdfd"
+    },
+    {
+      "id": "60009",
+      "name": "sdsadsa",
+      "menuSlug": "dasdasdsdsadsa"
+    },
+    {
+      "id": "60010",
+      "name": "gfdgddf",
+      "menuSlug": "gfdgddf"
+    },
+    {
+      "id": "60011",
+      "name": "dsadsadasdad",
+      "menuSlug": "dsadsadasdad"
+    },
+    {
+      "id": "60012",
+      "name": "Hdhdhhdhhd",
+      "menuSlug": "hdhdhhdhhd"
+    },
+    {
+      "id": "60013",
+      "name": "dfsdfdsf",
+      "menuSlug": "fsdfsf"
+    },
+    {
+      "id": "60014",
+      "name": "Sushi Haruno",
+      "menuSlug": "sushi-haruno"
+    },
+    {
+      "id": "60015",
+      "name": "ffr3434",
+      "menuSlug": "ddsdsdsd"
+    },
+    {
+      "id": "60016",
+      "name": "fsfdsfsdfdsfsfdd",
+      "menuSlug": "fff432dsfsfs"
+    },
+    {
+      "id": "60017",
+      "name": "gdfgdsgdgsgdfg",
+      "menuSlug": "gdfgdsgdgsgdfg"
+    },
+    {
+      "id": "60018",
+      "name": "Big Norte",
+      "menuSlug": "big-norte"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tmenuSlug\n30001\tSushi Haruno\tsushi_haruno\n60001\tRestaurante Kelri\tNULL\n60002\tSushi Haruno\tdsfdsfsd\n60003\tfdsfdsfs\tfdsfdsf\n60004\tKelri\tkkk\n60005\tfdfsdfsf\tfdfsdfsf\n60006\tfgdfgdf\tfgdfgdf\n60007\tsushi hahuno\tsushi-hahuno\n60008\t65464565fdfd\t65464565fdfd\n60009\tsdsadsa\tdasdasdsdsadsa\n60010\tgfdgddf\tgfdgddf\n60011\tdsadsadasdad\tdsadsadasdad\n60012\tHdhdhhdhhd\thdhdhhdhhd\n60013\tdfsdfdsf\tfsdfsf\n60014\tSushi Haruno\tsushi-haruno\n60015\tffr3434\tddsdsdsd\n60016\tfsfdsfsdfdsfsfdd\tfff432dsfsfs\n60017\tgdfgdsgdgsgdfg\tgdfgdsgdgsgdfg\n60018\tBig Norte\tbig-norte\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}
