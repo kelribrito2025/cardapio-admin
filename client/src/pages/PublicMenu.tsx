@@ -2224,14 +2224,14 @@ export default function PublicMenu() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-orange-200 bg-gradient-to-r from-orange-500 to-red-500 py-4 mt-8" style={{paddingTop: '10px', paddingBottom: '10px'}}>
+      <footer className="border-t border-red-200 bg-gradient-to-r from-red-500 to-red-600 py-4 mt-8" style={{paddingTop: '10px', paddingBottom: '10px'}}>
         <div className="container mx-auto px-4 flex items-center justify-center gap-3 text-white">
           <Rocket className="w-5 h-5" />
           <p className="text-sm font-medium">
             Desenvolvido por <span className="font-bold">Bigteck</span>
           </p>
           <span className="text-white/60">•</span>
-          <button className="px-4 py-1 bg-white text-orange-600 rounded-lg text-sm font-bold hover:scale-105 transition-transform" style={{paddingTop: '2px', paddingBottom: '2px', width: '174px', height: '25px'}}>
+          <button className="px-4 py-1 bg-white text-red-600 rounded-lg text-sm font-bold hover:scale-105 transition-transform" style={{paddingTop: '2px', paddingBottom: '2px', width: '174px', height: '25px'}}>
             Experimente grátis
           </button>
         </div>
