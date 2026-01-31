@@ -3865,3 +3865,4 @@
 - [x] Implementar regra: categoria ativa sem itens ativos não aparece no menu público
 - [x] Implementar regra: categoria ativa com pelo menos 1 item ativo aparece no menu público
 - [x] Exibir confirmação ao excluir categoria
+- [x] Toggle de categoria deve mostrar desativado quando todos os itens estão pausados

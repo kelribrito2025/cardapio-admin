@@ -75,6 +75,7 @@ function useIsMobile() {
 function SortableCategoryItem({
   category,
   productCount,
+  activeProductCount,
   onEdit,
   onDelete,
   onToggleActive,
@@ -88,6 +89,7 @@ function SortableCategoryItem({
 }: {
   category: any;
   productCount: number;
+  activeProductCount: number;
   onEdit: (id: number, name: string) => void;
   onDelete: (category: { id: number; name: string; productCount: number }) => void;
   onToggleActive: (id: number, isActive: boolean) => void;
@@ -115,7 +117,17 @@ function SortableCategoryItem({
     zIndex: isDragging ? 1000 : 1,
   };
 
-  const isActive = category.isActive !== false; // default to true if undefined
+  // Categoria é considerada "efetivamente ativa" se:
+  // 1. O campo isActive é true (ou undefined = default true)
+  // 2. E tem pelo menos 1 produto ativo
+  const categoryIsActive = category.isActive !== false;
+  const hasActiveProducts = activeProductCount > 0;
+  
+  // Para o toggle visual: mostra desativado se a categoria está pausada OU se não tem produtos ativos
+  const isEffectivelyActive = categoryIsActive && hasActiveProducts;
+  
+  // O toggle controla apenas o campo isActive da categoria
+  const isActive = categoryIsActive;
 
   return (
     <div
@@ -124,7 +136,7 @@ function SortableCategoryItem({
       className={cn(
         "flex items-center gap-4 p-4 bg-card border border-border/50 rounded-xl hover:bg-muted/30 transition-colors",
         isDragging && "shadow-lg",
-        !isActive && "opacity-60"
+        !isEffectivelyActive && "opacity-60"
       )}
     >
       <button
@@ -189,7 +201,7 @@ function SortableCategoryItem({
           <div className="flex items-center gap-2 group">
             <h4 className={cn(
               "font-semibold text-base transition-colors group-hover:text-primary",
-              !isActive && "text-muted-foreground"
+              !isEffectivelyActive && "text-muted-foreground"
             )}>
               {category.name} <span className="text-muted-foreground font-normal">({productCount} {productCount === 1 ? "item" : "itens"})</span>
             </h4>
@@ -204,15 +216,21 @@ function SortableCategoryItem({
           <TooltipTrigger asChild>
             <div onClick={(e) => e.stopPropagation()}>
               <Switch
-                checked={isActive}
+                checked={isEffectivelyActive}
                 onCheckedChange={(checked) => onToggleActive(category.id, checked)}
-                disabled={isTogglingActive}
+                disabled={isTogglingActive || (!hasActiveProducts && !isActive)}
                 className="data-[state=checked]:bg-green-500"
               />
             </div>
           </TooltipTrigger>
           <TooltipContent>
-            <p>{isActive ? "Categoria ativa" : "Categoria pausada"}</p>
+            <p>
+              {!categoryIsActive 
+                ? "Categoria pausada" 
+                : !hasActiveProducts 
+                  ? "Sem itens ativos - não aparece no menu" 
+                  : "Categoria ativa"}
+            </p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -312,6 +330,15 @@ export default function Categorias() {
   const productCountByCategory = productsData?.products?.reduce((acc, product) => {
     const categoryId = product.categoryId || 0;
     acc[categoryId] = (acc[categoryId] || 0) + 1;
+    return acc;
+  }, {} as Record<number, number>) || {};
+
+  // Calculate active product count by category (status === 'active' && hasStock)
+  const activeProductCountByCategory = productsData?.products?.reduce((acc, product) => {
+    if (product.status === 'active' && product.hasStock) {
+      const categoryId = product.categoryId || 0;
+      acc[categoryId] = (acc[categoryId] || 0) + 1;
+    }
     return acc;
   }, {} as Record<number, number>) || {};
 
@@ -539,6 +566,7 @@ export default function Categorias() {
                   key={category.id}
                   category={category}
                   productCount={productCountByCategory[category.id] || 0}
+                  activeProductCount={activeProductCountByCategory[category.id] || 0}
                   onEdit={handleEditCategory}
                   onDelete={handleDeleteCategory}
                   onToggleActive={handleToggleActive}

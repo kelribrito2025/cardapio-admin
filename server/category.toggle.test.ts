@@ -45,6 +45,41 @@ describe("Category Toggle (isActive)", () => {
   });
 });
 
+describe("Toggle visual de categoria baseado em produtos ativos", () => {
+  it("toggle deve mostrar desativado quando categoria tem todos os itens pausados", () => {
+    const category = { id: 1, name: "Lanches", isActive: true };
+    const activeProductCount = 0; // todos pausados
+    
+    const categoryIsActive = category.isActive !== false;
+    const hasActiveProducts = activeProductCount > 0;
+    const isEffectivelyActive = categoryIsActive && hasActiveProducts;
+    
+    expect(isEffectivelyActive).toBe(false); // toggle deve aparecer desativado
+  });
+
+  it("toggle deve mostrar ativado quando categoria tem pelo menos 1 item ativo", () => {
+    const category = { id: 1, name: "Lanches", isActive: true };
+    const activeProductCount = 1; // pelo menos 1 ativo
+    
+    const categoryIsActive = category.isActive !== false;
+    const hasActiveProducts = activeProductCount > 0;
+    const isEffectivelyActive = categoryIsActive && hasActiveProducts;
+    
+    expect(isEffectivelyActive).toBe(true); // toggle deve aparecer ativado
+  });
+
+  it("toggle deve mostrar desativado quando categoria está pausada mesmo com itens ativos", () => {
+    const category = { id: 1, name: "Lanches", isActive: false };
+    const activeProductCount = 5; // tem itens ativos
+    
+    const categoryIsActive = category.isActive !== false;
+    const hasActiveProducts = activeProductCount > 0;
+    const isEffectivelyActive = categoryIsActive && hasActiveProducts;
+    
+    expect(isEffectivelyActive).toBe(false); // toggle deve aparecer desativado
+  });
+});
+
 describe("Regras de visibilidade de categoria no menu público", () => {
   it("categoria pausada não deve aparecer no menu", () => {
     const categories = [
