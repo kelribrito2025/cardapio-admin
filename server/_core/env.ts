@@ -7,4 +7,9 @@ export const ENV = {
   isProduction: process.env.NODE_ENV === "production",
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+  // S3 próprio do usuário
+  mindiS3Bucket: process.env.MINDI_S3_BUCKET ?? "",
+  mindiS3Region: process.env.MINDI_S3_REGION ?? "",
+  mindiS3AccessKey: process.env.MINDI_S3_ACCESS_KEY ?? "",
+  mindiS3SecretKey: process.env.MINDI_S3_SECRET_KEY ?? "",
 };

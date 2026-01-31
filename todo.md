@@ -3849,3 +3849,8 @@
 - [x] Centralizar recibo na impressão normal
 - [x] Adicionar tarja preta no TOTAL e badge ENTREGA na impressão normal
 - [x] Forçar cores de fundo (badges pretos) na impressão normal
+- [ ] Bug: Imagens dos produtos não estão carregando no admin e menu público
+- [ ] Migrar imagens dos produtos do CloudFront antigo para o novo storage do Manus
+- [ ] Bug: Upload de novas imagens não está funcionando
+- [x] Adicionar link WhatsApp no rodapé do menu público (Bigteck e Experimente grátis) - 5588999290000
+- [x] Migrar sistema de storage para S3 próprio do usuário

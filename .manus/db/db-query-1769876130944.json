@@ -1,0 +1,60 @@
+{
+  "query": "SELECT id, name, images FROM products WHERE establishmentId = 60018 LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, images FROM products WHERE establishmentId = 60018 LIMIT 10;",
+  "rows": [
+    {
+      "id": "150017",
+      "name": "LANCHE DO DIA - Big EGG",
+      "images": "[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/1stamY9-FIVY78blmXJoD.webp\"]"
+    },
+    {
+      "id": "150018",
+      "name": "Dog Duplo",
+      "images": "[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/rS55c08OMOxfGrSPHH9xC.webp\"]"
+    },
+    {
+      "id": "150019",
+      "name": "Dog frango",
+      "images": "[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/D0TVgZO_i_1jjNW3-qJgq.webp\"]"
+    },
+    {
+      "id": "150020",
+      "name": "Dog bacon",
+      "images": "[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/UK0LW8PkwtFOeg38yaMk1.webp\"]"
+    },
+    {
+      "id": "150021",
+      "name": "Dog Calabresa",
+      "images": "NULL"
+    },
+    {
+      "id": "150022",
+      "name": "Big Lanche",
+      "images": "NULL"
+    },
+    {
+      "id": "150023",
+      "name": "Big burguer",
+      "images": "[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/CxpVubnylGt2amDhH33tp.webp\"]"
+    },
+    {
+      "id": "150024",
+      "name": "Big frango",
+      "images": "[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/03eNMeKAXBlzcNn264CsC.webp\"]"
+    },
+    {
+      "id": "150025",
+      "name": "Big frango com Catupiry",
+      "images": "[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/6AKi80BhtfebL3z1-R-98.webp\"]"
+    },
+    {
+      "id": "150026",
+      "name": "Big bacon",
+      "images": "[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/FchA8eq3sk09nxqa5nj_Y.webp\"]"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\timages\n150017\tLANCHE DO DIA - Big EGG\t[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/1stamY9-FIVY78blmXJoD.webp\"]\n150018\tDog Duplo\t[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/rS55c08OMOxfGrSPHH9xC.webp\"]\n150019\tDog frango\t[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/D0TVgZO_i_1jjNW3-qJgq.webp\"]\n150020\tDog bacon\t[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/UK0LW8PkwtFOeg38yaMk1.webp\"]\n150021\tDog Calabresa\tNULL\n150022\tBig Lanche\tNULL\n150023\tBig burguer\t[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/CxpVubnylGt2amDhH33tp.webp\"]\n150024\tBig frango\t[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/03eNMeKAXBlzcNn264CsC.webp\"]\n150025\tBig frango com Catupiry\t[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/6AKi80BhtfebL3z1-R-98.webp\"]\n150026\tBig bacon\t[\"https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/products/FchA8eq3sk09nxqa5nj_Y.webp\"]\n",
+  "stderr": "",
+  "execution_time_ms": 93
+}

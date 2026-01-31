@@ -4,7 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
-import { storagePut } from "./storage";
+import { mindiStoragePut } from "./mindiStorage";
 import { nanoid } from "nanoid";
 import bcrypt from "bcryptjs";
 import { ENV } from "./_core/env";
@@ -1654,8 +1654,8 @@ export const appRouter = router({
         // Convert base64 to buffer
         const buffer = Buffer.from(base64, "base64");
         
-        // Upload to S3
-        const { url } = await storagePut(fileName, buffer, mimeType);
+        // Upload to S3 (bucket próprio do usuário)
+        const { url } = await mindiStoragePut(fileName, buffer, mimeType);
         
         return { url };
       }),
