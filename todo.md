@@ -3854,3 +3854,4 @@
 - [ ] Bug: Upload de novas imagens não está funcionando
 - [x] Adicionar link WhatsApp no rodapé do menu público (Bigteck e Experimente grátis) - 5588999290000
 - [x] Migrar sistema de storage para S3 próprio do usuário
+- [x] Mostrar quantidade de itens ao lado do nome da categoria na página /categorias

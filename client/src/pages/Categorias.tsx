@@ -195,7 +195,7 @@ function SortableCategoryItem({
               "font-semibold text-base transition-colors",
               !isMobile && "group-hover:text-primary"
             )}>
-              {category.name}
+              {category.name} <span className="text-muted-foreground font-normal">({productCount} {productCount === 1 ? "item" : "itens"})</span>
             </h4>
             {!isMobile && (
               <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -203,10 +203,6 @@ function SortableCategoryItem({
           </div>
         )}
       </div>
-      
-      <span className="text-sm text-muted-foreground font-medium whitespace-nowrap">
-        {productCount} {productCount === 1 ? "item" : "itens"}
-      </span>
       
       {/* Menu de ações - apenas no desktop */}
       {!isMobile && (
