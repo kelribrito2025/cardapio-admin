@@ -145,17 +145,36 @@ function generateReceiptHTML(
       padding: 0; 
       box-sizing: border-box; 
     }
+    html {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      background: #e5e5e0;
+    }
     body { 
       font-family: 'Arial', 'Helvetica', sans-serif; 
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
       width: 100%; 
-      max-width: 100%;
-      padding: 8px;
-      background: #fff;
+      max-width: 320px;
+      padding: 20px;
+      background: #f5f5f0;
       color: #000;
       -webkit-font-smoothing: antialiased;
+      margin: 0 auto;
+    }
+    @media print {
+      html {
+        background: #fff;
+        display: block;
+      }
+      body {
+        background: #fff;
+        max-width: 100%;
+        padding: 8px;
+      }
     }
     
     /* CABEÇALHO */
