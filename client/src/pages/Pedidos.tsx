@@ -412,16 +412,25 @@ export default function Pedidos() {
         <title>Pedido ${orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</title>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { 
+          html, body { 
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
             font-family: Arial, sans-serif; 
             font-size: 13px; 
             padding: 20px; 
-            max-width: 320px; 
-            margin: 0 auto; 
             background: #f5f5f0;
             color: #333;
           }
-          .receipt { background: #f5f5f0; padding: 10px; }
+          .receipt { 
+            background: #f5f5f0; 
+            padding: 10px; 
+            max-width: 320px; 
+            width: 100%;
+            margin: 0 auto;
+          }
           .logo { text-align: center; padding-bottom: 15px; margin-bottom: 15px; }
           .logo h1 { font-size: 22px; font-weight: bold; margin: 0; letter-spacing: 1px; }
           .logo p { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-top: 2px; }
@@ -442,7 +451,19 @@ export default function Pedidos() {
           .section-content { font-size: 13px; color: #444; line-height: 1.4; }
           .footer { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #ccc; }
           .footer p { font-size: 11px; color: #666; }
-          @media print { body { padding: 0; background: white; } .receipt { background: white; } }
+          @media print { 
+            html, body { 
+              padding: 0; 
+              background: white; 
+              display: block;
+              width: 100%;
+            } 
+            .receipt { 
+              background: white; 
+              max-width: 100%;
+              margin: 0 auto;
+            } 
+          }
         </style>
       </head>
       <body>

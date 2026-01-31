@@ -3846,3 +3846,4 @@
 - [x] Alterar cor das abas de navegação em Configurações de azul escuro para vermelho (cor primária)
 - [x] Implementar novo modelo de rodapé no menu público com gradiente e botão 'Experimente grátis'
 - [x] Bug: Complementos não aparecem na impressão do pedido
+- [x] Centralizar recibo na impressão normal
