@@ -166,6 +166,11 @@ function generateReceiptHTML(
       margin: 0 auto;
     }
     @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
       html {
         background: #fff;
         display: block;
@@ -174,6 +179,18 @@ function generateReceiptHTML(
         background: #fff;
         max-width: 100%;
         padding: 8px;
+      }
+      .delivery-badge {
+        background: #000 !important;
+        color: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .total-final {
+        background: #000 !important;
+        color: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
     }
     

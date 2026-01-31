@@ -3848,3 +3848,4 @@
 - [x] Bug: Complementos não aparecem na impressão do pedido
 - [x] Centralizar recibo na impressão normal
 - [x] Adicionar tarja preta no TOTAL e badge ENTREGA na impressão normal
+- [x] Forçar cores de fundo (badges pretos) na impressão normal
