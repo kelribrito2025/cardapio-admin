@@ -1,0 +1,66 @@
+{
+  "query": "SELECT o.id, o.orderNumber, o.establishmentId, o.customerName, o.status, COUNT(oi.id) as itemCount FROM orders o LEFT JOIN orderItems oi ON o.id = oi.orderId GROUP BY o.id ORDER BY o.id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT o.id, o.orderNumber, o.establishmentId, o.customerName, o.status, COUNT(oi.id) as itemCount FROM orders o LEFT JOIN orderItems oi ON o.id = oi.orderId GROUP BY o.id ORDER BY o.id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "210097",
+      "orderNumber": "#P3",
+      "establishmentId": "30001",
+      "customerName": "fsdfdsfds",
+      "status": "new",
+      "itemCount": "1"
+    },
+    {
+      "id": "210096",
+      "orderNumber": "#P4",
+      "establishmentId": "60018",
+      "customerName": "Jessica ",
+      "status": "cancelled",
+      "itemCount": "1"
+    },
+    {
+      "id": "210095",
+      "orderNumber": "#P2",
+      "establishmentId": "30001",
+      "customerName": "fsdfdsfds",
+      "status": "new",
+      "itemCount": "1"
+    },
+    {
+      "id": "210094",
+      "orderNumber": "#P3",
+      "establishmentId": "60018",
+      "customerName": "Jessica ",
+      "status": "completed",
+      "itemCount": "2"
+    },
+    {
+      "id": "210093",
+      "orderNumber": "#P2",
+      "establishmentId": "60018",
+      "customerName": "Matheus ",
+      "status": "cancelled",
+      "itemCount": "1"
+    },
+    {
+      "id": "210092",
+      "orderNumber": "#P1",
+      "establishmentId": "60018",
+      "customerName": "Matheus ",
+      "status": "pending_confirmation",
+      "itemCount": "2"
+    },
+    {
+      "id": "210091",
+      "orderNumber": "#P1",
+      "establishmentId": "30001",
+      "customerName": "Kelri",
+      "status": "new",
+      "itemCount": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\testablishmentId\tcustomerName\tstatus\titemCount\n210097\t#P3\t30001\tfsdfdsfds\tnew\t1\n210096\t#P4\t60018\tJessica \tcancelled\t1\n210095\t#P2\t30001\tfsdfdsfds\tnew\t1\n210094\t#P3\t60018\tJessica \tcompleted\t2\n210093\t#P2\t60018\tMatheus \tcancelled\t1\n210092\t#P1\t60018\tMatheus \tpending_confirmation\t2\n210091\t#P1\t30001\tKelri\tnew\t1\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

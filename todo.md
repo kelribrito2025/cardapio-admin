@@ -3891,3 +3891,7 @@
 - [x] Corrigir exibição de quantidade de complemento no Modal Confirmar Endereço
 - [x] Corrigir exibição de quantidade de complemento na Impressão
 - [x] Corrigir exibição de quantidade de complemento na Notificação WhatsApp
+
+## Bugs de Impressão
+- [x] Bug: Quantidade de complementos não aparece na impressão normal (ex: "+ 4x Dose de Vodka Orloff")
+- [x] Bug: Impressão múltiplas impressoras está saindo em branco (era problema de URL dev vs produção)

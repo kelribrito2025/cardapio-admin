@@ -112,11 +112,15 @@ function generateReceiptHTML(
             if (comp.items && Array.isArray(comp.items)) {
               // Estrutura antiga com grupos de complementos
               for (const ci of comp.items) {
-                itemHTML += `<div class="item-complement">+ ${ci.name}${ci.price > 0 ? ` (${formatCurrency(ci.price)})` : ''}</div>`;
+                const qty = ci.quantity || 1;
+                const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+                itemHTML += `<div class="item-complement">+ ${qtyPrefix}${ci.name}${ci.price > 0 ? ` (${formatCurrency(ci.price * qty)})` : ''}</div>`;
               }
             } else if (comp.name) {
-              // Estrutura nova: array direto de complementos {name, price}
-              itemHTML += `<div class="item-complement">+ ${comp.name}${comp.price > 0 ? ` (${formatCurrency(comp.price)})` : ''}</div>`;
+              // Estrutura nova: array direto de complementos {name, price, quantity}
+              const qty = comp.quantity || 1;
+              const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+              itemHTML += `<div class="item-complement">+ ${qtyPrefix}${comp.name}${comp.price > 0 ? ` (${formatCurrency(comp.price * qty)})` : ''}</div>`;
             }
           }
         }

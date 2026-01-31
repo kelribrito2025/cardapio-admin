@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, orderNumber, establishmentId, customerName, status FROM orders ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, establishmentId, customerName, status FROM orders ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "210097",
+      "orderNumber": "#P3",
+      "establishmentId": "30001",
+      "customerName": "fsdfdsfds",
+      "status": "new"
+    },
+    {
+      "id": "210096",
+      "orderNumber": "#P4",
+      "establishmentId": "60018",
+      "customerName": "Jessica ",
+      "status": "cancelled"
+    },
+    {
+      "id": "210095",
+      "orderNumber": "#P2",
+      "establishmentId": "30001",
+      "customerName": "fsdfdsfds",
+      "status": "new"
+    },
+    {
+      "id": "210094",
+      "orderNumber": "#P3",
+      "establishmentId": "60018",
+      "customerName": "Jessica ",
+      "status": "completed"
+    },
+    {
+      "id": "210093",
+      "orderNumber": "#P2",
+      "establishmentId": "60018",
+      "customerName": "Matheus ",
+      "status": "cancelled"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\testablishmentId\tcustomerName\tstatus\n210097\t#P3\t30001\tfsdfdsfds\tnew\n210096\t#P4\t60018\tJessica \tcancelled\n210095\t#P2\t30001\tfsdfdsfds\tnew\n210094\t#P3\t60018\tJessica \tcompleted\n210093\t#P2\t60018\tMatheus \tcancelled\n",
+  "stderr": "",
+  "execution_time_ms": 78
+}
