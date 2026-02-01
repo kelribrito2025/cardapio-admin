@@ -3956,3 +3956,6 @@
 
 ## Mensagem Informativa Consumir no Local
 - [x] Adicionar mensagem de aviso quando usuário selecionar "Consumir no local" no menu público
+
+## Link WhatsApp na Mensagem de Consumo Local
+- [x] Adicionar link clicável no texto "WhatsApp" para abrir conversa com número do restaurante

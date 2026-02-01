@@ -3095,7 +3095,21 @@ export default function PublicMenu() {
                         </svg>
                         <div>
                           <p className="text-sm text-amber-800 font-medium">Não garantimos disponibilidade de mesas.</p>
-                          <p className="text-xs text-amber-700 mt-0.5">Verifique antes com nosso atendimento no WhatsApp.</p>
+                          <p className="text-xs text-amber-700 mt-0.5">
+                            Verifique antes com nosso atendimento no{' '}
+                            {establishment.whatsapp ? (
+                              <a 
+                                href={`https://wa.me/55${establishment.whatsapp.replace(/\D/g, '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-medium text-green-600 hover:text-green-700 underline"
+                              >
+                                WhatsApp
+                              </a>
+                            ) : (
+                              <span className="font-medium">WhatsApp</span>
+                            )}.
+                          </p>
                         </div>
                       </div>
                     </div>
