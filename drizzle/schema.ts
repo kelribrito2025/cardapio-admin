@@ -141,6 +141,10 @@ export const complementItems = mysqlTable("complementItems", {
   // Complementos Globais - novos campos
   priceMode: mysqlEnum("priceMode", ["normal", "free"]).default("normal").notNull(), // normal = preço base, free = grátis
   sortOrder: int("sortOrder").default(0).notNull(),
+  // Disponibilidade por dias e horários
+  availabilityType: mysqlEnum("availabilityType", ["always", "scheduled"]).default("always").notNull(), // always = sempre disponível, scheduled = dias/horários específicos
+  availableDays: json("availableDays").$type<number[]>(), // 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb
+  availableHours: json("availableHours").$type<{ day: number; startTime: string; endTime: string }[]>(), // Horários por dia
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

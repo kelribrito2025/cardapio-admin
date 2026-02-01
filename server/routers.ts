@@ -634,6 +634,13 @@ export const appRouter = router({
         isActive: z.boolean().optional(),
         priceMode: z.enum(["normal", "free"]).optional(),
         price: z.string().optional(),
+        availabilityType: z.enum(["always", "scheduled"]).optional(),
+        availableDays: z.array(z.number()).optional(),
+        availableHours: z.array(z.object({
+          day: z.number(),
+          startTime: z.string(),
+          endTime: z.string(),
+        })).optional(),
       }))
       .mutation(async ({ input }) => {
         const { establishmentId, complementName, ...data } = input;
@@ -919,12 +926,56 @@ export const appRouter = router({
       .input(z.object({ productId: z.number() }))
       .query(async ({ input }) => {
         const groups = await db.getComplementGroupsByProduct(input.productId);
+        
+        // Obter data/hora atual em Brasília
+        const now = new Date();
+        const brasiliaTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+        const currentDay = brasiliaTime.getDay(); // 0=Dom, 1=Seg, ..., 6=Sáb
+        const currentTime = brasiliaTime.toTimeString().slice(0, 5); // "HH:MM"
+        
+        // Função para verificar se um complemento está disponível agora
+        const isComplementAvailable = (item: {
+          isActive: boolean;
+          availabilityType: string | null;
+          availableDays: number[] | null;
+          availableHours: { day: number; startTime: string; endTime: string }[] | null;
+        }) => {
+          // Se não está ativo, não está disponível
+          if (!item.isActive) return false;
+          
+          // Se é "always" ou não tem tipo definido, está sempre disponível
+          if (!item.availabilityType || item.availabilityType === 'always') return true;
+          
+          // Se é "scheduled", verificar dias e horários
+          if (item.availabilityType === 'scheduled') {
+            // Verificar se o dia atual está nos dias disponíveis
+            if (!item.availableDays || !item.availableDays.includes(currentDay)) {
+              return false;
+            }
+            
+            // Verificar se o horário atual está em algum intervalo configurado para o dia
+            if (item.availableHours && item.availableHours.length > 0) {
+              const dayHours = item.availableHours.filter(h => h.day === currentDay);
+              if (dayHours.length === 0) return false;
+              
+              return dayHours.some(h => {
+                return currentTime >= h.startTime && currentTime <= h.endTime;
+              });
+            }
+            
+            // Se tem dias mas não tem horários configurados, considera o dia inteiro
+            return true;
+          }
+          
+          return true;
+        };
+        
         const groupsWithItems = await Promise.all(
           groups.map(async (group) => {
             const items = await db.getComplementItemsByGroup(group.id);
             return {
               ...group,
-              items: items.filter(item => item.isActive),
+              items: items.filter(item => isComplementAvailable(item)),
             };
           })
         );
@@ -997,6 +1048,59 @@ export const appRouter = router({
             code: 'BAD_REQUEST',
             message: 'O estabelecimento está fechado no momento. Não é possível realizar pedidos.',
           });
+        }
+        
+        // Validar disponibilidade dos complementos
+        const now = new Date();
+        const brasiliaTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+        const currentDay = brasiliaTime.getDay();
+        const currentTime = brasiliaTime.toTimeString().slice(0, 5);
+        
+        for (const item of items) {
+          if (item.complements && item.complements.length > 0) {
+            // Buscar grupos de complementos do produto
+            const groups = await db.getComplementGroupsByProduct(item.productId);
+            for (const group of groups) {
+              const complementItems = await db.getComplementItemsByGroup(group.id);
+              
+              for (const complement of item.complements) {
+                const dbComplement = complementItems.find(c => c.name === complement.name);
+                if (dbComplement) {
+                  // Verificar se o complemento está disponível
+                  if (!dbComplement.isActive) {
+                    throw new TRPCError({
+                      code: 'BAD_REQUEST',
+                      message: `O complemento "${complement.name}" não está mais disponível.`,
+                    });
+                  }
+                  
+                  if (dbComplement.availabilityType === 'scheduled') {
+                    const availableDays = dbComplement.availableDays as number[] | null;
+                    const availableHours = dbComplement.availableHours as { day: number; startTime: string; endTime: string }[] | null;
+                    
+                    if (availableDays && !availableDays.includes(currentDay)) {
+                      throw new TRPCError({
+                        code: 'BAD_REQUEST',
+                        message: `O complemento "${complement.name}" não está disponível hoje.`,
+                      });
+                    }
+                    
+                    if (availableHours && availableHours.length > 0) {
+                      const dayHours = availableHours.filter(h => h.day === currentDay);
+                      const isInTimeRange = dayHours.some(h => currentTime >= h.startTime && currentTime <= h.endTime);
+                      
+                      if (!isInTimeRange) {
+                        throw new TRPCError({
+                          code: 'BAD_REQUEST',
+                          message: `O complemento "${complement.name}" não está disponível neste horário.`,
+                        });
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
         
         try {
@@ -1283,7 +1387,7 @@ export const appRouter = router({
                       quantity: item.quantity ?? 1,
                       unitPrice: item.unitPrice,
                       totalPrice: item.totalPrice,
-                      complements: item.complements as Array<{ name: string; price: number }> | string | null,
+                      complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
                       notes: item.notes,
                     })),
                     orderTotal: order.total,

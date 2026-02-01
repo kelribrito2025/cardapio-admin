@@ -3904,3 +3904,10 @@
 
 ## Bug Acumulado da Semana
 - [x] Corrigir erro de timezone no cálculo do card Acumulado da Semana (pedidos sendo atribuídos ao dia errado)
+
+## Disponibilidade de Complementos por Dias/Horários
+- [x] Atualizar schema do banco de dados para armazenar disponibilidade de complementos
+- [x] Implementar lógica de validação de disponibilidade no backend
+- [x] Criar UI de configuração de disponibilidade no admin (dropdown)
+- [x] Filtrar complementos indisponíveis no menu público
+- [x] Validar disponibilidade antes de adicionar ao carrinho

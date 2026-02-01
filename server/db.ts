@@ -653,6 +653,9 @@ export async function getAllComplementItemsByEstablishment(establishmentId: numb
     priceMode: "normal" | "free";
     usageCount: number;
     groupIds: number[];
+    availabilityType: "always" | "scheduled";
+    availableDays: number[] | null;
+    availableHours: { day: number; startTime: string; endTime: string }[] | null;
   }>();
   
   for (const item of allItems) {
@@ -672,6 +675,9 @@ export async function getAllComplementItemsByEstablishment(establishmentId: numb
         priceMode: (item.priceMode as "normal" | "free") || "normal",
         usageCount: 1,
         groupIds: [item.groupId],
+        availabilityType: (item.availabilityType as "always" | "scheduled") || "always",
+        availableDays: item.availableDays as number[] | null,
+        availableHours: item.availableHours as { day: number; startTime: string; endTime: string }[] | null,
       });
     }
   }
@@ -683,7 +689,14 @@ export async function getAllComplementItemsByEstablishment(establishmentId: numb
 export async function updateComplementItemsByName(
   establishmentId: number,
   complementName: string,
-  data: { isActive?: boolean; priceMode?: "normal" | "free"; price?: string }
+  data: { 
+    isActive?: boolean; 
+    priceMode?: "normal" | "free"; 
+    price?: string;
+    availabilityType?: "always" | "scheduled";
+    availableDays?: number[];
+    availableHours?: { day: number; startTime: string; endTime: string }[];
+  }
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
