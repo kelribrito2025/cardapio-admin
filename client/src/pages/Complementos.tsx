@@ -359,37 +359,20 @@ function ComplementRow({
       >
         {/* Linha principal */}
         <div className="flex items-center gap-4 p-4">
-          {/* Nome e preço */}
+          {/* Nome, preço e uso - tudo na mesma linha */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h4 className={cn(
                 "font-semibold text-base",
                 !isActive && "text-muted-foreground"
               )}>
                 {complement.name}
               </h4>
-              {isFree && (
-                <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
-                  <Gift className="h-3 w-3 mr-1" />
-                  GRÁTIS
-                </Badge>
-              )}
-              {!isActive && (
-                <Badge variant="secondary" className="bg-orange-100 text-orange-700 border-orange-200">
-                  PAUSADO
-                </Badge>
-              )}
-              {availabilityType === "scheduled" && (
-                <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200">
-                  <Clock className="h-3 w-3 mr-1" />
-                  Horário específico
-                </Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              
+              {/* Preço inline */}
               {isEditingPrice ? (
                 <div className="flex items-center gap-1">
-                  <span>R$</span>
+                  <span className="text-sm text-muted-foreground">R$</span>
                   <Input
                     type="number"
                     step="0.01"
@@ -422,7 +405,7 @@ function ComplementRow({
                   </Button>
                 </div>
               ) : (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   {isFree ? (
                     <span className="line-through">R$ {price.toFixed(2)}</span>
                   ) : (
@@ -448,8 +431,27 @@ function ComplementRow({
                   </TooltipProvider>
                 </div>
               )}
-              <span className="mx-1">·</span>
-              <span>Usado em {complement.usageCount} {complement.usageCount === 1 ? "produto" : "produtos"}</span>
+              
+              <span className="text-sm text-muted-foreground">·</span>
+              <span className="text-sm text-muted-foreground">Usado em {complement.usageCount} {complement.usageCount === 1 ? "produto" : "produtos"}</span>
+              
+              {isFree && (
+                <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
+                  <Gift className="h-3 w-3 mr-1" />
+                  GRÁTIS
+                </Badge>
+              )}
+              {!isActive && (
+                <Badge variant="secondary" className="bg-orange-100 text-orange-700 border-orange-200">
+                  PAUSADO
+                </Badge>
+              )}
+              {availabilityType === "scheduled" && (
+                <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200">
+                  <Clock className="h-3 w-3 mr-1" />
+                  Horário específico
+                </Badge>
+              )}
             </div>
           </div>
 

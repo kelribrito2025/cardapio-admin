@@ -3911,3 +3911,6 @@
 - [x] Criar UI de configuração de disponibilidade no admin (dropdown)
 - [x] Filtrar complementos indisponíveis no menu público
 - [x] Validar disponibilidade antes de adicionar ao carrinho
+
+## Ajuste de Layout - Complementos
+- [x] Colocar nome, preço e "Usado em X produtos" na mesma linha
