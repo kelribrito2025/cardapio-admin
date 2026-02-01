@@ -496,7 +496,7 @@ export default function Pedidos() {
           <div class="order-info">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <h2>Pedido ${orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</h2>
-              <span class="delivery-badge">${orderDetails.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA'}</span>
+              <span class="delivery-badge">${orderDetails.deliveryType === 'delivery' ? 'ENTREGA' : orderDetails.deliveryType === 'dine_in' ? 'CONSUMO LOCAL' : 'RETIRADA'}</span>
             </div>
             <p>📅 ${format(new Date(orderDetails.createdAt), "dd/MM/yyyy")}, ${format(new Date(orderDetails.createdAt), "HH:mm")}</p>
           </div>
@@ -512,7 +512,7 @@ export default function Pedidos() {
           </div>
           ${orderDetails.notes ? `<hr class="divider"><div class="section"><div class="section-title">Observações:</div><div class="section-content">${orderDetails.notes}</div></div>` : ''}
           <hr class="divider">
-          <div class="section"><div class="section-title">Entrega</div><div class="section-content">${orderDetails.deliveryType === 'delivery' ? (orderDetails.customerAddress || 'Endereço não informado') : 'Retirada no local'}</div></div>
+          <div class="section"><div class="section-title">Entrega</div><div class="section-content">${orderDetails.deliveryType === 'delivery' ? (orderDetails.customerAddress || 'Endereço não informado') : orderDetails.deliveryType === 'dine_in' ? 'Consumir no local' : 'Retirada no local'}</div></div>
           <hr class="divider">
           <div class="section"><div class="section-title">Forma de pagamento</div><div class="section-content">${paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</div></div>
           <hr class="divider">
@@ -630,9 +630,11 @@ export default function Pedidos() {
       }).join('') || '';
       
       const discount = orderData.discount ? Number(orderData.discount) : 0;
-      const deliveryBadge = orderData.deliveryType === 'delivery' ? 'ENTREGA' : 'RETIRADA';
+      const deliveryBadge = orderData.deliveryType === 'delivery' ? 'ENTREGA' : orderData.deliveryType === 'dine_in' ? 'CONSUMO LOCAL' : 'RETIRADA';
       const deliveryText = orderData.deliveryType === 'delivery' 
         ? `Entrega: ${orderData.customerAddress || 'Endereço não informado'}` 
+        : orderData.deliveryType === 'dine_in'
+        ? 'Consumo no local: Cliente irá consumir no estabelecimento'
         : 'Retirada: Cliente irá retirar no estabelecimento';
       
       const printContent = `
@@ -1060,7 +1062,7 @@ export default function Pedidos() {
                               
                               {/* Tag de entrega/retirada */}
                               <span className="px-1.5 py-0.5 bg-muted/50 rounded text-[10px] font-medium capitalize whitespace-nowrap">
-                                {order.deliveryType === "delivery" ? "Entrega" : "Retirada"}
+                                {order.deliveryType === "delivery" ? "Entrega" : order.deliveryType === "dine_in" ? "Local" : "Retirada"}
                               </span>
                             </div>
                             
@@ -1418,7 +1420,7 @@ export default function Pedidos() {
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Tipo:</span>
-                      <span className="font-medium">{orderDetails.deliveryType === "delivery" ? "Entrega" : "Retirada"}</span>
+                      <span className="font-medium">{orderDetails.deliveryType === "delivery" ? "Entrega" : orderDetails.deliveryType === "dine_in" ? "Consumo no local" : "Retirada"}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Método:</span>

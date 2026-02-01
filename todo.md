@@ -3914,3 +3914,9 @@
 
 ## Ajuste de Layout - Complementos
 - [x] Colocar nome, preço e "Usado em X produtos" na mesma linha
+
+## Opção "Consumir no local"
+- [x] Atualizar schema do banco para suportar deliveryType 'dine_in'
+- [x] Adicionar opção "Consumir no local" na UI do menu público
+- [x] Atualizar lógica de fluxo para pular endereço quando dine_in
+- [x] Atualizar exibição em sacola, resumo, admin, impressão e notificações

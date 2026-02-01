@@ -64,7 +64,7 @@ type UserOrder = {
   items: Array<{ name: string; quantity: number; price: string; complements: Array<{ name: string; price: string; quantity: number }> }>;
   total: string;
   status: "sent" | "accepted" | "delivering" | "delivered" | "cancelled";
-  deliveryType: "pickup" | "delivery";
+  deliveryType: "pickup" | "delivery" | "dine_in";
   paymentMethod: "cash" | "card" | "pix";
   address?: { street: string; number: string; neighborhood: string; complement: string; reference: string };
   customerName: string;
@@ -141,7 +141,7 @@ export default function PublicMenu() {
   // Estados para o fluxo de finalização de pedido
   const [checkoutStep, setCheckoutStep] = useState(0); // 0 = fechado, 1-5 = modais
   const [orderObservation, setOrderObservation] = useState("");
-  const [deliveryType, setDeliveryType] = useState<"pickup" | "delivery">("pickup");
+  const [deliveryType, setDeliveryType] = useState<"pickup" | "delivery" | "dine_in">("pickup");
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "pix">("pix");
   const [changeAmount, setChangeAmount] = useState("");
   const [changeAmountError, setChangeAmountError] = useState<string | null>(null);
@@ -3090,6 +3090,20 @@ export default function PublicMenu() {
                       <Truck className="h-5 w-5 text-gray-600" />
                       <span className="font-medium text-gray-800">Entrega</span>
                     </label>
+                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                      deliveryType === "dine_in" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                    }`}>
+                      <input
+                        type="radio"
+                        name="deliveryType"
+                        value="dine_in"
+                        checked={deliveryType === "dine_in"}
+                        onChange={() => setDeliveryType("dine_in")}
+                        className="w-4 h-4 text-red-500 focus:ring-red-500"
+                      />
+                      <UtensilsCrossed className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-800">Consumir no local</span>
+                    </label>
                   </div>
 
                   {/* Campos de Endereço (condicional) */}
@@ -3321,7 +3335,7 @@ export default function PublicMenu() {
               {/* Footer */}
               <div className="flex-shrink-0 border-t px-6 py-4">
                 {(() => {
-                  const isAddressValid = deliveryType === 'pickup' || (
+                  const isAddressValid = deliveryType === 'pickup' || deliveryType === 'dine_in' || (
                     deliveryAddress.street.trim() !== '' &&
                     deliveryAddress.number.trim() !== '' &&
                     deliveryAddress.neighborhood.trim() !== ''
@@ -3400,7 +3414,7 @@ export default function PublicMenu() {
                   </div>
                   <div className="bg-gray-50 rounded-xl p-4">
                     <p className="text-sm text-gray-800 font-medium">
-                      {deliveryType === "pickup" ? "Retirar no local" : "Entrega"}
+                      {deliveryType === "pickup" ? "Retirar no local" : deliveryType === "dine_in" ? "Consumir no local" : "Entrega"}
                     </p>
                     {deliveryType === "delivery" && deliveryAddress.street && (
                       <p className="text-sm text-gray-500 mt-1">

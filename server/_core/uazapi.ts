@@ -415,7 +415,7 @@ export function generateStatusMessage(
   customerName: string,
   establishmentName: string,
   template?: string | null,
-  deliveryType?: 'delivery' | 'pickup' | null,
+  deliveryType?: 'delivery' | 'pickup' | 'dine_in' | null,
   cancellationReason?: string | null,
   orderItems?: Array<{
     productName: string;
@@ -444,18 +444,22 @@ export function generateStatusMessage(
     const pickupMessage = 'Você já pode vir retirar. 😄';
     // Mensagem para delivery
     const deliveryMessage = '🛵 Nosso entregador já está a caminho.';
+    // Mensagem para consumo no local
+    const dineInMessage = 'Seu pedido está pronto! 🍽️';
+    
+    // Determinar a mensagem correta baseada no tipo de entrega
+    const finalMessage = deliveryType === 'pickup' ? pickupMessage : deliveryType === 'dine_in' ? dineInMessage : deliveryMessage;
     
     // Substituir {{deliveryMessage}} se existir no template
     if (messageTemplate.includes('{{deliveryMessage}}')) {
       messageTemplate = messageTemplate.replace(
         /{{deliveryMessage}}/g,
-        deliveryType === 'pickup' ? pickupMessage : deliveryMessage
+        finalMessage
       );
     } else {
       // Se não tiver a variável, substituir a frase genérica
       messageTemplate = messageTemplate
-        .replace(/Você já pode retirar ou aguardar a entrega\./g, 
-          deliveryType === 'pickup' ? pickupMessage : deliveryMessage);
+        .replace(/Você já pode retirar ou aguardar a entrega\./g, finalMessage);
     }
   }
   
@@ -533,7 +537,7 @@ export async function sendOrderStatusNotification(
     orderNumber: string;
     establishmentName: string;
     template?: string | null;
-    deliveryType?: 'delivery' | 'pickup' | null;
+    deliveryType?: 'delivery' | 'pickup' | 'dine_in' | null;
     cancellationReason?: string | null;
     orderItems?: Array<{
       productName: string;
