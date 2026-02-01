@@ -3925,3 +3925,6 @@
 - [x] Adicionar campo dineInEnabled no schema do estabelecimento
 - [x] Adicionar toggle no card de Informações e Entrega nas configurações
 - [x] Filtrar opção no menu público baseado na configuração
+
+## Bug Hooks PublicMenu
+- [x] Corrigir erro "Rendered more hooks than during the previous render" - mover useEffect para antes dos early returns

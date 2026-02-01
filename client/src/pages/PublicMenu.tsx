@@ -318,6 +318,20 @@ export default function PublicMenu() {
       }
     }
   }, [data?.establishment?.id]);
+  
+  // Definir deliveryType inicial baseado nas opções disponíveis
+  useEffect(() => {
+    if (data?.establishment) {
+      // Selecionar a primeira opção disponível
+      if (data.establishment.allowsPickup) {
+        setDeliveryType("pickup");
+      } else if (data.establishment.allowsDelivery) {
+        setDeliveryType("delivery");
+      } else if (data.establishment.allowsDineIn) {
+        setDeliveryType("dine_in");
+      }
+    }
+  }, [data?.establishment?.id]);
 
   // Mutation para criar pedido
   const createOrderMutation = trpc.publicMenu.createOrder.useMutation({
@@ -1167,20 +1181,6 @@ export default function PublicMenu() {
 
   const { establishment, categories: allCategories, products } = data;
   const filteredProducts = filterProducts(products);
-
-  // Definir deliveryType inicial baseado nas opções disponíveis
-  useEffect(() => {
-    if (establishment) {
-      // Selecionar a primeira opção disponível
-      if (establishment.allowsPickup) {
-        setDeliveryType("pickup");
-      } else if (establishment.allowsDelivery) {
-        setDeliveryType("delivery");
-      } else if (establishment.allowsDineIn) {
-        setDeliveryType("dine_in");
-      }
-    }
-  }, [establishment?.id]);
 
   const getProductsByCategory = (categoryId: number) => {
     return filteredProducts.filter((p) => p.categoryId === categoryId);
