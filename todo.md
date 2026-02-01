@@ -3953,3 +3953,6 @@
 ## Correção Texto Tipo Pedido na Impressão
 - [x] Corrigir texto de "Retirada: Cliente irá retirar no estabelecimento" para "Consumo: Cliente irá consumir no local" quando tipo é dine_in
 - [x] Verificar e corrigir no modelo de múltiplas impressoras Android (não possui esse campo, usa apenas badge)
+
+## Mensagem Informativa Consumir no Local
+- [x] Adicionar mensagem de aviso quando usuário selecionar "Consumir no local" no menu público
