@@ -93,8 +93,7 @@ export function IntegrationsTab() {
     <div className="space-y-6">
       {/* iFood Integration Card */}
       <SectionCard 
-        title="Integração iFood" 
-        description="Receba pedidos do iFood diretamente no seu painel"
+        title="Integração iFood"
       >
         <div className="space-y-6">
           {/* Status da Integração */}
