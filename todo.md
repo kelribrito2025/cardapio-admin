@@ -4027,9 +4027,9 @@
 - [x] Remover card "Outras Integrações" da aba Integrações em Configurações
 
 ## Bug: Som do iFood não está tocando
-- [ ] Investigar por que o som específico do iFood não está sendo tocado
-- [ ] Verificar se o campo source está sendo enviado corretamente via SSE
-- [ ] Corrigir o problema identificado
+- [x] Investigar por que o som específico do iFood não está sendo tocado
+- [x] Verificar se o campo source está sendo enviado corretamente via SSE
+- [x] Corrigir o problema identificado
 
 ## Alteração Rodapé Impressões
 - [x] Alterar "Pedido realizado via Cardapio Admin manus.space" para "Pedido realizado via v2.mindi.com.br"
@@ -4042,3 +4042,7 @@
 ## Bug: Faturamento Hoje mostrando valores de ontem
 - [x] Investigar o filtro de data no cálculo do faturamento
 - [x] Corrigir para mostrar apenas pedidos do dia atual (timezone Brasil)
+
+## Bug: Notificação automática com Confirmação via Botões desativada
+- [x] Quando desativado, enviar template NOVO PEDIDO sem texto "Clique para confirmar"
+- [x] Remover botão "Sim, confirmar pedido" quando confirmação está desativada

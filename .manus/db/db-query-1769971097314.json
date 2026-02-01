@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, templateNewOrder FROM whatsappConfig WHERE establishmentId = 30001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, templateNewOrder FROM whatsappConfig WHERE establishmentId = 30001;",
+  "rows": [
+    {
+      "id": "1",
+      "templateNewOrder": "Olá, 👋🏻 "
+    }
+  ],
+  "messages": [
+    "{{greeting}}, {{customerName}}! Tudo bem?",
+    "Seu pedido *{{orderNumber}}* foi recebido com sucesso!",
+    "{{itensPedido}}"
+  ],
+  "stdout": "id\ttemplateNewOrder\n1\tOlá, 👋🏻 \n\n{{greeting}}, {{customerName}}! Tudo bem?\n\nSeu pedido *{{orderNumber}}* foi recebido com sucesso!\n\n{{itensPedido}}\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}

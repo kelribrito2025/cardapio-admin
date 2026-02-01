@@ -1773,8 +1773,11 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
           // Status já foi definido como pending_confirmation na criação do pedido
           
         } else if (whatsappConfig.notifyOnNewOrder) {
-          // Enviar notificação normal (sem botões)
+          // Enviar notificação normal (sem botões) - Template NOVO PEDIDO
           const { sendOrderStatusNotification } = await import('./_core/uazapi');
+          
+          console.log('[DB:createPublicOrder] Enviando template NOVO PEDIDO (sem botões)');
+          console.log('[DB:createPublicOrder] Template usado:', whatsappConfig.templateNewOrder?.substring(0, 100));
           
           await sendOrderStatusNotification(
             whatsappConfig.instanceToken,
