@@ -493,6 +493,10 @@ function generateReceiptHTML(
       ${order.addressComplement ? '<br>' + order.addressComplement : ''}
     </div>
   </div>
+  ` : order.deliveryType === 'dine_in' ? `
+  <div class="section-box">
+    <div class="section-content"><strong>Consumo:</strong> Cliente irá consumir no local</div>
+  </div>
   ` : `
   <div class="section-box">
     <div class="section-content"><strong>Retirada:</strong> Cliente irá retirar no estabelecimento</div>

@@ -3949,3 +3949,7 @@
 
 ## Tooltip nas Estrelas de Impressão
 - [x] Adicionar tooltip informativo nas estrelas de favoritar das opções de impressão (Impressão Normal e Múltiplas Impressoras)
+
+## Correção Texto Tipo Pedido na Impressão
+- [x] Corrigir texto de "Retirada: Cliente irá retirar no estabelecimento" para "Consumo: Cliente irá consumir no local" quando tipo é dine_in
+- [x] Verificar e corrigir no modelo de múltiplas impressoras Android (não possui esse campo, usa apenas badge)
