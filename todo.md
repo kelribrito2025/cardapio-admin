@@ -3962,3 +3962,6 @@
 
 ## Dropdown Card Complementos
 - [x] Fazer dropdown abrir ao clicar em qualquer parte do card de complemento
+
+## Bug Fix - Dropdown Card Complementos
+- [x] Corrigir dropdown que não abre ao clicar no card de complemento

@@ -359,12 +359,14 @@ function ComplementRow({
         onClick={(e) => {
           // Não abrir se clicou em botões, inputs ou switches
           const target = e.target as HTMLElement;
-          if (
+          const isInteractiveElement = 
+            target.tagName === 'BUTTON' ||
+            target.tagName === 'INPUT' ||
             target.closest('button') ||
             target.closest('input') ||
-            target.closest('[role="switch"]') ||
-            target.closest('[data-state]')
-          ) {
+            target.closest('[role="switch"]');
+          
+          if (isInteractiveElement) {
             return;
           }
           setIsOpen(!isOpen);
