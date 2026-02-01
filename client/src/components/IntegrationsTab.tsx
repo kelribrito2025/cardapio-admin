@@ -255,31 +255,6 @@ export function IntegrationsTab() {
         </div>
       </SectionCard>
 
-      {/* Outras Integrações (Em breve) */}
-      <SectionCard 
-        title="Outras Integrações" 
-        description="Em breve mais opções de integração"
-      >
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { name: "Rappi", color: "bg-orange-100 text-orange-600" },
-            { name: "Uber Eats", color: "bg-green-100 text-green-600" },
-            { name: "99Food", color: "bg-yellow-100 text-yellow-600" },
-            { name: "Aiqfome", color: "bg-purple-100 text-purple-600" },
-          ].map((integration) => (
-            <div
-              key={integration.name}
-              className={cn(
-                "p-4 rounded-lg text-center opacity-50",
-                integration.color
-              )}
-            >
-              <p className="font-medium">{integration.name}</p>
-              <p className="text-xs mt-1">Em breve</p>
-            </div>
-          ))}
-        </div>
-      </SectionCard>
     </div>
   );
 }

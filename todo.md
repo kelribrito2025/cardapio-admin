@@ -4022,3 +4022,6 @@
 - [x] Adicionar campo source ao objeto SSE para identificar origem do pedido
 - [x] Garantir que o source seja enviado em createPublicOrder e confirmOrderByNumber
 - [x] Implementar diferenciação de som para pedidos iFood vs interno
+
+## Remoção Card Outras Integrações
+- [x] Remover card "Outras Integrações" da aba Integrações em Configurações
