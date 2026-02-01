@@ -3946,3 +3946,6 @@
 ## Ajuste Badge Impressão
 - [x] Alterar badge de "CONSUMO LOCAL" para "CONSUMO" no modelo de impressão normal
 - [x] Verificar e ajustar modelo de múltiplas impressoras para usar "CONSUMO"
+
+## Tooltip nas Estrelas de Impressão
+- [x] Adicionar tooltip informativo nas estrelas de favoritar das opções de impressão (Impressão Normal e Múltiplas Impressoras)
