@@ -1416,7 +1416,7 @@ export default function Pedidos() {
 
                 {/* Delivery & Payment Info - Unified Card */}
                 <div className="border border-emerald-200 bg-emerald-50/50 rounded-xl p-4">
-                  <h4 className="font-semibold text-base mb-3">{orderDetails.deliveryType === 'dine_in' ? 'Consumo no local e Pagamento' : 'Entrega e Pagamento'}</h4>
+                  <h4 className="font-semibold text-base mb-3">{orderDetails.deliveryType === 'dine_in' ? 'Consumo e Pagamento' : 'Entrega e Pagamento'}</h4>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Tipo:</span>
