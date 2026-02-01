@@ -4034,3 +4034,7 @@
 ## Alteração Rodapé Impressões
 - [x] Alterar "Pedido realizado via Cardapio Admin manus.space" para "Pedido realizado via v2.mindi.com.br"
 - [x] Aplicar nos dois modelos: impressão normal e Android
+
+## Bug: Webhook iFood processa pedidos de merchants desconectados
+- [x] Verificar se o merchant está conectado antes de processar pedido no webhook
+- [x] Ignorar pedidos de merchants que não estão conectados no sistema

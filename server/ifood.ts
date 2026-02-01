@@ -706,19 +706,32 @@ async function convertIfoodOrderToInternal(ifoodOrder: IfoodOrder, establishment
  * Esta função é chamada pelo endpoint de webhook
  */
 export async function processIfoodWebhookEvent(event: IfoodEvent): Promise<void> {
-  console.log(`[iFood Webhook] Processando evento: ${event.code} - Pedido: ${event.orderId}`);
+  console.log(`[iFood Webhook] Processando evento: ${event.code} - Pedido: ${event.orderId} - Merchant: ${event.merchantId}`);
   
   try {
+    // Verificar se o merchant está conectado no sistema
+    const ifoodConfig = await db.getIfoodConfigByMerchantId(event.merchantId);
+    
+    if (!ifoodConfig || !ifoodConfig.isConnected) {
+      console.log(`[iFood Webhook] Merchant ${event.merchantId} não está conectado. Ignorando evento.`);
+      // Ainda assim enviar acknowledgment para o iFood não reenviar
+      try {
+        await acknowledgeIfoodEvent(event.id);
+        console.log(`[iFood Webhook] Acknowledgment enviado para evento ignorado ${event.id}`);
+      } catch (ackError) {
+        console.error(`[iFood Webhook] Erro ao enviar acknowledgment:`, ackError);
+      }
+      return;
+    }
+    
+    const establishmentId = ifoodConfig.establishmentId;
+    console.log(`[iFood Webhook] Merchant ${event.merchantId} conectado ao estabelecimento ${establishmentId}`);
+    
     // Processar diferentes tipos de eventos
     switch (event.code) {
       case "PLC": // Pedido colocado (novo pedido)
         // Buscar detalhes do pedido
         const orderDetails = await getIfoodOrderDetails(event.orderId);
-        
-        // TODO: Identificar o establishmentId correto baseado no merchantId
-        // Por enquanto, buscar o primeiro estabelecimento que tem integração iFood
-        // Em produção, deve haver uma tabela de mapeamento merchantId -> establishmentId
-        const establishmentId = 30001; // Placeholder - deve ser configurável
         
         // Converter e salvar pedido
         const orderData = await convertIfoodOrderToInternal(orderDetails, establishmentId);
