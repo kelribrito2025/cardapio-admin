@@ -3618,7 +3618,7 @@ export default function PublicMenu() {
                       O prazo de entrega está entre <strong>30 a 45 minutos</strong>.
                     </p>
                     <p className="text-gray-500 text-sm">
-                      Após enviar o seu pedido, favor aguardar a confirmação do nosso atendente.
+                      Após o envio, o restaurante irá confirmar seu pedido. Você será notificado em seguida.
                     </p>
                   </div>
                 ) : (
