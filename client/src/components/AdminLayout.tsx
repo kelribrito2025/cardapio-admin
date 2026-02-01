@@ -380,8 +380,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const toggleOpenMutation = trpc.establishment.setManualClose.useMutation({
     onSuccess: () => {
       refetchEstablishment();
-      const isCurrentlyManuallyOpen = establishment?.isOpen && !establishment?.manuallyClosed;
-      toast.success(isCurrentlyManuallyOpen ? "Loja fechada manualmente" : "Loja aberta");
+      // Usar calculatedIsOpen para determinar a mensagem correta
+      toast.success(calculatedIsOpen ? "Loja fechada manualmente" : "Loja aberta");
     },
     onError: () => {
       toast.error("Erro ao alterar status da loja");
@@ -390,12 +390,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   const handleToggleOpen = () => {
     if (establishment) {
-      // Se está aberto (toggle ligado e não fechado manualmente), fechar
-      // Se está fechado, abrir
-      const isCurrentlyManuallyOpen = establishment.isOpen && !establishment.manuallyClosed;
+      // Se está aberto (calculatedIsOpen = true), fechar manualmente
+      // Se está fechado (calculatedIsOpen = false), abrir manualmente
       toggleOpenMutation.mutate({
         id: establishment.id,
-        close: isCurrentlyManuallyOpen, // true = fechar, false = abrir
+        close: calculatedIsOpen, // true = fechar, false = abrir
       });
     }
   };
@@ -834,7 +833,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           <TooltipTrigger asChild>
                             <div>
                               <Switch
-                                checked={establishment.isOpen && !establishment.manuallyClosed}
+                                checked={calculatedIsOpen}
                                 onCheckedChange={handleToggleOpen}
                                 disabled={toggleOpenMutation.isPending}
                                 className="data-[state=checked]:bg-emerald-500 scale-90"
@@ -843,7 +842,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           </TooltipTrigger>
                           <TooltipContent side="left" className="max-w-[220px]">
                             <p className="text-xs">
-                              {establishment.isOpen && !establishment.manuallyClosed
+                              {calculatedIsOpen
                                 ? "Desative para fechar a loja manualmente (imprevistos, força maior). A loja reabrirá automaticamente no próximo horário configurado." 
                                 : "Ative para abrir a loja manualmente agora."}
                             </p>

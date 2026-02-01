@@ -3895,3 +3895,9 @@
 ## Bugs de Impressão
 - [x] Bug: Quantidade de complementos não aparece na impressão normal (ex: "+ 4x Dose de Vodka Orloff")
 - [x] Bug: Impressão múltiplas impressoras está saindo em branco (era problema de URL dev vs produção)
+
+## Limpeza de Banco de Dados
+- [x] Excluir tabela business_hours duplicada (usar apenas businessHours)
+
+## Bug Toggle Status Restaurante
+- [x] Corrigir toggle de status no perfil para refletir estado real (verde=aberto, vermelho=fechado baseado nos horários)
