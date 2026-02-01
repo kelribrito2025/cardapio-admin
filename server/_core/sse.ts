@@ -65,6 +65,9 @@ export function sendEvent(establishmentId: number, eventType: string, data: unkn
 export function notifyNewOrder(establishmentId: number, order: unknown): void {
   console.log(`[SSE] notifyNewOrder chamado para establishmentId: ${establishmentId}`);
   console.log(`[SSE] Conexões ativas para este estabelecimento: ${connections.get(establishmentId)?.size || 0}`);
+  // Log para debug do source do pedido
+  const orderData = order as { source?: string };
+  console.log(`[SSE] Source do pedido: ${orderData?.source || 'não definido'}`);
   sendEvent(establishmentId, "new_order", order);
 }
 

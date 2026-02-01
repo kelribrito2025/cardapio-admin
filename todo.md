@@ -4016,3 +4016,9 @@
 - [x] Validar Merchant ID antes de salvar e marcar como conectado
 - [x] Mostrar mensagem de erro se Merchant ID for inválido
 - [x] Mostrar feedback de carregamento durante validação
+
+## Correção Som de Notificação Pedidos iFood
+- [x] Identificar onde o som é tocado para pedidos normais
+- [x] Adicionar campo source ao objeto SSE para identificar origem do pedido
+- [x] Garantir que o source seja enviado em createPublicOrder e confirmOrderByNumber
+- [x] Implementar diferenciação de som para pedidos iFood vs interno

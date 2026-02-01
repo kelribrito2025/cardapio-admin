@@ -22,6 +22,7 @@ interface SSEOrder {
   notes?: string | null;
   changeAmount?: string | null;
   status: string;
+  source?: "internal" | "ifood" | "rappi" | "ubereats"; // Origem do pedido
   createdAt: Date | string;
   items?: Array<{
     id: number;

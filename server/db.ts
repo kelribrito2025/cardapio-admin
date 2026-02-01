@@ -1533,6 +1533,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
         notes: data.notes,
         changeAmount: data.changeAmount,
         status: "new",
+        source: "internal" as const, // Origem do pedido para diferenciar do iFood
         createdAt: new Date(),
         items: items.map((item, index) => ({
           id: index + 1,
@@ -2006,6 +2007,7 @@ export async function confirmOrderByNumber(
     const orderData = {
       ...order,
       status: 'new',
+      source: order.source || 'internal', // Garantir que o source seja enviado
       items: items.map((item, index) => ({
         id: item.id,
         orderId: item.orderId,
