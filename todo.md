@@ -3928,3 +3928,7 @@
 
 ## Bug Hooks PublicMenu
 - [x] Corrigir erro "Rendered more hooks than during the previous render" - mover useEffect para antes dos early returns
+
+## Remover Taxa de Entrega dos Modais
+- [x] Remover taxa de entrega do modal "Sua Sacola"
+- [x] Remover taxa de entrega do modal "Resumo do Pedido"
