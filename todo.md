@@ -3935,3 +3935,7 @@
 
 ## Bug Taxa de Entrega nos Modais Seguintes
 - [x] Verificar e corrigir exibição da taxa de entrega nos modais após selecionar "Entrega"
+
+## Bug Sidebar Detalhes do Pedido - Consumo no local
+- [x] Remover "Taxa de Entrega" do container "Itens do Pedido" quando for consumo no local
+- [x] Alterar título "Entrega e Pagamento" para "Consumo no local e Pagamento" quando for dine_in
