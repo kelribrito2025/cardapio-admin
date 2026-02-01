@@ -3939,3 +3939,6 @@
 ## Bug Sidebar Detalhes do Pedido - Consumo no local
 - [x] Remover "Taxa de Entrega" do container "Itens do Pedido" quando for consumo no local
 - [x] Alterar título "Entrega e Pagamento" para "Consumo no local e Pagamento" quando for dine_in
+
+## Bug Taxa de Entrega no Modal Sua Sacola
+- [x] Remover completamente a taxa de entrega do modal Sua Sacola (mesmo com taxa fixa)
