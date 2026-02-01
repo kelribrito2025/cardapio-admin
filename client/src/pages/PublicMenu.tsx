@@ -3449,7 +3449,16 @@ export default function PublicMenu() {
                       return sum + (Number(item.price) + complementsTotal) * item.quantity;
                     }, 0);
                     const discount = appliedCoupon?.discount || 0;
-                    const total = Math.max(0, subtotal - discount);
+                    const deliveryFee = deliveryType === 'delivery' 
+                      ? (establishment.deliveryFeeType === "free" 
+                          ? 0 
+                          : establishment.deliveryFeeType === "fixed" 
+                            ? Number(establishment.deliveryFeeFixed || 0)
+                            : selectedNeighborhood 
+                              ? Number(selectedNeighborhood.fee) 
+                              : 0)
+                      : 0;
+                    const total = Math.max(0, subtotal - discount + deliveryFee);
                     return (
                       <>
                         <div className="flex justify-between text-sm">
@@ -3463,6 +3472,16 @@ export default function PublicMenu() {
                               Cupom {appliedCoupon.code}
                             </span>
                             <span className="text-green-600">-{formatPrice(discount)}</span>
+                          </div>
+                        )}
+                        {deliveryType === 'delivery' && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Taxa de entrega</span>
+                            <span className={establishment.deliveryFeeType === "free" ? "text-green-600 font-medium" : "text-gray-600"}>
+                              {establishment.deliveryFeeType === "free" 
+                                ? "Grátis" 
+                                : formatPrice(deliveryFee)}
+                            </span>
                           </div>
                         )}
                         <div className="flex justify-between font-bold text-lg pt-2">

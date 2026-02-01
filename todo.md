@@ -3932,3 +3932,6 @@
 ## Remover Taxa de Entrega dos Modais
 - [x] Remover taxa de entrega do modal "Sua Sacola"
 - [x] Remover taxa de entrega do modal "Resumo do Pedido"
+
+## Bug Taxa de Entrega nos Modais Seguintes
+- [x] Verificar e corrigir exibição da taxa de entrega nos modais após selecionar "Entrega"
