@@ -49,6 +49,7 @@ export default function Complementos() {
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [expandedComplementId, setExpandedComplementId] = useState<number | null>(null);
 
   // Set establishment ID when data is loaded
   useEffect(() => {
@@ -199,6 +200,8 @@ export default function Complementos() {
                   onUpdatePrice={handleUpdatePrice}
                   onUpdateAvailability={handleUpdateAvailability}
                   isUpdating={updateGlobalMutation.isPending}
+                  isExpanded={expandedComplementId === complement.id}
+                  onToggleExpand={(id) => setExpandedComplementId(expandedComplementId === id ? null : id)}
                 />
               ))}
             </div>
@@ -229,6 +232,8 @@ function ComplementRow({
   onUpdatePrice,
   onUpdateAvailability,
   isUpdating,
+  isExpanded,
+  onToggleExpand,
 }: {
   complement: {
     id: number;
@@ -251,8 +256,10 @@ function ComplementRow({
     availableHours?: { day: number; startTime: string; endTime: string }[]
   ) => void;
   isUpdating: boolean;
+  isExpanded: boolean;
+  onToggleExpand: (id: number) => void;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  // Usar isExpanded do pai ao invés de estado local
   const [isEditingPrice, setIsEditingPrice] = useState(false);
   const [editedPrice, setEditedPrice] = useState(complement.price);
   
@@ -338,7 +345,7 @@ function ComplementRow({
       availabilityType === "scheduled" ? selectedDays : undefined,
       availabilityType === "scheduled" ? hoursConfig.filter(h => selectedDays.includes(h.day)) : undefined
     );
-    setIsOpen(false);
+    onToggleExpand(complement.id);
   };
 
   const getAvailabilityLabel = () => {
@@ -350,7 +357,7 @@ function ComplementRow({
   };
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+    <Collapsible open={isExpanded} onOpenChange={() => onToggleExpand(complement.id)}>
       <div
         className={cn(
           "bg-card border border-border/50 rounded-xl transition-all cursor-pointer hover:border-border",
@@ -369,7 +376,7 @@ function ComplementRow({
           if (isInteractiveElement) {
             return;
           }
-          setIsOpen(!isOpen);
+          onToggleExpand(complement.id);
         }}
       >
         {/* Linha principal */}
@@ -525,7 +532,7 @@ function ComplementRow({
           {/* Botão de expandir */}
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="icon" className="h-8 w-8">
-              <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
+              <ChevronDown className={cn("h-4 w-4 transition-transform", isExpanded && "rotate-180")} />
             </Button>
           </CollapsibleTrigger>
         </div>

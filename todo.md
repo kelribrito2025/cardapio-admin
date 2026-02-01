@@ -3965,3 +3965,6 @@
 
 ## Bug Fix - Dropdown Card Complementos
 - [x] Corrigir dropdown que não abre ao clicar no card de complemento
+
+## Dropdown Único Complementos
+- [x] Fechar dropdown anterior ao abrir outro card de complemento
