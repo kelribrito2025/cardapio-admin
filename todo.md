@@ -3901,3 +3901,6 @@
 
 ## Bug Toggle Status Restaurante
 - [x] Corrigir toggle de status no perfil para refletir estado real (verde=aberto, vermelho=fechado baseado nos horários)
+
+## Bug Acumulado da Semana
+- [x] Corrigir erro de timezone no cálculo do card Acumulado da Semana (pedidos sendo atribuídos ao dia errado)

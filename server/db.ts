@@ -1121,50 +1121,67 @@ export async function getWeeklyRevenue(establishmentId: number) {
   const db = await getDb();
   if (!db) return { thisWeek: [], lastWeek: [], thisWeekTotal: 0, lastWeekTotal: 0 };
   
-  // Get current date and calculate week boundaries
+  // Usar timezone de Brasília para cálculos
+  // Converter data atual para horário de Brasília
   const now = new Date();
-  const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  const brasiliaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  const currentDay = brasiliaDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
   
-  // Calculate start of current week (Monday)
-  const thisWeekStart = new Date(now);
+  // Calculate start of current week (Monday) em Brasília
+  const thisWeekStart = new Date(brasiliaDate);
   const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
-  thisWeekStart.setDate(now.getDate() - daysFromMonday);
+  thisWeekStart.setDate(brasiliaDate.getDate() - daysFromMonday);
   thisWeekStart.setHours(0, 0, 0, 0);
   
   // Calculate start of last week (Monday of previous week)
   const lastWeekStart = new Date(thisWeekStart);
   lastWeekStart.setDate(thisWeekStart.getDate() - 7);
   
-  // Calculate end of last week (Sunday of previous week)
+  // Calculate end of last week (Sunday of previous week at 23:59:59.999)
   const lastWeekEnd = new Date(thisWeekStart);
   lastWeekEnd.setMilliseconds(-1);
   
-  // Query for this week's data
+  // Formatar datas para SQL no formato 'YYYY-MM-DD HH:MM:SS'
+  const formatDateForSQL = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
+  
+  const thisWeekStartStr = formatDateForSQL(thisWeekStart);
+  const lastWeekStartStr = formatDateForSQL(lastWeekStart);
+  const lastWeekEndStr = formatDateForSQL(lastWeekEnd);
+  
+  // Query for this week's data - usando CONVERT_TZ para converter UTC para Brasília
   const thisWeekResult = await db.select({
-    dayOfWeek: sql<number>`DAYOFWEEK(createdAt)`,
+    dayOfWeek: sql<number>`DAYOFWEEK(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`,
     revenue: sql<number>`COALESCE(SUM(total), 0)`
   })
     .from(orders)
     .where(and(
       eq(orders.establishmentId, establishmentId),
-      gte(orders.createdAt, thisWeekStart),
+      sql`CONVERT_TZ(createdAt, '+00:00', '-03:00') >= ${thisWeekStartStr}`,
       eq(orders.status, "completed")
     ))
-    .groupBy(sql`DAYOFWEEK(createdAt)`);
+    .groupBy(sql`DAYOFWEEK(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`);
   
   // Query for last week's data
   const lastWeekResult = await db.select({
-    dayOfWeek: sql<number>`DAYOFWEEK(createdAt)`,
+    dayOfWeek: sql<number>`DAYOFWEEK(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`,
     revenue: sql<number>`COALESCE(SUM(total), 0)`
   })
     .from(orders)
     .where(and(
       eq(orders.establishmentId, establishmentId),
-      gte(orders.createdAt, lastWeekStart),
-      lte(orders.createdAt, lastWeekEnd),
+      sql`CONVERT_TZ(createdAt, '+00:00', '-03:00') >= ${lastWeekStartStr}`,
+      sql`CONVERT_TZ(createdAt, '+00:00', '-03:00') <= ${lastWeekEndStr}`,
       eq(orders.status, "completed")
     ))
-    .groupBy(sql`DAYOFWEEK(createdAt)`);
+    .groupBy(sql`DAYOFWEEK(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`);
   
   // Map MySQL DAYOFWEEK (1=Sunday, 2=Monday, ..., 7=Saturday) to our format (0=Mon, 1=Tue, ..., 6=Sun)
   const mapDayOfWeek = (mysqlDay: number) => {
