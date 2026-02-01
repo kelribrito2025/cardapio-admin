@@ -3942,3 +3942,7 @@
 
 ## Bug Taxa de Entrega no Modal Sua Sacola
 - [x] Remover completamente a taxa de entrega do modal Sua Sacola (mesmo com taxa fixa)
+
+## Ajuste Badge Impressão
+- [x] Alterar badge de "CONSUMO LOCAL" para "CONSUMO" no modelo de impressão normal
+- [x] Verificar e ajustar modelo de múltiplas impressoras para usar "CONSUMO"

@@ -53,7 +53,7 @@ function generateReceiptHTML(
     return phone;
   };
   
-  const deliveryTypeText = order.deliveryType === 'delivery' ? 'ENTREGA' : order.deliveryType === 'dine_in' ? 'CONSUMO LOCAL' : 'RETIRADA';
+  const deliveryTypeText = order.deliveryType === 'delivery' ? 'ENTREGA' : order.deliveryType === 'dine_in' ? 'CONSUMO' : 'RETIRADA';
   const paymentMethodText: Record<string, string> = {
     'cash': 'Dinheiro',
     'credit': 'Cartao Credito',
@@ -582,7 +582,7 @@ function generateSectorReceiptHTML(
     });
   };
   
-  const deliveryTypeText = order.deliveryType === 'delivery' ? 'ENTREGA' : order.deliveryType === 'dine_in' ? 'CONSUMO LOCAL' : 'RETIRADA';
+  const deliveryTypeText = order.deliveryType === 'delivery' ? 'ENTREGA' : order.deliveryType === 'dine_in' ? 'CONSUMO' : 'RETIRADA';
   
   // Formatar telefone no formato (88) 9 9929-0000
   const formatPhone = (phone: string | null | undefined): string => {
