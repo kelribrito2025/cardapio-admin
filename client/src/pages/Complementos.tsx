@@ -353,9 +353,22 @@ function ComplementRow({
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <div
         className={cn(
-          "bg-card border border-border/50 rounded-xl transition-all",
+          "bg-card border border-border/50 rounded-xl transition-all cursor-pointer hover:border-border",
           !isActive && "opacity-60"
         )}
+        onClick={(e) => {
+          // Não abrir se clicou em botões, inputs ou switches
+          const target = e.target as HTMLElement;
+          if (
+            target.closest('button') ||
+            target.closest('input') ||
+            target.closest('[role="switch"]') ||
+            target.closest('[data-state]')
+          ) {
+            return;
+          }
+          setIsOpen(!isOpen);
+        }}
       >
         {/* Linha principal */}
         <div className="flex items-center gap-4 p-4">

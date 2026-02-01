@@ -3959,3 +3959,6 @@
 
 ## Link WhatsApp na Mensagem de Consumo Local
 - [x] Adicionar link clicável no texto "WhatsApp" para abrir conversa com número do restaurante
+
+## Dropdown Card Complementos
+- [x] Fazer dropdown abrir ao clicar em qualquer parte do card de complemento
