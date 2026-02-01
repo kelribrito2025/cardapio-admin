@@ -4154,17 +4154,33 @@ export async function updateIfoodTokens(
 export async function saveIfoodMerchantInfo(
   establishmentId: number,
   merchantId: string,
-  merchantName: string
+  merchantName: string | null = null
 ): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  await db.update(ifoodConfig)
-    .set({
+  // Verificar se já existe configuração, senão criar
+  const existing = await getIfoodConfig(establishmentId);
+  
+  if (existing) {
+    await db.update(ifoodConfig)
+      .set({
+        merchantId,
+        merchantName,
+        isConnected: true,
+      })
+      .where(eq(ifoodConfig.establishmentId, establishmentId));
+  } else {
+    await db.insert(ifoodConfig).values({
+      establishmentId,
       merchantId,
       merchantName,
-    })
-    .where(eq(ifoodConfig.establishmentId, establishmentId));
+      isConnected: true,
+      isActive: false,
+      autoAcceptOrders: false,
+      notifyOnNewOrder: true,
+    });
+  }
 }
 
 /**

@@ -101,7 +101,7 @@ function SortableComplementGroup({
         isDragging && "shadow-xl ring-2 ring-primary/30"
       )}
     >
-      {typeof children === 'function' ? children({ attributes, listeners }) : children}
+      {typeof children === 'function' ? children({ attributes: attributes as unknown as Record<string, unknown>, listeners: listeners as Record<string, unknown> | undefined }) : children}
     </div>
   );
 }
@@ -1132,7 +1132,7 @@ export default function ProductForm() {
                           key={`group-${groupIndex}`}
                           groupIndex={groupIndex}
                         >
-                          {({ attributes, listeners }: { attributes: Record<string, unknown>; listeners: Record<string, unknown> | undefined }) => (
+                          {({ attributes, listeners }) => (
                           <>
                           <div className="flex items-start justify-between gap-3 flex-1">
                             <div className="flex-1 space-y-3" style={{marginBottom: '6px'}}>

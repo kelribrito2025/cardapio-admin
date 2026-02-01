@@ -4001,3 +4001,12 @@
 ## Som Específico para Pedidos iFood
 - [x] Copiar arquivo de som do iFood para o projeto (client/public)
 - [x] Atualizar lógica de notificação para tocar som diferente quando pedido for do iFood
+
+## Bug Fix - Erro Grant Type iFood
+- [ ] Corrigir erro "Grant type not authorized for client" na integração iFood
+
+
+## Modelo Centralizado iFood (Apenas Merchant ID)
+- [x] Simplificar tela de Integrações para pedir apenas Merchant ID
+- [x] Remover fluxo OAuth distribuído (não suporta webhook)
+- [x] Usar credenciais globais do sistema para autenticação

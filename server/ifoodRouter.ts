@@ -1,6 +1,7 @@
 /**
  * iFood Router - Endpoints para integração com iFood
- * Fluxo OAuth Distribuído - Cliente apenas autoriza, não precisa de credenciais
+ * Modelo Centralizado - Restaurante só precisa informar o Merchant ID
+ * As credenciais OAuth são gerenciadas pelo sistema (variáveis de ambiente)
  */
 
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
@@ -8,9 +9,6 @@ import { z } from "zod";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
 import { 
-  generateUserCode,
-  exchangeAuthorizationCode,
-  getMerchants,
   getIfoodOrderDetails,
   confirmIfoodOrder,
   startIfoodOrderPreparation,
@@ -34,10 +32,6 @@ export const ifoodRouter = router({
     const config = await db.getIfoodConfig(establishment.id);
     
     if (config) {
-      // Verificar se o código de usuário ainda é válido
-      const userCodeValid = config.userCode && config.userCodeExpiresAt && 
-        new Date(config.userCodeExpiresAt) > new Date();
-      
       return {
         isConnected: config.isConnected,
         isActive: config.isActive,
@@ -45,9 +39,6 @@ export const ifoodRouter = router({
         merchantName: config.merchantName,
         autoAcceptOrders: config.autoAcceptOrders,
         notifyOnNewOrder: config.notifyOnNewOrder,
-        // Código de usuário para autorização (se ainda válido)
-        userCode: userCodeValid ? config.userCode : null,
-        userCodeExpiresAt: userCodeValid ? config.userCodeExpiresAt : null,
       };
     }
     
@@ -58,50 +49,15 @@ export const ifoodRouter = router({
       merchantName: null,
       autoAcceptOrders: false,
       notifyOnNewOrder: true,
-      userCode: null,
-      userCodeExpiresAt: null,
     };
   }),
 
-  // Iniciar processo de conexão - Gera código para o usuário inserir no Partner Portal
-  startConnection: protectedProcedure.mutation(async ({ ctx }) => {
-    if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
-    
-    const establishment = await db.getEstablishmentByUserId(ctx.user.id);
-    if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
-    
-    try {
-      // Gerar código de usuário via API do iFood
-      const result = await generateUserCode();
-      
-      // Salvar código e verifier no banco
-      await db.saveIfoodUserCode(
-        establishment.id,
-        result.userCode,
-        result.authorizationCodeVerifier,
-        result.expiresIn
-      );
-      
-      return {
-        success: true,
-        userCode: result.userCode,
-        verificationUrl: result.verificationUrl,
-        verificationUrlComplete: result.verificationUrlComplete,
-        expiresIn: result.expiresIn,
-      };
-    } catch (error) {
-      console.error("[iFood] Erro ao gerar código de usuário:", error);
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: error instanceof Error ? error.message : 'Erro ao iniciar conexão com iFood'
-      });
-    }
-  }),
-
-  // Completar conexão - Trocar código de autorização por tokens
-  completeConnection: protectedProcedure
+  // Salvar Merchant ID - Modelo Centralizado
+  // O restaurante só precisa informar o Merchant ID
+  // As credenciais OAuth são do sistema (IFOOD_CLIENT_ID e IFOOD_CLIENT_SECRET)
+  saveMerchantId: protectedProcedure
     .input(z.object({
-      authorizationCode: z.string().min(1, "Código de autorização é obrigatório"),
+      merchantId: z.string().min(1, "Merchant ID é obrigatório"),
     }))
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
@@ -109,51 +65,23 @@ export const ifoodRouter = router({
       const establishment = await db.getEstablishmentByUserId(ctx.user.id);
       if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
       
-      // Buscar configuração com o verifier
-      const config = await db.getIfoodConfig(establishment.id);
-      if (!config?.authorizationCodeVerifier) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Processo de conexão não iniciado. Clique em "Conectar iFood" primeiro.'
-        });
-      }
-      
       try {
-        // Trocar código de autorização por tokens
-        const tokens = await exchangeAuthorizationCode(
-          input.authorizationCode,
-          config.authorizationCodeVerifier
-        );
-        
-        // Salvar tokens no banco
-        await db.saveIfoodOAuthTokens(
+        // Salvar o Merchant ID e marcar como conectado
+        await db.saveIfoodMerchantInfo(
           establishment.id,
-          tokens.accessToken,
-          tokens.refreshToken,
-          tokens.expiresIn
+          input.merchantId,
+          null // Nome será preenchido depois se necessário
         );
         
-        // Buscar informações do merchant
-        try {
-          const merchants = await getMerchants(establishment.id);
-          if (merchants && merchants.length > 0) {
-            const merchant = merchants[0];
-            await db.saveIfoodMerchantInfo(
-              establishment.id,
-              merchant.id,
-              merchant.name
-            );
-          }
-        } catch (merchantError) {
-          console.warn("[iFood] Não foi possível buscar informações do merchant:", merchantError);
-        }
+        // Marcar como conectado e ativo
+        await db.updateIfoodConfigStatus(establishment.id, true);
         
-        return { success: true, message: 'Conexão estabelecida com sucesso!' };
+        return { success: true, message: 'Merchant ID salvo com sucesso!' };
       } catch (error) {
-        console.error("[iFood] Erro ao completar conexão:", error);
+        console.error("[iFood] Erro ao salvar Merchant ID:", error);
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: error instanceof Error ? error.message : 'Erro ao completar conexão com iFood'
+          message: error instanceof Error ? error.message : 'Erro ao salvar Merchant ID'
         });
       }
     }),
@@ -182,46 +110,14 @@ export const ifoodRouter = router({
       if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
       
       const config = await db.getIfoodConfig(establishment.id);
-      if (!config?.isConnected) {
+      if (!config?.merchantId) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: 'Conecte ao iFood primeiro antes de ativar a integração'
+          message: 'Configure o Merchant ID primeiro'
         });
       }
       
       await db.updateIfoodConfigStatus(establishment.id, input.isActive);
-      
-      return { success: true };
-    }),
-
-  // Atualizar configurações de comportamento
-  updateSettings: protectedProcedure
-    .input(z.object({
-      autoAcceptOrders: z.boolean().optional(),
-      notifyOnNewOrder: z.boolean().optional(),
-    }))
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
-      
-      const establishment = await db.getEstablishmentByUserId(ctx.user.id);
-      if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
-      
-      // Atualizar apenas os campos fornecidos
-      const dbInstance = await db.getDb();
-      if (!dbInstance) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database not available' });
-      
-      const updateData: Record<string, boolean> = {};
-      if (input.autoAcceptOrders !== undefined) updateData.autoAcceptOrders = input.autoAcceptOrders;
-      if (input.notifyOnNewOrder !== undefined) updateData.notifyOnNewOrder = input.notifyOnNewOrder;
-      
-      if (Object.keys(updateData).length > 0) {
-        // Usar SQL direto para atualizar
-        const config = await db.getIfoodConfig(establishment.id);
-        if (config) {
-          // Atualização via função existente
-          await db.updateIfoodConfigStatus(establishment.id, config.isActive);
-        }
-      }
       
       return { success: true };
     }),
@@ -243,7 +139,7 @@ export const ifoodRouter = router({
     }
     
     return {
-      configured: true,
+      configured: !!config.merchantId,
       connected: config.isConnected,
       active: config.isActive,
       merchantName: config.merchantName,
