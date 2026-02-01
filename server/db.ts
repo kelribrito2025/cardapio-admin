@@ -1053,8 +1053,12 @@ export async function getDashboardStats(establishmentId: number) {
   const db = await getDb();
   if (!db) return { ordersToday: 0, revenueToday: 0, avgTicket: 0, lowStockCount: 0 };
   
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Usar timezone do Brasil (América/São_Paulo) para calcular o início do dia
+  const now = new Date();
+  const brazilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  const today = new Date(brazilTime.getFullYear(), brazilTime.getMonth(), brazilTime.getDate());
+  // Converter de volta para UTC para comparar com o banco
+  const todayUTC = new Date(today.getTime() + (3 * 60 * 60 * 1000)); // GMT-3
   
   // Orders today
   const ordersResult = await db.select({ 
@@ -1064,7 +1068,7 @@ export async function getDashboardStats(establishmentId: number) {
     .from(orders)
     .where(and(
       eq(orders.establishmentId, establishmentId),
-      gte(orders.createdAt, today),
+      gte(orders.createdAt, todayUTC),
       eq(orders.status, "completed")
     ));
   
@@ -1089,9 +1093,14 @@ export async function getWeeklyStats(establishmentId: number) {
   const db = await getDb();
   if (!db) return [];
   
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  sevenDaysAgo.setHours(0, 0, 0, 0);
+  // Usar timezone do Brasil (América/São_Paulo)
+  const now = new Date();
+  const brazilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  const todayBrazil = new Date(brazilTime.getFullYear(), brazilTime.getMonth(), brazilTime.getDate());
+  const sevenDaysAgoBrazil = new Date(todayBrazil);
+  sevenDaysAgoBrazil.setDate(sevenDaysAgoBrazil.getDate() - 7);
+  // Converter para UTC (GMT-3)
+  const sevenDaysAgo = new Date(sevenDaysAgoBrazil.getTime() + (3 * 60 * 60 * 1000));
   
   const result = await db.select({
     date: sql<string>`DATE(createdAt)`,

@@ -4038,3 +4038,7 @@
 ## Bug: Webhook iFood processa pedidos de merchants desconectados
 - [x] Verificar se o merchant está conectado antes de processar pedido no webhook
 - [x] Ignorar pedidos de merchants que não estão conectados no sistema
+
+## Bug: Faturamento Hoje mostrando valores de ontem
+- [x] Investigar o filtro de data no cálculo do faturamento
+- [x] Corrigir para mostrar apenas pedidos do dia atual (timezone Brasil)
