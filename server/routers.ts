@@ -258,6 +258,7 @@ export const appRouter = router({
         acceptsBoleto: z.boolean().optional(),
         allowsDelivery: z.boolean().optional(),
         allowsPickup: z.boolean().optional(),
+        allowsDineIn: z.boolean().optional(),
         smsEnabled: z.boolean().optional(),
         deliveryTimeEnabled: z.boolean().optional(),
         deliveryTimeMin: z.number().optional(),

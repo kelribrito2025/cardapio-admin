@@ -44,6 +44,7 @@ export const establishments = mysqlTable("establishments", {
   acceptsBoleto: boolean("acceptsBoleto").default(false).notNull(),
   allowsDelivery: boolean("allowsDelivery").default(true).notNull(),
   allowsPickup: boolean("allowsPickup").default(true).notNull(),
+  allowsDineIn: boolean("allowsDineIn").default(false).notNull(),
   rating: decimal("rating", { precision: 2, scale: 1 }).default("0"),
   reviewCount: int("reviewCount").default(0).notNull(),
   publicNote: varchar("publicNote", { length: 100 }),

@@ -124,6 +124,7 @@ export default function Configuracoes() {
   const [acceptsBoleto, setAcceptsBoleto] = useState(false);
   const [allowsDelivery, setAllowsDelivery] = useState(true);
   const [allowsPickup, setAllowsPickup] = useState(true);
+  const [allowsDineIn, setAllowsDineIn] = useState(false);
   
   // Public note state
   const [publicNote, setPublicNote] = useState("");
@@ -273,6 +274,7 @@ export default function Configuracoes() {
       setAcceptsBoleto(establishment.acceptsBoleto);
       setAllowsDelivery(establishment.allowsDelivery);
       setAllowsPickup(establishment.allowsPickup);
+      setAllowsDineIn(establishment.allowsDineIn);
       setPublicNote(establishment.publicNote || "");
       setPublicNoteCreatedAt(establishment.publicNoteCreatedAt ? new Date(establishment.publicNoteCreatedAt) : null);
       // Calcular dias de validade baseado na data de expiração
@@ -704,6 +706,7 @@ export default function Configuracoes() {
       acceptsBoleto,
       allowsDelivery,
       allowsPickup,
+      allowsDineIn,
       smsEnabled,
       deliveryTimeEnabled,
       deliveryTimeMin,
@@ -1744,6 +1747,15 @@ export default function Configuracoes() {
                     />
                     <Store className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium text-sm">Retirada</span>
+                  </label>
+                  <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
+                    <Checkbox
+                      checked={allowsDineIn}
+                      onCheckedChange={(checked) => setAllowsDineIn(checked as boolean)}
+                      className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <UtensilsCrossed className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium text-sm">Consumir no local</span>
                   </label>
                 </div>
 

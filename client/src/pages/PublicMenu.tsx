@@ -1168,6 +1168,20 @@ export default function PublicMenu() {
   const { establishment, categories: allCategories, products } = data;
   const filteredProducts = filterProducts(products);
 
+  // Definir deliveryType inicial baseado nas opções disponíveis
+  useEffect(() => {
+    if (establishment) {
+      // Selecionar a primeira opção disponível
+      if (establishment.allowsPickup) {
+        setDeliveryType("pickup");
+      } else if (establishment.allowsDelivery) {
+        setDeliveryType("delivery");
+      } else if (establishment.allowsDineIn) {
+        setDeliveryType("dine_in");
+      }
+    }
+  }, [establishment?.id]);
+
   const getProductsByCategory = (categoryId: number) => {
     return filteredProducts.filter((p) => p.categoryId === categoryId);
   };
@@ -3062,48 +3076,54 @@ export default function PublicMenu() {
                     Forma de entrega
                   </h3>
                   <div className="space-y-2">
-                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
-                      deliveryType === "pickup" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
-                    }`}>
-                      <input
-                        type="radio"
-                        name="deliveryType"
-                        value="pickup"
-                        checked={deliveryType === "pickup"}
-                        onChange={() => setDeliveryType("pickup")}
-                        className="w-4 h-4 text-red-500 focus:ring-red-500"
-                      />
-                      <Package className="h-5 w-5 text-gray-600" />
-                      <span className="font-medium text-gray-800">Retirar no local</span>
-                    </label>
-                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
-                      deliveryType === "delivery" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
-                    }`}>
-                      <input
-                        type="radio"
-                        name="deliveryType"
-                        value="delivery"
-                        checked={deliveryType === "delivery"}
-                        onChange={() => setDeliveryType("delivery")}
-                        className="w-4 h-4 text-red-500 focus:ring-red-500"
-                      />
-                      <Truck className="h-5 w-5 text-gray-600" />
-                      <span className="font-medium text-gray-800">Entrega</span>
-                    </label>
-                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
-                      deliveryType === "dine_in" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
-                    }`}>
-                      <input
-                        type="radio"
-                        name="deliveryType"
-                        value="dine_in"
-                        checked={deliveryType === "dine_in"}
-                        onChange={() => setDeliveryType("dine_in")}
-                        className="w-4 h-4 text-red-500 focus:ring-red-500"
-                      />
-                      <UtensilsCrossed className="h-5 w-5 text-gray-600" />
-                      <span className="font-medium text-gray-800">Consumir no local</span>
-                    </label>
+                    {establishment.allowsPickup && (
+                      <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                        deliveryType === "pickup" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                      }`}>
+                        <input
+                          type="radio"
+                          name="deliveryType"
+                          value="pickup"
+                          checked={deliveryType === "pickup"}
+                          onChange={() => setDeliveryType("pickup")}
+                          className="w-4 h-4 text-red-500 focus:ring-red-500"
+                        />
+                        <Package className="h-5 w-5 text-gray-600" />
+                        <span className="font-medium text-gray-800">Retirar no local</span>
+                      </label>
+                    )}
+                    {establishment.allowsDelivery && (
+                      <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                        deliveryType === "delivery" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                      }`}>
+                        <input
+                          type="radio"
+                          name="deliveryType"
+                          value="delivery"
+                          checked={deliveryType === "delivery"}
+                          onChange={() => setDeliveryType("delivery")}
+                          className="w-4 h-4 text-red-500 focus:ring-red-500"
+                        />
+                        <Truck className="h-5 w-5 text-gray-600" />
+                        <span className="font-medium text-gray-800">Entrega</span>
+                      </label>
+                    )}
+                    {establishment.allowsDineIn && (
+                      <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                        deliveryType === "dine_in" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                      }`}>
+                        <input
+                          type="radio"
+                          name="deliveryType"
+                          value="dine_in"
+                          checked={deliveryType === "dine_in"}
+                          onChange={() => setDeliveryType("dine_in")}
+                          className="w-4 h-4 text-red-500 focus:ring-red-500"
+                        />
+                        <UtensilsCrossed className="h-5 w-5 text-gray-600" />
+                        <span className="font-medium text-gray-800">Consumir no local</span>
+                      </label>
+                    )}
                   </div>
 
                   {/* Campos de Endereço (condicional) */}

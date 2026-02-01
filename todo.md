@@ -3920,3 +3920,8 @@
 - [x] Adicionar opção "Consumir no local" na UI do menu público
 - [x] Atualizar lógica de fluxo para pular endereço quando dine_in
 - [x] Atualizar exibição em sacola, resumo, admin, impressão e notificações
+
+## Configuração "Consumir no local" por Estabelecimento
+- [x] Adicionar campo dineInEnabled no schema do estabelecimento
+- [x] Adicionar toggle no card de Informações e Entrega nas configurações
+- [x] Filtrar opção no menu público baseado na configuração
