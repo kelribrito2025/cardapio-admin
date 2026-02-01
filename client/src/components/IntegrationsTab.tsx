@@ -16,6 +16,7 @@ import {
   Unlink,
   Store,
   Save,
+  AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -35,13 +36,13 @@ export function IntegrationsTab() {
 
   // Mutations
   const saveMerchantMutation = trpc.ifood.saveMerchantId.useMutation({
-    onSuccess: () => {
-      toast.success("Merchant ID salvo com sucesso!");
+    onSuccess: (data) => {
+      toast.success(data.message || "Conexão estabelecida com sucesso!");
       setIsEditing(false);
       refetch();
     },
     onError: (error) => {
-      toast.error(error.message || "Erro ao salvar Merchant ID");
+      toast.error(error.message || "Erro ao conectar com iFood");
     }
   });
 
@@ -111,7 +112,7 @@ export function IntegrationsTab() {
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {isConnected 
-                    ? `Merchant ID: ${config?.merchantId}` 
+                    ? config?.merchantName || `Merchant ID: ${config?.merchantId}`
                     : "Configure o Merchant ID da sua loja"}
                 </p>
               </div>
@@ -133,7 +134,7 @@ export function IntegrationsTab() {
                 <Store className="h-5 w-5 text-green-500" />
                 <div className="flex-1">
                   <p className="font-medium text-green-700 dark:text-green-300">
-                    Loja Conectada
+                    {config.merchantName || "Loja Conectada"}
                   </p>
                   <p className="text-sm text-green-600 dark:text-green-400">
                     Merchant ID: {config.merchantId}
@@ -216,9 +217,19 @@ export function IntegrationsTab() {
                   placeholder="Ex: 21e5dcf5-2e41-4d15-9564-32b6b5c78a40"
                   value={merchantId}
                   onChange={(e) => setMerchantId(e.target.value)}
+                  disabled={saveMerchantMutation.isPending}
                 />
                 <p className="text-xs text-muted-foreground">
                   O Merchant ID é o identificador único da sua loja no iFood
+                </p>
+              </div>
+
+              {/* Aviso de validação */}
+              <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/30 rounded-lg border border-amber-200 dark:border-amber-800">
+                <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-amber-600 dark:text-amber-400">
+                  O Merchant ID será validado com a API do iFood antes de conectar. 
+                  Certifique-se de que o ID está correto.
                 </p>
               </div>
 
@@ -228,11 +239,16 @@ export function IntegrationsTab() {
                 className="w-full"
               >
                 {saveMerchantMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Validando Merchant ID...
+                  </>
                 ) : (
-                  <Save className="h-4 w-4 mr-2" />
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Conectar iFood
+                  </>
                 )}
-                Conectar iFood
               </Button>
             </div>
           )}

@@ -4010,3 +4010,9 @@
 - [x] Simplificar tela de Integrações para pedir apenas Merchant ID
 - [x] Remover fluxo OAuth distribuído (não suporta webhook)
 - [x] Usar credenciais globais do sistema para autenticação
+
+## Validação do Merchant ID iFood
+- [x] Implementar função de validação do Merchant ID com a API do iFood
+- [x] Validar Merchant ID antes de salvar e marcar como conectado
+- [x] Mostrar mensagem de erro se Merchant ID for inválido
+- [x] Mostrar feedback de carregamento durante validação

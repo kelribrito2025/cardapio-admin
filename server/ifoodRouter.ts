@@ -17,6 +17,7 @@ import {
   requestIfoodOrderCancellation,
   getIfoodCancellationReasons,
   acknowledgeIfoodEvent,
+  validateMerchantId,
   type IfoodOrder,
   type IfoodEvent
 } from "./ifood";
@@ -66,22 +67,42 @@ export const ifoodRouter = router({
       if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
       
       try {
-        // Salvar o Merchant ID e marcar como conectado
+        // Validar o Merchant ID com a API do iFood
+        console.log(`[iFood] Validando Merchant ID: ${input.merchantId}`);
+        const validation = await validateMerchantId(input.merchantId);
+        
+        if (!validation.valid) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: validation.error || 'Merchant ID inválido'
+          });
+        }
+        
+        console.log(`[iFood] Merchant ID válido. Nome: ${validation.merchantName}`);
+        
+        // Salvar o Merchant ID e o nome da loja
         await db.saveIfoodMerchantInfo(
           establishment.id,
           input.merchantId,
-          null // Nome será preenchido depois se necessário
+          validation.merchantName || null
         );
         
         // Marcar como conectado e ativo
         await db.updateIfoodConfigStatus(establishment.id, true);
         
-        return { success: true, message: 'Merchant ID salvo com sucesso!' };
+        return { 
+          success: true, 
+          message: 'Conexão estabelecida com sucesso!',
+          merchantName: validation.merchantName
+        };
       } catch (error) {
         console.error("[iFood] Erro ao salvar Merchant ID:", error);
+        if (error instanceof TRPCError) {
+          throw error;
+        }
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: error instanceof Error ? error.message : 'Erro ao salvar Merchant ID'
+          message: error instanceof Error ? error.message : 'Erro ao conectar com iFood'
         });
       }
     }),

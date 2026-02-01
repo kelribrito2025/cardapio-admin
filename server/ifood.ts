@@ -92,6 +92,75 @@ export async function validateIfoodCredentials(): Promise<{ valid: boolean; erro
 }
 
 /**
+ * Valida se um Merchant ID existe e está acessível via API do iFood
+ * Usa as credenciais globais do sistema para verificar
+ */
+export async function validateMerchantId(merchantId: string): Promise<{ 
+  valid: boolean; 
+  merchantName?: string;
+  error?: string 
+}> {
+  try {
+    // Primeiro, obter token de acesso com credenciais globais
+    let token: string;
+    try {
+      token = await getIfoodAccessToken();
+    } catch (authError) {
+      console.error("[iFood] Erro de autenticação:", authError);
+      return {
+        valid: false,
+        error: "Erro de configuração do sistema. Entre em contato com o suporte."
+      };
+    }
+    
+    // Tentar buscar informações do merchant específico
+    const response = await fetch(`${IFOOD_API_BASE_URL}/merchant/v1.0/merchants/${merchantId}`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 404) {
+      return {
+        valid: false,
+        error: "Merchant ID não encontrado. Verifique se o ID está correto."
+      };
+    }
+
+    if (response.status === 403) {
+      return {
+        valid: false,
+        error: "Sem permissão para acessar este merchant. Verifique se a loja está vinculada à integração MINDI."
+      };
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`[iFood] Erro ao validar merchant ${merchantId}:`, response.status, errorText);
+      return {
+        valid: false,
+        error: `Erro ao validar Merchant ID: ${response.status}`
+      };
+    }
+
+    const merchantData = await response.json();
+    
+    return {
+      valid: true,
+      merchantName: merchantData.name || merchantData.corporateName || "Loja iFood"
+    };
+  } catch (error) {
+    console.error("[iFood] Erro ao validar Merchant ID:", error);
+    return {
+      valid: false,
+      error: error instanceof Error ? error.message : "Erro ao conectar com o iFood"
+    };
+  }
+}
+
+/**
  * Busca detalhes de um pedido do iFood
  */
 export async function getIfoodOrderDetails(orderId: string): Promise<any> {
