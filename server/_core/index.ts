@@ -544,8 +544,7 @@ function generateReceiptHTML(
   
   <div class="footer">
     ${settings?.footerMessage ? `<p>${settings.footerMessage}</p>` : ''}
-    <p>Pedido realizado via Cardapio Admin</p>
-    <p>manus.space</p>
+    <p>Pedido realizado via v2.mindi.com.br</p>
   </div>
 </body>
 <script>

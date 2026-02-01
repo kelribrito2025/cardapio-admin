@@ -4025,3 +4025,12 @@
 
 ## Remoção Card Outras Integrações
 - [x] Remover card "Outras Integrações" da aba Integrações em Configurações
+
+## Bug: Som do iFood não está tocando
+- [ ] Investigar por que o som específico do iFood não está sendo tocado
+- [ ] Verificar se o campo source está sendo enviado corretamente via SSE
+- [ ] Corrigir o problema identificado
+
+## Alteração Rodapé Impressões
+- [x] Alterar "Pedido realizado via Cardapio Admin manus.space" para "Pedido realizado via v2.mindi.com.br"
+- [x] Aplicar nos dois modelos: impressão normal e Android

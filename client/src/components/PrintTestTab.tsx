@@ -711,8 +711,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
   ` : ''}
   
   <div class="footer">
-    <p>Pedido realizado via Cardapio Admin</p>
-    <p>manus.space</p>
+    <p>Pedido realizado via v2.mindi.com.br</p>
   </div>
 </body>
 </html>
