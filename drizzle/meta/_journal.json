@@ -351,6 +351,13 @@
       "when": 1769958564799,
       "tag": "0049_windy_gamora",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "5",
+      "when": 1769959605453,
+      "tag": "0050_wet_ravenous",
+      "breakpoints": true
     }
   ]
 }

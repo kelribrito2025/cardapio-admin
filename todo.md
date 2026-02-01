@@ -3981,3 +3981,10 @@
 - [x] Adicionar badge visual "iFood" nos cards de pedidos
 - [ ] Adicionar filtro por origem do pedido na página de Pedidos
 - [ ] Testar integração com pedidos de teste do iFood
+
+## Aba de Integrações nas Configurações
+- [x] Criar tabela no banco para armazenar credenciais de integração por estabelecimento
+- [x] Criar endpoints tRPC para gerenciar integrações (salvar, buscar, testar conexão)
+- [x] Criar página de Integrações nas Configurações com formulário para iFood
+- [x] Atualizar lógica do webhook para usar credenciais por estabelecimento
+- [x] Adicionar toggle para ativar/desativar integração iFood

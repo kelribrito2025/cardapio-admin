@@ -24,7 +24,8 @@ import {
   printerSettings, InsertPrinterSettings, PrinterSettings,
   pushSubscriptions, InsertPushSubscription, PushSubscription,
   whatsappConfig, InsertWhatsappConfig, WhatsappConfig,
-  printQueue, InsertPrintQueue, PrintQueue
+  printQueue, InsertPrintQueue, PrintQueue,
+  ifoodConfig, InsertIfoodConfig, IfoodConfig
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -3973,4 +3974,120 @@ export async function getOrderByExternalId(externalId: string): Promise<Order | 
     .limit(1);
   
   return result[0] || null;
+}
+
+
+// ============================================
+// Funções de Configuração iFood
+// ============================================
+
+/**
+ * Busca configuração do iFood por estabelecimento
+ */
+export async function getIfoodConfig(establishmentId: number): Promise<IfoodConfig | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(ifoodConfig)
+    .where(eq(ifoodConfig.establishmentId, establishmentId))
+    .limit(1);
+  
+  return result[0] || null;
+}
+
+/**
+ * Salva ou atualiza configuração do iFood
+ */
+export async function saveIfoodConfig(data: {
+  establishmentId: number;
+  clientId: string;
+  clientSecret: string;
+  merchantId?: string;
+  isActive?: boolean;
+  autoAcceptOrders?: boolean;
+  notifyOnNewOrder?: boolean;
+}): Promise<IfoodConfig> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Verificar se já existe
+  const existing = await getIfoodConfig(data.establishmentId);
+  
+  if (existing) {
+    // Atualizar
+    await db.update(ifoodConfig)
+      .set({
+        clientId: data.clientId,
+        clientSecret: data.clientSecret,
+        merchantId: data.merchantId || existing.merchantId,
+        isActive: data.isActive ?? existing.isActive,
+        autoAcceptOrders: data.autoAcceptOrders ?? existing.autoAcceptOrders,
+        notifyOnNewOrder: data.notifyOnNewOrder ?? existing.notifyOnNewOrder,
+      })
+      .where(eq(ifoodConfig.establishmentId, data.establishmentId));
+    
+    return (await getIfoodConfig(data.establishmentId))!;
+  } else {
+    // Inserir
+    const result = await db.insert(ifoodConfig).values({
+      establishmentId: data.establishmentId,
+      clientId: data.clientId,
+      clientSecret: data.clientSecret,
+      merchantId: data.merchantId || null,
+      isActive: data.isActive ?? false,
+      autoAcceptOrders: data.autoAcceptOrders ?? false,
+      notifyOnNewOrder: data.notifyOnNewOrder ?? true,
+    });
+    
+    return (await getIfoodConfig(data.establishmentId))!;
+  }
+}
+
+/**
+ * Atualiza status de ativação do iFood
+ */
+export async function updateIfoodConfigStatus(establishmentId: number, isActive: boolean): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(ifoodConfig)
+    .set({ isActive })
+    .where(eq(ifoodConfig.establishmentId, establishmentId));
+}
+
+/**
+ * Atualiza timestamp do último refresh de token
+ */
+export async function updateIfoodTokenRefresh(establishmentId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(ifoodConfig)
+    .set({ lastTokenRefresh: new Date() })
+    .where(eq(ifoodConfig.establishmentId, establishmentId));
+}
+
+/**
+ * Busca configuração iFood pelo merchantId
+ */
+export async function getIfoodConfigByMerchantId(merchantId: string): Promise<IfoodConfig | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(ifoodConfig)
+    .where(eq(ifoodConfig.merchantId, merchantId))
+    .limit(1);
+  
+  return result[0] || null;
+}
+
+/**
+ * Lista todas as configurações iFood ativas
+ */
+export async function getActiveIfoodConfigs(): Promise<IfoodConfig[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(ifoodConfig)
+    .where(eq(ifoodConfig.isActive, true));
 }

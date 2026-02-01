@@ -105,13 +105,155 @@ async function convertIfoodOrderToInternal(ifoodOrder: IfoodOrder, establishment
 }
 
 export const ifoodRouter = router({
-  // Verificar status da integração
-  status: protectedProcedure.query(async () => {
-    const result = await validateIfoodCredentials();
+  // Buscar configuração do iFood do estabelecimento
+  getConfig: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+    
+    const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+    if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+    
+    const config = await db.getIfoodConfig(establishment.id);
+    
+    // Retornar sem o clientSecret por segurança
+    if (config) {
+      return {
+        ...config,
+        clientSecret: config.clientSecret ? '********' : null,
+        hasCredentials: !!config.clientId && !!config.clientSecret
+      };
+    }
+    
+    return null;
+  }),
+
+  // Salvar configuração do iFood
+  saveConfig: protectedProcedure
+    .input(z.object({
+      clientId: z.string().min(1, "Client ID é obrigatório"),
+      clientSecret: z.string().min(1, "Client Secret é obrigatório"),
+      merchantId: z.string().optional(),
+      isActive: z.boolean().optional(),
+      autoAcceptOrders: z.boolean().optional(),
+      notifyOnNewOrder: z.boolean().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+      
+      const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+      if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+      
+      // Se o clientSecret for "********", manter o existente
+      let clientSecret = input.clientSecret;
+      if (clientSecret === '********') {
+        const existingConfig = await db.getIfoodConfig(establishment.id);
+        if (existingConfig?.clientSecret) {
+          clientSecret = existingConfig.clientSecret;
+        } else {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Client Secret é obrigatório' });
+        }
+      }
+      
+      const config = await db.saveIfoodConfig({
+        establishmentId: establishment.id,
+        clientId: input.clientId,
+        clientSecret: clientSecret,
+        merchantId: input.merchantId,
+        isActive: input.isActive,
+        autoAcceptOrders: input.autoAcceptOrders,
+        notifyOnNewOrder: input.notifyOnNewOrder,
+      });
+      
+      return { success: true, config };
+    }),
+
+  // Testar conexão com iFood
+  testConnection: protectedProcedure
+    .input(z.object({
+      clientId: z.string().min(1),
+      clientSecret: z.string().min(1),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+      
+      // Se o clientSecret for "********", buscar o existente
+      let clientSecret = input.clientSecret;
+      if (clientSecret === '********') {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (establishment) {
+          const existingConfig = await db.getIfoodConfig(establishment.id);
+          if (existingConfig?.clientSecret) {
+            clientSecret = existingConfig.clientSecret;
+          }
+        }
+      }
+      
+      try {
+        // Tentar obter token com as credenciais fornecidas
+        const response = await fetch("https://merchant-api.ifood.com.br/authentication/v1.0/oauth/token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            grantType: "client_credentials",
+            clientId: input.clientId,
+            clientSecret: clientSecret,
+          }),
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          return { 
+            success: false, 
+            error: `Erro ${response.status}: ${errorText}` 
+          };
+        }
+        
+        return { success: true, message: "Conexão estabelecida com sucesso!" };
+      } catch (error) {
+        return { 
+          success: false, 
+          error: error instanceof Error ? error.message : "Erro ao conectar com iFood" 
+        };
+      }
+    }),
+
+  // Ativar/desativar integração
+  toggleActive: protectedProcedure
+    .input(z.object({
+      isActive: z.boolean()
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+      
+      const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+      if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+      
+      await db.updateIfoodConfigStatus(establishment.id, input.isActive);
+      
+      return { success: true };
+    }),
+
+  // Verificar status da integração (legado - manter compatibilidade)
+  status: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.user) {
+      return { configured: false, connected: false, error: 'Não autenticado' };
+    }
+    
+    const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+    if (!establishment) {
+      return { configured: false, connected: false, error: 'Estabelecimento não encontrado' };
+    }
+    
+    const config = await db.getIfoodConfig(establishment.id);
+    if (!config || !config.clientId || !config.clientSecret) {
+      return { configured: false, connected: false, error: 'Credenciais não configuradas' };
+    }
+    
     return {
       configured: true,
-      connected: result.valid,
-      error: result.error
+      connected: config.isActive,
+      error: null
     };
   }),
 

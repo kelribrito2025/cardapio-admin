@@ -14,20 +14,36 @@ import { ENV } from "./_core/env";
 const IFOOD_API_BASE_URL = "https://merchant-api.ifood.com.br";
 const IFOOD_AUTH_URL = "https://merchant-api.ifood.com.br/authentication/v1.0/oauth/token";
 
-// Cache do token em memória
-let cachedToken: {
+// Cache de tokens por estabelecimento (chave: establishmentId ou "global")
+const tokenCache: Map<string, {
   accessToken: string;
   expiresAt: number;
-} | null = null;
+}> = new Map();
 
 /**
  * Obtém um token de acesso do iFood
- * Usa cache em memória para evitar requisições desnecessárias
+ * Suporta credenciais globais (ENV) ou por estabelecimento
  */
-export async function getIfoodAccessToken(): Promise<string> {
+export async function getIfoodAccessToken(credentials?: {
+  clientId: string;
+  clientSecret: string;
+  establishmentId?: number;
+}): Promise<string> {
+  // Determina a chave do cache
+  const cacheKey = credentials?.establishmentId?.toString() || "global";
+  
   // Verifica se há token em cache e se ainda é válido (com margem de 5 minutos)
-  if (cachedToken && cachedToken.expiresAt > Date.now() + 5 * 60 * 1000) {
-    return cachedToken.accessToken;
+  const cached = tokenCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now() + 5 * 60 * 1000) {
+    return cached.accessToken;
+  }
+
+  // Usa credenciais fornecidas ou globais
+  const clientId = credentials?.clientId || ENV.ifoodClientId;
+  const clientSecret = credentials?.clientSecret || ENV.ifoodClientSecret;
+
+  if (!clientId || !clientSecret) {
+    throw new Error("Credenciais do iFood não configuradas");
   }
 
   // Solicita novo token
@@ -38,8 +54,8 @@ export async function getIfoodAccessToken(): Promise<string> {
     },
     body: new URLSearchParams({
       grantType: "client_credentials",
-      clientId: ENV.ifoodClientId,
-      clientSecret: ENV.ifoodClientSecret,
+      clientId,
+      clientSecret,
     }),
   });
 
@@ -51,12 +67,12 @@ export async function getIfoodAccessToken(): Promise<string> {
   const data = await response.json();
   
   // Armazena em cache
-  cachedToken = {
+  tokenCache.set(cacheKey, {
     accessToken: data.accessToken,
     expiresAt: Date.now() + (data.expiresIn * 1000),
-  };
+  });
 
-  return cachedToken.accessToken;
+  return data.accessToken;
 }
 
 /**

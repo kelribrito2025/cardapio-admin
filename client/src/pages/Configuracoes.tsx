@@ -74,6 +74,7 @@ import { AddressMapPicker } from "@/components/AddressMapPicker";
 import { LoyaltySettingsCard } from "@/components/LoyaltySettingsCard";
 import { WhatsAppTab } from "@/components/WhatsAppTab";
 import { PrintTestTab } from "@/components/PrintTestTab";
+import { IntegrationsTab } from "@/components/IntegrationsTab";
 
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
@@ -889,6 +890,9 @@ export default function Configuracoes() {
           </TabsTrigger>
           <TabsTrigger value="teste-impressao" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-primary">
             Impressora e Teste
+          </TabsTrigger>
+          <TabsTrigger value="integracoes" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-primary">
+            Integrações
           </TabsTrigger>
         </TabsList>
 
@@ -2119,6 +2123,11 @@ export default function Configuracoes() {
             onEditPrinter={openEditPrinterModal}
             onDeletePrinter={handleDeletePrinter}
           />
+        </TabsContent>
+
+        {/* Integrações Tab */}
+        <TabsContent value="integracoes" className="space-y-5">
+          <IntegrationsTab />
         </TabsContent>
       </Tabs>
 

@@ -492,3 +492,23 @@ export const printQueue = mysqlTable("printQueue", {
 
 export type PrintQueue = typeof printQueue.$inferSelect;
 export type InsertPrintQueue = typeof printQueue.$inferInsert;
+
+// Configuração de integração com iFood
+export const ifoodConfig = mysqlTable("ifoodConfig", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull().unique(),
+  clientId: varchar("clientId", { length: 100 }), // Client ID do iFood
+  clientSecret: varchar("clientSecret", { length: 200 }), // Client Secret do iFood
+  merchantId: varchar("merchantId", { length: 100 }), // ID da loja no iFood
+  isActive: boolean("isActive").default(false).notNull(), // Integração ativa
+  lastTokenRefresh: timestamp("lastTokenRefresh"), // Último refresh do token
+  webhookConfigured: boolean("webhookConfigured").default(false).notNull(), // Webhook configurado no portal
+  // Configurações de comportamento
+  autoAcceptOrders: boolean("autoAcceptOrders").default(false).notNull(), // Aceitar pedidos automaticamente
+  notifyOnNewOrder: boolean("notifyOnNewOrder").default(true).notNull(), // Notificar sobre novos pedidos
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type IfoodConfig = typeof ifoodConfig.$inferSelect;
+export type InsertIfoodConfig = typeof ifoodConfig.$inferInsert;
