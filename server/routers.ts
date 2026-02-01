@@ -11,9 +11,11 @@ import { ENV } from "./_core/env";
 import { sdk } from "./_core/sdk";
 import { TRPCError } from "@trpc/server";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
+import { ifoodRouter } from "./ifoodRouter";
 
 export const appRouter = router({
   system: systemRouter,
+  ifood: ifoodRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

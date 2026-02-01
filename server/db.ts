@@ -3768,3 +3768,209 @@ export async function getPrintHistory(establishmentId: number, limit: number = 5
   
   return result;
 }
+
+
+// ============ IFOOD INTEGRATION FUNCTIONS ============
+
+/**
+ * Busca pedidos por fonte (iFood, interno, etc)
+ */
+export async function getOrdersBySource(
+  establishmentId: number, 
+  source: "internal" | "ifood" | "rappi" | "ubereats",
+  status?: "pending_confirmation" | "new" | "preparing" | "ready" | "completed" | "cancelled"
+): Promise<Order[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const conditions = [
+    eq(orders.establishmentId, establishmentId),
+    eq(orders.source, source)
+  ];
+  
+  if (status) {
+    conditions.push(eq(orders.status, status));
+  }
+  
+  const result = await db.select().from(orders)
+    .where(and(...conditions))
+    .orderBy(desc(orders.createdAt));
+  
+  return result;
+}
+
+/**
+ * Cria pedido a partir do iFood
+ */
+export async function createOrderFromIfood(data: {
+  establishmentId: number;
+  orderNumber: string;
+  customerName: string;
+  customerPhone: string | null;
+  customerAddress: string;
+  status: "new";
+  deliveryType: "delivery" | "pickup" | "dine_in";
+  paymentMethod: "cash" | "card" | "pix" | "boleto";
+  subtotal: string;
+  deliveryFee: string;
+  discount: string;
+  total: string;
+  notes: string | null;
+  changeAmount: string | null;
+  source: "ifood";
+  externalId: string;
+  externalDisplayId: string;
+  externalStatus: string;
+  externalData: Record<string, unknown>;
+  items: Array<{
+    productId: number;
+    productName: string;
+    quantity: number;
+    unitPrice: string;
+    totalPrice: string;
+    complements: Array<{ name: string; price: number; quantity: number }>;
+    notes: string | null;
+  }>;
+}): Promise<Order | null> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Verificar se pedido já existe
+  const existing = await db.select({ id: orders.id })
+    .from(orders)
+    .where(eq(orders.externalId, data.externalId))
+    .limit(1);
+  
+  if (existing.length > 0) {
+    console.log(`[iFood] Pedido ${data.externalId} já existe, ignorando`);
+    return null;
+  }
+  
+  // Inserir pedido
+  const orderData: InsertOrder = {
+    establishmentId: data.establishmentId,
+    orderNumber: data.orderNumber,
+    customerName: data.customerName,
+    customerPhone: data.customerPhone,
+    customerAddress: data.customerAddress,
+    status: data.status,
+    deliveryType: data.deliveryType,
+    paymentMethod: data.paymentMethod,
+    subtotal: data.subtotal,
+    deliveryFee: data.deliveryFee,
+    discount: data.discount,
+    total: data.total,
+    notes: data.notes,
+    changeAmount: data.changeAmount,
+    source: data.source,
+    externalId: data.externalId,
+    externalDisplayId: data.externalDisplayId,
+    externalStatus: data.externalStatus,
+    externalData: data.externalData
+  };
+  
+  const result = await db.insert(orders).values(orderData);
+  const orderId = result[0].insertId;
+  
+  // Inserir itens
+  if (data.items.length > 0) {
+    const itemsWithOrderId = data.items.map(item => ({
+      orderId,
+      productId: item.productId,
+      productName: item.productName,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      totalPrice: item.totalPrice,
+      complements: item.complements,
+      notes: item.notes
+    }));
+    await db.insert(orderItems).values(itemsWithOrderId);
+  }
+  
+  // Buscar pedido criado
+  const newOrder = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1);
+  
+  if (newOrder.length > 0) {
+    // Notificar via SSE
+    notifyNewOrder(data.establishmentId, newOrder[0]);
+  }
+  
+  return newOrder[0] || null;
+}
+
+/**
+ * Atualiza status externo do pedido
+ */
+export async function updateOrderExternalStatus(orderId: number, externalStatus: string): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(orders)
+    .set({ externalStatus })
+    .where(eq(orders.id, orderId));
+}
+
+/**
+ * Atualiza status do pedido pelo ID externo
+ */
+export async function updateOrderStatusByExternalId(
+  externalId: string, 
+  status: "pending_confirmation" | "new" | "preparing" | "ready" | "completed" | "cancelled"
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const updateData: Partial<Order> = { status };
+  if (status === "completed" || status === "cancelled") {
+    updateData.completedAt = new Date();
+  }
+  
+  await db.update(orders)
+    .set(updateData)
+    .where(eq(orders.externalId, externalId));
+  
+  // Buscar pedido para notificar
+  const updatedOrder = await db.select().from(orders).where(eq(orders.externalId, externalId)).limit(1);
+  if (updatedOrder.length > 0) {
+    const order = updatedOrder[0];
+    notifyOrderUpdate(order.establishmentId, { id: order.id, status, updatedAt: new Date() });
+  }
+}
+
+/**
+ * Atualiza status externo do pedido pelo ID externo
+ */
+export async function updateOrderExternalStatusByExternalId(externalId: string, externalStatus: string): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(orders)
+    .set({ externalStatus })
+    .where(eq(orders.externalId, externalId));
+}
+
+/**
+ * Atualiza motivo de cancelamento do pedido
+ */
+export async function updateOrderCancellationReason(orderId: number, reason: string): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(orders)
+    .set({ cancellationReason: reason })
+    .where(eq(orders.id, orderId));
+}
+
+/**
+ * Busca pedido pelo ID externo
+ */
+export async function getOrderByExternalId(externalId: string): Promise<Order | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(orders)
+    .where(eq(orders.externalId, externalId))
+    .limit(1);
+  
+  return result[0] || null;
+}

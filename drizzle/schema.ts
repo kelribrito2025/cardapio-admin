@@ -172,6 +172,12 @@ export const orders = mysqlTable("orders", {
   notes: text("notes"),
   changeAmount: decimal("changeAmount", { precision: 10, scale: 2 }),
   cancellationReason: text("cancellationReason"),
+  // Campos para pedidos externos (iFood, Rappi, etc)
+  source: mysqlEnum("source", ["internal", "ifood", "rappi", "ubereats"]).default("internal").notNull(),
+  externalId: varchar("externalId", { length: 100 }), // ID do pedido na plataforma externa
+  externalDisplayId: varchar("externalDisplayId", { length: 50 }), // ID de exibição (ex: #1234)
+  externalStatus: varchar("externalStatus", { length: 50 }), // Status original da plataforma
+  externalData: json("externalData").$type<Record<string, unknown>>(), // Dados completos do pedido externo
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   completedAt: timestamp("completedAt"),

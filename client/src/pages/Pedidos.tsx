@@ -1022,6 +1022,12 @@ export default function Pedidos() {
                             <span className={cn("font-bold text-base", config.color)}>
                               {order.orderNumber?.startsWith('#') ? order.orderNumber : `#${order.orderNumber}`}
                             </span>
+                            {/* Badge iFood */}
+                            {(order as any).source === 'ifood' && (
+                              <span className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full shadow-sm">
+                                iFood
+                              </span>
+                            )}
                           </div>
                           <div className={cn("flex items-center gap-1.5 text-sm font-medium", config.color)}>
                             <Clock className="h-4 w-4" />
@@ -1325,6 +1331,12 @@ export default function Pedidos() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Badge iFood */}
+                  {(orderDetails as any).source === 'ifood' && (
+                    <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full shadow-sm">
+                      iFood
+                    </span>
+                  )}
                   <StatusBadge variant={statusConfig[orderDetails.status as OrderStatus]?.variant}>
                     {statusConfig[orderDetails.status as OrderStatus]?.label}
                   </StatusBadge>

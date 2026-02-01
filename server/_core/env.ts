@@ -12,4 +12,7 @@ export const ENV = {
   mindiS3Region: process.env.MINDI_S3_REGION ?? "",
   mindiS3AccessKey: process.env.MINDI_S3_ACCESS_KEY ?? "",
   mindiS3SecretKey: process.env.MINDI_S3_SECRET_KEY ?? "",
+  // iFood Integration
+  ifoodClientId: process.env.IFOOD_CLIENT_ID ?? "",
+  ifoodClientSecret: process.env.IFOOD_CLIENT_SECRET ?? "",
 };

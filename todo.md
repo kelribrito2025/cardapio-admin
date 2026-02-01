@@ -3968,3 +3968,16 @@
 
 ## Dropdown Único Complementos
 - [x] Fechar dropdown anterior ao abrir outro card de complemento
+
+
+## Integração iFood via Webhook
+- [x] Configurar credenciais iFood como variáveis de ambiente
+- [x] Implementar autenticação OAuth2 com iFood (obter e renovar tokens)
+- [x] Criar endpoint de Webhook para receber eventos do iFood
+- [x] Atualizar schema do banco para suportar pedidos externos (source, externalId, etc)
+- [x] Implementar processamento de pedidos do iFood (converter para formato interno)
+- [x] Implementar envio de acknowledgment para eventos recebidos
+- [x] Implementar sincronização de status (confirmar, despachar, cancelar)
+- [x] Adicionar badge visual "iFood" nos cards de pedidos
+- [ ] Adicionar filtro por origem do pedido na página de Pedidos
+- [ ] Testar integração com pedidos de teste do iFood

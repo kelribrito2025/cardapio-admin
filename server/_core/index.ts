@@ -1536,6 +1536,37 @@ async function startServer() {
     }
   });
 
+  // iFood Webhook endpoint
+  app.post("/api/ifood/webhook", async (req, res) => {
+    try {
+      console.log('[iFood Webhook] Evento recebido:', JSON.stringify(req.body).substring(0, 500));
+      
+      const events = Array.isArray(req.body) ? req.body : [req.body];
+      
+      for (const event of events) {
+        if (!event.id || !event.code || !event.orderId) {
+          console.log('[iFood Webhook] Evento inválido, ignorando');
+          continue;
+        }
+        
+        // Processar evento via tRPC (internamente)
+        try {
+          // Import dinâmico para evitar dependência circular
+          const { processIfoodWebhookEvent } = await import('../ifood');
+          await processIfoodWebhookEvent(event);
+        } catch (processError) {
+          console.error('[iFood Webhook] Erro ao processar evento:', processError);
+        }
+      }
+      
+      // Sempre responder 200 para o webhook
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('[iFood Webhook] Erro:', error);
+      res.status(200).json({ success: false, error: 'Internal error' });
+    }
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",
