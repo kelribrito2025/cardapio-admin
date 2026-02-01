@@ -3988,3 +3988,12 @@
 - [x] Criar página de Integrações nas Configurações com formulário para iFood
 - [x] Atualizar lógica do webhook para usar credenciais por estabelecimento
 - [x] Adicionar toggle para ativar/desativar integração iFood
+
+## Fluxo OAuth Distribuído iFood (Simplificado para Cliente)
+- [x] Atualizar backend com endpoints para fluxo OAuth distribuído (getUserCode, exchangeAuthCode)
+- [x] Atualizar tabela ifoodConfig para armazenar tokens OAuth por estabelecimento
+- [x] Remover campos Client ID e Client Secret da tela de Integrações
+- [x] Adicionar botão "Conectar iFood" que inicia o fluxo OAuth
+- [x] Adicionar campo para colar código de autorização do Partner Portal
+- [x] Implementar renovação automática de tokens (refresh token)
+- [x] Mostrar status de conexão (Conectado/Desconectado) na tela

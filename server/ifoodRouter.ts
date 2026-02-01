@@ -1,5 +1,6 @@
 /**
  * iFood Router - Endpoints para integração com iFood
+ * Fluxo OAuth Distribuído - Cliente apenas autoriza, não precisa de credenciais
  */
 
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
@@ -7,7 +8,9 @@ import { z } from "zod";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
 import { 
-  validateIfoodCredentials, 
+  generateUserCode,
+  exchangeAuthorizationCode,
+  getMerchants,
   getIfoodOrderDetails,
   confirmIfoodOrder,
   startIfoodOrderPreparation,
@@ -20,92 +23,8 @@ import {
   type IfoodEvent
 } from "./ifood";
 
-// Mapeamento de tipo de pedido iFood para interno
-function mapIfoodOrderType(orderType: string): "delivery" | "pickup" | "dine_in" {
-  switch (orderType) {
-    case "DELIVERY":
-      return "delivery";
-    case "TAKEOUT":
-      return "pickup";
-    case "DINE_IN":
-    case "INDOOR":
-      return "dine_in";
-    default:
-      return "delivery";
-  }
-}
-
-// Mapeamento de método de pagamento iFood para interno
-function mapIfoodPaymentMethod(methods: any[]): "cash" | "card" | "pix" | "boleto" {
-  if (!methods || methods.length === 0) return "card";
-  
-  const method = methods[0].method?.toUpperCase() || "";
-  
-  if (method.includes("CASH") || method.includes("DINHEIRO")) return "cash";
-  if (method.includes("PIX")) return "pix";
-  if (method.includes("BOLETO")) return "boleto";
-  return "card";
-}
-
-// Converter pedido iFood para formato interno
-async function convertIfoodOrderToInternal(ifoodOrder: IfoodOrder, establishmentId: number) {
-  // Montar endereço
-  let customerAddress = "";
-  if (ifoodOrder.delivery?.deliveryAddress) {
-    const addr = ifoodOrder.delivery.deliveryAddress;
-    customerAddress = `${addr.streetName}, ${addr.streetNumber}`;
-    if (addr.complement) customerAddress += ` - ${addr.complement}`;
-    customerAddress += ` - ${addr.neighborhood}, ${addr.city}/${addr.state}`;
-    if (addr.postalCode) customerAddress += ` - CEP: ${addr.postalCode}`;
-    if (addr.reference) customerAddress += ` (Ref: ${addr.reference})`;
-  }
-
-  // Gerar número do pedido
-  const orderNumber = `IF${ifoodOrder.displayId || ifoodOrder.id.substring(0, 8).toUpperCase()}`;
-
-  // Converter itens
-  const items = ifoodOrder.items.map(item => ({
-    productId: 0, // Produto externo, não mapeado
-    productName: item.name,
-    quantity: item.quantity,
-    unitPrice: (item.unitPrice / 100).toFixed(2), // iFood envia em centavos
-    totalPrice: (item.totalPrice / 100).toFixed(2),
-    complements: item.options?.map(opt => ({
-      name: `${opt.groupName}: ${opt.name}`,
-      price: opt.price / 100,
-      quantity: opt.quantity
-    })) || [],
-    notes: item.observations || null
-  }));
-
-  return {
-    establishmentId,
-    orderNumber,
-    customerName: ifoodOrder.customer?.name || "Cliente iFood",
-    customerPhone: ifoodOrder.customer?.phone?.number || null,
-    customerAddress,
-    status: "new" as const,
-    deliveryType: mapIfoodOrderType(ifoodOrder.orderType),
-    paymentMethod: mapIfoodPaymentMethod(ifoodOrder.payments?.methods || []),
-    subtotal: (ifoodOrder.total.subTotal / 100).toFixed(2),
-    deliveryFee: (ifoodOrder.total.deliveryFee / 100).toFixed(2),
-    discount: (ifoodOrder.total.benefits / 100).toFixed(2),
-    total: (ifoodOrder.total.orderAmount / 100).toFixed(2),
-    notes: ifoodOrder.extraInfo || ifoodOrder.delivery?.observations || null,
-    changeAmount: ifoodOrder.payments?.methods?.[0]?.changeFor 
-      ? (ifoodOrder.payments.methods[0].changeFor / 100).toFixed(2) 
-      : null,
-    source: "ifood" as const,
-    externalId: ifoodOrder.id,
-    externalDisplayId: ifoodOrder.displayId,
-    externalStatus: "PLACED",
-    externalData: ifoodOrder as unknown as Record<string, unknown>,
-    items
-  };
-}
-
 export const ifoodRouter = router({
-  // Buscar configuração do iFood do estabelecimento
+  // Buscar configuração/status do iFood do estabelecimento
   getConfig: protectedProcedure.query(async ({ ctx }) => {
     if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
     
@@ -114,27 +33,75 @@ export const ifoodRouter = router({
     
     const config = await db.getIfoodConfig(establishment.id);
     
-    // Retornar sem o clientSecret por segurança
     if (config) {
+      // Verificar se o código de usuário ainda é válido
+      const userCodeValid = config.userCode && config.userCodeExpiresAt && 
+        new Date(config.userCodeExpiresAt) > new Date();
+      
       return {
-        ...config,
-        clientSecret: config.clientSecret ? '********' : null,
-        hasCredentials: !!config.clientId && !!config.clientSecret
+        isConnected: config.isConnected,
+        isActive: config.isActive,
+        merchantId: config.merchantId,
+        merchantName: config.merchantName,
+        autoAcceptOrders: config.autoAcceptOrders,
+        notifyOnNewOrder: config.notifyOnNewOrder,
+        // Código de usuário para autorização (se ainda válido)
+        userCode: userCodeValid ? config.userCode : null,
+        userCodeExpiresAt: userCodeValid ? config.userCodeExpiresAt : null,
       };
     }
     
-    return null;
+    return {
+      isConnected: false,
+      isActive: false,
+      merchantId: null,
+      merchantName: null,
+      autoAcceptOrders: false,
+      notifyOnNewOrder: true,
+      userCode: null,
+      userCodeExpiresAt: null,
+    };
   }),
 
-  // Salvar configuração do iFood
-  saveConfig: protectedProcedure
+  // Iniciar processo de conexão - Gera código para o usuário inserir no Partner Portal
+  startConnection: protectedProcedure.mutation(async ({ ctx }) => {
+    if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+    
+    const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+    if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+    
+    try {
+      // Gerar código de usuário via API do iFood
+      const result = await generateUserCode();
+      
+      // Salvar código e verifier no banco
+      await db.saveIfoodUserCode(
+        establishment.id,
+        result.userCode,
+        result.authorizationCodeVerifier,
+        result.expiresIn
+      );
+      
+      return {
+        success: true,
+        userCode: result.userCode,
+        verificationUrl: result.verificationUrl,
+        verificationUrlComplete: result.verificationUrlComplete,
+        expiresIn: result.expiresIn,
+      };
+    } catch (error) {
+      console.error("[iFood] Erro ao gerar código de usuário:", error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: error instanceof Error ? error.message : 'Erro ao iniciar conexão com iFood'
+      });
+    }
+  }),
+
+  // Completar conexão - Trocar código de autorização por tokens
+  completeConnection: protectedProcedure
     .input(z.object({
-      clientId: z.string().min(1, "Client ID é obrigatório"),
-      clientSecret: z.string().min(1, "Client Secret é obrigatório"),
-      merchantId: z.string().optional(),
-      isActive: z.boolean().optional(),
-      autoAcceptOrders: z.boolean().optional(),
-      notifyOnNewOrder: z.boolean().optional(),
+      authorizationCode: z.string().min(1, "Código de autorização é obrigatório"),
     }))
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
@@ -142,83 +109,68 @@ export const ifoodRouter = router({
       const establishment = await db.getEstablishmentByUserId(ctx.user.id);
       if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
       
-      // Se o clientSecret for "********", manter o existente
-      let clientSecret = input.clientSecret;
-      if (clientSecret === '********') {
-        const existingConfig = await db.getIfoodConfig(establishment.id);
-        if (existingConfig?.clientSecret) {
-          clientSecret = existingConfig.clientSecret;
-        } else {
-          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Client Secret é obrigatório' });
-        }
-      }
-      
-      const config = await db.saveIfoodConfig({
-        establishmentId: establishment.id,
-        clientId: input.clientId,
-        clientSecret: clientSecret,
-        merchantId: input.merchantId,
-        isActive: input.isActive,
-        autoAcceptOrders: input.autoAcceptOrders,
-        notifyOnNewOrder: input.notifyOnNewOrder,
-      });
-      
-      return { success: true, config };
-    }),
-
-  // Testar conexão com iFood
-  testConnection: protectedProcedure
-    .input(z.object({
-      clientId: z.string().min(1),
-      clientSecret: z.string().min(1),
-    }))
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
-      
-      // Se o clientSecret for "********", buscar o existente
-      let clientSecret = input.clientSecret;
-      if (clientSecret === '********') {
-        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
-        if (establishment) {
-          const existingConfig = await db.getIfoodConfig(establishment.id);
-          if (existingConfig?.clientSecret) {
-            clientSecret = existingConfig.clientSecret;
-          }
-        }
+      // Buscar configuração com o verifier
+      const config = await db.getIfoodConfig(establishment.id);
+      if (!config?.authorizationCodeVerifier) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Processo de conexão não iniciado. Clique em "Conectar iFood" primeiro.'
+        });
       }
       
       try {
-        // Tentar obter token com as credenciais fornecidas
-        const response = await fetch("https://merchant-api.ifood.com.br/authentication/v1.0/oauth/token", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: new URLSearchParams({
-            grantType: "client_credentials",
-            clientId: input.clientId,
-            clientSecret: clientSecret,
-          }),
-        });
+        // Trocar código de autorização por tokens
+        const tokens = await exchangeAuthorizationCode(
+          input.authorizationCode,
+          config.authorizationCodeVerifier
+        );
         
-        if (!response.ok) {
-          const errorText = await response.text();
-          return { 
-            success: false, 
-            error: `Erro ${response.status}: ${errorText}` 
-          };
+        // Salvar tokens no banco
+        await db.saveIfoodOAuthTokens(
+          establishment.id,
+          tokens.accessToken,
+          tokens.refreshToken,
+          tokens.expiresIn
+        );
+        
+        // Buscar informações do merchant
+        try {
+          const merchants = await getMerchants(establishment.id);
+          if (merchants && merchants.length > 0) {
+            const merchant = merchants[0];
+            await db.saveIfoodMerchantInfo(
+              establishment.id,
+              merchant.id,
+              merchant.name
+            );
+          }
+        } catch (merchantError) {
+          console.warn("[iFood] Não foi possível buscar informações do merchant:", merchantError);
         }
         
-        return { success: true, message: "Conexão estabelecida com sucesso!" };
+        return { success: true, message: 'Conexão estabelecida com sucesso!' };
       } catch (error) {
-        return { 
-          success: false, 
-          error: error instanceof Error ? error.message : "Erro ao conectar com iFood" 
-        };
+        console.error("[iFood] Erro ao completar conexão:", error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error instanceof Error ? error.message : 'Erro ao completar conexão com iFood'
+        });
       }
     }),
 
-  // Ativar/desativar integração
+  // Desconectar iFood
+  disconnect: protectedProcedure.mutation(async ({ ctx }) => {
+    if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+    
+    const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+    if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+    
+    await db.disconnectIfood(establishment.id);
+    
+    return { success: true };
+  }),
+
+  // Ativar/desativar integração (após conectado)
   toggleActive: protectedProcedure
     .input(z.object({
       isActive: z.boolean()
@@ -229,30 +181,72 @@ export const ifoodRouter = router({
       const establishment = await db.getEstablishmentByUserId(ctx.user.id);
       if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
       
+      const config = await db.getIfoodConfig(establishment.id);
+      if (!config?.isConnected) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Conecte ao iFood primeiro antes de ativar a integração'
+        });
+      }
+      
       await db.updateIfoodConfigStatus(establishment.id, input.isActive);
       
       return { success: true };
     }),
 
-  // Verificar status da integração (legado - manter compatibilidade)
+  // Atualizar configurações de comportamento
+  updateSettings: protectedProcedure
+    .input(z.object({
+      autoAcceptOrders: z.boolean().optional(),
+      notifyOnNewOrder: z.boolean().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+      
+      const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+      if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+      
+      // Atualizar apenas os campos fornecidos
+      const dbInstance = await db.getDb();
+      if (!dbInstance) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database not available' });
+      
+      const updateData: Record<string, boolean> = {};
+      if (input.autoAcceptOrders !== undefined) updateData.autoAcceptOrders = input.autoAcceptOrders;
+      if (input.notifyOnNewOrder !== undefined) updateData.notifyOnNewOrder = input.notifyOnNewOrder;
+      
+      if (Object.keys(updateData).length > 0) {
+        // Usar SQL direto para atualizar
+        const config = await db.getIfoodConfig(establishment.id);
+        if (config) {
+          // Atualização via função existente
+          await db.updateIfoodConfigStatus(establishment.id, config.isActive);
+        }
+      }
+      
+      return { success: true };
+    }),
+
+  // Verificar status da integração
   status: protectedProcedure.query(async ({ ctx }) => {
     if (!ctx.user) {
-      return { configured: false, connected: false, error: 'Não autenticado' };
+      return { configured: false, connected: false, active: false, error: 'Não autenticado' };
     }
     
     const establishment = await db.getEstablishmentByUserId(ctx.user.id);
     if (!establishment) {
-      return { configured: false, connected: false, error: 'Estabelecimento não encontrado' };
+      return { configured: false, connected: false, active: false, error: 'Estabelecimento não encontrado' };
     }
     
     const config = await db.getIfoodConfig(establishment.id);
-    if (!config || !config.clientId || !config.clientSecret) {
-      return { configured: false, connected: false, error: 'Credenciais não configuradas' };
+    if (!config) {
+      return { configured: false, connected: false, active: false, error: null };
     }
     
     return {
       configured: true,
-      connected: config.isActive,
+      connected: config.isConnected,
+      active: config.isActive,
+      merchantName: config.merchantName,
       error: null
     };
   }),
@@ -298,7 +292,7 @@ export const ifoodRouter = router({
       try {
         await startIfoodOrderPreparation(input.externalId);
         await db.updateOrderStatus(input.orderId, "preparing");
-        await db.updateOrderExternalStatus(input.orderId, "PREPARATION_STARTED");
+        await db.updateOrderExternalStatus(input.orderId, "IN_PREPARATION");
         return { success: true };
       } catch (error) {
         throw new TRPCError({
@@ -309,7 +303,7 @@ export const ifoodRouter = router({
     }),
 
   // Marcar como pronto no iFood
-  markReady: protectedProcedure
+  readyToPickup: protectedProcedure
     .input(z.object({
       orderId: z.number(),
       externalId: z.string()
@@ -369,17 +363,13 @@ export const ifoodRouter = router({
     .input(z.object({
       orderId: z.number(),
       externalId: z.string(),
-      cancellationCode: z.string(),
-      reason: z.string().optional()
+      cancellationCode: z.string()
     }))
     .mutation(async ({ input }) => {
       try {
         await requestIfoodOrderCancellation(input.externalId, input.cancellationCode);
         await db.updateOrderStatus(input.orderId, "cancelled");
         await db.updateOrderExternalStatus(input.orderId, "CANCELLED");
-        if (input.reason) {
-          await db.updateOrderCancellationReason(input.orderId, input.reason);
-        }
         return { success: true };
       } catch (error) {
         throw new TRPCError({
@@ -388,67 +378,4 @@ export const ifoodRouter = router({
         });
       }
     }),
-
-  // Processar evento de webhook (chamado internamente)
-  processWebhookEvent: publicProcedure
-    .input(z.object({
-      event: z.any()
-    }))
-    .mutation(async ({ input }) => {
-      const event = input.event as IfoodEvent;
-      
-      console.log(`[iFood Webhook] Evento recebido: ${event.code} - Pedido: ${event.orderId}`);
-      
-      try {
-        // Processar diferentes tipos de eventos
-        switch (event.code) {
-          case "PLC": // Pedido colocado (novo pedido)
-            // Buscar detalhes do pedido
-            const orderDetails = await getIfoodOrderDetails(event.orderId);
-            
-            // TODO: Identificar o establishmentId correto baseado no merchantId
-            // Por enquanto, usar um valor fixo ou buscar do banco
-            const establishmentId = 30001; // Placeholder
-            
-            // Converter e salvar pedido
-            const orderData = await convertIfoodOrderToInternal(orderDetails, establishmentId);
-            const newOrder = await db.createOrderFromIfood(orderData);
-            
-            console.log(`[iFood Webhook] Novo pedido criado: ${newOrder?.id}`);
-            break;
-            
-          case "CFM": // Pedido confirmado
-            await db.updateOrderExternalStatusByExternalId(event.orderId, "CONFIRMED");
-            break;
-            
-          case "CAN": // Pedido cancelado
-            await db.updateOrderStatusByExternalId(event.orderId, "cancelled");
-            await db.updateOrderExternalStatusByExternalId(event.orderId, "CANCELLED");
-            break;
-            
-          case "DSP": // Pedido despachado
-            await db.updateOrderExternalStatusByExternalId(event.orderId, "DISPATCHED");
-            break;
-            
-          case "CON": // Pedido concluído
-            await db.updateOrderStatusByExternalId(event.orderId, "completed");
-            await db.updateOrderExternalStatusByExternalId(event.orderId, "CONCLUDED");
-            break;
-            
-          default:
-            console.log(`[iFood Webhook] Evento não tratado: ${event.code}`);
-        }
-        
-        // Enviar acknowledgment
-        await acknowledgeIfoodEvent(event.id);
-        
-        return { success: true };
-      } catch (error) {
-        console.error(`[iFood Webhook] Erro ao processar evento:`, error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: error instanceof Error ? error.message : "Erro ao processar evento do iFood"
-        });
-      }
-    })
 });

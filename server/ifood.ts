@@ -9,6 +9,7 @@
  */
 
 import { ENV } from "./_core/env";
+import * as db from "./db";
 
 // Constantes da API do iFood
 const IFOOD_API_BASE_URL = "https://merchant-api.ifood.com.br";
@@ -261,6 +262,185 @@ export async function requestIfoodOrderCancellation(
   }
 }
 
+// ==========================================
+// FLUXO OAUTH DISTRIBUÍDO (Para clientes)
+// ==========================================
+
+/**
+ * Gera um código de link para o cliente autorizar o MINDI no Partner Portal
+ * Passo 1 do fluxo distribuído
+ */
+export async function generateUserCode(): Promise<{
+  userCode: string;
+  authorizationCodeVerifier: string;
+  verificationUrl: string;
+  verificationUrlComplete: string;
+  expiresIn: number;
+}> {
+  const clientId = ENV.ifoodClientId;
+  const clientSecret = ENV.ifoodClientSecret;
+
+  if (!clientId || !clientSecret) {
+    throw new Error("Credenciais do iFood não configuradas no sistema");
+  }
+
+  const response = await fetch(`${IFOOD_API_BASE_URL}/authentication/v1.0/oauth/userCode`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      clientId,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Falha ao gerar código de usuário: ${response.status} - ${errorText}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Troca o código de autorização por tokens de acesso
+ * Passo 5 do fluxo distribuído
+ */
+export async function exchangeAuthorizationCode(
+  authorizationCode: string,
+  authorizationCodeVerifier: string
+): Promise<{
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  tokenType: string;
+}> {
+  const clientId = ENV.ifoodClientId;
+  const clientSecret = ENV.ifoodClientSecret;
+
+  if (!clientId || !clientSecret) {
+    throw new Error("Credenciais do iFood não configuradas no sistema");
+  }
+
+  const response = await fetch(IFOOD_AUTH_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      grantType: "authorization_code",
+      clientId,
+      clientSecret,
+      authorizationCode,
+      authorizationCodeVerifier,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Falha ao trocar código de autorização: ${response.status} - ${errorText}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Renova o token de acesso usando o refresh token
+ */
+export async function refreshAccessToken(refreshToken: string): Promise<{
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  tokenType: string;
+}> {
+  const clientId = ENV.ifoodClientId;
+  const clientSecret = ENV.ifoodClientSecret;
+
+  if (!clientId || !clientSecret) {
+    throw new Error("Credenciais do iFood não configuradas no sistema");
+  }
+
+  const response = await fetch(IFOOD_AUTH_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      grantType: "refresh_token",
+      clientId,
+      clientSecret,
+      refreshToken,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Falha ao renovar token: ${response.status} - ${errorText}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Obtém token de acesso para um estabelecimento específico
+ * Usa o refresh token armazenado para obter um novo access token
+ */
+export async function getAccessTokenForEstablishment(establishmentId: number): Promise<string> {
+  // Verifica cache primeiro
+  const cacheKey = `establishment_${establishmentId}`;
+  const cached = tokenCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now() + 5 * 60 * 1000) {
+    return cached.accessToken;
+  }
+
+  // Buscar configuração do estabelecimento
+  const config = await db.getIfoodConfigByEstablishment(establishmentId);
+  if (!config || !config.refreshToken) {
+    throw new Error("Estabelecimento não conectado ao iFood");
+  }
+
+  // Renovar token
+  const tokens = await refreshAccessToken(config.refreshToken);
+
+  // Atualizar tokens no banco
+  await db.updateIfoodTokens(establishmentId, tokens.accessToken, tokens.refreshToken, tokens.expiresIn);
+
+  // Armazenar em cache
+  tokenCache.set(cacheKey, {
+    accessToken: tokens.accessToken,
+    expiresAt: Date.now() + (tokens.expiresIn * 1000),
+  });
+
+  return tokens.accessToken;
+}
+
+/**
+ * Busca os merchants (lojas) vinculados ao token do estabelecimento
+ */
+export async function getMerchants(establishmentId: number): Promise<Array<{
+  id: string;
+  name: string;
+  corporateName: string;
+  status: string;
+}>> {
+  const token = await getAccessTokenForEstablishment(establishmentId);
+
+  const response = await fetch(`${IFOOD_API_BASE_URL}/merchant/v1.0/merchants`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Falha ao buscar merchants: ${response.status} - ${errorText}`);
+  }
+
+  return response.json();
+}
+
 // Tipos para eventos do iFood
 export interface IfoodEvent {
   id: string;
@@ -367,9 +547,6 @@ export interface IfoodOrderItem {
   }>;
 }
 
-
-// Import das funções do banco de dados
-import * as db from "./db";
 
 // Mapeamento de tipo de pedido iFood para interno
 function mapIfoodOrderType(orderType: string): "delivery" | "pickup" | "dine_in" {

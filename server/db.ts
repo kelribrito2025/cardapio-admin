@@ -3995,53 +3995,7 @@ export async function getIfoodConfig(establishmentId: number): Promise<IfoodConf
   return result[0] || null;
 }
 
-/**
- * Salva ou atualiza configuração do iFood
- */
-export async function saveIfoodConfig(data: {
-  establishmentId: number;
-  clientId: string;
-  clientSecret: string;
-  merchantId?: string;
-  isActive?: boolean;
-  autoAcceptOrders?: boolean;
-  notifyOnNewOrder?: boolean;
-}): Promise<IfoodConfig> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  
-  // Verificar se já existe
-  const existing = await getIfoodConfig(data.establishmentId);
-  
-  if (existing) {
-    // Atualizar
-    await db.update(ifoodConfig)
-      .set({
-        clientId: data.clientId,
-        clientSecret: data.clientSecret,
-        merchantId: data.merchantId || existing.merchantId,
-        isActive: data.isActive ?? existing.isActive,
-        autoAcceptOrders: data.autoAcceptOrders ?? existing.autoAcceptOrders,
-        notifyOnNewOrder: data.notifyOnNewOrder ?? existing.notifyOnNewOrder,
-      })
-      .where(eq(ifoodConfig.establishmentId, data.establishmentId));
-    
-    return (await getIfoodConfig(data.establishmentId))!;
-  } else {
-    // Inserir
-    const result = await db.insert(ifoodConfig).values({
-      establishmentId: data.establishmentId,
-      clientId: data.clientId,
-      clientSecret: data.clientSecret,
-      merchantId: data.merchantId || null,
-      isActive: data.isActive ?? false,
-      autoAcceptOrders: data.autoAcceptOrders ?? false,
-      notifyOnNewOrder: data.notifyOnNewOrder ?? true,
-    });
-    
-    return (await getIfoodConfig(data.establishmentId))!;
-  }
-}
+
 
 /**
  * Atualiza status de ativação do iFood
@@ -4090,4 +4044,161 @@ export async function getActiveIfoodConfigs(): Promise<IfoodConfig[]> {
   
   return db.select().from(ifoodConfig)
     .where(eq(ifoodConfig.isActive, true));
+}
+
+
+// ============ IFOOD OAUTH DISTRIBUTED FUNCTIONS ============
+
+/**
+ * Busca configuração do iFood por estabelecimento (alias para compatibilidade)
+ */
+export async function getIfoodConfigByEstablishment(establishmentId: number): Promise<IfoodConfig | null> {
+  return getIfoodConfig(establishmentId);
+}
+
+/**
+ * Salva o código de usuário e verifier para autorização OAuth
+ */
+export async function saveIfoodUserCode(
+  establishmentId: number,
+  userCode: string,
+  authorizationCodeVerifier: string,
+  expiresIn: number
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const expiresAt = new Date(Date.now() + expiresIn * 1000);
+  
+  // Verificar se já existe configuração
+  const existing = await getIfoodConfig(establishmentId);
+  
+  if (existing) {
+    await db.update(ifoodConfig)
+      .set({
+        userCode,
+        authorizationCodeVerifier,
+        userCodeExpiresAt: expiresAt,
+      })
+      .where(eq(ifoodConfig.establishmentId, establishmentId));
+  } else {
+    await db.insert(ifoodConfig).values({
+      establishmentId,
+      userCode,
+      authorizationCodeVerifier,
+      userCodeExpiresAt: expiresAt,
+      isActive: false,
+      isConnected: false,
+      autoAcceptOrders: false,
+      notifyOnNewOrder: true,
+    });
+  }
+}
+
+/**
+ * Salva os tokens OAuth após autorização bem-sucedida
+ */
+export async function saveIfoodOAuthTokens(
+  establishmentId: number,
+  accessToken: string,
+  refreshToken: string,
+  expiresIn: number
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const tokenExpiresAt = new Date(Date.now() + expiresIn * 1000);
+  
+  await db.update(ifoodConfig)
+    .set({
+      accessToken,
+      refreshToken,
+      tokenExpiresAt,
+      isConnected: true,
+      lastTokenRefresh: new Date(),
+      // Limpar códigos temporários
+      userCode: null,
+      authorizationCodeVerifier: null,
+      userCodeExpiresAt: null,
+    })
+    .where(eq(ifoodConfig.establishmentId, establishmentId));
+}
+
+/**
+ * Atualiza tokens após refresh
+ */
+export async function updateIfoodTokens(
+  establishmentId: number,
+  accessToken: string,
+  refreshToken: string,
+  expiresIn: number
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const tokenExpiresAt = new Date(Date.now() + expiresIn * 1000);
+  
+  await db.update(ifoodConfig)
+    .set({
+      accessToken,
+      refreshToken,
+      tokenExpiresAt,
+      lastTokenRefresh: new Date(),
+    })
+    .where(eq(ifoodConfig.establishmentId, establishmentId));
+}
+
+/**
+ * Salva informações do merchant após conexão
+ */
+export async function saveIfoodMerchantInfo(
+  establishmentId: number,
+  merchantId: string,
+  merchantName: string
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(ifoodConfig)
+    .set({
+      merchantId,
+      merchantName,
+    })
+    .where(eq(ifoodConfig.establishmentId, establishmentId));
+}
+
+/**
+ * Desconecta o iFood de um estabelecimento
+ */
+export async function disconnectIfood(establishmentId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(ifoodConfig)
+    .set({
+      accessToken: null,
+      refreshToken: null,
+      tokenExpiresAt: null,
+      isConnected: false,
+      isActive: false,
+      merchantId: null,
+      merchantName: null,
+      userCode: null,
+      authorizationCodeVerifier: null,
+      userCodeExpiresAt: null,
+    })
+    .where(eq(ifoodConfig.establishmentId, establishmentId));
+}
+
+/**
+ * Busca configuração iFood pelo establishmentId (com tokens válidos)
+ */
+export async function getIfoodConfigWithValidToken(establishmentId: number): Promise<IfoodConfig | null> {
+  const config = await getIfoodConfig(establishmentId);
+  
+  if (!config || !config.isConnected || !config.refreshToken) {
+    return null;
+  }
+  
+  return config;
 }

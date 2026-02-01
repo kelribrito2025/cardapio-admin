@@ -493,16 +493,25 @@ export const printQueue = mysqlTable("printQueue", {
 export type PrintQueue = typeof printQueue.$inferSelect;
 export type InsertPrintQueue = typeof printQueue.$inferInsert;
 
-// Configuração de integração com iFood
+// Configuração de integração com iFood (Fluxo OAuth Distribuído)
 export const ifoodConfig = mysqlTable("ifoodConfig", {
   id: int("id").autoincrement().primaryKey(),
   establishmentId: int("establishmentId").notNull().unique(),
-  clientId: varchar("clientId", { length: 100 }), // Client ID do iFood
-  clientSecret: varchar("clientSecret", { length: 200 }), // Client Secret do iFood
-  merchantId: varchar("merchantId", { length: 100 }), // ID da loja no iFood
+  // Tokens OAuth (obtidos via fluxo distribuído)
+  accessToken: text("accessToken"), // Token de acesso atual
+  refreshToken: text("refreshToken"), // Token para renovar acesso
+  tokenExpiresAt: timestamp("tokenExpiresAt"), // Quando o token expira
+  // Código de verificação temporário (usado durante autorização)
+  authorizationCodeVerifier: varchar("authorizationCodeVerifier", { length: 255 }),
+  userCode: varchar("userCode", { length: 50 }), // Código exibido para o usuário
+  userCodeExpiresAt: timestamp("userCodeExpiresAt"), // Quando o código expira
+  // Informações da loja no iFood
+  merchantId: varchar("merchantId", { length: 100 }), // ID da loja no iFood (UUID)
+  merchantName: varchar("merchantName", { length: 255 }), // Nome da loja no iFood
+  // Status
   isActive: boolean("isActive").default(false).notNull(), // Integração ativa
+  isConnected: boolean("isConnected").default(false).notNull(), // Conectado ao iFood
   lastTokenRefresh: timestamp("lastTokenRefresh"), // Último refresh do token
-  webhookConfigured: boolean("webhookConfigured").default(false).notNull(), // Webhook configurado no portal
   // Configurações de comportamento
   autoAcceptOrders: boolean("autoAcceptOrders").default(false).notNull(), // Aceitar pedidos automaticamente
   notifyOnNewOrder: boolean("notifyOnNewOrder").default(true).notNull(), // Notificar sobre novos pedidos
