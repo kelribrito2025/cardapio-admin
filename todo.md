@@ -3997,3 +3997,7 @@
 - [x] Adicionar campo para colar código de autorização do Partner Portal
 - [x] Implementar renovação automática de tokens (refresh token)
 - [x] Mostrar status de conexão (Conectado/Desconectado) na tela
+
+## Som Específico para Pedidos iFood
+- [x] Copiar arquivo de som do iFood para o projeto (client/public)
+- [x] Atualizar lógica de notificação para tocar som diferente quando pedido for do iFood

@@ -9,8 +9,10 @@ import { useOrdersSSE } from "@/hooks/useOrdersSSE";
 class NotificationAudioManager {
   private static instance: NotificationAudioManager;
   private audio: HTMLAudioElement | null = null;
+  private ifoodAudio: HTMLAudioElement | null = null; // Som específico do iFood
   private audioContext: AudioContext | null = null;
   private audioBuffer: AudioBuffer | null = null;
+  private ifoodAudioBuffer: AudioBuffer | null = null; // Buffer do som do iFood
   private isUnlocked = false;
   private pendingPlay = false;
   private soundStateLoaded = false;
@@ -19,6 +21,7 @@ class NotificationAudioManager {
   private isIOS = false;
   private userHasInteracted = false;
   private audioPool: HTMLAudioElement[] = []; // Pool de áudios para Android
+  private ifoodAudioPool: HTMLAudioElement[] = []; // Pool de áudios iFood para Android
 
   private constructor() {
     this.detectMobile();
@@ -70,6 +73,12 @@ class NotificationAudioManager {
     this.audio.volume = 0;
     this.audio.preload = "auto";
     
+    // Criar elemento de áudio para iFood
+    this.ifoodAudio = new Audio("/ifood-notification.mp3");
+    this.ifoodAudio.muted = true;
+    this.ifoodAudio.volume = 0;
+    this.ifoodAudio.preload = "auto";
+    
     // Para Android, criar um pool de áudios pré-carregados
     // Android Chrome tem problemas com reutilização de elementos de áudio
     if (this.isAndroid) {
@@ -79,6 +88,12 @@ class NotificationAudioManager {
         poolAudio.preload = "auto";
         poolAudio.volume = 0.7;
         this.audioPool.push(poolAudio);
+        
+        // Pool para iFood
+        const ifoodPoolAudio = new Audio("/ifood-notification.mp3");
+        ifoodPoolAudio.preload = "auto";
+        ifoodPoolAudio.volume = 0.7;
+        this.ifoodAudioPool.push(ifoodPoolAudio);
       }
     }
     
@@ -116,10 +131,17 @@ class NotificationAudioManager {
     if (!this.audioContext) return;
     
     try {
+      // Carregar som padrão
       const response = await fetch("/notification.mp3");
       const arrayBuffer = await response.arrayBuffer();
       this.audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
       console.log("[NotificationAudio] Buffer de áudio carregado para mobile");
+      
+      // Carregar som do iFood
+      const ifoodResponse = await fetch("/ifood-notification.mp3");
+      const ifoodArrayBuffer = await ifoodResponse.arrayBuffer();
+      this.ifoodAudioBuffer = await this.audioContext.decodeAudioData(ifoodArrayBuffer);
+      console.log("[NotificationAudio] Buffer de áudio iFood carregado para mobile");
     } catch (e) {
       console.log("[NotificationAudio] Erro ao carregar buffer:", e);
     }
@@ -220,8 +242,9 @@ class NotificationAudioManager {
   }
 
   // Tocar usando Web Audio API (melhor para mobile)
-  private playWithWebAudio(): boolean {
-    if (!this.audioContext || !this.audioBuffer) return false;
+  private playWithWebAudio(isIfood: boolean = false): boolean {
+    const buffer = isIfood ? this.ifoodAudioBuffer : this.audioBuffer;
+    if (!this.audioContext || !buffer) return false;
     
     try {
       // Resumir contexto se necessário
@@ -230,7 +253,7 @@ class NotificationAudioManager {
       }
       
       const source = this.audioContext.createBufferSource();
-      source.buffer = this.audioBuffer;
+      source.buffer = buffer;
       
       const gainNode = this.audioContext.createGain();
       gainNode.gain.value = 0.7;
@@ -239,7 +262,7 @@ class NotificationAudioManager {
       gainNode.connect(this.audioContext.destination);
       
       source.start(0);
-      console.log("[NotificationAudio] Som tocado via Web Audio API!");
+      console.log(`[NotificationAudio] Som ${isIfood ? 'iFood' : 'padrão'} tocado via Web Audio API!`);
       return true;
     } catch (e) {
       console.log("[NotificationAudio] Erro ao tocar via Web Audio:", e);
@@ -248,18 +271,19 @@ class NotificationAudioManager {
   }
 
   // Tocar usando HTML Audio
-  private playWithHtmlAudio(): boolean {
-    if (!this.audio) return false;
+  private playWithHtmlAudio(isIfood: boolean = false): boolean {
+    const audioElement = isIfood ? this.ifoodAudio : this.audio;
+    if (!audioElement) return false;
     
-    this.audio.muted = false;
-    this.audio.volume = 0.7;
-    this.audio.currentTime = 0;
+    audioElement.muted = false;
+    audioElement.volume = 0.7;
+    audioElement.currentTime = 0;
     
-    const playPromise = this.audio.play();
+    const playPromise = audioElement.play();
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
-          console.log("[NotificationAudio] Som tocado via HTML Audio!");
+          console.log(`[NotificationAudio] Som ${isIfood ? 'iFood' : 'padrão'} tocado via HTML Audio!`);
           this.isUnlocked = true;
         })
         .catch((err) => {
@@ -274,11 +298,12 @@ class NotificationAudioManager {
   }
 
   // Tocar usando pool de áudios (específico para Android)
-  private playWithAndroidPool(): boolean {
-    if (this.audioPool.length === 0) return false;
+  private playWithAndroidPool(isIfood: boolean = false): boolean {
+    const pool = isIfood ? this.ifoodAudioPool : this.audioPool;
+    if (pool.length === 0) return false;
     
     // Encontrar um áudio disponível no pool (que não está tocando)
-    for (const audio of this.audioPool) {
+    for (const audio of pool) {
       if (audio.paused || audio.ended) {
         audio.currentTime = 0;
         audio.muted = false;
@@ -288,7 +313,7 @@ class NotificationAudioManager {
         if (playPromise !== undefined) {
           playPromise
             .then(() => {
-              console.log("[NotificationAudio] Som tocado via Android Pool!");
+              console.log(`[NotificationAudio] Som ${isIfood ? 'iFood' : 'padrão'} tocado via Android Pool!`);
             })
             .catch((err) => {
               console.log("[NotificationAudio] Erro Android Pool:", err.message);
@@ -299,7 +324,7 @@ class NotificationAudioManager {
     }
     
     // Se todos estão ocupados, usar o primeiro e resetar
-    const audio = this.audioPool[0];
+    const audio = pool[0];
     audio.currentTime = 0;
     audio.muted = false;
     audio.volume = 0.7;
@@ -323,7 +348,7 @@ class NotificationAudioManager {
     }
   }
 
-  play() {
+  play(isIfood: boolean = false) {
     // Verificar se estamos no menu público
     if (this.isInPublicMenu()) {
       console.log("[NotificationAudio] No menu público, som bloqueado");
@@ -342,7 +367,7 @@ class NotificationAudioManager {
       return;
     }
 
-    console.log("[NotificationAudio] Tentando tocar som...", {
+    console.log(`[NotificationAudio] Tentando tocar som ${isIfood ? 'iFood' : 'padrão'}...`, {
       isMobile: this.isMobile,
       isAndroid: this.isAndroid,
       isIOS: this.isIOS,
@@ -350,7 +375,8 @@ class NotificationAudioManager {
       isUnlocked: this.isUnlocked,
       hasAudioContext: !!this.audioContext,
       hasAudioBuffer: !!this.audioBuffer,
-      audioPoolSize: this.audioPool.length
+      audioPoolSize: this.audioPool.length,
+      isIfood
     });
 
     // Vibrar em dispositivos móveis (principalmente Android)
@@ -362,20 +388,20 @@ class NotificationAudioManager {
     // Para Android, tentar múltiplas estratégias
     if (this.isAndroid && this.userHasInteracted) {
       // Estratégia 1: Pool de áudios (mais confiável no Android)
-      if (this.playWithAndroidPool()) {
-        console.log("[NotificationAudio] Android: Usando pool de áudios");
+      if (this.playWithAndroidPool(isIfood)) {
+        console.log(`[NotificationAudio] Android: Usando pool de áudios ${isIfood ? 'iFood' : 'padrão'}`);
         return;
       }
       
       // Estratégia 2: Web Audio API
-      if (this.playWithWebAudio()) {
-        console.log("[NotificationAudio] Android: Usando Web Audio API");
+      if (this.playWithWebAudio(isIfood)) {
+        console.log(`[NotificationAudio] Android: Usando Web Audio API ${isIfood ? 'iFood' : 'padrão'}`);
         return;
       }
       
       // Estratégia 3: Criar novo elemento de áudio
-      console.log("[NotificationAudio] Android: Criando novo elemento de áudio");
-      const newAudio = new Audio("/notification.mp3");
+      console.log(`[NotificationAudio] Android: Criando novo elemento de áudio ${isIfood ? 'iFood' : 'padrão'}`);
+      const newAudio = new Audio(isIfood ? "/ifood-notification.mp3" : "/notification.mp3");
       newAudio.volume = 0.7;
       newAudio.play().catch((e) => {
         console.log("[NotificationAudio] Android: Erro no novo áudio:", e.message);
@@ -385,13 +411,13 @@ class NotificationAudioManager {
 
     // Para iOS, usar Web Audio API primeiro
     if (this.isIOS && this.userHasInteracted) {
-      if (this.playWithWebAudio()) {
+      if (this.playWithWebAudio(isIfood)) {
         return;
       }
     }
 
     // Fallback para HTML Audio
-    this.playWithHtmlAudio();
+    this.playWithHtmlAudio(isIfood);
   }
 
   // Método para verificar se o áudio está desbloqueado
@@ -455,9 +481,9 @@ class NotificationAudioManager {
 }
 
 // Função para tocar som de notificação
-const playNotificationSound = () => {
+const playNotificationSound = (isIfood: boolean = false) => {
   try {
-    NotificationAudioManager.getInstance().play();
+    NotificationAudioManager.getInstance().play(isIfood);
   } catch (err) {
     console.log("[NewOrders] Erro ao tocar áudio:", err);
   }
@@ -532,8 +558,13 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     const timestamp = new Date().toISOString();
     const isAndroid = /Android/i.test(navigator.userAgent);
     
+    // Verificar se o pedido é do iFood
+    const orderData = order as { source?: string };
+    const isIfoodOrder = orderData?.source === 'ifood';
+    
     console.log(`[NewOrders] [${timestamp}] ========== NOVO PEDIDO RECEBIDO ==========`);
     console.log(`[NewOrders] [${timestamp}] Plataforma: ${isAndroid ? 'Android' : 'Outro'}`);
+    console.log(`[NewOrders] [${timestamp}] Origem: ${isIfoodOrder ? 'iFood' : 'Interno'}`);
     console.log(`[NewOrders] [${timestamp}] Pedido:`, order);
     console.log(`[NewOrders] [${timestamp}] Location atual:`, locationRef.current);
     
@@ -547,7 +578,7 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     try {
       // Disparar evento customizado para toast (será capturado pelo componente de toast)
       const toastEvent = new CustomEvent('new-order-notification', {
-        detail: { order, timestamp }
+        detail: { order, timestamp, isIfood: isIfoodOrder }
       });
       window.dispatchEvent(toastEvent);
       console.log(`[NewOrders] [${timestamp}] Evento de toast disparado`);
@@ -557,9 +588,10 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     
     // Tocar som de notificação APENAS se não estiver no menu público
     // O menu público usa a rota /menu/:slug
+    // Se for pedido do iFood, toca som específico do iFood
     if (!locationRef.current.startsWith('/menu/')) {
-      console.log(`[NewOrders] [${timestamp}] Chamando playNotificationSound...`);
-      playNotificationSound();
+      console.log(`[NewOrders] [${timestamp}] Chamando playNotificationSound (iFood: ${isIfoodOrder})...`);
+      playNotificationSound(isIfoodOrder);
       console.log(`[NewOrders] [${timestamp}] playNotificationSound chamado`);
     } else {
       console.log(`[NewOrders] [${timestamp}] Som não tocado - usuário está no menu público`);
