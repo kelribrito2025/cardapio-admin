@@ -4080,3 +4080,6 @@
 - [x] No modal de confirmação (step 2), mostrar apenas a opção de entrega já selecionada
 - [x] Adicionar botão "Alterar" dentro da opção selecionada para voltar ao modal de seleção de bairro
 - [x] Remover as outras opções de entrega do modal de confirmação
+
+## Ajuste: Remover nome do bairro do modal de tipo de entrega
+- [x] Alterar "Entrega - Bairro X" para apenas "Entrega" no modal de tipo de entrega (step 2)

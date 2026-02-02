@@ -3075,7 +3075,7 @@ export default function PublicMenu() {
                         <div>
                           <span className="font-medium text-gray-800">
                             {deliveryType === "pickup" && "Retirar no local"}
-                            {deliveryType === "delivery" && (selectedNeighborhood ? `Entrega - ${selectedNeighborhood.name}` : "Entrega")}
+                            {deliveryType === "delivery" && "Entrega"}
                             {deliveryType === "dine_in" && "Consumir no local"}
                           </span>
                           <span className="ml-2 text-sm text-green-600 font-medium">
