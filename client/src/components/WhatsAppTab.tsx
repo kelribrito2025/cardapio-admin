@@ -31,6 +31,9 @@ export function WhatsAppTab({ hideConnectionCard = false }: WhatsAppTabProps) {
   const [testMessage, setTestMessage] = useState("Olá! Esta é uma mensagem de teste do Cardápio Admin.");
   const [isPolling, setIsPolling] = useState(false);
   
+  // Get establishment data for restaurant name
+  const { data: establishment } = trpc.establishment.get.useQuery();
+  
   // Notification settings
   const [requireOrderConfirmation, setRequireOrderConfirmation] = useState(false);
   const [notifyOnNewOrder, setNotifyOnNewOrder] = useState(true);
@@ -449,6 +452,8 @@ export function WhatsAppTab({ hideConnectionCard = false }: WhatsAppTabProps) {
             onSave={handleSaveTemplates}
             isSaving={saveTemplatesMutation.isPending}
             defaultTemplates={DEFAULT_TEMPLATES}
+            restaurantName={establishment?.name}
+            restaurantLogo={establishment?.logo}
           />
         </TabsContent>
 

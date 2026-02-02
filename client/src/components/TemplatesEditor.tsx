@@ -41,6 +41,8 @@ interface TemplatesEditorProps {
     completed: string;
     cancelled: string;
   };
+  restaurantName?: string;
+  restaurantLogo?: string | null;
 }
 
 type TemplateType = 'newOrder' | 'preparing' | 'ready' | 'completed' | 'cancelled';
@@ -151,6 +153,8 @@ export function TemplatesEditor({
   onSave,
   isSaving,
   defaultTemplates,
+  restaurantName,
+  restaurantLogo,
 }: TemplatesEditorProps) {
   const [activeTemplate, setActiveTemplate] = useState<TemplateType>('newOrder');
   const [copiedVar, setCopiedVar] = useState<string | null>(null);
@@ -312,11 +316,21 @@ export function TemplatesEditor({
           <div className="bg-[#008069] px-4 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center overflow-hidden">
-                  <span className="text-white font-bold text-sm">R</span>
-                </div>
+                {restaurantLogo ? (
+                  <img 
+                    src={restaurantLogo} 
+                    alt={restaurantName || 'Restaurante'} 
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center overflow-hidden">
+                    <span className="text-white font-bold text-sm">
+                      {restaurantName ? restaurantName.charAt(0).toUpperCase() : 'R'}
+                    </span>
+                  </div>
+                )}
                 <div>
-                  <p className="text-white font-semibold text-sm">Restaurante Kelri</p>
+                  <p className="text-white font-semibold text-sm">{restaurantName || 'Seu Restaurante'}</p>
                   <p className="text-emerald-200 text-xs">online</p>
                 </div>
               </div>

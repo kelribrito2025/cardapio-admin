@@ -4151,3 +4151,6 @@
 - [x] Mover balão de mensagem para o lado esquerdo (mensagem recebida pelo cliente)
 - [x] Usar cor branca no balão (mensagem recebida) em vez de verde
 - [x] Adicionar nome do restaurante no header do preview
+
+## Preview WhatsApp no Editor de Templates
+- [x] Buscar dinamicamente o nome do restaurante do banco de dados para exibir no header do preview WhatsApp
