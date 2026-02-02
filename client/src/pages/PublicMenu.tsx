@@ -5466,6 +5466,66 @@ export default function PublicMenu() {
               </div>
             </div>
 
+            {/* Opção Fixa - Retirar no Local */}
+            {establishment.deliveryTypes?.includes('pickup') && (
+              <div className="px-5 pt-4 pb-2 bg-white border-b border-gray-200">
+                <button
+                  onClick={() => {
+                    setSelectedNeighborhood(null);
+                    setDeliveryType('pickup');
+                    setShowNeighborhoodModal(false);
+                    setNeighborhoodSearch('');
+                    // Reabrir a sacola ou checkout se veio do botão Alterar bairro
+                    if (reopenBagAfterNeighborhood) {
+                      setReopenBagAfterNeighborhood(false);
+                      setTimeout(() => {
+                        if (checkoutStep === 0) {
+                          setCheckoutStep(2);
+                        } else {
+                          setShowMobileBag(true);
+                        }
+                      }, 100);
+                    }
+                  }}
+                  className={cn(
+                    "w-full px-5 py-4 text-left rounded-xl flex items-center justify-between transition-all border-2",
+                    deliveryType === 'pickup' && !selectedNeighborhood
+                      ? "bg-green-50 border-green-400 shadow-sm" 
+                      : "bg-gray-50 border-gray-200 hover:bg-green-50 hover:border-green-300"
+                  )}
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className={cn(
+                      "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors",
+                      deliveryType === 'pickup' && !selectedNeighborhood
+                        ? "border-green-500 bg-green-500" 
+                        : "border-gray-300"
+                    )}>
+                      {deliveryType === 'pickup' && !selectedNeighborhood && (
+                        <Check className="h-3.5 w-3.5 text-white" />
+                      )}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-gray-800 text-base">Retirar no local</span>
+                      <span className="text-gray-500 text-sm">Sem taxa de entrega</span>
+                    </div>
+                  </div>
+                  <span className="text-green-600 font-bold text-base">Grátis</span>
+                </button>
+              </div>
+            )}
+
+            {/* Separador com texto */}
+            {establishment.deliveryTypes?.includes('pickup') && (
+              <div className="px-5 py-2 bg-white">
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-px bg-gray-200"></div>
+                  <span className="text-gray-400 text-xs font-medium uppercase">ou escolha um bairro para entrega</span>
+                  <div className="flex-1 h-px bg-gray-200"></div>
+                </div>
+              </div>
+            )}
+
             {/* Body - Lista de Bairros */}
             <div 
               className="p-5 space-y-2.5 overflow-y-auto flex-1 overscroll-contain" 
@@ -5473,7 +5533,7 @@ export default function PublicMenu() {
                 backgroundColor: '#ffffff', 
                 // No mobile: altura para ~4 itens (cada item tem ~60px + 10px gap = ~280px)
                 // No desktop: altura maior
-                maxHeight: window.innerWidth < 768 ? '280px' : '400px', 
+                maxHeight: window.innerWidth < 768 ? '240px' : '350px', 
                 WebkitOverflowScrolling: 'touch'
               }}
               data-neighborhood-scrollable="true"

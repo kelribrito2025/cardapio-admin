@@ -4050,3 +4050,9 @@
 ## Bug: Taxa de entrega aplicada em pedidos de retirada (pickup)
 - [x] Corrigir cálculo da taxa de entrega para zerar quando deliveryType é pickup ou dine_in
 - [x] Verificar todos os locais onde deliveryFee é calculado no PublicMenu.tsx
+
+## Opção Retirar no Local no Modal de Bairro
+- [x] Adicionar opção fixa "Retirar no local" no topo do modal de seleção de bairro
+- [x] Destacar visualmente a opção (cor verde, texto "Grátis")
+- [x] Ao selecionar, definir deliveryType como pickup automaticamente
+- [x] Zerar taxa de entrega ao selecionar retirada
