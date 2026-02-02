@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS menu_views_hourly (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  establishmentId INT NOT NULL,\n  dayOfWeek INT NOT NULL,\n  hour INT NOT NULL,\n  viewCount INT NOT NULL DEFAULT 0,\n  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,\n  INDEX idx_establishment_day_hour (establishmentId, dayOfWeek, hour)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute CREATE TABLE IF NOT EXISTS menu_views_hourly (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  establishmentId INT NOT NULL,\n  dayOfWeek INT NOT NULL,\n  hour INT NOT NULL,\n  viewCount INT NOT NULL DEFAULT 0,\n  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,\n  INDEX idx_establishment_day_hour (establishmentId, dayOfWeek, hour)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 212
+}

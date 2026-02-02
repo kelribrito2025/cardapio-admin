@@ -4169,3 +4169,12 @@
 
 - [x] Ajustar a fonte do card de Visualizações para usar a mesma fonte do sistema admin
 - [x] Ajustar a altura do card de Visualizações para ser igual ao card de Acumulado da Semana
+
+## Mapa de Calor de Visualizações
+- [x] Criar tabela menu_views_hourly no schema para armazenar visualizações por hora
+- [x] Implementar procedure para buscar dados do mapa de calor (7 dias x 24 horas)
+- [x] Atualizar registro de sessão para incluir hora
+- [x] Criar componente HeatmapCard com grid de dias x horas
+- [x] Implementar escala de cores (azul claro a azul escuro)
+- [x] Adicionar legenda "Menos" a "Mais"
+- [x] Integrar HeatmapCard no Dashboard substituindo o ViewsCard simples

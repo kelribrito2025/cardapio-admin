@@ -548,3 +548,18 @@ export const menuViewsDaily = mysqlTable("menu_views_daily", {
 
 export type MenuViewsDaily = typeof menuViewsDaily.$inferSelect;
 export type InsertMenuViewsDaily = typeof menuViewsDaily.$inferInsert;
+
+
+// Menu views hourly aggregation for heatmap
+export const menuViewsHourly = mysqlTable("menu_views_hourly", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  dayOfWeek: int("dayOfWeek").notNull(), // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  hour: int("hour").notNull(), // 0-23
+  viewCount: int("viewCount").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MenuViewsHourly = typeof menuViewsHourly.$inferSelect;
+export type InsertMenuViewsHourly = typeof menuViewsHourly.$inferInsert;

@@ -27,7 +27,8 @@ import {
   printQueue, InsertPrintQueue, PrintQueue,
   ifoodConfig, InsertIfoodConfig, IfoodConfig,
   menuSessions, InsertMenuSession, MenuSession,
-  menuViewsDaily, InsertMenuViewsDaily, MenuViewsDaily
+  menuViewsDaily, InsertMenuViewsDaily, MenuViewsDaily,
+  menuViewsHourly, InsertMenuViewsHourly, MenuViewsHourly
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -4440,4 +4441,75 @@ export async function cleanupOldMenuSessions(): Promise<number> {
     .where(lt(menuSessions.updatedAt, twentyFourHoursAgo));
   
   return result[0]?.affectedRows || 0;
+}
+
+
+// ============ MENU VIEWS HEATMAP FUNCTIONS ============
+
+/**
+ * Incrementa a contagem de visualizações para um dia/hora específico
+ */
+export async function incrementMenuViewHourly(
+  establishmentId: number,
+  dayOfWeek: number,
+  hour: number
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Tenta atualizar registro existente
+  const existing = await db.select()
+    .from(menuViewsHourly)
+    .where(
+      and(
+        eq(menuViewsHourly.establishmentId, establishmentId),
+        eq(menuViewsHourly.dayOfWeek, dayOfWeek),
+        eq(menuViewsHourly.hour, hour)
+      )
+    )
+    .limit(1);
+  
+  if (existing.length > 0) {
+    await db.update(menuViewsHourly)
+      .set({ viewCount: sql`${menuViewsHourly.viewCount} + 1` })
+      .where(eq(menuViewsHourly.id, existing[0].id));
+  } else {
+    await db.insert(menuViewsHourly).values({
+      establishmentId,
+      dayOfWeek,
+      hour,
+      viewCount: 1,
+    });
+  }
+}
+
+/**
+ * Busca dados do mapa de calor (7 dias x 24 horas)
+ */
+export async function getMenuViewsHeatmap(establishmentId: number): Promise<{
+  data: { dayOfWeek: number; hour: number; count: number }[];
+  maxCount: number;
+  totalViews: number;
+}> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const results = await db.select({
+    dayOfWeek: menuViewsHourly.dayOfWeek,
+    hour: menuViewsHourly.hour,
+    count: menuViewsHourly.viewCount,
+  })
+    .from(menuViewsHourly)
+    .where(eq(menuViewsHourly.establishmentId, establishmentId));
+  
+  const data = results.map(r => ({
+    dayOfWeek: r.dayOfWeek,
+    hour: r.hour,
+    count: r.count,
+  }));
+  
+  const maxCount = data.length > 0 ? Math.max(...data.map(d => d.count)) : 0;
+  const totalViews = data.reduce((sum, d) => sum + d.count, 0);
+  
+  return { data, maxCount, totalViews };
 }

@@ -426,6 +426,13 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         await db.registerMenuSession(input.sessionId, input.establishmentId);
+        
+        // Incrementar contagem do mapa de calor
+        const now = new Date();
+        const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
+        const hour = now.getHours(); // 0-23
+        await db.incrementMenuViewHourly(input.establishmentId, dayOfWeek, hour);
+        
         return { success: true };
       }),
     
@@ -464,6 +471,20 @@ export const appRouter = router({
         const establishment = await db.getEstablishmentByUserId(ctx.user.id);
         if (!establishment) return [];
         return db.getMenuViewsHistory(establishment.id, input.days);
+      }),
+    
+    // Procedure protegida para buscar dados do mapa de calor
+    getHeatmap: protectedProcedure
+      .query(async ({ ctx }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) {
+          return {
+            data: [],
+            maxCount: 0,
+            totalViews: 0,
+          };
+        }
+        return db.getMenuViewsHeatmap(establishment.id);
       }),
   }),
 
