@@ -4247,3 +4247,6 @@
 
 ## Reorganização do Menu
 - [x] Mover menu de Cupons para a seção de Marketing
+
+## Badge Breve no Menu Cupons
+- [x] Adicionar badge "Breve" ao menu de Cupons igual aos outros menus
