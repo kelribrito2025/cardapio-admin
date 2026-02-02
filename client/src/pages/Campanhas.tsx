@@ -1,5 +1,5 @@
 import { AdminLayout } from "@/components/AdminLayout";
-import { PageHeader, SectionCard } from "@/components/shared";
+import { PageHeader, SectionCard, StatCard } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -191,66 +191,31 @@ export default function Campanhas() {
         />
 
         {/* Cards Informativos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Saldo Disponível */}
-          <div className="bg-card rounded-xl border border-border/50 p-4 shadow-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="h-10 w-10 rounded-xl bg-green-100 flex items-center justify-center">
-                <Wallet className="h-5 w-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground font-medium">Saldo Disponível</p>
-                <p className="text-xl font-bold text-foreground">
-                  R$ {MOCK_DATA.saldo.toFixed(2)}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Custo por SMS */}
-          <div className="bg-card rounded-xl border border-border/50 p-4 shadow-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                <DollarSign className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground font-medium">Custo por SMS</p>
-                <p className="text-xl font-bold text-foreground">
-                  R$ {MOCK_DATA.custoPorSms.toFixed(2)}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Quantidade de SMS Possíveis */}
-          <div className="bg-card rounded-xl border border-border/50 p-4 shadow-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="h-10 w-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                <Hash className="h-5 w-5 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground font-medium">SMS Possíveis</p>
-                <p className="text-xl font-bold text-foreground">
-                  {smsPossiveis.toLocaleString()}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Último Disparo */}
-          <div className="bg-card rounded-xl border border-border/50 p-4 shadow-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="h-10 w-10 rounded-xl bg-orange-100 flex items-center justify-center">
-                <Clock className="h-5 w-5 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground font-medium">Último Disparo</p>
-                <p className="text-xl font-bold text-foreground">
-                  {formatarUltimoDisparo()}
-                </p>
-              </div>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <StatCard
+            title="Saldo Disponível"
+            value={`R$ ${MOCK_DATA.saldo.toFixed(2)}`}
+            icon={Wallet}
+            variant="emerald"
+          />
+          <StatCard
+            title="Custo por SMS"
+            value={`R$ ${MOCK_DATA.custoPorSms.toFixed(2)}`}
+            icon={DollarSign}
+            variant="blue"
+          />
+          <StatCard
+            title="SMS Possíveis"
+            value={smsPossiveis.toLocaleString()}
+            icon={Hash}
+            variant="blue"
+          />
+          <StatCard
+            title="Último Disparo"
+            value={formatarUltimoDisparo()}
+            icon={Clock}
+            variant="amber"
+          />
         </div>
 
         {/* Layout em duas colunas */}

@@ -4197,3 +4197,4 @@
 - [x] Mostrar total de destinatários selecionados
 - [x] Adicionar botão "Disparar SMS"
 - [x] Criar preview visual do SMS no formato de celular
+- [x] Ajustar os 4 cards informativos da página de Campanhas SMS para seguir o mesmo modelo visual dos cards do Dashboard
