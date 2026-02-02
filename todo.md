@@ -4200,3 +4200,5 @@
 - [x] Ajustar os 4 cards informativos da página de Campanhas SMS para seguir o mesmo modelo visual dos cards do Dashboard
 - [x] Mover ícone de informação (i) para o final da linha "Mensagem SMS"
 - [x] Mover contador de caracteres para dentro do campo de texto no canto inferior direito
+- [x] Ajustar campo de mensagem SMS para ter apenas uma área de texto sem quebras de linha extras
+- [x] Posicionar contador de caracteres no canto inferior direito na mesma linha do placeholder

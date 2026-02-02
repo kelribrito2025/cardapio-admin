@@ -255,11 +255,11 @@ export default function Campanhas() {
                     }
                   }}
                   placeholder="Digite sua mensagem promocional aqui..."
-                  className="min-h-[120px] resize-none pb-8"
+                  className="min-h-[100px] resize-none pr-16"
                 />
-                {/* Contador de caracteres dentro do campo */}
+                {/* Contador de caracteres no canto inferior direito */}
                 <div className={cn(
-                  "absolute bottom-2 right-3 text-sm font-medium pointer-events-none",
+                  "absolute bottom-3 right-3 text-sm font-medium pointer-events-none",
                   mensagem.length > SMS_CHAR_LIMIT * 0.9 ? "text-orange-500" : "text-muted-foreground",
                   mensagem.length >= SMS_CHAR_LIMIT && "text-red-500"
                 )}>
