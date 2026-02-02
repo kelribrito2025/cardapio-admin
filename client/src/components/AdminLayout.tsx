@@ -684,7 +684,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Main content */}
       <div 
-        className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] min-h-screen bg-gray-50", mainPadding)}
+        className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] h-screen overflow-hidden flex flex-col bg-gray-50", mainPadding)}
       >
         {/* Topbar */}
         <header className="sticky top-0 z-30 h-[58px] bg-card/80 backdrop-blur-md border-b border-border/50">
@@ -895,7 +895,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </header>
 
         {/* Page content */}
-        <main className="p-3 lg:p-6">
+        <main className="flex-1 overflow-auto p-3 lg:p-6">
           {children}
         </main>
       </div>

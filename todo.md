@@ -4281,3 +4281,6 @@
 ## Correção de overflow na página PDV
 - [x] Corrigir barra de rolagem externa na página PDV
 - [x] Garantir que o botão Finalizar Pedido apareça completo
+
+## Correção de overflow na página Dashboard
+- [x] Corrigir barra de rolagem externa na página Dashboard
