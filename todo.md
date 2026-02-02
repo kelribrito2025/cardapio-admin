@@ -4300,3 +4300,7 @@
 
 ## Correção do alinhamento nos cards do PDV
 - [x] Fixar posição do preço e botão Adicionar independente do tamanho da descrição
+
+## Alteração do comportamento do botão Adicionar no PDV
+- [x] Botão Adicionar: adiciona item direto à lista sem abrir modal
+- [x] Clicar no card: abre modal de detalhes do item

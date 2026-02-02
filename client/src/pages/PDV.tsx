@@ -377,7 +377,8 @@ export default function PDV() {
                             className="h-8 px-3 text-xs border-red-200 text-red-600 hover:bg-red-50"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleProductClick(product);
+                              // Adiciona direto à lista com quantidade 1, sem observação e sem complementos
+                              addToCart(product, 1, "", []);
                             }}
                             disabled={!product.hasStock}
                           >
