@@ -82,8 +82,8 @@ export function HeatmapCard() {
               <Eye className="h-5 w-5 text-blue-600" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-base font-semibold text-foreground">Mapa de Calor</h3>
-              <p className="text-xs text-muted-foreground">Visualizações por dia e hora</p>
+              <h3 className="text-base font-semibold text-foreground">Visualizações do Cardápio</h3>
+              <p className="text-xs text-muted-foreground">Horários em que seu cardápio é mais acessado</p>
             </div>
           </div>
           
