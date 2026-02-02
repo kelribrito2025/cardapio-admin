@@ -667,7 +667,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       key={item.href}
                       href={item.href}
                       onClick={handleNavClick}
-                      className={navClassName} style={{borderRadius: '12px', paddingLeft: '37px', marginRight: '20px', marginLeft: '-27px'}}
+                      className={navClassName} style={{borderRadius: '12px', paddingLeft: '37px', marginRight: '43px', marginLeft: '-27px'}}
                     >
                       {navContent}
                     </Link>
