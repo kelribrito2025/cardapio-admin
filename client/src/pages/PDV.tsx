@@ -301,12 +301,12 @@ export default function PDV() {
                       className="bg-card rounded-xl border border-border/50 overflow-hidden cursor-pointer hover:shadow-lg hover:border-red-200 transition-all group"
                     >
                       {/* Imagem */}
-                      <div className="aspect-square bg-muted relative overflow-hidden">
+                      <div className="h-28 bg-muted relative overflow-hidden">
                         {product.images?.[0] ? (
                           <img
                             src={product.images[0]}
                             alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={{height: '110px'}}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
