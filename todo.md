@@ -4140,3 +4140,9 @@
 - [x] Preview estilo WhatsApp (bolha verde, horário, checkmarks)
 - [x] Reduzir texto técnico visível
 - [x] Manter lógica atual de salvamento
+
+## Redesign dos 3 Cards da Página de Templates
+- [ ] Criar novo modelo visual para o card de Variáveis disponíveis
+- [ ] Criar novo modelo visual para o card do Editor de texto
+- [ ] Criar novo modelo visual para o card de Preview WhatsApp
+- [ ] Manter botões de navegação (Novo Pedido, Preparando, etc.) no lugar atual

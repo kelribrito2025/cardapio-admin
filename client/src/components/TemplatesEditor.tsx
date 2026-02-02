@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
 import { 
   Loader2,
   ShoppingBag,
@@ -10,7 +9,16 @@ import {
   Package,
   XCircle,
   RotateCcw,
-  Info
+  Info,
+  MessageCircle,
+  Phone,
+  Video,
+  MoreVertical,
+  Smile,
+  Paperclip,
+  Mic,
+  Send,
+  Check
 } from "lucide-react";
 
 interface TemplatesEditorProps {
@@ -82,13 +90,13 @@ const TEMPLATE_CONFIG: Record<TemplateType, {
 };
 
 const VARIABLES = [
-  { name: '{{customerName}}', description: 'Nome do cliente' },
-  { name: '{{orderNumber}}', description: 'Número do pedido' },
-  { name: '{{establishmentName}}', description: 'Nome do estabelecimento' },
-  { name: '{{greeting}}', description: 'Saudação (Bom dia/Boa tarde/Boa noite)' },
-  { name: '{{deliveryMessage}}', description: 'Mensagem de entrega/retirada' },
-  { name: '{{cancellationReason}}', description: 'Motivo do cancelamento' },
-  { name: '{{itensPedido}}', description: 'Lista dos itens do pedido' },
+  { name: '{{customerName}}', label: 'Nome do cliente', description: 'Nome completo do cliente' },
+  { name: '{{orderNumber}}', label: 'Nº do pedido', description: 'Número único do pedido' },
+  { name: '{{establishmentName}}', label: 'Nome da loja', description: 'Nome do seu estabelecimento' },
+  { name: '{{greeting}}', label: 'Saudação', description: 'Bom dia, Boa tarde ou Boa noite' },
+  { name: '{{deliveryMessage}}', label: 'Msg entrega', description: 'Mensagem sobre entrega' },
+  { name: '{{cancellationReason}}', label: 'Motivo cancelamento', description: 'Razão do cancelamento' },
+  { name: '{{itensPedido}}', label: 'Itens do pedido', description: 'Lista de itens do pedido' },
 ];
 
 // Função para formatar texto estilo WhatsApp
@@ -145,6 +153,7 @@ export function TemplatesEditor({
   defaultTemplates,
 }: TemplatesEditorProps) {
   const [activeTemplate, setActiveTemplate] = useState<TemplateType>('newOrder');
+  const [copiedVar, setCopiedVar] = useState<string | null>(null);
 
   const templates: Record<TemplateType, { value: string; setter: (v: string) => void; default: string }> = {
     newOrder: { value: templateNewOrder, setter: setTemplateNewOrder, default: defaultTemplates.newOrder },
@@ -159,6 +168,8 @@ export function TemplatesEditor({
 
   const handleInsertVariable = (variable: string) => {
     currentTemplate.setter(currentTemplate.value + variable);
+    setCopiedVar(variable);
+    setTimeout(() => setCopiedVar(null), 1500);
   };
 
   const handleResetTemplate = () => {
@@ -171,12 +182,12 @@ export function TemplatesEditor({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Header com título e descrição */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold">Editor de Mensagens</h3>
-          <p className="text-sm text-muted-foreground">Personalize as mensagens automáticas enviadas aos clientes</p>
+          <h3 className="text-lg font-semibold text-slate-800">Editor de Mensagens</h3>
+          <p className="text-sm text-slate-500">Personalize as mensagens automáticas enviadas aos clientes</p>
         </div>
         <Button 
           onClick={onSave}
@@ -212,100 +223,176 @@ export function TemplatesEditor({
         })}
       </div>
 
-      {/* Card de variáveis disponíveis */}
-      <Card className="border-blue-200 bg-blue-50/50">
-        <CardContent className="py-3 px-4">
-          <div className="flex items-start gap-2">
-            <Info className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-blue-800 mb-2">Variáveis disponíveis</p>
-              <div className="flex flex-wrap gap-2">
-                {VARIABLES.map((v) => (
-                  <button
-                    key={v.name}
-                    onClick={() => handleInsertVariable(v.name)}
-                    className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-mono bg-white border border-blue-200 text-blue-700 hover:bg-blue-100 hover:border-blue-300 transition-colors"
-                    title={v.description}
-                  >
-                    {v.name}
-                  </button>
-                ))}
+      {/* Card de Variáveis - Novo Design Minimalista */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <Info className="h-4 w-4 text-blue-500" />
+          <span className="text-sm font-semibold text-slate-700">Variáveis disponíveis</span>
+          <span className="text-xs text-slate-400 ml-1">• Clique para inserir</span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {VARIABLES.map((v) => (
+            <button
+              key={v.name}
+              onClick={() => handleInsertVariable(v.name)}
+              className={`group relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                copiedVar === v.name
+                  ? 'bg-green-500 text-white scale-95'
+                  : 'bg-slate-100 text-slate-600 hover:bg-blue-500 hover:text-white hover:shadow-md'
+              }`}
+              title={v.description}
+            >
+              <span className="font-mono text-xs">{v.name.replace(/\{\{|\}\}/g, '')}</span>
+              {copiedVar === v.name && (
+                <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                  Inserido!
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Layout principal: Editor + Preview lado a lado */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* Card do Editor - Novo Design Clean */}
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          {/* Header do Editor */}
+          <div className="px-5 py-4 border-b border-slate-100 bg-slate-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.bgColor}`}>
+                  <span className={config.color}>{config.icon}</span>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-slate-800">{config.label}</h4>
+                  <p className="text-xs text-slate-500">{config.description}</p>
+                </div>
               </div>
+              <button
+                onClick={handleResetTemplate}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-all"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Restaurar
+              </button>
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Layout principal: Editor + Preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Coluna do Editor */}
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <span className={`${config.color}`}>{config.icon}</span>
-                <span className="font-medium">{config.label}</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleResetTemplate}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <RotateCcw className="h-4 w-4 mr-1" />
-                Restaurar padrão
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground mb-3">{config.description}</p>
+          
+          {/* Área de Texto */}
+          <div className="p-5">
             <Textarea
               value={currentTemplate.value}
               onChange={(e) => currentTemplate.setter(e.target.value)}
-              rows={10}
-              className="font-mono text-sm resize-none"
+              rows={14}
+              className="font-mono text-sm resize-none border-slate-200 rounded-xl focus:border-blue-400 focus:ring-blue-400 bg-slate-50"
               placeholder="Digite sua mensagem aqui..."
             />
-            <p className="text-xs text-muted-foreground mt-2 text-right">
-              {currentTemplate.value.length} caracteres
-            </p>
-          </CardContent>
-        </Card>
+            <div className="flex items-center justify-between mt-3 px-1">
+              <span className="text-xs text-slate-400">
+                Use <code className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">*texto*</code> para <strong>negrito</strong>
+              </span>
+              <span className={`text-xs font-semibold ${
+                currentTemplate.value.length > 900 
+                  ? currentTemplate.value.length > 1000 
+                    ? 'text-red-500' 
+                    : 'text-orange-500'
+                  : 'text-slate-400'
+              }`}>
+                {currentTemplate.value.length} / 1024
+              </span>
+            </div>
+          </div>
+        </div>
 
-        {/* Coluna do Preview WhatsApp */}
-        <Card className="bg-[#e5ddd5]">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="font-medium text-gray-700">Preview</span>
-              <span className="text-xs text-gray-500">Como o cliente verá</span>
+        {/* Card de Preview WhatsApp - Design Realista */}
+        <div className="bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-300">
+          {/* Header do WhatsApp - Estilo iOS/Android */}
+          <div className="bg-[#008069] px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-slate-300 flex items-center justify-center overflow-hidden">
+                  <MessageCircle className="h-5 w-5 text-slate-500" />
+                </div>
+                <div>
+                  <p className="text-white font-semibold text-sm">Seu Restaurante</p>
+                  <p className="text-emerald-200 text-xs">online</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <Video className="h-5 w-5 text-white/80" />
+                <Phone className="h-5 w-5 text-white/80" />
+                <MoreVertical className="h-5 w-5 text-white/80" />
+              </div>
+            </div>
+          </div>
+          
+          {/* Área de Chat - Background WhatsApp */}
+          <div 
+            className="p-4 min-h-[380px] relative"
+            style={{
+              backgroundColor: '#ECE5DD',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d4cfc4' fill-opacity='0.3' fill-rule='evenodd'/%3E%3C/svg%3E")`,
+            }}
+          >
+            {/* Data do dia */}
+            <div className="flex justify-center mb-4">
+              <span className="bg-white/90 text-slate-600 text-[11px] font-medium px-3 py-1 rounded-lg shadow-sm">
+                HOJE
+              </span>
             </div>
             
-            {/* Simulação de tela WhatsApp */}
-            <div className="bg-[#e5ddd5] rounded-lg p-4 min-h-[280px]" style={{
-              backgroundImage: `url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QkZEBQQ3WPvJAAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAJklEQVRo3u3BMQEAAADCoPVP7WsIoAAAAAAAAAAAAAAAAAAAbjh4AAFiTgvhAAAAAElFTkSuQmCC")`,
-              backgroundRepeat: 'repeat'
-            }}>
-              {/* Bolha de mensagem */}
-              <div className="max-w-[85%] ml-auto">
-                <div className="bg-[#dcf8c6] rounded-lg rounded-tr-none p-3 shadow-sm relative">
+            {/* Bolha de mensagem enviada */}
+            <div className="flex justify-end">
+              <div className="max-w-[85%] relative">
+                {/* Bolha principal */}
+                <div className="bg-[#D9FDD3] rounded-lg rounded-tr-sm p-3 shadow-sm relative">
                   {/* Triângulo da bolha */}
-                  <div className="absolute -right-2 top-0 w-0 h-0 border-l-8 border-l-[#dcf8c6] border-t-8 border-t-transparent border-b-8 border-b-transparent"></div>
+                  <div 
+                    className="absolute -right-2 top-0 w-0 h-0"
+                    style={{
+                      borderLeft: '8px solid #D9FDD3',
+                      borderBottom: '8px solid transparent',
+                    }}
+                  />
                   
                   {/* Conteúdo da mensagem */}
-                  <div className="text-sm text-gray-800 whitespace-pre-wrap break-words">
-                    {formatWhatsAppText(currentTemplate.value)}
+                  <div className="text-[14px] text-slate-800 whitespace-pre-wrap break-words leading-relaxed pr-12">
+                    {formatWhatsAppText(currentTemplate.value) || (
+                      <span className="text-slate-400 italic">Sua mensagem aparecerá aqui...</span>
+                    )}
                   </div>
                   
                   {/* Horário e checkmarks */}
-                  <div className="flex items-center justify-end gap-1 mt-1">
-                    <span className="text-[10px] text-gray-500">{getCurrentTime()}</span>
-                    <svg className="w-4 h-4 text-blue-500" viewBox="0 0 16 15" fill="currentColor">
-                      <path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.879a.32.32 0 0 1-.484.033l-.358-.325a.319.319 0 0 0-.484.032l-.378.483a.418.418 0 0 0 .036.541l1.32 1.266c.143.14.361.125.484-.033l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.879a.32.32 0 0 1-.484.033L1.891 7.769a.366.366 0 0 0-.515.006l-.423.433a.364.364 0 0 0 .006.514l3.258 3.185c.143.14.361.125.484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z"/>
-                    </svg>
+                  <div className="absolute bottom-2 right-2 flex items-center gap-1">
+                    <span className="text-[11px] text-slate-500">{getCurrentTime()}</span>
+                    <div className="flex -space-x-1">
+                      <Check className="h-3.5 w-3.5 text-[#53BDEB]" />
+                      <Check className="h-3.5 w-3.5 text-[#53BDEB] -ml-2" />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+          
+          {/* Footer do WhatsApp - Input de mensagem */}
+          <div className="bg-[#F0F2F5] px-3 py-2 flex items-center gap-2">
+            <button className="p-2 hover:bg-slate-200 rounded-full transition-colors">
+              <Smile className="h-6 w-6 text-slate-500" />
+            </button>
+            <button className="p-2 hover:bg-slate-200 rounded-full transition-colors">
+              <Paperclip className="h-6 w-6 text-slate-500" />
+            </button>
+            <div className="flex-1 bg-white rounded-full px-4 py-2.5 text-sm text-slate-400">
+              Digite uma mensagem
+            </div>
+            <button className="w-10 h-10 rounded-full bg-[#008069] flex items-center justify-center hover:bg-[#017561] transition-colors">
+              <Mic className="h-5 w-5 text-white" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
