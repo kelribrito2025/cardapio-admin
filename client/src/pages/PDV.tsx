@@ -360,16 +360,14 @@ export default function PDV() {
                       </div>
 
                       {/* Info */}
-                      <div className="p-3">
+                      <div className="p-3 flex flex-col h-[120px]">
                         <h3 className="font-semibold text-sm line-clamp-1 mb-1">
                           {product.name}
                         </h3>
-                        {product.description && (
-                          <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-                            {product.description}
-                          </p>
-                        )}
-                        <div className="flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground line-clamp-2 mb-2 flex-1">
+                          {product.description || ''}
+                        </p>
+                        <div className="flex items-center justify-between mt-auto">
                           <span className="text-red-600 font-bold text-sm">
                             {formatCurrency(parseFloat(product.price))}
                           </span>

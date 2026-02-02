@@ -4297,3 +4297,6 @@
 
 ## Correção do placeholder de foto no PDV
 - [x] Ajustar placeholder de foto nos cards de itens quando produto não tem imagem
+
+## Correção do alinhamento nos cards do PDV
+- [x] Fixar posição do preço e botão Adicionar independente do tamanho da descrição
