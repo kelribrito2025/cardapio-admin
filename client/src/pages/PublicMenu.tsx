@@ -5467,10 +5467,10 @@ export default function PublicMenu() {
             </div>
 
             {/* Opções Fixas - Retirar no Local e Consumir no Local */}
-            {(establishment.deliveryTypes?.includes('pickup') || establishment.deliveryTypes?.includes('dine_in')) && (
+            {(establishment.allowsPickup || establishment.allowsDineIn) && (
               <div className="px-5 pt-4 pb-2 bg-white border-b border-gray-200 space-y-2">
                 {/* Opção Retirar no Local */}
-                {establishment.deliveryTypes?.includes('pickup') && (
+                {establishment.allowsPickup && (
                   <button
                     onClick={() => {
                       setSelectedNeighborhood(null);
@@ -5516,7 +5516,7 @@ export default function PublicMenu() {
                 )}
 
                 {/* Opção Consumir no Local */}
-                {establishment.deliveryTypes?.includes('dine_in') && (
+                {establishment.allowsDineIn && (
                   <button
                     onClick={() => {
                       setSelectedNeighborhood(null);
@@ -5564,7 +5564,7 @@ export default function PublicMenu() {
             )}
 
             {/* Separador com texto */}
-            {(establishment.deliveryTypes?.includes('pickup') || establishment.deliveryTypes?.includes('dine_in')) && (
+            {(establishment.allowsPickup || establishment.allowsDineIn) && (
               <div className="px-5 py-2 bg-white">
                 <div className="flex items-center gap-3">
                   <div className="flex-1 h-px bg-gray-200"></div>
