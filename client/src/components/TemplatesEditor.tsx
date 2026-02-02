@@ -310,138 +310,97 @@ export function TemplatesEditor({
           </div>
         </div>
 
-        {/* Card de Preview WhatsApp - Formato de Celular */}
-        <div className="flex justify-center">
-          {/* Moldura do Celular */}
-          <div className="relative bg-[#B8BCC0] rounded-[40px] p-2 shadow-xl" style={{ width: '320px' }}>
-            {/* Borda interna do celular */}
-            <div className="bg-black rounded-[32px] overflow-hidden">
-              {/* Barra de status do celular */}
-              <div className="bg-[#008069] px-4 pt-2 pb-0 relative">
-                <div className="flex items-center justify-between text-white text-xs">
-                  <span className="font-semibold">9:41</span>
-                  <div className="absolute left-1/2 -translate-x-1/2 top-1">
-                    {/* Dynamic Island / Notch */}
-                    <div className="w-20 h-5 bg-black rounded-full"></div>
+        {/* Card de Preview WhatsApp - Design Realista */}
+        <div className="bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-300">
+          {/* Header do WhatsApp - Perspectiva do Cliente (recebendo mensagem do restaurante) */}
+          <div className="bg-[#008069] px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {restaurantLogo ? (
+                  <img 
+                    src={restaurantLogo} 
+                    alt={restaurantName || 'Restaurante'} 
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center overflow-hidden">
+                    <span className="text-white font-bold text-sm">
+                      {restaurantName ? restaurantName.charAt(0).toUpperCase() : 'R'}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    {/* Sinal de celular */}
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                      <rect x="1" y="14" width="4" height="8" rx="1" />
-                      <rect x="7" y="10" width="4" height="12" rx="1" />
-                      <rect x="13" y="6" width="4" height="16" rx="1" />
-                      <rect x="19" y="2" width="4" height="20" rx="1" />
-                    </svg>
-                    {/* WiFi */}
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 18c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0-6c3.31 0 6 2.69 6 6h-2c0-2.21-1.79-4-4-4s-4 1.79-4 4H6c0-3.31 2.69-6 6-6zm0-4c4.97 0 9 4.03 9 9h-2c0-3.87-3.13-7-7-7s-7 3.13-7 7H3c0-4.97 4.03-9 9-9z" />
-                    </svg>
-                    {/* Bateria */}
-                    <svg className="w-6 h-4" viewBox="0 0 28 14" fill="currentColor">
-                      <rect x="0" y="0" width="24" height="14" rx="3" stroke="currentColor" strokeWidth="1" fill="none" />
-                      <rect x="2" y="2" width="18" height="10" rx="1" />
-                      <rect x="25" y="4" width="2" height="6" rx="1" />
-                    </svg>
-                  </div>
+                )}
+                <div>
+                  <p className="text-white font-semibold text-sm">{restaurantName || 'Seu Restaurante'}</p>
+                  <p className="text-emerald-200 text-xs">online</p>
                 </div>
               </div>
-              
-              {/* Header do WhatsApp */}
-              <div className="bg-[#008069] px-3 py-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    {restaurantLogo ? (
-                      <img 
-                        src={restaurantLogo} 
-                        alt={restaurantName || 'Restaurante'} 
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center overflow-hidden">
-                        <span className="text-white font-bold text-xs">
-                          {restaurantName ? restaurantName.charAt(0).toUpperCase() : 'R'}
-                        </span>
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-white font-semibold text-xs">{restaurantName || 'Seu Restaurante'}</p>
-                      <p className="text-emerald-200 text-[10px]">online</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Video className="h-4 w-4 text-white/80" />
-                    <Phone className="h-4 w-4 text-white/80" />
-                    <MoreVertical className="h-4 w-4 text-white/80" />
-                  </div>
-                </div>
-              </div>
-              
-              {/* Área de Chat - Background WhatsApp */}
-              <div 
-                className="p-3 min-h-[340px] max-h-[380px] overflow-y-auto relative"
-                style={{
-                  backgroundColor: '#ECE5DD',
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d4cfc4' fill-opacity='0.3' fill-rule='evenodd'/%3E%3C/svg%3E")`,
-                }}
-              >
-                {/* Data do dia */}
-                <div className="flex justify-center mb-3">
-                  <span className="bg-white/90 text-slate-600 text-[10px] font-medium px-2 py-0.5 rounded-md shadow-sm">
-                    HOJE
-                  </span>
-                </div>
-                
-                {/* Bolha de mensagem RECEBIDA (lado esquerdo, cor branca) */}
-                <div className="flex justify-start">
-                  <div className="max-w-[90%] relative">
-                    {/* Bolha principal - cor branca para mensagem recebida */}
-                    <div className="bg-white rounded-lg rounded-tl-sm p-2.5 shadow-sm relative">
-                      {/* Triângulo da bolha - lado esquerdo */}
-                      <div 
-                        className="absolute -left-2 top-0 w-0 h-0"
-                        style={{
-                          borderRight: '8px solid white',
-                          borderBottom: '8px solid transparent',
-                        }}
-                      />
-                      
-                      {/* Conteúdo da mensagem */}
-                      <div className="text-[12px] text-slate-800 whitespace-pre-wrap break-words leading-relaxed pr-10">
-                        {formatWhatsAppText(currentTemplate.value) || (
-                          <span className="text-slate-400 italic">Sua mensagem aparecerá aqui...</span>
-                        )}
-                      </div>
-                      
-                      {/* Horário (sem checkmarks para mensagem recebida) */}
-                      <div className="absolute bottom-1.5 right-2 flex items-center gap-1">
-                        <span className="text-[10px] text-slate-500">{getCurrentTime()}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Footer do WhatsApp - Input de mensagem */}
-              <div className="bg-[#F0F2F5] px-2 py-1.5 flex items-center gap-1.5">
-                <button className="p-1.5 hover:bg-slate-200 rounded-full transition-colors">
-                  <Smile className="h-5 w-5 text-slate-500" />
-                </button>
-                <button className="p-1.5 hover:bg-slate-200 rounded-full transition-colors">
-                  <Paperclip className="h-5 w-5 text-slate-500" />
-                </button>
-                <div className="flex-1 bg-white rounded-full px-3 py-1.5 text-xs text-slate-400">
-                  Digite uma mensagem
-                </div>
-                <button className="w-8 h-8 rounded-full bg-[#008069] flex items-center justify-center hover:bg-[#017561] transition-colors">
-                  <Mic className="h-4 w-4 text-white" />
-                </button>
-              </div>
-              
-              {/* Barra de navegação inferior do celular */}
-              <div className="bg-black h-5 flex items-center justify-center">
-                <div className="w-24 h-1 bg-white/50 rounded-full"></div>
+              <div className="flex items-center gap-4">
+                <Video className="h-5 w-5 text-white/80" />
+                <Phone className="h-5 w-5 text-white/80" />
+                <MoreVertical className="h-5 w-5 text-white/80" />
               </div>
             </div>
+          </div>
+          
+          {/* Área de Chat - Background WhatsApp */}
+          <div 
+            className="p-4 min-h-[380px] relative"
+            style={{
+              backgroundColor: '#ECE5DD',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d4cfc4' fill-opacity='0.3' fill-rule='evenodd'/%3E%3C/svg%3E")`,
+            }}
+          >
+            {/* Data do dia */}
+            <div className="flex justify-center mb-4">
+              <span className="bg-white/90 text-slate-600 text-[11px] font-medium px-3 py-1 rounded-lg shadow-sm">
+                HOJE
+              </span>
+            </div>
+            
+            {/* Bolha de mensagem RECEBIDA (lado esquerdo, cor branca) */}
+            <div className="flex justify-start">
+              <div className="max-w-[85%] relative">
+                {/* Bolha principal - cor branca para mensagem recebida */}
+                <div className="bg-white rounded-lg rounded-tl-sm p-3 shadow-sm relative">
+                  {/* Triângulo da bolha - lado esquerdo */}
+                  <div 
+                    className="absolute -left-2 top-0 w-0 h-0"
+                    style={{
+                      borderRight: '8px solid white',
+                      borderBottom: '8px solid transparent',
+                    }}
+                  />
+                  
+                  {/* Conteúdo da mensagem */}
+                  <div className="text-[14px] text-slate-800 whitespace-pre-wrap break-words leading-relaxed pr-12">
+                    {formatWhatsAppText(currentTemplate.value) || (
+                      <span className="text-slate-400 italic">Sua mensagem aparecerá aqui...</span>
+                    )}
+                  </div>
+                  
+                  {/* Horário (sem checkmarks para mensagem recebida) */}
+                  <div className="absolute bottom-2 right-2 flex items-center gap-1">
+                    <span className="text-[11px] text-slate-500">{getCurrentTime()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Footer do WhatsApp - Input de mensagem */}
+          <div className="bg-[#F0F2F5] px-3 py-2 flex items-center gap-2">
+            <button className="p-2 hover:bg-slate-200 rounded-full transition-colors">
+              <Smile className="h-6 w-6 text-slate-500" />
+            </button>
+            <button className="p-2 hover:bg-slate-200 rounded-full transition-colors">
+              <Paperclip className="h-6 w-6 text-slate-500" />
+            </button>
+            <div className="flex-1 bg-white rounded-full px-4 py-2.5 text-sm text-slate-400">
+              Digite uma mensagem
+            </div>
+            <button className="w-10 h-10 rounded-full bg-[#008069] flex items-center justify-center hover:bg-[#017561] transition-colors">
+              <Mic className="h-5 w-5 text-white" />
+            </button>
           </div>
         </div>
       </div>

@@ -4184,9 +4184,3 @@
 - [x] Ajustar altura do card de Acumulado da Semana para ser igual ao card de Mapa de Calor
 - [x] Ajustar header do card de Acumulado da Semana para ter ícone à esquerda, título e descrição breve (mesmo modelo do Mapa de Calor)
 - [x] Adicionar ícone de informação (ⓘ) no card de Mapa de Calor com tooltip explicativo
-
-## Preview WhatsApp com formato de celular
-- [x] Redesenhar o card de preview WhatsApp com moldura de celular (bordas arredondadas cinza)
-- [x] Adicionar notch/dynamic island no topo do celular
-- [x] Adicionar barra de status (hora, sinal, bateria) no topo
-- [x] Manter o conteúdo interno do preview (header verde, mensagens, input)
