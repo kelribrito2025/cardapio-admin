@@ -4265,3 +4265,8 @@
 - [x] Adicionar rota /pdv no App.tsx
 - [x] Adicionar menu PDV na seção Operações da sidebar
 - [x] Manter identidade visual do sistema (bordas coloridas, estilo de cards)
+
+## Ajustes de Layout no PDV
+- [x] Remover título "PDV" e descrição do topo da página
+- [x] Ajustar categorias para ficarem em uma única linha com scroll horizontal
+- [x] Evitar quebra de linha automática nas categorias

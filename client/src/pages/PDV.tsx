@@ -191,21 +191,13 @@ export default function PDV() {
   return (
     <AdminLayout>
       <div className="flex flex-col h-[calc(100vh-2rem)] -m-6">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-border/50 bg-background">
-          <PageHeader
-            title="PDV"
-            description="Frente de caixa para criação rápida de pedidos"
-          />
-        </div>
-
         {/* Main Content */}
         <div className="flex flex-1 overflow-hidden">
           {/* Coluna Esquerda - Produtos */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Barra de Categorias */}
-            <div className="px-4 py-3 border-b border-border/50 bg-muted/20">
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+            <div className="px-4 py-2 border-b border-border/50 bg-muted/20 overflow-hidden">
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin flex-nowrap">
                 <button
                   onClick={() => setSelectedCategory(null)}
                   className={cn(
