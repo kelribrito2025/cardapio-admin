@@ -145,20 +145,20 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Weekly Revenue Card */}
-      <div className="mb-6">
-        <WeeklyRevenueCard
-          thisWeek={weeklyRevenue?.thisWeek ?? []}
-          lastWeek={weeklyRevenue?.lastWeek ?? []}
-          thisWeekTotal={weeklyRevenue?.thisWeekTotal ?? 0}
-          lastWeekTotal={weeklyRevenue?.lastWeekTotal ?? 0}
-          loading={weeklyRevenueLoading}
-        />
-      </div>
-
-      {/* Mapa de Calor de Visualizações */}
-      <div className="mb-6">
-        <HeatmapCard />
+      {/* Weekly Revenue Card + Mapa de Calor */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
+        <div className="lg:col-span-3">
+          <WeeklyRevenueCard
+            thisWeek={weeklyRevenue?.thisWeek ?? []}
+            lastWeek={weeklyRevenue?.lastWeek ?? []}
+            thisWeekTotal={weeklyRevenue?.thisWeekTotal ?? 0}
+            lastWeekTotal={weeklyRevenue?.lastWeekTotal ?? 0}
+            loading={weeklyRevenueLoading}
+          />
+        </div>
+        <div className="lg:col-span-2">
+          <HeatmapCard />
+        </div>
       </div>
 
       {/* Charts and Recent Orders */}

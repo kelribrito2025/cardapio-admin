@@ -4178,3 +4178,6 @@
 - [x] Implementar escala de cores (azul claro a azul escuro)
 - [x] Adicionar legenda "Menos" a "Mais"
 - [x] Integrar HeatmapCard no Dashboard substituindo o ViewsCard simples
+
+- [x] Mover HeatmapCard para ao lado do card de Acumulado da Semana (40% do espaço)
+- [x] Alterar informação de hover para tooltip flutuante acima da célula
