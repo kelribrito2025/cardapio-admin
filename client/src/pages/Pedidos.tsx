@@ -1533,7 +1533,7 @@ export default function Pedidos() {
                         </div>
                       )}
                       {/* Responsável pelo desconto */}
-                      {(orderDetails as any).externalData?.total?.benefits && (orderDetails as any).externalData.total.benefits.length > 0 && (
+                      {(orderDetails as any).externalData?.total?.benefits?.length > 0 && (
                         <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">Desconto:</span>
                           <span className="font-medium">

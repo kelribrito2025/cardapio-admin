@@ -4109,3 +4109,7 @@
 - [x] Destacar código de coleta do iFood (displayId)
 - [x] Exibir responsável pelo desconto (iFood/Loja)
 - [x] Exibir observações de entrega (delivery.observations)
+
+## Bug: '0' solto na seção de informações do iFood
+- [x] Identificar causa do bug (condição && renderizando 0 quando benefits.length é 0)
+- [x] Corrigir condição para usar optional chaining (benefits?.length > 0)

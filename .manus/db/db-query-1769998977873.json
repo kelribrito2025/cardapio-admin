@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, orderNumber, source, externalDisplayId FROM orders WHERE source = 'ifood' ORDER BY id DESC LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, source, externalDisplayId FROM orders WHERE source = 'ifood' ORDER BY id DESC LIMIT 1;",
+  "rows": [
+    {
+      "id": "240003",
+      "orderNumber": "#IFOOD-TEST-001",
+      "source": "ifood",
+      "externalDisplayId": "#1234"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tsource\texternalDisplayId\n240003\t#IFOOD-TEST-001\tifood\t#1234\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}
