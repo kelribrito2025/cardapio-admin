@@ -166,7 +166,7 @@ export function ViewsCard() {
   }
 
   return (
-    <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-foreground">Visualizações</h3>
@@ -211,6 +211,9 @@ export function ViewsCard() {
           </span>
         )}
       </div>
+
+      {/* Spacer para empurrar o gráfico para baixo */}
+      <div className="flex-1" />
 
       {/* Mini gráfico sparkline */}
       <div className="relative group">

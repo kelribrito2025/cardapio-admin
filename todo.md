@@ -4168,3 +4168,4 @@
 - [x] Implementar tratamento de edge cases (poucas visualizações, sem dados)
 
 - [x] Ajustar a fonte do card de Visualizações para usar a mesma fonte do sistema admin
+- [x] Ajustar a altura do card de Visualizações para ser igual ao card de Acumulado da Semana
