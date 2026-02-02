@@ -295,7 +295,7 @@ export default function Campanhas() {
                 </div>
               </div>
 
-              <div className="relative">
+              <div className="relative flex items-start gap-2">
                 <Textarea
                   value={mensagem}
                   onChange={(e) => {
@@ -304,11 +304,18 @@ export default function Campanhas() {
                     }
                   }}
                   placeholder="Digite sua mensagem promocional aqui..."
-                  className="min-h-[100px] resize-none pr-16"
+                  className="min-h-[44px] resize-none flex-1"
+                  rows={1}
+                  style={{ height: 'auto', minHeight: '44px' }}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = '44px';
+                    target.style.height = `${Math.max(44, target.scrollHeight)}px`;
+                  }}
                 />
-                {/* Contador de caracteres no canto inferior direito */}
+                {/* Contador de caracteres ao lado do campo */}
                 <div className={cn(
-                  "absolute bottom-3 right-3 text-sm font-medium pointer-events-none",
+                  "text-sm font-medium whitespace-nowrap pt-2.5",
                   mensagem.length > SMS_CHAR_LIMIT * 0.9 ? "text-orange-500" : "text-muted-foreground",
                   mensagem.length >= SMS_CHAR_LIMIT && "text-red-500"
                 )}>

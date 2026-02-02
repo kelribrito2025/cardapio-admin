@@ -4209,3 +4209,8 @@
 
 ## Correção de Timezone no Heatmap
 - [x] Corrigir timezone do registro de visualizações do cardápio para usar horário de São Paulo (UTC-3) em vez de UTC
+
+## Ajuste do Campo de Mensagem SMS
+- [x] Campo de mensagem deve ter apenas uma linha inicialmente (altura mínima)
+- [x] Contador de caracteres deve ficar na mesma linha do placeholder (à direita)
+- [x] Campo só deve expandir quando a mensagem for grande
