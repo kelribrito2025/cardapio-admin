@@ -4254,3 +4254,14 @@
 
 ## Est## Estilo de Seleção do Menu
 - [x] Alterar estilo de seleção do menu para barra vermelha clara à esquerda e fundo vermelho escuro
+
+## Página PDV (Ponto de Venda)
+- [x] Criar página PDV.tsx com layout de duas colunas
+- [x] Coluna esquerda: grade de produtos com categorias no topo
+- [x] Coluna direita: sacola estilo menu público (mais alta)
+- [x] Topo da sacola: seletor de tipo de pedido (Mesa, Retirada, Entrega)
+- [x] Cards de produto com foto, título, descrição e botão adicionar
+- [x] Modal de detalhes do item (reutilizar modelo do menu público)
+- [x] Adicionar rota /pdv no App.tsx
+- [x] Adicionar menu PDV na seção Operações da sidebar
+- [x] Manter identidade visual do sistema (bordas coloridas, estilo de cards)

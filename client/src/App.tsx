@@ -23,6 +23,7 @@ import Impressoras from "./pages/Impressoras";
 import Categorias from "./pages/Categorias";
 import Complementos from "./pages/Complementos";
 import Campanhas from "./pages/Campanhas";
+import PDV from "./pages/PDV";
 
 
 // Auth Pages
@@ -53,6 +54,7 @@ function AdminRoutes() {
         <Route path="/teste-impressao" component={TesteImpressao} />
         <Route path="/impressoras" component={Impressoras} />
         <Route path="/campanhas" component={Campanhas} />
+        <Route path="/pdv" component={PDV} />
         
         
         <Route path="/404" component={NotFound} />

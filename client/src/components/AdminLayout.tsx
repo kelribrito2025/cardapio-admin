@@ -27,6 +27,7 @@ import {
   Tag,
   Layers,
   Megaphone,
+  Monitor,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -57,6 +58,7 @@ const menuSections = [
     title: "OPERAÇÕES",
     items: [
       { icon: LayoutDashboard, label: "Dashboard", href: "/", disabled: false },
+      { icon: Monitor, label: "PDV", href: "/pdv", disabled: false },
     ]
   },
   {
