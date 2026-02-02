@@ -4075,3 +4075,8 @@
 ## Bug: Texto incorreto na sacola para Consumir/Retirar no local
 - [x] Alterar "Taxa de entrega Grátis" para "Consumir no local Grátis" quando dine_in selecionado
 - [x] Alterar "Taxa de entrega Grátis" para "Retirar no local Grátis" quando pickup selecionado
+
+## Bug: Modal de tipo de entrega mostra opções incorretas
+- [x] No modal de confirmação (step 2), mostrar apenas a opção de entrega já selecionada
+- [x] Adicionar botão "Alterar" dentro da opção selecionada para voltar ao modal de seleção de bairro
+- [x] Remover as outras opções de entrega do modal de confirmação

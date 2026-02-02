@@ -3059,61 +3059,50 @@ export default function PublicMenu() {
 
               {/* Body */}
               <div className="flex-1 overflow-y-auto overscroll-contain p-6 space-y-6">
-                {/* Forma de Entrega */}
+                {/* Forma de Entrega - Mostra apenas a opção selecionada com botão Alterar */}
                 <div>
                   <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
                     <Truck className="h-4 w-4 text-red-500" />
                     Forma de entrega
                   </h3>
                   <div className="space-y-2">
-                    {establishment.allowsPickup && (
-                      <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
-                        deliveryType === "pickup" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
-                      }`}>
-                        <input
-                          type="radio"
-                          name="deliveryType"
-                          value="pickup"
-                          checked={deliveryType === "pickup"}
-                          onChange={() => setDeliveryType("pickup")}
-                          className="w-4 h-4 text-red-500 focus:ring-red-500"
-                        />
-                        <Package className="h-5 w-5 text-gray-600" />
-                        <span className="font-medium text-gray-800">Retirar no local</span>
-                      </label>
-                    )}
-                    {establishment.allowsDelivery && (
-                      <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
-                        deliveryType === "delivery" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
-                      }`}>
-                        <input
-                          type="radio"
-                          name="deliveryType"
-                          value="delivery"
-                          checked={deliveryType === "delivery"}
-                          onChange={() => setDeliveryType("delivery")}
-                          className="w-4 h-4 text-red-500 focus:ring-red-500"
-                        />
-                        <Truck className="h-5 w-5 text-gray-600" />
-                        <span className="font-medium text-gray-800">Entrega</span>
-                      </label>
-                    )}
-                    {establishment.allowsDineIn && (
-                      <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
-                        deliveryType === "dine_in" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
-                      }`}>
-                        <input
-                          type="radio"
-                          name="deliveryType"
-                          value="dine_in"
-                          checked={deliveryType === "dine_in"}
-                          onChange={() => setDeliveryType("dine_in")}
-                          className="w-4 h-4 text-red-500 focus:ring-red-500"
-                        />
-                        <UtensilsCrossed className="h-5 w-5 text-gray-600" />
-                        <span className="font-medium text-gray-800">Consumir no local</span>
-                      </label>
-                    )}
+                    {/* Mostra apenas a opção selecionada */}
+                    <div className="flex items-center justify-between p-4 border border-red-500 bg-red-50 rounded-xl">
+                      <div className="flex items-center gap-3">
+                        {deliveryType === "pickup" && <Package className="h-5 w-5 text-red-500" />}
+                        {deliveryType === "delivery" && <Truck className="h-5 w-5 text-red-500" />}
+                        {deliveryType === "dine_in" && <UtensilsCrossed className="h-5 w-5 text-red-500" />}
+                        <div>
+                          <span className="font-medium text-gray-800">
+                            {deliveryType === "pickup" && "Retirar no local"}
+                            {deliveryType === "delivery" && (selectedNeighborhood ? `Entrega - ${selectedNeighborhood.name}` : "Entrega")}
+                            {deliveryType === "dine_in" && "Consumir no local"}
+                          </span>
+                          <span className="ml-2 text-sm text-green-600 font-medium">
+                            {deliveryType === "pickup" || deliveryType === "dine_in" 
+                              ? "Grátis" 
+                              : establishment.deliveryFeeType === "free" 
+                                ? "Grátis" 
+                                : establishment.deliveryFeeType === "fixed" 
+                                  ? `R$ ${Number(establishment.deliveryFeeFixed || 0).toFixed(2).replace('.', ',')}` 
+                                  : selectedNeighborhood 
+                                    ? `R$ ${Number(selectedNeighborhood.fee).toFixed(2).replace('.', ',')}` 
+                                    : ""}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setReopenBagAfterNeighborhood(true);
+                          setCheckoutStep(0);
+                          setShowNeighborhoodModal(true);
+                        }}
+                        className="px-3 py-1.5 text-red-500 text-sm font-medium hover:bg-red-100 rounded-lg transition-colors"
+                      >
+                        Alterar
+                      </button>
+                    </div>
                   </div>
 
                   {/* Mensagem informativa para Consumir no local */}
