@@ -218,7 +218,7 @@ export function TemplatesEditor({
                 isActive 
                   ? 'bg-red-500 text-white shadow-md' 
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+              }`} style={isActive ? {backgroundColor: '#db262f'} : {}}
             >
               {cfg.icon}
               {cfg.label}
