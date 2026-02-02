@@ -171,6 +171,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(sidebarCollapsed));
   }, [sidebarCollapsed]);
 
+  // Minimizar menu automaticamente ao acessar a página PDV
+  useEffect(() => {
+    if (location === "/pdv") {
+      setSidebarCollapsed(true);
+    }
+  }, [location]);
+
   // Get establishment data
   const { data: establishment, refetch: refetchEstablishment } = trpc.establishment.get.useQuery(
     undefined,

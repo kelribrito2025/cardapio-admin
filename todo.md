@@ -4304,3 +4304,6 @@
 ## Alteração do comportamento do botão Adicionar no PDV
 - [x] Botão Adicionar: adiciona item direto à lista sem abrir modal
 - [x] Clicar no card: abre modal de detalhes do item
+
+## Minimizar menu automaticamente no PDV
+- [x] Menu lateral deve minimizar automaticamente ao acessar a página PDV
