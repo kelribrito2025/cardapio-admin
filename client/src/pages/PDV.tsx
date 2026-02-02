@@ -190,7 +190,7 @@ export default function PDV() {
 
   return (
     <AdminLayout>
-      <div className="flex flex-col h-[calc(100vh-2rem)] -m-6">
+      <div className="flex flex-col h-[calc(100vh-4rem)] -m-6 overflow-hidden">
         {/* Main Content */}
         <div className="flex flex-1 overflow-hidden">
           {/* Coluna Esquerda - Produtos */}
@@ -353,7 +353,7 @@ export default function PDV() {
           </div>
 
           {/* Coluna Direita - Sacola/Pedido */}
-          <div className="w-[380px] border-l border-border/50 bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col">
+          <div className="w-[380px] border-l border-border/50 bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col overflow-hidden">
             {/* Header da Sacola */}
             <div className="p-4 border-b border-border/50">
               <h2 className="text-lg font-bold text-gray-800">Pedido Atual</h2>
@@ -485,7 +485,7 @@ export default function PDV() {
             </div>
 
             {/* Footer - Totais e Ações */}
-            <div className="border-t border-border/50 bg-white p-4 space-y-4">
+            <div className="border-t border-border/50 bg-white p-4 space-y-4 shrink-0">
               {/* Totais */}
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">

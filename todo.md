@@ -4277,3 +4277,7 @@
 
 ## Otimização da sacola no PDV
 - [x] Remover fotos dos itens na lista do pedido para ganhar espaço
+
+## Correção de overflow na página PDV
+- [x] Corrigir barra de rolagem externa na página PDV
+- [x] Garantir que o botão Finalizar Pedido apareça completo
