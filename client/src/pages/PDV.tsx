@@ -196,12 +196,12 @@ export default function PDV() {
           {/* Coluna Esquerda - Produtos */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Barra de Categorias */}
-            <div className="px-4 py-2 border-b border-border/50 bg-muted/20 overflow-hidden">
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin flex-nowrap">
+            <div className="px-4 py-2 border-b border-border/50 bg-muted/20">
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
                 <button
                   onClick={() => setSelectedCategory(null)}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all",
+                    "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
                     selectedCategory === null
                       ? "bg-red-500 text-white shadow-sm"
                       : "bg-card text-muted-foreground hover:bg-muted border border-border/50"
@@ -229,7 +229,7 @@ export default function PDV() {
                         key={category.id}
                         onClick={() => setSelectedCategory(category.id)}
                         className={cn(
-                          "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all",
+                          "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
                           selectedCategory === category.id
                             ? "bg-red-500 text-white shadow-sm"
                             : "bg-card text-muted-foreground hover:bg-muted border border-border/50"

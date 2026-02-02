@@ -4270,3 +4270,7 @@
 - [x] Remover título "PDV" e descrição do topo da página
 - [x] Ajustar categorias para ficarem em uma única linha com scroll horizontal
 - [x] Evitar quebra de linha automática nas categorias
+
+## Correção dos botões de categorias no PDV
+- [x] Corrigir texto cortado nos botões de categorias
+- [x] Garantir que o texto completo apareça em cada botão
