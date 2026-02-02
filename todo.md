@@ -4294,3 +4294,6 @@
 ## Ajuste dos cards de itens no PDV
 - [x] Adicionar sombra igual aos cards da Dashboard
 - [x] Adicionar borda colorida no topo dos cards (estilo "Pedidos Hoje")
+
+## Correção do placeholder de foto no PDV
+- [x] Ajustar placeholder de foto nos cards de itens quando produto não tem imagem

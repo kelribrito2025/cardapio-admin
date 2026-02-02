@@ -338,7 +338,7 @@ export default function PDV() {
                       className="bg-card rounded-xl border border-border/50 border-t-4 border-t-red-500 overflow-hidden cursor-pointer shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
                     >
                       {/* Imagem */}
-                      <div className="h-28 bg-muted relative overflow-hidden">
+                      <div className="h-28 bg-gradient-to-br from-red-500 to-red-600 relative overflow-hidden">
                         {product.images?.[0] ? (
                           <img
                             src={product.images[0]}
@@ -347,7 +347,7 @@ export default function PDV() {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <ImageIcon className="h-12 w-12 text-muted-foreground/30" />
+                            <UtensilsCrossed className="h-12 w-12 text-white animate-placeholder-pulse" />
                           </div>
                         )}
                         {!product.hasStock && (
