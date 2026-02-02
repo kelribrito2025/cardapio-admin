@@ -3690,14 +3690,16 @@ export default function PublicMenu() {
                     // Calcular desconto do cupom
                     const discount = appliedCoupon?.discount || 0;
                     
-                    // Calcular taxa de entrega
-                    const deliveryFeeValue = establishment.deliveryFeeType === "free" 
-                      ? 0 
-                      : establishment.deliveryFeeType === "fixed" 
-                        ? Number(establishment.deliveryFeeFixed || 0)
-                        : selectedNeighborhood 
-                          ? Number(selectedNeighborhood.fee) 
-                          : 0;
+                    // Calcular taxa de entrega (apenas para delivery, não para pickup ou dine_in)
+                    const deliveryFeeValue = deliveryType === 'pickup' || deliveryType === 'dine_in'
+                      ? 0
+                      : establishment.deliveryFeeType === "free" 
+                        ? 0 
+                        : establishment.deliveryFeeType === "fixed" 
+                          ? Number(establishment.deliveryFeeFixed || 0)
+                          : selectedNeighborhood 
+                            ? Number(selectedNeighborhood.fee) 
+                            : 0;
                     const total = Math.max(0, subtotal - discount + deliveryFeeValue);
                     
                     // Montar endereço completo
@@ -4005,13 +4007,16 @@ export default function PublicMenu() {
                     return sum + itemTotal + complementsTotal;
                   }, 0);
                   const discount = appliedCoupon?.discount || 0;
-                  const deliveryFee = establishment.deliveryFeeType === "free" 
-                    ? 0 
-                    : establishment.deliveryFeeType === "fixed" 
-                      ? Number(establishment.deliveryFeeFixed || 0)
-                      : selectedNeighborhood 
-                        ? Number(selectedNeighborhood.fee) 
-                        : 0;
+                  // Taxa de entrega apenas para delivery (não para pickup ou dine_in)
+                  const deliveryFee = deliveryType === 'pickup' || deliveryType === 'dine_in'
+                    ? 0
+                    : establishment.deliveryFeeType === "free" 
+                      ? 0 
+                      : establishment.deliveryFeeType === "fixed" 
+                        ? Number(establishment.deliveryFeeFixed || 0)
+                        : selectedNeighborhood 
+                          ? Number(selectedNeighborhood.fee) 
+                          : 0;
                   const total = Math.max(0, subtotal - discount + deliveryFee);
                   const minOrderValue = establishment?.minimumOrderEnabled && establishment?.minimumOrderValue ? Number(establishment.minimumOrderValue) : 0;
                   const isBelowMinOrder = minOrderValue > 0 && total < minOrderValue;

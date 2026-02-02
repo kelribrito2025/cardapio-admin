@@ -4046,3 +4046,7 @@
 ## Bug: Notificação automática com Confirmação via Botões desativada
 - [x] Quando desativado, enviar template NOVO PEDIDO sem texto "Clique para confirmar"
 - [x] Remover botão "Sim, confirmar pedido" quando confirmação está desativada
+
+## Bug: Taxa de entrega aplicada em pedidos de retirada (pickup)
+- [x] Corrigir cálculo da taxa de entrega para zerar quando deliveryType é pickup ou dine_in
+- [x] Verificar todos os locais onde deliveryFee é calculado no PublicMenu.tsx

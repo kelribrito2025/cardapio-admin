@@ -1,0 +1,210 @@
+{
+  "query": "DESCRIBE orders;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute DESCRIBE orders;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "establishmentId",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "orderNumber",
+      "Type": "varchar(50)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "customerName",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "customerPhone",
+      "Type": "varchar(30)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "customerAddress",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "status",
+      "Type": "enum('pending_confirmation','new','preparing','ready','completed','cancelled')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "pending_confirmation",
+      "Extra": ""
+    },
+    {
+      "Field": "deliveryType",
+      "Type": "enum('delivery','pickup','dine_in')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "delivery",
+      "Extra": ""
+    },
+    {
+      "Field": "paymentMethod",
+      "Type": "enum('cash','card','pix','boleto')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "cash",
+      "Extra": ""
+    },
+    {
+      "Field": "subtotal",
+      "Type": "decimal(10,2)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "deliveryFee",
+      "Type": "decimal(10,2)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "total",
+      "Type": "decimal(10,2)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "notes",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "createdAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "updatedAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    },
+    {
+      "Field": "completedAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "changeAmount",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "discount",
+      "Type": "decimal(10,2)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "couponCode",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "cancellationReason",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "source",
+      "Type": "enum('internal','ifood','rappi','ubereats')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "internal",
+      "Extra": ""
+    },
+    {
+      "Field": "externalId",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "externalDisplayId",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "externalStatus",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "externalData",
+      "Type": "json",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint(11)\tNO\tPRI\tNULL\tauto_increment\nestablishmentId\tint(11)\tNO\t\tNULL\t\norderNumber\tvarchar(50)\tNO\t\tNULL\t\ncustomerName\tvarchar(255)\tYES\t\tNULL\t\ncustomerPhone\tvarchar(30)\tYES\t\tNULL\t\ncustomerAddress\ttext\tYES\t\tNULL\t\nstatus\tenum('pending_confirmation','new','preparing','ready','completed','cancelled')\tNO\t\tpending_confirmation\t\ndeliveryType\tenum('delivery','pickup','dine_in')\tNO\t\tdelivery\t\npaymentMethod\tenum('cash','card','pix','boleto')\tNO\t\tcash\t\nsubtotal\tdecimal(10,2)\tNO\t\tNULL\t\ndeliveryFee\tdecimal(10,2)\tNO\t\t0\t\ntotal\tdecimal(10,2)\tNO\t\tNULL\t\nnotes\ttext\tYES\t\tNULL\t\ncreatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\nupdatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\ncompletedAt\ttimestamp\tYES\t\tNULL\t\nchangeAmount\tdecimal(10,2)\tYES\t\tNULL\t\ndiscount\tdecimal(10,2)\tNO\t\t0\t\ncouponCode\tvarchar(50)\tYES\t\tNULL\t\ncancellationReason\ttext\tYES\t\tNULL\t\nsource\tenum('internal','ifood','rappi','ubereats')\tNO\t\tinternal\t\nexternalId\tvarchar(100)\tYES\t\tNULL\t\nexternalDisplayId\tvarchar(50)\tYES\t\tNULL\t\nexternalStatus\tvarchar(50)\tYES\t\tNULL\t\nexternalData\tjson\tYES\t\tNULL\t\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}

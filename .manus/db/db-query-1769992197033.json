@@ -1,0 +1,230 @@
+{
+  "query": "SELECT id, orderNumber, customerName, deliveryType, deliveryFee, subtotal, total, status, createdAt FROM orders WHERE establishmentId = 60018 ORDER BY createdAt DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, customerName, deliveryType, deliveryFee, subtotal, total, status, createdAt FROM orders WHERE establishmentId = 60018 ORDER BY createdAt DESC LIMIT 20;",
+  "rows": [
+    {
+      "id": "210145",
+      "orderNumber": "#P21",
+      "customerName": "Maria Fernanda ",
+      "deliveryType": "pickup",
+      "deliveryFee": "5.00",
+      "subtotal": "54.00",
+      "total": "59.00",
+      "status": "preparing",
+      "createdAt": "2026-02-02 00:05:04"
+    },
+    {
+      "id": "210144",
+      "orderNumber": "#P20",
+      "customerName": "Aline ",
+      "deliveryType": "delivery",
+      "deliveryFee": "0.00",
+      "subtotal": "30.90",
+      "total": "30.90",
+      "status": "ready",
+      "createdAt": "2026-02-02 00:01:37"
+    },
+    {
+      "id": "210143",
+      "orderNumber": "#P19",
+      "customerName": "Joao vitor ",
+      "deliveryType": "delivery",
+      "deliveryFee": "5.00",
+      "subtotal": "52.00",
+      "total": "57.00",
+      "status": "preparing",
+      "createdAt": "2026-02-01 23:45:45"
+    },
+    {
+      "id": "210142",
+      "orderNumber": "#P18",
+      "customerName": "Jessica ",
+      "deliveryType": "delivery",
+      "deliveryFee": "0.00",
+      "subtotal": "36.00",
+      "total": "36.00",
+      "status": "cancelled",
+      "createdAt": "2026-02-01 23:05:22"
+    },
+    {
+      "id": "210141",
+      "orderNumber": "#P17",
+      "customerName": "Pedro",
+      "deliveryType": "delivery",
+      "deliveryFee": "0.00",
+      "subtotal": "82.80",
+      "total": "82.80",
+      "status": "ready",
+      "createdAt": "2026-02-01 23:00:05"
+    },
+    {
+      "id": "210140",
+      "orderNumber": "#P16",
+      "customerName": "Aline ",
+      "deliveryType": "delivery",
+      "deliveryFee": "9.00",
+      "subtotal": "33.90",
+      "total": "42.90",
+      "status": "preparing",
+      "createdAt": "2026-02-01 22:53:06"
+    },
+    {
+      "id": "210139",
+      "orderNumber": "#P15",
+      "customerName": "Ludmilla ",
+      "deliveryType": "pickup",
+      "deliveryFee": "5.00",
+      "subtotal": "46.90",
+      "total": "51.90",
+      "status": "completed",
+      "createdAt": "2026-02-01 22:49:26"
+    },
+    {
+      "id": "210138",
+      "orderNumber": "#P14",
+      "customerName": "Geovanna ",
+      "deliveryType": "delivery",
+      "deliveryFee": "5.00",
+      "subtotal": "38.30",
+      "total": "43.30",
+      "status": "ready",
+      "createdAt": "2026-02-01 21:48:51"
+    },
+    {
+      "id": "210106",
+      "orderNumber": "#P13",
+      "customerName": "Diana ",
+      "deliveryType": "delivery",
+      "deliveryFee": "8.00",
+      "subtotal": "51.90",
+      "total": "59.90",
+      "status": "completed",
+      "createdAt": "2026-02-01 01:43:24"
+    },
+    {
+      "id": "210105",
+      "orderNumber": "#P12",
+      "customerName": "Luiz Gustavo ",
+      "deliveryType": "delivery",
+      "deliveryFee": "0.00",
+      "subtotal": "26.00",
+      "total": "26.00",
+      "status": "completed",
+      "createdAt": "2026-02-01 00:48:58"
+    },
+    {
+      "id": "210104",
+      "orderNumber": "#P11",
+      "customerName": "Daiane Ferraz ",
+      "deliveryType": "delivery",
+      "deliveryFee": "0.00",
+      "subtotal": "25.00",
+      "total": "25.00",
+      "status": "completed",
+      "createdAt": "2026-02-01 00:41:23"
+    },
+    {
+      "id": "210103",
+      "orderNumber": "#P10",
+      "customerName": "Camila ",
+      "deliveryType": "delivery",
+      "deliveryFee": "5.00",
+      "subtotal": "78.00",
+      "total": "83.00",
+      "status": "completed",
+      "createdAt": "2026-02-01 00:28:22"
+    },
+    {
+      "id": "210102",
+      "orderNumber": "#P9",
+      "customerName": "Geovanna ",
+      "deliveryType": "delivery",
+      "deliveryFee": "5.00",
+      "subtotal": "55.80",
+      "total": "60.80",
+      "status": "completed",
+      "createdAt": "2026-02-01 00:23:25"
+    },
+    {
+      "id": "210101",
+      "orderNumber": "#P8",
+      "customerName": "Maria",
+      "deliveryType": "delivery",
+      "deliveryFee": "0.00",
+      "subtotal": "71.90",
+      "total": "71.90",
+      "status": "completed",
+      "createdAt": "2026-02-01 00:18:53"
+    },
+    {
+      "id": "210100",
+      "orderNumber": "#P7",
+      "customerName": "Mara ",
+      "deliveryType": "delivery",
+      "deliveryFee": "9.00",
+      "subtotal": "52.00",
+      "total": "61.00",
+      "status": "pending_confirmation",
+      "createdAt": "2026-01-31 23:57:02"
+    },
+    {
+      "id": "210099",
+      "orderNumber": "#P6",
+      "customerName": "Mateus ",
+      "deliveryType": "delivery",
+      "deliveryFee": "0.00",
+      "subtotal": "26.00",
+      "total": "26.00",
+      "status": "completed",
+      "createdAt": "2026-01-31 23:42:45"
+    },
+    {
+      "id": "210098",
+      "orderNumber": "#P5",
+      "customerName": "Wallace ",
+      "deliveryType": "pickup",
+      "deliveryFee": "0.00",
+      "subtotal": "56.90",
+      "total": "56.90",
+      "status": "completed",
+      "createdAt": "2026-01-31 23:27:42"
+    },
+    {
+      "id": "210096",
+      "orderNumber": "#P4",
+      "customerName": "Jessica ",
+      "deliveryType": "delivery",
+      "deliveryFee": "0.00",
+      "subtotal": "24.00",
+      "total": "24.00",
+      "status": "cancelled",
+      "createdAt": "2026-01-31 22:15:17"
+    },
+    {
+      "id": "210094",
+      "orderNumber": "#P3",
+      "customerName": "Jessica ",
+      "deliveryType": "delivery",
+      "deliveryFee": "0.00",
+      "subtotal": "36.90",
+      "total": "36.90",
+      "status": "completed",
+      "createdAt": "2026-01-31 22:08:53"
+    },
+    {
+      "id": "210093",
+      "orderNumber": "#P2",
+      "customerName": "Matheus ",
+      "deliveryType": "pickup",
+      "deliveryFee": "6.00",
+      "subtotal": "34.00",
+      "total": "40.00",
+      "status": "cancelled",
+      "createdAt": "2026-01-31 21:47:33"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tcustomerName\tdeliveryType\tdeliveryFee\tsubtotal\ttotal\tstatus\tcreatedAt\n210145\t#P21\tMaria Fernanda \tpickup\t5.00\t54.00\t59.00\tpreparing\t2026-02-02 00:05:04\n210144\t#P20\tAline \tdelivery\t0.00\t30.90\t30.90\tready\t2026-02-02 00:01:37\n210143\t#P19\tJoao vitor \tdelivery\t5.00\t52.00\t57.00\tpreparing\t2026-02-01 23:45:45\n210142\t#P18\tJessica \tdelivery\t0.00\t36.00\t36.00\tcancelled\t2026-02-01 23:05:22\n210141\t#P17\tPedro\tdelivery\t0.00\t82.80\t82.80\tready\t2026-02-01 23:00:05\n210140\t#P16\tAline \tdelivery\t9.00\t33.90\t42.90\tpreparing\t2026-02-01 22:53:06\n210139\t#P15\tLudmilla \tpickup\t5.00\t46.90\t51.90\tcompleted\t2026-02-01 22:49:26\n210138\t#P14\tGeovanna \tdelivery\t5.00\t38.30\t43.30\tready\t2026-02-01 21:48:51\n210106\t#P13\tDiana \tdelivery\t8.00\t51.90\t59.90\tcompleted\t2026-02-01 01:43:24\n210105\t#P12\tLuiz Gustavo \tdelivery\t0.00\t26.00\t26.00\tcompleted\t2026-02-01 00:48:58\n210104\t#P11\tDaiane Ferraz \tdelivery\t0.00\t25.00\t25.00\tcompleted\t2026-02-01 00:41:23\n210103\t#P10\tCamila \tdelivery\t5.00\t78.00\t83.00\tcompleted\t2026-02-01 00:28:22\n210102\t#P9\tGeovanna \tdelivery\t5.00\t55.80\t60.80\tcompleted\t2026-02-01 00:23:25\n210101\t#P8\tMaria\tdelivery\t0.00\t71.90\t71.90\tcompleted\t2026-02-01 00:18:53\n210100\t#P7\tMara \tdelivery\t9.00\t52.00\t61.00\tpending_confirmation\t2026-01-31 23:57:02\n210099\t#P6\tMateus \tdelivery\t0.00\t26.00\t26.00\tcompleted\t2026-01-31 23:42:45\n210098\t#P5\tWallace \tpickup\t0.00\t56.90\t56.90\tcompleted\t2026-01-31 23:27:42\n210096\t#P4\tJessica \tdelivery\t0.00\t24.00\t24.00\tcancelled\t2026-01-31 22:15:17\n210094\t#P3\tJessica \tdelivery\t0.00\t36.90\t36.90\tcompleted\t2026-01-31 22:08:53\n210093\t#P2\tMatheus \tpickup\t6.00\t34.00\t40.00\tcancelled\t2026-01-31 21:47:33\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}
