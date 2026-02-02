@@ -4071,3 +4071,7 @@
 - [x] Corrigir exibição da taxa de entrega na sacola desktop quando bairro é selecionado
 - [x] Adicionar taxa de entrega no resumo do modal de confirmação (step 3)
 - [x] Garantir que a taxa de entrega seja exibida corretamente para pickup/dine_in (R$ 0,00)
+
+## Bug: Texto incorreto na sacola para Consumir/Retirar no local
+- [x] Alterar "Taxa de entrega Grátis" para "Consumir no local Grátis" quando dine_in selecionado
+- [x] Alterar "Taxa de entrega Grátis" para "Retirar no local Grátis" quando pickup selecionado

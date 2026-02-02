@@ -2104,9 +2104,15 @@ export default function PublicMenu() {
                           <span className="text-gray-600">{formatPrice(deliveryFeeValue)}</span>
                         </div>
                       )}
-                      {(deliveryType === 'pickup' || deliveryType === 'dine_in') && (
+                      {deliveryType === 'pickup' && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Taxa de entrega</span>
+                          <span className="text-gray-600">Retirar no local</span>
+                          <span className="text-green-600 font-medium">Grátis</span>
+                        </div>
+                      )}
+                      {deliveryType === 'dine_in' && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Consumir no local</span>
                           <span className="text-green-600 font-medium">Grátis</span>
                         </div>
                       )}
@@ -3525,9 +3531,15 @@ export default function PublicMenu() {
                             <span className="text-gray-600">{formatPrice(deliveryFeeValue)}</span>
                           </div>
                         )}
-                        {(deliveryType === 'pickup' || deliveryType === 'dine_in') && (
+                        {deliveryType === 'pickup' && (
                           <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Taxa de entrega</span>
+                            <span className="text-gray-600">Retirar no local</span>
+                            <span className="text-green-600 font-medium">Grátis</span>
+                          </div>
+                        )}
+                        {deliveryType === 'dine_in' && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Consumir no local</span>
                             <span className="text-green-600 font-medium">Grátis</span>
                           </div>
                         )}
