@@ -306,7 +306,7 @@ export default function PDV() {
                           <img
                             src={product.images[0]}
                             alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={{height: '110px'}}
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
