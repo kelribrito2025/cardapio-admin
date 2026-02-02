@@ -25,8 +25,9 @@ import {
   FileSpreadsheet,
   UserPlus,
   Trash2,
+  X,
 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -34,22 +35,68 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { trpc } from "@/lib/trpc";
 
 // Limite de caracteres do SMS
 const SMS_CHAR_LIMIT = 152;
 
-// Dados mockados para demonstração visual
+// Dados mockados para demonstração visual (saldo e custo)
 const MOCK_DATA = {
   saldo: 125.50,
   custoPorSms: 0.08,
   ultimoDisparo: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 dias atrás
-  clientesBase: [
-    { id: 1, nome: "João Silva", telefone: "(11) 99999-1234", selecionado: false },
-    { id: 2, nome: "Maria Santos", telefone: "(11) 98888-5678", selecionado: false },
-    { id: 3, nome: "Pedro Oliveira", telefone: "(11) 97777-9012", selecionado: false },
-    { id: 4, nome: "Ana Costa", telefone: "(11) 96666-3456", selecionado: false },
-    { id: 5, nome: "Carlos Lima", telefone: "(11) 95555-7890", selecionado: false },
-  ],
+};
+
+// Função para formatar número de telefone no padrão brasileiro
+const formatPhoneNumber = (value: string): string => {
+  // Remove tudo que não é número
+  const numbers = value.replace(/\D/g, '');
+  
+  // Se começar com 55, remove (será adicionado automaticamente)
+  const cleaned = numbers.startsWith('55') ? numbers.slice(2) : numbers;
+  
+  // Limita a 11 dígitos (DDD + 9 dígitos)
+  const limited = cleaned.slice(0, 11);
+  
+  // Formata conforme vai digitando
+  if (limited.length === 0) return '';
+  if (limited.length <= 2) return `+55 ${limited}`;
+  if (limited.length <= 3) return `+55 ${limited.slice(0, 2)} ${limited.slice(2)}`;
+  if (limited.length <= 7) return `+55 ${limited.slice(0, 2)} ${limited.slice(2, 3)} ${limited.slice(3)}`;
+  if (limited.length <= 11) return `+55 ${limited.slice(0, 2)} ${limited.slice(2, 3)} ${limited.slice(3, 7)}-${limited.slice(7)}`;
+  
+  return `+55 ${limited.slice(0, 2)} ${limited.slice(2, 3)} ${limited.slice(3, 7)}-${limited.slice(7, 11)}`;
+};
+
+// Função para extrair apenas números do telefone formatado
+const extractPhoneNumbers = (formatted: string): string => {
+  return formatted.replace(/\D/g, '');
+};
+
+// Função para formatar telefone para exibição (a partir de número limpo)
+const formatPhoneForDisplay = (phone: string): string => {
+  const numbers = phone.replace(/\D/g, '');
+  
+  // Se já tem 55 no início
+  if (numbers.startsWith('55') && numbers.length >= 12) {
+    const ddd = numbers.slice(2, 4);
+    const firstDigit = numbers.slice(4, 5);
+    const middle = numbers.slice(5, 9);
+    const end = numbers.slice(9, 13);
+    return `+55 ${ddd} ${firstDigit} ${middle}-${end}`;
+  }
+  
+  // Se tem 11 dígitos (DDD + 9 dígitos)
+  if (numbers.length === 11) {
+    return `+55 ${numbers.slice(0, 2)} ${numbers.slice(2, 3)} ${numbers.slice(3, 7)}-${numbers.slice(7)}`;
+  }
+  
+  // Se tem 10 dígitos (DDD + 8 dígitos - telefone fixo)
+  if (numbers.length === 10) {
+    return `+55 ${numbers.slice(0, 2)} ${numbers.slice(2, 6)}-${numbers.slice(6)}`;
+  }
+  
+  return phone;
 };
 
 export default function Campanhas() {
@@ -61,6 +108,9 @@ export default function Campanhas() {
   const [numerosManual, setNumerosManual] = useState<string[]>([]);
   const [isEnviando, setIsEnviando] = useState(false);
   const [selecionarTodos, setSelecionarTodos] = useState(false);
+
+  // Buscar clientes reais do banco de dados
+  const { data: clientesBase, isLoading: isLoadingClientes } = trpc.campanhas.getClientes.useQuery();
 
   // Calcular quantidade de SMS possíveis com o saldo
   const smsPossiveis = Math.floor(MOCK_DATA.saldo / MOCK_DATA.custoPorSms);
@@ -100,23 +150,34 @@ export default function Campanhas() {
     if (selecionarTodos) {
       setClientesSelecionados([]);
     } else {
-      setClientesSelecionados(MOCK_DATA.clientesBase.map(c => c.id));
+      setClientesSelecionados(clientesBase?.map(c => c.id) || []);
     }
     setSelecionarTodos(!selecionarTodos);
   };
 
+  // Handler para input de número manual com formatação automática
+  const handleNumeroManualChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setNumeroManual(formatted);
+  }, []);
+
   // Adicionar número manual
   const adicionarNumeroManual = () => {
-    const numeroLimpo = numeroManual.replace(/\D/g, "");
-    if (numeroLimpo.length >= 10 && numeroLimpo.length <= 11) {
-      if (!numerosManual.includes(numeroLimpo)) {
-        setNumerosManual(prev => [...prev, numeroLimpo]);
+    const numeroLimpo = extractPhoneNumbers(numeroManual);
+    
+    // Validar: deve ter pelo menos 12 dígitos (55 + DDD + número)
+    // ou 10-11 dígitos sem o 55
+    const numeroParaSalvar = numeroLimpo.startsWith('55') ? numeroLimpo : `55${numeroLimpo}`;
+    
+    if (numeroParaSalvar.length >= 12 && numeroParaSalvar.length <= 13) {
+      if (!numerosManual.includes(numeroParaSalvar)) {
+        setNumerosManual(prev => [...prev, numeroParaSalvar]);
         setNumeroManual("");
       } else {
         toast.error("Número já adicionado");
       }
     } else {
-      toast.error("Número inválido. Use o formato (XX) XXXXX-XXXX");
+      toast.error("Número inválido. Digite DDD + número (ex: 88 9 9929-0000)");
     }
   };
 
@@ -129,9 +190,9 @@ export default function Campanhas() {
   const handleImportarCSV = () => {
     // Simular importação
     const numerosSimulados = [
-      "11999991111",
-      "11999992222",
-      "11999993333",
+      "5511999991111",
+      "5511999992222",
+      "5511999993333",
     ];
     setNumerosImportados(numerosSimulados);
     toast.success(`${numerosSimulados.length} números importados com sucesso!`);
@@ -165,18 +226,6 @@ export default function Campanhas() {
     setClientesSelecionados([]);
     setNumerosImportados([]);
     setNumerosManual([]);
-  };
-
-  // Formatar número para exibição
-  const formatarTelefone = (numero: string) => {
-    const limpo = numero.replace(/\D/g, "");
-    if (limpo.length === 11) {
-      return `(${limpo.slice(0, 2)}) ${limpo.slice(2, 7)}-${limpo.slice(7)}`;
-    }
-    if (limpo.length === 10) {
-      return `(${limpo.slice(0, 2)}) ${limpo.slice(2, 6)}-${limpo.slice(6)}`;
-    }
-    return numero;
   };
 
   // Preview da mensagem com substituições
@@ -312,38 +361,56 @@ export default function Campanhas() {
                           checked={selecionarTodos}
                           onChange={toggleSelecionarTodos}
                           className="rounded border-gray-300"
+                          disabled={isLoadingClientes || !clientesBase?.length}
                         />
                         <span className="text-sm font-medium">Selecionar todos</span>
                       </label>
                       <span className="text-xs text-muted-foreground">
-                        {MOCK_DATA.clientesBase.length} clientes
+                        {isLoadingClientes ? "Carregando..." : `${clientesBase?.length || 0} clientes`}
                       </span>
                     </div>
                     
                     {/* Lista de clientes */}
                     <div className="max-h-[240px] overflow-y-auto">
-                      {MOCK_DATA.clientesBase.map((cliente) => (
-                        <label
-                          key={cliente.id}
-                          className={cn(
-                            "flex items-center gap-3 px-4 py-3 border-b last:border-b-0 cursor-pointer transition-colors",
-                            clientesSelecionados.includes(cliente.id) 
-                              ? "bg-primary/5" 
-                              : "hover:bg-muted/30"
-                          )}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={clientesSelecionados.includes(cliente.id)}
-                            onChange={() => toggleCliente(cliente.id)}
-                            className="rounded border-gray-300"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{cliente.nome}</p>
-                            <p className="text-xs text-muted-foreground">{cliente.telefone}</p>
-                          </div>
-                        </label>
-                      ))}
+                      {isLoadingClientes ? (
+                        <div className="flex items-center justify-center py-8">
+                          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                        </div>
+                      ) : clientesBase && clientesBase.length > 0 ? (
+                        clientesBase.map((cliente) => (
+                          <label
+                            key={cliente.id}
+                            className={cn(
+                              "flex items-center gap-3 px-4 py-3 border-b last:border-b-0 cursor-pointer transition-colors",
+                              clientesSelecionados.includes(cliente.id) 
+                                ? "bg-primary/5" 
+                                : "hover:bg-muted/30"
+                            )}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={clientesSelecionados.includes(cliente.id)}
+                              onChange={() => toggleCliente(cliente.id)}
+                              className="rounded border-gray-300"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{cliente.name || "Cliente"}</p>
+                              <p className="text-xs text-muted-foreground">{formatPhoneForDisplay(cliente.phone)}</p>
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {cliente.orderCount} pedido{cliente.orderCount !== 1 ? "s" : ""}
+                            </div>
+                          </label>
+                        ))
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-8 text-center">
+                          <Users className="h-8 w-8 text-muted-foreground/50 mb-2" />
+                          <p className="text-sm text-muted-foreground">Nenhum cliente encontrado</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Os clientes aparecerão aqui após realizarem pedidos
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
@@ -374,7 +441,7 @@ export default function Campanhas() {
                         <div className="flex flex-wrap gap-2 justify-center mb-4">
                           {numerosImportados.map((numero, index) => (
                             <span key={index} className="bg-muted px-3 py-1 rounded-full text-sm">
-                              {formatarTelefone(numero)}
+                              {formatPhoneForDisplay(numero)}
                             </span>
                           ))}
                         </div>
@@ -397,8 +464,8 @@ export default function Campanhas() {
                     <div className="flex gap-2">
                       <Input
                         value={numeroManual}
-                        onChange={(e) => setNumeroManual(e.target.value)}
-                        placeholder="(XX) XXXXX-XXXX"
+                        onChange={handleNumeroManualChange}
+                        placeholder="+55 88 9 9929-0000"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
@@ -406,7 +473,7 @@ export default function Campanhas() {
                           }
                         }}
                       />
-                      <Button onClick={adicionarNumeroManual}>
+                      <Button onClick={adicionarNumeroManual} className="bg-primary hover:bg-primary/90">
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
@@ -419,7 +486,7 @@ export default function Campanhas() {
                               key={index} 
                               className="bg-muted px-3 py-1.5 rounded-full text-sm flex items-center gap-2"
                             >
-                              {formatarTelefone(numero)}
+                              {formatPhoneForDisplay(numero)}
                               <button
                                 onClick={() => removerNumeroManual(numero)}
                                 className="text-muted-foreground hover:text-destructive transition-colors"
@@ -448,7 +515,7 @@ export default function Campanhas() {
                     Custo estimado: <span className="font-semibold text-foreground">R$ {custoTotal.toFixed(2)}</span>
                   </p>
                   {custoTotal > MOCK_DATA.saldo && (
-                    <p className="text-xs text-red-500 flex items-center gap-1">
+                    <p className="text-xs text-destructive flex items-center gap-1">
                       <AlertCircle className="h-3.5 w-3.5" />
                       Saldo insuficiente
                     </p>
@@ -457,8 +524,7 @@ export default function Campanhas() {
                 <Button 
                   onClick={handleEnviarSMS}
                   disabled={isEnviando || totalDestinatarios === 0 || !mensagem.trim() || custoTotal > MOCK_DATA.saldo}
-                  className="w-full sm:w-auto bg-green-600 hover:bg-green-700"
-                  size="lg"
+                  className="w-full sm:w-auto bg-primary hover:bg-primary/90"
                 >
                   {isEnviando ? (
                     <>
@@ -476,82 +542,65 @@ export default function Campanhas() {
             </div>
           </div>
 
-          {/* Coluna Direita - Preview do Celular */}
+          {/* Coluna Direita - Preview */}
           <div className="lg:col-span-2">
-            <div className="sticky top-6">
-              <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="h-10 w-10 rounded-xl bg-gray-100 flex items-center justify-center">
-                    <MessageSquare className="h-5 w-5 text-gray-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-base font-semibold text-foreground">Preview</h3>
-                    <p className="text-xs text-muted-foreground">Como o cliente verá o SMS</p>
+            <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm sticky top-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-10 w-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                  <MessageSquare className="h-5 w-5 text-gray-600" />
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold text-foreground">Preview</h3>
+                  <p className="text-xs text-muted-foreground">Como o cliente verá o SMS</p>
+                </div>
+              </div>
+
+              {/* Preview do celular */}
+              <div className="bg-gray-100 rounded-[2rem] p-3 max-w-[280px] mx-auto">
+                {/* Barra de status do celular */}
+                <div className="flex items-center justify-between px-4 py-1 text-xs text-gray-600">
+                  <span className="font-medium">9:41</span>
+                  <div className="flex items-center gap-1">
+                    <Signal className="h-3.5 w-3.5" />
+                    <Wifi className="h-3.5 w-3.5" />
+                    <Battery className="h-4 w-4" />
                   </div>
                 </div>
 
-                {/* Moldura do Celular */}
-                <div className="flex justify-center">
-                  <div className="relative bg-[#1a1a1a] rounded-[40px] p-2 shadow-xl" style={{ width: '280px' }}>
-                    {/* Borda interna do celular */}
-                    <div className="bg-[#0a0a0a] rounded-[32px] overflow-hidden">
-                      {/* Barra de status do celular */}
-                      <div className="bg-[#1a1a1a] px-6 py-2 flex items-center justify-between">
-                        <span className="text-white text-xs font-medium">9:41</span>
-                        <div className="flex items-center gap-1">
-                          <Signal className="h-3.5 w-3.5 text-white" />
-                          <Wifi className="h-3.5 w-3.5 text-white" />
-                          <Battery className="h-4 w-4 text-white" />
-                        </div>
-                      </div>
+                {/* Tela do app de mensagens */}
+                <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+                  {/* Header do app */}
+                  <div className="bg-gray-50 px-3 py-2 flex items-center gap-2 border-b">
+                    <ChevronLeft className="h-5 w-5 text-blue-500" />
+                    <span className="font-medium text-sm">Mensagens</span>
+                  </div>
 
-                      {/* Tela do SMS */}
-                      <div className="bg-white min-h-[400px] flex flex-col">
-                        {/* Header do app de mensagens */}
-                        <div className="bg-gray-100 px-4 py-3 flex items-center gap-3 border-b">
-                          <ChevronLeft className="h-5 w-5 text-blue-500" />
-                          <div className="flex-1">
-                            <p className="text-sm font-semibold text-gray-900">Mensagens</p>
-                          </div>
-                        </div>
-
-                        {/* Área de mensagens */}
-                        <div className="flex-1 p-4 bg-white">
-                          {/* Balão de mensagem */}
-                          <div className="flex justify-start">
-                            <div className="max-w-[85%] bg-gray-200 rounded-2xl rounded-tl-sm px-4 py-2.5">
-                              <p className="text-sm text-gray-900 whitespace-pre-wrap break-words">
-                                {previewMensagem}
-                              </p>
-                              <p className="text-[10px] text-gray-500 mt-1 text-right">
-                                Agora
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Barra inferior do app */}
-                        <div className="bg-gray-100 px-4 py-3 border-t">
-                          <div className="bg-white rounded-full px-4 py-2 text-sm text-gray-400 border">
-                            Mensagem de texto
-                          </div>
-                        </div>
-                      </div>
+                  {/* Área de mensagens */}
+                  <div className="p-3 min-h-[200px] bg-white">
+                    <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-3 py-2 max-w-[90%]">
+                      <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">
+                        {previewMensagem}
+                      </p>
+                      <p className="text-[10px] text-gray-400 text-right mt-1">Agora</p>
                     </div>
+                  </div>
 
-                    {/* Barra de navegação inferior do celular */}
-                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/30 rounded-full" />
+                  {/* Input de mensagem */}
+                  <div className="border-t px-3 py-2">
+                    <div className="bg-gray-100 rounded-full px-3 py-1.5 text-xs text-gray-400">
+                      Mensagem de texto
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Nota informativa */}
-                <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                  <div className="flex gap-2">
-                    <Info className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                    <p className="text-xs text-blue-700">
-                      O SMS será enviado do número da Disparo Pro. O cliente verá a mensagem exatamente como mostrado acima.
-                    </p>
-                  </div>
+              {/* Informação adicional */}
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <Info className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-blue-700">
+                    O SMS será enviado do número da Disparo Pro. O cliente verá a mensagem exatamente como mostrado acima.
+                  </p>
                 </div>
               </div>
             </div>
@@ -559,24 +608,5 @@ export default function Campanhas() {
         </div>
       </div>
     </AdminLayout>
-  );
-}
-
-// Componente X para o botão de remover
-function X({ className }: { className?: string }) {
-  return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-      className={className}
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
   );
 }

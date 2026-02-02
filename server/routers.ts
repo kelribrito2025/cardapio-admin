@@ -2695,6 +2695,21 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+  
+  // ============ CAMPANHAS SMS ============
+  campanhas: router({
+    // Buscar clientes únicos que fizeram pedidos
+    getClientes: protectedProcedure
+      .query(async ({ ctx }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        const clientes = await db.getUniqueCustomers(establishment.id);
+        return clientes;
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

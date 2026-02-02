@@ -1,4 +1,4 @@
-import { eq, desc, asc, and, like, sql, gte, lte, lt, or, ne, inArray } from "drizzle-orm";
+import { eq, desc, asc, and, like, sql, gte, lte, lt, or, ne, inArray, isNotNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate, notifyPrintOrder } from "./_core/sse";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
@@ -4512,4 +4512,51 @@ export async function getMenuViewsHeatmap(establishmentId: number): Promise<{
   const totalViews = data.reduce((sum, d) => sum + d.count, 0);
   
   return { data, maxCount, totalViews };
+}
+
+
+// ============ SMS CAMPAIGNS - CLIENTES ============
+
+/**
+ * Busca clientes únicos que fizeram pedidos no estabelecimento
+ * Retorna nome e telefone de clientes com telefone válido
+ */
+export async function getUniqueCustomers(establishmentId: number): Promise<{
+  id: number;
+  name: string | null;
+  phone: string;
+  lastOrderAt: Date;
+  orderCount: number;
+}[]> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Buscar clientes únicos agrupados por telefone
+  const results = await db.select({
+    customerPhone: orders.customerPhone,
+    customerName: sql<string>`MAX(${orders.customerName})`.as('customerName'),
+    lastOrderAt: sql<Date>`MAX(${orders.createdAt})`.as('lastOrderAt'),
+    orderCount: sql<number>`COUNT(*)`.as('orderCount'),
+  })
+    .from(orders)
+    .where(
+      and(
+        eq(orders.establishmentId, establishmentId),
+        isNotNull(orders.customerPhone),
+        sql`${orders.customerPhone} != ''`
+      )
+    )
+    .groupBy(orders.customerPhone)
+    .orderBy(desc(sql`MAX(${orders.createdAt})`));
+  
+  // Filtrar e formatar resultados
+  return results
+    .filter(r => r.customerPhone && r.customerPhone.replace(/\D/g, '').length >= 10)
+    .map((r, index) => ({
+      id: index + 1,
+      name: r.customerName || null,
+      phone: r.customerPhone!,
+      lastOrderAt: r.lastOrderAt,
+      orderCount: r.orderCount,
+    }));
 }

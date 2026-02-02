@@ -4202,3 +4202,7 @@
 - [x] Mover contador de caracteres para dentro do campo de texto no canto inferior direito
 - [x] Ajustar campo de mensagem SMS para ter apenas uma área de texto sem quebras de linha extras
 - [x] Posicionar contador de caracteres no canto inferior direito na mesma linha do placeholder
+
+## Melhorias na Página de Campanhas SMS
+- [x] Formatar número de telefone automaticamente com +55 e máscara (XX) X XXXX-XXXX na aba Adicionar Manual
+- [x] Buscar clientes reais do banco de dados na aba Base de Clientes (clientes que fizeram pedidos)
