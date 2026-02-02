@@ -4284,3 +4284,9 @@
 
 ## Correção de overflow na página Dashboard
 - [x] Corrigir barra de rolagem externa na página Dashboard
+
+## Correção do modal de detalhes no PDV
+- [ ] Abrir modal de detalhes quando clicar em Adicionar em item com complementos
+- [ ] Replicar estilo do modal do menu público no PDV (bordas arredondadas, grupos de complementos)
+- [ ] Adicionar seleção de complementos no modal do PDV
+- [ ] Botão "Escolha uma opção" quando há complementos obrigatórios
