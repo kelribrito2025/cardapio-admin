@@ -563,3 +563,34 @@ export const menuViewsHourly = mysqlTable("menu_views_hourly", {
 
 export type MenuViewsHourly = typeof menuViewsHourly.$inferSelect;
 export type InsertMenuViewsHourly = typeof menuViewsHourly.$inferInsert;
+
+
+// SMS Balance - Saldo de SMS por estabelecimento
+export const smsBalance = mysqlTable("sms_balance", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull().unique(),
+  balance: decimal("balance", { precision: 10, scale: 2 }).default("0").notNull(), // Saldo em reais
+  costPerSms: decimal("costPerSms", { precision: 10, scale: 4 }).default("0.0800").notNull(), // Custo por SMS (padrão R$ 0,08)
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SmsBalance = typeof smsBalance.$inferSelect;
+export type InsertSmsBalance = typeof smsBalance.$inferInsert;
+
+// SMS Transactions - Histórico de transações de SMS (créditos e débitos)
+export const smsTransactions = mysqlTable("sms_transactions", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  type: mysqlEnum("type", ["credit", "debit"]).notNull(), // credit = recarga, debit = envio
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(), // Valor da transação
+  smsCount: int("smsCount").default(0).notNull(), // Quantidade de SMS (para débitos)
+  balanceBefore: decimal("balanceBefore", { precision: 10, scale: 2 }).notNull(), // Saldo antes
+  balanceAfter: decimal("balanceAfter", { precision: 10, scale: 2 }).notNull(), // Saldo depois
+  description: varchar("description", { length: 255 }), // Descrição da transação
+  campaignName: varchar("campaignName", { length: 255 }), // Nome da campanha (para débitos)
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type SmsTransaction = typeof smsTransactions.$inferSelect;
+export type InsertSmsTransaction = typeof smsTransactions.$inferInsert;

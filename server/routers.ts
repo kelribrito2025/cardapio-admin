@@ -2713,6 +2713,121 @@ export const appRouter = router({
         const clientes = await db.getUniqueCustomers(establishment.id);
         return clientes;
       }),
+    
+    // Buscar saldo SMS do estabelecimento
+    getSaldo: protectedProcedure.query(async ({ ctx }) => {
+      if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+      
+      const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+      if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+      
+      const balance = await db.getOrCreateSmsBalance(establishment.id);
+      const lastDispatch = await db.getLastSmsDispatch(establishment.id);
+      
+      return {
+        saldo: parseFloat(balance.balance as string),
+        custoPorSms: parseFloat(balance.costPerSms as string),
+        smsDisponiveis: Math.floor(parseFloat(balance.balance as string) / parseFloat(balance.costPerSms as string)),
+        ultimoDisparo: lastDispatch?.createdAt || null,
+      };
+    }),
+    
+    // Buscar histórico de transações SMS
+    getTransacoes: protectedProcedure
+      .input(z.object({ limit: z.number().optional() }).optional())
+      .query(async ({ ctx, input }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        return await db.getSmsTransactions(establishment.id, input?.limit || 50);
+      }),
+    
+    // Enviar SMS em massa para múltiplos destinatários
+    enviarSMS: protectedProcedure
+      .input(z.object({
+        mensagem: z.string().min(1).max(160),
+        destinatarios: z.array(z.string()).min(1),
+        nomeCampanha: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        // Verificar saldo antes de enviar
+        const saldoCheck = await db.debitSmsBalance(
+          establishment.id,
+          input.destinatarios.length,
+          input.nomeCampanha || `Campanha ${establishment.name}`
+        );
+        
+        if (!saldoCheck.success) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: saldoCheck.message,
+          });
+        }
+        
+        const { sendSMS } = await import('./_core/sms');
+        
+        const resultados: { numero: string; sucesso: boolean; erro?: string }[] = [];
+        let enviados = 0;
+        let falhas = 0;
+        
+        console.log(`[Campanhas] Iniciando envio de SMS para ${input.destinatarios.length} destinatários`);
+        console.log(`[Campanhas] Mensagem: ${input.mensagem}`);
+        
+        for (const numero of input.destinatarios) {
+          try {
+            console.log(`[Campanhas] Enviando SMS para ${numero}...`);
+            const resultado = await sendSMS({
+              to: numero,
+              message: input.mensagem,
+              campaignName: input.nomeCampanha || `Campanha ${establishment.name}`,
+            });
+            
+            if (resultado.success) {
+              enviados++;
+              resultados.push({ numero, sucesso: true });
+              console.log(`[Campanhas] SMS enviado com sucesso para ${numero}`);
+            } else {
+              falhas++;
+              resultados.push({ numero, sucesso: false, erro: resultado.error });
+              console.error(`[Campanhas] Falha ao enviar SMS para ${numero}: ${resultado.error}`);
+            }
+          } catch (error) {
+            falhas++;
+            const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+            resultados.push({ numero, sucesso: false, erro: errorMessage });
+            console.error(`[Campanhas] Erro ao enviar SMS para ${numero}:`, error);
+          }
+        }
+        
+        // Se houve falhas, devolver créditos proporcionais
+        if (falhas > 0) {
+          const balance = await db.getOrCreateSmsBalance(establishment.id);
+          const costPerSms = parseFloat(balance.costPerSms as string);
+          const refundAmount = falhas * costPerSms;
+          await db.addSmsCredit(
+            establishment.id,
+            refundAmount,
+            `Estorno de ${falhas} SMS não enviados`
+          );
+          console.log(`[Campanhas] Estorno de R$ ${refundAmount.toFixed(2)} por ${falhas} SMS não enviados`);
+        }
+        
+        console.log(`[Campanhas] Envio concluído: ${enviados} enviados, ${falhas} falhas`);
+        
+        return {
+          total: input.destinatarios.length,
+          enviados,
+          falhas,
+          resultados,
+        };
+      }),
   }),
 });
 

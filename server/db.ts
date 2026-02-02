@@ -28,7 +28,9 @@ import {
   ifoodConfig, InsertIfoodConfig, IfoodConfig,
   menuSessions, InsertMenuSession, MenuSession,
   menuViewsDaily, InsertMenuViewsDaily, MenuViewsDaily,
-  menuViewsHourly, InsertMenuViewsHourly, MenuViewsHourly
+  menuViewsHourly, InsertMenuViewsHourly, MenuViewsHourly,
+  smsBalance, InsertSmsBalance, SmsBalance,
+  smsTransactions, InsertSmsTransaction, SmsTransaction
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -4559,4 +4561,164 @@ export async function getUniqueCustomers(establishmentId: number): Promise<{
       lastOrderAt: r.lastOrderAt,
       orderCount: r.orderCount,
     }));
+}
+
+
+// ============ SMS BALANCE FUNCTIONS ============
+
+// Buscar saldo SMS do estabelecimento
+export async function getSmsBalance(establishmentId: number): Promise<SmsBalance | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const [balance] = await db.select().from(smsBalance).where(eq(smsBalance.establishmentId, establishmentId));
+  return balance || null;
+}
+
+// Criar ou atualizar saldo SMS do estabelecimento
+export async function getOrCreateSmsBalance(establishmentId: number): Promise<SmsBalance> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Tentar buscar saldo existente
+  let balance = await getSmsBalance(establishmentId);
+  
+  if (!balance) {
+    // Criar novo registro de saldo com valor inicial de R$ 0,00
+    await db.insert(smsBalance).values({
+      establishmentId,
+      balance: "0.00",
+      costPerSms: "0.0800",
+    });
+    balance = await getSmsBalance(establishmentId);
+  }
+  
+  return balance!;
+}
+
+// Adicionar crédito ao saldo SMS
+export async function addSmsCredit(
+  establishmentId: number, 
+  amount: number, 
+  description?: string
+): Promise<SmsBalance> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const currentBalance = await getOrCreateSmsBalance(establishmentId);
+  const balanceBefore = parseFloat(currentBalance.balance as string);
+  const balanceAfter = balanceBefore + amount;
+  
+  // Atualizar saldo
+  await db.update(smsBalance)
+    .set({ balance: balanceAfter.toFixed(2) })
+    .where(eq(smsBalance.establishmentId, establishmentId));
+  
+  // Registrar transação
+  await db.insert(smsTransactions).values({
+    establishmentId,
+    type: "credit",
+    amount: amount.toFixed(2),
+    smsCount: 0,
+    balanceBefore: balanceBefore.toFixed(2),
+    balanceAfter: balanceAfter.toFixed(2),
+    description: description || "Recarga de créditos SMS",
+  });
+  
+  return (await getSmsBalance(establishmentId))!;
+}
+
+// Debitar saldo SMS (retorna true se sucesso, false se saldo insuficiente)
+export async function debitSmsBalance(
+  establishmentId: number, 
+  smsCount: number,
+  campaignName?: string
+): Promise<{ success: boolean; message: string; debitedCount: number }> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const currentBalance = await getOrCreateSmsBalance(establishmentId);
+  const balanceBefore = parseFloat(currentBalance.balance as string);
+  const costPerSms = parseFloat(currentBalance.costPerSms as string);
+  const totalCost = smsCount * costPerSms;
+  
+  // Verificar se tem saldo suficiente
+  if (balanceBefore < totalCost) {
+    // Calcular quantos SMS podem ser enviados com o saldo disponível
+    const maxSmsWithBalance = Math.floor(balanceBefore / costPerSms);
+    
+    if (maxSmsWithBalance <= 0) {
+      return {
+        success: false,
+        message: "Saldo insuficiente para enviar SMS. Recarregue seus créditos.",
+        debitedCount: 0,
+      };
+    }
+    
+    // Retornar quantos podem ser enviados
+    return {
+      success: false,
+      message: `Saldo insuficiente. Você pode enviar no máximo ${maxSmsWithBalance} SMS com seu saldo atual de R$ ${balanceBefore.toFixed(2)}.`,
+      debitedCount: maxSmsWithBalance,
+    };
+  }
+  
+  const balanceAfter = balanceBefore - totalCost;
+  
+  // Atualizar saldo
+  await db.update(smsBalance)
+    .set({ balance: balanceAfter.toFixed(2) })
+    .where(eq(smsBalance.establishmentId, establishmentId));
+  
+  // Registrar transação
+  await db.insert(smsTransactions).values({
+    establishmentId,
+    type: "debit",
+    amount: totalCost.toFixed(2),
+    smsCount,
+    balanceBefore: balanceBefore.toFixed(2),
+    balanceAfter: balanceAfter.toFixed(2),
+    description: `Envio de ${smsCount} SMS`,
+    campaignName,
+  });
+  
+  return {
+    success: true,
+    message: `Débito de R$ ${totalCost.toFixed(2)} realizado com sucesso.`,
+    debitedCount: smsCount,
+  };
+}
+
+// Buscar histórico de transações SMS
+export async function getSmsTransactions(
+  establishmentId: number, 
+  limit: number = 50
+): Promise<SmsTransaction[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select()
+    .from(smsTransactions)
+    .where(eq(smsTransactions.establishmentId, establishmentId))
+    .orderBy(desc(smsTransactions.createdAt))
+    .limit(limit);
+}
+
+// Buscar último disparo de SMS
+export async function getLastSmsDispatch(establishmentId: number): Promise<SmsTransaction | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const [lastDispatch] = await db.select()
+    .from(smsTransactions)
+    .where(
+      and(
+        eq(smsTransactions.establishmentId, establishmentId),
+        eq(smsTransactions.type, "debit")
+      )
+    )
+    .orderBy(desc(smsTransactions.createdAt))
+    .limit(1);
+  
+  return lastDispatch || null;
 }

@@ -38,12 +38,8 @@ import { trpc } from "@/lib/trpc";
 // Limite de caracteres do SMS
 const SMS_CHAR_LIMIT = 152;
 
-// Dados mockados para demonstração visual (saldo e custo)
-const MOCK_DATA = {
-  saldo: 125.50,
-  custoPorSms: 0.08,
-  ultimoDisparo: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 dias atrás
-};
+// Custo padrão por SMS (usado quando não há dados do servidor)
+const DEFAULT_COST_PER_SMS = 0.08;
 
 // Função para formatar número de telefone no padrão brasileiro
 const formatPhoneNumber = (value: string): string => {
@@ -109,9 +105,15 @@ export default function Campanhas() {
 
   // Buscar clientes reais do banco de dados
   const { data: clientesBase, isLoading: isLoadingClientes } = trpc.campanhas.getClientes.useQuery();
-
-  // Calcular quantidade de SMS possíveis com o saldo
-  const smsPossiveis = Math.floor(MOCK_DATA.saldo / MOCK_DATA.custoPorSms);
+  
+  // Buscar saldo SMS real do banco de dados
+  const { data: saldoData, isLoading: isLoadingSaldo, refetch: refetchSaldo } = trpc.campanhas.getSaldo.useQuery();
+  
+  // Dados de saldo (real ou padrão)
+  const saldo = saldoData?.saldo ?? 0;
+  const custoPorSms = saldoData?.custoPorSms ?? DEFAULT_COST_PER_SMS;
+  const smsPossiveis = saldoData?.smsDisponiveis ?? 0;
+  const ultimoDisparo = saldoData?.ultimoDisparo ? new Date(saldoData.ultimoDisparo) : null;
 
   // Calcular total de destinatários
   const totalDestinatarios = useMemo(() => {
@@ -120,19 +122,25 @@ export default function Campanhas() {
 
   // Calcular custo total
   const custoTotal = useMemo(() => {
-    return totalDestinatarios * MOCK_DATA.custoPorSms;
-  }, [totalDestinatarios]);
+    return totalDestinatarios * custoPorSms;
+  }, [totalDestinatarios, custoPorSms]);
 
   // Formatar data do último disparo
   const formatarUltimoDisparo = () => {
+    if (!ultimoDisparo) return "Nunca";
+    
     const agora = new Date();
-    const diff = agora.getTime() - MOCK_DATA.ultimoDisparo.getTime();
+    const diff = agora.getTime() - ultimoDisparo.getTime();
     const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
     
     if (dias === 0) return "Hoje";
     if (dias === 1) return "Ontem";
     return `Há ${dias} dias`;
   };
+  
+  // Verificar se tem saldo suficiente
+  const temSaldoSuficiente = saldo >= custoTotal && totalDestinatarios > 0;
+  const maxDestinatariosComSaldo = Math.floor(saldo / custoPorSms);
 
   // Selecionar/deselecionar cliente
   const toggleCliente = (id: number) => {
@@ -196,7 +204,29 @@ export default function Campanhas() {
     toast.success(`${numerosSimulados.length} números importados com sucesso!`);
   };
 
-  // Simular envio de SMS
+  // Mutation para enviar SMS
+  const enviarSMSMutation = trpc.campanhas.enviarSMS.useMutation({
+    onSuccess: (data) => {
+      if (data.enviados > 0) {
+        toast.success(`SMS enviado com sucesso para ${data.enviados} destinatário(s)!`);
+      }
+      if (data.falhas > 0) {
+        toast.error(`Falha ao enviar para ${data.falhas} destinatário(s)`);
+      }
+      // Limpar seleções
+      setMensagem("");
+      setClientesSelecionados([]);
+      setNumerosImportados([]);
+      setNumerosManual([]);
+      // Atualizar saldo após envio
+      refetchSaldo();
+    },
+    onError: (error) => {
+      toast.error(`Erro ao enviar SMS: ${error.message}`);
+    },
+  });
+
+  // Enviar SMS usando a API real
   const handleEnviarSMS = async () => {
     if (!mensagem.trim()) {
       toast.error("Digite uma mensagem para enviar");
@@ -206,24 +236,41 @@ export default function Campanhas() {
       toast.error("Selecione pelo menos um destinatário");
       return;
     }
-    if (custoTotal > MOCK_DATA.saldo) {
-      toast.error("Saldo insuficiente para este envio");
+    if (custoTotal > saldo) {
+      toast.error(`Saldo insuficiente. Você pode enviar no máximo ${maxDestinatariosComSaldo} SMS.`);
       return;
     }
 
     setIsEnviando(true);
     
-    // Simular envio
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Coletar todos os números de telefone
+    const todosNumeros: string[] = [];
     
-    toast.success(`SMS enviado para ${totalDestinatarios} destinatários!`);
-    setIsEnviando(false);
+    // Adicionar números dos clientes selecionados
+    if (clientesBase) {
+      clientesSelecionados.forEach(id => {
+        const cliente = clientesBase.find(c => c.id === id);
+        if (cliente?.phone) {
+          todosNumeros.push(cliente.phone);
+        }
+      });
+    }
     
-    // Limpar seleções
-    setMensagem("");
-    setClientesSelecionados([]);
-    setNumerosImportados([]);
-    setNumerosManual([]);
+    // Adicionar números importados
+    todosNumeros.push(...numerosImportados);
+    
+    // Adicionar números manuais
+    todosNumeros.push(...numerosManual);
+    
+    try {
+      await enviarSMSMutation.mutateAsync({
+        mensagem: mensagem.trim(),
+        destinatarios: todosNumeros,
+        nomeCampanha: "Campanha Promocional",
+      });
+    } finally {
+      setIsEnviando(false);
+    }
   };
 
   // Preview da mensagem com substituições
@@ -241,13 +288,13 @@ export default function Campanhas() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <StatCard
             title="Saldo Disponível"
-            value={`R$ ${MOCK_DATA.saldo.toFixed(2)}`}
+            value={isLoadingSaldo ? "..." : `R$ ${saldo.toFixed(2)}`}
             icon={Wallet}
             variant="emerald"
           />
           <StatCard
             title="Custo por SMS"
-            value={`R$ ${MOCK_DATA.custoPorSms.toFixed(2)}`}
+            value={`R$ ${custoPorSms.toFixed(2)}`}
             icon={DollarSign}
             variant="blue"
           />
@@ -519,7 +566,7 @@ export default function Campanhas() {
                   <p className="text-sm text-muted-foreground">
                     Custo estimado: <span className="font-semibold text-foreground">R$ {custoTotal.toFixed(2)}</span>
                   </p>
-                  {custoTotal > MOCK_DATA.saldo && (
+                  {custoTotal > saldo && totalDestinatarios > 0 && (
                     <p className="text-xs text-destructive flex items-center gap-1">
                       <AlertCircle className="h-3.5 w-3.5" />
                       Saldo insuficiente
@@ -528,7 +575,7 @@ export default function Campanhas() {
                 </div>
                 <Button 
                   onClick={handleEnviarSMS}
-                  disabled={isEnviando || totalDestinatarios === 0 || !mensagem.trim() || custoTotal > MOCK_DATA.saldo}
+                  disabled={isEnviando || totalDestinatarios === 0 || !mensagem.trim() || custoTotal > saldo}
                   className="w-full sm:w-auto bg-primary hover:bg-primary/90"
                 >
                   {isEnviando ? (

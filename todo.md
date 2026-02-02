@@ -4221,3 +4221,15 @@
 
 ## Ajuste do Estilo do Preview SMS (iOS Style)
 - [x] Mudar preview para estilo iOS com header "< Mensagens" e fundo cinza claro
+
+## Investigação do Envio SMS
+- [x] Verificar logs do servidor para identificar erro no envio SMS via Disparo Pro
+- [x] Corrigir integração com API Disparo Pro se necessário
+
+## Sistema de Saldo SMS
+- [x] Criar tabela sms_balance no banco de dados para armazenar saldo de cada estabelecimento
+- [x] Criar tabela sms_transactions para histórico de transações (créditos e débitos)
+- [x] Implementar procedure para buscar saldo atual do estabelecimento
+- [x] Implementar débito automático do saldo ao enviar SMS com sucesso
+- [x] Bloquear envio se saldo insuficiente
+- [x] Atualizar frontend para usar saldo real em vez de dados mockados
