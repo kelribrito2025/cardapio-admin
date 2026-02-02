@@ -1,6 +1,7 @@
 import { Eye, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useMemo } from "react";
+import { cn } from "@/lib/utils";
 
 // Tipo para os estados visuais
 type ViewsState = "up" | "down" | "neutral";
@@ -8,19 +9,22 @@ type ViewsState = "up" | "down" | "neutral";
 // Cores por estado
 const stateColors = {
   up: {
-    text: "#16A34A", // Verde
+    text: "text-emerald-700",
+    bg: "bg-emerald-100",
     icon: TrendingUp,
     line: "#22C55E",
     symbol: "▲",
   },
   down: {
-    text: "#DC2626", // Vermelho
+    text: "text-red-700",
+    bg: "bg-red-100",
     icon: TrendingDown,
     line: "#EF4444",
     symbol: "▼",
   },
   neutral: {
-    text: "#9CA3AF", // Cinza
+    text: "text-gray-500",
+    bg: "bg-gray-100",
     icon: Minus,
     line: "#D1D5DB",
     symbol: "—",
@@ -129,7 +133,7 @@ export function ViewsCard() {
   const StateIcon = stateConfig.icon;
 
   // Verificar se há poucas visualizações
-  const hasLowVolume = stats && stats.totalViews < 10;
+  const hasLowVolume = stats && stats.totalViews < 10 && stats.totalViews > 0;
   
   // Verificar se não há dados
   const hasNoData = !stats || (stats.totalViews === 0 && stats.previousTotalViews === 0);
@@ -149,64 +153,62 @@ export function ViewsCard() {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm animate-pulse">
+      <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm">
         <div className="flex items-center justify-between mb-3">
-          <div className="h-4 bg-gray-200 rounded w-24"></div>
-          <div className="h-5 w-5 bg-gray-200 rounded"></div>
+          <div className="skeleton h-4 w-24 rounded-md" />
+          <div className="skeleton h-5 w-5 rounded" />
         </div>
-        <div className="h-8 bg-gray-200 rounded w-16 mb-2"></div>
-        <div className="h-4 bg-gray-200 rounded w-32 mb-3"></div>
-        <div className="h-8 bg-gray-200 rounded w-full"></div>
+        <div className="skeleton h-8 w-16 rounded-md mb-2" />
+        <div className="skeleton h-4 w-32 rounded-md mb-3" />
+        <div className="skeleton h-8 w-full rounded-md" />
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm hover:shadow-md transition-shadow">
       {/* Header */}
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-[13px] font-medium text-gray-500 uppercase tracking-wide">
-          Visualizações
-        </span>
-        <Eye className="h-5 w-5 text-gray-400" />
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-semibold text-foreground">Visualizações</h3>
+        <Eye className="h-5 w-5 text-muted-foreground" />
       </div>
 
       {/* Número principal */}
-      <div className="mb-1">
-        <span className="text-[28px] font-bold text-gray-900">
+      <div className="flex items-center gap-2 mb-5">
+        <span className="text-2xl font-bold text-foreground">
           {hasNoData ? "—" : stats?.totalViews || 0}
         </span>
+        
+        {/* Badge de variação percentual */}
+        {!hasNoData && !hasLowVolume && (
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium",
+              stateConfig.bg,
+              stateConfig.text
+            )}
+          >
+            <StateIcon className="w-3 h-3" />
+            {stats?.percentageChange > 0 ? "+" : ""}
+            {stats?.percentageChange}%
+          </span>
+        )}
       </div>
 
-      {/* Variação percentual */}
-      <div className="flex items-center gap-1 mb-3">
+      {/* Texto de status */}
+      <div className="mb-3">
         {hasNoData ? (
-          <span className="text-[12px] font-medium text-gray-400">
+          <span className="text-xs text-muted-foreground">
             Sem visualizações ainda
           </span>
         ) : hasLowVolume ? (
-          <span className="text-[12px] font-medium text-amber-500">
+          <span className="text-xs text-amber-600 font-medium">
             Volume baixo de visualizações
           </span>
         ) : (
-          <>
-            <span 
-              className="text-[12px] font-medium"
-              style={{ color: stateConfig.text }}
-            >
-              {stats?.percentageChange > 0 ? "+" : ""}
-              {stats?.percentageChange}%
-            </span>
-            <span 
-              className="text-[12px]"
-              style={{ color: stateConfig.text }}
-            >
-              {stateConfig.symbol}
-            </span>
-            <span className="text-[12px] text-gray-400 ml-1">
-              vs últimos 7 dias
-            </span>
-          </>
+          <span className="text-xs text-muted-foreground">
+            vs últimos 7 dias
+          </span>
         )}
       </div>
 
@@ -222,11 +224,11 @@ export function ViewsCard() {
         {/* Tooltip com dados por dia (hover) */}
         {stats?.dailyViews && stats.dailyViews.length > 0 && (
           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
-            <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg whitespace-nowrap">
+            <div className="bg-popover text-popover-foreground text-xs rounded-lg px-3 py-2 shadow-lg border border-border whitespace-nowrap">
               <div className="space-y-1">
                 {stats.dailyViews.slice(-3).map((day, index) => (
                   <div key={index} className="flex justify-between gap-4">
-                    <span className="text-gray-300">{getDayName(day.date)}</span>
+                    <span className="text-muted-foreground">{getDayName(day.date)}</span>
                     <span className="font-medium">{day.views} visualizações</span>
                   </div>
                 ))}

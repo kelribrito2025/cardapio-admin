@@ -4166,3 +4166,5 @@
 - [x] Integrar card no Dashboard ao lado do card de Acumulados da Semana
 - [x] Implementar estados visuais: alta (verde), queda (vermelho), neutro (cinza)
 - [x] Implementar tratamento de edge cases (poucas visualizações, sem dados)
+
+- [x] Ajustar a fonte do card de Visualizações para usar a mesma fonte do sistema admin
