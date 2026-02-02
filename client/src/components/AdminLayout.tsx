@@ -607,12 +607,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   );
 
                   const navClassName = cn(
-                    "flex items-center gap-2.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
-                    sidebarCollapsed ? "px-0 justify-center" : "px-3",
+                    "flex items-center gap-2.5 py-2.5 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative",
+                    sidebarCollapsed ? "px-0 justify-center rounded-lg" : "px-3 rounded-r-xl",
                     isComingSoon 
                       ? "text-gray-400 cursor-default"
                       : isActive
-                        ? "bg-primary text-white shadow-md shadow-primary/20"
+                        ? "bg-red-900/30 text-white before:absolute before:left-0 before:top-1 before:bottom-1 before:w-1 before:bg-red-400 before:rounded-r-full"
                         : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                   );
 

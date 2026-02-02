@@ -4250,3 +4250,7 @@
 
 ## Badge Breve no Menu Cupons
 - [x] Adicionar badge "Breve" ao menu de Cupons igual aos outros menus
+
+
+## Est## Estilo de Seleção do Menu
+- [x] Alterar estilo de seleção do menu para barra vermelha clara à esquerda e fundo vermelho escuro
