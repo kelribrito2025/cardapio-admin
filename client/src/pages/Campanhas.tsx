@@ -585,7 +585,7 @@ export default function Campanhas() {
                 <div className="flex items-start gap-2">
                   <Info className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
                   <p className="text-xs text-blue-700">
-                    O SMS será enviado do número da Disparo Pro. O cliente verá a mensagem exatamente como mostrado acima.
+                    O cliente verá a mensagem exatamente como mostrado acima.
                   </p>
                 </div>
               </div>
