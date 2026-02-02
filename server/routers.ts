@@ -428,9 +428,13 @@ export const appRouter = router({
         await db.registerMenuSession(input.sessionId, input.establishmentId);
         
         // Incrementar contagem do mapa de calor
+        // Usar timezone de São Paulo (UTC-3) para registrar corretamente
         const now = new Date();
-        const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
-        const hour = now.getHours(); // 0-23
+        const saoPauloOffset = -3 * 60; // UTC-3 em minutos
+        const utcOffset = now.getTimezoneOffset(); // Offset UTC do servidor em minutos
+        const saoPauloTime = new Date(now.getTime() + (utcOffset + saoPauloOffset) * 60 * 1000);
+        const dayOfWeek = saoPauloTime.getDay(); // 0 = Sunday, 6 = Saturday
+        const hour = saoPauloTime.getHours(); // 0-23
         await db.incrementMenuViewHourly(input.establishmentId, dayOfWeek, hour);
         
         return { success: true };

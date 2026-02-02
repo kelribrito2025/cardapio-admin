@@ -4206,3 +4206,6 @@
 ## Melhorias na Página de Campanhas SMS
 - [x] Formatar número de telefone automaticamente com +55 e máscara (XX) X XXXX-XXXX na aba Adicionar Manual
 - [x] Buscar clientes reais do banco de dados na aba Base de Clientes (clientes que fizeram pedidos)
+
+## Correção de Timezone no Heatmap
+- [x] Corrigir timezone do registro de visualizações do cardápio para usar horário de São Paulo (UTC-3) em vez de UTC
