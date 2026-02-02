@@ -39,7 +39,7 @@ import { trpc } from "@/lib/trpc";
 const SMS_CHAR_LIMIT = 152;
 
 // Custo padrão por SMS (usado quando não há dados do servidor)
-const DEFAULT_COST_PER_SMS = 0.08;
+const DEFAULT_COST_PER_SMS = 0.10;
 
 // Função para formatar número de telefone no padrão brasileiro
 const formatPhoneNumber = (value: string): string => {
@@ -91,6 +91,13 @@ const formatPhoneForDisplay = (phone: string): string => {
   }
   
   return phone;
+};
+
+// Função para mascarar telefone para privacidade (ex: +55 11 9 9929-00**)
+const maskPhoneForPrivacy = (phone: string): string => {
+  const formatted = formatPhoneForDisplay(phone);
+  // Substitui os últimos 2 dígitos por **
+  return formatted.replace(/(\d{2})$/, '**');
 };
 
 export default function Campanhas() {
@@ -447,7 +454,7 @@ export default function Campanhas() {
                             />
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium truncate">{cliente.name || "Cliente"}</p>
-                              <p className="text-xs text-muted-foreground">{formatPhoneForDisplay(cliente.phone)}</p>
+                              <p className="text-xs text-muted-foreground">{maskPhoneForPrivacy(cliente.phone)}</p>
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {cliente.orderCount} pedido{cliente.orderCount !== 1 ? "s" : ""}
@@ -493,7 +500,7 @@ export default function Campanhas() {
                         <div className="flex flex-wrap gap-2 justify-center mb-4">
                           {numerosImportados.map((numero, index) => (
                             <span key={index} className="bg-muted px-3 py-1 rounded-full text-sm">
-                              {formatPhoneForDisplay(numero)}
+                              {maskPhoneForPrivacy(numero)}
                             </span>
                           ))}
                         </div>
@@ -538,7 +545,7 @@ export default function Campanhas() {
                               key={index} 
                               className="bg-muted px-3 py-1.5 rounded-full text-sm flex items-center gap-2"
                             >
-                              {formatPhoneForDisplay(numero)}
+                              {maskPhoneForPrivacy(numero)}
                               <button
                                 onClick={() => removerNumeroManual(numero)}
                                 className="text-muted-foreground hover:text-destructive transition-colors"

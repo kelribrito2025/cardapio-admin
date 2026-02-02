@@ -4233,3 +4233,9 @@
 - [x] Implementar débito automático do saldo ao enviar SMS com sucesso
 - [x] Bloquear envio se saldo insuficiente
 - [x] Atualizar frontend para usar saldo real em vez de dados mockados
+
+
+## Ajustes de UX - Campanhas SMS
+- [x] Alterar custo padrão por SMS de R$ 0,08 para R$ 0,10
+- [x] Mascarar números de telefone na lista de destinatários (ex: +55 11 9 9929-00**)
+- [x] Definir saldo inicial de R$ 0,10 para novos usuários (1 SMS de teste)

@@ -4584,11 +4584,11 @@ export async function getOrCreateSmsBalance(establishmentId: number): Promise<Sm
   let balance = await getSmsBalance(establishmentId);
   
   if (!balance) {
-    // Criar novo registro de saldo com valor inicial de R$ 0,00
+    // Criar novo registro de saldo com valor inicial de R$ 0,10 (1 SMS de teste)
     await db.insert(smsBalance).values({
       establishmentId,
-      balance: "0.00",
-      costPerSms: "0.0800",
+      balance: "0.10",
+      costPerSms: "0.1000",
     });
     balance = await getSmsBalance(establishmentId);
   }
