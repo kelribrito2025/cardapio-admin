@@ -1,4 +1,4 @@
-import { Eye } from "lucide-react";
+import { Eye, Info } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useMemo, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -76,14 +76,34 @@ export function HeatmapCard() {
     <TooltipProvider delayDuration={0}>
       <div className="bg-card rounded-xl border border-border/50 p-4 shadow-sm h-full flex flex-col">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
-            <Eye className="h-5 w-5 text-blue-600" />
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+              <Eye className="h-5 w-5 text-blue-600" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-base font-semibold text-foreground">Mapa de Calor</h3>
+              <p className="text-xs text-muted-foreground">Visualizações por dia e hora</p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <h3 className="text-base font-semibold text-foreground">Mapa de Calor</h3>
-            <p className="text-xs text-muted-foreground">Visualizações por dia e hora</p>
-          </div>
+          
+          {/* Ícone de informação */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className="h-6 w-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                <Info className="h-4 w-4 text-gray-500" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent 
+              side="bottom" 
+              align="end"
+              className="bg-gray-900 text-white border-0 px-4 py-3 max-w-[280px]"
+            >
+              <p className="text-sm leading-relaxed">
+                Este gráfico mostra quando os clientes mais acessam seu cardápio. Use esses horários para divulgar ofertas ou reforçar o atendimento.
+              </p>
+            </TooltipContent>
+          </Tooltip>
         </div>
 
         {/* Grid do Heatmap */}
