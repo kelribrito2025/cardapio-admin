@@ -4124,3 +4124,19 @@
 - [ ] Implementar Plataforma de Negociação (verificar se obrigatório)
 - [ ] Implementar verificação de duplicação de eventos
 - [x] Preparar documentação para sessão de homologação
+
+## Refatoração Visual da Página de Templates
+- [ ] Criar sistema de abas para navegação entre templates (Novo Pedido, Preparando, Pronto, Finalizado, Cancelado)
+- [ ] Layout em duas colunas: editor à esquerda, preview à direita
+- [ ] Mover variáveis para card separado com tags clicáveis
+- [ ] Preview estilo WhatsApp real (bolha verde, horário, checkmarks ✓✓)
+- [ ] Reduzir texto técnico visível na tela principal
+- [ ] Manter toda a lógica de salvamento e carregamento atual
+
+## Refatoração Visual da Página de Templates
+- [x] Criar tabs horizontais com nomes dos modelos (Novo Pedido, Preparando, Pronto, Finalizado, Cancelado)
+- [x] Mover variáveis para card separado com tags clicáveis
+- [x] Layout em duas colunas: editor à esquerda, preview à direita
+- [x] Preview estilo WhatsApp (bolha verde, horário, checkmarks)
+- [x] Reduzir texto técnico visível
+- [x] Manter lógica atual de salvamento

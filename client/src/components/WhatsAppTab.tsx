@@ -20,6 +20,7 @@ import {
   Smartphone,
   Unplug
 } from "lucide-react";
+import { TemplatesEditor } from "@/components/TemplatesEditor";
 
 interface WhatsAppTabProps {
   hideConnectionCard?: boolean;
@@ -434,97 +435,21 @@ export function WhatsAppTab({ hideConnectionCard = false }: WhatsAppTabProps) {
         
         {/* Templates Tab */}
         <TabsContent value="templates" className="space-y-4 mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Templates de Mensagem</CardTitle>
-              <CardDescription>
-                Personalize as mensagens enviadas aos clientes. Use as variáveis: 
-                <code className="mx-1 px-1 bg-muted rounded">{"{{customerName}}"}</code>,
-                <code className="mx-1 px-1 bg-muted rounded">{"{{orderNumber}}"}</code>,
-                <code className="mx-1 px-1 bg-muted rounded">{"{{establishmentName}}"}</code>,
-                <code className="mx-1 px-1 bg-muted rounded">{"{{greeting}}"}</code>,
-                <code className="mx-1 px-1 bg-muted rounded">{"{{deliveryMessage}}"}</code>,
-                <code className="mx-1 px-1 bg-muted rounded">{"{{cancellationReason}}"}</code>,
-                <code className="mx-1 px-1 bg-muted rounded">{"{{itensPedido}}"}</code>
-                <span className="text-xs block mt-1 text-muted-foreground">
-                  • {"{{greeting}}"} - saudação automática baseada no horário (Bom dia/Boa tarde/Boa noite)
-                  <br />• {"{{deliveryMessage}}"} - mensagem automática de retirada ou entrega (apenas no status Pronto)
-                  <br />• {"{{cancellationReason}}"} - motivo do cancelamento (apenas no status Cancelado)
-                  <br />• {"{{itensPedido}}"} - lista completa dos itens do pedido (produtos, complementos, observações e total)
-                </span>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Novo Pedido</Label>
-                  <Textarea
-                    value={templateNewOrder}
-                    onChange={(e) => setTemplateNewOrder(e.target.value)}
-                    rows={4}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label>Preparando</Label>
-                  <Textarea
-                    value={templatePreparing}
-                    onChange={(e) => setTemplatePreparing(e.target.value)}
-                    rows={4}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label>Pronto</Label>
-                  <Textarea
-                    value={templateReady}
-                    onChange={(e) => setTemplateReady(e.target.value)}
-                    rows={4}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Use <code className="px-1 bg-muted rounded">{"{{deliveryMessage}}"}</code> para mensagem automática:
-                    <br />• <strong>Retirada:</strong> "Você já pode vir retirar. 😄"
-                    <br />• <strong>Entrega:</strong> "🛵 Nosso entregador já está a caminho."
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label>Finalizado</Label>
-                  <Textarea
-                    value={templateCompleted}
-                    onChange={(e) => setTemplateCompleted(e.target.value)}
-                    rows={4}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label>Cancelado</Label>
-                  <Textarea
-                    value={templateCancelled}
-                    onChange={(e) => setTemplateCancelled(e.target.value)}
-                    rows={4}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Use <code className="px-1 bg-muted rounded">{"{{cancellationReason}}"}</code> para incluir o motivo do cancelamento informado no modal.
-                  </p>
-                </div>
-              </div>
-              
-              <p className="text-sm text-muted-foreground">
-                Personalize as mensagens conforme sua preferência. Use as variáveis para inserir dados do pedido automaticamente.
-              </p>
-              
-              <Button 
-                onClick={handleSaveTemplates}
-                disabled={saveTemplatesMutation.isPending}
-              >
-                {saveTemplatesMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : null}
-                Salvar Templates
-              </Button>
-            </CardContent>
-          </Card>
+          <TemplatesEditor
+            templateNewOrder={templateNewOrder}
+            setTemplateNewOrder={setTemplateNewOrder}
+            templatePreparing={templatePreparing}
+            setTemplatePreparing={setTemplatePreparing}
+            templateReady={templateReady}
+            setTemplateReady={setTemplateReady}
+            templateCompleted={templateCompleted}
+            setTemplateCompleted={setTemplateCompleted}
+            templateCancelled={templateCancelled}
+            setTemplateCancelled={setTemplateCancelled}
+            onSave={handleSaveTemplates}
+            isSaving={saveTemplatesMutation.isPending}
+            defaultTemplates={DEFAULT_TEMPLATES}
+          />
         </TabsContent>
 
       </Tabs>
