@@ -5468,98 +5468,94 @@ export default function PublicMenu() {
 
             {/* Opções Fixas - Retirar no Local e Consumir no Local */}
             {(establishment.allowsPickup || establishment.allowsDineIn) && (
-              <div className="px-5 pt-4 pb-2 bg-white border-b border-gray-200 space-y-2">
-                {/* Opção Retirar no Local */}
-                {establishment.allowsPickup && (
-                  <button
-                    onClick={() => {
-                      setSelectedNeighborhood(null);
-                      setDeliveryType('pickup');
-                      setShowNeighborhoodModal(false);
-                      setNeighborhoodSearch('');
-                      if (reopenBagAfterNeighborhood) {
-                        setReopenBagAfterNeighborhood(false);
-                        setTimeout(() => {
-                          if (checkoutStep === 0) {
-                            setCheckoutStep(2);
-                          } else {
-                            setShowMobileBag(true);
-                          }
-                        }, 100);
-                      }
-                    }}
-                    className={cn(
-                      "w-full px-5 py-4 text-left rounded-xl flex items-center justify-between transition-all border-2",
-                      deliveryType === 'pickup' && !selectedNeighborhood
-                        ? "bg-green-50 border-green-400 shadow-sm" 
-                        : "bg-gray-50 border-gray-200 hover:bg-green-50 hover:border-green-300"
-                    )}
-                  >
-                    <div className="flex items-center gap-3.5">
-                      <div className={cn(
-                        "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors",
+              <div className="px-5 pt-3 pb-2 bg-white border-b border-gray-200">
+                <div className="flex flex-col md:flex-row gap-2">
+                  {/* Opção Retirar no Local */}
+                  {establishment.allowsPickup && (
+                    <button
+                      onClick={() => {
+                        setSelectedNeighborhood(null);
+                        setDeliveryType('pickup');
+                        setShowNeighborhoodModal(false);
+                        setNeighborhoodSearch('');
+                        if (reopenBagAfterNeighborhood) {
+                          setReopenBagAfterNeighborhood(false);
+                          setTimeout(() => {
+                            if (checkoutStep === 0) {
+                              setCheckoutStep(2);
+                            } else {
+                              setShowMobileBag(true);
+                            }
+                          }, 100);
+                        }
+                      }}
+                      className={cn(
+                        "flex-1 px-4 py-2.5 text-left rounded-lg flex items-center justify-between transition-all border-2",
                         deliveryType === 'pickup' && !selectedNeighborhood
-                          ? "border-green-500 bg-green-500" 
-                          : "border-gray-300"
-                      )}>
-                        {deliveryType === 'pickup' && !selectedNeighborhood && (
-                          <Check className="h-3.5 w-3.5 text-white" />
-                        )}
+                          ? "bg-green-50 border-green-400 shadow-sm" 
+                          : "bg-gray-50 border-gray-200 hover:bg-green-50 hover:border-green-300"
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className={cn(
+                          "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors",
+                          deliveryType === 'pickup' && !selectedNeighborhood
+                            ? "border-green-500 bg-green-500" 
+                            : "border-gray-300"
+                        )}>
+                          {deliveryType === 'pickup' && !selectedNeighborhood && (
+                            <Check className="h-3 w-3 text-white" />
+                          )}
+                        </div>
+                        <span className="font-medium text-gray-800 text-sm">Retirar no local</span>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-gray-800 text-base">Retirar no local</span>
-                        <span className="text-gray-500 text-sm">Sem taxa de entrega</span>
-                      </div>
-                    </div>
-                    <span className="text-green-600 font-bold text-base">Grátis</span>
-                  </button>
-                )}
+                      <span className="text-green-600 font-bold text-sm">Grátis</span>
+                    </button>
+                  )}
 
-                {/* Opção Consumir no Local */}
-                {establishment.allowsDineIn && (
-                  <button
-                    onClick={() => {
-                      setSelectedNeighborhood(null);
-                      setDeliveryType('dine_in');
-                      setShowNeighborhoodModal(false);
-                      setNeighborhoodSearch('');
-                      if (reopenBagAfterNeighborhood) {
-                        setReopenBagAfterNeighborhood(false);
-                        setTimeout(() => {
-                          if (checkoutStep === 0) {
-                            setCheckoutStep(2);
-                          } else {
-                            setShowMobileBag(true);
-                          }
-                        }, 100);
-                      }
-                    }}
-                    className={cn(
-                      "w-full px-5 py-4 text-left rounded-xl flex items-center justify-between transition-all border-2",
-                      deliveryType === 'dine_in' && !selectedNeighborhood
-                        ? "bg-blue-50 border-blue-400 shadow-sm" 
-                        : "bg-gray-50 border-gray-200 hover:bg-blue-50 hover:border-blue-300"
-                    )}
-                  >
-                    <div className="flex items-center gap-3.5">
-                      <div className={cn(
-                        "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors",
+                  {/* Opção Consumir no Local */}
+                  {establishment.allowsDineIn && (
+                    <button
+                      onClick={() => {
+                        setSelectedNeighborhood(null);
+                        setDeliveryType('dine_in');
+                        setShowNeighborhoodModal(false);
+                        setNeighborhoodSearch('');
+                        if (reopenBagAfterNeighborhood) {
+                          setReopenBagAfterNeighborhood(false);
+                          setTimeout(() => {
+                            if (checkoutStep === 0) {
+                              setCheckoutStep(2);
+                            } else {
+                              setShowMobileBag(true);
+                            }
+                          }, 100);
+                        }
+                      }}
+                      className={cn(
+                        "flex-1 px-4 py-2.5 text-left rounded-lg flex items-center justify-between transition-all border-2",
                         deliveryType === 'dine_in' && !selectedNeighborhood
-                          ? "border-blue-500 bg-blue-500" 
-                          : "border-gray-300"
-                      )}>
-                        {deliveryType === 'dine_in' && !selectedNeighborhood && (
-                          <Check className="h-3.5 w-3.5 text-white" />
-                        )}
+                          ? "bg-blue-50 border-blue-400 shadow-sm" 
+                          : "bg-gray-50 border-gray-200 hover:bg-blue-50 hover:border-blue-300"
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className={cn(
+                          "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors",
+                          deliveryType === 'dine_in' && !selectedNeighborhood
+                            ? "border-blue-500 bg-blue-500" 
+                            : "border-gray-300"
+                        )}>
+                          {deliveryType === 'dine_in' && !selectedNeighborhood && (
+                            <Check className="h-3 w-3 text-white" />
+                          )}
+                        </div>
+                        <span className="font-medium text-gray-800 text-sm">Consumir no local</span>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-gray-800 text-base">Consumir no local</span>
-                        <span className="text-gray-500 text-sm">Sem taxa de entrega</span>
-                      </div>
-                    </div>
-                    <span className="text-blue-600 font-bold text-base">Grátis</span>
-                  </button>
-                )}
+                      <span className="text-blue-600 font-bold text-sm">Grátis</span>
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 

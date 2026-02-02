@@ -4061,3 +4061,8 @@
 - [x] Adicionar opção "Consumir no local" no modal de seleção de bairro
 - [x] Destacar visualmente similar à opção de retirada (azul)
 - [x] Ao selecionar, definir deliveryType como dine_in automaticamente
+
+## Layout Opções Retirar/Consumir no Modal de Bairro
+- [x] Colocar opções lado a lado no desktop (md:flex-row)
+- [x] Reduzir altura em 30% (py-2.5 em vez de py-4)
+- [x] Manter empilhadas no mobile (flex-col)
