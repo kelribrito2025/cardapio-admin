@@ -4243,3 +4243,14 @@
 
 ## Menu Campanhas - Badge Breve
 - [x] Adicionar badge "Breve" no menu de Campanhas igual ao menu de Estoque
+
+
+## Otimização de Build - Fase 1: Lazy Loading
+- [x] Medir tempo de build atual (baseline)
+- [x] Implementar lazy loading com React.lazy e Suspense
+- [x] Aplicar lazy loading em PublicMenu.tsx
+- [x] Aplicar lazy loading em Configuracoes.tsx
+- [x] Aplicar lazy loading em Pedidos.tsx
+- [x] Aplicar lazy loading em ProductForm.tsx
+- [x] Medir tempo de build após otimização
+- [x] Documentar tamanho dos chunks gerados
