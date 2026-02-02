@@ -77,7 +77,7 @@ export function HeatmapCard() {
       <div className="bg-card rounded-xl border border-border/50 p-4 shadow-sm h-full flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
-          <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+          <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
             <Eye className="h-5 w-5 text-blue-600" />
           </div>
           <div className="min-w-0">
