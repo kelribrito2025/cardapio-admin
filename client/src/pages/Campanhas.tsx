@@ -228,27 +228,9 @@ export default function Campanhas() {
                 <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center">
                   <MessageSquare className="h-5 w-5 text-blue-600" />
                 </div>
-                <div>
-                  <h3 className="text-base font-semibold text-foreground">Mensagem SMS</h3>
-                  <p className="text-xs text-muted-foreground">Máximo de {SMS_CHAR_LIMIT} caracteres</p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <Textarea
-                  value={mensagem}
-                  onChange={(e) => {
-                    if (e.target.value.length <= SMS_CHAR_LIMIT) {
-                      setMensagem(e.target.value);
-                    }
-                  }}
-                  placeholder="Digite sua mensagem promocional aqui..."
-                  className="min-h-[120px] resize-none"
-                />
-                
-                {/* Contador de caracteres */}
-                <div className="flex items-center justify-between">
+                <div className="flex-1">
                   <div className="flex items-center gap-2">
+                    <h3 className="text-base font-semibold text-foreground">Mensagem SMS</h3>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button className="text-muted-foreground hover:text-foreground transition-colors">
@@ -259,17 +241,29 @@ export default function Campanhas() {
                         <p>SMS com mais de 160 caracteres são divididos em múltiplas mensagens e cobrados separadamente.</p>
                       </TooltipContent>
                     </Tooltip>
-                    <span className="text-xs text-muted-foreground">
-                      Dica: Mensagens curtas têm melhor engajamento
-                    </span>
                   </div>
-                  <div className={cn(
-                    "text-sm font-medium",
-                    mensagem.length > SMS_CHAR_LIMIT * 0.9 ? "text-orange-500" : "text-muted-foreground",
-                    mensagem.length >= SMS_CHAR_LIMIT && "text-red-500"
-                  )}>
-                    {mensagem.length} / {SMS_CHAR_LIMIT}
-                  </div>
+                  <p className="text-xs text-muted-foreground">Máximo de {SMS_CHAR_LIMIT} caracteres</p>
+                </div>
+              </div>
+
+              <div className="relative">
+                <Textarea
+                  value={mensagem}
+                  onChange={(e) => {
+                    if (e.target.value.length <= SMS_CHAR_LIMIT) {
+                      setMensagem(e.target.value);
+                    }
+                  }}
+                  placeholder="Digite sua mensagem promocional aqui..."
+                  className="min-h-[120px] resize-none pb-8"
+                />
+                {/* Contador de caracteres dentro do campo */}
+                <div className={cn(
+                  "absolute bottom-2 right-3 text-sm font-medium pointer-events-none",
+                  mensagem.length > SMS_CHAR_LIMIT * 0.9 ? "text-orange-500" : "text-muted-foreground",
+                  mensagem.length >= SMS_CHAR_LIMIT && "text-red-500"
+                )}>
+                  {mensagem.length} / {SMS_CHAR_LIMIT}
                 </div>
               </div>
             </div>
