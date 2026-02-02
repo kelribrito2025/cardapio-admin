@@ -4214,3 +4214,7 @@
 - [x] Campo de mensagem deve ter apenas uma linha inicialmente (altura mínima)
 - [x] Contador de caracteres deve ficar na mesma linha do placeholder (à direita)
 - [x] Campo só deve expandir quando a mensagem for grande
+
+## Ajuste do Preview SMS
+- [x] Remover modelo de celular do preview SMS
+- [x] Usar estilo de card similar ao preview de WhatsApp da página de templates

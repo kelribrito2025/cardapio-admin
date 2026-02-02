@@ -15,10 +15,7 @@ import {
   Plus,
   Send,
   Info,
-  Signal,
-  Battery,
-  Wifi,
-  ChevronLeft,
+
   Loader2,
   AlertCircle,
   CheckCircle2,
@@ -562,42 +559,14 @@ export default function Campanhas() {
                 </div>
               </div>
 
-              {/* Preview do celular */}
-              <div className="bg-gray-100 rounded-[2rem] p-3 max-w-[280px] mx-auto">
-                {/* Barra de status do celular */}
-                <div className="flex items-center justify-between px-4 py-1 text-xs text-gray-600">
-                  <span className="font-medium">9:41</span>
-                  <div className="flex items-center gap-1">
-                    <Signal className="h-3.5 w-3.5" />
-                    <Wifi className="h-3.5 w-3.5" />
-                    <Battery className="h-4 w-4" />
-                  </div>
-                </div>
-
-                {/* Tela do app de mensagens */}
-                <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-                  {/* Header do app */}
-                  <div className="bg-gray-50 px-3 py-2 flex items-center gap-2 border-b">
-                    <ChevronLeft className="h-5 w-5 text-blue-500" />
-                    <span className="font-medium text-sm">Mensagens</span>
-                  </div>
-
-                  {/* Área de mensagens */}
-                  <div className="p-3 min-h-[200px] bg-white">
-                    <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-3 py-2 max-w-[90%]">
-                      <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">
-                        {previewMensagem}
-                      </p>
-                      <p className="text-[10px] text-gray-400 text-right mt-1">Agora</p>
-                    </div>
-                  </div>
-
-                  {/* Input de mensagem */}
-                  <div className="border-t px-3 py-2">
-                    <div className="bg-gray-100 rounded-full px-3 py-1.5 text-xs text-gray-400">
-                      Mensagem de texto
-                    </div>
-                  </div>
+              {/* Preview estilo WhatsApp - Card simples */}
+              <div className="bg-[#e5ddd5] rounded-xl p-4">
+                {/* Balão de mensagem */}
+                <div className="bg-white rounded-lg rounded-tl-sm p-3 shadow-sm max-w-[85%]">
+                  <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">
+                    {previewMensagem}
+                  </p>
+                  <p className="text-[10px] text-gray-400 text-right mt-1">Agora</p>
                 </div>
               </div>
 
