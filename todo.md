@@ -4184,3 +4184,16 @@
 - [x] Ajustar altura do card de Acumulado da Semana para ser igual ao card de Mapa de Calor
 - [x] Ajustar header do card de Acumulado da Semana para ter ícone à esquerda, título e descrição breve (mesmo modelo do Mapa de Calor)
 - [x] Adicionar ícone de informação (ⓘ) no card de Mapa de Calor com tooltip explicativo
+
+
+## Página de Disparo de SMS (Campanhas)
+- [x] Adicionar seção "Marketing" na sidebar
+- [x] Adicionar menu "Campanhas" dentro da seção Marketing
+- [x] Criar rota /campanhas no App.tsx
+- [x] Criar página de Campanhas com 4 cards informativos (Saldo, Custo por SMS, Quantidade possível, Último disparo)
+- [x] Implementar layout em duas colunas (editor à esquerda, preview à direita)
+- [x] Criar editor de mensagem SMS com limite de 152 caracteres e contador em tempo real
+- [x] Criar bloco de seleção de destinatários com 3 abas (Base de clientes, Importar CSV, Adicionar manualmente)
+- [x] Mostrar total de destinatários selecionados
+- [x] Adicionar botão "Disparar SMS"
+- [x] Criar preview visual do SMS no formato de celular

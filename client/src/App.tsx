@@ -22,6 +22,7 @@ import TesteImpressao from "./pages/TesteImpressao";
 import Impressoras from "./pages/Impressoras";
 import Categorias from "./pages/Categorias";
 import Complementos from "./pages/Complementos";
+import Campanhas from "./pages/Campanhas";
 
 
 // Auth Pages
@@ -51,6 +52,7 @@ function AdminRoutes() {
         <Route path="/cupons/:id" component={CouponForm} />
         <Route path="/teste-impressao" component={TesteImpressao} />
         <Route path="/impressoras" component={Impressoras} />
+        <Route path="/campanhas" component={Campanhas} />
         
         
         <Route path="/404" component={NotFound} />

@@ -26,6 +26,7 @@ import {
   Printer,
   Tag,
   Layers,
+  Megaphone,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -67,6 +68,12 @@ const menuSections = [
       { icon: Layers, label: "Complementos", href: "/complementos", disabled: false },
       { icon: Ticket, label: "Cupons", href: "/cupons", disabled: false },
       { icon: Package, label: "Estoque", href: "/estoque", disabled: true, comingSoon: true },
+    ]
+  },
+  {
+    title: "MARKETING",
+    items: [
+      { icon: Megaphone, label: "Campanhas", href: "/campanhas", disabled: false },
     ]
   },
   {
