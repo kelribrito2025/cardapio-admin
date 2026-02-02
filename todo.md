@@ -4083,3 +4083,29 @@
 
 ## Ajuste: Remover nome do bairro do modal de tipo de entrega
 - [x] Alterar "Entrega - Bairro X" para apenas "Entrega" no modal de tipo de entrega (step 2)
+
+## Bug: Erro de permissão ao inserir merchant ID do iFood
+- [ ] Investigar código de integração iFood que valida merchant ID
+- [ ] Identificar causa do erro "Sem permissão para acessar este merchant"
+- [ ] Corrigir validação ou mensagem de erro
+
+## Validação de Critérios de Homologação iFood
+- [x] Analisar código atual da integração iFood
+- [x] Criar checklist de critérios obrigatórios
+- [ ] Testar recebimento de eventos via polling/webhook
+- [ ] Testar processamento de pedidos delivery (IMMEDIATE e SCHEDULED)
+- [ ] Testar processamento de pedidos para retirar (TAKEOUT)
+- [ ] Testar cancelamento de pedidos com motivos
+- [ ] Testar exibição de informações de pagamento
+- [ ] Testar exibição de observações dos itens
+- [ ] Testar sincronização de status com outros sistemas
+- [ ] Documentar gaps e correções necessárias
+
+## Implementar informações do iFood no modal de detalhes do pedido
+- [x] Exibir data/hora de entrega para pedidos agendados (SCHEDULED)
+- [x] Exibir bandeira do cartão quando pagamento em cartão
+- [x] Exibir valor do troco quando pagamento em dinheiro
+- [x] Exibir CPF/CNPJ do cliente quando informado
+- [x] Destacar código de coleta do iFood (displayId)
+- [x] Exibir responsável pelo desconto (iFood/Loja)
+- [x] Exibir observações de entrega (delivery.observations)

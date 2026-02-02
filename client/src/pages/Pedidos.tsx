@@ -1329,6 +1329,12 @@ export default function Pedidos() {
                   <p className="text-sm text-muted-foreground">
                     {format(new Date(orderDetails.createdAt), "dd 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })}
                   </p>
+                  {/* Código de coleta iFood */}
+                  {(orderDetails as any).source === 'ifood' && (orderDetails as any).externalDisplayId && (
+                    <p className="text-sm font-bold text-red-600 mt-1">
+                      Código de Coleta: {(orderDetails as any).externalDisplayId}
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   {/* Badge iFood */}
@@ -1470,14 +1476,85 @@ export default function Pedidos() {
                       <span className="text-muted-foreground">Método:</span>
                       <span className="font-medium">{paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</span>
                     </div>
+                    {/* Bandeira do cartão - apenas para pedidos iFood */}
+                    {(orderDetails as any).source === 'ifood' && (orderDetails as any).externalData?.payments?.methods?.[0]?.card?.brand && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Bandeira:</span>
+                        <span className="font-medium">{(orderDetails as any).externalData.payments.methods[0].card.brand}</span>
+                      </div>
+                    )}
+                    {/* Valor do troco - para pagamento em dinheiro */}
+                    {orderDetails.paymentMethod === 'cash' && (orderDetails as any).changeAmount && Number((orderDetails as any).changeAmount) > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Troco para:</span>
+                        <span className="font-medium">{formatCurrency((orderDetails as any).changeAmount)}</span>
+                      </div>
+                    )}
                     {orderDetails.customerAddress && (
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Endereço:</span>
                         <span className="font-medium text-right max-w-[180px]">{orderDetails.customerAddress}</span>
                       </div>
                     )}
+                    {/* CPF/CNPJ do cliente - apenas para pedidos iFood */}
+                    {(orderDetails as any).source === 'ifood' && (orderDetails as any).externalData?.customer?.documentNumber && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">CPF/CNPJ:</span>
+                        <span className="font-medium">{(orderDetails as any).externalData.customer.documentNumber}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
+
+                {/* Informações Adicionais do iFood */}
+                {(orderDetails as any).source === 'ifood' && (
+                  <div className="border border-red-200 bg-red-50/50 rounded-xl p-4">
+                    <h4 className="font-semibold text-base mb-3 flex items-center gap-2">
+                      <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded">iFood</span>
+                      Informações do Pedido
+                    </h4>
+                    <div className="space-y-2">
+                      {/* Tipo de pedido (Imediato ou Agendado) */}
+                      {(orderDetails as any).externalData?.orderTiming && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Tipo:</span>
+                          <span className="font-medium">
+                            {(orderDetails as any).externalData.orderTiming === 'SCHEDULED' ? 'Agendado' : 'Imediato'}
+                          </span>
+                        </div>
+                      )}
+                      {/* Data/hora de entrega agendada */}
+                      {(orderDetails as any).externalData?.orderTiming === 'SCHEDULED' && (orderDetails as any).externalData?.schedule?.deliveryDateTimeStart && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Entrega Agendada:</span>
+                          <span className="font-medium text-amber-600">
+                            {format(new Date((orderDetails as any).externalData.schedule.deliveryDateTimeStart), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                          </span>
+                        </div>
+                      )}
+                      {/* Responsável pelo desconto */}
+                      {(orderDetails as any).externalData?.total?.benefits && (orderDetails as any).externalData.total.benefits.length > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Desconto:</span>
+                          <span className="font-medium">
+                            {(orderDetails as any).externalData.total.benefits.map((b: any) => 
+                              `${b.sponsorshipValues?.IFOOD ? 'iFood' : 'Loja'}: ${formatCurrency((b.value || 0) / 100)}`
+                            ).join(', ')}
+                          </span>
+                        </div>
+                      )}
+                      {/* Observações de entrega */}
+                      {(orderDetails as any).externalData?.delivery?.observations && (
+                        <div className="text-sm">
+                          <span className="text-muted-foreground block mb-1">Observações de Entrega:</span>
+                          <span className="font-medium text-amber-700 bg-amber-100 px-2 py-1 rounded block">
+                            {(orderDetails as any).externalData.delivery.observations}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Status Timeline */}
                 <div className="border border-border/50 rounded-xl p-4">
