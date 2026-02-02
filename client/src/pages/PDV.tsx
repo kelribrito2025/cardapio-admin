@@ -335,7 +335,7 @@ export default function PDV() {
                     <div
                       key={product.id}
                       onClick={() => handleProductClick(product)}
-                      className="bg-card rounded-xl border border-border/50 overflow-hidden cursor-pointer hover:shadow-lg hover:border-red-200 transition-all group"
+                      className="bg-card rounded-xl border border-border/50 border-t-4 border-t-red-500 overflow-hidden cursor-pointer shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
                     >
                       {/* Imagem */}
                       <div className="h-28 bg-muted relative overflow-hidden">

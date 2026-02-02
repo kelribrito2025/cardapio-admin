@@ -4290,3 +4290,7 @@
 - [ ] Replicar estilo do modal do menu público no PDV (bordas arredondadas, grupos de complementos)
 - [ ] Adicionar seleção de complementos no modal do PDV
 - [ ] Botão "Escolha uma opção" quando há complementos obrigatórios
+
+## Ajuste dos cards de itens no PDV
+- [x] Adicionar sombra igual aos cards da Dashboard
+- [x] Adicionar borda colorida no topo dos cards (estilo "Pedidos Hoje")
