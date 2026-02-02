@@ -23,6 +23,7 @@ import {
   UserPlus,
   Trash2,
   X,
+  ChevronLeft,
 } from "lucide-react";
 import { useState, useMemo, useCallback } from "react";
 import { toast } from "sonner";
@@ -559,14 +560,23 @@ export default function Campanhas() {
                 </div>
               </div>
 
-              {/* Preview estilo WhatsApp - Card simples */}
-              <div className="bg-[#e5ddd5] rounded-xl p-4">
-                {/* Balão de mensagem */}
-                <div className="bg-white rounded-lg rounded-tl-sm p-3 shadow-sm max-w-[85%]">
-                  <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">
-                    {previewMensagem}
-                  </p>
-                  <p className="text-[10px] text-gray-400 text-right mt-1">Agora</p>
+              {/* Preview estilo iOS Messages */}
+              <div className="bg-gray-100 rounded-xl overflow-hidden">
+                {/* Header estilo iOS */}
+                <div className="bg-gray-50 px-3 py-2.5 flex items-center gap-2 border-b border-gray-200">
+                  <ChevronLeft className="h-5 w-5 text-blue-500" />
+                  <span className="font-semibold text-base text-gray-900">Mensagens</span>
+                </div>
+
+                {/* Área de mensagem */}
+                <div className="p-4 bg-gray-100">
+                  {/* Balão de mensagem */}
+                  <div className="bg-gray-200 rounded-2xl rounded-tl-sm p-3 max-w-[90%]">
+                    <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">
+                      {previewMensagem}
+                    </p>
+                    <p className="text-[11px] text-gray-400 text-right mt-1">Agora</p>
+                  </div>
                 </div>
               </div>
 

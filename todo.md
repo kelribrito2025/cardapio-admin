@@ -4218,3 +4218,6 @@
 ## Ajuste do Preview SMS
 - [x] Remover modelo de celular do preview SMS
 - [x] Usar estilo de card similar ao preview de WhatsApp da página de templates
+
+## Ajuste do Estilo do Preview SMS (iOS Style)
+- [x] Mudar preview para estilo iOS com header "< Mensagens" e fundo cinza claro
