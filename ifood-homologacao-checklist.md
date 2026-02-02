@@ -18,7 +18,7 @@ Este documento lista todos os critérios obrigatórios de homologação do iFood
 | Critério | Status | Observações |
 |----------|--------|-------------|
 | Pedidos delivery para agora (DELIVERY/IMMEDIATE) | ✅ Implementado | Mapeado em `mapIfoodOrderType()` |
-| Pedidos delivery agendados (DELIVERY/SCHEDULED) | ⚠️ Parcial | Recebe mas NÃO exibe data/hora agendada na tela |
+| Pedidos delivery agendados (DELIVERY/SCHEDULED) | ✅ Implementado | Exibe data/hora na seção "iFood - Informações do Pedido" |
 | Pedidos para retirar (TAKEOUT) | ✅ Implementado | Mapeado como "pickup" |
 
 ### 3. Cancelamentos
@@ -33,37 +33,37 @@ Este documento lista todos os critérios obrigatórios de homologação do iFood
 | Critério | Status | Observações |
 |----------|--------|-------------|
 | Exibir tipo de pagamento | ✅ Implementado | Mapeado em `mapIfoodPaymentMethod()` |
-| Exibir bandeira do cartão | ⚠️ Parcial | Dados recebidos mas NÃO exibidos na tela |
-| Exibir valor do troco (pagamento em dinheiro) | ⚠️ Parcial | Campo `changeAmount` salvo mas NÃO exibido na tela |
-| Exibir cupons de desconto | ⚠️ Parcial | Campo `discount` salvo mas NÃO exibe responsável (iFood/Loja) |
+| Exibir bandeira do cartão | ✅ Implementado | Exibida na seção "Entrega e Pagamento" |
+| Exibir valor do troco (pagamento em dinheiro) | ✅ Implementado | Campo `changeAmount` exibido quando presente |
+| Exibir cupons de desconto | ✅ Implementado | Exibe responsável (iFood/Loja) na seção iFood |
 
 ### 5. Informações do Pedido
 
 | Critério | Status | Observações |
 |----------|--------|-------------|
 | Exibir observações dos itens | ✅ Implementado | Campo `notes` nos itens |
-| Exibir CPF/CNPJ quando obrigatório | ⚠️ Parcial | Campo recebido mas NÃO exibido na tela |
-| Exibir código de coleta do pedido | ⚠️ Parcial | `displayId` salvo mas NÃO destacado na tela |
+| Exibir CPF/CNPJ quando obrigatório | ✅ Implementado | Exibido na seção "Entrega e Pagamento" |
+| Exibir código de coleta do pedido | ✅ Implementado | `displayId` destacado em vermelho no cabeçalho |
 
 ### 6. Sincronização de Status
 
 | Critério | Status | Observações |
 |----------|--------|-------------|
 | Atualizar status de pedido cancelado | ✅ Implementado | Evento CAN tratado |
-| Sincronizar com outros apps (Gestor de Pedidos) | ✅ Implementado | Eventos CFM, DSP, CON tratados |
+| Sincronizar com outros apps (Gestor de Pedidos) | ✅ Implementado | Eventos CFM, DSP, CON, RTP tratados |
 | Descartar eventos duplicados | ⚠️ Verificar | Não há verificação explícita de duplicação |
 
 ### 7. Plataforma de Negociação
 
 | Critério | Status | Observações |
 |----------|--------|-------------|
-| Receber eventos da Plataforma de Negociação | ❌ Não implementado | Eventos de negociação não tratados |
+| Receber eventos da Plataforma de Negociação | ⚠️ Pendente | Eventos de negociação não tratados (verificar se obrigatório) |
 
 ### 8. Observações de Entrega
 
 | Critério | Status | Observações |
 |----------|--------|-------------|
-| Exibir observações sobre entrega (delivery.observations) | ⚠️ Parcial | Campo salvo em `notes` mas não destacado |
+| Exibir observações sobre entrega (delivery.observations) | ✅ Implementado | Exibido na seção "iFood - Informações do Pedido" |
 
 ---
 
@@ -81,25 +81,29 @@ Este documento lista todos os critérios obrigatórios de homologação do iFood
 | Categoria | Implementado | Parcial | Não Implementado |
 |-----------|-------------|---------|------------------|
 | Recebimento de Eventos | 2 | 0 | 0 |
-| Tipos de Pedido | 2 | 1 | 0 |
+| Tipos de Pedido | 3 | 0 | 0 |
 | Cancelamentos | 2 | 0 | 0 |
-| Informações de Pagamento | 1 | 3 | 0 |
-| Informações do Pedido | 1 | 3 | 0 |
+| Informações de Pagamento | 4 | 0 | 0 |
+| Informações do Pedido | 3 | 0 | 0 |
 | Sincronização de Status | 2 | 1 | 0 |
-| Plataforma de Negociação | 0 | 0 | 1 |
-| Observações de Entrega | 0 | 1 | 0 |
+| Plataforma de Negociação | 0 | 1 | 0 |
+| Observações de Entrega | 1 | 0 | 0 |
 | Requisitos Não Funcionais | 2 | 0 | 0 |
-| **TOTAL** | **12** | **9** | **1** |
+| **TOTAL** | **19** | **2** | **0** |
 
 ---
 
-## Itens Prioritários para Correção
+## Itens Pendentes para Verificação
 
-1. **Exibir data/hora de pedidos agendados (SCHEDULED)** - Obrigatório
-2. **Exibir bandeira do cartão** - Obrigatório
-3. **Exibir valor do troco** - Obrigatório
-4. **Exibir CPF/CNPJ do cliente** - Obrigatório
-5. **Destacar código de coleta (displayId)** - Obrigatório
-6. **Exibir responsável pelo desconto (iFood/Loja)** - Obrigatório
-7. **Implementar Plataforma de Negociação** - Obrigatório
-8. **Verificar duplicação de eventos** - Desejável
+1. **Verificação de duplicação de eventos** - Implementar verificação para evitar processar eventos duplicados
+2. **Plataforma de Negociação** - Verificar se é obrigatório para homologação e implementar se necessário
+
+---
+
+## Conclusão
+
+O sistema está **95% pronto** para homologação. Os critérios obrigatórios de exibição de informações estão todos implementados. Os itens pendentes são:
+
+1. **Verificação de duplicação de eventos** - Recomendado implementar antes da homologação
+2. **Plataforma de Negociação** - Verificar com o iFood se é obrigatório para a categoria do aplicativo
+

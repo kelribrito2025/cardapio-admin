@@ -4113,3 +4113,14 @@
 ## Bug: '0' solto na seção de informações do iFood
 - [x] Identificar causa do bug (condição && renderizando 0 quando benefits.length é 0)
 - [x] Corrigir condição para usar optional chaining (benefits?.length > 0)
+
+## Validação Final de Critérios de Homologação iFood
+- [x] Verificar exibição de data/hora de pedidos agendados (SCHEDULED)
+- [x] Verificar exibição de bandeira do cartão
+- [x] Verificar exibição de valor do troco
+- [x] Verificar exibição de CPF/CNPJ do cliente
+- [x] Verificar destaque do código de coleta (displayId)
+- [x] Verificar exibição de responsável pelo desconto (iFood/Loja)
+- [ ] Implementar Plataforma de Negociação (verificar se obrigatório)
+- [ ] Implementar verificação de duplicação de eventos
+- [x] Preparar documentação para sessão de homologação
