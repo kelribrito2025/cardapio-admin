@@ -430,68 +430,54 @@ export default function PDV() {
                     key={`${item.productId}-${index}`}
                     className="bg-white rounded-xl p-3 border border-gray-200 shadow-sm"
                   >
-                    <div className="flex gap-3">
-                      {/* Imagem */}
-                      <div className="w-16 h-16 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
-                        {item.image ? (
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <ImageIcon className="h-6 w-6 text-gray-300" />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-sm text-gray-800 line-clamp-1">
-                          {item.name}
-                        </h4>
-                        <p className="text-red-600 font-bold text-sm mt-0.5">
-                          {formatCurrency(parseFloat(item.price))}
-                        </p>
-                        {item.observation && (
-                          <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
-                            Obs: {item.observation}
+                    <div className="flex flex-col gap-2">
+                      {/* Header com nome e botão remover */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-sm text-gray-800 line-clamp-2">
+                            {item.name}
+                          </h4>
+                          <p className="text-red-600 font-bold text-sm mt-0.5">
+                            {formatCurrency(parseFloat(item.price))}
                           </p>
-                        )}
-
-                        {/* Controles de Quantidade */}
-                        <div className="flex items-center justify-between mt-2">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => updateCartItemQuantity(index, -1)}
-                              className="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
-                            >
-                              <Minus className="h-3 w-3" />
-                            </button>
-                            <span className="text-sm font-semibold w-6 text-center">
-                              {item.quantity}
-                            </span>
-                            <button
-                              onClick={() => updateCartItemQuantity(index, 1)}
-                              className="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
-                            >
-                              <Plus className="h-3 w-3" />
-                            </button>
-                          </div>
-                          <span className="text-sm font-bold text-gray-800">
-                            {formatCurrency(parseFloat(item.price) * item.quantity)}
-                          </span>
                         </div>
+                        <button
+                          onClick={() => removeCartItem(index)}
+                          className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </div>
 
-                      {/* Botão Remover */}
-                      <button
-                        onClick={() => removeCartItem(index)}
-                        className="text-gray-400 hover:text-red-500 transition-colors"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {item.observation && (
+                        <p className="text-xs text-muted-foreground line-clamp-1">
+                          Obs: {item.observation}
+                        </p>
+                      )}
+
+                      {/* Controles de Quantidade */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => updateCartItemQuantity(index, -1)}
+                            className="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </button>
+                          <span className="text-sm font-semibold w-6 text-center">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateCartItemQuantity(index, 1)}
+                            className="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
+                        </div>
+                        <span className="text-sm font-bold text-gray-800">
+                          {formatCurrency(parseFloat(item.price) * item.quantity)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ))

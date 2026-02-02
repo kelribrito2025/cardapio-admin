@@ -4274,3 +4274,6 @@
 ## Correção dos botões de categorias no PDV
 - [x] Corrigir texto cortado nos botões de categorias
 - [x] Garantir que o texto completo apareça em cada botão
+
+## Otimização da sacola no PDV
+- [x] Remover fotos dos itens na lista do pedido para ganhar espaço
