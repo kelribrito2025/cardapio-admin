@@ -4056,3 +4056,8 @@
 - [x] Destacar visualmente a opção (cor verde, texto "Grátis")
 - [x] Ao selecionar, definir deliveryType como pickup automaticamente
 - [x] Zerar taxa de entrega ao selecionar retirada
+
+## Opção Consumir no Local no Modal de Bairro
+- [x] Adicionar opção "Consumir no local" no modal de seleção de bairro
+- [x] Destacar visualmente similar à opção de retirada (azul)
+- [x] Ao selecionar, definir deliveryType como dine_in automaticamente
