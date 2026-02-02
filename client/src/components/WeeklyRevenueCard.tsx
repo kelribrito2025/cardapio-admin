@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign } from "lucide-react";
 
 interface WeeklyRevenueCardProps {
   thisWeek: number[];
@@ -74,8 +74,16 @@ export function WeeklyRevenueCard({
   return (
     <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-foreground">Acumulado da semana</h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+            <DollarSign className="h-5 w-5 text-emerald-600" />
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-base font-semibold text-foreground">Acumulado da semana</h3>
+            <p className="text-xs text-muted-foreground">Faturamento por dia</p>
+          </div>
+        </div>
         
         {/* Toggle */}
         <div className="flex items-center gap-2 text-xs">
