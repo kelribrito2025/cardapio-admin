@@ -4146,3 +4146,8 @@
 - [ ] Criar novo modelo visual para o card do Editor de texto
 - [ ] Criar novo modelo visual para o card de Preview WhatsApp
 - [ ] Manter botões de navegação (Novo Pedido, Preparando, etc.) no lugar atual
+
+## Correção do Preview WhatsApp
+- [x] Mover balão de mensagem para o lado esquerdo (mensagem recebida pelo cliente)
+- [x] Usar cor branca no balão (mensagem recebida) em vez de verde
+- [x] Adicionar nome do restaurante no header do preview

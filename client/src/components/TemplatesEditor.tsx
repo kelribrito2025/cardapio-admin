@@ -308,15 +308,15 @@ export function TemplatesEditor({
 
         {/* Card de Preview WhatsApp - Design Realista */}
         <div className="bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-300">
-          {/* Header do WhatsApp - Estilo iOS/Android */}
+          {/* Header do WhatsApp - Perspectiva do Cliente (recebendo mensagem do restaurante) */}
           <div className="bg-[#008069] px-4 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-slate-300 flex items-center justify-center overflow-hidden">
-                  <MessageCircle className="h-5 w-5 text-slate-500" />
+                <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center overflow-hidden">
+                  <span className="text-white font-bold text-sm">R</span>
                 </div>
                 <div>
-                  <p className="text-white font-semibold text-sm">Seu Restaurante</p>
+                  <p className="text-white font-semibold text-sm">Restaurante Kelri</p>
                   <p className="text-emerald-200 text-xs">online</p>
                 </div>
               </div>
@@ -343,16 +343,16 @@ export function TemplatesEditor({
               </span>
             </div>
             
-            {/* Bolha de mensagem enviada */}
-            <div className="flex justify-end">
+            {/* Bolha de mensagem RECEBIDA (lado esquerdo, cor branca) */}
+            <div className="flex justify-start">
               <div className="max-w-[85%] relative">
-                {/* Bolha principal */}
-                <div className="bg-[#D9FDD3] rounded-lg rounded-tr-sm p-3 shadow-sm relative">
-                  {/* Triângulo da bolha */}
+                {/* Bolha principal - cor branca para mensagem recebida */}
+                <div className="bg-white rounded-lg rounded-tl-sm p-3 shadow-sm relative">
+                  {/* Triângulo da bolha - lado esquerdo */}
                   <div 
-                    className="absolute -right-2 top-0 w-0 h-0"
+                    className="absolute -left-2 top-0 w-0 h-0"
                     style={{
-                      borderLeft: '8px solid #D9FDD3',
+                      borderRight: '8px solid white',
                       borderBottom: '8px solid transparent',
                     }}
                   />
@@ -364,13 +364,9 @@ export function TemplatesEditor({
                     )}
                   </div>
                   
-                  {/* Horário e checkmarks */}
+                  {/* Horário (sem checkmarks para mensagem recebida) */}
                   <div className="absolute bottom-2 right-2 flex items-center gap-1">
                     <span className="text-[11px] text-slate-500">{getCurrentTime()}</span>
-                    <div className="flex -space-x-1">
-                      <Check className="h-3.5 w-3.5 text-[#53BDEB]" />
-                      <Check className="h-3.5 w-3.5 text-[#53BDEB] -ml-2" />
-                    </div>
                   </div>
                 </div>
               </div>
