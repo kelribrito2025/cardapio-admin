@@ -73,7 +73,7 @@ const menuSections = [
   {
     title: "MARKETING",
     items: [
-      { icon: Megaphone, label: "Campanhas", href: "/campanhas", disabled: false },
+      { icon: Megaphone, label: "Campanhas", href: "/campanhas", disabled: true, comingSoon: true },
     ]
   },
   {

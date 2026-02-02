@@ -4239,3 +4239,7 @@
 - [x] Alterar custo padrão por SMS de R$ 0,08 para R$ 0,10
 - [x] Mascarar números de telefone na lista de destinatários (ex: +55 11 9 9929-00**)
 - [x] Definir saldo inicial de R$ 0,10 para novos usuários (1 SMS de teste)
+
+
+## Menu Campanhas - Badge Breve
+- [x] Adicionar badge "Breve" no menu de Campanhas igual ao menu de Estoque
