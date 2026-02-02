@@ -612,7 +612,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     isComingSoon 
                       ? "text-gray-400 cursor-default"
                       : isActive
-                        ? "bg-red-200/60 text-red-800 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1.5 before:bg-red-500 before:rounded-r-sm"
+                        ? "bg-red-200/60 text-red-800 rounded-xl"
                         : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                   );
 
