@@ -4154,3 +4154,15 @@
 
 ## Preview WhatsApp no Editor de Templates
 - [x] Buscar dinamicamente o nome do restaurante do banco de dados para exibir no header do preview WhatsApp
+
+## Card de Visualizações do Cardápio no Dashboard
+- [x] Criar tabela menu_sessions no schema do banco de dados
+- [x] Executar migração (pnpm db:push)
+- [x] Implementar procedure pública para registrar sessão do cardápio
+- [x] Implementar procedure protegida para contar visualizações ativas
+- [x] Implementar procedure para buscar histórico de visualizações (últimos 7 dias)
+- [x] Implementar hook no cardápio público para registrar sessões
+- [x] Criar componente ViewsCard com sparkline e estados de cores
+- [x] Integrar card no Dashboard ao lado do card de Acumulados da Semana
+- [x] Implementar estados visuais: alta (verde), queda (vermelho), neutro (cinza)
+- [x] Implementar tratamento de edge cases (poucas visualizações, sem dados)

@@ -1,6 +1,7 @@
 import { AdminLayout } from "@/components/AdminLayout";
 import { StatCard, PageHeader, SectionCard, StatusBadge, EmptyState } from "@/components/shared";
 import { WeeklyRevenueCard } from "@/components/WeeklyRevenueCard";
+import { ViewsCard } from "@/components/ViewsCard";
 import { trpc } from "@/lib/trpc";
 import { 
   ShoppingBag, 
@@ -144,15 +145,20 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Weekly Revenue Card */}
-      <div className="mb-6">
-        <WeeklyRevenueCard
-          thisWeek={weeklyRevenue?.thisWeek ?? []}
-          lastWeek={weeklyRevenue?.lastWeek ?? []}
-          thisWeekTotal={weeklyRevenue?.thisWeekTotal ?? 0}
-          lastWeekTotal={weeklyRevenue?.lastWeekTotal ?? 0}
-          loading={weeklyRevenueLoading}
-        />
+      {/* Weekly Revenue Card + Views Card */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="lg:col-span-2">
+          <WeeklyRevenueCard
+            thisWeek={weeklyRevenue?.thisWeek ?? []}
+            lastWeek={weeklyRevenue?.lastWeek ?? []}
+            thisWeekTotal={weeklyRevenue?.thisWeekTotal ?? 0}
+            lastWeekTotal={weeklyRevenue?.lastWeekTotal ?? 0}
+            loading={weeklyRevenueLoading}
+          />
+        </div>
+        <div className="lg:col-span-1">
+          <ViewsCard />
+        </div>
       </div>
 
       {/* Charts and Recent Orders */}

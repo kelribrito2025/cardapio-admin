@@ -1,4 +1,4 @@
-import { eq, desc, asc, and, like, sql, gte, lte, or, ne, inArray } from "drizzle-orm";
+import { eq, desc, asc, and, like, sql, gte, lte, lt, or, ne, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate, notifyPrintOrder } from "./_core/sse";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
@@ -25,7 +25,9 @@ import {
   pushSubscriptions, InsertPushSubscription, PushSubscription,
   whatsappConfig, InsertWhatsappConfig, WhatsappConfig,
   printQueue, InsertPrintQueue, PrintQueue,
-  ifoodConfig, InsertIfoodConfig, IfoodConfig
+  ifoodConfig, InsertIfoodConfig, IfoodConfig,
+  menuSessions, InsertMenuSession, MenuSession,
+  menuViewsDaily, InsertMenuViewsDaily, MenuViewsDaily
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -4231,4 +4233,211 @@ export async function getIfoodConfigWithValidToken(establishmentId: number): Pro
   }
   
   return config;
+}
+
+
+// ============ MENU SESSIONS / VIEWS FUNCTIONS ============
+
+
+
+/**
+ * Registra ou atualiza uma sessão de visualização do cardápio
+ */
+export async function registerMenuSession(sessionId: string, establishmentId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Upsert - insere ou atualiza se já existir
+  await db.insert(menuSessions)
+    .values({
+      sessionId,
+      establishmentId,
+    })
+    .onDuplicateKeyUpdate({
+      set: { updatedAt: new Date() },
+    });
+  
+  // Também atualiza a contagem diária
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  
+  // Verificar se já existe registro para hoje
+  const existingDaily = await db.select()
+    .from(menuViewsDaily)
+    .where(and(
+      eq(menuViewsDaily.establishmentId, establishmentId),
+      eq(menuViewsDaily.date, today)
+    ))
+    .limit(1);
+  
+  if (existingDaily.length === 0) {
+    // Criar novo registro para hoje
+    await db.insert(menuViewsDaily)
+      .values({
+        establishmentId,
+        date: today,
+        viewCount: 1,
+        uniqueVisitors: 1,
+      });
+  } else {
+    // Verificar se é uma sessão nova (não existia antes)
+    const existingSession = await db.select()
+      .from(menuSessions)
+      .where(and(
+        eq(menuSessions.sessionId, sessionId),
+        eq(menuSessions.establishmentId, establishmentId)
+      ))
+      .limit(1);
+    
+    // Incrementar viewCount sempre, uniqueVisitors apenas se for sessão nova
+    const isNewSession = existingSession.length === 0 || 
+      (existingSession[0].createdAt.toISOString().split('T')[0] === today);
+    
+    await db.update(menuViewsDaily)
+      .set({
+        viewCount: sql`${menuViewsDaily.viewCount} + 1`,
+        ...(isNewSession ? { uniqueVisitors: sql`${menuViewsDaily.uniqueVisitors} + 1` } : {}),
+      })
+      .where(and(
+        eq(menuViewsDaily.establishmentId, establishmentId),
+        eq(menuViewsDaily.date, today)
+      ));
+  }
+}
+
+/**
+ * Conta visualizações ativas (últimos 3 minutos)
+ */
+export async function getActiveViewers(establishmentId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const threeMinutesAgo = new Date(Date.now() - 3 * 60 * 1000);
+  
+  const result = await db.select({ count: sql<number>`COUNT(DISTINCT ${menuSessions.sessionId})` })
+    .from(menuSessions)
+    .where(and(
+      eq(menuSessions.establishmentId, establishmentId),
+      gte(menuSessions.updatedAt, threeMinutesAgo)
+    ));
+  
+  return result[0]?.count || 0;
+}
+
+/**
+ * Busca histórico de visualizações dos últimos N dias
+ */
+export async function getMenuViewsHistory(establishmentId: number, days: number = 7): Promise<MenuViewsDaily[]> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+  const startDateStr = startDate.toISOString().split('T')[0];
+  
+  const result = await db.select()
+    .from(menuViewsDaily)
+    .where(and(
+      eq(menuViewsDaily.establishmentId, establishmentId),
+      gte(menuViewsDaily.date, startDateStr)
+    ))
+    .orderBy(asc(menuViewsDaily.date));
+  
+  return result;
+}
+
+/**
+ * Busca estatísticas de visualizações com comparação de períodos
+ */
+export async function getMenuViewsStats(establishmentId: number): Promise<{
+  totalViews: number;
+  uniqueVisitors: number;
+  previousTotalViews: number;
+  previousUniqueVisitors: number;
+  dailyViews: { date: string; views: number; visitors: number }[];
+  percentageChange: number;
+}> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const today = new Date();
+  const sevenDaysAgo = new Date(today);
+  sevenDaysAgo.setDate(today.getDate() - 7);
+  const fourteenDaysAgo = new Date(today);
+  fourteenDaysAgo.setDate(today.getDate() - 14);
+  
+  const todayStr = today.toISOString().split('T')[0];
+  const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
+  const fourteenDaysAgoStr = fourteenDaysAgo.toISOString().split('T')[0];
+  
+  // Buscar dados dos últimos 7 dias
+  const currentPeriod = await db.select()
+    .from(menuViewsDaily)
+    .where(and(
+      eq(menuViewsDaily.establishmentId, establishmentId),
+      gte(menuViewsDaily.date, sevenDaysAgoStr),
+      lte(menuViewsDaily.date, todayStr)
+    ))
+    .orderBy(asc(menuViewsDaily.date));
+  
+  // Buscar dados dos 7 dias anteriores (para comparação)
+  const previousPeriod = await db.select()
+    .from(menuViewsDaily)
+    .where(and(
+      eq(menuViewsDaily.establishmentId, establishmentId),
+      gte(menuViewsDaily.date, fourteenDaysAgoStr),
+      lt(menuViewsDaily.date, sevenDaysAgoStr)
+    ));
+  
+  // Calcular totais
+  const totalViews = currentPeriod.reduce((sum, day) => sum + day.viewCount, 0);
+  const uniqueVisitors = currentPeriod.reduce((sum, day) => sum + day.uniqueVisitors, 0);
+  const previousTotalViews = previousPeriod.reduce((sum, day) => sum + day.viewCount, 0);
+  const previousUniqueVisitors = previousPeriod.reduce((sum, day) => sum + day.uniqueVisitors, 0);
+  
+  // Calcular variação percentual
+  let percentageChange = 0;
+  if (previousTotalViews > 0) {
+    percentageChange = Math.round(((totalViews - previousTotalViews) / previousTotalViews) * 100);
+  } else if (totalViews > 0) {
+    percentageChange = 100; // Se não tinha visualizações antes, é 100% de aumento
+  }
+  
+  // Preparar dados diários (preencher dias sem dados com 0)
+  const dailyViews: { date: string; views: number; visitors: number }[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    const dateStr = date.toISOString().split('T')[0];
+    
+    const dayData = currentPeriod.find(d => d.date === dateStr);
+    dailyViews.push({
+      date: dateStr,
+      views: dayData?.viewCount || 0,
+      visitors: dayData?.uniqueVisitors || 0,
+    });
+  }
+  
+  return {
+    totalViews,
+    uniqueVisitors,
+    previousTotalViews,
+    previousUniqueVisitors,
+    dailyViews,
+    percentageChange,
+  };
+}
+
+/**
+ * Limpa sessões antigas (mais de 24 horas)
+ */
+export async function cleanupOldMenuSessions(): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  
+  const result = await db.delete(menuSessions)
+    .where(lt(menuSessions.updatedAt, twentyFourHoursAgo));
+  
+  return result[0]?.affectedRows || 0;
 }

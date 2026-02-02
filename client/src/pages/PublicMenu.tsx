@@ -252,6 +252,27 @@ export default function PublicMenu() {
     { enabled: !!data?.establishment?.id }
   );
   
+  // Mutation para registrar sessão de visualização do cardápio
+  const registerSessionMutation = trpc.menuViews.registerSession.useMutation();
+  
+  // Registrar sessão quando o cardápio é carregado
+  useEffect(() => {
+    if (data?.establishment?.id) {
+      // Gerar ou recuperar session_id do localStorage
+      let sessionId = localStorage.getItem('menu_session_id');
+      if (!sessionId) {
+        sessionId = crypto.randomUUID();
+        localStorage.setItem('menu_session_id', sessionId);
+      }
+      
+      // Registrar a sessão
+      registerSessionMutation.mutate({
+        sessionId,
+        establishmentId: data.establishment.id,
+      });
+    }
+  }, [data?.establishment?.id]);
+  
   // Query para buscar taxas por bairro
   const { data: neighborhoodFeesData } = trpc.publicMenu.getNeighborhoodFees.useQuery(
     { establishmentId: data?.establishment?.id || 0 },

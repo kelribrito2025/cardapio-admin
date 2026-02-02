@@ -521,3 +521,30 @@ export const ifoodConfig = mysqlTable("ifoodConfig", {
 
 export type IfoodConfig = typeof ifoodConfig.$inferSelect;
 export type InsertIfoodConfig = typeof ifoodConfig.$inferInsert;
+
+
+// Menu sessions for tracking active viewers
+export const menuSessions = mysqlTable("menu_sessions", {
+  id: int("id").autoincrement().primaryKey(),
+  sessionId: varchar("sessionId", { length: 64 }).notNull(),
+  establishmentId: int("establishmentId").notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type MenuSession = typeof menuSessions.$inferSelect;
+export type InsertMenuSession = typeof menuSessions.$inferInsert;
+
+// Menu views daily aggregation for historical data
+export const menuViewsDaily = mysqlTable("menu_views_daily", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  date: varchar("date", { length: 10 }).notNull(), // YYYY-MM-DD format
+  viewCount: int("viewCount").default(0).notNull(),
+  uniqueVisitors: int("uniqueVisitors").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MenuViewsDaily = typeof menuViewsDaily.$inferSelect;
+export type InsertMenuViewsDaily = typeof menuViewsDaily.$inferInsert;

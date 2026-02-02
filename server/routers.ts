@@ -416,6 +416,57 @@ export const appRouter = router({
       }),
   }),
 
+  // ============ MENU VIEWS ============
+  menuViews: router({
+    // Procedure pública para registrar sessão do cardápio
+    registerSession: publicProcedure
+      .input(z.object({
+        sessionId: z.string(),
+        establishmentId: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.registerMenuSession(input.sessionId, input.establishmentId);
+        return { success: true };
+      }),
+    
+    // Procedure protegida para contar visualizações ativas
+    getActiveViewers: protectedProcedure
+      .query(async ({ ctx }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) return { activeViewers: 0 };
+        const count = await db.getActiveViewers(establishment.id);
+        return { activeViewers: count };
+      }),
+    
+    // Procedure protegida para buscar estatísticas de visualizações
+    getStats: protectedProcedure
+      .query(async ({ ctx }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) {
+          return {
+            totalViews: 0,
+            uniqueVisitors: 0,
+            previousTotalViews: 0,
+            previousUniqueVisitors: 0,
+            dailyViews: [],
+            percentageChange: 0,
+          };
+        }
+        return db.getMenuViewsStats(establishment.id);
+      }),
+    
+    // Procedure protegida para buscar histórico de visualizações
+    getHistory: protectedProcedure
+      .input(z.object({
+        days: z.number().optional().default(7),
+      }))
+      .query(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) return [];
+        return db.getMenuViewsHistory(establishment.id, input.days);
+      }),
+  }),
+
   // ============ PRODUCTS ============
   product: router({
     list: protectedProcedure
