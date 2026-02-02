@@ -4242,4 +4242,4 @@
 
 
 ## Menu Campanhas - Badge Breve
-- [x] Adicionar badge "Breve" no menu de Campanhas apenas na versão publicada (produção)
+- [x] Adicionar badge "Breve" no menu de Campanhas igual ao menu de Estoque

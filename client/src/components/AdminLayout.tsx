@@ -66,14 +66,14 @@ const menuSections = [
       { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo", disabled: false },
       { icon: Tag, label: "Categorias", href: "/categorias", disabled: false },
       { icon: Layers, label: "Complementos", href: "/complementos", disabled: false },
-      { icon: Ticket, label: "Cupons", href: "/cupons", disabled: import.meta.env.PROD, comingSoon: import.meta.env.PROD },
-      { icon: Package, label: "Estoque", href: "/estoque", disabled: import.meta.env.PROD, comingSoon: import.meta.env.PROD },
+      { icon: Ticket, label: "Cupons", href: "/cupons", disabled: false },
+      { icon: Package, label: "Estoque", href: "/estoque", disabled: true, comingSoon: true },
     ]
   },
   {
     title: "MARKETING",
     items: [
-      { icon: Megaphone, label: "Campanhas", href: "/campanhas", disabled: import.meta.env.PROD, comingSoon: import.meta.env.PROD },
+      { icon: Megaphone, label: "Campanhas", href: "/campanhas", disabled: true, comingSoon: true },
     ]
   },
   {
@@ -865,25 +865,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                         Configurações
                       </Link>
                     </DropdownMenuItem>
-                    {import.meta.env.PROD ? (
-                      <DropdownMenuItem 
-                        className="rounded-lg cursor-default opacity-50" 
-                        onSelect={(e) => e.preventDefault()}
-                      >
-                        <Crown className="h-4 w-4 mr-2.5" />
-                        Planos
-                        <span className="ml-auto text-[9px] font-semibold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">
-                          Breve
-                        </span>
-                      </DropdownMenuItem>
-                    ) : (
-                      <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
-                        <Link href="/planos">
-                          <Crown className="h-4 w-4 mr-2.5" />
-                          Planos
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
+                    <DropdownMenuItem 
+                      className="rounded-lg cursor-default opacity-50" 
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      <Crown className="h-4 w-4 mr-2.5" />
+                      Planos
+                      <span className="ml-auto text-[9px] font-semibold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">
+                        Breve
+                      </span>
+                    </DropdownMenuItem>
                   </div>
                   <DropdownMenuSeparator className="bg-border/50" />
                   <div className="p-1">
