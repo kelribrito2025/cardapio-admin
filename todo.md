@@ -4181,3 +4181,4 @@
 
 - [x] Mover HeatmapCard para ao lado do card de Acumulado da Semana (40% do espaço)
 - [x] Alterar informação de hover para tooltip flutuante acima da célula
+- [x] Ajustar altura do card de Acumulado da Semana para ser igual ao card de Mapa de Calor

@@ -72,7 +72,7 @@ export function WeeklyRevenueCard({
   }
 
   return (
-    <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm">
+    <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm h-full flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-foreground">Acumulado da semana</h3>
@@ -134,7 +134,7 @@ export function WeeklyRevenueCard({
       </div>
 
       {/* Bar Chart */}
-      <div className="relative">
+      <div className="relative flex-1 flex flex-col justify-end">
         <div className="flex items-end justify-between gap-1.5 sm:gap-2 h-32">
           {DAYS.map((day, index) => {
             const thisWeekValue = thisWeek[index] || 0;
