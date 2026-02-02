@@ -1971,13 +1971,15 @@ export default function PublicMenu() {
                           }
                         </span>
                         <span className="text-lg font-bold text-gray-900">
-                          {establishment.deliveryFeeType === "free" 
-                            ? "R$ 0,00" 
-                            : establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed
-                              ? `R$ ${Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}`
-                              : selectedNeighborhood
-                                ? `R$ ${Number(selectedNeighborhood.fee).toFixed(2).replace('.', ',')}`
-                                : "A calcular"
+                          {deliveryType === 'pickup' || deliveryType === 'dine_in'
+                            ? "R$ 0,00"
+                            : establishment.deliveryFeeType === "free" 
+                              ? "R$ 0,00" 
+                              : establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed
+                                ? `R$ ${Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}`
+                                : selectedNeighborhood
+                                  ? `R$ ${Number(selectedNeighborhood.fee).toFixed(2).replace('.', ',')}`
+                                  : "A calcular"
                           }
                         </span>
                       </div>
@@ -2079,13 +2081,35 @@ export default function PublicMenu() {
                     return sum + (Number(item.price) + complementsTotal) * item.quantity;
                   }, 0);
                   const discount = appliedCoupon?.discount || 0;
-                  const total = Math.max(0, subtotal - discount);
+                  // Calcular taxa de entrega (apenas para delivery, não para pickup ou dine_in)
+                  const deliveryFeeValue = deliveryType === 'pickup' || deliveryType === 'dine_in'
+                    ? 0
+                    : establishment.deliveryFeeType === "free" 
+                      ? 0 
+                      : establishment.deliveryFeeType === "fixed" 
+                        ? Number(establishment.deliveryFeeFixed || 0)
+                        : selectedNeighborhood 
+                          ? Number(selectedNeighborhood.fee) 
+                          : 0;
+                  const total = Math.max(0, subtotal - discount + deliveryFeeValue);
                   return (
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Subtotal</span>
                         <span className="text-gray-600">{formatPrice(subtotal)}</span>
                       </div>
+                      {deliveryType === 'delivery' && deliveryFeeValue > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Taxa de entrega</span>
+                          <span className="text-gray-600">{formatPrice(deliveryFeeValue)}</span>
+                        </div>
+                      )}
+                      {(deliveryType === 'pickup' || deliveryType === 'dine_in') && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Taxa de entrega</span>
+                          <span className="text-green-600 font-medium">Grátis</span>
+                        </div>
+                      )}
                       {appliedCoupon && (
                         <div className="flex justify-between text-sm">
                           <span className="text-green-600 flex items-center gap-1">
@@ -3478,13 +3502,35 @@ export default function PublicMenu() {
                       return sum + (Number(item.price) + complementsTotal) * item.quantity;
                     }, 0);
                     const discount = appliedCoupon?.discount || 0;
-                    const total = Math.max(0, subtotal - discount);
+                    // Calcular taxa de entrega (apenas para delivery, não para pickup ou dine_in)
+                    const deliveryFeeValue = deliveryType === 'pickup' || deliveryType === 'dine_in'
+                      ? 0
+                      : establishment.deliveryFeeType === "free" 
+                        ? 0 
+                        : establishment.deliveryFeeType === "fixed" 
+                          ? Number(establishment.deliveryFeeFixed || 0)
+                          : selectedNeighborhood 
+                            ? Number(selectedNeighborhood.fee) 
+                            : 0;
+                    const total = Math.max(0, subtotal - discount + deliveryFeeValue);
                     return (
                       <>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Subtotal</span>
                           <span className="text-gray-600">{formatPrice(subtotal)}</span>
                         </div>
+                        {deliveryType === 'delivery' && deliveryFeeValue > 0 && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Taxa de entrega</span>
+                            <span className="text-gray-600">{formatPrice(deliveryFeeValue)}</span>
+                          </div>
+                        )}
+                        {(deliveryType === 'pickup' || deliveryType === 'dine_in') && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Taxa de entrega</span>
+                            <span className="text-green-600 font-medium">Grátis</span>
+                          </div>
+                        )}
                         {appliedCoupon && (
                           <div className="flex justify-between text-sm">
                             <span className="text-green-600 flex items-center gap-1">

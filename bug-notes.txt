@@ -1,0 +1,7 @@
+Bug encontrado:
+- Após selecionar o bairro "Bairro do cruzeiro" com taxa R$ 2,00
+- A sacola mostra "Taxa por bairro R$ 2,00" corretamente
+- Porém o Total ainda mostra R$ 105,00 (apenas o subtotal)
+- O Total deveria ser R$ 107,00 (subtotal + taxa de entrega)
+
+Problema: A taxa de entrega não está sendo somada ao total na sacola desktop.

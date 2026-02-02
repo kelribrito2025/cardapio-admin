@@ -4066,3 +4066,8 @@
 - [x] Colocar opções lado a lado no desktop (md:flex-row)
 - [x] Reduzir altura em 30% (py-2.5 em vez de py-4)
 - [x] Manter empilhadas no mobile (flex-col)
+
+## Bug: Taxa de entrega não exibida corretamente na sacola desktop
+- [x] Corrigir exibição da taxa de entrega na sacola desktop quando bairro é selecionado
+- [x] Adicionar taxa de entrega no resumo do modal de confirmação (step 3)
+- [x] Garantir que a taxa de entrega seja exibida corretamente para pickup/dine_in (R$ 0,00)
