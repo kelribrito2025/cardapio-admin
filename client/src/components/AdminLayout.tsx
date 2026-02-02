@@ -66,13 +66,13 @@ const menuSections = [
       { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo", disabled: false },
       { icon: Tag, label: "Categorias", href: "/categorias", disabled: false },
       { icon: Layers, label: "Complementos", href: "/complementos", disabled: false },
-      { icon: Ticket, label: "Cupons", href: "/cupons", disabled: false },
       { icon: Package, label: "Estoque", href: "/estoque", disabled: true, comingSoon: true },
     ]
   },
   {
     title: "MARKETING",
     items: [
+      { icon: Ticket, label: "Cupons", href: "/cupons", disabled: false },
       { icon: Megaphone, label: "Campanhas", href: "/campanhas", disabled: true, comingSoon: true },
     ]
   },

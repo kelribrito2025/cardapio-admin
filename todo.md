@@ -4243,3 +4243,7 @@
 
 ## Menu Campanhas - Badge Breve
 - [x] Adicionar badge "Breve" no menu de Campanhas igual ao menu de Estoque
+
+
+## Reorganização do Menu
+- [x] Mover menu de Cupons para a seção de Marketing
