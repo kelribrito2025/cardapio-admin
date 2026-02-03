@@ -2290,11 +2290,11 @@ export default function PublicMenu() {
       <footer className="border-t border-red-200 bg-gradient-to-r from-red-500 to-red-600 py-4 mt-8" style={{paddingTop: '10px', paddingBottom: '10px'}}>
         <div className="container mx-auto px-4 flex items-center justify-center gap-3 text-white">
           <Rocket className="w-5 h-5" />
-          <p className="text-sm font-medium">
+          <p className="text-sm font-medium" style={{marginRight: '-19px'}}>
             Powered by <a href="https://wa.me/5588999290000?text=Ol%C3%A1%2C%20quero%20ter%20meu%20pr%C3%B3prio%20MENU%20digital%20e%20testar%20por%2030%20dias." target="_blank" rel="noopener noreferrer" className="font-bold hover:underline cursor-pointer">Bigteck</a>
           </p>
           <span className="text-white/60">•</span>
-          <a href="https://wa.me/5588999290000?text=Ol%C3%A1%2C%20quero%20ter%20meu%20pr%C3%B3prio%20MENU%20digital%20e%20testar%20por%2030%20dias." target="_blank" rel="noopener noreferrer" className="px-4 py-1 bg-white text-red-600 rounded-lg text-sm font-bold hover:scale-105 transition-transform" style={{paddingTop: '2px', paddingBottom: '2px', width: '149px', height: '25px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center'}}>
+          <a href="https://wa.me/5588999290000?text=Ol%C3%A1%2C%20quero%20ter%20meu%20pr%C3%B3prio%20MENU%20digital%20e%20testar%20por%2030%20dias." target="_blank" rel="noopener noreferrer" className="px-4 py-1 bg-white text-red-600 rounded-lg text-sm font-bold hover:scale-105 transition-transform" style={{paddingTop: '2px', paddingBottom: '2px', width: '149px', height: '25px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginRight: '-5px'}}>
             Criar Menu
           </a>
         </div>
