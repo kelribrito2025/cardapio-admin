@@ -4433,3 +4433,14 @@
 ## Correção: Restaurar Complementos ao Editar Item no PDV
 - [x] Corrigir mapeamento de complementos salvos para grupos de complementos do produto
 - [x] Garantir que complementos já selecionados apareçam marcados no modal ao editar
+
+## Sidebar de Entrega no PDV
+- [ ] Criar sidebar de entrega na lateral direita do PDV (mesma largura do card Pedido Atual)
+- [ ] Adicionar campos de endereço: Rua, Número, Bairro, Complemento, Ponto de referência
+- [ ] Adicionar seleção de forma de entrega com preço
+- [ ] Adicionar formas de pagamento: Dinheiro, Cartão, Pix (com chave do restaurante)
+- [ ] Mostrar sidebar apenas quando tipo de pedido for "Entrega"
+- [ ] Manter mesmo estilo visual do modal de entrega do menu público
+- [ ] Implementar seleção de bairro na sidebar de entrega do PDV quando restaurante estiver configurado para entrega por bairro
+
+- [x] Modificar sidebar de entrega para seleção de bairro ocupar toda a sidebar inicialmente, e após selecionar mostrar campos de endereço e pagamento

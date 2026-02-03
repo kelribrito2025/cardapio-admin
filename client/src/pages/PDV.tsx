@@ -1,6 +1,7 @@
 import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/lib/trpc";
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { 
   UtensilsCrossed, 
@@ -17,12 +18,19 @@ import {
   Check,
   ChevronsRight,
   Pencil,
-  ChevronDown
+  ChevronDown,
+  CreditCard,
+  Banknote,
+  QrCode,
+  Copy,
+  MapPin,
+  ChevronUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
 // Tipos
 type OrderType = "mesa" | "retirada" | "entrega";
@@ -93,6 +101,31 @@ export default function PDV() {
   const [expandedCartItem, setExpandedCartItem] = useState<number | null>(null);
   const [editingCartItem, setEditingCartItem] = useState<{index: number; item: CartItem} | null>(null);
   const [isEditingMode, setIsEditingMode] = useState(false);
+  
+  // Estados para entrega
+  const [deliveryAddress, setDeliveryAddress] = useState({
+    street: "",
+    number: "",
+    neighborhood: "",
+    complement: "",
+    reference: ""
+  });
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "pix">("cash");
+  const [changeAmount, setChangeAmount] = useState("");
+  const [showDeliverySidebar, setShowDeliverySidebar] = useState(false);
+  const [showNeighborhoodSelector, setShowNeighborhoodSelector] = useState(false);
+  const [selectedNeighborhoodFee, setSelectedNeighborhoodFee] = useState<{id: number; neighborhood: string; fee: string} | null>(null);
+
+  // Query para buscar taxas por bairro
+  const { data: neighborhoodFees } = trpc.neighborhoodFees.list.useQuery(
+    { establishmentId: establishmentId! },
+    { enabled: !!establishmentId && establishment?.deliveryFeeType === "byNeighborhood" }
+  );
+
+  // Debug: Monitorar mudanças no estado showDeliverySidebar
+  useEffect(() => {
+    console.log("[PDV] showDeliverySidebar changed to:", showDeliverySidebar);
+  }, [showDeliverySidebar]);
 
   // Estados para drag horizontal na barra de categorias
   const categoriesContainerRef = useRef<HTMLDivElement>(null);
@@ -566,7 +599,11 @@ export default function PDV() {
                   Retirada
                 </button>
                 <button
-                  onClick={() => setOrderType("entrega")}
+                  onClick={() => {
+                    console.log("[PDV] Clicou em Entrega");
+                    setOrderType("entrega");
+                    setShowDeliverySidebar(true);
+                  }}
                   className={cn(
                     "flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-xl text-sm font-medium transition-all",
                     orderType === "entrega"
@@ -578,6 +615,7 @@ export default function PDV() {
                   Entrega
                 </button>
               </div>
+
 
               {/* Campo de Mesa */}
               {orderType === "mesa" && (
@@ -1230,6 +1268,308 @@ export default function PDV() {
         </div>
       )}
 
+      {/* Sidebar de Entrega usando Sheet do shadcn/ui */}
+      <Sheet open={showDeliverySidebar} onOpenChange={setShowDeliverySidebar}>
+        <SheetContent side="right" className="w-[437px] sm:max-w-[437px] p-0 flex flex-col" hideCloseButton>
+          {/* Header */}
+          <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/20 rounded-lg">
+                  <Truck className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-white">Dados da Entrega</h2>
+                  <p className="text-sm text-white/80">Preencha os dados para entrega</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowDeliverySidebar(false)}
+                className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+              >
+                <X className="h-5 w-5 text-white" />
+              </button>
+            </div>
+          </div>
+
+          {/* Conteúdo - Formulário de Entrega */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {/* Se for entrega por bairro e ainda não selecionou bairro, mostra apenas seleção de bairro */}
+            {establishment?.deliveryFeeType === "byNeighborhood" && !selectedNeighborhoodFee ? (
+              // Tela de seleção de bairro ocupando toda a sidebar
+              <div className="space-y-4">
+                <div className="text-center py-4">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
+                    <MapPin className="h-8 w-8 text-red-500" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-800">Selecione o Bairro</h3>
+                  <p className="text-sm text-gray-500 mt-1">Escolha o bairro para calcular a taxa de entrega</p>
+                </div>
+                
+                <div className="space-y-2">
+                  {neighborhoodFees && neighborhoodFees.length > 0 ? (
+                    neighborhoodFees.map((fee) => (
+                      <button
+                        key={fee.id}
+                        onClick={() => {
+                          setSelectedNeighborhoodFee(fee);
+                          setDeliveryAddress({...deliveryAddress, neighborhood: fee.neighborhood});
+                        }}
+                        className="w-full flex items-center justify-between p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-red-300 hover:bg-red-50/50 transition-all"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                          </div>
+                          <span className="font-medium text-gray-700 text-base">{fee.neighborhood}</span>
+                        </div>
+                        <span className="font-bold text-red-500 text-base">
+                          R$ {parseFloat(fee.fee).toFixed(2).replace(".", ",")}
+                        </span>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500">Nenhum bairro cadastrado</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              // Formulário completo de entrega (após selecionar bairro ou quando não é por bairro)
+              <>
+            {/* Seção de Endereço */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-gray-700">
+                <MapPin className="h-5 w-5 text-red-500" />
+                <h3 className="font-semibold">Endereço de Entrega</h3>
+              </div>
+              
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Rua / Avenida *</label>
+                  <Input
+                    placeholder="Ex: Rua das Flores"
+                    value={deliveryAddress.street}
+                    onChange={(e) => setDeliveryAddress({...deliveryAddress, street: e.target.value})}
+                    className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Número *</label>
+                    <Input
+                      placeholder="123"
+                      value={deliveryAddress.number}
+                      onChange={(e) => setDeliveryAddress({...deliveryAddress, number: e.target.value})}
+                      className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Bairro *</label>
+                    {establishment?.deliveryFeeType === "byNeighborhood" ? (
+                      // Botão para alterar bairro selecionado
+                      <button
+                        onClick={() => setSelectedNeighborhoodFee(null)}
+                        className="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white hover:border-red-300 hover:bg-red-50/50 transition-all"
+                      >
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-red-500" />
+                          <span className="font-medium text-gray-700">{selectedNeighborhoodFee?.neighborhood}</span>
+                          <span className="text-sm text-gray-500">
+                            (R$ {selectedNeighborhoodFee ? parseFloat(selectedNeighborhoodFee.fee).toFixed(2).replace(".", ",") : "0,00"})
+                          </span>
+                        </div>
+                        <span className="text-sm text-red-500 font-medium">Alterar</span>
+                      </button>
+                    ) : (
+                      // Campo de texto normal quando não é entrega por bairro
+                      <Input
+                        placeholder="Centro"
+                        value={deliveryAddress.neighborhood}
+                        onChange={(e) => setDeliveryAddress({...deliveryAddress, neighborhood: e.target.value})}
+                        className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                      />
+                    )}
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Complemento</label>
+                  <Input
+                    placeholder="Apto, Bloco, Casa..."
+                    value={deliveryAddress.complement}
+                    onChange={(e) => setDeliveryAddress({...deliveryAddress, complement: e.target.value})}
+                    className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Ponto de Referência</label>
+                  <Input
+                    placeholder="Próximo ao mercado..."
+                    value={deliveryAddress.reference}
+                    onChange={(e) => setDeliveryAddress({...deliveryAddress, reference: e.target.value})}
+                    className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Divisor */}
+            <div className="border-t border-gray-200 my-4" />
+
+            {/* Seção de Pagamento */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-gray-700">
+                <CreditCard className="h-5 w-5 text-red-500" />
+                <h3 className="font-semibold">Forma de Pagamento</h3>
+              </div>
+              
+              <div className="space-y-2">
+                {/* Dinheiro */}
+                <button
+                  onClick={() => setPaymentMethod("cash")}
+                  className={cn(
+                    "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all",
+                    paymentMethod === "cash"
+                      ? "border-red-500 bg-red-50"
+                      : "border-gray-200 hover:border-gray-300 bg-white"
+                  )}
+                >
+                  <div className={cn(
+                    "p-2 rounded-lg",
+                    paymentMethod === "cash" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600"
+                  )}>
+                    <Banknote className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className={cn(
+                      "font-medium",
+                      paymentMethod === "cash" ? "text-red-700" : "text-gray-700"
+                    )}>Dinheiro</p>
+                    <p className="text-xs text-gray-500">Pagamento na entrega</p>
+                  </div>
+                  {paymentMethod === "cash" && (
+                    <Check className="h-5 w-5 text-red-500" />
+                  )}
+                </button>
+
+                {/* Campo de Troco - aparece quando dinheiro está selecionado */}
+                {paymentMethod === "cash" && (
+                  <div className="ml-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">Troco para quanto?</label>
+                    <Input
+                      type="text"
+                      placeholder="Ex: R$ 50,00"
+                      value={changeAmount}
+                      onChange={(e) => setChangeAmount(e.target.value)}
+                      className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Deixe em branco se não precisar de troco</p>
+                  </div>
+                )}
+
+                {/* Cartão */}
+                <button
+                  onClick={() => setPaymentMethod("card")}
+                  className={cn(
+                    "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all",
+                    paymentMethod === "card"
+                      ? "border-red-500 bg-red-50"
+                      : "border-gray-200 hover:border-gray-300 bg-white"
+                  )}
+                >
+                  <div className={cn(
+                    "p-2 rounded-lg",
+                    paymentMethod === "card" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600"
+                  )}>
+                    <CreditCard className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className={cn(
+                      "font-medium",
+                      paymentMethod === "card" ? "text-red-700" : "text-gray-700"
+                    )}>Cartão</p>
+                    <p className="text-xs text-gray-500">Débito ou Crédito na entrega</p>
+                  </div>
+                  {paymentMethod === "card" && (
+                    <Check className="h-5 w-5 text-red-500" />
+                  )}
+                </button>
+
+                {/* Pix */}
+                <button
+                  onClick={() => setPaymentMethod("pix")}
+                  className={cn(
+                    "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all",
+                    paymentMethod === "pix"
+                      ? "border-red-500 bg-red-50"
+                      : "border-gray-200 hover:border-gray-300 bg-white"
+                  )}
+                >
+                  <div className={cn(
+                    "p-2 rounded-lg",
+                    paymentMethod === "pix" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600"
+                  )}>
+                    <QrCode className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className={cn(
+                      "font-medium",
+                      paymentMethod === "pix" ? "text-red-700" : "text-gray-700"
+                    )}>Pix</p>
+                    <p className="text-xs text-gray-500">Pagamento instantâneo</p>
+                  </div>
+                  {paymentMethod === "pix" && (
+                    <Check className="h-5 w-5 text-red-500" />
+                  )}
+                </button>
+
+                {/* Chave Pix - aparece quando pix está selecionado */}
+                {paymentMethod === "pix" && (
+                  <div className="ml-4 p-3 bg-green-50 rounded-xl border border-green-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-green-700">Chave Pix</span>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText("exemplo@pix.com");
+                          toast.success("Chave Pix copiada!");
+                        }}
+                        className="flex items-center gap-1 text-xs text-green-600 hover:text-green-700 transition-colors"
+                      >
+                        <Copy className="h-3 w-3" />
+                        Copiar
+                      </button>
+                    </div>
+                    <p className="text-sm text-green-800 font-mono bg-white px-3 py-2 rounded-lg border border-green-200">
+                      exemplo@pix.com
+                    </p>
+                    <p className="text-xs text-green-600 mt-2">Envie o comprovante ao entregador</p>
+                  </div>
+                )}
+              </div>
+            </div>
+              </>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="p-4 border-t border-border/50 bg-gray-50">
+            <Button
+              onClick={() => setShowDeliverySidebar(false)}
+              className="w-full bg-red-500 hover:bg-red-600 text-white py-3"
+              disabled={!deliveryAddress.street || !deliveryAddress.number || !deliveryAddress.neighborhood}
+            >
+              <Check className="h-5 w-5 mr-2" />
+              Confirmar Dados
+            </Button>
+            <p className="text-xs text-center text-gray-500 mt-2">
+              Campos com * são obrigatórios
+            </p>
+          </div>
+        </SheetContent>
+      </Sheet>
       
     </AdminLayout>
   );
