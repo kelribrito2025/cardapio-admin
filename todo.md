@@ -4310,3 +4310,7 @@
 
 ## Correção de preço duplicado na lista do PDV
 - [x] Remover o preço vermelho duplicado na lista de itens do PDV
+
+## Ícone de menu de categorias no PDV
+- [x] Adicionar ícone de menu (três linhas) ao lado do botão "Todos"
+- [x] Criar modal com lista de todas as categorias para seleção rápida

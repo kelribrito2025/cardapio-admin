@@ -12,7 +12,9 @@ import {
   X,
   Search,
   Image as ImageIcon,
-  Eye
+  Eye,
+  Menu,
+  Check
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -84,6 +86,7 @@ export default function PDV() {
   // Map<groupId, Map<itemId, quantity>>
   const [selectedComplements, setSelectedComplements] = useState<Map<number, Map<number, number>>>(new Map());
   const [selectedComplementImage, setSelectedComplementImage] = useState<string | null>(null);
+  const [showCategoriesModal, setShowCategoriesModal] = useState(false);
 
   // Query para buscar complementos do produto selecionado
   const { data: productComplements } = trpc.publicMenu.getProductComplements.useQuery(
@@ -243,6 +246,14 @@ export default function PDV() {
             {/* Barra de Categorias */}
             <div className="px-4 py-2 border-b border-border/50 bg-muted/20">
               <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
+                {/* Botão de Menu de Categorias */}
+                <button
+                  onClick={() => setShowCategoriesModal(true)}
+                  className="flex items-center justify-center w-10 h-10 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0"
+                  title="Ver todas as categorias"
+                >
+                  <Menu className="h-5 w-5" />
+                </button>
                 <button
                   onClick={() => setSelectedCategory(null)}
                   className={cn(
@@ -953,6 +964,85 @@ export default function PDV() {
                   </button>
                 );
               })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Categorias */}
+      {showCategoriesModal && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowCategoriesModal(false)}
+        >
+          <div 
+            className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border/50">
+              <h2 className="text-lg font-semibold text-foreground">Categorias</h2>
+              <button
+                onClick={() => setShowCategoriesModal(false)}
+                className="p-2 rounded-full hover:bg-muted transition-colors"
+              >
+                <X className="h-5 w-5 text-muted-foreground" />
+              </button>
+            </div>
+            
+            {/* Lista de Categorias */}
+            <div className="overflow-y-auto max-h-[60vh]">
+              {/* Opção Todos */}
+              <button
+                onClick={() => {
+                  setSelectedCategory(null);
+                  setShowCategoriesModal(false);
+                }}
+                className={cn(
+                  "w-full flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border/30",
+                  selectedCategory === null && "bg-red-50"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-base font-medium text-foreground">Todos</span>
+                  <span className="px-2 py-0.5 rounded-full text-xs bg-muted text-muted-foreground">
+                    {productsList.filter((p) => p.status === 'active').length || 0}
+                  </span>
+                </div>
+                {selectedCategory === null && (
+                  <Check className="h-5 w-5 text-red-500" />
+                )}
+              </button>
+              
+              {/* Categorias */}
+              {sortedCategories.map((category) => {
+                const count = productsList.filter(
+                  (p) => p.status === 'active' && p.categoryId === category.id
+                ).length || 0;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => {
+                      setSelectedCategory(category.id);
+                      setShowCategoriesModal(false);
+                    }}
+                    className={cn(
+                      "w-full flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border/30",
+                      selectedCategory === category.id && "bg-red-50"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-base font-medium text-foreground">{category.name}</span>
+                      <span className="px-2 py-0.5 rounded-full text-xs bg-muted text-muted-foreground">
+                        {count}
+                      </span>
+                    </div>
+                    {selectedCategory === category.id && (
+                      <Check className="h-5 w-5 text-red-500" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
