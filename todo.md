@@ -4610,12 +4610,3 @@
 
 ## WhatsApp - Mensagem Completa do Pedido
 - [x] Incluir número do pedido, itens com complementos e valor total na mensagem do WhatsApp
-
-## HeatmapCard - Tooltips Desktop vs Mobile
-- [x] Corrigir tooltips para usar hover no desktop e click no mobile
-
-## WhatsApp - Remover Texto Extra
-- [x] Remover "Como posso ajudar?" da mensagem do WhatsApp
-
-## HeatmapCard - Espaçamento dos Quadradinhos
-- [x] Corrigir espaçamento entre os quadradinhos do heatmap

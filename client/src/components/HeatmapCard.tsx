@@ -36,35 +36,10 @@ function getColorClass(value: number, maxValue: number): string {
   return COLOR_SCALE[index];
 }
 
-// Hook para detectar se é dispositivo touch/mobile
-function useIsTouchDevice() {
-  const [isTouch, setIsTouch] = useState(false);
-  
-  useEffect(() => {
-    // Verificar se é dispositivo touch
-    const checkTouch = () => {
-      setIsTouch(
-        'ontouchstart' in window || 
-        navigator.maxTouchPoints > 0 ||
-        window.matchMedia('(pointer: coarse)').matches
-      );
-    };
-    
-    checkTouch();
-    
-    // Re-verificar em resize (para casos de mudança de modo)
-    window.addEventListener('resize', checkTouch);
-    return () => window.removeEventListener('resize', checkTouch);
-  }, []);
-  
-  return isTouch;
-}
-
 export function HeatmapCard() {
   const { data: heatmapData, isLoading } = trpc.menuViews.getHeatmap.useQuery();
-  const isTouch = useIsTouchDevice();
   
-  // Estado para controlar tooltip ativo (apenas para mobile/touch)
+  // Estado para controlar tooltip ativo (para suporte mobile)
   const [activeCell, setActiveCell] = useState<string | null>(null);
   const [showInfoTooltip, setShowInfoTooltip] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -87,10 +62,8 @@ export function HeatmapCard() {
   const maxCount = heatmapData?.maxCount || 0;
   const totalViews = heatmapData?.totalViews || 0;
 
-  // Fechar tooltips ao clicar fora (apenas para mobile)
+  // Fechar tooltips ao clicar fora
   useEffect(() => {
-    if (!isTouch) return;
-    
     function handleClickOutside(event: MouseEvent | TouchEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setActiveCell(null);
@@ -105,18 +78,16 @@ export function HeatmapCard() {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
     };
-  }, [isTouch]);
+  }, []);
 
   // Handler para toggle do tooltip da célula (mobile)
   const handleCellClick = (cellKey: string) => {
-    if (!isTouch) return;
     setShowInfoTooltip(false);
     setActiveCell(prev => prev === cellKey ? null : cellKey);
   };
 
   // Handler para toggle do tooltip de info (mobile)
   const handleInfoClick = () => {
-    if (!isTouch) return;
     setActiveCell(null);
     setShowInfoTooltip(prev => !prev);
   };
@@ -151,17 +122,15 @@ export function HeatmapCard() {
             </div>
           </div>
           
-          {/* Ícone de informação - hover no desktop, click no mobile */}
-          <Tooltip open={isTouch ? showInfoTooltip : undefined}>
+          {/* Ícone de informação com suporte a touch */}
+          <Tooltip open={showInfoTooltip}>
             <TooltipTrigger asChild>
               <button 
                 className="h-6 w-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
                 onClick={handleInfoClick}
                 onTouchEnd={(e) => {
-                  if (isTouch) {
-                    e.preventDefault();
-                    handleInfoClick();
-                  }
+                  e.preventDefault();
+                  handleInfoClick();
                 }}
               >
                 <Info className="h-4 w-4 text-gray-500" />
@@ -184,14 +153,14 @@ export function HeatmapCard() {
           {/* Coluna fixa dos dias da semana */}
           <div className="flex-shrink-0 z-10 bg-card">
             {/* Espaço para alinhar com header das horas */}
-            <div className="h-5 mb-1" />
+            <div className="h-4 mb-0.5" />
             {/* Labels dos dias */}
             {DAYS.map((day) => (
               <div 
                 key={day} 
-                className="h-[28px] mb-1 flex items-center justify-end pr-3"
+                className="h-[18px] mb-0.5 flex items-center justify-end pr-2"
               >
-                <span className="text-xs font-medium text-muted-foreground">
+                <span className="text-[10px] font-medium text-muted-foreground">
                   {day}
                 </span>
               </div>
@@ -202,12 +171,11 @@ export function HeatmapCard() {
           <div className="flex-1 overflow-x-auto">
             <div className="min-w-[450px]">
               {/* Header com horas */}
-              <div className="flex mb-1 h-5">
+              <div className="flex mb-0.5 h-4">
                 {HOURS.map(hour => (
                   <div 
                     key={hour} 
-                    className="flex-1 text-center text-xs text-muted-foreground font-medium"
-                    style={{ minWidth: '28px' }}
+                    className="flex-1 text-center text-[10px] text-muted-foreground font-medium"
                   >
                     {hour}h
                   </div>
@@ -216,7 +184,7 @@ export function HeatmapCard() {
 
               {/* Linhas do grid (células das horas) */}
               {DAYS.map((day, dayIndex) => (
-                <div key={day} className="flex items-center mb-1 h-[28px] gap-1">
+                <div key={day} className="flex items-center mb-0.5 h-[18px]">
                   {/* Células das horas */}
                   {HOURS.map(hour => {
                     const count = matrix[dayIndex][hour];
@@ -225,23 +193,18 @@ export function HeatmapCard() {
                     const isActive = activeCell === cellKey;
                     
                     return (
-                      <Tooltip 
-                        key={cellKey} 
-                        open={isTouch ? isActive : undefined}
-                      >
+                      <Tooltip key={cellKey} open={isActive}>
                         <TooltipTrigger asChild>
                           <div
                             className={cn(
-                              "w-[28px] h-[28px] rounded-md cursor-pointer transition-all hover:ring-2 hover:ring-blue-600 hover:ring-offset-1 flex-shrink-0",
+                              "flex-1 aspect-square rounded-[3px] mx-[1px] cursor-pointer transition-all hover:ring-2 hover:ring-blue-600 hover:ring-offset-1",
                               colorClass,
                               isActive && "ring-2 ring-blue-600 ring-offset-1"
                             )}
                             onClick={() => handleCellClick(cellKey)}
                             onTouchEnd={(e) => {
-                              if (isTouch) {
-                                e.preventDefault();
-                                handleCellClick(cellKey);
-                              }
+                              e.preventDefault();
+                              handleCellClick(cellKey);
                             }}
                           />
                         </TooltipTrigger>

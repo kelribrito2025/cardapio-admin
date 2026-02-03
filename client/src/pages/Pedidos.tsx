@@ -1308,7 +1308,7 @@ export default function Pedidos() {
                           const totalFormatted = `R$ ${Number(orderDetails.total).toFixed(2).replace('.', ',')}`;
                           
                           // Montar mensagem completa
-                          const message = `Olá ${orderDetails.customerName || ''}! Sobre seu pedido ${orderNumber}:\n\n*Itens:*\n${itemsText}\n\n*Total:* ${totalFormatted}`;
+                          const message = `Olá ${orderDetails.customerName || ''}! Sobre seu pedido ${orderNumber}:\n\n*Itens:*\n${itemsText}\n\n*Total:* ${totalFormatted}\n\nComo posso ajudar?`;
                           
                           window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
                         }}
