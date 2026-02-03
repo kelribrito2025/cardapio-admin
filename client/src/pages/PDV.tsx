@@ -1053,14 +1053,22 @@ export default function PDV() {
                       : "Grátis"}
                   </span>
                 </div>
+                {/* Desconto do Cupom */}
+                {appliedCoupon && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Desconto ({appliedCoupon.code})</span>
+                    <span className="font-medium text-green-600">-{formatCurrency(appliedCoupon.discount)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-lg font-bold border-t border-dashed pt-2">
                   <span>Total</span>
                   <span className="text-red-600">
                     {formatCurrency(
-                      calculateTotal() + 
+                      Math.max(0, calculateTotal() + 
                       (orderType === "entrega" && selectedNeighborhoodFee 
                         ? parseFloat(selectedNeighborhoodFee.fee) 
-                        : 0)
+                        : 0) -
+                      (appliedCoupon?.discount || 0))
                     )}
                   </span>
                 </div>

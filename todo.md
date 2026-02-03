@@ -4535,3 +4535,6 @@
 
 ## Bug - Cupom OFF10 retornando inválido no PDV
 - [x] Investigar e corrigir validação de cupom no PDV (formato JSON do tRPC)
+
+## Exibir Desconto no Resumo do PDV
+- [x] Adicionar linha de desconto entre Subtotal e Total quando cupom aplicado
