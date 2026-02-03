@@ -873,7 +873,7 @@ export default function Configuracoes() {
   return (
     <AdminLayout>
       {/* Layout com Barra Lateral Secundária */}
-      <div className="flex gap-0 -mx-6 -mt-6">
+      <div className="flex gap-0 -mx-3 lg:-mx-6 -mt-3 lg:-mt-6 min-h-[calc(100vh-58px)]">
         {/* Barra Lateral Secundária */}
         <SettingsSidebar 
           activeSection={activeSection} 
@@ -881,7 +881,7 @@ export default function Configuracoes() {
         />
         
         {/* Conteúdo Principal */}
-        <div className="flex-1 p-6 bg-muted/30 min-h-[calc(100vh-100px)]">
+        <div className="flex-1 p-6 bg-muted/30 overflow-y-auto">
           {/* Cabeçalho */}
           <div className="mb-6">
             <PageHeader

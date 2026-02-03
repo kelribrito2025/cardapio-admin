@@ -4381,3 +4381,7 @@
 ## Fixar Barra Lateral Secundária
 - [x] Fixar a segunda barra de menu lateral para não deslizar com a página
 - [x] Manter apenas o conteúdo da direita com scroll
+
+## Ajustes na Barra Lateral Secundária
+- [x] Remover espaço acima da barra de menu secundária (alinhar com topo)
+- [x] Minimizar barra lateral principal automaticamente ao clicar em Configurações

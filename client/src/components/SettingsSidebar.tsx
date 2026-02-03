@@ -29,7 +29,7 @@ const menuItems: { id: SettingsSection; label: string; icon: React.ElementType }
 
 export function SettingsSidebar({ activeSection, onSectionChange }: SettingsSidebarProps) {
   return (
-    <div className="w-64 h-[calc(100vh-64px)] sticky top-0 bg-white border-r border-border/50 py-4 px-3 overflow-y-auto">
+    <div className="w-64 min-h-full bg-white border-r border-border/50 pt-3 pb-4 px-3">
       <div className="mb-4 px-3">
         <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           Configurações
