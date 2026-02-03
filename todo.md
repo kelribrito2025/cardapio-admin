@@ -4314,3 +4314,7 @@
 ## Ícone de menu de categorias no PDV
 - [x] Adicionar ícone de menu (três linhas) ao lado do botão "Todos"
 - [x] Criar modal com lista de todas as categorias para seleção rápida
+
+## Ajustes na barra de categorias do PDV
+- [x] Remover emojis das categorias, exibindo apenas o texto
+- [x] Mover contagem de itens para badge no canto superior direito do botão

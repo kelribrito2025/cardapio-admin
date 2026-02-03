@@ -257,7 +257,7 @@ export default function PDV() {
                 <button
                   onClick={() => setSelectedCategory(null)}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
+                    "relative px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
                     selectedCategory === null
                       ? "bg-red-500 text-white shadow-sm"
                       : "bg-card text-muted-foreground hover:bg-muted border border-border/50"
@@ -265,8 +265,8 @@ export default function PDV() {
                 >
                   Todos
                   <span className={cn(
-                    "px-2 py-0.5 rounded-full text-xs",
-                    selectedCategory === null ? "bg-white/20" : "bg-muted"
+                    "absolute -top-1.5 -right-1.5 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-xs font-semibold",
+                    selectedCategory === null ? "bg-white text-red-500" : "bg-red-500 text-white"
                   )}>
                     {productsList.filter((p) => p.status === 'active').length || 0}
                   </span>
@@ -280,22 +280,23 @@ export default function PDV() {
                     const count = productsList.filter(
                       (p) => p.status === 'active' && p.categoryId === category.id
                     ).length || 0;
+                    // Remover emojis do nome da categoria
+                    const categoryNameWithoutEmoji = category.name.replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]+|[\u2600-\u27BF]/g, '').trim();
                     return (
                       <button
                         key={category.id}
                         onClick={() => setSelectedCategory(category.id)}
                         className={cn(
-                          "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
+                          "relative px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
                           selectedCategory === category.id
                             ? "bg-red-500 text-white shadow-sm"
                             : "bg-card text-muted-foreground hover:bg-muted border border-border/50"
                         )}
                       >
-                        
-                        {category.name}
+                        {categoryNameWithoutEmoji}
                         <span className={cn(
-                          "px-2 py-0.5 rounded-full text-xs",
-                          selectedCategory === category.id ? "bg-white/20" : "bg-muted"
+                          "absolute -top-1.5 -right-1.5 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-xs font-semibold",
+                          selectedCategory === category.id ? "bg-white text-red-500" : "bg-red-500 text-white"
                         )}>
                           {count}
                         </span>
