@@ -4591,3 +4591,6 @@
 ## PDV - Campo de Valor Recebido
 - [x] Alterar texto "Precisa de troco para quanto?" para "Qual valor recebido?"
 - [x] Implementar formatação automática de moeda (ex: 050 = 0,50, 2 = 0,02)
+
+## HeatmapCard - Dias da Semana Fixos
+- [x] Fixar coluna dos dias da semana (Dom, Seg, Ter, etc.) durante scroll horizontal no heatmap

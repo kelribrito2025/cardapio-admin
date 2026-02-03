@@ -148,67 +148,81 @@ export function HeatmapCard() {
           </Tooltip>
         </div>
 
-        {/* Grid do Heatmap */}
-        <div className="flex-1 overflow-x-auto">
-          <div className="min-w-[500px]">
-            {/* Header com horas */}
-            <div className="flex mb-0.5">
-              <div className="w-8 flex-shrink-0" /> {/* Espaço para labels dos dias */}
-              {HOURS.map(hour => (
-                <div 
-                  key={hour} 
-                  className="flex-1 text-center text-[10px] text-muted-foreground font-medium"
-                >
-                  {hour}h
+        {/* Grid do Heatmap com coluna de dias fixa */}
+        <div className="flex-1 flex">
+          {/* Coluna fixa dos dias da semana */}
+          <div className="flex-shrink-0 z-10 bg-card">
+            {/* Espaço para alinhar com header das horas */}
+            <div className="h-4 mb-0.5" />
+            {/* Labels dos dias */}
+            {DAYS.map((day) => (
+              <div 
+                key={day} 
+                className="h-[18px] mb-0.5 flex items-center justify-end pr-2"
+              >
+                <span className="text-[10px] font-medium text-muted-foreground">
+                  {day}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Área scrollável com horas e células */}
+          <div className="flex-1 overflow-x-auto">
+            <div className="min-w-[450px]">
+              {/* Header com horas */}
+              <div className="flex mb-0.5 h-4">
+                {HOURS.map(hour => (
+                  <div 
+                    key={hour} 
+                    className="flex-1 text-center text-[10px] text-muted-foreground font-medium"
+                  >
+                    {hour}h
+                  </div>
+                ))}
+              </div>
+
+              {/* Linhas do grid (células das horas) */}
+              {DAYS.map((day, dayIndex) => (
+                <div key={day} className="flex items-center mb-0.5 h-[18px]">
+                  {/* Células das horas */}
+                  {HOURS.map(hour => {
+                    const count = matrix[dayIndex][hour];
+                    const colorClass = getColorClass(count, maxCount);
+                    const cellKey = `${dayIndex}-${hour}`;
+                    const isActive = activeCell === cellKey;
+                    
+                    return (
+                      <Tooltip key={cellKey} open={isActive}>
+                        <TooltipTrigger asChild>
+                          <div
+                            className={cn(
+                              "flex-1 aspect-square rounded-[3px] mx-[1px] cursor-pointer transition-all hover:ring-2 hover:ring-blue-600 hover:ring-offset-1",
+                              colorClass,
+                              isActive && "ring-2 ring-blue-600 ring-offset-1"
+                            )}
+                            onClick={() => handleCellClick(cellKey)}
+                            onTouchEnd={(e) => {
+                              e.preventDefault();
+                              handleCellClick(cellKey);
+                            }}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent 
+                          side="top" 
+                          className="bg-gray-900 text-white border-0 px-3 py-2"
+                        >
+                          <div className="text-center">
+                            <div className="font-semibold">{day} às {hour}h</div>
+                            <div className="text-blue-300">{count} visualizações</div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    );
+                  })}
                 </div>
               ))}
             </div>
-
-            {/* Linhas do grid (dias) */}
-            {DAYS.map((day, dayIndex) => (
-              <div key={day} className="flex items-center mb-0.5">
-                {/* Label do dia */}
-                <div className="w-8 flex-shrink-0 text-[10px] font-medium text-muted-foreground pr-1 text-right">
-                  {day}
-                </div>
-                
-                {/* Células das horas */}
-                {HOURS.map(hour => {
-                  const count = matrix[dayIndex][hour];
-                  const colorClass = getColorClass(count, maxCount);
-                  const cellKey = `${dayIndex}-${hour}`;
-                  const isActive = activeCell === cellKey;
-                  
-                  return (
-                    <Tooltip key={cellKey} open={isActive}>
-                      <TooltipTrigger asChild>
-                        <div
-                          className={cn(
-                            "flex-1 aspect-square rounded-[3px] mx-[1px] cursor-pointer transition-all hover:ring-2 hover:ring-blue-600 hover:ring-offset-1",
-                            colorClass,
-                            isActive && "ring-2 ring-blue-600 ring-offset-1"
-                          )}
-                          onClick={() => handleCellClick(cellKey)}
-                          onTouchEnd={(e) => {
-                            e.preventDefault();
-                            handleCellClick(cellKey);
-                          }}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent 
-                        side="top" 
-                        className="bg-gray-900 text-white border-0 px-3 py-2"
-                      >
-                        <div className="text-center">
-                          <div className="font-semibold">{day} às {hour}h</div>
-                          <div className="text-blue-300">{count} visualizações</div>
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
-                  );
-                })}
-              </div>
-            ))}
           </div>
         </div>
 
