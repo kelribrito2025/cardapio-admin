@@ -4377,3 +4377,7 @@
 ## Ajuste do Cabeçalho nas Configurações
 - [x] Mover cabeçalho (título e descrição) para dentro da área de conteúdo principal
 - [x] Cabeçalho deve ficar ao lado direito do menu secundário, não acima dele
+
+## Fixar Barra Lateral Secundária
+- [x] Fixar a segunda barra de menu lateral para não deslizar com a página
+- [x] Manter apenas o conteúdo da direita com scroll
