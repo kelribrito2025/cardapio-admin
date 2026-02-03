@@ -65,6 +65,9 @@ export function HeatmapCard() {
   const [activeCell, setActiveCell] = useState<string | null>(null);
   const [showInfoTooltip, setShowInfoTooltip] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Estado para destaque de linha e coluna (hover no desktop)
+  const [hoveredCell, setHoveredCell] = useState<{ day: number; hour: number } | null>(null);
 
   // Criar matriz de dados 7x24
   const matrix = useMemo(() => {
@@ -185,7 +188,10 @@ export function HeatmapCard() {
               {HOURS.map(hour => (
                 <div 
                   key={hour} 
-                  className="flex-1 text-center text-[10px] text-muted-foreground font-medium"
+                  className={cn(
+                    "flex-1 text-center text-[10px] font-medium transition-colors",
+                    hoveredCell?.hour === hour ? "text-blue-600 font-semibold" : "text-muted-foreground"
+                  )}
                 >
                   {hour}h
                 </div>
@@ -196,7 +202,10 @@ export function HeatmapCard() {
             {DAYS.map((day, dayIndex) => (
               <div key={day} className="flex items-center mb-0.5">
                 {/* Label do dia - sticky para ficar fixo durante scroll horizontal */}
-                <div className="w-8 flex-shrink-0 text-[10px] font-medium text-muted-foreground pr-1 text-right sticky left-0 bg-card z-10">
+                <div className={cn(
+                  "w-8 flex-shrink-0 text-[10px] font-medium pr-1 text-right sticky left-0 bg-card z-10 transition-colors",
+                  hoveredCell?.day === dayIndex ? "text-blue-600 font-semibold" : "text-muted-foreground"
+                )}>
                   {day}
                 </div>
                 
@@ -207,6 +216,11 @@ export function HeatmapCard() {
                   const cellKey = `${dayIndex}-${hour}`;
                   const isActive = activeCell === cellKey;
                   
+                  // Verificar se esta célula está na mesma linha ou coluna da célula em hover
+                  const isInHighlightedRow = hoveredCell && hoveredCell.day === dayIndex && hoveredCell.hour !== hour;
+                  const isInHighlightedCol = hoveredCell && hoveredCell.hour === hour && hoveredCell.day !== dayIndex;
+                  const isHovered = hoveredCell && hoveredCell.day === dayIndex && hoveredCell.hour === hour;
+                  
                   return (
                     <Tooltip 
                       key={cellKey}
@@ -215,11 +229,18 @@ export function HeatmapCard() {
                       <TooltipTrigger asChild>
                         <div
                           className={cn(
-                            "flex-1 aspect-square rounded-[3px] mx-[1px] cursor-pointer transition-all hover:ring-2 hover:ring-blue-600 hover:ring-offset-1",
+                            "flex-1 aspect-square rounded-[3px] mx-[1px] cursor-pointer transition-all",
                             colorClass,
+                            // Destaque da célula em hover
+                            isHovered && "ring-2 ring-blue-600 ring-offset-1",
+                            // Destaque sutil para linha e coluna
+                            (isInHighlightedRow || isInHighlightedCol) && "opacity-80 ring-1 ring-blue-400/50",
+                            // Estado ativo para mobile
                             isActive && "ring-2 ring-blue-600 ring-offset-1"
                           )}
                           onClick={() => handleCellClick(cellKey)}
+                          onMouseEnter={() => !isTouch && setHoveredCell({ day: dayIndex, hour })}
+                          onMouseLeave={() => !isTouch && setHoveredCell(null)}
                           onTouchEnd={(e) => {
                             if (isTouch) {
                               e.preventDefault();
