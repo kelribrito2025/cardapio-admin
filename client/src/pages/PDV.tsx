@@ -309,14 +309,15 @@ export default function PDV() {
               {/* Gradiente e Botão de Ver Mais fixo na direita */}
               <div className="absolute right-0 top-0 bottom-0 flex items-center">
                 {/* Gradiente para indicar mais categorias */}
-                <div className="w-12 h-full bg-gradient-to-r from-transparent to-muted/20 pointer-events-none" style={{background: 'linear-gradient(to right, transparent, hsl(var(--muted) / 0.9))'}} />
+                <div className="w-16 h-full pointer-events-none" style={{background: 'linear-gradient(to right, transparent, hsl(var(--muted) / 0.9))'}} />
                 {/* Botão de Ver Mais Categorias - Fixo */}
                 <button
                   onClick={() => setShowCategoriesModal(true)}
-                  className="flex items-center justify-center w-10 h-10 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0 mr-2"
+                  className="flex items-center gap-1 px-3 py-2 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0 mr-2 text-sm font-medium whitespace-nowrap"
                   title="Ver todas as categorias"
                 >
-                  <ChevronsRight className="h-5 w-5" />
+                  <span>Ver mais</span>
+                  <ChevronsRight className="h-4 w-4" />
                 </button>
               </div>
             </div>
