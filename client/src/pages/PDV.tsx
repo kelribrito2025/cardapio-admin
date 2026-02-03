@@ -350,19 +350,11 @@ export default function PDV() {
                 )}
                 </div>
               </div>
-              {/* Gradiente e Botão de Ver Mais fixo na direita */}
-              <div className="absolute right-0 top-0 bottom-0 flex items-center">
-                {/* Gradiente para indicar mais categorias */}
-                <div className="w-16 h-full pointer-events-none" style={{background: 'linear-gradient(to right, transparent, hsl(var(--muted) / 0.9))'}} />
-                {/* Botão de Ver Mais Categorias - Fixo */}
-                <button
-                  onClick={() => setShowCategoriesModal(true)}
-                  className="flex items-center gap-1 px-3 py-2 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0 mr-2 text-sm font-medium whitespace-nowrap"
-                  title="Ver todas as categorias"
-                >
-                  <span>Ver mais</span>
-                  <ChevronsRight className="h-4 w-4" />
-                </button>
+              {/* Indicador de mais categorias - Setinha fixa na direita */}
+              <div className="absolute right-0 top-0 bottom-0 flex items-center pointer-events-none pr-2">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted/80 text-muted-foreground animate-pulse">
+                  <ChevronsRight className="h-5 w-5" />
+                </div>
               </div>
             </div>
 

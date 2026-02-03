@@ -4339,3 +4339,6 @@
 
 ## Botão de menu fixo na barra de categorias
 - [x] Mover botão de menu (3 linhas) para fora da área de arrasto
+
+## Ajustar botão Ver mais da barra de categorias
+- [x] Manter apenas setinha (ChevronsRight) com efeito visual, remover texto e gradiente
