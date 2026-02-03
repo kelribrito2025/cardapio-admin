@@ -385,160 +385,35 @@ export default function Pedidos() {
     },
   });
 
-  // Função para imprimir pedido
+  // Função para imprimir pedido - usa iframe oculto para não abrir nova janela
+  // Usa a mesma API de recibo que a aba de recibo para garantir consistência
   const handlePrintOrder = () => {
     if (!orderDetails) return;
     
-    const printWindow = window.open('', '_blank', 'width=400,height=600');
-    if (!printWindow) {
-      toast.error("Não foi possível abrir a janela de impressão. Verifique se pop-ups estão permitidos.");
-      return;
-    }
+    const receiptUrl = `${window.location.origin}/api/print/receipt/${orderDetails.id}`;
     
-    const itemsHtml = orderDetails.items?.map(item => {
-      const unitPrice = Number(item.totalPrice) / item.quantity;
-      const complementsHtml = item.complements && item.complements.length > 0
-        ? item.complements.map((c: any) => {
-            const qty = c.quantity || 1;
-            const price = Number(c.price || 0);
-            const totalPrice = price * qty;
-            const priceStr = totalPrice > 0 ? ` R$ ${totalPrice.toFixed(2).replace('.', ',')}` : '';
-            const qtyStr = qty > 1 ? `${qty}x ` : '';
-            return `<div class="item-complement">+ ${qtyStr}${c.name}${priceStr}</div>`;
-          }).join('')
-        : '';
-      return `
-        <div class="item">
-          <div class="item-header">
-            <span class="item-qty">${item.quantity}x ${item.productName}</span>
-            <span class="item-price">R$ ${Number(item.totalPrice).toFixed(2).replace('.', ',')}</span>
-          </div>
-          ${complementsHtml}
-          ${item.notes ? `<div class="item-obs">Obs: ${item.notes}</div>` : ''}
-        </div>
-      `;
-    }).join('') || '';
+    // Criar iframe oculto para impressão
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+    iframe.src = receiptUrl;
     
-    const discount = orderDetails.discount ? Number(orderDetails.discount) : 0;
+    document.body.appendChild(iframe);
     
-    const printContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Pedido ${orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</title>
-        <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          html, body { 
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            font-family: Arial, sans-serif; 
-            font-size: 13px; 
-            padding: 20px; 
-            background: #f5f5f0;
-            color: #333;
-          }
-          .receipt { 
-            background: #f5f5f0; 
-            padding: 10px; 
-            max-width: 320px; 
-            width: 100%;
-            margin: 0 auto;
-          }
-          .logo { text-align: center; padding-bottom: 15px; margin-bottom: 15px; }
-          .logo h1 { font-size: 22px; font-weight: bold; margin: 0; letter-spacing: 1px; }
-          .logo p { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-top: 2px; }
-          .order-info { margin-bottom: 15px; }
-          .order-info h2 { font-size: 16px; font-weight: bold; margin-bottom: 2px; }
-          .order-info p { font-size: 12px; color: #666; }
-          .divider { border: none; border-top: 1px solid #ccc; margin: 12px 0; }
-          .divider-dashed { border: none; border-top: 1px dashed #bbb; margin: 10px 0; }
-          .item { margin-bottom: 10px; }
-          .item-header { display: flex; justify-content: space-between; font-weight: 500; }
-          .item-obs { font-size: 11px; color: #666; margin-top: 2px; padding-left: 5px; }
-          .item-complement { font-size: 11px; color: #555; margin-top: 2px; padding-left: 10px; }
-          .totals { margin: 15px 0; }
-          .total-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
-          .total-row.final { 
-            font-weight: bold; 
-            font-size: 15px; 
-            margin-top: 8px; 
-            background: #333; 
-            color: white; 
-            padding: 8px 12px; 
-            border-radius: 4px;
-          }
-          .delivery-badge {
-            display: inline-block;
-            background: #333;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: bold;
-            letter-spacing: 1px;
-          }
-          .section { margin: 15px 0; }
-          .section-title { font-weight: bold; font-size: 14px; margin-bottom: 6px; }
-          .section-content { font-size: 13px; color: #444; line-height: 1.4; }
-          .footer { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #ccc; }
-          .footer p { font-size: 11px; color: #666; }
-          @media print { 
-            html, body { 
-              padding: 0; 
-              background: white; 
-              display: block;
-              width: 100%;
-            } 
-            .receipt { 
-              background: white; 
-              max-width: 100%;
-              margin: 0 auto;
-            } 
-          }
-        </style>
-      </head>
-      <body>
-        <div class="receipt">
-          <div class="logo">
-            <h1>${establishment?.name || 'Cardápio'}</h1>
-            <p>Sistema de Pedidos</p>
-          </div>
-          <div class="order-info">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <h2>Pedido ${orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</h2>
-              <span class="delivery-badge">${orderDetails.deliveryType === 'delivery' ? 'ENTREGA' : orderDetails.deliveryType === 'dine_in' ? 'CONSUMO LOCAL' : 'RETIRADA'}</span>
-            </div>
-            <p>📅 ${format(new Date(orderDetails.createdAt), "dd/MM/yyyy")}, ${format(new Date(orderDetails.createdAt), "HH:mm")}</p>
-          </div>
-          <hr class="divider">
-          <div class="items">${itemsHtml}</div>
-          <hr class="divider-dashed">
-          <div class="totals">
-            <div class="total-row"><span>Valor dos produtos</span><span>R$ ${Number(orderDetails.subtotal).toFixed(2).replace('.', ',')}</span></div>
-            ${orderDetails.couponCode ? `<div class="total-row"><span>Cupom aplicado</span><span>${orderDetails.couponCode}</span></div>` : ''}
-            ${discount > 0 ? `<div class="total-row"><span>Desconto</span><span>- R$ ${discount.toFixed(2).replace('.', ',')}</span></div>` : ''}
-            <div class="total-row"><span>Taxa de entrega</span><span>${Number(orderDetails.deliveryFee) > 0 ? `R$ ${Number(orderDetails.deliveryFee).toFixed(2).replace('.', ',')}` : 'Grátis'}</span></div>
-            <div class="total-row final"><span>TOTAL:</span><span>R$ ${Number(orderDetails.total).toFixed(2).replace('.', ',')}</span></div>
-          </div>
-          ${orderDetails.notes ? `<hr class="divider"><div class="section"><div class="section-title">Observações:</div><div class="section-content">${orderDetails.notes}</div></div>` : ''}
-          <hr class="divider">
-          <div class="section"><div class="section-title">Entrega</div><div class="section-content">${orderDetails.deliveryType === 'delivery' ? (orderDetails.customerAddress || 'Endereço não informado') : orderDetails.deliveryType === 'dine_in' ? 'Consumir no local' : 'Retirada no local'}</div></div>
-          <hr class="divider">
-          <div class="section"><div class="section-title">Forma de pagamento</div><div class="section-content">${paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</div></div>
-          <hr class="divider">
-          <div class="section"><div class="section-title">Cliente</div><div class="section-content">${orderDetails.customerName || 'Não informado'}<br>${orderDetails.customerPhone || ''}</div></div>
-          <div class="footer"><p>Pedido realizado via Cardápio Admin</p><p>manus.space</p></div>
-        </div>
-        <script>window.onload = function() { window.print(); window.onafterprint = function() { window.close(); }; };</script>
-      </body>
-      </html>
-    `;
-    
-    printWindow.document.write(printContent);
-    printWindow.document.close();
+    // Aguardar o iframe carregar e chamar print
+    iframe.onload = () => {
+      setTimeout(() => {
+        iframe.contentWindow?.print();
+        // Remover iframe após impressão (com delay para garantir que o diálogo de impressão abriu)
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 1000);
+      }, 500);
+    };
   };
 
   // Função para imprimir via API térmica

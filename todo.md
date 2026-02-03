@@ -4603,3 +4603,7 @@
 
 ## Pedidos - Card de Cancelados Apenas Mobile
 - [x] Ocultar card de Cancelados no desktop e manter apenas no mobile
+
+## Impressão do Recibo - Correções
+- [x] Remover janela/aba que abre no navegador ao clicar em imprimir
+- [x] Corrigir modelo de impressão para usar o modelo correto da aba do recibo
