@@ -4326,3 +4326,8 @@
 ## Melhorias na barra de categorias do PDV
 - [x] Remover barra de rolagem horizontal das categorias
 - [x] Adicionar ícone de menu no final da lista para ver mais categorias
+
+## Ícone de ver mais categorias fixo
+- [x] Fixar ícone na borda direita, fora do overflow
+- [x] Adicionar gradiente/fade antes do ícone para indicar mais categorias
+- [x] Garantir que o botão esteja sempre visível e clicável

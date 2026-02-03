@@ -244,8 +244,8 @@ export default function PDV() {
           {/* Coluna Esquerda - Produtos */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Barra de Categorias */}
-            <div className="px-4 py-2 border-b border-border/50 bg-muted/20" style={{paddingRight: '6px'}}>
-              <div className="flex items-center gap-2 overflow-hidden">
+            <div className="relative px-4 py-2 border-b border-border/50 bg-muted/20">
+              <div className="flex items-center gap-2 overflow-hidden pr-14">
                 {/* Botão de Menu de Categorias - Início */}
                 <button
                   onClick={() => setShowCategoriesModal(true)}
@@ -304,10 +304,15 @@ export default function PDV() {
                     );
                   })
                 )}
-                {/* Botão de Menu de Categorias - Final */}
+              </div>
+              {/* Gradiente e Botão de Menu fixo na direita */}
+              <div className="absolute right-0 top-0 bottom-0 flex items-center">
+                {/* Gradiente para indicar mais categorias */}
+                <div className="w-12 h-full bg-gradient-to-r from-transparent to-muted/20 pointer-events-none" style={{background: 'linear-gradient(to right, transparent, hsl(var(--muted) / 0.9))'}} />
+                {/* Botão de Menu de Categorias - Fixo */}
                 <button
                   onClick={() => setShowCategoriesModal(true)}
-                  className="flex items-center justify-center w-10 h-10 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0 ml-auto"
+                  className="flex items-center justify-center w-10 h-10 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0 mr-2"
                   title="Ver todas as categorias"
                 >
                   <Menu className="h-5 w-5" />
