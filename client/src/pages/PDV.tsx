@@ -2081,7 +2081,7 @@ export default function PDV() {
               <p className="text-xs text-gray-500">Selecione como o cliente vai pagar</p>
             </div>
 
-            <div className="space-y-3 p-4 bg-gray-50 rounded-xl">
+            <div className="space-y-3">
               {availablePaymentMethods.length > 0 ? (
                 availablePaymentMethods.map((method) => (
                   <div key={method.id}>
@@ -2125,55 +2125,42 @@ export default function PDV() {
 
                     {/* Campos de Troco - apenas para Dinheiro */}
                     {method.id === "cash" && selectedPaymentInSidebar === "cash" && (
-                      <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-4">
-                        {/* Valor Total */}
-                        <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200">
-                          <div className="flex items-center gap-2">
-                            <DollarSign className="h-4 w-4 text-gray-500" />
-                            <span className="text-sm font-medium text-gray-600">Valor total</span>
+                      <div className="mt-4 ml-2 space-y-3">
+                        {/* Pergunta sobre troco */}
+                        <p className="text-sm text-gray-600">Precisa de troco para quanto?</p>
+                        
+                        {/* Campo Valor Recebido */}
+                        <Input
+                          type="text"
+                          placeholder="0,00"
+                          value={receivedAmount}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/[^0-9,]/g, "");
+                            setReceivedAmount(value);
+                          }}
+                          className="w-full text-lg bg-gray-50 border-gray-200 rounded-xl"
+                        />
+                        
+                        <p className="text-xs text-gray-400">Deixe em branco se não precisar de troco</p>
+                        
+                        {/* Troco a Devolver - só mostra se tiver valor */}
+                        {receivedAmount && parseFloat(receivedAmount.replace(",", ".")) > 0 && (
+                          <div className="pt-2">
+                            <p className="text-sm text-gray-600">Troco a devolver:</p>
+                            <p className="text-xl font-bold text-green-600">
+                              {(() => {
+                                const totalValue = Math.max(0, calculateTotal() + 
+                                  (orderType === "entrega" && selectedNeighborhoodFee 
+                                    ? parseFloat(selectedNeighborhoodFee.fee) 
+                                    : 0) -
+                                  (appliedCoupon?.discount || 0));
+                                const received = parseFloat(receivedAmount.replace(",", ".")) || 0;
+                                const change = received - totalValue;
+                                return formatCurrency(Math.max(0, change));
+                              })()}
+                            </p>
                           </div>
-                          <span className="text-lg font-bold text-gray-800">
-                            {formatCurrency(
-                              Math.max(0, calculateTotal() + 
-                              (orderType === "entrega" && selectedNeighborhoodFee 
-                                ? parseFloat(selectedNeighborhoodFee.fee) 
-                                : 0) -
-                              (appliedCoupon?.discount || 0))
-                            )}
-                          </span>
-                        </div>
-
-                        {/* Valor Recebido */}
-                        <div>
-                          <label className="block text-sm font-semibold text-gray-700 mb-2">Valor recebido</label>
-                          <Input
-                            type="text"
-                            placeholder="R$ 0,00"
-                            value={receivedAmount}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/[^0-9,]/g, "");
-                              setReceivedAmount(value);
-                            }}
-                            className="w-full text-lg font-medium bg-white"
-                          />
-                        </div>
-
-                        {/* Troco a Devolver */}
-                        <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                          <p className="text-sm text-green-600 mb-1">Troco a devolver:</p>
-                          <p className="text-2xl font-bold text-green-700">
-                            {(() => {
-                              const totalValue = Math.max(0, calculateTotal() + 
-                                (orderType === "entrega" && selectedNeighborhoodFee 
-                                  ? parseFloat(selectedNeighborhoodFee.fee) 
-                                  : 0) -
-                                (appliedCoupon?.discount || 0));
-                              const received = parseFloat(receivedAmount.replace(",", ".")) || 0;
-                              const change = received - totalValue;
-                              return formatCurrency(Math.max(0, change));
-                            })()}
-                          </p>
-                        </div>
+                        )}
                       </div>
                     )}
                   </div>

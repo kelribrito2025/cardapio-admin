@@ -4570,3 +4570,7 @@
 
 ## Efeito Pulse no Botão Criar Menu
 - [x] Adicionar animação pulse/glow no botão "Criar Menu" do rodapé
+
+## Ajuste Estilo Modal Pagamento PDV
+- [x] Remover container cinza das opções de pagamento
+- [x] Ajustar campos de troco para estilo do menu público
