@@ -4567,3 +4567,6 @@
 - [x] Aplicar fundo branco no modal
 - [x] Container com fundo cinza claro para opções de pagamento
 - [x] Bordas arredondadas e cores consistentes com sidebar de entrega
+
+## Efeito Pulse no Botão Criar Menu
+- [x] Adicionar animação pulse/glow no botão "Criar Menu" do rodapé
