@@ -4444,3 +4444,7 @@
 - [ ] Implementar seleção de bairro na sidebar de entrega do PDV quando restaurante estiver configurado para entrega por bairro
 
 - [x] Modificar sidebar de entrega para seleção de bairro ocupar toda a sidebar inicialmente, e após selecionar mostrar campos de endereço e pagamento
+
+- [x] Exibir tipo de pedido (Consumo, Retirada, Entrega) no card de Pedido Atual
+- [x] Mostrar taxa de entrega quando aplicável no card de Pedido Atual
+- [x] Adicionar ícone de cupom ao lado esquerdo do botão de cupom no card de Pedido Atual

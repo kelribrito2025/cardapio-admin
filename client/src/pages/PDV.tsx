@@ -17,6 +17,7 @@ import {
   Menu,
   Check,
   ChevronsRight,
+  ChevronRight,
   Pencil,
   ChevronDown,
   CreditCard,
@@ -24,7 +25,8 @@ import {
   QrCode,
   Copy,
   MapPin,
-  ChevronUp
+  ChevronUp,
+  Ticket
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -753,11 +755,39 @@ export default function PDV() {
                   <span className="text-muted-foreground">Subtotal</span>
                   <span className="font-medium">{formatCurrency(calculateTotal())}</span>
                 </div>
+                {/* Tipo de Pedido */}
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {orderType === "mesa" ? "Consumo no local" : orderType === "retirada" ? "Retirar no local" : "Entrega"}
+                  </span>
+                  <span className="font-medium text-green-600">
+                    {orderType === "entrega" && selectedNeighborhoodFee 
+                      ? `R$ ${parseFloat(selectedNeighborhoodFee.fee).toFixed(2).replace(".", ",")}`
+                      : "Grátis"}
+                  </span>
+                </div>
                 <div className="flex justify-between text-lg font-bold border-t border-dashed pt-2">
                   <span>Total</span>
-                  <span className="text-red-600">{formatCurrency(calculateTotal())}</span>
+                  <span className="text-red-600">
+                    {formatCurrency(
+                      calculateTotal() + 
+                      (orderType === "entrega" && selectedNeighborhoodFee 
+                        ? parseFloat(selectedNeighborhoodFee.fee) 
+                        : 0)
+                    )}
+                  </span>
                 </div>
               </div>
+
+              {/* Botão de Cupom */}
+              <button className="w-full flex items-center gap-3 p-3 rounded-lg border border-dashed border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors">
+                <Ticket className="h-5 w-5 text-gray-400" />
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-medium text-gray-700">Tem um cupom?</p>
+                  <p className="text-xs text-gray-500">Clique e insira o código</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </button>
 
               {/* Botões de Ação */}
               <div className="flex gap-2">
