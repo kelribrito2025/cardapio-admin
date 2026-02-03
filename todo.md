@@ -4494,3 +4494,7 @@
 ## Ajuste Controle de Quantidade no Footer do Modal
 - [x] Restaurar estilo do controle de quantidade no PDV (botões circulares em fundo cinza arredondado)
 - [x] Aplicar mesmo estilo no modal do menu público
+
+## Correção Comportamento de Interação no PDV
+- [x] Botão "Adicionar" deve adicionar item diretamente ao carrinho (sem abrir modal)
+- [x] Card do item (imagem, título, área) deve abrir o modal de detalhes

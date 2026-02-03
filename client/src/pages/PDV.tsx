@@ -723,7 +723,9 @@ export default function PDV() {
                             className="h-8 px-2 xl:px-3 text-xs border-red-200 text-red-600 hover:bg-red-50 shrink-0"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleProductClick(product);
+                              // Adicionar diretamente ao carrinho sem abrir modal
+                              addToCart(product, 1, '', []);
+                              toast.success(`${product.name} adicionado ao carrinho`);
                             }}
                             disabled={!product.hasStock}
                           >
