@@ -1557,8 +1557,38 @@ export default function PDV() {
                   />
                 </div>
                 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
+                {/* Bairro - linha única com ícone, "Entrega", taxa e "Alterar" */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Bairro *</label>
+                  {establishment?.deliveryFeeType === "byNeighborhood" ? (
+                    // Botão para alterar bairro selecionado - layout em linha única
+                    <button
+                      onClick={() => setSelectedNeighborhoodFee(null)}
+                      className="w-full flex items-center justify-between p-3 rounded-xl border-2 border-red-200 bg-red-50/50 hover:border-red-300 transition-all"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Truck className="h-4 w-4 text-red-500 flex-shrink-0" />
+                        <span className="font-medium text-gray-800">Entrega</span>
+                        <span className="font-semibold text-green-600">
+                          R$ {selectedNeighborhoodFee ? parseFloat(selectedNeighborhoodFee.fee).toFixed(2).replace(".", ",") : "0,00"}
+                        </span>
+                      </div>
+                      <span className="text-sm text-red-500 font-medium flex-shrink-0">Alterar</span>
+                    </button>
+                  ) : (
+                    // Campo de texto normal quando não é entrega por bairro
+                    <Input
+                      placeholder="Centro"
+                      value={deliveryAddress.neighborhood}
+                      onChange={(e) => setDeliveryAddress({...deliveryAddress, neighborhood: e.target.value})}
+                      className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                    />
+                  )}
+                </div>
+                
+                {/* Número (20%) e Complemento (80%) na mesma linha */}
+                <div className="flex gap-3">
+                  <div className="w-[20%]">
                     <label className="block text-sm font-medium text-gray-600 mb-1">Número *</label>
                     <Input
                       placeholder="123"
@@ -1567,43 +1597,15 @@ export default function PDV() {
                       className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Bairro *</label>
-                    {establishment?.deliveryFeeType === "byNeighborhood" ? (
-                      // Botão para alterar bairro selecionado
-                      <button
-                        onClick={() => setSelectedNeighborhoodFee(null)}
-                        className="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white hover:border-red-300 hover:bg-red-50/50 transition-all"
-                      >
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-red-500" />
-                          <span className="font-medium text-gray-700">{selectedNeighborhoodFee?.neighborhood}</span>
-                          <span className="text-sm text-gray-500">
-                            (R$ {selectedNeighborhoodFee ? parseFloat(selectedNeighborhoodFee.fee).toFixed(2).replace(".", ",") : "0,00"})
-                          </span>
-                        </div>
-                        <span className="text-sm text-red-500 font-medium">Alterar</span>
-                      </button>
-                    ) : (
-                      // Campo de texto normal quando não é entrega por bairro
-                      <Input
-                        placeholder="Centro"
-                        value={deliveryAddress.neighborhood}
-                        onChange={(e) => setDeliveryAddress({...deliveryAddress, neighborhood: e.target.value})}
-                        className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
-                      />
-                    )}
+                  <div className="w-[80%]">
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Complemento</label>
+                    <Input
+                      placeholder="Apto, Bloco, Casa..."
+                      value={deliveryAddress.complement}
+                      onChange={(e) => setDeliveryAddress({...deliveryAddress, complement: e.target.value})}
+                      className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                    />
                   </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Complemento</label>
-                  <Input
-                    placeholder="Apto, Bloco, Casa..."
-                    value={deliveryAddress.complement}
-                    onChange={(e) => setDeliveryAddress({...deliveryAddress, complement: e.target.value})}
-                    className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
-                  />
                 </div>
                 
                 <div>

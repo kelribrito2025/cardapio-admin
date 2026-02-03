@@ -4498,3 +4498,8 @@
 ## Correção Comportamento de Interação no PDV
 - [x] Botão "Adicionar" deve adicionar item diretamente ao carrinho (sem abrir modal)
 - [x] Card do item (imagem, título, área) deve abrir o modal de detalhes
+
+## Correção Layout Sidebar Dados da Entrega
+- [x] Seleção de bairro em uma única linha (ícone + "Entrega" + taxa + "Alterar")
+- [x] Campo Número ao lado do Complemento (20% largura)
+- [x] Campo Complemento com 80% da largura
