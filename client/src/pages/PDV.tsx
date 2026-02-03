@@ -352,7 +352,7 @@ export default function PDV() {
               </div>
               {/* Indicador de mais categorias - Setinha fixa na direita */}
               <div className="absolute right-0 top-0 bottom-0 flex items-center pointer-events-none pr-2">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted/80 text-muted-foreground animate-pulse">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-red-100 text-red-400 animate-pulse">
                   <ChevronsRight className="h-5 w-5" />
                 </div>
               </div>
