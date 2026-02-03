@@ -409,3 +409,17 @@
 .animate-logo-entrance {
   animation: logo-fade-in 0.6s ease-out forwards;
 }
+
+/* Animação de movimento lateral para indicador de mais categorias */
+@keyframes bounce-x {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+}
+
+.animate-bounce-x {
+  animation: bounce-x 1s ease-in-out infinite;
+}
