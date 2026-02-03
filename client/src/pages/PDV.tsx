@@ -1684,7 +1684,7 @@ export default function PDV() {
           </div>
 
           {/* Conteúdo - Formulário de Entrega */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-white">
             {/* Se for entrega por bairro e ainda não selecionou bairro, mostra apenas seleção de bairro */}
             {establishment?.deliveryFeeType === "byNeighborhood" && !selectedNeighborhoodFee ? (
               // Tela de seleção de bairro ocupando toda a sidebar
@@ -1729,25 +1729,26 @@ export default function PDV() {
               // Formulário completo de entrega (após selecionar bairro ou quando não é por bairro)
               <>
             {/* Seção de Dados do Cliente */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-gray-700">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <h3 className="font-semibold">Dados do Cliente</h3>
-              </div>
-              
-              <div className="space-y-3">
+            <div>
+              <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Dados do Cliente
+              </h3>
+              <div className="space-y-3 p-4 bg-gray-50 rounded-xl">
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Nome *</label>
-                  <Input
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Nome <span className="text-red-500">*</span></label>
+                  <input
+                    type="text"
                     placeholder="Nome do cliente"
                     value={deliveryAddress.name}
                     onChange={(e) => setDeliveryAddress({...deliveryAddress, name: e.target.value})}
-                    className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Telefone *</label>
-                  <Input
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Telefone <span className="text-red-500">*</span></label>
+                  <input
+                    type="text"
                     placeholder="(00) 00000-0000"
                     value={deliveryAddress.phone}
                     onChange={(e) => {
@@ -1760,91 +1761,115 @@ export default function PDV() {
                       }
                       setDeliveryAddress({...deliveryAddress, phone: value});
                     }}
-                    className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Divisor */}
-            <div className="border-t border-gray-200" />
-
             {/* Seção de Endereço */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-gray-700">
-                <MapPin className="h-5 w-5 text-red-500" />
-                <h3 className="font-semibold">Endereço de Entrega</h3>
-              </div>
+            <div>
+              <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-red-500" />
+                Endereço de Entrega
+              </h3>
               
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Rua / Avenida *</label>
-                  <Input
-                    placeholder="Ex: Rua das Flores"
-                    value={deliveryAddress.street}
-                    onChange={(e) => setDeliveryAddress({...deliveryAddress, street: e.target.value})}
-                    className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
-                  />
-                </div>
-                
-                {/* Bairro - linha única com ícone, "Entrega", taxa e "Alterar" */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Bairro *</label>
-                  {establishment?.deliveryFeeType === "byNeighborhood" ? (
-                    // Botão para alterar bairro selecionado - layout em linha única
-                    <button
-                      onClick={() => setSelectedNeighborhoodFee(null)}
-                      className="w-full flex items-center justify-between p-3 rounded-xl border-2 border-red-200 bg-red-50/50 hover:border-red-300 transition-all"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Truck className="h-4 w-4 text-red-500 flex-shrink-0" />
+              {/* Botão de Entrega com taxa - estilo igual ao menu público */}
+              {establishment?.deliveryFeeType === "byNeighborhood" && selectedNeighborhoodFee && (
+                <div className="mb-3">
+                  <button
+                    onClick={() => setSelectedNeighborhoodFee(null)}
+                    className="w-full flex items-center justify-between p-4 border border-red-500 bg-red-50 rounded-xl"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Truck className="h-5 w-5 text-red-500" />
+                      <div>
                         <span className="font-medium text-gray-800">Entrega</span>
-                        <span className="font-semibold text-green-600">
-                          R$ {selectedNeighborhoodFee ? parseFloat(selectedNeighborhoodFee.fee).toFixed(2).replace(".", ",") : "0,00"}
+                        <span className="ml-2 text-sm text-green-600 font-medium">
+                          R$ {parseFloat(selectedNeighborhoodFee.fee).toFixed(2).replace(".", ",")}
                         </span>
                       </div>
-                      <span className="text-sm text-red-500 font-medium flex-shrink-0">Alterar</span>
-                    </button>
+                    </div>
+                    <span className="text-red-500 text-sm font-medium">Alterar</span>
+                  </button>
+                </div>
+              )}
+              
+              <div className="space-y-3 p-4 bg-gray-50 rounded-xl">
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="col-span-2">
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Rua <span className="text-red-500">*</span></label>
+                    <input
+                      type="text"
+                      placeholder="Nome da rua"
+                      value={deliveryAddress.street}
+                      onChange={(e) => setDeliveryAddress({...deliveryAddress, street: e.target.value})}
+                      className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Número <span className="text-red-500">*</span></label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={6}
+                      placeholder="Nº"
+                      value={deliveryAddress.number}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                        setDeliveryAddress({...deliveryAddress, number: value});
+                      }}
+                      className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Bairro <span className="text-red-500">*</span></label>
+                  {establishment?.deliveryFeeType === "byNeighborhood" && selectedNeighborhoodFee ? (
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700">
+                        {selectedNeighborhoodFee.neighborhood}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedNeighborhoodFee(null)}
+                        className="px-3 py-2.5 text-red-500 text-sm font-medium hover:bg-red-50 rounded-lg transition-colors whitespace-nowrap"
+                      >
+                        Alterar bairro
+                      </button>
+                    </div>
                   ) : (
-                    // Campo de texto normal quando não é entrega por bairro
-                    <Input
-                      placeholder="Centro"
+                    <input
+                      type="text"
+                      placeholder="Nome do bairro"
                       value={deliveryAddress.neighborhood}
                       onChange={(e) => setDeliveryAddress({...deliveryAddress, neighborhood: e.target.value})}
-                      className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                      className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                     />
                   )}
                 </div>
                 
-                {/* Número (20%) e Complemento (80%) na mesma linha */}
-                <div className="flex gap-3">
-                  <div className="w-[20%]">
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Número *</label>
-                    <Input
-                      placeholder="123"
-                      value={deliveryAddress.number}
-                      onChange={(e) => setDeliveryAddress({...deliveryAddress, number: e.target.value})}
-                      className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
-                    />
-                  </div>
-                  <div className="w-[80%]">
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Complemento</label>
-                    <Input
-                      placeholder="Apto, Bloco, Casa..."
-                      value={deliveryAddress.complement}
-                      onChange={(e) => setDeliveryAddress({...deliveryAddress, complement: e.target.value})}
-                      className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Complemento</label>
+                  <input
+                    type="text"
+                    placeholder="Apto, bloco, etc."
+                    value={deliveryAddress.complement}
+                    onChange={(e) => setDeliveryAddress({...deliveryAddress, complement: e.target.value})}
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Ponto de Referência</label>
-                  <Input
-                    placeholder="Próximo ao mercado..."
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Ponto de referência</label>
+                  <input
+                    type="text"
+                    placeholder="Próximo a..."
                     value={deliveryAddress.reference}
                     onChange={(e) => setDeliveryAddress({...deliveryAddress, reference: e.target.value})}
-                    className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                   />
                 </div>
               </div>

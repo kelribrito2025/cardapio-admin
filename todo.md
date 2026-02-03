@@ -4557,3 +4557,8 @@
 
 ## Máscara de Telefone no PDV
 - [x] Adicionar formatação automática (00) 00000-0000 no campo de telefone
+
+## Padronização Visual da Sidebar de Entrega no PDV
+- [x] Aplicar fundo branco na sidebar
+- [x] Container com fundo cinza claro para campos de input
+- [x] Bordas arredondadas e cores iguais ao modal do menu público
