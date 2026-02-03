@@ -4516,3 +4516,8 @@
 
 ## Bug - Janela de Impressão Abrindo Duas Vezes
 - [x] Corrigir conflito entre iframe.print() e auto-print da página de recibo
+
+## Campo de Cupom no PDV
+- [x] Ao clicar no ícone de cupom, mostrar campo de texto abaixo dos botões
+- [x] Campo de texto para inserir código do cupom
+- [x] Botão "Aplicar" ao lado do campo

@@ -211,6 +211,11 @@ export default function PDV() {
   // Estados para sidebar de pagamento (Retirada)
   const [showPaymentSidebar, setShowPaymentSidebar] = useState(false);
 
+  // Estados para cupom
+  const [showCouponField, setShowCouponField] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{code: string; discount: number} | null>(null);
+
   // Query para buscar taxas por bairro
   const { data: neighborhoodFees } = trpc.neighborhoodFees.list.useQuery(
     { establishmentId: establishmentId! },
@@ -387,6 +392,10 @@ export default function PDV() {
     });
     setSelectedNeighborhoodFee(null);
     setChangeAmount("");
+    // Limpar cupom
+    setShowCouponField(false);
+    setCouponCode("");
+    setAppliedCoupon(null);
   };
 
   // Calcular total
@@ -1057,10 +1066,11 @@ export default function PDV() {
                 {/* Botão de Cupom */}
                 <Button
                   variant="outline"
-                  className="px-3"
+                  className={cn("px-3", showCouponField && "border-red-500 bg-red-50")}
                   title="Adicionar cupom"
+                  onClick={() => setShowCouponField(!showCouponField)}
                 >
-                  <Ticket className="h-5 w-5 text-gray-500" />
+                  <Ticket className={cn("h-5 w-5", showCouponField ? "text-red-500" : "text-gray-500")} />
                 </Button>
                 <Button
                   variant="outline"
@@ -1079,6 +1089,59 @@ export default function PDV() {
                   {createOrderMutation.isPending ? "Criando..." : mainButtonConfig.text}
                 </Button>
               </div>
+
+              {/* Campo de Cupom */}
+              {showCouponField && (
+                <div className="mt-3 flex gap-2">
+                  {appliedCoupon ? (
+                    <div className="flex-1 flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-4 py-2">
+                      <div className="flex items-center gap-2">
+                        <Ticket className="h-4 w-4 text-green-600" />
+                        <span className="text-green-700 font-medium">{appliedCoupon.code}</span>
+                        <span className="text-green-600 text-sm">(-{formatCurrency(appliedCoupon.discount)})</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-red-500 hover:text-red-600 hover:bg-red-50"
+                        onClick={() => {
+                          setAppliedCoupon(null);
+                          setCouponCode("");
+                          toast.success("Cupom removido");
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Input
+                        placeholder="Código do cupom"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                        className="flex-1 rounded-xl"
+                      />
+                      <Button
+                        variant="outline"
+                        className="px-6 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                        onClick={() => {
+                          if (!couponCode.trim()) {
+                            toast.error("Digite o código do cupom");
+                            return;
+                          }
+                          // TODO: Validar cupom no backend
+                          // Por enquanto, simula aplicação do cupom
+                          toast.success(`Cupom ${couponCode} aplicado!`);
+                          setAppliedCoupon({ code: couponCode, discount: 5 });
+                        }}
+                        disabled={!couponCode.trim()}
+                      >
+                        Aplicar
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
