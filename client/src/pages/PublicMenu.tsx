@@ -201,6 +201,8 @@ export default function PublicMenu() {
   const [isLoyaltyLoggedIn, setIsLoyaltyLoggedIn] = useState(false);
   const [showCouponAppliedModal, setShowCouponAppliedModal] = useState(false);
   const [appliedCouponInfo, setAppliedCouponInfo] = useState<{ code: string; type: string; value: number } | null>(null);
+  const [showCategoriesModal, setShowCategoriesModal] = useState(false);
+  const [categorySearch, setCategorySearch] = useState("");
   
   const userOrdersRef = useRef<typeof userOrders>([]);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
@@ -1872,7 +1874,10 @@ export default function PublicMenu() {
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center gap-2">
               {/* Menu Icon */}
-              <button className="p-2 text-gray-500 hover:text-gray-700 flex-shrink-0">
+              <button 
+                className="p-2 text-gray-500 hover:text-gray-700 flex-shrink-0"
+                onClick={() => setShowCategoriesModal(true)}
+              >
                 <Menu className="h-5 w-5" />
               </button>
 
@@ -5723,6 +5728,131 @@ export default function PublicMenu() {
               >
                 Fechar
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Categorias - Bottom Sheet no mobile, Modal centralizado no desktop */}
+      {showCategoriesModal && (
+        <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => {
+              setShowCategoriesModal(false);
+              setCategorySearch("");
+            }}
+          />
+          
+          {/* Modal Content - Bottom Sheet no mobile (80% da tela), Modal centralizado no desktop */}
+          <div 
+            className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 overflow-hidden animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300"
+            style={{ 
+              height: 'min(80vh, 600px)',
+              maxHeight: '80vh',
+              touchAction: 'pan-y' 
+            }}
+          >
+            {/* Header */}
+            <div className="sticky top-0 z-[50] bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl shadow-sm" style={{height: '68px'}}>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-100 rounded-xl">
+                  <Menu className="h-5 w-5 text-red-500" />
+                </div>
+                <h2 className="text-lg font-bold text-gray-900">Categorias</h2>
+              </div>
+              <button 
+                onClick={() => {
+                  setShowCategoriesModal(false);
+                  setCategorySearch("");
+                }}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Campo de Busca */}
+            <div className="px-4 py-3 bg-white border-b border-gray-100">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Buscar categoria..."
+                  value={categorySearch}
+                  onChange={(e) => setCategorySearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-100 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+                {categorySearch && (
+                  <button
+                    onClick={() => setCategorySearch("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded-full"
+                  >
+                    <X className="h-3 w-3 text-gray-500" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Lista de Categorias */}
+            <div 
+              className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-2" 
+              style={{ 
+                backgroundColor: '#ffffff',
+                maxHeight: 'calc(80vh - 68px - 60px)',
+                WebkitOverflowScrolling: 'touch'
+              }}
+            >
+              {(() => {
+                const filteredCategories = categories.filter(cat =>
+                  cat.name.toLowerCase().includes(categorySearch.toLowerCase())
+                );
+                
+                if (filteredCategories.length === 0) {
+                  return (
+                    <div className="text-center py-8">
+                      <Search className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                      <p className="text-gray-500 font-medium">Nenhuma categoria encontrada</p>
+                      <p className="text-gray-400 text-sm mt-1">Tente buscar por outro nome</p>
+                    </div>
+                  );
+                }
+                
+                return filteredCategories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => {
+                      scrollToCategory(category.id);
+                      setShowCategoriesModal(false);
+                      setCategorySearch("");
+                    }}
+                    className={cn(
+                      "w-full px-4 py-3.5 text-left rounded-xl flex items-center justify-between transition-all border",
+                      activeCategory === category.id
+                        ? "bg-red-50 border-red-300 shadow-sm"
+                        : "bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "w-2 h-2 rounded-full",
+                        activeCategory === category.id ? "bg-red-500" : "bg-gray-300"
+                      )} />
+                      <span className={cn(
+                        "font-medium",
+                        activeCategory === category.id ? "text-red-600" : "text-gray-700"
+                      )}>
+                        {category.name}
+                      </span>
+                    </div>
+                    <ChevronRight className={cn(
+                      "h-4 w-4",
+                      activeCategory === category.id ? "text-red-400" : "text-gray-400"
+                    )} />
+                  </button>
+                ));
+              })()}
             </div>
           </div>
         </div>

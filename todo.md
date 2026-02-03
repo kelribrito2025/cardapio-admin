@@ -4538,3 +4538,9 @@
 
 ## Exibir Desconto no Resumo do PDV
 - [x] Adicionar linha de desconto entre Subtotal e Total quando cupom aplicado
+
+## Modal de Categorias no Menu Público
+- [x] Mobile: Bottom Sheet subindo da parte inferior (80% da tela)
+- [x] Desktop: Modal centralizado padrão
+- [x] Campo de busca para filtrar categorias em ambos
+- [x] Lista de todas as categorias navegáveis
