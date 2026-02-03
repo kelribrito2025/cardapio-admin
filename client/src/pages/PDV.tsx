@@ -417,7 +417,7 @@ export default function PDV() {
                   )}
                 >
                   <UtensilsCrossed className="h-5 w-5" />
-                  Mesa
+                  Consumo
                 </button>
                 <button
                   onClick={() => setOrderType("retirada")}
