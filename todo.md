@@ -4389,3 +4389,6 @@
 ## Corrigir Barra Lateral Secundária Fixa
 - [x] Fixar a barra de menu secundária para não rolar junto com a página
 - [x] Apenas o conteúdo à direita deve ter scroll
+
+## Borda Vermelha no Menu Secundário
+- [x] Adicionar borda vermelha no lado direito do item ativo na barra de menu secundária
