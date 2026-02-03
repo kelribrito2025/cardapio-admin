@@ -307,27 +307,39 @@ export default function PDV() {
       return;
     }
 
-    // Restaurar os complementos selecionados do item
-    const complementsMap = new Map<number, Map<number, number>>();
-    item.complements.forEach(comp => {
-      // Precisamos encontrar o groupId do complemento
-      // Por enquanto, vamos usar o id do complemento como chave temporária
-      // O modal vai buscar os complementos do produto e podemos mapear
-      const groupMap = new Map<number, number>();
-      groupMap.set(comp.id, comp.quantity);
-      // Usamos um groupId temporário baseado no id do complemento
-      // Isso será atualizado quando os complementos forem carregados
-      complementsMap.set(comp.id, groupMap);
-    });
-
+    // Primeiro, abrir o modal com o produto selecionado
+    // Os complementos serão restaurados pelo useEffect quando productComplements carregar
     setSelectedProduct(product);
     setProductQuantity(item.quantity);
     setProductObservation(item.observation);
-    setSelectedComplements(complementsMap);
+    setSelectedComplements(new Map()); // Será preenchido pelo useEffect
     setSelectedComplementImage(null);
     setIsEditingMode(true);
     setEditingCartItem({ index, item });
   };
+
+  // useEffect para restaurar complementos quando editando um item do carrinho
+  useEffect(() => {
+    if (isEditingMode && editingCartItem && productComplements && productComplements.length > 0) {
+      const complementsMap = new Map<number, Map<number, number>>();
+      
+      // Para cada complemento salvo no item do carrinho
+      editingCartItem.item.complements.forEach(savedComp => {
+        // Encontrar o grupo que contém esse complemento
+        productComplements.forEach(group => {
+          const foundItem = group.items.find(item => item.id === savedComp.id);
+          if (foundItem) {
+            // Adicionar ao mapa usando o groupId correto
+            const currentGroupMap = complementsMap.get(group.id) || new Map<number, number>();
+            currentGroupMap.set(savedComp.id, savedComp.quantity);
+            complementsMap.set(group.id, currentGroupMap);
+          }
+        });
+      });
+      
+      setSelectedComplements(complementsMap);
+    }
+  }, [isEditingMode, editingCartItem, productComplements]);
 
   return (
     <AdminLayout>

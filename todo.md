@@ -4429,3 +4429,7 @@
 - [x] Modal de edição deve mostrar os complementos já selecionados
 - [x] Reutilizar o modal de detalhes do produto para edição
 - [x] Remover modal de edição separado
+
+## Correção: Restaurar Complementos ao Editar Item no PDV
+- [x] Corrigir mapeamento de complementos salvos para grupos de complementos do produto
+- [x] Garantir que complementos já selecionados apareçam marcados no modal ao editar
