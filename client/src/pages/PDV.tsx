@@ -245,8 +245,8 @@ export default function PDV() {
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Barra de Categorias */}
             <div className="px-4 py-2 border-b border-border/50 bg-muted/20">
-              <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
-                {/* Botão de Menu de Categorias */}
+              <div className="flex items-center gap-2 overflow-hidden">
+                {/* Botão de Menu de Categorias - Início */}
                 <button
                   onClick={() => setShowCategoriesModal(true)}
                   className="flex items-center justify-center w-10 h-10 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0"
@@ -304,6 +304,14 @@ export default function PDV() {
                     );
                   })
                 )}
+                {/* Botão de Menu de Categorias - Final */}
+                <button
+                  onClick={() => setShowCategoriesModal(true)}
+                  className="flex items-center justify-center w-10 h-10 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0 ml-auto"
+                  title="Ver todas as categorias"
+                >
+                  <Menu className="h-5 w-5" />
+                </button>
               </div>
             </div>
 

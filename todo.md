@@ -4322,3 +4322,7 @@
 ## Botão Adicionar responsivo nos cards do PDV
 - [x] Quando espaço for limitado, mostrar apenas ícone + sem texto "Adicionar"
 - [x] Mostrar texto "Adicionar" em telas maiores (2-3 cards) e apenas ícone + em 4+ cards por linha
+
+## Melhorias na barra de categorias do PDV
+- [x] Remover barra de rolagem horizontal das categorias
+- [x] Adicionar ícone de menu no final da lista para ver mais categorias
