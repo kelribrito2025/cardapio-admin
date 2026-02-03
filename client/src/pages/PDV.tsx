@@ -197,6 +197,8 @@ export default function PDV() {
   
   // Estados para entrega
   const [deliveryAddress, setDeliveryAddress] = useState({
+    name: "",
+    phone: "",
     street: "",
     number: "",
     neighborhood: "",
@@ -388,6 +390,8 @@ export default function PDV() {
     setTableNumber("");
     setPaymentMethod(null);
     setDeliveryAddress({
+      name: "",
+      phone: "",
       street: "",
       number: "",
       neighborhood: "",
@@ -1724,6 +1728,38 @@ export default function PDV() {
             ) : (
               // Formulário completo de entrega (após selecionar bairro ou quando não é por bairro)
               <>
+            {/* Seção de Dados do Cliente */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <h3 className="font-semibold">Dados do Cliente</h3>
+              </div>
+              
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Nome *</label>
+                  <Input
+                    placeholder="Nome do cliente"
+                    value={deliveryAddress.name}
+                    onChange={(e) => setDeliveryAddress({...deliveryAddress, name: e.target.value})}
+                    className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Telefone *</label>
+                  <Input
+                    placeholder="(00) 00000-0000"
+                    value={deliveryAddress.phone}
+                    onChange={(e) => setDeliveryAddress({...deliveryAddress, phone: e.target.value})}
+                    className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Divisor */}
+            <div className="border-t border-gray-200" />
+
             {/* Seção de Endereço */}
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-gray-700">

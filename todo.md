@@ -4550,3 +4550,7 @@
 - [x] Exibir texto "Troco a devolver: R$ XX,XX" destacado e calculado automaticamente
 - [x] Substituir botão Cancelar por botão Continuar
 - [x] Ao clicar em Continuar, confirmar pagamento e fechar modal
+
+## Campos Nome e Telefone na Sidebar de Entrega
+- [x] Adicionar campo Nome acima do Endereço de Entrega
+- [x] Adicionar campo Telefone abaixo do Nome
