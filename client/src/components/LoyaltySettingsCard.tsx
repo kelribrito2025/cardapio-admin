@@ -62,7 +62,7 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
           <Gift className="h-6 w-6 text-emerald-600" />
         </div>
         <div className="flex-1">
-          <h3 className="font-semibold text-lg">Cartão Fidelidade</h3>
+          <h3 className="font-semibold text-lg">Programa de fidelidade</h3>
           <p className="text-sm text-muted-foreground">
             Configure o programa de fidelidade do seu restaurante
           </p>
