@@ -4470,3 +4470,23 @@
 ## Bug - Botão Adicionar no PDV abrindo modal (CORRIGIDO)
 - [x] Corrigir botão Adicionar para adicionar item direto ao carrinho sem abrir modal
 - [x] Modal de detalhes só deve abrir ao clicar no card do item
+
+## Correção Modal de Detalhes do Item no PDV
+- [ ] Corrigir modal para seguir exatamente o layout do menu público
+- [ ] Foto grande no topo com botão X
+- [ ] Nome, descrição e preço em vermelho
+- [ ] Grupos de complementos com botão + vermelho circular
+- [ ] Controle de quantidade (-/+) e botão "Adicionar" no rodapé
+
+## Comparação Modal PDV vs Menu Público
+- [ ] Comparar layout, ícones, alturas e larguras dos modais
+- [ ] Ajustar modal do PDV para ficar idêntico ao menu público
+
+## Comparação Modal PDV vs Menu Público
+- [x] Comparar layout, ícones, alturas e larguras dos modais
+- [x] Ajustar modal do PDV para ficar idêntico ao menu público
+- [x] Placeholder sem imagem ajustado (h-[180px] sm:h-48 md:h-56)
+- [x] Área de conteúdo com overscroll-contain e padding responsivo
+- [x] Ordem título/preço/descrição corrigida
+- [x] Campo de observações com rounded-xl
+- [x] Footer com controles rounded-xl

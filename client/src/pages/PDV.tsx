@@ -1049,8 +1049,8 @@ export default function PDV() {
               
               // Se não tem imagem, mostrar placeholder
               return (
-                <div className="relative w-full h-[215px] sm:h-60 md:h-72 flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
-                  <UtensilsCrossed className="h-20 w-20 text-white/50" />
+                <div className="relative w-full h-[180px] sm:h-48 md:h-56 flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                  <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80 animate-placeholder-pulse" />
                   <button 
                     onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
                     className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
@@ -1062,139 +1062,202 @@ export default function PDV() {
             })()}
             
             {/* Conteúdo */}
-            <div className="flex-1 overflow-y-auto">
-              <div className="p-4 space-y-4">
-                {/* Nome e Descrição */}
+            <div className="flex-1 overflow-y-auto overscroll-contain">
+              <div className="p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
+                {/* Título e Preço */}
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h2>
-                  {selectedProduct.description && (
-                    <p className="text-sm text-gray-600 mt-1">{selectedProduct.description}</p>
+                  <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
+                  {Number(selectedProduct.price) > 0 && (
+                    <p className="text-lg font-semibold text-red-500 mt-1">
+                      {formatCurrency(parseFloat(selectedProduct.price))}
+                    </p>
                   )}
-                  <p className="text-lg font-bold text-red-600 mt-2">
-                    {formatCurrency(parseFloat(selectedProduct.price))}
-                  </p>
                 </div>
 
-                {/* Complementos */}
+                {/* Descrição */}
+                {selectedProduct.description && (
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {selectedProduct.description}
+                  </p>
+                )}
+
+                {/* Grupos de Complementos - Estilo Menu Público */}
                 {productComplements && productComplements.length > 0 && (
                   <div className="space-y-4">
-                    {productComplements.map((group) => (
-                      <div key={group.id} className="border-t pt-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <div>
-                            <h3 className="font-semibold text-gray-900">{group.name}</h3>
-                            <p className="text-xs text-gray-500">
-                              {group.isRequired ? "Obrigatório" : "Opcional"} • 
-                              {group.minQuantity > 0 && ` Mín: ${group.minQuantity}`}
-                              {group.maxQuantity > 0 && ` Máx: ${group.maxQuantity}`}
+                    {productComplements.map((group) => {
+                      const selectedInGroup = selectedComplements.get(group.id) || new Map<number, number>();
+                      const isRadio = group.maxQuantity === 1;
+                      
+                      return (
+                        <div key={group.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                          {/* Header do Grupo */}
+                          <div className="bg-gray-50 px-4 py-3 border-b border-gray-200" style={{paddingTop: '8px', height: '58px'}}>
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-semibold text-gray-900">{group.name}</h4>
+                              {group.isRequired && (
+                                <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
+                                  Obrigatório
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500 mt-0.5">
+                              {group.minQuantity > 0 ? `Mín: ${group.minQuantity}` : ''}
+                              {group.minQuantity > 0 && group.maxQuantity > 1 ? ' | ' : ''}
+                              {group.maxQuantity > 1 ? `Máx: ${group.maxQuantity}` : ''}
+                              {group.maxQuantity === 1 && group.minQuantity === 0 ? 'Escolha até 1' : ''}
                             </p>
                           </div>
-                          {group.isRequired && (
-                            <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">
-                              Obrigatório
-                            </span>
-                          )}
-                        </div>
-                        <div className="space-y-2">
-                          {group.items.map((item) => {
-                            const groupSelections = selectedComplements.get(group.id) || new Map();
-                            const itemQuantity = groupSelections.get(item.id) || 0;
-                            const totalGroupQuantity = Array.from(groupSelections.values()).reduce((sum, q) => sum + q, 0);
-                            const canAddMore = group.maxQuantity === 0 || totalGroupQuantity < group.maxQuantity;
-                            
-                            return (
-                              <div 
-                                key={item.id} 
-                                className={cn(
-                                  "flex items-center justify-between p-3 rounded-lg border transition-all",
-                                  itemQuantity > 0 ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
-                                )}
-                              >
-                                <div 
-                                  className="flex items-center gap-3 flex-1 cursor-pointer"
-                                  onClick={() => {
-                                    if (item.imageUrl) {
-                                      setSelectedComplementImage(item.imageUrl);
+                          
+                          {/* Itens do Grupo */}
+                          <div className="divide-y divide-gray-100">
+                            {group.items.map((item) => {
+                              const itemQuantity = selectedInGroup.get(item.id) || 0;
+                              const isSelected = itemQuantity > 0;
+                              const itemImageUrl = item.imageUrl;
+                              const displayPrice = Number(item.price);
+                              
+                              // Função para adicionar/incrementar complemento
+                              const handleIncrement = (e: React.MouseEvent) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setSelectedComplements((prev) => {
+                                  const newMap = new Map(prev);
+                                  const currentGroupMap = new Map(prev.get(group.id) || []);
+                                  const currentQty = currentGroupMap.get(item.id) || 0;
+                                  
+                                  // Verificar limite do grupo
+                                  const totalInGroup = Array.from(currentGroupMap.values()).reduce((a, b) => a + b, 0);
+                                  if (group.maxQuantity === 0 || totalInGroup < group.maxQuantity) {
+                                    currentGroupMap.set(item.id, currentQty + 1);
+                                    newMap.set(group.id, currentGroupMap);
+                                    if (itemImageUrl) setSelectedComplementImage(itemImageUrl);
+                                  }
+                                  return newMap;
+                                });
+                              };
+                              
+                              // Função para decrementar/remover complemento
+                              const handleDecrement = (e: React.MouseEvent) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setSelectedComplements((prev) => {
+                                  const newMap = new Map(prev);
+                                  const currentGroupMap = new Map(prev.get(group.id) || []);
+                                  const currentQty = currentGroupMap.get(item.id) || 0;
+                                  
+                                  if (currentQty > 1) {
+                                    currentGroupMap.set(item.id, currentQty - 1);
+                                  } else {
+                                    currentGroupMap.delete(item.id);
+                                    if (itemImageUrl && selectedComplementImage === itemImageUrl) {
+                                      setSelectedComplementImage(null);
                                     }
-                                  }}
+                                  }
+                                  newMap.set(group.id, currentGroupMap);
+                                  return newMap;
+                                });
+                              };
+                              
+                              // Função para toggle (checkbox/radio)
+                              const handleToggle = () => {
+                                setSelectedComplements((prev) => {
+                                  const newMap = new Map(prev);
+                                  const currentGroupMap = new Map(prev.get(group.id) || []);
+                                  
+                                  if (isRadio) {
+                                    // Radio: substitui a seleção com quantidade 1
+                                    const newGroupMap = new Map<number, number>();
+                                    newGroupMap.set(item.id, 1);
+                                    newMap.set(group.id, newGroupMap);
+                                    if (itemImageUrl) {
+                                      setSelectedComplementImage(itemImageUrl);
+                                    } else {
+                                      setSelectedComplementImage(null);
+                                    }
+                                  } else {
+                                    // Checkbox: toggle
+                                    if (isSelected) {
+                                      currentGroupMap.delete(item.id);
+                                      if (itemImageUrl && selectedComplementImage === itemImageUrl) {
+                                        setSelectedComplementImage(null);
+                                      }
+                                    } else {
+                                      const totalInGroup = Array.from(currentGroupMap.values()).reduce((a, b) => a + b, 0);
+                                      if (group.maxQuantity === 0 || totalInGroup < group.maxQuantity) {
+                                        currentGroupMap.set(item.id, 1);
+                                        if (itemImageUrl) {
+                                          setSelectedComplementImage(itemImageUrl);
+                                        }
+                                      }
+                                    }
+                                    newMap.set(group.id, currentGroupMap);
+                                  }
+                                  return newMap;
+                                });
+                              };
+                              
+                              return (
+                                <div
+                                  key={item.id}
+                                  className={`flex items-center justify-between px-4 py-3 transition-colors ${
+                                    isSelected ? 'bg-red-50' : 'hover:bg-gray-50'
+                                  }`}
                                 >
-                                  {item.imageUrl && (
-                                    <div className="relative">
-                                      <img 
-                                        src={item.imageUrl} 
-                                        alt={item.name} 
-                                        className="w-12 h-12 rounded-lg object-cover"
-                                      />
-                                      <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg opacity-0 hover:opacity-100 transition-opacity">
-                                        <Eye className="h-4 w-4 text-white" />
+                                  <label className="flex items-center gap-3 cursor-pointer flex-1">
+                                    <input
+                                      type={isRadio ? 'radio' : 'checkbox'}
+                                      name={`group-${group.id}`}
+                                      checked={isSelected}
+                                      onChange={handleToggle}
+                                      className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500"
+                                    />
+                                    <span className="text-sm text-gray-900">{item.name}</span>
+                                  </label>
+                                  
+                                  <div className="flex items-center gap-3">
+                                    {/* Controles de quantidade - aparecem quando selecionado */}
+                                    {isSelected && !isRadio && (
+                                      <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1">
+                                        <button
+                                          type="button"
+                                          onClick={handleDecrement}
+                                          className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
+                                        >
+                                          <Minus className="w-4 h-4" />
+                                        </button>
+                                        <span className="w-6 text-center text-sm font-medium text-gray-900">{itemQuantity}</span>
+                                        <button
+                                          type="button"
+                                          onClick={handleIncrement}
+                                          className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
+                                        >
+                                          <Plus className="w-4 h-4" />
+                                        </button>
                                       </div>
-                                    </div>
-                                  )}
-                                  <div>
-                                    <p className="font-medium text-gray-900 text-sm">{item.name}</p>
-                                    {parseFloat(item.price) > 0 && (
-                                      <p className="text-xs text-gray-500">+ {formatCurrency(parseFloat(item.price))}</p>
+                                    )}
+                                    
+                                    {/* Preço */}
+                                    {displayPrice > 0 && (
+                                      <span className="text-sm text-gray-600 min-w-[70px] text-right">
+                                        {isSelected && itemQuantity > 1 
+                                          ? `+ ${formatCurrency(displayPrice * itemQuantity)}` 
+                                          : `+ ${formatCurrency(displayPrice)}`
+                                        }
+                                      </span>
                                     )}
                                   </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  {itemQuantity > 0 && (
-                                    <button
-                                      onClick={() => {
-                                        const newMap = new Map(selectedComplements);
-                                        const groupMap = new Map(newMap.get(group.id) || new Map());
-                                        const newQty = itemQuantity - 1;
-                                        if (newQty <= 0) {
-                                          groupMap.delete(item.id);
-                                        } else {
-                                          groupMap.set(item.id, newQty);
-                                        }
-                                        if (groupMap.size === 0) {
-                                          newMap.delete(group.id);
-                                        } else {
-                                          newMap.set(group.id, groupMap);
-                                        }
-                                        setSelectedComplements(newMap);
-                                      }}
-                                      className="w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
-                                    >
-                                      <Minus className="h-4 w-4" />
-                                    </button>
-                                  )}
-                                  {itemQuantity > 0 && (
-                                    <span className="w-6 text-center font-semibold text-sm">{itemQuantity}</span>
-                                  )}
-                                  <button
-                                    onClick={() => {
-                                      if (!canAddMore) return;
-                                      const newMap = new Map(selectedComplements);
-                                      const groupMap = new Map(newMap.get(group.id) || new Map());
-                                      groupMap.set(item.id, itemQuantity + 1);
-                                      newMap.set(group.id, groupMap);
-                                      setSelectedComplements(newMap);
-                                    }}
-                                    disabled={!canAddMore}
-                                    className={cn(
-                                      "w-7 h-7 rounded-full flex items-center justify-center transition-colors",
-                                      canAddMore 
-                                        ? "bg-red-500 text-white hover:bg-red-600" 
-                                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                                    )}
-                                  >
-                                    <Plus className="h-4 w-4" />
-                                  </button>
-                                </div>
-                              </div>
-                            );
-                          })}
+                              );
+                            })}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
 
-                {/* Observações */}
-                <div className="border-t pt-4">
+                {/* Campo de Observação */}
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Observações
                   </label>
@@ -1202,29 +1265,34 @@ export default function PDV() {
                     value={productObservation}
                     onChange={(e) => setProductObservation(e.target.value)}
                     placeholder="Ex: Sem cebola, bem passado..."
-                    className="w-full p-3 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                     rows={2}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Footer - Quantidade e Adicionar */}
-            <div className="border-t p-4 bg-white flex items-center gap-4">
+            {/* Footer com Quantidade e Botão Adicionar */}
+            <div className="border-t bg-white p-3 sm:p-4 flex items-center gap-3 sm:gap-4 flex-shrink-0">
               {/* Controle de Quantidade */}
-              <div className="flex items-center gap-3 bg-gray-100 rounded-full px-2 py-1">
+              <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-2 py-1">
                 <button
+                  type="button"
                   onClick={() => setProductQuantity(Math.max(1, productQuantity - 1))}
-                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+                  className="p-2 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
+                  disabled={productQuantity <= 1}
                 >
-                  <Minus className="h-4 w-4" />
+                  <Minus className="h-4 w-4 text-gray-700" />
                 </button>
-                <span className="w-8 text-center font-semibold">{productQuantity}</span>
+                <span className="text-lg font-semibold text-gray-900 min-w-[24px] text-center">
+                  {productQuantity}
+                </span>
                 <button
+                  type="button"
                   onClick={() => setProductQuantity(productQuantity + 1)}
-                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+                  className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-4 w-4 text-gray-700" />
                 </button>
               </div>
 
@@ -1299,12 +1367,11 @@ export default function PDV() {
                       setEditingCartItem(null);
                     }}
                     disabled={!requiredGroupsFilled}
-                    className={cn(
-                      "flex-1 py-3 rounded-full font-semibold text-white flex items-center justify-center gap-2 transition-colors",
+                    className={`flex-1 font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 ${
                       requiredGroupsFilled 
-                        ? "bg-red-500 hover:bg-red-600" 
-                        : "bg-gray-300 cursor-not-allowed"
-                    )}
+                        ? 'bg-red-500 hover:bg-red-600 text-white' 
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
                   >
                     {isEditingMode ? (
                       <>
