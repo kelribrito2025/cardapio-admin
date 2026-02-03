@@ -214,7 +214,8 @@ export default function PDV() {
   // Estados para cupom
   const [showCouponField, setShowCouponField] = useState(false);
   const [couponCode, setCouponCode] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState<{code: string; discount: number} | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{code: string; discount: number; couponId: number} | null>(null);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
 
   // Query para buscar taxas por bairro
   const { data: neighborhoodFees } = trpc.neighborhoodFees.list.useQuery(
@@ -466,7 +467,8 @@ export default function PDV() {
     const deliveryFee = orderType === "entrega" && selectedNeighborhoodFee 
       ? parseFloat(selectedNeighborhoodFee.fee) 
       : 0;
-    const total = subtotal + deliveryFee;
+    const discount = appliedCoupon?.discount || 0;
+    const total = subtotal + deliveryFee - discount;
 
     // Mapear tipo de pedido para deliveryType
     const deliveryTypeMap: Record<OrderType, "delivery" | "pickup" | "dine_in"> = {
@@ -496,7 +498,10 @@ export default function PDV() {
       paymentMethod: paymentMethod || "cash",
       subtotal: subtotal.toFixed(2),
       deliveryFee: deliveryFee.toFixed(2),
-      total: total.toFixed(2),
+      discount: discount.toFixed(2),
+      couponCode: appliedCoupon?.code || undefined,
+      couponId: appliedCoupon?.couponId || undefined,
+      total: Math.max(0, total).toFixed(2),
       notes: orderType === "mesa" ? `Mesa: ${tableNumber}` : undefined,
       status: "preparing", // Pedidos do PDV já vão direto para preparação
       source: "pdv",
@@ -1124,19 +1129,54 @@ export default function PDV() {
                       <Button
                         variant="outline"
                         className="px-6 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                        onClick={() => {
+                        onClick={async () => {
                           if (!couponCode.trim()) {
                             toast.error("Digite o código do cupom");
                             return;
                           }
-                          // TODO: Validar cupom no backend
-                          // Por enquanto, simula aplicação do cupom
-                          toast.success(`Cupom ${couponCode} aplicado!`);
-                          setAppliedCoupon({ code: couponCode, discount: 5 });
+                          if (!establishmentId) {
+                            toast.error("Estabelecimento não encontrado");
+                            return;
+                          }
+                          
+                          setIsValidatingCoupon(true);
+                          try {
+                            // Determinar o tipo de entrega para validação
+                            const deliveryTypeMap: Record<OrderType, "delivery" | "pickup" | "self_service"> = {
+                              mesa: "self_service",
+                              retirada: "pickup",
+                              entrega: "delivery"
+                            };
+                            
+                            const response = await fetch(`/api/trpc/coupon.validate?input=${encodeURIComponent(JSON.stringify({
+                              establishmentId,
+                              code: couponCode.toUpperCase(),
+                              orderValue: calculateTotal(),
+                              deliveryType: deliveryTypeMap[orderType]
+                            }))}`).then(res => res.json());
+                            
+                            const result = response.result?.data;
+                            
+                            if (result?.valid && result?.coupon) {
+                              toast.success(`Cupom ${couponCode} aplicado!`);
+                              setAppliedCoupon({ 
+                                code: couponCode.toUpperCase(), 
+                                discount: result.discount,
+                                couponId: result.coupon.id
+                              });
+                            } else {
+                              toast.error(result?.error || "Cupom inválido");
+                            }
+                          } catch (error) {
+                            console.error("Erro ao validar cupom:", error);
+                            toast.error("Erro ao validar cupom");
+                          } finally {
+                            setIsValidatingCoupon(false);
+                          }
                         }}
-                        disabled={!couponCode.trim()}
+                        disabled={!couponCode.trim() || isValidatingCoupon}
                       >
-                        Aplicar
+                        {isValidatingCoupon ? "Validando..." : "Aplicar"}
                       </Button>
                     </>
                   )}

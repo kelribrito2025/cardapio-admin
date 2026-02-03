@@ -776,6 +776,9 @@ export const appRouter = router({
         paymentMethod: z.enum(["cash", "card", "pix", "boleto"]).default("cash"),
         subtotal: z.string(),
         deliveryFee: z.string().default("0"),
+        discount: z.string().optional(),
+        couponCode: z.string().optional(),
+        couponId: z.number().optional(),
         total: z.string(),
         notes: z.string().optional(),
         status: z.enum(["pending_confirmation", "new", "preparing", "ready", "completed", "cancelled"]).optional(),
@@ -795,11 +798,17 @@ export const appRouter = router({
         })),
       }))
       .mutation(async ({ input }) => {
-        const { items, ...orderData } = input;
+        const { items, couponId, ...orderData } = input;
         const result = await db.createOrderWithNumber(orderData, items.map(item => ({
           ...item,
           orderId: 0, // Will be set in db function
         })));
+        
+        // Incrementar uso do cupom se foi aplicado
+        if (couponId && result) {
+          await db.incrementCouponUsage(couponId);
+        }
+        
         return result;
       }),
   }),
