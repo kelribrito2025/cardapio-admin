@@ -4345,3 +4345,6 @@
 
 ## Setinha de categorias condicional
 - [x] Mostrar setinha apenas quando houver overflow na lista de categorias
+
+## Filtrar categorias pausadas no PDV
+- [x] Exibir apenas categorias ativas (isActive = true) no PDV

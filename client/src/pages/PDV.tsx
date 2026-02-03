@@ -117,8 +117,8 @@ export default function PDV() {
     return true;
   }) || [];
 
-  // Ordenar categorias
-  const sortedCategories = categories?.slice().sort((a, b) => a.sortOrder - b.sortOrder) || [];
+  // Ordenar categorias (apenas ativas)
+  const sortedCategories = categories?.filter(c => c.isActive).slice().sort((a, b) => a.sortOrder - b.sortOrder) || [];
 
   // Verificar se produto tem complementos
   const hasComplements = (productId: number) => {
