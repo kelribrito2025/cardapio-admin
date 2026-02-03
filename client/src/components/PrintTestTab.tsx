@@ -208,13 +208,35 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       qrCodeUrl,
     });
     
-    // Abrir o recibo de teste em nova janela
+    // Usar iframe oculto para imprimir sem abrir nova aba
     const testUrl = `${window.location.origin}/api/print/test/${establishmentId}`;
-    const printWindow = window.open(testUrl, '_blank');
-    if (!printWindow) {
-      toast.error("Não foi possível abrir a janela de impressão. Verifique se popups estão permitidos.");
-      return;
+    
+    // Remover iframe anterior se existir
+    const existingIframe = document.getElementById('print-test-iframe');
+    if (existingIframe) {
+      existingIframe.remove();
     }
+    
+    // Criar iframe oculto
+    const iframe = document.createElement('iframe');
+    iframe.id = 'print-test-iframe';
+    iframe.style.position = 'absolute';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+    iframe.style.visibility = 'hidden';
+    iframe.src = testUrl;
+    
+    iframe.onload = () => {
+      try {
+        iframe.contentWindow?.print();
+      } catch (e) {
+        console.error('Erro ao imprimir:', e);
+        toast.error("Erro ao imprimir. Tente novamente.");
+      }
+    };
+    
+    document.body.appendChild(iframe);
   };
 
   const handleTestThermalPrint = async () => {
@@ -1126,7 +1148,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Button onClick={handleTestPrint} variant="outline">
                   <Printer className="h-4 w-4 mr-2" />
-                  Teste Normal (Nova Aba)
+                  Teste Normal
                 </Button>
                 <Button onClick={handleTestThermalPrint}>
                   <Smartphone className="h-4 w-4 mr-2" />

@@ -4636,3 +4636,6 @@
 
 ## Sidebar - Minimizar ao Clicar em Pedidos
 - [x] Minimizar sidebar automaticamente ao clicar no menu Pedidos (igual ao PDV)
+
+## Configurações - Impressão de Teste
+- [x] Corrigir botão Teste Normal para não abrir nova aba ao imprimir
