@@ -4448,3 +4448,5 @@
 - [x] Exibir tipo de pedido (Consumo, Retirada, Entrega) no card de Pedido Atual
 - [x] Mostrar taxa de entrega quando aplicável no card de Pedido Atual
 - [x] Adicionar ícone de cupom ao lado esquerdo do botão de cupom no card de Pedido Atual
+
+- [x] Modificar botão de cupom para ser apenas um ícone ao lado esquerdo do botão Limpar

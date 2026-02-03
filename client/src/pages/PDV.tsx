@@ -779,18 +779,16 @@ export default function PDV() {
                 </div>
               </div>
 
-              {/* Botão de Cupom */}
-              <button className="w-full flex items-center gap-3 p-3 rounded-lg border border-dashed border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors">
-                <Ticket className="h-5 w-5 text-gray-400" />
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-medium text-gray-700">Tem um cupom?</p>
-                  <p className="text-xs text-gray-500">Clique e insira o código</p>
-                </div>
-                <ChevronRight className="h-4 w-4 text-gray-400" />
-              </button>
-
               {/* Botões de Ação */}
               <div className="flex gap-2">
+                {/* Botão de Cupom */}
+                <Button
+                  variant="outline"
+                  className="px-3"
+                  title="Adicionar cupom"
+                >
+                  <Ticket className="h-5 w-5 text-gray-500" />
+                </Button>
                 <Button
                   variant="outline"
                   className="flex-1"
