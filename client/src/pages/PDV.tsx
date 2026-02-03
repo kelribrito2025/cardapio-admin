@@ -97,12 +97,33 @@ export default function PDV() {
     { enabled: !!establishmentId && establishmentId > 0 }
   );
 
-  // Função para imprimir pedido (Impressão Normal)
+  // Função para imprimir pedido (Impressão Normal) - usa iframe oculto para não abrir nova aba
   const handlePrintOrderDirect = async (orderId: number) => {
     try {
-      // Abrir o recibo em uma nova aba - funciona em celular e desktop
       const receiptUrl = `${window.location.origin}/api/print/receipt/${orderId}`;
-      window.open(receiptUrl, '_blank');
+      
+      // Criar iframe oculto para impressão
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.right = '0';
+      iframe.style.bottom = '0';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = 'none';
+      iframe.src = receiptUrl;
+      
+      document.body.appendChild(iframe);
+      
+      // Aguardar o iframe carregar e chamar print
+      iframe.onload = () => {
+        setTimeout(() => {
+          iframe.contentWindow?.print();
+          // Remover iframe após impressão (com delay para garantir que o diálogo de impressão abriu)
+          setTimeout(() => {
+            document.body.removeChild(iframe);
+          }, 1000);
+        }, 500);
+      };
     } catch (error) {
       console.error("Erro ao imprimir pedido:", error);
     }

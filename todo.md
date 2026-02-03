@@ -4508,3 +4508,8 @@
 - [x] Analisar código de impressão existente na página de Pedidos
 - [x] Implementar impressão automática após finalizar pedido no PDV
 - [x] Usar opção de impressão configurada como favorita
+
+## Melhoria Impressão Normal
+- [x] Alterar impressão normal para usar iframe oculto com window.print()
+- [x] Evitar abertura de nova aba ao imprimir
+- [x] Aplicado tanto no PDV quanto na página de Pedidos
