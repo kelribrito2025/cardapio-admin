@@ -4331,3 +4331,8 @@
 - [x] Fixar ícone na borda direita, fora do overflow
 - [x] Adicionar gradiente/fade antes do ícone para indicar mais categorias
 - [x] Garantir que o botão esteja sempre visível e clicável
+
+## Drag horizontal na barra de categorias do PDV
+- [x] Permitir arrastar com mouse para navegar entre categorias
+- [x] Cursor muda para grab/grabbing durante arrasto
+- [x] Sem scrollbar visível

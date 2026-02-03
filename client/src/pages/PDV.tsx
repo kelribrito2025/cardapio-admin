@@ -1,6 +1,6 @@
 import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/lib/trpc";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { 
   UtensilsCrossed, 
@@ -89,6 +89,12 @@ export default function PDV() {
   const [selectedComplementImage, setSelectedComplementImage] = useState<string | null>(null);
   const [showCategoriesModal, setShowCategoriesModal] = useState(false);
 
+  // Estados para drag horizontal na barra de categorias
+  const categoriesContainerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
   // Query para buscar complementos do produto selecionado
   const { data: productComplements } = trpc.publicMenu.getProductComplements.useQuery(
     { productId: selectedProduct?.id || 0 },
@@ -118,6 +124,30 @@ export default function PDV() {
     // Verificamos se o produto tem grupos de complementos
     // Como não temos essa info no produto, vamos sempre abrir o modal
     return true;
+  };
+
+  // Funções de drag horizontal na barra de categorias
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!categoriesContainerRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - categoriesContainerRef.current.offsetLeft);
+    setScrollLeft(categoriesContainerRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !categoriesContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - categoriesContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Velocidade do scroll
+    categoriesContainerRef.current.scrollLeft = scrollLeft - walk;
   };
 
   // Funções do carrinho
@@ -246,7 +276,18 @@ export default function PDV() {
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Barra de Categorias */}
             <div className="relative px-4 py-2 border-b border-border/50 bg-muted/20">
-              <div className="flex items-center gap-2 overflow-hidden pr-14">
+              <div 
+                ref={categoriesContainerRef}
+                className={cn(
+                  "flex items-center gap-2 overflow-x-auto pr-24 scrollbar-hide select-none",
+                  isDragging ? "cursor-grabbing" : "cursor-grab"
+                )}
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                onMouseDown={handleMouseDown}
+                onMouseLeave={handleMouseLeave}
+                onMouseUp={handleMouseUp}
+                onMouseMove={handleMouseMove}
+              >
                 {/* Botão de Menu de Categorias - Início */}
                 <button
                   onClick={() => setShowCategoriesModal(true)}
