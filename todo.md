@@ -4659,3 +4659,11 @@
 - [x] Adicionar campo htmlPrintEnabled no schema do banco
 - [x] Criar/atualizar procedure para salvar configuração
 - [x] Adicionar toggle no card de layout da aba Impressora e Teste
+
+## Conta e Segurança - Ajustes de E-mail e Nome
+- [x] Campo e-mail deve mostrar o e-mail cadastrado na plataforma (do usuário)
+- [x] Nome do responsável ao ser alterado deve refletir no nome do perfil do usuário
+
+## Conta e Segurança - Ajustes de E-mail e Nome do Responsável
+- [x] Campo e-mail deve mostrar o e-mail cadastrado na plataforma (do usuário)
+- [x] Nome do responsável deve refletir no nome do perfil do usuário ao ser alterado

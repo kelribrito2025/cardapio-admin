@@ -370,8 +370,14 @@ export const appRouter = router({
     // Obter dados da conta
     getAccountData: protectedProcedure
       .input(z.object({ establishmentId: z.number() }))
-      .query(async ({ input }) => {
-        return db.getEstablishmentAccountData(input.establishmentId);
+      .query(async ({ ctx, input }) => {
+        const accountData = await db.getEstablishmentAccountData(input.establishmentId);
+        // Incluir e-mail do usuário da plataforma
+        return {
+          ...accountData,
+          userEmail: ctx.user.email,
+          userName: ctx.user.name,
+        };
       }),
     
     // Atualizar dados da conta
@@ -384,9 +390,15 @@ export const appRouter = router({
         responsibleName: z.string().nullable().optional(),
         responsiblePhone: z.string().nullable().optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const { establishmentId, ...data } = input;
         await db.updateEstablishmentAccountData(establishmentId, data);
+        
+        // Se o nome do responsável foi alterado, atualizar também o nome do usuário
+        if (input.responsibleName) {
+          await db.updateUserName(ctx.user.id, input.responsibleName);
+        }
+        
         return { success: true };
       }),
     

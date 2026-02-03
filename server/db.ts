@@ -369,6 +369,13 @@ export async function updateUserPassword(userId: number, passwordHash: string) {
   await db.update(users).set({ passwordHash }).where(eq(users.id, userId));
 }
 
+export async function updateUserName(userId: number, name: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(users).set({ name }).where(eq(users.id, userId));
+}
+
 export async function updateTwoFactorSettings(
   establishmentId: number, 
   enabled: boolean, 

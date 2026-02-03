@@ -82,13 +82,15 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
     if (accountInfo) {
       setAccountData({
         name: accountInfo.name || "",
-        email: accountInfo.email || "",
+        // Usar e-mail do usuário da plataforma (userEmail) em vez do e-mail do estabelecimento
+        email: accountInfo.userEmail || accountInfo.email || "",
         cnpj: accountInfo.cnpj || "",
-        responsibleName: accountInfo.responsibleName || "",
+        // Usar nome do usuário da plataforma como padrão para o responsável
+        responsibleName: accountInfo.responsibleName || accountInfo.userName || "",
         responsiblePhone: accountInfo.responsiblePhone || "",
       });
       setTwoFactorEnabled(accountInfo.twoFactorEnabled || false);
-      setTwoFactorEmail(accountInfo.twoFactorEmail || accountInfo.email || "");
+      setTwoFactorEmail(accountInfo.twoFactorEmail || accountInfo.userEmail || accountInfo.email || "");
     }
   }, [accountInfo]);
   
@@ -207,14 +209,18 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="email">E-mail</Label>
+                  <Label htmlFor="email">E-mail da conta</Label>
                   <Input
                     id="email"
                     type="email"
                     value={accountData.email}
-                    onChange={(e) => setAccountData({ ...accountData, email: e.target.value })}
-                    placeholder="email@exemplo.com"
+                    readOnly
+                    disabled
+                    className="bg-muted cursor-not-allowed"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Este é o e-mail cadastrado na plataforma e não pode ser alterado aqui
+                  </p>
                 </div>
                 
                 <div className="space-y-2">
