@@ -184,14 +184,14 @@ export function HeatmapCard() {
           {/* Coluna fixa dos dias da semana */}
           <div className="flex-shrink-0 z-10 bg-card">
             {/* Espaço para alinhar com header das horas */}
-            <div className="h-4 mb-0.5" />
+            <div className="h-5 mb-1" />
             {/* Labels dos dias */}
             {DAYS.map((day) => (
               <div 
                 key={day} 
-                className="h-[18px] mb-0.5 flex items-center justify-end pr-2"
+                className="h-[28px] mb-1 flex items-center justify-end pr-3"
               >
-                <span className="text-[10px] font-medium text-muted-foreground">
+                <span className="text-xs font-medium text-muted-foreground">
                   {day}
                 </span>
               </div>
@@ -202,11 +202,12 @@ export function HeatmapCard() {
           <div className="flex-1 overflow-x-auto">
             <div className="min-w-[450px]">
               {/* Header com horas */}
-              <div className="flex mb-0.5 h-4">
+              <div className="flex mb-1 h-5">
                 {HOURS.map(hour => (
                   <div 
                     key={hour} 
-                    className="flex-1 text-center text-[10px] text-muted-foreground font-medium"
+                    className="flex-1 text-center text-xs text-muted-foreground font-medium"
+                    style={{ minWidth: '28px' }}
                   >
                     {hour}h
                   </div>
@@ -215,7 +216,7 @@ export function HeatmapCard() {
 
               {/* Linhas do grid (células das horas) */}
               {DAYS.map((day, dayIndex) => (
-                <div key={day} className="flex items-center mb-0.5 h-[18px]">
+                <div key={day} className="flex items-center mb-1 h-[28px] gap-1">
                   {/* Células das horas */}
                   {HOURS.map(hour => {
                     const count = matrix[dayIndex][hour];
@@ -231,7 +232,7 @@ export function HeatmapCard() {
                         <TooltipTrigger asChild>
                           <div
                             className={cn(
-                              "flex-1 aspect-square rounded-[3px] mx-[1px] cursor-pointer transition-all hover:ring-2 hover:ring-blue-600 hover:ring-offset-1",
+                              "w-[28px] h-[28px] rounded-md cursor-pointer transition-all hover:ring-2 hover:ring-blue-600 hover:ring-offset-1 flex-shrink-0",
                               colorClass,
                               isActive && "ring-2 ring-blue-600 ring-offset-1"
                             )}

@@ -4616,3 +4616,6 @@
 
 ## WhatsApp - Remover Texto Extra
 - [x] Remover "Como posso ajudar?" da mensagem do WhatsApp
+
+## HeatmapCard - Espaçamento dos Quadradinhos
+- [x] Corrigir espaçamento entre os quadradinhos do heatmap
