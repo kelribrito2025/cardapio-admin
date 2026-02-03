@@ -4607,3 +4607,6 @@
 ## Impressão do Recibo - Correções
 - [x] Remover janela/aba que abre no navegador ao clicar em imprimir
 - [x] Corrigir modelo de impressão para usar o modelo correto da aba do recibo
+
+## WhatsApp - Mensagem Completa do Pedido
+- [x] Incluir número do pedido, itens com complementos e valor total na mensagem do WhatsApp

@@ -1286,7 +1286,31 @@ export default function Pedidos() {
                           if (phone && !phone.startsWith('55')) {
                             phone = '55' + phone;
                           }
-                          window.open(`https://wa.me/${phone}?text=Olá! Sobre seu pedido %23${orderDetails.orderNumber}...`, '_blank');
+                          
+                          // Montar mensagem completa com itens do pedido
+                          const orderNumber = orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`;
+                          
+                          // Formatar itens com complementos
+                          const itemsText = orderDetails.items?.map(item => {
+                            let itemLine = `${item.quantity}x ${item.productName}`;
+                            // Adicionar complementos se houver
+                            if (item.complements && item.complements.length > 0) {
+                              const complementsText = item.complements.map((c: any) => {
+                                const qty = c.quantity || 1;
+                                return qty > 1 ? `  + ${qty}x ${c.name}` : `  + ${c.name}`;
+                              }).join('\n');
+                              itemLine += '\n' + complementsText;
+                            }
+                            return itemLine;
+                          }).join('\n') || '';
+                          
+                          // Formatar valor total
+                          const totalFormatted = `R$ ${Number(orderDetails.total).toFixed(2).replace('.', ',')}`;
+                          
+                          // Montar mensagem completa
+                          const message = `Olá ${orderDetails.customerName || ''}! Sobre seu pedido ${orderNumber}:\n\n*Itens:*\n${itemsText}\n\n*Total:* ${totalFormatted}\n\nComo posso ajudar?`;
+                          
+                          window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
                         }}
                       >
                         <img src="/icons8-whatsapp.svg" alt="WhatsApp" className="h-4 w-4" />
