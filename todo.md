@@ -4399,3 +4399,6 @@
 
 ## Ajustar Borda do Menu Secundário
 - [x] Ajustar a borda vermelha do lado direito do item ativo no menu secundário para ficar igual ao menu primário (arredondada)
+
+## Corrigir Efeito de Recolher no Menu Configurações
+- [x] Verificar e corrigir o efeito de recolher do menu ao clicar em Configurações para ficar igual ao PDV

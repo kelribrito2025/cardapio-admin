@@ -172,9 +172,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }, [sidebarCollapsed]);
 
   // Minimizar menu automaticamente ao acessar a página PDV ou Configurações
+  // Usa um pequeno delay para permitir que a transição seja visível
   useEffect(() => {
     if (location === "/pdv" || location === "/configuracoes") {
-      setSidebarCollapsed(true);
+      // Pequeno delay para garantir que a transição seja visível
+      const timer = setTimeout(() => {
+        setSidebarCollapsed(true);
+      }, 50);
+      return () => clearTimeout(timer);
     }
   }, [location]);
 
