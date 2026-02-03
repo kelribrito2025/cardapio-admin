@@ -46,21 +46,18 @@ export function SettingsSidebar({ activeSection, onSectionChange }: SettingsSide
               key={item.id}
               onClick={() => onSectionChange(item.id)}
               className={cn(
-                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 relative",
+                "w-full flex items-center gap-3 py-2.5 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative",
                 isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? "bg-red-200/60 text-red-800 rounded-r-xl -ml-3 pl-6 border-r-4 border-red-500"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground px-3 rounded-lg"
               )}
+              style={isActive ? { borderRadius: '12px', marginRight: '-12px' } : {}}
             >
               <Icon className={cn(
                 "h-5 w-5 flex-shrink-0",
-                isActive ? "text-primary" : "text-muted-foreground"
+                isActive ? "text-red-800" : "text-muted-foreground"
               )} />
               <span>{item.label}</span>
-              {/* Borda vermelha no lado direito quando ativo */}
-              {isActive && (
-                <span className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-l-full" />
-              )}
             </button>
           );
         })}

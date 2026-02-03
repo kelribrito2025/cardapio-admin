@@ -4396,3 +4396,6 @@
 ## Transição Suave no Menu Configurações
 - [x] Adicionar transição suave ao recolher o menu primário ao clicar em Configurações
 - [x] Adicionar efeito do menu secundário deslizando de trás do menu primário
+
+## Ajustar Borda do Menu Secundário
+- [x] Ajustar a borda vermelha do lado direito do item ativo no menu secundário para ficar igual ao menu primário (arredondada)
