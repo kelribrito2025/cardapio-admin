@@ -4354,3 +4354,14 @@
 
 ## Melhorar drag de categorias
 - [x] Continuar drag mesmo quando mouse sair da área horizontal das categorias
+
+## Dropdown WhatsApp na página de configurações
+- [ ] Transformar menu WhatsApp em dropdown expansível
+- [ ] Adicionar sub-abas Notificações e Templates dentro do dropdown
+
+## Dropdown WhatsApp nas Configurações
+- [x] Converter botões "Notificações" e "Templates" do WhatsApp em um dropdown
+- [x] Adicionar ícone de seta (ChevronDown) que rotaciona ao abrir/fechar
+- [x] Implementar menu dropdown com opções "Notificações" e "Templates"
+- [x] Manter destaque visual quando uma das opções está selecionada
+- [x] Fechar dropdown automaticamente ao selecionar uma opção

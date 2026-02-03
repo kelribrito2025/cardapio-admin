@@ -24,9 +24,11 @@ import { TemplatesEditor } from "@/components/TemplatesEditor";
 
 interface WhatsAppTabProps {
   hideConnectionCard?: boolean;
+  activeSubTab?: "notifications" | "templates";
+  showOnlyContent?: boolean;
 }
 
-export function WhatsAppTab({ hideConnectionCard = false }: WhatsAppTabProps) {
+export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnlyContent = false }: WhatsAppTabProps) {
   const [testPhone, setTestPhone] = useState("");
   const [testMessage, setTestMessage] = useState("Olá! Esta é uma mensagem de teste do Cardápio Admin.");
   const [isPolling, setIsPolling] = useState(false);
@@ -298,6 +300,156 @@ export function WhatsAppTab({ hideConnectionCard = false }: WhatsAppTabProps) {
         </Card>
       )}
       
+      {/* Modo showOnlyContent - renderiza apenas o conteúdo da aba selecionada */}
+      {showOnlyContent && activeSubTab === "notifications" && (
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Notificações Automáticas</CardTitle>
+              <CardDescription>
+                Configure quando enviar mensagens automáticas para os clientes
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-4">
+                {/* Confirmação de Pedido com Botões */}
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-amber-800 font-semibold flex items-center gap-2">
+                        📱 Confirmação via Botões
+                      </Label>
+                      <p className="text-sm text-amber-700">
+                        Enviar botões interativos para o cliente confirmar ou cancelar o pedido antes de começar a preparar
+                      </p>
+                    </div>
+                    <Switch
+                      checked={requireOrderConfirmation}
+                      onCheckedChange={setRequireOrderConfirmation}
+                    />
+                  </div>
+                  {requireOrderConfirmation && (
+                    <div className="mt-3 p-3 bg-white rounded-md border border-amber-100">
+                      <p className="text-xs text-amber-600 mb-2">
+                        <strong>Como funciona:</strong>
+                      </p>
+                      <ol className="text-xs text-amber-600 list-decimal list-inside space-y-1">
+                        <li>Cliente faz o pedido no cardápio</li>
+                        <li>Recebe mensagem com botões: "✅ Ok, pode fazer" ou "❌ Não quero mais"</li>
+                        <li>Se confirmar, o pedido aparece na página de Pedidos</li>
+                        <li>Se cancelar, o pedido é automaticamente cancelado</li>
+                      </ol>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="border-t pt-4">
+                  <p className="text-sm font-medium text-muted-foreground mb-4">Notificações de Status</p>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Novo Pedido</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Enviar quando um novo pedido for recebido
+                    </p>
+                  </div>
+                  <Switch
+                    checked={notifyOnNewOrder}
+                    onCheckedChange={setNotifyOnNewOrder}
+                    disabled={requireOrderConfirmation}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Preparando</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Enviar quando o pedido começar a ser preparado
+                    </p>
+                  </div>
+                  <Switch
+                    checked={notifyOnPreparing}
+                    onCheckedChange={setNotifyOnPreparing}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Pronto</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Enviar quando o pedido estiver pronto
+                    </p>
+                  </div>
+                  <Switch
+                    checked={notifyOnReady}
+                    onCheckedChange={setNotifyOnReady}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Finalizado</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Enviar quando o pedido for entregue/retirado
+                    </p>
+                  </div>
+                  <Switch
+                    checked={notifyOnCompleted}
+                    onCheckedChange={setNotifyOnCompleted}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Cancelado</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Enviar quando o pedido for cancelado
+                    </p>
+                  </div>
+                  <Switch
+                    checked={notifyOnCancelled}
+                    onCheckedChange={setNotifyOnCancelled}
+                  />
+                </div>
+              </div>
+              
+              <Button 
+                onClick={handleSaveNotifications}
+                disabled={saveNotificationsMutation.isPending}
+              >
+                {saveNotificationsMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : null}
+                Salvar Configurações
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+      
+      {showOnlyContent && activeSubTab === "templates" && (
+        <TemplatesEditor
+          templateNewOrder={templateNewOrder}
+          setTemplateNewOrder={setTemplateNewOrder}
+          templatePreparing={templatePreparing}
+          setTemplatePreparing={setTemplatePreparing}
+          templateReady={templateReady}
+          setTemplateReady={setTemplateReady}
+          templateCompleted={templateCompleted}
+          setTemplateCompleted={setTemplateCompleted}
+          templateCancelled={templateCancelled}
+          setTemplateCancelled={setTemplateCancelled}
+          onSave={handleSaveTemplates}
+          isSaving={saveTemplatesMutation.isPending}
+          defaultTemplates={DEFAULT_TEMPLATES}
+          restaurantName={establishment?.name}
+          restaurantLogo={establishment?.logo}
+        />
+      )}
+      
+      {/* Modo normal com abas internas */}
+      {!showOnlyContent && (
       <Tabs defaultValue="notifications" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="notifications" className="flex items-center gap-2">
@@ -458,6 +610,7 @@ export function WhatsAppTab({ hideConnectionCard = false }: WhatsAppTabProps) {
         </TabsContent>
 
       </Tabs>
+      )}
     </div>
   );
 }

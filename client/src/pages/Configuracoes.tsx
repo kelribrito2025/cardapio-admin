@@ -65,6 +65,8 @@ import {
   Bike,
   Package,
   ShoppingBag,
+  ChevronDown,
+  FileText,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -98,6 +100,8 @@ export default function Configuracoes() {
   );
   
   const [activeTab, setActiveTab] = useState("estabelecimento");
+  const [whatsappDropdownOpen, setWhatsappDropdownOpen] = useState(false);
+  const [whatsappSubTab, setWhatsappSubTab] = useState<"notifications" | "templates">("notifications");
 
   // Establishment form state
   const [name, setName] = useState("");
@@ -885,9 +889,53 @@ export default function Configuracoes() {
             Atendimento
           </TabsTrigger>
 
-          <TabsTrigger value="whatsapp" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-primary">
-            WhatsApp
-          </TabsTrigger>
+          {/* WhatsApp Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setWhatsappDropdownOpen(!whatsappDropdownOpen)}
+              className={cn(
+                "relative px-6 py-3 rounded-none bg-transparent font-medium flex items-center gap-1 transition-colors",
+                (activeTab === "whatsapp-notifications" || activeTab === "whatsapp-templates")
+                  ? "text-primary font-semibold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              WhatsApp
+              <ChevronDown className={cn("h-4 w-4 transition-transform", whatsappDropdownOpen && "rotate-180")} />
+            </button>
+            {whatsappDropdownOpen && (
+              <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-border z-50 min-w-[160px] py-1">
+                <button
+                  onClick={() => {
+                    setActiveTab("whatsapp-notifications");
+                    setWhatsappSubTab("notifications");
+                    setWhatsappDropdownOpen(false);
+                  }}
+                  className={cn(
+                    "w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-muted transition-colors",
+                    activeTab === "whatsapp-notifications" && "bg-muted text-primary font-medium"
+                  )}
+                >
+                  <Smartphone className="h-4 w-4" />
+                  Notificações
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab("whatsapp-templates");
+                    setWhatsappSubTab("templates");
+                    setWhatsappDropdownOpen(false);
+                  }}
+                  className={cn(
+                    "w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-muted transition-colors",
+                    activeTab === "whatsapp-templates" && "bg-muted text-primary font-medium"
+                  )}
+                >
+                  <FileText className="h-4 w-4" />
+                  Templates
+                </button>
+              </div>
+            )}
+          </div>
           <TabsTrigger value="teste-impressao" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-primary">
             Impressora e Teste
           </TabsTrigger>
@@ -2109,10 +2157,19 @@ export default function Configuracoes() {
         </TabsContent>
 
         
-        {/* WhatsApp Tab */}
-        <TabsContent value="whatsapp" className="space-y-5">
-          <WhatsAppTab hideConnectionCard />
-        </TabsContent>
+        {/* WhatsApp Notifications Tab */}
+        {activeTab === "whatsapp-notifications" && (
+          <div className="space-y-5">
+            <WhatsAppTab hideConnectionCard showOnlyContent activeSubTab="notifications" />
+          </div>
+        )}
+        
+        {/* WhatsApp Templates Tab */}
+        {activeTab === "whatsapp-templates" && (
+          <div className="space-y-5">
+            <WhatsAppTab hideConnectionCard showOnlyContent activeSubTab="templates" />
+          </div>
+        )}
         
         {/* Teste Impressão Tab */}
         <TabsContent value="teste-impressao" className="space-y-5">
