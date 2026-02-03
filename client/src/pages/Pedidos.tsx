@@ -129,6 +129,19 @@ const kanbanColumns = [
     placeholderText: "text-gray-400",
     icon: CheckCircle2,
   },
+  {
+    id: "cancelled" as OrderStatus,
+    title: "Cancelados",
+    color: "red",
+    borderColor: "border-t-red-500",
+    iconBg: "bg-red-100",
+    iconColor: "text-red-600",
+    dotColor: "bg-red-500",
+    placeholderBorder: "border-red-300",
+    placeholderBg: "bg-red-50",
+    placeholderText: "text-red-500",
+    icon: XCircle,
+  },
 ];
 
 const statusConfig: Record<OrderStatus, { 
@@ -962,7 +975,7 @@ export default function Pedidos() {
       </div>
 
       {/* Kanban Board */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:h-[calc(100vh-200px)]">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 md:h-[calc(100vh-200px)]">
         {kanbanColumns.map((column) => {
           const columnOrders = ordersByStatus[column.id];
           const Icon = column.icon;

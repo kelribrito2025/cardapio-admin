@@ -4597,3 +4597,6 @@
 
 ## PDV - Troco em Destaque
 - [x] Exibir troco a devolver em destaque quando valor recebido for digitado
+
+## Pedidos - Card de Cancelados Mobile
+- [x] Voltar a exibir o card de cancelados na versão mobile
