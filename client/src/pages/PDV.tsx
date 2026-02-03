@@ -267,7 +267,7 @@ export default function PDV() {
                   <span className={cn(
                     "absolute -top-1.5 -right-1.5 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-xs font-semibold",
                     selectedCategory === null ? "bg-white text-red-500" : "bg-red-500 text-white"
-                  )}>
+                  )} style={{marginTop: '6px'}}>
                     {productsList.filter((p) => p.status === 'active').length || 0}
                   </span>
                 </button>
