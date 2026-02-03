@@ -1272,27 +1272,22 @@ export default function PDV() {
               </div>
             </div>
 
-            {/* Footer com Quantidade e Botão Adicionar */}
-            <div className="border-t bg-white p-3 sm:p-4 flex items-center gap-3 sm:gap-4 flex-shrink-0">
+            {/* Footer - Quantidade e Adicionar */}
+            <div className="border-t p-4 bg-white flex items-center gap-4">
               {/* Controle de Quantidade */}
-              <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-2 py-1">
+              <div className="flex items-center gap-3 bg-gray-100 rounded-full px-2 py-1">
                 <button
-                  type="button"
                   onClick={() => setProductQuantity(Math.max(1, productQuantity - 1))}
-                  className="p-2 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
-                  disabled={productQuantity <= 1}
+                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
                 >
-                  <Minus className="h-4 w-4 text-gray-700" />
+                  <Minus className="h-4 w-4" />
                 </button>
-                <span className="text-lg font-semibold text-gray-900 min-w-[24px] text-center">
-                  {productQuantity}
-                </span>
+                <span className="w-8 text-center font-semibold">{productQuantity}</span>
                 <button
-                  type="button"
                   onClick={() => setProductQuantity(productQuantity + 1)}
-                  className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
                 >
-                  <Plus className="h-4 w-4 text-gray-700" />
+                  <Plus className="h-4 w-4" />
                 </button>
               </div>
 

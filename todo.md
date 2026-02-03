@@ -4490,3 +4490,7 @@
 - [x] Ordem título/preço/descrição corrigida
 - [x] Campo de observações com rounded-xl
 - [x] Footer com controles rounded-xl
+
+## Ajuste Controle de Quantidade no Footer do Modal
+- [x] Restaurar estilo do controle de quantidade no PDV (botões circulares em fundo cinza arredondado)
+- [x] Aplicar mesmo estilo no modal do menu público
