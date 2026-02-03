@@ -4392,3 +4392,7 @@
 
 ## Borda Vermelha no Menu Secundário
 - [x] Adicionar borda vermelha no lado direito do item ativo na barra de menu secundária
+
+## Transição Suave no Menu Configurações
+- [x] Adicionar transição suave ao recolher o menu primário ao clicar em Configurações
+- [x] Adicionar efeito do menu secundário deslizando de trás do menu primário

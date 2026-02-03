@@ -874,8 +874,8 @@ export default function Configuracoes() {
     <AdminLayout>
       {/* Layout com Barra Lateral Secundária */}
       <div data-settings-page className="flex h-[calc(100vh-58px)] overflow-hidden">
-        {/* Barra Lateral Secundária - Fixa */}
-        <div className="w-64 shrink-0 bg-white border-r border-border/50 pt-3 pb-4 px-3 h-full overflow-y-auto">
+        {/* Barra Lateral Secundária - Fixa com animação de entrada */}
+        <div className="w-64 shrink-0 bg-white border-r border-border/50 pt-3 pb-4 px-3 h-full overflow-y-auto animate-slide-in-from-left">
           <SettingsSidebar 
             activeSection={activeSection} 
             onSectionChange={setActiveSection} 
