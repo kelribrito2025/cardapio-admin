@@ -4385,3 +4385,7 @@
 ## Ajustes na Barra Lateral Secundária
 - [x] Remover espaço acima da barra de menu secundária (alinhar com topo)
 - [x] Minimizar barra lateral principal automaticamente ao clicar em Configurações
+
+## Corrigir Barra Lateral Secundária Fixa
+- [x] Fixar a barra de menu secundária para não rolar junto com a página
+- [x] Apenas o conteúdo à direita deve ter scroll

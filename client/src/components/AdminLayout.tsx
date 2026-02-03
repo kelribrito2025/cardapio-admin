@@ -902,7 +902,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-auto p-3 lg:p-6">
+        <main className="flex-1 overflow-auto p-3 lg:p-6 [&:has(>[data-settings-page])]:overflow-hidden [&:has(>[data-settings-page])]:p-0">
           {children}
         </main>
       </div>

@@ -873,15 +873,17 @@ export default function Configuracoes() {
   return (
     <AdminLayout>
       {/* Layout com Barra Lateral Secundária */}
-      <div className="flex gap-0 -mx-3 lg:-mx-6 -mt-3 lg:-mt-6 min-h-[calc(100vh-58px)]">
-        {/* Barra Lateral Secundária */}
-        <SettingsSidebar 
-          activeSection={activeSection} 
-          onSectionChange={setActiveSection} 
-        />
+      <div data-settings-page className="flex h-[calc(100vh-58px)] overflow-hidden">
+        {/* Barra Lateral Secundária - Fixa */}
+        <div className="w-64 shrink-0 bg-white border-r border-border/50 pt-3 pb-4 px-3 h-full overflow-y-auto">
+          <SettingsSidebar 
+            activeSection={activeSection} 
+            onSectionChange={setActiveSection} 
+          />
+        </div>
         
-        {/* Conteúdo Principal */}
-        <div className="flex-1 p-6 bg-muted/30 overflow-y-auto">
+        {/* Conteúdo Principal - Com Scroll */}
+        <div className="flex-1 p-6 bg-muted/30 h-full overflow-y-auto">
           {/* Cabeçalho */}
           <div className="mb-6">
             <PageHeader
