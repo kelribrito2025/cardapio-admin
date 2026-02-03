@@ -3321,6 +3321,39 @@ export default function PublicMenu() {
                             </p>
                           )}
                           <p className="mt-1 text-xs text-gray-500">Deixe em branco se não precisar de troco</p>
+                          
+                          {/* Botões de atalho de valores */}
+                          <div className="mt-3 flex gap-2">
+                            {[20, 50, 100].map((value) => (
+                              <button
+                                key={value}
+                                type="button"
+                                onClick={() => {
+                                  const formatted = value.toLocaleString("pt-BR", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  });
+                                  setChangeAmount(formatted);
+                                  
+                                  // Validar se o valor do troco é maior que o total
+                                  const cartTotal = cart.reduce((sum, item) => {
+                                    const itemTotal = parseFloat(item.price) * item.quantity;
+                                    const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price) * (c.quantity || 1), 0) * item.quantity;
+                                    return sum + itemTotal + complementsTotal;
+                                  }, 0) - (appliedCoupon?.discount || 0);
+                                  
+                                  if (value > 0 && value <= cartTotal) {
+                                    setChangeAmountError("O valor do troco deve ser maior que o total do pedido (R$ " + cartTotal.toFixed(2).replace('.', ',') + ")");
+                                  } else {
+                                    setChangeAmountError(null);
+                                  }
+                                }}
+                                className="flex-1 py-2 px-3 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors"
+                              >
+                                R$ {value}
+                              </button>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>

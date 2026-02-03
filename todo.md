@@ -4574,3 +4574,9 @@
 ## Ajuste Estilo Modal Pagamento PDV
 - [x] Remover container cinza das opções de pagamento
 - [x] Ajustar campos de troco para estilo do menu público
+
+## Atalhos de Valores no Campo de Troco - Menu Público
+- [ ] Adicionar botões R$ 20, R$ 50, R$ 100 abaixo do campo de troco
+
+## Atalhos de Valores no Campo de Troco - Menu Público
+- [x] Adicionar botões R$ 20, R$ 50, R$ 100 abaixo do campo de troco
