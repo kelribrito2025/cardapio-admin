@@ -4466,3 +4466,7 @@
 - [x] Pedidos do PDV agora têm status inicial 'preparing' (em preparação)
 - [x] Número do pedido segue sequência correta (#P1, #P2, #P3...)
 - [x] Notificação SSE enviada para atualizar página de Pedidos em tempo real
+
+## Bug - Botão Adicionar no PDV abrindo modal (CORRIGIDO)
+- [x] Corrigir botão Adicionar para adicionar item direto ao carrinho sem abrir modal
+- [x] Modal de detalhes só deve abrir ao clicar no card do item
