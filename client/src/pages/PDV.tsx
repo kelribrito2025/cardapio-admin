@@ -386,7 +386,7 @@ export default function PDV() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-8 px-2 lg:px-3 text-xs border-red-200 text-red-600 hover:bg-red-50 shrink-0"
+                            className="h-8 px-2 xl:px-3 text-xs border-red-200 text-red-600 hover:bg-red-50 shrink-0"
                             onClick={(e) => {
                               e.stopPropagation();
                               // Adiciona direto à lista com quantidade 1, sem observação e sem complementos
@@ -394,8 +394,8 @@ export default function PDV() {
                             }}
                             disabled={!product.hasStock}
                           >
-                            <Plus className="h-4 w-4 lg:mr-1" />
-                            <span className="hidden lg:inline">Adicionar</span>
+                            <Plus className="h-4 w-4 xl:mr-1" />
+                            <span className="hidden xl:inline">Adicionar</span>
                           </Button>
                         </div>
                       </div>
