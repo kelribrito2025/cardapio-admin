@@ -67,7 +67,7 @@ export function SettingsSidebar({ activeSection, onSectionChange }: SettingsSide
                     ? "bg-red-200/60 text-red-800 rounded-r-xl -ml-3 pl-6 border-r-4 border-red-500"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground px-3 rounded-lg"
                 )}
-                style={isActive ? { borderRadius: '12px', marginRight: '-12px' } : {}}
+                style={isActive ? { borderRadius: '12px', marginRight: '-12px', paddingLeft: '17px' } : {}}
               >
                 <Icon className={cn(
                   "h-5 w-5 flex-shrink-0",
