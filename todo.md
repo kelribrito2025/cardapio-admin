@@ -4365,3 +4365,11 @@
 - [x] Implementar menu dropdown com opções "Notificações" e "Templates"
 - [x] Manter destaque visual quando uma das opções está selecionada
 - [x] Fechar dropdown automaticamente ao selecionar uma opção
+
+## Barra Lateral Secundária nas Configurações
+- [x] Criar componente de barra lateral secundária para Configurações
+- [x] Adicionar menus verticais: Estabelecimento, Atendimento, WhatsApp, Impressora e Teste, Integrações
+- [x] Exibir conteúdo à direita da segunda barra lateral
+- [x] Remover abas horizontais atuais
+- [x] Manter destaque visual no item selecionado
+- [ ] Garantir responsividade no mobile

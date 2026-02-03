@@ -77,6 +77,7 @@ import { LoyaltySettingsCard } from "@/components/LoyaltySettingsCard";
 import { WhatsAppTab } from "@/components/WhatsAppTab";
 import { PrintTestTab } from "@/components/PrintTestTab";
 import { IntegrationsTab } from "@/components/IntegrationsTab";
+import { SettingsSidebar, SettingsSection } from "@/components/SettingsSidebar";
 
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
@@ -99,9 +100,7 @@ export default function Configuracoes() {
     { enabled: !!establishment?.id }
   );
   
-  const [activeTab, setActiveTab] = useState("estabelecimento");
-  const [whatsappDropdownOpen, setWhatsappDropdownOpen] = useState(false);
-  const [whatsappSubTab, setWhatsappSubTab] = useState<"notifications" | "templates">("notifications");
+  const [activeSection, setActiveSection] = useState<SettingsSection>("estabelecimento");
 
   // Establishment form state
   const [name, setName] = useState("");
@@ -880,72 +879,19 @@ export default function Configuracoes() {
         />
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} style={{marginTop: '-14px'}}>
-        <TabsList className="mb-6 bg-transparent border-b border-border/50 rounded-none p-0 h-auto gap-0">
-          <TabsTrigger value="estabelecimento" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-primary">
-            Estabelecimento
-          </TabsTrigger>
-          <TabsTrigger value="atendimento" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-primary">
-            Atendimento
-          </TabsTrigger>
-
-          {/* WhatsApp Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setWhatsappDropdownOpen(!whatsappDropdownOpen)}
-              className={cn(
-                "relative px-6 py-3 rounded-none bg-transparent font-medium flex items-center gap-1 transition-colors",
-                (activeTab === "whatsapp-notifications" || activeTab === "whatsapp-templates")
-                  ? "text-primary font-semibold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              WhatsApp
-              <ChevronDown className={cn("h-4 w-4 transition-transform", whatsappDropdownOpen && "rotate-180")} />
-            </button>
-            {whatsappDropdownOpen && (
-              <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-border z-50 min-w-[160px] py-1">
-                <button
-                  onClick={() => {
-                    setActiveTab("whatsapp-notifications");
-                    setWhatsappSubTab("notifications");
-                    setWhatsappDropdownOpen(false);
-                  }}
-                  className={cn(
-                    "w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-muted transition-colors",
-                    activeTab === "whatsapp-notifications" && "bg-muted text-primary font-medium"
-                  )}
-                >
-                  <Smartphone className="h-4 w-4" />
-                  Notificações
-                </button>
-                <button
-                  onClick={() => {
-                    setActiveTab("whatsapp-templates");
-                    setWhatsappSubTab("templates");
-                    setWhatsappDropdownOpen(false);
-                  }}
-                  className={cn(
-                    "w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-muted transition-colors",
-                    activeTab === "whatsapp-templates" && "bg-muted text-primary font-medium"
-                  )}
-                >
-                  <FileText className="h-4 w-4" />
-                  Templates
-                </button>
-              </div>
-            )}
-          </div>
-          <TabsTrigger value="teste-impressao" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-primary">
-            Impressora e Teste
-          </TabsTrigger>
-          <TabsTrigger value="integracoes" className="relative px-6 py-3 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent data-[state=active]:after:bg-primary">
-            Integrações
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Estabelecimento Tab */}
-        <TabsContent value="estabelecimento" className="space-y-5">
+      {/* Layout com Barra Lateral Secundária */}
+      <div className="flex gap-0 -mx-6 -mt-4">
+        {/* Barra Lateral Secundária */}
+        <SettingsSidebar 
+          activeSection={activeSection} 
+          onSectionChange={setActiveSection} 
+        />
+        
+        {/* Conteúdo Principal */}
+        <div className="flex-1 p-6 bg-muted/30 min-h-[calc(100vh-140px)]">
+          {/* Estabelecimento Section */}
+          {activeSection === "estabelecimento" && (
+            <div className="space-y-5">
           {/* Preview do Perfil Público + Endereço lado a lado */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 items-stretch">
             {/* Preview do Perfil Público - 60% */}
@@ -1595,10 +1541,12 @@ export default function Configuracoes() {
             <LoyaltySettingsCard establishmentId={establishment?.id || 0} />
           </SectionCard>
 
-        </TabsContent>
+            </div>
+          )}
 
-        {/* Atendimento Tab */}
-        <TabsContent value="atendimento" className="space-y-5">
+          {/* Atendimento Section */}
+          {activeSection === "atendimento" && (
+            <div className="space-y-5">
           {/* Configurações básicas */}
           <SectionCard title="Configurações básicas de atendimento">
             <div className="space-y-5">
@@ -2154,39 +2102,37 @@ export default function Configuracoes() {
               </Button>
             </div>
           </SectionCard>
-        </TabsContent>
+            </div>
+          )}
 
-        
-        {/* WhatsApp Notifications Tab */}
-        {activeTab === "whatsapp-notifications" && (
-          <div className="space-y-5">
-            <WhatsAppTab hideConnectionCard showOnlyContent activeSubTab="notifications" />
-          </div>
-        )}
-        
-        {/* WhatsApp Templates Tab */}
-        {activeTab === "whatsapp-templates" && (
-          <div className="space-y-5">
-            <WhatsAppTab hideConnectionCard showOnlyContent activeSubTab="templates" />
-          </div>
-        )}
-        
-        {/* Teste Impressão Tab */}
-        <TabsContent value="teste-impressao" className="space-y-5">
-          <PrintTestTab 
-            establishmentId={establishment?.id || 0}
-            printers={printers}
-            onAddPrinter={openAddPrinterModal}
-            onEditPrinter={openEditPrinterModal}
-            onDeletePrinter={handleDeletePrinter}
-          />
-        </TabsContent>
+          {/* WhatsApp Section */}
+          {activeSection === "whatsapp" && (
+            <div className="space-y-5">
+              <WhatsAppTab hideConnectionCard />
+            </div>
+          )}
 
-        {/* Integrações Tab */}
-        <TabsContent value="integracoes" className="space-y-5">
-          <IntegrationsTab />
-        </TabsContent>
-      </Tabs>
+          {/* Impressora e Teste Section */}
+          {activeSection === "impressora" && (
+            <div className="space-y-5">
+              <PrintTestTab 
+                establishmentId={establishment?.id || 0}
+                printers={printers}
+                onAddPrinter={openAddPrinterModal}
+                onEditPrinter={openEditPrinterModal}
+                onDeletePrinter={handleDeletePrinter}
+              />
+            </div>
+          )}
+
+          {/* Integrações Section */}
+          {activeSection === "integracoes" && (
+            <div className="space-y-5">
+              <IntegrationsTab />
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Modal de Adicionar/Editar Impressora */}
       <Dialog open={isPrinterModalOpen} onOpenChange={setIsPrinterModalOpen}>
