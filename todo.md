@@ -4351,3 +4351,6 @@
 
 ## Borda vermelha nos cards do carrinho do PDV
 - [x] Adicionar borda vermelha na lateral esquerda dos cards de itens no carrinho
+
+## Melhorar drag de categorias
+- [x] Continuar drag mesmo quando mouse sair da área horizontal das categorias

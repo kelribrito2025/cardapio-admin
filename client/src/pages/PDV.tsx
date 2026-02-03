@@ -135,21 +135,30 @@ export default function PDV() {
     setScrollLeft(categoriesContainerRef.current.scrollLeft);
   };
 
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-  };
+  // Usar useEffect para adicionar listeners no document quando estiver arrastando
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (!isDragging || !categoriesContainerRef.current) return;
+      e.preventDefault();
+      const x = e.pageX - categoriesContainerRef.current.offsetLeft;
+      const walk = (x - startX) * 2; // Velocidade do scroll
+      categoriesContainerRef.current.scrollLeft = scrollLeft - walk;
+    };
 
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
+    const handleGlobalMouseUp = () => {
+      setIsDragging(false);
+    };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !categoriesContainerRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - categoriesContainerRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // Velocidade do scroll
-    categoriesContainerRef.current.scrollLeft = scrollLeft - walk;
-  };
+    if (isDragging) {
+      document.addEventListener('mousemove', handleGlobalMouseMove);
+      document.addEventListener('mouseup', handleGlobalMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [isDragging, startX, scrollLeft]);
 
   // Detectar overflow nas categorias
   useEffect(() => {
@@ -309,9 +318,6 @@ export default function PDV() {
                   )}
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   onMouseDown={handleMouseDown}
-                  onMouseLeave={handleMouseLeave}
-                  onMouseUp={handleMouseUp}
-                  onMouseMove={handleMouseMove}
                 >
                 <button
                   onClick={() => setSelectedCategory(null)}
