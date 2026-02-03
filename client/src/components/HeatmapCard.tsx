@@ -1,6 +1,6 @@
 import { Eye, Info } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -36,38 +36,8 @@ function getColorClass(value: number, maxValue: number): string {
   return COLOR_SCALE[index];
 }
 
-// Hook para detectar se é dispositivo touch/mobile
-function useIsTouchDevice() {
-  const [isTouch, setIsTouch] = useState(false);
-  
-  useEffect(() => {
-    // Verificar se é dispositivo touch
-    const checkTouch = () => {
-      setIsTouch(
-        'ontouchstart' in window || 
-        navigator.maxTouchPoints > 0 ||
-        window.matchMedia('(pointer: coarse)').matches
-      );
-    };
-    
-    checkTouch();
-    
-    // Re-verificar em resize (para casos de mudança de modo)
-    window.addEventListener('resize', checkTouch);
-    return () => window.removeEventListener('resize', checkTouch);
-  }, []);
-  
-  return isTouch;
-}
-
 export function HeatmapCard() {
   const { data: heatmapData, isLoading } = trpc.menuViews.getHeatmap.useQuery();
-  const isTouch = useIsTouchDevice();
-  
-  // Estado para controlar tooltip ativo (apenas para mobile/touch)
-  const [activeCell, setActiveCell] = useState<string | null>(null);
-  const [showInfoTooltip, setShowInfoTooltip] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   // Criar matriz de dados 7x24
   const matrix = useMemo(() => {
@@ -87,40 +57,6 @@ export function HeatmapCard() {
   const maxCount = heatmapData?.maxCount || 0;
   const totalViews = heatmapData?.totalViews || 0;
 
-  // Fechar tooltips ao clicar fora (apenas para mobile)
-  useEffect(() => {
-    if (!isTouch) return;
-    
-    function handleClickOutside(event: MouseEvent | TouchEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setActiveCell(null);
-        setShowInfoTooltip(false);
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside);
-    
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-    };
-  }, [isTouch]);
-
-  // Handler para toggle do tooltip da célula (mobile)
-  const handleCellClick = (cellKey: string) => {
-    if (!isTouch) return;
-    setShowInfoTooltip(false);
-    setActiveCell(prev => prev === cellKey ? null : cellKey);
-  };
-
-  // Handler para toggle do tooltip de info (mobile)
-  const handleInfoClick = () => {
-    if (!isTouch) return;
-    setActiveCell(null);
-    setShowInfoTooltip(prev => !prev);
-  };
-
   if (isLoading) {
     return (
       <div className="bg-card rounded-xl border border-border/50 p-4 shadow-sm h-full">
@@ -138,7 +74,7 @@ export function HeatmapCard() {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div ref={containerRef} className="bg-card rounded-xl border border-border/50 p-4 shadow-sm h-full flex flex-col">
+      <div className="bg-card rounded-xl border border-border/50 p-4 shadow-sm h-full flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -151,19 +87,10 @@ export function HeatmapCard() {
             </div>
           </div>
           
-          {/* Ícone de informação - hover no desktop, click no mobile */}
-          <Tooltip open={isTouch ? showInfoTooltip : undefined}>
+          {/* Ícone de informação */}
+          <Tooltip>
             <TooltipTrigger asChild>
-              <button 
-                className="h-6 w-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
-                onClick={handleInfoClick}
-                onTouchEnd={(e) => {
-                  if (isTouch) {
-                    e.preventDefault();
-                    handleInfoClick();
-                  }
-                }}
-              >
+              <button className="h-6 w-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
                 <Info className="h-4 w-4 text-gray-500" />
               </button>
             </TooltipTrigger>
@@ -179,86 +106,59 @@ export function HeatmapCard() {
           </Tooltip>
         </div>
 
-        {/* Grid do Heatmap com coluna de dias fixa */}
-        <div className="flex-1 flex">
-          {/* Coluna fixa dos dias da semana */}
-          <div className="flex-shrink-0 z-10 bg-card">
-            {/* Espaço para alinhar com header das horas */}
-            <div className="h-4 mb-0.5" />
-            {/* Labels dos dias */}
-            {DAYS.map((day) => (
-              <div 
-                key={day} 
-                className="h-[18px] mb-0.5 flex items-center justify-end pr-2"
-              >
-                <span className="text-[10px] font-medium text-muted-foreground">
-                  {day}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {/* Área scrollável com horas e células */}
-          <div className="flex-1 overflow-x-auto">
-            <div className="min-w-[450px]">
-              {/* Header com horas */}
-              <div className="flex mb-0.5 h-4">
-                {HOURS.map(hour => (
-                  <div 
-                    key={hour} 
-                    className="flex-1 text-center text-[10px] text-muted-foreground font-medium"
-                  >
-                    {hour}h
-                  </div>
-                ))}
-              </div>
-
-              {/* Linhas do grid (células das horas) */}
-              {DAYS.map((day, dayIndex) => (
-                <div key={day} className="flex items-center mb-0.5 h-[18px]">
-                  {/* Células das horas */}
-                  {HOURS.map(hour => {
-                    const count = matrix[dayIndex][hour];
-                    const colorClass = getColorClass(count, maxCount);
-                    const cellKey = `${dayIndex}-${hour}`;
-                    const isActive = activeCell === cellKey;
-                    
-                    return (
-                      <Tooltip 
-                        key={cellKey} 
-                        open={isTouch ? isActive : undefined}
-                      >
-                        <TooltipTrigger asChild>
-                          <div
-                            className={cn(
-                              "flex-1 aspect-square rounded-[3px] mx-[1px] cursor-pointer transition-all hover:ring-2 hover:ring-blue-600 hover:ring-offset-1",
-                              colorClass,
-                              isActive && "ring-2 ring-blue-600 ring-offset-1"
-                            )}
-                            onClick={() => handleCellClick(cellKey)}
-                            onTouchEnd={(e) => {
-                              if (isTouch) {
-                                e.preventDefault();
-                                handleCellClick(cellKey);
-                              }
-                            }}
-                          />
-                        </TooltipTrigger>
-                        <TooltipContent 
-                          side="top" 
-                          className="bg-gray-900 text-white border-0 px-3 py-2"
-                        >
-                          <div className="text-center">
-                            <div className="font-semibold">{day} às {hour}h</div>
-                            <div className="text-blue-300">{count} visualizações</div>
-                          </div>
-                        </TooltipContent>
-                      </Tooltip>
-                    );
-                  })}
+        {/* Grid do Heatmap */}
+        <div className="flex-1 overflow-x-auto">
+          <div className="min-w-[500px]">
+            {/* Header com horas */}
+            <div className="flex mb-0.5">
+              <div className="w-8 flex-shrink-0" /> {/* Espaço para labels dos dias */}
+              {HOURS.map(hour => (
+                <div 
+                  key={hour} 
+                  className="flex-1 text-center text-[10px] text-muted-foreground font-medium"
+                >
+                  {hour}h
                 </div>
               ))}
             </div>
+
+            {/* Linhas do grid (dias) */}
+            {DAYS.map((day, dayIndex) => (
+              <div key={day} className="flex items-center mb-0.5">
+                {/* Label do dia */}
+                <div className="w-8 flex-shrink-0 text-[10px] font-medium text-muted-foreground pr-1 text-right">
+                  {day}
+                </div>
+                
+                {/* Células das horas */}
+                {HOURS.map(hour => {
+                  const count = matrix[dayIndex][hour];
+                  const colorClass = getColorClass(count, maxCount);
+                  
+                  return (
+                    <Tooltip key={`${dayIndex}-${hour}`}>
+                      <TooltipTrigger asChild>
+                        <div
+                          className={cn(
+                            "flex-1 aspect-square rounded-[3px] mx-[1px] cursor-pointer transition-all hover:ring-2 hover:ring-blue-600 hover:ring-offset-1",
+                            colorClass
+                          )}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent 
+                        side="top" 
+                        className="bg-gray-900 text-white border-0 px-3 py-2"
+                      >
+                        <div className="text-center">
+                          <div className="font-semibold">{day} às {hour}h</div>
+                          <div className="text-blue-300">{count} visualizações</div>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                })}
+              </div>
+            ))}
           </div>
         </div>
 

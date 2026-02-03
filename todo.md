@@ -4616,3 +4616,6 @@
 
 ## WhatsApp - Remover Texto Extra
 - [x] Remover "Como posso ajudar?" da mensagem do WhatsApp
+
+## Dashboard - Comportamento dos Cards com Sidebar
+- [x] Reverter HeatmapCard para versão 005e5bf7
