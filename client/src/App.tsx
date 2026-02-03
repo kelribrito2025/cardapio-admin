@@ -24,6 +24,7 @@ import Categorias from "./pages/Categorias";
 import Complementos from "./pages/Complementos";
 import Campanhas from "./pages/Campanhas";
 import PDV from "./pages/PDV";
+import AccountSecurity from "./pages/AccountSecurity";
 
 
 // Auth Pages
@@ -55,6 +56,7 @@ function AdminRoutes() {
         <Route path="/impressoras" component={Impressoras} />
         <Route path="/campanhas" component={Campanhas} />
         <Route path="/pdv" component={PDV} />
+        <Route path="/conta-seguranca" component={AccountSecurity} />
         
         
         <Route path="/404" component={NotFound} />

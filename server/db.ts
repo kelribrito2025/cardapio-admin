@@ -318,6 +318,76 @@ export async function getPublicMenuData(slug: string) {
   };
 }
 
+// ============ ACCOUNT & SECURITY FUNCTIONS ============
+
+export async function getEstablishmentAccountData(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select({
+    id: establishments.id,
+    name: establishments.name,
+    email: establishments.email,
+    cnpj: establishments.cnpj,
+    responsibleName: establishments.responsibleName,
+    responsiblePhone: establishments.responsiblePhone,
+    twoFactorEnabled: establishments.twoFactorEnabled,
+    twoFactorEmail: establishments.twoFactorEmail,
+  }).from(establishments).where(eq(establishments.id, establishmentId)).limit(1);
+  
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function updateEstablishmentAccountData(
+  establishmentId: number, 
+  data: {
+    name?: string;
+    email?: string | null;
+    cnpj?: string | null;
+    responsibleName?: string | null;
+    responsiblePhone?: string | null;
+  }
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(establishments).set(data).where(eq(establishments.id, establishmentId));
+}
+
+export async function getUserById(userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function updateUserPassword(userId: number, passwordHash: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(users).set({ passwordHash }).where(eq(users.id, userId));
+}
+
+export async function updateTwoFactorSettings(
+  establishmentId: number, 
+  enabled: boolean, 
+  email?: string
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const updateData: { twoFactorEnabled: boolean; twoFactorEmail?: string | null } = {
+    twoFactorEnabled: enabled,
+  };
+  
+  if (email !== undefined) {
+    updateData.twoFactorEmail = email || null;
+  }
+  
+  await db.update(establishments).set(updateData).where(eq(establishments.id, establishmentId));
+}
+
 // ============ CATEGORY FUNCTIONS ============
 export async function getCategoriesByEstablishment(establishmentId: number) {
   const db = await getDb();

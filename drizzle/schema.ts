@@ -71,6 +71,14 @@ export const establishments = mysqlTable("establishments", {
   loyaltyCouponType: mysqlEnum("loyaltyCouponType", ["fixed", "percentage", "free_delivery"]).default("fixed"),
   loyaltyCouponValue: decimal("loyaltyCouponValue", { precision: 10, scale: 2 }).default("10"),
   loyaltyMinOrderValue: decimal("loyaltyMinOrderValue", { precision: 10, scale: 2 }).default("0"),
+  // Dados da Conta
+  email: varchar("email", { length: 320 }),
+  cnpj: varchar("cnpj", { length: 20 }),
+  responsibleName: varchar("responsibleName", { length: 255 }),
+  responsiblePhone: varchar("responsiblePhone", { length: 30 }),
+  // Segurança
+  twoFactorEnabled: boolean("twoFactorEnabled").default(false).notNull(),
+  twoFactorEmail: varchar("twoFactorEmail", { length: 320 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

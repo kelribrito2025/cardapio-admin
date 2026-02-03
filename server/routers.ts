@@ -364,6 +364,84 @@ export const appRouter = router({
         await db.saveBusinessHours(input.establishmentId, input.hours);
         return { success: true };
       }),
+    
+    // ============ CONTA E SEGURANÇA ============
+    
+    // Obter dados da conta
+    getAccountData: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getEstablishmentAccountData(input.establishmentId);
+      }),
+    
+    // Atualizar dados da conta
+    updateAccountData: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        name: z.string().min(1, "Nome do estabelecimento é obrigatório").optional(),
+        email: z.string().email("Email inválido").nullable().optional(),
+        cnpj: z.string().nullable().optional(),
+        responsibleName: z.string().nullable().optional(),
+        responsiblePhone: z.string().nullable().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { establishmentId, ...data } = input;
+        await db.updateEstablishmentAccountData(establishmentId, data);
+        return { success: true };
+      }),
+    
+    // Alterar senha
+    changePassword: protectedProcedure
+      .input(z.object({
+        currentPassword: z.string().min(1, "Senha atual é obrigatória"),
+        newPassword: z.string().min(8, "Nova senha deve ter pelo menos 8 caracteres"),
+        confirmPassword: z.string().min(1, "Confirmação de senha é obrigatória"),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Verificar se as senhas coincidem
+        if (input.newPassword !== input.confirmPassword) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Nova senha e confirmação não coincidem.",
+          });
+        }
+        
+        // Buscar usuário com hash da senha
+        const user = await db.getUserById(ctx.user.id);
+        if (!user || !user.passwordHash) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Usuário não possui senha cadastrada.",
+          });
+        }
+        
+        // Verificar senha atual
+        const isValid = await bcrypt.compare(input.currentPassword, user.passwordHash);
+        if (!isValid) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Senha atual incorreta.",
+          });
+        }
+        
+        // Atualizar senha
+        const newPasswordHash = await bcrypt.hash(input.newPassword, 10);
+        await db.updateUserPassword(ctx.user.id, newPasswordHash);
+        
+        return { success: true };
+      }),
+    
+    // Toggle 2FA por e-mail
+    toggleTwoFactor: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        enabled: z.boolean(),
+        email: z.string().email("Email inválido").optional(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateTwoFactorSettings(input.establishmentId, input.enabled, input.email);
+        return { success: true };
+      }),
   }),
 
   // ============ CATEGORIES ============

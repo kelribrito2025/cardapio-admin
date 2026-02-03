@@ -4639,3 +4639,15 @@
 
 ## Configurações - Impressão de Teste
 - [x] Corrigir botão Teste Normal para não abrir nova aba ao imprimir
+
+## Conta e Segurança - Nova Página
+- [x] Criar/atualizar schema do banco para campos de conta e 2FA
+- [x] Criar procedures tRPC para dados da conta
+- [x] Criar procedure para alteração de senha
+- [x] Criar procedure para toggle 2FA por e-mail
+- [x] Criar página AccountSecurity.tsx com seções:
+  - [x] Card Dados da Conta (estabelecimento + responsável)
+  - [x] Card Alterar Senha
+  - [x] Card Verificação em duas etapas (2FA)
+- [x] Adicionar rota /conta-seguranca no App.tsx
+- [x] Adicionar link no menu secundário (AdminLayout)
