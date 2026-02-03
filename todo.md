@@ -4633,3 +4633,6 @@
 
 ## Sidebar Mobile - Ícone de Fechar
 - [x] Substituir ícone de X por ícone de minimizar/maximizar na sidebar mobile
+
+## Sidebar - Minimizar ao Clicar em Pedidos
+- [x] Minimizar sidebar automaticamente ao clicar no menu Pedidos (igual ao PDV)

@@ -446,8 +446,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     return null;
   }
 
-  const handleNavClick = () => {
+  const handleNavClick = (href: string) => {
+    // Fechar sidebar mobile
     setSidebarOpen(false);
+    
+    // Minimizar sidebar automaticamente ao clicar em Pedidos ou PDV (desktop)
+    if (href === "/pedidos" || href === "/pdv") {
+      setSidebarCollapsed(true);
+    }
   };
 
   // Sidebar width based on collapsed state
@@ -663,7 +669,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                         <TooltipTrigger asChild>
                           <Link
                             href={item.href}
-                            onClick={handleNavClick}
+                            onClick={() => handleNavClick(item.href)}
                             className={navClassName}
                           >
                             {navContent}
@@ -680,7 +686,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <Link
                       key={item.href}
                       href={item.href}
-                      onClick={handleNavClick}
+                      onClick={() => handleNavClick(item.href)}
                       className={navClassName} style={{borderRadius: '12px', paddingLeft: '37px', marginRight: '43px', marginLeft: '-27px'}}
                     >
                       {navContent}
