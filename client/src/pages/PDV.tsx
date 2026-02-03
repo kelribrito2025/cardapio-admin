@@ -2126,17 +2126,29 @@ export default function PDV() {
                     {/* Campos de Troco - apenas para Dinheiro */}
                     {method.id === "cash" && selectedPaymentInSidebar === "cash" && (
                       <div className="mt-4 ml-2 space-y-3">
-                        {/* Pergunta sobre troco */}
-                        <p className="text-sm text-gray-600">Precisa de troco para quanto?</p>
+                        {/* Pergunta sobre valor recebido */}
+                        <p className="text-sm text-gray-600">Qual valor recebido?</p>
                         
                         {/* Campo Valor Recebido */}
                         <Input
                           type="text"
+                          inputMode="numeric"
                           placeholder="0,00"
                           value={receivedAmount}
                           onChange={(e) => {
-                            const value = e.target.value.replace(/[^0-9,]/g, "");
-                            setReceivedAmount(value);
+                            // Remove tudo que não é número
+                            const onlyNumbers = e.target.value.replace(/\D/g, "");
+                            
+                            // Se não tiver números, limpa o campo
+                            if (!onlyNumbers) {
+                              setReceivedAmount("");
+                              return;
+                            }
+                            
+                            // Converte para centavos e formata
+                            const cents = parseInt(onlyNumbers, 10);
+                            const formatted = (cents / 100).toFixed(2).replace(".", ",");
+                            setReceivedAmount(formatted);
                           }}
                           className="w-full text-lg bg-gray-50 border-gray-200 rounded-xl"
                         />

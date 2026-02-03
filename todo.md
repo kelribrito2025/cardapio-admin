@@ -4587,3 +4587,7 @@
 ## Tooltips Mobile - Card de Visualizações do Cardápio
 - [x] Corrigir tooltip dos quadradinhos do heatmap para funcionar com touch/tap em mobile
 - [x] Corrigir tooltip do ícone de informação (i) para funcionar com touch/tap em mobile
+
+## PDV - Campo de Valor Recebido
+- [x] Alterar texto "Precisa de troco para quanto?" para "Qual valor recebido?"
+- [x] Implementar formatação automática de moeda (ex: 050 = 0,50, 2 = 0,02)
