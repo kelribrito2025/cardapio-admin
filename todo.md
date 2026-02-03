@@ -4554,3 +4554,6 @@
 ## Campos Nome e Telefone na Sidebar de Entrega
 - [x] Adicionar campo Nome acima do Endereço de Entrega
 - [x] Adicionar campo Telefone abaixo do Nome
+
+## Máscara de Telefone no PDV
+- [x] Adicionar formatação automática (00) 00000-0000 no campo de telefone

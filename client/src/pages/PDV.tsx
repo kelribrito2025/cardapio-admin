@@ -1750,7 +1750,16 @@ export default function PDV() {
                   <Input
                     placeholder="(00) 00000-0000"
                     value={deliveryAddress.phone}
-                    onChange={(e) => setDeliveryAddress({...deliveryAddress, phone: e.target.value})}
+                    onChange={(e) => {
+                      // Aplica máscara de telefone (00) 00000-0000
+                      let value = e.target.value.replace(/\D/g, ""); // Remove tudo que não é número
+                      if (value.length > 11) value = value.slice(0, 11); // Limita a 11 dígitos
+                      if (value.length > 0) {
+                        value = value.replace(/^(\d{2})(\d)/g, "($1) $2"); // Adiciona parênteses no DDD
+                        value = value.replace(/(\d{5})(\d)/, "$1-$2"); // Adiciona hífen
+                      }
+                      setDeliveryAddress({...deliveryAddress, phone: value});
+                    }}
                     className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
                   />
                 </div>
