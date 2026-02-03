@@ -379,14 +379,14 @@ export default function PDV() {
                         <p className="text-xs text-muted-foreground line-clamp-2 mb-2 flex-1">
                           {product.description || ''}
                         </p>
-                        <div className="flex items-center justify-between mt-auto">
-                          <span className="text-red-600 font-bold text-sm">
+                        <div className="flex items-center justify-between mt-auto gap-2">
+                          <span className="text-red-600 font-bold text-sm whitespace-nowrap">
                             {formatCurrency(parseFloat(product.price))}
                           </span>
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-8 px-3 text-xs border-red-200 text-red-600 hover:bg-red-50"
+                            className="h-8 px-2 text-xs border-red-200 text-red-600 hover:bg-red-50 shrink-0"
                             onClick={(e) => {
                               e.stopPropagation();
                               // Adiciona direto à lista com quantidade 1, sem observação e sem complementos
@@ -394,8 +394,7 @@ export default function PDV() {
                             }}
                             disabled={!product.hasStock}
                           >
-                            <Plus className="h-3 w-3 mr-1" />
-                            Adicionar
+                            <Plus className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>

@@ -4318,3 +4318,6 @@
 ## Ajustes na barra de categorias do PDV
 - [x] Remover emojis das categorias, exibindo apenas o texto
 - [x] Mover contagem de itens para badge no canto superior direito do botão
+
+## Botão Adicionar responsivo nos cards do PDV
+- [x] Quando espaço for limitado, mostrar apenas ícone + sem texto "Adicionar"
