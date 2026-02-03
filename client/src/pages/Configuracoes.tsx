@@ -873,9 +873,9 @@ export default function Configuracoes() {
   return (
     <AdminLayout>
       {/* Layout com Barra Lateral Secundária */}
-      <div data-settings-page className="flex h-[calc(100vh-58px)] overflow-hidden">
-        {/* Barra Lateral Secundária - Fixa com animação de entrada */}
-        <div className="w-64 shrink-0 bg-white border-r border-border/50 pt-3 pb-4 px-3 h-full overflow-y-auto animate-slide-in-from-left">
+      <div data-settings-page className="flex flex-col md:flex-row h-[calc(100vh-58px)] overflow-hidden">
+        {/* Barra Lateral Secundária - Desktop: Fixa / Mobile: Accordion no topo */}
+        <div className="md:w-64 shrink-0 bg-white md:border-r border-border/50 pt-3 pb-4 px-3 md:h-full md:overflow-y-auto animate-slide-in-from-left">
           <SettingsSidebar 
             activeSection={activeSection} 
             onSectionChange={setActiveSection} 
@@ -883,9 +883,9 @@ export default function Configuracoes() {
         </div>
         
         {/* Conteúdo Principal - Com Scroll */}
-        <div className="flex-1 p-6 bg-muted/30 h-full overflow-y-auto">
+        <div className="flex-1 p-4 md:p-6 bg-muted/30 h-full overflow-y-auto">
           {/* Cabeçalho */}
-          <div className="mb-6">
+          <div className="mb-4 md:mb-6">
             <PageHeader
               title="Configurações"
               description="Gerencie as configurações do seu estabelecimento"

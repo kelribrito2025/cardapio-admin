@@ -4372,7 +4372,7 @@
 - [x] Exibir conteúdo à direita da segunda barra lateral
 - [x] Remover abas horizontais atuais
 - [x] Manter destaque visual no item selecionado
-- [ ] Garantir responsividade no mobile
+- [x] Garantir responsividade no mobile
 
 ## Ajuste do Cabeçalho nas Configurações
 - [x] Mover cabeçalho (título e descrição) para dentro da área de conteúdo principal
@@ -4402,3 +4402,10 @@
 
 ## Corrigir Efeito de Recolher no Menu Configurações
 - [x] Verificar e corrigir o efeito de recolher do menu ao clicar em Configurações para ficar igual ao PDV
+
+## Menu Sanfona Mobile nas Configurações
+- [x] Transformar barra lateral secundária em menu sanfona (accordion) no mobile
+- [x] Menu deve expandir/recolher ao clicar no título da seção
+- [x] Mostrar ícone de seta indicando estado expandido/recolhido
+- [x] Manter comportamento normal em desktop (barra lateral fixa)
+- [x] Adicionar transição suave na expansão/recolhimento
