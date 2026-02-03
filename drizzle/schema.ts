@@ -173,7 +173,7 @@ export const orders = mysqlTable("orders", {
   changeAmount: decimal("changeAmount", { precision: 10, scale: 2 }),
   cancellationReason: text("cancellationReason"),
   // Campos para pedidos externos (iFood, Rappi, etc)
-  source: mysqlEnum("source", ["internal", "ifood", "rappi", "ubereats"]).default("internal").notNull(),
+  source: mysqlEnum("source", ["internal", "ifood", "rappi", "ubereats", "pdv"]).default("internal").notNull(),
   externalId: varchar("externalId", { length: 100 }), // ID do pedido na plataforma externa
   externalDisplayId: varchar("externalDisplayId", { length: 50 }), // ID de exibição (ex: #1234)
   externalStatus: varchar("externalStatus", { length: 50 }), // Status original da plataforma

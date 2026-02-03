@@ -3,6 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
+import { useLocation } from "wouter";
 import { 
   UtensilsCrossed, 
   ShoppingBag, 
@@ -26,7 +27,8 @@ import {
   Copy,
   MapPin,
   ChevronUp,
-  Ticket
+  Ticket,
+  Wallet
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +38,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 
 // Tipos
 type OrderType = "mesa" | "retirada" | "entrega";
+type PaymentMethodType = "cash" | "card" | "pix" | null;
 
 type CartItem = {
   productId: number;
@@ -67,6 +70,7 @@ type Category = {
 };
 
 export default function PDV() {
+  const [, setLocation] = useLocation();
   const { data: establishment } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
 
@@ -86,6 +90,23 @@ export default function PDV() {
     { establishmentId: establishmentId! },
     { enabled: !!establishmentId }
   );
+
+  // Mutation para criar pedido
+  const createOrderMutation = trpc.order.create.useMutation({
+    onSuccess: (data) => {
+      toast.success("Pedido criado com sucesso!", {
+        description: `Pedido ${data.orderNumber} criado e em preparação`,
+      });
+      clearCart();
+      // Redirecionar para a página de Pedidos
+      setLocation("/pedidos");
+    },
+    onError: (error) => {
+      toast.error("Erro ao criar pedido", {
+        description: error.message,
+      });
+    },
+  });
 
   // Estados
   const [orderType, setOrderType] = useState<OrderType>("mesa");
@@ -112,11 +133,14 @@ export default function PDV() {
     complement: "",
     reference: ""
   });
-  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "pix">("cash");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>(null);
   const [changeAmount, setChangeAmount] = useState("");
   const [showDeliverySidebar, setShowDeliverySidebar] = useState(false);
   const [showNeighborhoodSelector, setShowNeighborhoodSelector] = useState(false);
   const [selectedNeighborhoodFee, setSelectedNeighborhoodFee] = useState<{id: number; neighborhood: string; fee: string} | null>(null);
+
+  // Estados para sidebar de pagamento (Retirada)
+  const [showPaymentSidebar, setShowPaymentSidebar] = useState(false);
 
   // Query para buscar taxas por bairro
   const { data: neighborhoodFees } = trpc.neighborhoodFees.list.useQuery(
@@ -284,6 +308,16 @@ export default function PDV() {
   const clearCart = () => {
     setCart([]);
     setTableNumber("");
+    setPaymentMethod(null);
+    setDeliveryAddress({
+      street: "",
+      number: "",
+      neighborhood: "",
+      complement: "",
+      reference: ""
+    });
+    setSelectedNeighborhoodFee(null);
+    setChangeAmount("");
   };
 
   // Calcular total
@@ -305,20 +339,127 @@ export default function PDV() {
     }).format(value);
   };
 
-  // Finalizar pedido (apenas visual por enquanto)
-  const handleFinishOrder = () => {
+  // Gerar número do pedido
+  const generateOrderNumber = () => {
+    const now = new Date();
+    const timestamp = now.getTime().toString().slice(-6);
+    return `${timestamp}`;
+  };
+
+  // Handler para o botão principal (Pagamento ou Finalizar Pedido)
+  const handleMainButtonClick = () => {
     if (cart.length === 0) {
       toast.error("Adicione itens ao pedido");
       return;
     }
+
+    // Para Retirada: se não tem forma de pagamento, abre sidebar de pagamento
+    if (orderType === "retirada" && !paymentMethod) {
+      setShowPaymentSidebar(true);
+      return;
+    }
+
+    // Para Mesa: verificar número da mesa
     if (orderType === "mesa" && !tableNumber) {
       toast.error("Informe o número da mesa");
       return;
     }
-    toast.success("Pedido finalizado com sucesso!", {
-      description: `Tipo: ${orderType === "mesa" ? "Mesa " + tableNumber : orderType === "retirada" ? "Retirada" : "Entrega"}`,
+
+    // Para Entrega: verificar endereço
+    if (orderType === "entrega" && (!deliveryAddress.street || !deliveryAddress.number || !deliveryAddress.neighborhood)) {
+      toast.error("Preencha os dados de entrega");
+      setShowDeliverySidebar(true);
+      return;
+    }
+
+    // Criar pedido
+    createOrder();
+  };
+
+  // Criar pedido no banco de dados
+  const createOrder = () => {
+    if (!establishmentId) {
+      toast.error("Estabelecimento não encontrado");
+      return;
+    }
+
+    const orderNumber = generateOrderNumber();
+    const subtotal = calculateTotal();
+    const deliveryFee = orderType === "entrega" && selectedNeighborhoodFee 
+      ? parseFloat(selectedNeighborhoodFee.fee) 
+      : 0;
+    const total = subtotal + deliveryFee;
+
+    // Mapear tipo de pedido para deliveryType
+    const deliveryTypeMap: Record<OrderType, "delivery" | "pickup" | "dine_in"> = {
+      mesa: "dine_in",
+      retirada: "pickup",
+      entrega: "delivery"
+    };
+
+    // Construir endereço completo para entrega
+    let customerAddress = "";
+    if (orderType === "entrega") {
+      customerAddress = `${deliveryAddress.street}, ${deliveryAddress.number}`;
+      if (deliveryAddress.complement) customerAddress += ` - ${deliveryAddress.complement}`;
+      customerAddress += ` - ${deliveryAddress.neighborhood}`;
+      if (deliveryAddress.reference) customerAddress += ` (Ref: ${deliveryAddress.reference})`;
+    } else if (orderType === "mesa") {
+      customerAddress = `Mesa ${tableNumber}`;
+    }
+
+    createOrderMutation.mutate({
+      establishmentId,
+      orderNumber,
+      customerName: orderType === "mesa" ? `Mesa ${tableNumber}` : "Cliente PDV",
+      customerPhone: "",
+      customerAddress,
+      deliveryType: deliveryTypeMap[orderType],
+      paymentMethod: paymentMethod || "cash",
+      subtotal: subtotal.toFixed(2),
+      deliveryFee: deliveryFee.toFixed(2),
+      total: total.toFixed(2),
+      notes: orderType === "mesa" ? `Mesa: ${tableNumber}` : undefined,
+      status: "preparing", // Pedidos do PDV já vão direto para preparação
+      source: "pdv",
+      items: cart.map(item => ({
+        productId: item.productId,
+        productName: item.name,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        totalPrice: ((parseFloat(item.price) + item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0)) * item.quantity).toFixed(2),
+        complements: item.complements.map(c => ({
+          name: c.name,
+          price: parseFloat(c.price),
+          quantity: c.quantity
+        })),
+        notes: item.observation || undefined
+      }))
     });
-    clearCart();
+  };
+
+  // Determinar texto e estado do botão principal
+  const getMainButtonConfig = () => {
+    if (orderType === "retirada" && !paymentMethod) {
+      return {
+        text: "Pagamento",
+        icon: <Wallet className="h-5 w-5 mr-2" />,
+        disabled: cart.length === 0
+      };
+    }
+    return {
+      text: "Finalizar Pedido",
+      icon: null,
+      disabled: cart.length === 0 || createOrderMutation.isPending
+    };
+  };
+
+  const mainButtonConfig = getMainButtonConfig();
+
+  // Handler para selecionar forma de pagamento na sidebar
+  const handleSelectPaymentMethod = (method: PaymentMethodType) => {
+    setPaymentMethod(method);
+    setShowPaymentSidebar(false);
   };
 
   // Handler para abrir modal de produto
@@ -375,6 +516,42 @@ export default function PDV() {
       setSelectedComplements(complementsMap);
     }
   }, [isEditingMode, editingCartItem, productComplements]);
+
+  // Obter formas de pagamento disponíveis do estabelecimento
+  const getAvailablePaymentMethods = () => {
+    const methods: Array<{ id: PaymentMethodType; name: string; description: string; icon: React.ReactNode }> = [];
+    
+    if (establishment?.acceptsCash) {
+      methods.push({
+        id: "cash",
+        name: "Dinheiro",
+        description: "Pagamento em espécie",
+        icon: <Banknote className="h-5 w-5" />
+      });
+    }
+    
+    if (establishment?.acceptsCard) {
+      methods.push({
+        id: "card",
+        name: "Cartão",
+        description: "Débito ou Crédito",
+        icon: <CreditCard className="h-5 w-5" />
+      });
+    }
+    
+    if (establishment?.acceptsPix) {
+      methods.push({
+        id: "pix",
+        name: "Pix",
+        description: "Pagamento instantâneo",
+        icon: <QrCode className="h-5 w-5" />
+      });
+    }
+    
+    return methods;
+  };
+
+  const availablePaymentMethods = getAvailablePaymentMethods();
 
   return (
     <AdminLayout>
@@ -546,13 +723,12 @@ export default function PDV() {
                             className="h-8 px-2 xl:px-3 text-xs border-red-200 text-red-600 hover:bg-red-50 shrink-0"
                             onClick={(e) => {
                               e.stopPropagation();
-                              // Adiciona direto à lista com quantidade 1, sem observação e sem complementos
-                              addToCart(product, 1, "", []);
+                              handleProductClick(product);
                             }}
                             disabled={!product.hasStock}
                           >
-                            <Plus className="h-4 w-4 xl:mr-1" />
-                            <span className="hidden xl:inline">Adicionar</span>
+                            <Plus className="h-4 w-4" />
+                            <span className="hidden xl:inline ml-1">Adicionar</span>
                           </Button>
                         </div>
                       </div>
@@ -563,21 +739,19 @@ export default function PDV() {
             </div>
           </div>
 
-          {/* Coluna Direita - Sacola/Pedido */}
-          <div className="w-[380px] border-l border-border/50 bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col overflow-hidden">
-            {/* Header da Sacola */}
-            <div className="p-4 border-b border-border/50">
-              <h2 className="text-lg font-bold text-gray-800">Pedido Atual</h2>
-              <p className="text-sm text-muted-foreground">
-                Selecione o tipo e adicione os itens
-              </p>
-            </div>
-
-            {/* Seletor de Tipo de Pedido */}
-            <div className="p-4 border-b border-border/50">
+          {/* Coluna Direita - Carrinho */}
+          <div className="w-96 border-l border-border/50 bg-gray-50 flex flex-col">
+            {/* Header do Carrinho */}
+            <div className="p-4 border-b border-border/50 bg-white">
+              <h2 className="text-lg font-bold text-foreground mb-3">Pedido Atual</h2>
+              
+              {/* Tipo de Pedido */}
               <div className="flex gap-2">
                 <button
-                  onClick={() => setOrderType("mesa")}
+                  onClick={() => {
+                    setOrderType("mesa");
+                    setPaymentMethod(null);
+                  }}
                   className={cn(
                     "flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-xl text-sm font-medium transition-all",
                     orderType === "mesa"
@@ -589,7 +763,10 @@ export default function PDV() {
                   Consumo
                 </button>
                 <button
-                  onClick={() => setOrderType("retirada")}
+                  onClick={() => {
+                    setOrderType("retirada");
+                    setPaymentMethod(null);
+                  }}
                   className={cn(
                     "flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-xl text-sm font-medium transition-all",
                     orderType === "retirada"
@@ -604,6 +781,7 @@ export default function PDV() {
                   onClick={() => {
                     console.log("[PDV] Clicou em Entrega");
                     setOrderType("entrega");
+                    setPaymentMethod(null);
                     setShowDeliverySidebar(true);
                   }}
                   className={cn(
@@ -628,6 +806,30 @@ export default function PDV() {
                     onChange={(e) => setTableNumber(e.target.value)}
                     className="text-center font-medium"
                   />
+                </div>
+              )}
+
+              {/* Indicador de forma de pagamento selecionada (Retirada) */}
+              {orderType === "retirada" && paymentMethod && (
+                <div className="mt-3 flex items-center justify-between p-3 bg-green-50 rounded-xl border border-green-200">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-green-500 text-white rounded-lg">
+                      {paymentMethod === "cash" && <Banknote className="h-4 w-4" />}
+                      {paymentMethod === "card" && <CreditCard className="h-4 w-4" />}
+                      {paymentMethod === "pix" && <QrCode className="h-4 w-4" />}
+                    </div>
+                    <span className="text-sm font-medium text-green-700">
+                      {paymentMethod === "cash" && "Dinheiro"}
+                      {paymentMethod === "card" && "Cartão"}
+                      {paymentMethod === "pix" && "Pix"}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setShowPaymentSidebar(true)}
+                    className="text-sm text-green-600 hover:text-green-700 font-medium"
+                  >
+                    Alterar
+                  </button>
                 </div>
               )}
             </div>
@@ -799,10 +1001,11 @@ export default function PDV() {
                 </Button>
                 <Button
                   className="flex-1 bg-red-500 hover:bg-red-600 text-white"
-                  onClick={handleFinishOrder}
-                  disabled={cart.length === 0}
+                  onClick={handleMainButtonClick}
+                  disabled={mainButtonConfig.disabled}
                 >
-                  Finalizar Pedido
+                  {mainButtonConfig.icon}
+                  {createOrderMutation.isPending ? "Criando..." : mainButtonConfig.text}
                 </Button>
               </div>
             </div>
@@ -844,10 +1047,10 @@ export default function PDV() {
                 );
               }
               
-              // Placeholder quando não há imagem
+              // Se não tem imagem, mostrar placeholder
               return (
-                <div className="relative w-full h-[180px] sm:h-48 md:h-56 flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
-                  <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80" />
+                <div className="relative w-full h-[215px] sm:h-60 md:h-72 flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                  <UtensilsCrossed className="h-20 w-20 text-white/50" />
                   <button 
                     onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
                     className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
@@ -857,346 +1060,253 @@ export default function PDV() {
                 </div>
               );
             })()}
-
-            {/* Body */}
-            <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
-              {/* Título e Preço */}
-              <div>
-                <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
-                {selectedProduct.description && (
-                  <p className="text-sm text-gray-600 leading-relaxed mt-1">
-                    {selectedProduct.description}
-                  </p>
-                )}
-                {Number(selectedProduct.price) > 0 && (
-                  <p className="text-lg font-semibold text-red-500 mt-2">
+            
+            {/* Conteúdo */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-4 space-y-4">
+                {/* Nome e Descrição */}
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h2>
+                  {selectedProduct.description && (
+                    <p className="text-sm text-gray-600 mt-1">{selectedProduct.description}</p>
+                  )}
+                  <p className="text-lg font-bold text-red-600 mt-2">
                     {formatCurrency(parseFloat(selectedProduct.price))}
                   </p>
-                )}
-              </div>
+                </div>
 
-              {/* Grupos de Complementos */}
-              {productComplements && productComplements.length > 0 && (
-                <div className="space-y-4">
-                  {productComplements.map((group) => {
-                    const selectedInGroup = selectedComplements.get(group.id) || new Map<number, number>();
-                    const isRadio = group.maxQuantity === 1;
-                    
-                    return (
-                      <div key={group.id} className="border border-gray-200 rounded-xl overflow-hidden">
-                        {/* Header do Grupo */}
-                        <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-semibold text-gray-900">{group.name}</h4>
-                            {group.isRequired && (
-                              <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
-                                Obrigatório
-                              </span>
-                            )}
+                {/* Complementos */}
+                {productComplements && productComplements.length > 0 && (
+                  <div className="space-y-4">
+                    {productComplements.map((group) => (
+                      <div key={group.id} className="border-t pt-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <h3 className="font-semibold text-gray-900">{group.name}</h3>
+                            <p className="text-xs text-gray-500">
+                              {group.isRequired ? "Obrigatório" : "Opcional"} • 
+                              {group.minQuantity > 0 && ` Mín: ${group.minQuantity}`}
+                              {group.maxQuantity > 0 && ` Máx: ${group.maxQuantity}`}
+                            </p>
                           </div>
-                          <p className="text-xs text-gray-500 mt-0.5">
-                            {group.minQuantity > 0 ? `Mín: ${group.minQuantity}` : ''}
-                            {group.minQuantity > 0 && group.maxQuantity > 1 ? ' | ' : ''}
-                            {group.maxQuantity > 1 ? `Máx: ${group.maxQuantity}` : ''}
-                            {group.maxQuantity === 1 && group.minQuantity === 0 ? 'Escolha até 1' : ''}
-                          </p>
+                          {group.isRequired && (
+                            <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">
+                              Obrigatório
+                            </span>
+                          )}
                         </div>
-                        
-                        {/* Itens do Grupo */}
-                        <div className="divide-y divide-gray-100">
+                        <div className="space-y-2">
                           {group.items.map((item) => {
-                            const itemQuantity = selectedInGroup.get(item.id) || 0;
-                            const isSelected = itemQuantity > 0;
-                            const itemImageUrl = (item as any).imageUrl;
-                            const displayPrice = item.priceMode === 'free' ? 0 : Number(item.price);
-                            
-                            // Função para adicionar/incrementar complemento
-                            const handleIncrement = (e: React.MouseEvent) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setSelectedComplements((prev) => {
-                                const newMap = new Map(prev);
-                                const currentGroupMap = new Map(prev.get(group.id) || []);
-                                const currentQty = currentGroupMap.get(item.id) || 0;
-                                
-                                // Verificar limite do grupo
-                                const totalInGroup = Array.from(currentGroupMap.values()).reduce((a, b) => a + b, 0);
-                                if (totalInGroup < group.maxQuantity) {
-                                  currentGroupMap.set(item.id, currentQty + 1);
-                                  newMap.set(group.id, currentGroupMap);
-                                  if (itemImageUrl) setSelectedComplementImage(itemImageUrl);
-                                }
-                                return newMap;
-                              });
-                            };
-                            
-                            // Função para decrementar/remover complemento
-                            const handleDecrement = (e: React.MouseEvent) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setSelectedComplements((prev) => {
-                                const newMap = new Map(prev);
-                                const currentGroupMap = new Map(prev.get(group.id) || []);
-                                const currentQty = currentGroupMap.get(item.id) || 0;
-                                
-                                if (currentQty > 1) {
-                                  currentGroupMap.set(item.id, currentQty - 1);
-                                } else {
-                                  currentGroupMap.delete(item.id);
-                                  if (itemImageUrl && selectedComplementImage === itemImageUrl) {
-                                    setSelectedComplementImage(null);
-                                  }
-                                }
-                                newMap.set(group.id, currentGroupMap);
-                                return newMap;
-                              });
-                            };
-                            
-                            // Função para toggle (checkbox/radio)
-                            const handleToggle = () => {
-                              setSelectedComplements((prev) => {
-                                const newMap = new Map(prev);
-                                const currentGroupMap = new Map(prev.get(group.id) || []);
-                                
-                                if (isRadio) {
-                                  // Radio: substitui a seleção com quantidade 1
-                                  const newGroupMap = new Map<number, number>();
-                                  newGroupMap.set(item.id, 1);
-                                  newMap.set(group.id, newGroupMap);
-                                  if (itemImageUrl) {
-                                    setSelectedComplementImage(itemImageUrl);
-                                  } else {
-                                    setSelectedComplementImage(null);
-                                  }
-                                } else {
-                                  // Checkbox: toggle
-                                  if (isSelected) {
-                                    currentGroupMap.delete(item.id);
-                                    if (itemImageUrl && selectedComplementImage === itemImageUrl) {
-                                      setSelectedComplementImage(null);
-                                    }
-                                  } else {
-                                    const totalInGroup = Array.from(currentGroupMap.values()).reduce((a, b) => a + b, 0);
-                                    if (totalInGroup < group.maxQuantity) {
-                                      currentGroupMap.set(item.id, 1);
-                                      if (itemImageUrl) {
-                                        setSelectedComplementImage(itemImageUrl);
-                                      }
-                                    }
-                                  }
-                                  newMap.set(group.id, currentGroupMap);
-                                }
-                                return newMap;
-                              });
-                            };
+                            const groupSelections = selectedComplements.get(group.id) || new Map();
+                            const itemQuantity = groupSelections.get(item.id) || 0;
+                            const totalGroupQuantity = Array.from(groupSelections.values()).reduce((sum, q) => sum + q, 0);
+                            const canAddMore = group.maxQuantity === 0 || totalGroupQuantity < group.maxQuantity;
                             
                             return (
-                              <div
-                                key={item.id}
-                                className={`flex items-center justify-between px-4 py-3 transition-colors ${
-                                  isSelected ? 'bg-red-50' : 'hover:bg-gray-50'
-                                }`}
+                              <div 
+                                key={item.id} 
+                                className={cn(
+                                  "flex items-center justify-between p-3 rounded-lg border transition-all",
+                                  itemQuantity > 0 ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                                )}
                               >
-                                <label className="flex items-center gap-3 cursor-pointer flex-1">
-                                  <input
-                                    type={isRadio ? 'radio' : 'checkbox'}
-                                    name={`group-${group.id}`}
-                                    checked={isSelected}
-                                    onChange={handleToggle}
-                                    className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500"
-                                  />
-                                  <span className="text-sm text-gray-900">{item.name}</span>
-                                </label>
-                                
-                                <div className="flex items-center gap-3">
-                                  {/* Controles de quantidade - aparecem quando selecionado */}
-                                  {isSelected && !isRadio && (
-                                    <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1">
-                                      <button
-                                        type="button"
-                                        onClick={handleDecrement}
-                                        className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
-                                      >
-                                        <Minus className="w-4 h-4" />
-                                      </button>
-                                      <span className="w-6 text-center text-sm font-medium text-gray-900">{itemQuantity}</span>
-                                      <button
-                                        type="button"
-                                        onClick={handleIncrement}
-                                        className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
-                                      >
-                                        <Plus className="w-4 h-4" />
-                                      </button>
+                                <div 
+                                  className="flex items-center gap-3 flex-1 cursor-pointer"
+                                  onClick={() => {
+                                    if (item.imageUrl) {
+                                      setSelectedComplementImage(item.imageUrl);
+                                    }
+                                  }}
+                                >
+                                  {item.imageUrl && (
+                                    <div className="relative">
+                                      <img 
+                                        src={item.imageUrl} 
+                                        alt={item.name} 
+                                        className="w-12 h-12 rounded-lg object-cover"
+                                      />
+                                      <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg opacity-0 hover:opacity-100 transition-opacity">
+                                        <Eye className="h-4 w-4 text-white" />
+                                      </div>
                                     </div>
                                   )}
-                                  
-                                  {/* Preço */}
-                                  {(() => {
-                                    if (displayPrice > 0) {
-                                      const totalItemPrice = displayPrice * (itemQuantity || 1);
-                                      return (
-                                        <span className="text-sm text-gray-600 min-w-[70px] text-right">
-                                          {isSelected && itemQuantity > 1 
-                                            ? `+ ${formatCurrency(totalItemPrice)}` 
-                                            : `+ ${formatCurrency(displayPrice)}`
-                                          }
-                                        </span>
-                                      );
-                                    } else if (item.priceMode === 'free' && Number(item.price) > 0) {
-                                      return <span className="text-sm text-green-600 font-medium">GRÁTIS</span>;
-                                    }
-                                    return null;
-                                  })()}
+                                  <div>
+                                    <p className="font-medium text-gray-900 text-sm">{item.name}</p>
+                                    {parseFloat(item.price) > 0 && (
+                                      <p className="text-xs text-gray-500">+ {formatCurrency(parseFloat(item.price))}</p>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {itemQuantity > 0 && (
+                                    <button
+                                      onClick={() => {
+                                        const newMap = new Map(selectedComplements);
+                                        const groupMap = new Map(newMap.get(group.id) || new Map());
+                                        const newQty = itemQuantity - 1;
+                                        if (newQty <= 0) {
+                                          groupMap.delete(item.id);
+                                        } else {
+                                          groupMap.set(item.id, newQty);
+                                        }
+                                        if (groupMap.size === 0) {
+                                          newMap.delete(group.id);
+                                        } else {
+                                          newMap.set(group.id, groupMap);
+                                        }
+                                        setSelectedComplements(newMap);
+                                      }}
+                                      className="w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
+                                    >
+                                      <Minus className="h-4 w-4" />
+                                    </button>
+                                  )}
+                                  {itemQuantity > 0 && (
+                                    <span className="w-6 text-center font-semibold text-sm">{itemQuantity}</span>
+                                  )}
+                                  <button
+                                    onClick={() => {
+                                      if (!canAddMore) return;
+                                      const newMap = new Map(selectedComplements);
+                                      const groupMap = new Map(newMap.get(group.id) || new Map());
+                                      groupMap.set(item.id, itemQuantity + 1);
+                                      newMap.set(group.id, groupMap);
+                                      setSelectedComplements(newMap);
+                                    }}
+                                    disabled={!canAddMore}
+                                    className={cn(
+                                      "w-7 h-7 rounded-full flex items-center justify-center transition-colors",
+                                      canAddMore 
+                                        ? "bg-red-500 text-white hover:bg-red-600" 
+                                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                    )}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </button>
                                 </div>
                               </div>
                             );
                           })}
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
 
-              {/* Campo de Observação */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Observações
-                </label>
-                <textarea
-                  value={productObservation}
-                  onChange={(e) => setProductObservation(e.target.value)}
-                  placeholder="Ex: Sem cebola, bem passado..."
-                  rows={2}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
-                />
+                {/* Observações */}
+                <div className="border-t pt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Observações
+                  </label>
+                  <textarea
+                    value={productObservation}
+                    onChange={(e) => setProductObservation(e.target.value)}
+                    placeholder="Ex: Sem cebola, bem passado..."
+                    className="w-full p-3 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                    rows={2}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Footer com Quantidade e Botão Adicionar */}
-            <div className="border-t bg-white p-3 sm:p-4 flex items-center gap-3 sm:gap-4 flex-shrink-0">
+            {/* Footer - Quantidade e Adicionar */}
+            <div className="border-t p-4 bg-white flex items-center gap-4">
               {/* Controle de Quantidade */}
-              <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-2 py-1">
+              <div className="flex items-center gap-3 bg-gray-100 rounded-full px-2 py-1">
                 <button
-                  type="button"
                   onClick={() => setProductQuantity(Math.max(1, productQuantity - 1))}
-                  className="p-2 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
-                  disabled={productQuantity <= 1}
+                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
                 >
-                  <Minus className="h-4 w-4 text-gray-700" />
+                  <Minus className="h-4 w-4" />
                 </button>
-                <span className="text-lg font-semibold text-gray-900 min-w-[24px] text-center">
-                  {productQuantity}
-                </span>
+                <span className="w-8 text-center font-semibold">{productQuantity}</span>
                 <button
-                  type="button"
                   onClick={() => setProductQuantity(productQuantity + 1)}
-                  className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
                 >
-                  <Plus className="h-4 w-4 text-gray-700" />
+                  <Plus className="h-4 w-4" />
                 </button>
               </div>
 
               {/* Botão Adicionar */}
               {(() => {
-                // Calcular preço total com complementos (considerando quantidade)
+                // Calcular preço total
                 let complementsTotal = 0;
-                const selectedComplementsList: Array<{ id: number; name: string; price: string; quantity: number }> = [];
-                
-                if (productComplements) {
-                  productComplements.forEach((group) => {
-                    const selectedInGroup = selectedComplements.get(group.id);
-                    if (selectedInGroup) {
-                      group.items.forEach((item) => {
-                        const qty = selectedInGroup.get(item.id);
-                        if (qty && qty > 0) {
-                          // Considerar priceMode: se for 'free', o preço é 0
-                          const itemPrice = item.priceMode === 'free' ? 0 : Number(item.price);
-                          complementsTotal += itemPrice * qty;
-                          selectedComplementsList.push({
-                            id: item.id,
-                            name: item.name,
-                            price: String(itemPrice),
-                            quantity: qty,
-                          });
-                        }
-                      });
-                    }
-                  });
-                }
-                
-                const unitPrice = Number(selectedProduct.price) + complementsTotal;
-                const totalPrice = unitPrice * productQuantity;
-                
-                // Verificar se grupos obrigatórios estão preenchidos
-                let requiredGroupsMet = true;
-                if (productComplements) {
-                  productComplements.forEach((group) => {
-                    if (group.isRequired || group.minQuantity > 0) {
-                      const selectedInGroup = selectedComplements.get(group.id);
-                      // Contar total de itens selecionados no grupo
-                      const selectedCount = selectedInGroup ? Array.from(selectedInGroup.values()).reduce((a, b) => a + b, 0) : 0;
-                      if (selectedCount < (group.minQuantity || 1)) {
-                        requiredGroupsMet = false;
+                selectedComplements.forEach((groupMap) => {
+                  groupMap.forEach((qty, itemId) => {
+                    // Encontrar o item nos complementos
+                    productComplements?.forEach(group => {
+                      const item = group.items.find(i => i.id === itemId);
+                      if (item) {
+                        complementsTotal += parseFloat(item.price) * qty;
                       }
-                    }
+                    });
                   });
-                }
+                });
+                const totalPrice = (parseFloat(selectedProduct.price) + complementsTotal) * productQuantity;
                 
-                // Verificar se item tem preço zero e nenhum complemento selecionado
-                const hasZeroPrice = Number(selectedProduct.price) === 0;
-                const hasSelectedComplements = selectedComplementsList.length > 0;
-                const canAddZeroPriceItem = !hasZeroPrice || hasSelectedComplements;
-                
-                const canAddToCart = requiredGroupsMet && canAddZeroPriceItem && selectedProduct.hasStock;
+                // Verificar se todos os grupos obrigatórios estão preenchidos
+                const requiredGroupsFilled = productComplements?.every(group => {
+                  if (!group.isRequired) return true;
+                  const groupSelections = selectedComplements.get(group.id);
+                  if (!groupSelections) return false;
+                  const totalQty = Array.from(groupSelections.values()).reduce((sum, q) => sum + q, 0);
+                  return totalQty >= group.minQuantity;
+                }) ?? true;
                 
                 return (
                   <button
                     onClick={() => {
+                      // Coletar complementos selecionados
+                      const complements: Array<{ id: number; name: string; price: string; quantity: number }> = [];
+                      selectedComplements.forEach((groupMap, groupId) => {
+                        groupMap.forEach((qty, itemId) => {
+                          productComplements?.forEach(group => {
+                            if (group.id === groupId) {
+                              const item = group.items.find(i => i.id === itemId);
+                              if (item) {
+                                complements.push({
+                                  id: item.id,
+                                  name: item.name,
+                                  price: item.price,
+                                  quantity: qty
+                                });
+                              }
+                            }
+                          });
+                        });
+                      });
+                      
                       if (isEditingMode && editingCartItem) {
-                        // Modo de edição: atualizar item existente no carrinho
+                        // Modo de edição: atualizar item existente
                         const newCart = [...cart];
                         newCart[editingCartItem.index] = {
                           ...newCart[editingCartItem.index],
                           quantity: productQuantity,
                           observation: productObservation,
-                          complements: selectedComplementsList,
+                          complements
                         };
                         setCart(newCart);
-                        setSelectedProduct(null);
-                        setIsEditingMode(false);
-                        setEditingCartItem(null);
-                        setSelectedComplements(new Map());
-                        setSelectedComplementImage(null);
                         toast.success("Item atualizado!");
                       } else {
-                        // Modo normal: adicionar novo item
-                        addToCart(selectedProduct, productQuantity, productObservation, selectedComplementsList);
+                        // Modo de adição: adicionar novo item
+                        addToCart(selectedProduct, productQuantity, productObservation, complements);
                       }
+                      
+                      setSelectedProduct(null);
+                      setSelectedComplementImage(null);
+                      setIsEditingMode(false);
+                      setEditingCartItem(null);
                     }}
-                    disabled={!canAddToCart}
-                    className={`flex-1 font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 ${
-                      canAddToCart 
-                        ? 'bg-red-500 hover:bg-red-600 text-white' 
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
+                    disabled={!requiredGroupsFilled}
+                    className={cn(
+                      "flex-1 py-3 rounded-full font-semibold text-white flex items-center justify-center gap-2 transition-colors",
+                      requiredGroupsFilled 
+                        ? "bg-red-500 hover:bg-red-600" 
+                        : "bg-gray-300 cursor-not-allowed"
+                    )}
                   >
-                    {!selectedProduct.hasStock ? (
-                      <>
-                        <X className="h-5 w-5" />
-                        <span>Indisponível</span>
-                      </>
-                    ) : hasZeroPrice && !hasSelectedComplements ? (
-                      <>
-                        <ShoppingBag className="h-5 w-5" />
-                        <span>Escolha uma opção</span>
-                      </>
-                    ) : !requiredGroupsMet ? (
-                      <>
-                        <ShoppingBag className="h-5 w-5" />
-                        <span>Escolha uma opção</span>
-                      </>
-                    ) : isEditingMode ? (
+                    {isEditingMode ? (
                       <>
                         <Check className="h-5 w-5" />
                         <span className="hidden xs:inline">Atualizar</span>
@@ -1445,7 +1555,7 @@ export default function PDV() {
             </div>
 
             {/* Divisor */}
-            <div className="border-t border-gray-200 my-4" />
+            <div className="border-t border-gray-200" />
 
             {/* Seção de Pagamento */}
             <div className="space-y-3">
@@ -1456,125 +1566,135 @@ export default function PDV() {
               
               <div className="space-y-2">
                 {/* Dinheiro */}
-                <button
-                  onClick={() => setPaymentMethod("cash")}
-                  className={cn(
-                    "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all",
-                    paymentMethod === "cash"
-                      ? "border-red-500 bg-red-50"
-                      : "border-gray-200 hover:border-gray-300 bg-white"
-                  )}
-                >
-                  <div className={cn(
-                    "p-2 rounded-lg",
-                    paymentMethod === "cash" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600"
-                  )}>
-                    <Banknote className="h-5 w-5" />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <p className={cn(
-                      "font-medium",
-                      paymentMethod === "cash" ? "text-red-700" : "text-gray-700"
-                    )}>Dinheiro</p>
-                    <p className="text-xs text-gray-500">Pagamento na entrega</p>
-                  </div>
-                  {paymentMethod === "cash" && (
-                    <Check className="h-5 w-5 text-red-500" />
-                  )}
-                </button>
+                {establishment?.acceptsCash && (
+                  <>
+                    <button
+                      onClick={() => setPaymentMethod("cash")}
+                      className={cn(
+                        "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all",
+                        paymentMethod === "cash"
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-200 hover:border-gray-300 bg-white"
+                      )}
+                    >
+                      <div className={cn(
+                        "p-2 rounded-lg",
+                        paymentMethod === "cash" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600"
+                      )}>
+                        <Banknote className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className={cn(
+                          "font-medium",
+                          paymentMethod === "cash" ? "text-red-700" : "text-gray-700"
+                        )}>Dinheiro</p>
+                        <p className="text-xs text-gray-500">Pagamento na entrega</p>
+                      </div>
+                      {paymentMethod === "cash" && (
+                        <Check className="h-5 w-5 text-red-500" />
+                      )}
+                    </button>
 
-                {/* Campo de Troco - aparece quando dinheiro está selecionado */}
-                {paymentMethod === "cash" && (
-                  <div className="ml-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
-                    <label className="block text-sm font-medium text-gray-600 mb-2">Troco para quanto?</label>
-                    <Input
-                      type="text"
-                      placeholder="Ex: R$ 50,00"
-                      value={changeAmount}
-                      onChange={(e) => setChangeAmount(e.target.value)}
-                      className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">Deixe em branco se não precisar de troco</p>
-                  </div>
+                    {/* Campo de Troco - aparece quando dinheiro está selecionado */}
+                    {paymentMethod === "cash" && (
+                      <div className="ml-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                        <label className="block text-sm font-medium text-gray-600 mb-2">Troco para quanto?</label>
+                        <Input
+                          type="text"
+                          placeholder="Ex: R$ 50,00"
+                          value={changeAmount}
+                          onChange={(e) => setChangeAmount(e.target.value)}
+                          className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Deixe em branco se não precisar de troco</p>
+                      </div>
+                    )}
+                  </>
                 )}
 
                 {/* Cartão */}
-                <button
-                  onClick={() => setPaymentMethod("card")}
-                  className={cn(
-                    "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all",
-                    paymentMethod === "card"
-                      ? "border-red-500 bg-red-50"
-                      : "border-gray-200 hover:border-gray-300 bg-white"
-                  )}
-                >
-                  <div className={cn(
-                    "p-2 rounded-lg",
-                    paymentMethod === "card" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600"
-                  )}>
-                    <CreditCard className="h-5 w-5" />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <p className={cn(
-                      "font-medium",
-                      paymentMethod === "card" ? "text-red-700" : "text-gray-700"
-                    )}>Cartão</p>
-                    <p className="text-xs text-gray-500">Débito ou Crédito na entrega</p>
-                  </div>
-                  {paymentMethod === "card" && (
-                    <Check className="h-5 w-5 text-red-500" />
-                  )}
-                </button>
+                {establishment?.acceptsCard && (
+                  <button
+                    onClick={() => setPaymentMethod("card")}
+                    className={cn(
+                      "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all",
+                      paymentMethod === "card"
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-200 hover:border-gray-300 bg-white"
+                    )}
+                  >
+                    <div className={cn(
+                      "p-2 rounded-lg",
+                      paymentMethod === "card" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600"
+                    )}>
+                      <CreditCard className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <p className={cn(
+                        "font-medium",
+                        paymentMethod === "card" ? "text-red-700" : "text-gray-700"
+                      )}>Cartão</p>
+                      <p className="text-xs text-gray-500">Débito ou Crédito na entrega</p>
+                    </div>
+                    {paymentMethod === "card" && (
+                      <Check className="h-5 w-5 text-red-500" />
+                    )}
+                  </button>
+                )}
 
                 {/* Pix */}
-                <button
-                  onClick={() => setPaymentMethod("pix")}
-                  className={cn(
-                    "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all",
-                    paymentMethod === "pix"
-                      ? "border-red-500 bg-red-50"
-                      : "border-gray-200 hover:border-gray-300 bg-white"
-                  )}
-                >
-                  <div className={cn(
-                    "p-2 rounded-lg",
-                    paymentMethod === "pix" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600"
-                  )}>
-                    <QrCode className="h-5 w-5" />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <p className={cn(
-                      "font-medium",
-                      paymentMethod === "pix" ? "text-red-700" : "text-gray-700"
-                    )}>Pix</p>
-                    <p className="text-xs text-gray-500">Pagamento instantâneo</p>
-                  </div>
-                  {paymentMethod === "pix" && (
-                    <Check className="h-5 w-5 text-red-500" />
-                  )}
-                </button>
+                {establishment?.acceptsPix && (
+                  <>
+                    <button
+                      onClick={() => setPaymentMethod("pix")}
+                      className={cn(
+                        "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all",
+                        paymentMethod === "pix"
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-200 hover:border-gray-300 bg-white"
+                      )}
+                    >
+                      <div className={cn(
+                        "p-2 rounded-lg",
+                        paymentMethod === "pix" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600"
+                      )}>
+                        <QrCode className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className={cn(
+                          "font-medium",
+                          paymentMethod === "pix" ? "text-red-700" : "text-gray-700"
+                        )}>Pix</p>
+                        <p className="text-xs text-gray-500">Pagamento instantâneo</p>
+                      </div>
+                      {paymentMethod === "pix" && (
+                        <Check className="h-5 w-5 text-red-500" />
+                      )}
+                    </button>
 
-                {/* Chave Pix - aparece quando pix está selecionado */}
-                {paymentMethod === "pix" && (
-                  <div className="ml-4 p-3 bg-green-50 rounded-xl border border-green-200">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-green-700">Chave Pix</span>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText("exemplo@pix.com");
-                          toast.success("Chave Pix copiada!");
-                        }}
-                        className="flex items-center gap-1 text-xs text-green-600 hover:text-green-700 transition-colors"
-                      >
-                        <Copy className="h-3 w-3" />
-                        Copiar
-                      </button>
-                    </div>
-                    <p className="text-sm text-green-800 font-mono bg-white px-3 py-2 rounded-lg border border-green-200">
-                      exemplo@pix.com
-                    </p>
-                    <p className="text-xs text-green-600 mt-2">Envie o comprovante ao entregador</p>
-                  </div>
+                    {/* Chave Pix - aparece quando pix está selecionado */}
+                    {paymentMethod === "pix" && establishment?.pixKey && (
+                      <div className="ml-4 p-3 bg-green-50 rounded-xl border border-green-200">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-green-700">Chave Pix</span>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(establishment.pixKey || "");
+                              toast.success("Chave Pix copiada!");
+                            }}
+                            className="flex items-center gap-1 text-xs text-green-600 hover:text-green-700 transition-colors"
+                          >
+                            <Copy className="h-3 w-3" />
+                            Copiar
+                          </button>
+                        </div>
+                        <p className="text-sm text-green-800 font-mono bg-white px-3 py-2 rounded-lg border border-green-200">
+                          {establishment.pixKey}
+                        </p>
+                        <p className="text-xs text-green-600 mt-2">Envie o comprovante ao entregador</p>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -1595,6 +1715,80 @@ export default function PDV() {
             <p className="text-xs text-center text-gray-500 mt-2">
               Campos com * são obrigatórios
             </p>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Sidebar de Pagamento (para Retirada) */}
+      <Sheet open={showPaymentSidebar} onOpenChange={setShowPaymentSidebar}>
+        <SheetContent side="right" className="w-[437px] sm:max-w-[437px] p-0 flex flex-col" hideCloseButton>
+          {/* Header */}
+          <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/20 rounded-lg">
+                  <Wallet className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-white">Forma de Pagamento</h2>
+                  <p className="text-sm text-white/80">Selecione como o cliente vai pagar</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowPaymentSidebar(false)}
+                className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+              >
+                <X className="h-5 w-5 text-white" />
+              </button>
+            </div>
+          </div>
+
+          {/* Conteúdo - Formas de Pagamento */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="text-center py-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
+                <CreditCard className="h-8 w-8 text-red-500" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-800">Selecione o Pagamento</h3>
+              <p className="text-sm text-gray-500 mt-1">Escolha a forma de pagamento do cliente</p>
+            </div>
+
+            <div className="space-y-3">
+              {availablePaymentMethods.length > 0 ? (
+                availablePaymentMethods.map((method) => (
+                  <button
+                    key={method.id}
+                    onClick={() => handleSelectPaymentMethod(method.id)}
+                    className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-red-300 hover:bg-red-50/50 transition-all"
+                  >
+                    <div className="p-3 bg-gray-100 rounded-xl text-gray-600">
+                      {method.icon}
+                    </div>
+                    <div className="flex-1 text-left">
+                      <p className="font-semibold text-gray-800 text-base">{method.name}</p>
+                      <p className="text-sm text-gray-500">{method.description}</p>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-gray-400" />
+                  </button>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">Nenhuma forma de pagamento configurada</p>
+                  <p className="text-sm text-gray-400 mt-1">Configure as formas de pagamento nas configurações</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="p-4 border-t border-border/50 bg-gray-50">
+            <Button
+              variant="outline"
+              onClick={() => setShowPaymentSidebar(false)}
+              className="w-full py-3"
+            >
+              Cancelar
+            </Button>
           </div>
         </SheetContent>
       </Sheet>

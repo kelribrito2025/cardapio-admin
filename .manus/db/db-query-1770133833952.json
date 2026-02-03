@@ -1,0 +1,100 @@
+{
+  "query": "SELECT id, orderNumber, status, deliveryType, paymentMethod, source, createdAt FROM orders ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, status, deliveryType, paymentMethod, source, createdAt FROM orders ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "300004",
+      "orderNumber": "696458",
+      "status": "pending_confirmation",
+      "deliveryType": "pickup",
+      "paymentMethod": "card",
+      "source": "internal",
+      "createdAt": "2026-02-03 15:48:16"
+    },
+    {
+      "id": "300003",
+      "orderNumber": "617000",
+      "status": "pending_confirmation",
+      "deliveryType": "pickup",
+      "paymentMethod": "card",
+      "source": "internal",
+      "createdAt": "2026-02-03 15:46:57"
+    },
+    {
+      "id": "300002",
+      "orderNumber": "387267",
+      "status": "pending_confirmation",
+      "deliveryType": "pickup",
+      "paymentMethod": "pix",
+      "source": "internal",
+      "createdAt": "2026-02-03 15:43:07"
+    },
+    {
+      "id": "300001",
+      "orderNumber": "170298",
+      "status": "pending_confirmation",
+      "deliveryType": "pickup",
+      "paymentMethod": "cash",
+      "source": "internal",
+      "createdAt": "2026-02-03 15:39:30"
+    },
+    {
+      "id": "270007",
+      "orderNumber": "#P30",
+      "status": "completed",
+      "deliveryType": "delivery",
+      "paymentMethod": "cash",
+      "source": "internal",
+      "createdAt": "2026-02-03 01:57:08"
+    },
+    {
+      "id": "270006",
+      "orderNumber": "#P29",
+      "status": "completed",
+      "deliveryType": "delivery",
+      "paymentMethod": "card",
+      "source": "internal",
+      "createdAt": "2026-02-03 01:28:05"
+    },
+    {
+      "id": "270005",
+      "orderNumber": "#P28",
+      "status": "completed",
+      "deliveryType": "delivery",
+      "paymentMethod": "card",
+      "source": "internal",
+      "createdAt": "2026-02-03 00:14:37"
+    },
+    {
+      "id": "270004",
+      "orderNumber": "#P27",
+      "status": "completed",
+      "deliveryType": "delivery",
+      "paymentMethod": "pix",
+      "source": "internal",
+      "createdAt": "2026-02-02 23:47:23"
+    },
+    {
+      "id": "270003",
+      "orderNumber": "#P26",
+      "status": "completed",
+      "deliveryType": "delivery",
+      "paymentMethod": "cash",
+      "source": "internal",
+      "createdAt": "2026-02-02 23:33:21"
+    },
+    {
+      "id": "270002",
+      "orderNumber": "#P25",
+      "status": "completed",
+      "deliveryType": "delivery",
+      "paymentMethod": "card",
+      "source": "internal",
+      "createdAt": "2026-02-02 23:04:04"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tstatus\tdeliveryType\tpaymentMethod\tsource\tcreatedAt\n300004\t696458\tpending_confirmation\tpickup\tcard\tinternal\t2026-02-03 15:48:16\n300003\t617000\tpending_confirmation\tpickup\tcard\tinternal\t2026-02-03 15:46:57\n300002\t387267\tpending_confirmation\tpickup\tpix\tinternal\t2026-02-03 15:43:07\n300001\t170298\tpending_confirmation\tpickup\tcash\tinternal\t2026-02-03 15:39:30\n270007\t#P30\tcompleted\tdelivery\tcash\tinternal\t2026-02-03 01:57:08\n270006\t#P29\tcompleted\tdelivery\tcard\tinternal\t2026-02-03 01:28:05\n270005\t#P28\tcompleted\tdelivery\tcard\tinternal\t2026-02-03 00:14:37\n270004\t#P27\tcompleted\tdelivery\tpix\tinternal\t2026-02-02 23:47:23\n270003\t#P26\tcompleted\tdelivery\tcash\tinternal\t2026-02-02 23:33:21\n270002\t#P25\tcompleted\tdelivery\tcard\tinternal\t2026-02-02 23:04:04\n",
+  "stderr": "",
+  "execution_time_ms": 631
+}

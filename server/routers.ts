@@ -778,6 +778,8 @@ export const appRouter = router({
         deliveryFee: z.string().default("0"),
         total: z.string(),
         notes: z.string().optional(),
+        status: z.enum(["pending_confirmation", "new", "preparing", "ready", "completed", "cancelled"]).optional(),
+        source: z.enum(["internal", "ifood", "rappi", "ubereats", "pdv"]).optional(),
         items: z.array(z.object({
           productId: z.number(),
           productName: z.string(),
@@ -794,11 +796,11 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         const { items, ...orderData } = input;
-        const id = await db.createOrder(orderData, items.map(item => ({
+        const result = await db.createOrderWithNumber(orderData, items.map(item => ({
           ...item,
           orderId: 0, // Will be set in db function
         })));
-        return { id };
+        return result;
       }),
   }),
 

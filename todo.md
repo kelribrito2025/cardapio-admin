@@ -4450,3 +4450,19 @@
 - [x] Adicionar ícone de cupom ao lado esquerdo do botão de cupom no card de Pedido Atual
 
 - [x] Modificar botão de cupom para ser apenas um ícone ao lado esquerdo do botão Limpar
+
+## Fluxo de Retirada no PDV
+- [ ] Implementar sidebar de pagamento para Retirada (mesmo padrão visual da sidebar de Entrega)
+- [ ] Botão "Finalizar Pedido" muda para "Pagamento" quando tipo é Retirada e não há forma de pagamento selecionada
+- [ ] Ao clicar em "Pagamento", abrir sidebar com formas de pagamento do restaurante
+- [ ] Ao selecionar forma de pagamento, fechar sidebar automaticamente
+- [ ] Após selecionar pagamento, botão volta para "Finalizar Pedido"
+- [ ] Ao clicar em "Finalizar Pedido", criar pedido com status "Preparando" e redirecionar para página de Pedidos
+
+## Bug - Pedidos de Retirada não aparecem na página de Pedidos
+- [x] Investigar por que pedidos de Retirada não aparecem no card de preparo
+- [x] Corrigir a lógica de criação/exibição de pedidos de Retirada
+- [x] Testar fluxo completo de Retirada
+- [x] Pedidos do PDV agora têm status inicial 'preparing' (em preparação)
+- [x] Número do pedido segue sequência correta (#P1, #P2, #P3...)
+- [x] Notificação SSE enviada para atualizar página de Pedidos em tempo real

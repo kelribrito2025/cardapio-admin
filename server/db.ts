@@ -804,11 +804,40 @@ export async function getOrderItemsWithPrinter(orderId: number) {
   return items;
 }
 
-export async function createOrder(data: InsertOrder, items: InsertOrderItem[]) {
+export async function createOrderWithNumber(data: InsertOrder, items: InsertOrderItem[]): Promise<{ id: number; orderNumber: string }> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(orders).values(data);
+  // Se não foi passado orderNumber, gerar automaticamente no formato #P1, #P2, etc.
+  let orderNumber = data.orderNumber;
+  if (!orderNumber || orderNumber.match(/^\d+$/)) {
+    // Buscar último pedido do estabelecimento para gerar próximo número
+    const lastOrderResult = await db.select({ orderNumber: orders.orderNumber })
+      .from(orders)
+      .where(eq(orders.establishmentId, data.establishmentId))
+      .orderBy(desc(orders.id))
+      .limit(1);
+    
+    let nextNumber = 1;
+    if (lastOrderResult.length > 0 && lastOrderResult[0].orderNumber) {
+      const lastNumber = lastOrderResult[0].orderNumber;
+      const match = lastNumber.match(/#P(\d+)/);
+      if (match) {
+        nextNumber = parseInt(match[1], 10) + 1;
+      }
+    }
+    orderNumber = `#P${nextNumber}`;
+  }
+  
+  // Definir status padrão como 'preparing' para pedidos do PDV
+  const finalData = {
+    ...data,
+    orderNumber,
+    status: data.status || 'preparing',
+    source: data.source || 'pdv',
+  };
+  
+  const result = await db.insert(orders).values(finalData);
   const orderId = result[0].insertId;
   
   if (items.length > 0) {
@@ -816,7 +845,44 @@ export async function createOrder(data: InsertOrder, items: InsertOrderItem[]) {
     await db.insert(orderItems).values(itemsWithOrderId);
   }
   
-  return orderId;
+  // Notificar via SSE sobre novo pedido
+  const sseOrderData = {
+    id: orderId,
+    orderNumber,
+    establishmentId: data.establishmentId,
+    customerName: data.customerName,
+    customerPhone: data.customerPhone,
+    customerAddress: data.customerAddress,
+    deliveryType: data.deliveryType,
+    paymentMethod: data.paymentMethod,
+    subtotal: data.subtotal,
+    deliveryFee: data.deliveryFee,
+    discount: data.discount || "0",
+    couponCode: data.couponCode || null,
+    total: data.total,
+    notes: data.notes,
+    status: finalData.status,
+    source: finalData.source,
+    createdAt: new Date(),
+    items: items.map(item => ({
+      productId: item.productId,
+      productName: item.productName,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      totalPrice: item.totalPrice,
+      complements: item.complements,
+      notes: item.notes,
+    })),
+  };
+  notifyNewOrder(data.establishmentId, sseOrderData);
+  
+  return { id: orderId, orderNumber };
+}
+
+// Manter função antiga para compatibilidade
+export async function createOrder(data: InsertOrder, items: InsertOrderItem[]): Promise<number> {
+  const result = await createOrderWithNumber(data, items);
+  return result.id;
 }
 
 export async function updateOrderStatus(id: number, status: "new" | "preparing" | "ready" | "completed" | "cancelled", cancellationReason?: string) {
