@@ -4625,6 +4625,3 @@
 
 ## HeatmapCard - Coluna de Dias Fixa
 - [x] Adicionar coluna de dias da semana fixa durante scroll horizontal usando CSS sticky
-
-## HeatmapCard - Destaque de Linha e Coluna
-- [x] Implementar destaque visual para linha e coluna ao passar o mouse sobre uma célula
