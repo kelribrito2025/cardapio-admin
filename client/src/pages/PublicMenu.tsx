@@ -3348,7 +3348,11 @@ export default function PublicMenu() {
                                     setChangeAmountError(null);
                                   }
                                 }}
-                                className="flex-1 py-2 px-3 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors"
+                                className={`flex-1 py-2 px-3 text-sm font-medium rounded-lg transition-colors ${
+                                  changeAmount === value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                    ? "bg-red-500 text-white border border-red-500"
+                                    : "text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                                }`}
                               >
                                 R$ {value}
                               </button>

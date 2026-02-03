@@ -4580,3 +4580,6 @@
 
 ## Atalhos de Valores no Campo de Troco - Menu Público
 - [x] Adicionar botões R$ 20, R$ 50, R$ 100 abaixo do campo de troco
+
+## Estilo do Botão de Troco Selecionado
+- [x] Fazer botão de valor de troco selecionado ficar vermelho
