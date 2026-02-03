@@ -91,12 +91,60 @@ export default function PDV() {
     { enabled: !!establishmentId }
   );
 
+  // Query para buscar configurações de impressão (para saber o método favorito)
+  const { data: printerSettings } = trpc.printer.getSettings.useQuery(
+    { establishmentId: establishmentId ?? 0 },
+    { enabled: !!establishmentId && establishmentId > 0 }
+  );
+
+  // Função para imprimir pedido (Impressão Normal)
+  const handlePrintOrderDirect = async (orderId: number) => {
+    try {
+      // Abrir o recibo em uma nova aba - funciona em celular e desktop
+      const receiptUrl = `${window.location.origin}/api/print/receipt/${orderId}`;
+      window.open(receiptUrl, '_blank');
+    } catch (error) {
+      console.error("Erro ao imprimir pedido:", error);
+    }
+  };
+
+  // Função para imprimir em múltiplas impressoras (Android)
+  const handlePrintMultiPrinter = async (orderId: number) => {
+    try {
+      const response = await fetch(`${window.location.origin}/api/print/multiprinter-sectors/${orderId}`);
+      const data = await response.json();
+      
+      if (data.success && data.deepLink) {
+        window.location.href = data.deepLink;
+      }
+    } catch (error) {
+      console.error("Erro ao imprimir em múltiplas impressoras:", error);
+    }
+  };
+
+  // Função para imprimir usando o método favorito
+  const handlePrintWithFavoriteMethod = async (orderId: number) => {
+    const printMethod = printerSettings?.defaultPrintMethod || 'normal';
+    
+    if (printMethod === 'android') {
+      await handlePrintMultiPrinter(orderId);
+    } else {
+      await handlePrintOrderDirect(orderId);
+    }
+  };
+
   // Mutation para criar pedido
   const createOrderMutation = trpc.order.create.useMutation({
     onSuccess: (data) => {
       toast.success("Pedido criado com sucesso!", {
         description: `Pedido ${data.orderNumber} criado e em preparação`,
       });
+      
+      // Imprimir pedido automaticamente usando o método favorito
+      if (data.id) {
+        handlePrintWithFavoriteMethod(data.id);
+      }
+      
       clearCart();
       // Redirecionar para a página de Pedidos
       setLocation("/pedidos");

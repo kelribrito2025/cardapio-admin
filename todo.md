@@ -4503,3 +4503,8 @@
 - [x] Seleção de bairro em uma única linha (ícone + "Entrega" + taxa + "Alterar")
 - [x] Campo Número ao lado do Complemento (20% largura)
 - [x] Campo Complemento com 80% da largura
+
+## Impressão Automática no PDV
+- [x] Analisar código de impressão existente na página de Pedidos
+- [x] Implementar impressão automática após finalizar pedido no PDV
+- [x] Usar opção de impressão configurada como favorita
