@@ -94,6 +94,7 @@ export default function PDV() {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [hasOverflow, setHasOverflow] = useState(false);
 
   // Query para buscar complementos do produto selecionado
   const { data: productComplements } = trpc.publicMenu.getProductComplements.useQuery(
@@ -149,6 +150,20 @@ export default function PDV() {
     const walk = (x - startX) * 2; // Velocidade do scroll
     categoriesContainerRef.current.scrollLeft = scrollLeft - walk;
   };
+
+  // Detectar overflow nas categorias
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (categoriesContainerRef.current) {
+        const { scrollWidth, clientWidth } = categoriesContainerRef.current;
+        setHasOverflow(scrollWidth > clientWidth);
+      }
+    };
+
+    checkOverflow();
+    window.addEventListener('resize', checkOverflow);
+    return () => window.removeEventListener('resize', checkOverflow);
+  }, [sortedCategories]);
 
   // Funções do carrinho
   const addToCart = (product: Product, quantity: number, observation: string, complements: Array<{ id: number; name: string; price: string; quantity: number }>) => {
@@ -350,10 +365,12 @@ export default function PDV() {
                 )}
                 </div>
               </div>
-              {/* Indicador de mais categorias - Setinha fixa na direita */}
-              <div className="absolute right-0 top-0 bottom-0 flex items-center pointer-events-none pr-2">
-                <ChevronsRight className="h-6 w-6 text-red-400 animate-bounce-x" />
-              </div>
+              {/* Indicador de mais categorias - Setinha fixa na direita (só aparece quando há overflow) */}
+              {hasOverflow && (
+                <div className="absolute right-0 top-0 bottom-0 flex items-center pointer-events-none pr-2">
+                  <ChevronsRight className="h-6 w-6 text-red-400 animate-bounce-x" />
+                </div>
+              )}
             </div>
 
             {/* Barra de Busca */}

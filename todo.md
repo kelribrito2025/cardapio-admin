@@ -4342,3 +4342,6 @@
 
 ## Ajustar botão Ver mais da barra de categorias
 - [x] Manter apenas setinha (ChevronsRight) com efeito visual, remover texto e gradiente
+
+## Setinha de categorias condicional
+- [x] Mostrar setinha apenas quando houver overflow na lista de categorias
