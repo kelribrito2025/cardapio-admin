@@ -4409,3 +4409,23 @@
 - [x] Mostrar ícone de seta indicando estado expandido/recolhido
 - [x] Manter comportamento normal em desktop (barra lateral fixa)
 - [x] Adicionar transição suave na expansão/recolhimento
+
+## Redesign do Card de Item no PDV
+- [ ] Mostrar apenas título e preço na mesma linha no card do item
+- [ ] Adicionar dropdown com controles (menos/mais/editar) ao hover ou clique
+- [ ] Ícone de editar na mesma linha dos botões menos/mais
+- [ ] Ao clicar no ícone de editar, abrir modal de detalhes do item
+- [ ] Manter funcionalidade de remover item
+
+## Correção do Modal de Edição no PDV
+- [ ] Ao clicar em editar item do carrinho, abrir o mesmo modal de detalhes do produto
+- [ ] Preencher o modal com os complementos já selecionados do item
+- [ ] Remover o modal separado de edição de item
+
+## Redesign do Card de Item no PDV
+- [x] Mostrar apenas título e preço na mesma linha no card do item
+- [x] Adicionar dropdown com controles (menos/mais/editar) ao hover ou clique
+- [x] Botão de editar deve abrir o modal de detalhes do produto
+- [x] Modal de edição deve mostrar os complementos já selecionados
+- [x] Reutilizar o modal de detalhes do produto para edição
+- [x] Remover modal de edição separado

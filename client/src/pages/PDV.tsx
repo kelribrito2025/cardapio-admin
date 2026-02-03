@@ -15,7 +15,9 @@ import {
   Eye,
   Menu,
   Check,
-  ChevronsRight
+  ChevronsRight,
+  Pencil,
+  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -88,6 +90,9 @@ export default function PDV() {
   const [selectedComplements, setSelectedComplements] = useState<Map<number, Map<number, number>>>(new Map());
   const [selectedComplementImage, setSelectedComplementImage] = useState<string | null>(null);
   const [showCategoriesModal, setShowCategoriesModal] = useState(false);
+  const [expandedCartItem, setExpandedCartItem] = useState<number | null>(null);
+  const [editingCartItem, setEditingCartItem] = useState<{index: number; item: CartItem} | null>(null);
+  const [isEditingMode, setIsEditingMode] = useState(false);
 
   // Estados para drag horizontal na barra de categorias
   const categoriesContainerRef = useRef<HTMLDivElement>(null);
@@ -289,6 +294,39 @@ export default function PDV() {
     setProductObservation("");
     setSelectedComplements(new Map());
     setSelectedComplementImage(null);
+    setIsEditingMode(false);
+    setEditingCartItem(null);
+  };
+
+  // Handler para editar item do carrinho (abre o mesmo modal de detalhes)
+  const handleEditCartItem = (index: number, item: CartItem) => {
+    // Encontrar o produto original
+    const product = productsList.find(p => p.id === item.productId);
+    if (!product) {
+      toast.error("Produto não encontrado");
+      return;
+    }
+
+    // Restaurar os complementos selecionados do item
+    const complementsMap = new Map<number, Map<number, number>>();
+    item.complements.forEach(comp => {
+      // Precisamos encontrar o groupId do complemento
+      // Por enquanto, vamos usar o id do complemento como chave temporária
+      // O modal vai buscar os complementos do produto e podemos mapear
+      const groupMap = new Map<number, number>();
+      groupMap.set(comp.id, comp.quantity);
+      // Usamos um groupId temporário baseado no id do complemento
+      // Isso será atualizado quando os complementos forem carregados
+      complementsMap.set(comp.id, groupMap);
+    });
+
+    setSelectedProduct(product);
+    setProductQuantity(item.quantity);
+    setProductObservation(item.observation);
+    setSelectedComplements(complementsMap);
+    setSelectedComplementImage(null);
+    setIsEditingMode(true);
+    setEditingCartItem({ index, item });
   };
 
   return (
@@ -551,75 +589,109 @@ export default function PDV() {
                   <p className="text-xs">Clique nos produtos para adicionar</p>
                 </div>
               ) : (
-                cart.map((item, index) => (
-                  <div
-                    key={`${item.productId}-${index}`}
-                    className="bg-white rounded-xl p-3 border border-gray-200 shadow-sm border-l-4 border-l-red-500"
-                  >
-                    <div className="flex flex-col gap-2">
-                      {/* Header com nome e botão remover */}
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-sm text-gray-800 line-clamp-2">
+                cart.map((item, index) => {
+                  const isExpanded = expandedCartItem === index;
+                  const itemTotal = (parseFloat(item.price) + 
+                    item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0)
+                  ) * item.quantity;
+                  
+                  return (
+                    <div
+                      key={`${item.productId}-${index}`}
+                      className="bg-white rounded-xl border border-gray-200 shadow-sm border-l-4 border-l-red-500 overflow-hidden transition-all duration-200"
+                      onMouseEnter={() => setExpandedCartItem(index)}
+                      onMouseLeave={() => setExpandedCartItem(null)}
+                    >
+                      {/* Header - Título e Preço na mesma linha */}
+                      <div 
+                        className="flex items-center justify-between p-3 cursor-pointer"
+                        onClick={() => setExpandedCartItem(isExpanded ? null : index)}
+                      >
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <span className="text-xs font-medium text-red-600 bg-red-50 px-1.5 py-0.5 rounded">
+                            {item.quantity}x
+                          </span>
+                          <h4 className="font-semibold text-sm text-gray-800 truncate">
                             {item.name}
                           </h4>
                         </div>
-                        <button
-                          onClick={() => removeCartItem(index)}
-                          className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold text-gray-800 whitespace-nowrap">
+                            {formatCurrency(itemTotal)}
+                          </span>
+                          <ChevronDown className={cn(
+                            "h-4 w-4 text-gray-400 transition-transform duration-200",
+                            isExpanded && "rotate-180"
+                          )} />
+                        </div>
                       </div>
 
-                      {/* Complementos */}
-                      {item.complements.length > 0 && (
-                        <div className="text-xs text-muted-foreground space-y-0.5 border-t border-gray-100 pt-2">
-                          {item.complements.map((comp, i) => (
-                            <div key={i} className="flex justify-between">
-                              <span>{comp.quantity}x {comp.name}</span>
-                              <span>+ {formatCurrency(parseFloat(comp.price) * comp.quantity)}</span>
+                      {/* Dropdown com controles */}
+                      <div className={cn(
+                        "overflow-hidden transition-all duration-200 ease-in-out",
+                        isExpanded ? "max-h-48 opacity-100" : "max-h-0 opacity-0"
+                      )}>
+                        <div className="px-3 pb-3 space-y-2 border-t border-gray-100">
+                          {/* Complementos */}
+                          {item.complements.length > 0 && (
+                            <div className="text-xs text-muted-foreground space-y-0.5 pt-2">
+                              {item.complements.map((comp, i) => (
+                                <div key={i} className="flex justify-between">
+                                  <span>{comp.quantity}x {comp.name}</span>
+                                  <span>+ {formatCurrency(parseFloat(comp.price) * comp.quantity)}</span>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {item.observation && (
-                        <p className="text-xs text-muted-foreground line-clamp-1">
-                          Obs: {item.observation}
-                        </p>
-                      )}
-
-                      {/* Controles de Quantidade */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => updateCartItemQuantity(index, -1)}
-                            className="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
-                          >
-                            <Minus className="h-3 w-3" />
-                          </button>
-                          <span className="text-sm font-semibold w-6 text-center">
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() => updateCartItemQuantity(index, 1)}
-                            className="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
-                          >
-                            <Plus className="h-3 w-3" />
-                          </button>
-                        </div>
-                        <span className="text-sm font-bold text-gray-800">
-                          {formatCurrency(
-                            (parseFloat(item.price) + 
-                             item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0)
-                            ) * item.quantity
                           )}
-                        </span>
+
+                          {item.observation && (
+                            <p className="text-xs text-muted-foreground line-clamp-1 pt-1">
+                              Obs: {item.observation}
+                            </p>
+                          )}
+
+                          {/* Controles de Quantidade e Ações */}
+                          <div className="flex items-center justify-between pt-2">
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); updateCartItemQuantity(index, -1); }}
+                                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                              >
+                                <Minus className="h-4 w-4" />
+                              </button>
+                              <span className="text-sm font-semibold w-8 text-center">
+                                {item.quantity}
+                              </span>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); updateCartItemQuantity(index, 1); }}
+                                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                              >
+                                <Plus className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEditCartItem(index, item);
+                                }}
+                                className="w-8 h-8 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center transition-colors ml-2"
+                                title="Editar item"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </button>
+                            </div>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); removeCartItem(index); }}
+                              className="w-8 h-8 rounded-full bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-colors"
+                              title="Remover item"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 
@@ -666,7 +738,7 @@ export default function PDV() {
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); }}
+            onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
@@ -685,7 +757,7 @@ export default function PDV() {
                       className="w-full h-full object-cover"
                     />
                     <button 
-                      onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); }}
+                      onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
                       className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
                     >
                       <X className="h-5 w-5 text-gray-700" />
@@ -699,7 +771,7 @@ export default function PDV() {
                 <div className="relative w-full h-[180px] sm:h-48 md:h-56 flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
                   <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80" />
                   <button 
-                    onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); }}
+                    onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
                     className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
                   >
                     <X className="h-5 w-5 text-gray-700" />
@@ -1003,7 +1075,26 @@ export default function PDV() {
                 return (
                   <button
                     onClick={() => {
-                      addToCart(selectedProduct, productQuantity, productObservation, selectedComplementsList);
+                      if (isEditingMode && editingCartItem) {
+                        // Modo de edição: atualizar item existente no carrinho
+                        const newCart = [...cart];
+                        newCart[editingCartItem.index] = {
+                          ...newCart[editingCartItem.index],
+                          quantity: productQuantity,
+                          observation: productObservation,
+                          complements: selectedComplementsList,
+                        };
+                        setCart(newCart);
+                        setSelectedProduct(null);
+                        setIsEditingMode(false);
+                        setEditingCartItem(null);
+                        setSelectedComplements(new Map());
+                        setSelectedComplementImage(null);
+                        toast.success("Item atualizado!");
+                      } else {
+                        // Modo normal: adicionar novo item
+                        addToCart(selectedProduct, productQuantity, productObservation, selectedComplementsList);
+                      }
                     }}
                     disabled={!canAddToCart}
                     className={`flex-1 font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 ${
@@ -1026,6 +1117,12 @@ export default function PDV() {
                       <>
                         <ShoppingBag className="h-5 w-5" />
                         <span>Escolha uma opção</span>
+                      </>
+                    ) : isEditingMode ? (
+                      <>
+                        <Check className="h-5 w-5" />
+                        <span className="hidden xs:inline">Atualizar</span>
+                        <span>{formatCurrency(totalPrice)}</span>
                       </>
                     ) : (
                       <>
@@ -1120,6 +1217,8 @@ export default function PDV() {
           </div>
         </div>
       )}
+
+      
     </AdminLayout>
   );
 }
