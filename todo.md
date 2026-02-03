@@ -4373,3 +4373,7 @@
 - [x] Remover abas horizontais atuais
 - [x] Manter destaque visual no item selecionado
 - [ ] Garantir responsividade no mobile
+
+## Ajuste do Cabeçalho nas Configurações
+- [x] Mover cabeçalho (título e descrição) para dentro da área de conteúdo principal
+- [x] Cabeçalho deve ficar ao lado direito do menu secundário, não acima dele

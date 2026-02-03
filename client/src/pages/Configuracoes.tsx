@@ -872,15 +872,8 @@ export default function Configuracoes() {
 
   return (
     <AdminLayout>
-      <div className="mb-6">
-        <PageHeader
-          title="Configurações"
-          description="Gerencie as configurações do seu estabelecimento"
-        />
-      </div>
-
       {/* Layout com Barra Lateral Secundária */}
-      <div className="flex gap-0 -mx-6 -mt-4">
+      <div className="flex gap-0 -mx-6 -mt-6">
         {/* Barra Lateral Secundária */}
         <SettingsSidebar 
           activeSection={activeSection} 
@@ -888,7 +881,15 @@ export default function Configuracoes() {
         />
         
         {/* Conteúdo Principal */}
-        <div className="flex-1 p-6 bg-muted/30 min-h-[calc(100vh-140px)]">
+        <div className="flex-1 p-6 bg-muted/30 min-h-[calc(100vh-100px)]">
+          {/* Cabeçalho */}
+          <div className="mb-6">
+            <PageHeader
+              title="Configurações"
+              description="Gerencie as configurações do seu estabelecimento"
+            />
+          </div>
+          
           {/* Estabelecimento Section */}
           {activeSection === "estabelecimento" && (
             <div className="space-y-5">
