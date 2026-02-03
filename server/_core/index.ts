@@ -548,12 +548,17 @@ function generateReceiptHTML(
   </div>
 </body>
 <script>
-  // Auto-print quando a página carregar
+  // Auto-print quando a página carregar (apenas se não estiver em iframe)
+  // Quando carregado via iframe, o código do cliente controla a impressão
   window.onload = function() {
-    // Pequeno delay para garantir que o conteúdo foi renderizado
-    setTimeout(function() {
-      window.print();
-    }, 300);
+    // Verifica se está em um iframe
+    var isInIframe = window !== window.parent;
+    if (!isInIframe) {
+      // Pequeno delay para garantir que o conteúdo foi renderizado
+      setTimeout(function() {
+        window.print();
+      }, 300);
+    }
   };
 </script>
 </html>

@@ -4513,3 +4513,6 @@
 - [x] Alterar impressão normal para usar iframe oculto com window.print()
 - [x] Evitar abertura de nova aba ao imprimir
 - [x] Aplicado tanto no PDV quanto na página de Pedidos
+
+## Bug - Janela de Impressão Abrindo Duas Vezes
+- [x] Corrigir conflito entre iframe.print() e auto-print da página de recibo
