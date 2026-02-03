@@ -4594,3 +4594,6 @@
 
 ## HeatmapCard - Dias da Semana Fixos
 - [x] Fixar coluna dos dias da semana (Dom, Seg, Ter, etc.) durante scroll horizontal no heatmap
+
+## PDV - Troco em Destaque
+- [x] Exibir troco a devolver em destaque quando valor recebido for digitado
