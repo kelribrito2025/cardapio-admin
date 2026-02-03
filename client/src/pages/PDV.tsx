@@ -498,8 +498,8 @@ export default function PDV() {
     createOrderMutation.mutate({
       establishmentId,
       orderNumber,
-      customerName: orderType === "mesa" ? `Mesa ${tableNumber}` : "Cliente PDV",
-      customerPhone: "",
+      customerName: orderType === "mesa" ? `Mesa ${tableNumber}` : (deliveryAddress.name || "Cliente PDV"),
+      customerPhone: deliveryAddress.phone || "",
       customerAddress,
       deliveryType: deliveryTypeMap[orderType],
       paymentMethod: paymentMethod || "cash",
@@ -1746,7 +1746,7 @@ export default function PDV() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Telefone <span className="text-red-500">*</span></label>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Telefone</label>
                   <input
                     type="text"
                     placeholder="(00) 00000-0000"
