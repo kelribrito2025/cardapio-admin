@@ -975,7 +975,7 @@ export default function Pedidos() {
       </div>
 
       {/* Kanban Board */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 md:h-[calc(100vh-200px)]">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:h-[calc(100vh-200px)]">
         {kanbanColumns.map((column) => {
           const columnOrders = ordersByStatus[column.id];
           const Icon = column.icon;
@@ -986,7 +986,9 @@ export default function Pedidos() {
               key={column.id}
               className={cn(
                 "bg-card rounded-2xl flex flex-col overflow-hidden border-t-4 shadow-soft",
-                column.borderColor
+                column.borderColor,
+                // Card de Cancelados: visível apenas no mobile
+                column.id === "cancelled" && "md:hidden"
               )}
             >
               {/* Column Header - clicável no mobile para expandir/minimizar */}

@@ -4600,3 +4600,6 @@
 
 ## Pedidos - Card de Cancelados Mobile
 - [x] Voltar a exibir o card de cancelados na versão mobile
+
+## Pedidos - Card de Cancelados Apenas Mobile
+- [x] Ocultar card de Cancelados no desktop e manter apenas no mobile
