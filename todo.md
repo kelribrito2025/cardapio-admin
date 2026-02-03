@@ -4521,3 +4521,14 @@
 - [x] Ao clicar no ícone de cupom, mostrar campo de texto abaixo dos botões
 - [x] Campo de texto para inserir código do cupom
 - [x] Botão "Aplicar" ao lado do campo
+
+## Lógica Real de Cupons no PDV
+- [ ] Criar tabela de cupons no banco de dados (código, tipo desconto, valor, validade, uso máximo)
+- [ ] Criar endpoint para validar cupom
+- [ ] Criar endpoint para listar cupons
+- [ ] Integrar validação de cupom no PDV
+- [ ] Aplicar desconto real no total do pedido
+- [ ] Salvar cupom aplicado no pedido
+
+## Badge Breve no Menu PDV
+- [x] Adicionar badge "Breve" no item PDV da sidebar igual ao Estoque
