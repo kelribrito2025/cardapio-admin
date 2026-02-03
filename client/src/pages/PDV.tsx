@@ -14,7 +14,8 @@ import {
   Image as ImageIcon,
   Eye,
   Menu,
-  Check
+  Check,
+  ChevronsRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -305,17 +306,17 @@ export default function PDV() {
                   })
                 )}
               </div>
-              {/* Gradiente e Botão de Menu fixo na direita */}
+              {/* Gradiente e Botão de Ver Mais fixo na direita */}
               <div className="absolute right-0 top-0 bottom-0 flex items-center">
                 {/* Gradiente para indicar mais categorias */}
                 <div className="w-12 h-full bg-gradient-to-r from-transparent to-muted/20 pointer-events-none" style={{background: 'linear-gradient(to right, transparent, hsl(var(--muted) / 0.9))'}} />
-                {/* Botão de Menu de Categorias - Fixo */}
+                {/* Botão de Ver Mais Categorias - Fixo */}
                 <button
                   onClick={() => setShowCategoriesModal(true)}
                   className="flex items-center justify-center w-10 h-10 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0 mr-2"
                   title="Ver todas as categorias"
                 >
-                  <Menu className="h-5 w-5" />
+                  <ChevronsRight className="h-5 w-5" />
                 </button>
               </div>
             </div>
