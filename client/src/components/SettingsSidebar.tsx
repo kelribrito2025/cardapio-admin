@@ -7,6 +7,7 @@ import {
   Puzzle,
   ChevronDown,
   Menu,
+  ShieldCheck,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -15,7 +16,8 @@ export type SettingsSection =
   | "atendimento" 
   | "whatsapp" 
   | "impressora" 
-  | "integracoes";
+  | "integracoes"
+  | "conta-seguranca";
 
 interface SettingsSidebarProps {
   activeSection: SettingsSection;
@@ -28,6 +30,7 @@ const menuItems: { id: SettingsSection; label: string; icon: React.ElementType }
   { id: "whatsapp", label: "WhatsApp", icon: MessageCircle },
   { id: "impressora", label: "Impressora e Teste", icon: Printer },
   { id: "integracoes", label: "Integrações", icon: Puzzle },
+  { id: "conta-seguranca", label: "Conta e Segurança", icon: ShieldCheck },
 ];
 
 export function SettingsSidebar({ activeSection, onSectionChange }: SettingsSidebarProps) {

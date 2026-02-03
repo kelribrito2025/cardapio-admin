@@ -4651,3 +4651,6 @@
   - [x] Card Verificação em duas etapas (2FA)
 - [x] Adicionar rota /conta-seguranca no App.tsx
 - [x] Adicionar link no menu secundário (AdminLayout)
+
+## Conta e Segurança - Correção de Posição no Menu
+- [x] Mover link do menu primário para o menu secundário (abaixo do WhatsApp)

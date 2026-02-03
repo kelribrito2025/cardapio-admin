@@ -28,7 +28,6 @@ import {
   Layers,
   Megaphone,
   Monitor,
-  ShieldCheck,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -83,7 +82,6 @@ const menuSections = [
     title: "SISTEMA",
     items: [
       { icon: Settings, label: "Configurações", href: "/configuracoes", disabled: false },
-      { icon: ShieldCheck, label: "Conta e Segurança", href: "/conta-seguranca", disabled: false },
     ]
   },
 ];

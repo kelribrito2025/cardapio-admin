@@ -78,6 +78,7 @@ import { WhatsAppTab } from "@/components/WhatsAppTab";
 import { PrintTestTab } from "@/components/PrintTestTab";
 import { IntegrationsTab } from "@/components/IntegrationsTab";
 import { SettingsSidebar, SettingsSection } from "@/components/SettingsSidebar";
+import { AccountSecuritySection } from "@/components/AccountSecuritySection";
 
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
@@ -2132,6 +2133,13 @@ export default function Configuracoes() {
           {activeSection === "integracoes" && (
             <div className="space-y-5">
               <IntegrationsTab />
+            </div>
+          )}
+
+          {/* Conta e Segurança Section */}
+          {activeSection === "conta-seguranca" && (
+            <div className="space-y-5">
+              <AccountSecuritySection establishmentId={establishment?.id || 0} />
             </div>
           )}
         </div>
