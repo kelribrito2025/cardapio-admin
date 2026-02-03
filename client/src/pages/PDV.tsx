@@ -276,26 +276,28 @@ export default function PDV() {
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Barra de Categorias */}
             <div className="relative px-4 py-2 border-b border-border/50 bg-muted/20">
-              <div 
-                ref={categoriesContainerRef}
-                className={cn(
-                  "flex items-center gap-2 overflow-x-auto pr-24 scrollbar-hide select-none",
-                  isDragging ? "cursor-grabbing" : "cursor-grab"
-                )}
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                onMouseDown={handleMouseDown}
-                onMouseLeave={handleMouseLeave}
-                onMouseUp={handleMouseUp}
-                onMouseMove={handleMouseMove}
-              >
-                {/* Botão de Menu de Categorias - Início */}
+              <div className="flex items-center gap-2">
+                {/* Botão de Menu de Categorias - Fixo */}
                 <button
                   onClick={() => setShowCategoriesModal(true)}
-                  className="flex items-center justify-center w-10 h-10 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0"
+                  className="flex items-center justify-center w-10 h-10 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0 cursor-pointer"
                   title="Ver todas as categorias"
                 >
                   <Menu className="h-5 w-5" />
                 </button>
+                {/* Área de categorias com drag */}
+                <div 
+                  ref={categoriesContainerRef}
+                  className={cn(
+                    "flex items-center gap-2 overflow-x-auto pr-24 scrollbar-hide select-none flex-1",
+                    isDragging ? "cursor-grabbing" : "cursor-grab"
+                  )}
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                  onMouseDown={handleMouseDown}
+                  onMouseLeave={handleMouseLeave}
+                  onMouseUp={handleMouseUp}
+                  onMouseMove={handleMouseMove}
+                >
                 <button
                   onClick={() => setSelectedCategory(null)}
                   className={cn(
@@ -346,6 +348,7 @@ export default function PDV() {
                     );
                   })
                 )}
+                </div>
               </div>
               {/* Gradiente e Botão de Ver Mais fixo na direita */}
               <div className="absolute right-0 top-0 bottom-0 flex items-center">

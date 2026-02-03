@@ -4336,3 +4336,6 @@
 - [x] Permitir arrastar com mouse para navegar entre categorias
 - [x] Cursor muda para grab/grabbing durante arrasto
 - [x] Sem scrollbar visível
+
+## Botão de menu fixo na barra de categorias
+- [x] Mover botão de menu (3 linhas) para fora da área de arrasto
