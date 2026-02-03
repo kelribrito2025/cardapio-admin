@@ -244,7 +244,7 @@ export default function PDV() {
           {/* Coluna Esquerda - Produtos */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Barra de Categorias */}
-            <div className="px-4 py-2 border-b border-border/50 bg-muted/20">
+            <div className="px-4 py-2 border-b border-border/50 bg-muted/20" style={{paddingRight: '6px'}}>
               <div className="flex items-center gap-2 overflow-hidden">
                 {/* Botão de Menu de Categorias - Início */}
                 <button
