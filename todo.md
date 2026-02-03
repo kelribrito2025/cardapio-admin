@@ -4630,3 +4630,6 @@
 - [x] Tornar campo de telefone não obrigatório na sidebar de dados de entrega
 - [x] Usar nome do cliente digitado no card do pedido em vez de "Cliente PDV"
 - [x] Usar nome do cliente digitado na impressão do recibo
+
+## Sidebar Mobile - Ícone de Fechar
+- [x] Substituir ícone de X por ícone de minimizar/maximizar na sidebar mobile

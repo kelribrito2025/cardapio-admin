@@ -11,7 +11,7 @@ import {
   Search,
   Bell,
   Menu,
-  X,
+
   LogOut,
   ChevronDown,
   ChevronRight,
@@ -539,9 +539,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 {/* Close button - Mobile only */}
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                  className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500 hover:text-gray-700"
                 >
-                  <X className="h-5 w-5 text-gray-600" />
+                  <PanelLeftClose className="h-5 w-5" />
                 </button>
               </div>
             </>
