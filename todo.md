@@ -4619,3 +4619,9 @@
 
 ## Dashboard - Comportamento dos Cards com Sidebar
 - [x] Reverter HeatmapCard para versão 005e5bf7
+
+## HeatmapCard - Tooltips Touch/Tap
+- [x] Reimplementar suporte a touch/tap nos tooltips sem afetar layout dos cards
+
+## HeatmapCard - Coluna de Dias Fixa
+- [x] Adicionar coluna de dias da semana fixa durante scroll horizontal usando CSS sticky
