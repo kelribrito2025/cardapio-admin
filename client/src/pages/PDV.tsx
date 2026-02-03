@@ -2071,16 +2071,17 @@ export default function PDV() {
           </div>
 
           {/* Conteúdo - Formas de Pagamento */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            <div className="text-center py-4">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
-                <CreditCard className="h-8 w-8 text-red-500" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-800">Selecione o Pagamento</h3>
-              <p className="text-sm text-gray-500 mt-1">Escolha a forma de pagamento do cliente</p>
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-white">
+            {/* Título da seção */}
+            <div>
+              <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                <CreditCard className="h-4 w-4 text-red-500" />
+                Formas de Pagamento
+              </h3>
+              <p className="text-xs text-gray-500">Selecione como o cliente vai pagar</p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 p-4 bg-gray-50 rounded-xl">
               {availablePaymentMethods.length > 0 ? (
                 availablePaymentMethods.map((method) => (
                   <div key={method.id}>
@@ -2183,11 +2184,11 @@ export default function PDV() {
                   <p className="text-sm text-gray-400 mt-1">Configure as formas de pagamento nas configurações</p>
                 </div>
               )}
-            </div>
+                        </div>
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-border/50 bg-gray-50">
+          <div className="p-4 border-t border-gray-200 bg-white">
             <Button
               onClick={() => {
                 if (selectedPaymentInSidebar) {

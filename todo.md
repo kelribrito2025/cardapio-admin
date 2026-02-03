@@ -4562,3 +4562,8 @@
 - [x] Aplicar fundo branco na sidebar
 - [x] Container com fundo cinza claro para campos de input
 - [x] Bordas arredondadas e cores iguais ao modal do menu público
+
+## Padronização Visual do Modal de Pagamento no PDV
+- [x] Aplicar fundo branco no modal
+- [x] Container com fundo cinza claro para opções de pagamento
+- [x] Bordas arredondadas e cores consistentes com sidebar de entrega
