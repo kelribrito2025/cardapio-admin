@@ -4544,3 +4544,9 @@
 - [x] Desktop: Modal centralizado padrão
 - [x] Campo de busca para filtrar categorias em ambos
 - [x] Lista de todas as categorias navegáveis
+
+## Modal de Forma de Pagamento no PDV - Dinheiro
+- [x] Ao selecionar Dinheiro, exibir campos: Valor total (somente leitura), Valor recebido (editável)
+- [x] Exibir texto "Troco a devolver: R$ XX,XX" destacado e calculado automaticamente
+- [x] Substituir botão Cancelar por botão Continuar
+- [x] Ao clicar em Continuar, confirmar pagamento e fechar modal

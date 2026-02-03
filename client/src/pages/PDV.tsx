@@ -28,7 +28,8 @@ import {
   MapPin,
   ChevronUp,
   Ticket,
-  Wallet
+  Wallet,
+  DollarSign
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -210,6 +211,8 @@ export default function PDV() {
 
   // Estados para sidebar de pagamento (Retirada)
   const [showPaymentSidebar, setShowPaymentSidebar] = useState(false);
+  const [selectedPaymentInSidebar, setSelectedPaymentInSidebar] = useState<PaymentMethodType>(null);
+  const [receivedAmount, setReceivedAmount] = useState("");
 
   // Estados para cupom
   const [showCouponField, setShowCouponField] = useState(false);
@@ -1968,7 +1971,13 @@ export default function PDV() {
       </Sheet>
 
       {/* Sidebar de Pagamento (para Retirada) */}
-      <Sheet open={showPaymentSidebar} onOpenChange={setShowPaymentSidebar}>
+      <Sheet open={showPaymentSidebar} onOpenChange={(open) => {
+        setShowPaymentSidebar(open);
+        if (!open) {
+          setSelectedPaymentInSidebar(null);
+          setReceivedAmount("");
+        }
+      }}>
         <SheetContent side="right" className="w-[437px] sm:max-w-[437px] p-0 flex flex-col" hideCloseButton>
           {/* Header */}
           <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
@@ -2004,20 +2013,99 @@ export default function PDV() {
             <div className="space-y-3">
               {availablePaymentMethods.length > 0 ? (
                 availablePaymentMethods.map((method) => (
-                  <button
-                    key={method.id}
-                    onClick={() => handleSelectPaymentMethod(method.id)}
-                    className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-red-300 hover:bg-red-50/50 transition-all"
-                  >
-                    <div className="p-3 bg-gray-100 rounded-xl text-gray-600">
-                      {method.icon}
-                    </div>
-                    <div className="flex-1 text-left">
-                      <p className="font-semibold text-gray-800 text-base">{method.name}</p>
-                      <p className="text-sm text-gray-500">{method.description}</p>
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-gray-400" />
-                  </button>
+                  <div key={method.id}>
+                    <button
+                      onClick={() => {
+                        if (method.id === "cash") {
+                          setSelectedPaymentInSidebar(selectedPaymentInSidebar === "cash" ? null : "cash");
+                          setReceivedAmount("");
+                        } else {
+                          handleSelectPaymentMethod(method.id);
+                        }
+                      }}
+                      className={cn(
+                        "w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all",
+                        selectedPaymentInSidebar === method.id
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-200 bg-white hover:border-red-300 hover:bg-red-50/50"
+                      )}
+                    >
+                      <div className={cn(
+                        "p-3 rounded-xl",
+                        selectedPaymentInSidebar === method.id
+                          ? "bg-red-500 text-white"
+                          : "bg-gray-100 text-gray-600"
+                      )}>
+                        {method.icon}
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className={cn(
+                          "font-semibold text-base",
+                          selectedPaymentInSidebar === method.id ? "text-red-700" : "text-gray-800"
+                        )}>{method.name}</p>
+                        <p className="text-sm text-gray-500">{method.description}</p>
+                      </div>
+                      {selectedPaymentInSidebar === method.id ? (
+                        <Check className="h-5 w-5 text-red-500" />
+                      ) : (
+                        <ChevronRight className="h-5 w-5 text-gray-400" />
+                      )}
+                    </button>
+
+                    {/* Campos de Troco - apenas para Dinheiro */}
+                    {method.id === "cash" && selectedPaymentInSidebar === "cash" && (
+                      <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-4">
+                        {/* Valor Total */}
+                        <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200">
+                          <div className="flex items-center gap-2">
+                            <DollarSign className="h-4 w-4 text-gray-500" />
+                            <span className="text-sm font-medium text-gray-600">Valor total</span>
+                          </div>
+                          <span className="text-lg font-bold text-gray-800">
+                            {formatCurrency(
+                              Math.max(0, calculateTotal() + 
+                              (orderType === "entrega" && selectedNeighborhoodFee 
+                                ? parseFloat(selectedNeighborhoodFee.fee) 
+                                : 0) -
+                              (appliedCoupon?.discount || 0))
+                            )}
+                          </span>
+                        </div>
+
+                        {/* Valor Recebido */}
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Valor recebido</label>
+                          <Input
+                            type="text"
+                            placeholder="R$ 0,00"
+                            value={receivedAmount}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/[^0-9,]/g, "");
+                              setReceivedAmount(value);
+                            }}
+                            className="w-full text-lg font-medium bg-white"
+                          />
+                        </div>
+
+                        {/* Troco a Devolver */}
+                        <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                          <p className="text-sm text-green-600 mb-1">Troco a devolver:</p>
+                          <p className="text-2xl font-bold text-green-700">
+                            {(() => {
+                              const totalValue = Math.max(0, calculateTotal() + 
+                                (orderType === "entrega" && selectedNeighborhoodFee 
+                                  ? parseFloat(selectedNeighborhoodFee.fee) 
+                                  : 0) -
+                                (appliedCoupon?.discount || 0));
+                              const received = parseFloat(receivedAmount.replace(",", ".")) || 0;
+                              const change = received - totalValue;
+                              return formatCurrency(Math.max(0, change));
+                            })()}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 ))
               ) : (
                 <div className="text-center py-8">
@@ -2031,11 +2119,21 @@ export default function PDV() {
           {/* Footer */}
           <div className="p-4 border-t border-border/50 bg-gray-50">
             <Button
-              variant="outline"
-              onClick={() => setShowPaymentSidebar(false)}
-              className="w-full py-3"
+              onClick={() => {
+                if (selectedPaymentInSidebar) {
+                  setPaymentMethod(selectedPaymentInSidebar);
+                  if (selectedPaymentInSidebar === "cash" && receivedAmount) {
+                    setChangeAmount(receivedAmount);
+                  }
+                }
+                setShowPaymentSidebar(false);
+                setSelectedPaymentInSidebar(null);
+                setReceivedAmount("");
+              }}
+              disabled={!selectedPaymentInSidebar && availablePaymentMethods.length > 0}
+              className="w-full py-3 bg-red-500 hover:bg-red-600 text-white"
             >
-              Cancelar
+              Continuar
             </Button>
           </div>
         </SheetContent>
