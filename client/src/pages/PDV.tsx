@@ -479,9 +479,6 @@ export default function PDV() {
                           <h4 className="font-semibold text-sm text-gray-800 line-clamp-2">
                             {item.name}
                           </h4>
-                          <p className="text-red-600 font-bold text-sm mt-0.5">
-                            {formatCurrency(parseFloat(item.price))}
-                          </p>
                         </div>
                         <button
                           onClick={() => removeCartItem(index)}

@@ -4307,3 +4307,6 @@
 
 ## Minimizar menu automaticamente no PDV
 - [x] Menu lateral deve minimizar automaticamente ao acessar a página PDV
+
+## Correção de preço duplicado na lista do PDV
+- [x] Remover o preço vermelho duplicado na lista de itens do PDV
