@@ -4654,3 +4654,8 @@
 
 ## Conta e Segurança - Correção de Posição no Menu
 - [x] Mover link do menu primário para o menu secundário (abaixo do WhatsApp)
+
+## Impressora e Teste - Configuração de Impressão HTML
+- [x] Adicionar campo htmlPrintEnabled no schema do banco
+- [x] Criar/atualizar procedure para salvar configuração
+- [x] Adicionar toggle no card de layout da aba Impressora e Teste

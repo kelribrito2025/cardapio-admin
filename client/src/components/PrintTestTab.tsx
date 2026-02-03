@@ -67,6 +67,9 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [qrCodeUploading, setQrCodeUploading] = useState(false);
 
+  // Modo de impressão HTML vs ESC/POS
+  const [htmlPrintEnabled, setHtmlPrintEnabled] = useState(true);
+
   // Carregar configurações salvas quando disponíveis
   useEffect(() => {
     if (savedSettings) {
@@ -84,6 +87,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       setShowQrCode(savedSettings.showQrCode ?? false);
       setQrCodeUrl((savedSettings as any).qrCodeUrl || null);
       setItemBorderStyle((savedSettings as any).itemBorderStyle || "rounded");
+      setHtmlPrintEnabled((savedSettings as any).htmlPrintEnabled ?? true);
     }
   }, [savedSettings]);
   
@@ -181,6 +185,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       showQrCode,
       qrCodeUrl,
       itemBorderStyle,
+      htmlPrintEnabled,
     });
   };
 
@@ -854,6 +859,19 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Impressão HTML</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Ative quando a impressora aceita impressão com layout HTML (mais flexível). Desative para usar o formato compatível ESC/POS.
+                  </p>
+                </div>
+                <Switch
+                  checked={htmlPrintEnabled}
+                  onCheckedChange={setHtmlPrintEnabled}
+                />
+              </div>
+
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Largura do papel</Label>

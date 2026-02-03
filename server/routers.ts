@@ -2169,6 +2169,7 @@ export const appRouter = router({
         boxPadding: z.number().min(4).max(20).optional(),
         itemBorderStyle: z.enum(['rounded', 'dashed']).optional(),
         defaultPrintMethod: z.enum(['normal', 'android']).optional(),
+        htmlPrintEnabled: z.boolean().optional(),
       }))
       .mutation(async ({ input }) => {
         await db.upsertPrinterSettings(input);

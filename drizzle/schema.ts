@@ -426,6 +426,8 @@ export const printerSettings = mysqlTable("printerSettings", {
   itemBorderStyle: varchar("itemBorderStyle", { length: 20 }).default("rounded").notNull(), // Estilo de borda dos itens: rounded ou dashed
   // Preferência de impressão padrão ao aceitar pedidos
   defaultPrintMethod: mysqlEnum("defaultPrintMethod", ["normal", "android"]).default("normal").notNull(), // Método de impressão favorito
+  // Modo de impressão HTML vs ESC/POS
+  htmlPrintEnabled: boolean("htmlPrintEnabled").default(true).notNull(), // Usar layout HTML (mais flexível) ou ESC/POS (compatível)
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
