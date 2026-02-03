@@ -4348,3 +4348,6 @@
 
 ## Filtrar categorias pausadas no PDV
 - [x] Exibir apenas categorias ativas (isActive = true) no PDV
+
+## Borda vermelha nos cards do carrinho do PDV
+- [x] Adicionar borda vermelha na lateral esquerda dos cards de itens no carrinho

@@ -548,7 +548,7 @@ export default function PDV() {
                 cart.map((item, index) => (
                   <div
                     key={`${item.productId}-${index}`}
-                    className="bg-white rounded-xl p-3 border border-gray-200 shadow-sm"
+                    className="bg-white rounded-xl p-3 border border-gray-200 shadow-sm border-l-4 border-l-red-500"
                   >
                     <div className="flex flex-col gap-2">
                       {/* Header com nome e botão remover */}
