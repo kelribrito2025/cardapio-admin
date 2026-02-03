@@ -4532,3 +4532,6 @@
 
 ## Badge Breve no Menu PDV
 - [x] Adicionar badge "Breve" no item PDV da sidebar igual ao Estoque
+
+## Bug - Cupom OFF10 retornando inválido no PDV
+- [x] Investigar e corrigir validação de cupom no PDV (formato JSON do tRPC)

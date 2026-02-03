@@ -1,0 +1,27 @@
+{
+  "query": "SELECT id, establishmentId, code, type, value, status, minOrderValue, startDate, endDate, activeDays, validOrigins, startTime, endTime, quantity, usedCount FROM coupons WHERE code = 'OFF10';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, establishmentId, code, type, value, status, minOrderValue, startDate, endDate, activeDays, validOrigins, startTime, endTime, quantity, usedCount FROM coupons WHERE code = 'OFF10';",
+  "rows": [
+    {
+      "id": "180001",
+      "establishmentId": "30001",
+      "code": "OFF10",
+      "type": "fixed",
+      "value": "10.00",
+      "status": "active",
+      "minOrderValue": "NULL",
+      "startDate": "NULL",
+      "endDate": "NULL",
+      "activeDays": "NULL",
+      "validOrigins": "NULL",
+      "startTime": "NULL",
+      "endTime": "NULL",
+      "quantity": "1",
+      "usedCount": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\tcode\ttype\tvalue\tstatus\tminOrderValue\tstartDate\tendDate\tactiveDays\tvalidOrigins\tstartTime\tendTime\tquantity\tusedCount\n180001\t30001\tOFF10\tfixed\t10.00\tactive\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\t1\t0\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}

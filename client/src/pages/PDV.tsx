@@ -1149,13 +1149,15 @@ export default function PDV() {
                             };
                             
                             const response = await fetch(`/api/trpc/coupon.validate?input=${encodeURIComponent(JSON.stringify({
-                              establishmentId,
-                              code: couponCode.toUpperCase(),
-                              orderValue: calculateTotal(),
-                              deliveryType: deliveryTypeMap[orderType]
+                              json: {
+                                establishmentId,
+                                code: couponCode.toUpperCase(),
+                                orderValue: calculateTotal(),
+                                deliveryType: deliveryTypeMap[orderType]
+                              }
                             }))}`).then(res => res.json());
                             
-                            const result = response.result?.data;
+                            const result = response.result?.data?.json || response.result?.data;
                             
                             if (result?.valid && result?.coupon) {
                               toast.success(`Cupom ${couponCode} aplicado!`);

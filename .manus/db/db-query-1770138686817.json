@@ -1,0 +1,30 @@
+{
+  "query": "SELECT * FROM coupons WHERE code = 'OFF10' OR code LIKE '%OFF10%' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM coupons WHERE code = 'OFF10' OR code LIKE '%OFF10%' LIMIT 5;",
+  "rows": [
+    {
+      "id": "180001",
+      "establishmentId": "30001",
+      "code": "OFF10",
+      "type": "fixed",
+      "value": "10.00",
+      "maxDiscount": "NULL",
+      "minOrderValue": "NULL",
+      "quantity": "1",
+      "usedCount": "0",
+      "startDate": "NULL",
+      "endDate": "NULL",
+      "activeDays": "NULL",
+      "validOrigins": "NULL",
+      "startTime": "NULL",
+      "endTime": "NULL",
+      "status": "active",
+      "createdAt": "2026-02-03 17:09:40",
+      "updatedAt": "2026-02-03 17:09:40"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\tcode\ttype\tvalue\tmaxDiscount\tminOrderValue\tquantity\tusedCount\tstartDate\tendDate\tactiveDays\tvalidOrigins\tstartTime\tendTime\tstatus\tcreatedAt\tupdatedAt\n180001\t30001\tOFF10\tfixed\t10.00\tNULL\tNULL\t1\t0\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tactive\t2026-02-03 17:09:40\t2026-02-03 17:09:40\n",
+  "stderr": "",
+  "execution_time_ms": 112
+}
