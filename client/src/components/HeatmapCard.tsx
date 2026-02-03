@@ -36,10 +36,35 @@ function getColorClass(value: number, maxValue: number): string {
   return COLOR_SCALE[index];
 }
 
+// Hook para detectar se é dispositivo touch/mobile
+function useIsTouchDevice() {
+  const [isTouch, setIsTouch] = useState(false);
+  
+  useEffect(() => {
+    // Verificar se é dispositivo touch
+    const checkTouch = () => {
+      setIsTouch(
+        'ontouchstart' in window || 
+        navigator.maxTouchPoints > 0 ||
+        window.matchMedia('(pointer: coarse)').matches
+      );
+    };
+    
+    checkTouch();
+    
+    // Re-verificar em resize (para casos de mudança de modo)
+    window.addEventListener('resize', checkTouch);
+    return () => window.removeEventListener('resize', checkTouch);
+  }, []);
+  
+  return isTouch;
+}
+
 export function HeatmapCard() {
   const { data: heatmapData, isLoading } = trpc.menuViews.getHeatmap.useQuery();
+  const isTouch = useIsTouchDevice();
   
-  // Estado para controlar tooltip ativo (para suporte mobile)
+  // Estado para controlar tooltip ativo (apenas para mobile/touch)
   const [activeCell, setActiveCell] = useState<string | null>(null);
   const [showInfoTooltip, setShowInfoTooltip] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -62,8 +87,10 @@ export function HeatmapCard() {
   const maxCount = heatmapData?.maxCount || 0;
   const totalViews = heatmapData?.totalViews || 0;
 
-  // Fechar tooltips ao clicar fora
+  // Fechar tooltips ao clicar fora (apenas para mobile)
   useEffect(() => {
+    if (!isTouch) return;
+    
     function handleClickOutside(event: MouseEvent | TouchEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setActiveCell(null);
@@ -78,16 +105,18 @@ export function HeatmapCard() {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
     };
-  }, []);
+  }, [isTouch]);
 
   // Handler para toggle do tooltip da célula (mobile)
   const handleCellClick = (cellKey: string) => {
+    if (!isTouch) return;
     setShowInfoTooltip(false);
     setActiveCell(prev => prev === cellKey ? null : cellKey);
   };
 
   // Handler para toggle do tooltip de info (mobile)
   const handleInfoClick = () => {
+    if (!isTouch) return;
     setActiveCell(null);
     setShowInfoTooltip(prev => !prev);
   };
@@ -122,15 +151,17 @@ export function HeatmapCard() {
             </div>
           </div>
           
-          {/* Ícone de informação com suporte a touch */}
-          <Tooltip open={showInfoTooltip}>
+          {/* Ícone de informação - hover no desktop, click no mobile */}
+          <Tooltip open={isTouch ? showInfoTooltip : undefined}>
             <TooltipTrigger asChild>
               <button 
                 className="h-6 w-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
                 onClick={handleInfoClick}
                 onTouchEnd={(e) => {
-                  e.preventDefault();
-                  handleInfoClick();
+                  if (isTouch) {
+                    e.preventDefault();
+                    handleInfoClick();
+                  }
                 }}
               >
                 <Info className="h-4 w-4 text-gray-500" />
@@ -193,7 +224,10 @@ export function HeatmapCard() {
                     const isActive = activeCell === cellKey;
                     
                     return (
-                      <Tooltip key={cellKey} open={isActive}>
+                      <Tooltip 
+                        key={cellKey} 
+                        open={isTouch ? isActive : undefined}
+                      >
                         <TooltipTrigger asChild>
                           <div
                             className={cn(
@@ -203,8 +237,10 @@ export function HeatmapCard() {
                             )}
                             onClick={() => handleCellClick(cellKey)}
                             onTouchEnd={(e) => {
-                              e.preventDefault();
-                              handleCellClick(cellKey);
+                              if (isTouch) {
+                                e.preventDefault();
+                                handleCellClick(cellKey);
+                              }
                             }}
                           />
                         </TooltipTrigger>
