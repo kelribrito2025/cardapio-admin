@@ -5005,3 +5005,8 @@
 - [x] Padronizar modal de Mesas para ficar igual ao modal do PDV
 - [x] Usar mesmos tamanhos de fonte e espaçamentos
 - [x] Usar mesmo estilo de checkbox/radio
+
+
+## Cor dos Badges nos Filtros da Página de Mesas
+- [x] Alterar cor dos badges (Todas, Livres, Ocupadas, Pedindo conta, Reservadas) para vermelho
+- [x] Manter posição atual dos badges
