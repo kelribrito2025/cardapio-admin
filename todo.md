@@ -4679,29 +4679,3 @@
 
 ## PDV - Corrigir Notificações Duplicadas
 - [x] Corrigir notificações duplicadas ao adicionar item ao carrinho
-
-## Notificações - Novo Estilo Visual
-- [x] Alterar estilo das notificações para fundo vermelho com ícones e textos brancos
-
-## Notificações - Correção do Estilo Visual
-- [ ] Corrigir configuração do Toaster para aplicar estilo vermelho com textos brancos
-
-## Notificações - Criar Opções de Modelos
-- [ ] Criar página de demonstração com diferentes modelos de notificação para escolha
-
-- [x] Adicionar mais 25 modelos de notificação na página de demonstração
-
-## Notificações - Aplicar Modelo 20 (Estilo Notion)
-- [x] Aplicar modelo 20 (Estilo Notion) como notificação padrão do sistema no canto superior direito
-
-## Notificações - Corrigir Estilo Vermelho Restante
-- [x] Identificar e corrigir todas as notificações que ainda aparecem com fundo vermelho
-
-## Notificações - Aplicar Modelo Snackbar
-- [x] Aplicar modelo Snackbar (estilo Material Design) no canto superior direito
-
-## Notificações - Aplicar Modelo 6 (Badge Compacto)
-- [x] Aplicar modelo 6 (Badge Compacto) no sistema de notificações
-
-## Notificações - Aplicar Modelo 1 (Minimalista com Barra)
-- [x] Aplicar modelo 1 (Minimalista com Barra) no sistema de notificações

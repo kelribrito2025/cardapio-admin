@@ -25,7 +25,6 @@ import Complementos from "./pages/Complementos";
 import Campanhas from "./pages/Campanhas";
 import PDV from "./pages/PDV";
 import AccountSecurity from "./pages/AccountSecurity";
-import NotificationDemo from "./pages/NotificationDemo";
 
 
 // Auth Pages
@@ -58,7 +57,6 @@ function AdminRoutes() {
         <Route path="/campanhas" component={Campanhas} />
         <Route path="/pdv" component={PDV} />
         <Route path="/conta-seguranca" component={AccountSecurity} />
-        <Route path="/notification-demo" component={NotificationDemo} />
         
         
         <Route path="/404" component={NotFound} />
@@ -96,21 +94,7 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
-          <Toaster 
-            position="top-right" 
-            toastOptions={{
-              unstyled: true,
-              classNames: {
-                toast: 'flex items-center gap-2 bg-gray-900 rounded-lg px-4 py-2.5 min-w-[250px] shadow-xl',
-                title: 'text-gray-200 text-sm',
-                description: 'text-gray-400 text-sm',
-                actionButton: 'bg-green-500 text-white px-3 py-1 rounded text-sm font-medium hover:bg-green-600',
-                cancelButton: 'bg-gray-700 text-gray-200 px-3 py-1 rounded text-sm hover:bg-gray-600',
-                closeButton: 'text-gray-400 hover:text-gray-200',
-                icon: 'text-green-400 w-4 h-4',
-              },
-            }}
-          />
+          <Toaster position="top-right" closeButton />
           <Router />
         </TooltipProvider>
       </ThemeProvider>
