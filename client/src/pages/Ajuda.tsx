@@ -99,40 +99,40 @@ function FAQItem({ question, answer, isOpen, onToggle }: FAQItemProps) {
   );
 }
 
-// FAQ Data
+// FAQ Data - Traduzido para português brasileiro
 const faqData = [
   {
-    question: "How do I connect my bank account?",
+    question: "Como faço para cadastrar meu cardápio?",
     answer:
-      "Go to Bank Accounts → \"Connect New Account\" → search for your bank → log in securely using Open Banking. We never store your credentials.",
+      "Vá em Cardápio → \"Adicionar Item\" → preencha as informações do produto (nome, descrição, preço, foto) → clique em Salvar. Seu item estará disponível imediatamente no cardápio digital.",
   },
   {
-    question: "Is my data safe and private?",
+    question: "Meus dados estão seguros e privados?",
     answer:
-      "Yes. We use encryption and follow best security practices to protect your data. Your information is never shared with third parties.",
+      "Sim. Utilizamos criptografia e seguimos as melhores práticas de segurança para proteger seus dados. Suas informações nunca são compartilhadas com terceiros.",
   },
   {
-    question: "Can I cancel my subscription anytime?",
+    question: "Posso cancelar minha assinatura a qualquer momento?",
     answer:
-      "Yes. You can cancel your subscription at any time directly from the dashboard, without any penalties or fees.",
+      "Sim. Você pode cancelar sua assinatura a qualquer momento diretamente pelo painel, sem multas ou taxas adicionais.",
   },
   {
-    question: "How does the WhatsApp bot work?",
+    question: "Como funciona o bot do WhatsApp?",
     answer:
-      "Our bot allows you to check information, receive alerts, and interact with your account directly through WhatsApp.",
+      "Nosso bot permite que seus clientes façam pedidos, consultem o cardápio e recebam atualizações sobre seus pedidos diretamente pelo WhatsApp.",
   },
 ];
 
-// Video Chapters Data
+// Video Chapters Data - Traduzido para português brasileiro
 const videoChapters = [
-  { time: "0:00", title: "Introduction" },
-  { time: "1:05", title: "Dashboard Overview" },
-  { time: "3:00", title: "Connecting Bank Accounts" },
-  { time: "6:00", title: "Understanding Charts" },
-  { time: "10:00", title: "Setting Goals" },
-  { time: "10:00", title: "Setting Goals" },
-  { time: "10:00", title: "Setting Goals" },
-  { time: "10:00", title: "Setting Goals" },
+  { time: "0:00", title: "Introdução" },
+  { time: "1:05", title: "Visão Geral do Painel" },
+  { time: "3:00", title: "Cadastrando Produtos" },
+  { time: "6:00", title: "Gerenciando Pedidos" },
+  { time: "10:00", title: "Configurando Categorias" },
+  { time: "12:00", title: "Personalizando o Cardápio" },
+  { time: "15:00", title: "Relatórios e Métricas" },
+  { time: "18:00", title: "Dicas e Boas Práticas" },
 ];
 
 export default function Ajuda() {
@@ -146,7 +146,7 @@ export default function Ajuda() {
     <AdminLayout>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-gray-900">Help & Support</h1>
+        <h1 className="text-xl font-bold text-gray-900">Ajuda e Suporte</h1>
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5 text-gray-500" />
@@ -156,7 +156,7 @@ export default function Ajuda() {
           </Button>
           <Button variant="outline" size="sm" className="gap-2 text-gray-600">
             <HelpCircle className="h-4 w-4" />
-            Need help
+            Precisa de ajuda
           </Button>
         </div>
       </div>
@@ -164,27 +164,27 @@ export default function Ajuda() {
       {/* Block 1 - Contact Channels */}
       <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
         <h2 className="text-base font-semibold text-gray-900 mb-5">
-          What can we help you with?
+          Como podemos ajudar você?
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <ContactCard
             icon={<MessageCircle className="h-5 w-5 text-white" />}
             iconBg="bg-green-500"
-            title="WhatsApp Support"
-            subtitle="Talk to us instantly"
+            title="Suporte via WhatsApp"
+            subtitle="Fale conosco instantaneamente"
             href="https://wa.me/5511999999999"
           />
           <ContactCard
             icon={<Mail className="h-5 w-5 text-white" />}
             iconBg="bg-amber-400"
-            title="Email Us"
-            subtitle="support@grandmafy.com"
-            href="mailto:support@grandmafy.com"
+            title="Envie um E-mail"
+            subtitle="suporte@seudominio.com"
+            href="mailto:suporte@seudominio.com"
           />
           <ContactCard
             icon={<Phone className="h-5 w-5 text-white" />}
             iconBg="bg-cyan-500"
-            title="Call Support"
+            title="Suporte por Telefone"
             subtitle="+55 (11) 99999-9999"
             href="tel:+5511999999999"
           />
@@ -203,7 +203,7 @@ export default function Ajuda() {
                 <div className="absolute top-4 left-4 text-white text-xs font-medium">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-6 h-6 bg-white/20 rounded" />
-                    <span>Dashboard</span>
+                    <span>Painel</span>
                   </div>
                 </div>
               </div>
@@ -218,21 +218,21 @@ export default function Ajuda() {
               {/* Video title overlay */}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-5">
                 <h3 className="text-white font-bold text-xl leading-tight">
-                  Bank Finance Dashboard Tutorial
+                  Tutorial do Cardápio Digital
                   <br />
-                  (2025) – Complete Guide
+                  (2025) – Guia Completo
                 </h3>
               </div>
             </div>
             <p className="mt-3 text-sm font-medium text-gray-900">
-              Bank Finance Dashboard Tutorial (2025) – Complete Guide
+              Tutorial do Cardápio Digital (2025) – Guia Completo
             </p>
           </div>
 
           {/* Video Chapters - 2 columns */}
           <div className="lg:col-span-2">
             <h3 className="text-base font-semibold text-gray-900 mb-4">
-              Video Chapters
+              Capítulos do Vídeo
             </h3>
             <div className="max-h-[320px] overflow-y-auto">
               {videoChapters.map((chapter, index) => (
@@ -241,7 +241,7 @@ export default function Ajuda() {
                   time={chapter.time}
                   title={chapter.title}
                   onClick={() => {
-                    console.log(`Seek to ${chapter.time}`);
+                    console.log(`Ir para ${chapter.time}`);
                   }}
                 />
               ))}
@@ -253,7 +253,7 @@ export default function Ajuda() {
       {/* Block 3 - FAQ */}
       <div className="bg-white rounded-xl border border-gray-100 p-6">
         <h2 className="text-base font-semibold text-gray-900 mb-4">
-          Frequently Asked Questions
+          Perguntas Frequentes
         </h2>
         <div>
           {faqData.map((faq, index) => (

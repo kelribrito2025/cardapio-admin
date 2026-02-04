@@ -4725,3 +4725,6 @@
 - [x] Cards de contato (WhatsApp, Email, Telefone) com ícones coloridos
 - [x] Seção Tutorial com player de vídeo e lista de capítulos
 - [x] Seção FAQ com accordion expansível
+
+## Tradução da Página de Ajuda
+- [x] Traduzir todo o conteúdo da página de Ajuda para português brasileiro
