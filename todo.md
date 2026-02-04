@@ -4737,3 +4737,6 @@
 
 ## Atualização do Telefone na Página de Ajuda
 - [x] Atualizar número de telefone de suporte para 5534998807793
+
+## Verificação de Cabeçalho - Ajuda vs Dashboard
+- [x] Verificar e ajustar cabeçalho da página de Ajuda para usar o mesmo padrão do Dashboard

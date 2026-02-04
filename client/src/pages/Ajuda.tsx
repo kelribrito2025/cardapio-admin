@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
+import { PageHeader } from "@/components/shared";
 import {
   MessageCircle,
   Mail,
@@ -7,11 +8,8 @@ import {
   Play,
   ChevronDown,
   ChevronUp,
-  Bell,
-  HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 // Contact Card Component
 interface ContactCardProps {
@@ -145,20 +143,11 @@ export default function Ajuda() {
   return (
     <AdminLayout>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-gray-900">Ajuda e Suporte</h1>
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5 text-gray-500" />
-            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center">
-              4
-            </span>
-          </Button>
-          <Button variant="outline" size="sm" className="gap-2 text-gray-600">
-            <HelpCircle className="h-4 w-4" />
-            Precisa de ajuda
-          </Button>
-        </div>
+      <div className="mb-6">
+        <PageHeader 
+          title="Ajuda e Suporte" 
+          description="Central de ajuda e suporte ao cliente"
+        />
       </div>
 
       {/* Block 1 - Contact Channels */}
