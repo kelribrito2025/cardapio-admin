@@ -4670,3 +4670,6 @@
 
 ## Conta e Segurança - Atualização do Nome do Perfil em Tempo Real
 - [x] Invalidar cache do auth.me após salvar nome do responsável para atualizar perfil sem recarregar página
+
+## PDV - Remover Redirecionamento Após Finalizar Pedido
+- [x] Remover redirecionamento automático para /pedidos após finalizar pedido no PDV

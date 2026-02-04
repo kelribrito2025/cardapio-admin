@@ -168,8 +168,7 @@ export default function PDV() {
       }
       
       clearCart();
-      // Redirecionar para a página de Pedidos
-      setLocation("/pedidos");
+      // Manter na página do PDV para continuar atendendo
     },
     onError: (error) => {
       toast.error("Erro ao criar pedido", {
