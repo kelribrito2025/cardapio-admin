@@ -293,7 +293,9 @@ export default function Planos() {
                 key={plan.id}
                 className={cn(
                   "relative bg-card rounded-xl border p-6 transition-all duration-300 overflow-hidden",
-                  plan.highlighted
+                  plan.id === "pro"
+                    ? "border-green-500 border-2 ring-2 ring-green-100"
+                    : plan.highlighted
                     ? "border-blue-500 border-2"
                     : "border-border/50 hover:border-border"
                 )}
@@ -311,6 +313,16 @@ export default function Planos() {
                   <div className="absolute top-4 right-4 z-10">
                     <Badge className="bg-blue-100 text-blue-700 text-xs font-medium px-3 py-1 rounded-full">
                       Mais Popular
+                    </Badge>
+                  </div>
+                )}
+                
+                {/* Current Plan Badge */}
+                {plan.id === "pro" && (
+                  <div className="absolute top-4 left-4 z-10">
+                    <Badge className="bg-green-100 text-green-700 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
+                      <Check className="h-3 w-3" />
+                      Plano Atual
                     </Badge>
                   </div>
                 )}
