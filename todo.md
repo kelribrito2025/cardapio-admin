@@ -4805,3 +4805,6 @@
 
 ## Reorganização de Campos na Aba Dados da Conta
 - [x] Mover campo CNPJ para ao lado do campo nome do estabelecimento
+
+## Reorganização dos Campos de Senha
+- [x] Colocar campos de senha atual, nova e confirmar na mesma linha horizontal
