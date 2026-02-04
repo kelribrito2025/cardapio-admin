@@ -4695,3 +4695,12 @@
 
 ## Ajustes no Menu do Perfil
 - [x] Alterar "Configurações" para "Ajuda e suporte" no dropdown do perfil
+
+
+## Página de Ajuda e Suporte
+- [x] Criar estrutura base da página com 3 blocos (Canais de Ajuda, Tutorial, FAQ)
+- [x] Implementar bloco "Como podemos ajudar?" com 3 cards de contato (WhatsApp, Email, Telefone)
+- [x] Implementar bloco Tutorial em Vídeo com player e lista de capítulos
+- [x] Implementar bloco FAQ com accordion expansível
+- [x] Garantir responsividade completa da página
+- [x] Registrar rota /ajuda no App.tsx
