@@ -4756,3 +4756,6 @@
 
 ## Restaurar Efeito Hover nos Cards
 - [x] Restaurar efeito de hover com elevação suave nos StatCards do Dashboard
+
+## Ajuste de Sombra nos Cards Acumulado e Heatmap
+- [x] Remover shadow-soft dos cards WeeklyRevenueCard e HeatmapCard
