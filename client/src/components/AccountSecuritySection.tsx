@@ -13,6 +13,9 @@ interface AccountSecuritySectionProps {
 }
 
 export function AccountSecuritySection({ establishmentId }: AccountSecuritySectionProps) {
+  // Utils do tRPC para invalidar cache
+  const utils = trpc.useUtils();
+  
   // Estados para dados da conta
   const [accountData, setAccountData] = useState({
     name: "",
@@ -44,8 +47,10 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
   
   // Mutations
   const updateAccountMutation = trpc.establishment.updateAccountData.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Dados da conta atualizados com sucesso!");
+      // Invalidar cache do auth.me para atualizar o nome do perfil em tempo real
+      await utils.auth.me.invalidate();
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao atualizar dados da conta");

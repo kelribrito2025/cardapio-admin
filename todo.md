@@ -4667,3 +4667,6 @@
 ## Conta e Segurança - Ajustes de E-mail e Nome do Responsável
 - [x] Campo e-mail deve mostrar o e-mail cadastrado na plataforma (do usuário)
 - [x] Nome do responsável deve refletir no nome do perfil do usuário ao ser alterado
+
+## Conta e Segurança - Atualização do Nome do Perfil em Tempo Real
+- [x] Invalidar cache do auth.me após salvar nome do responsável para atualizar perfil sem recarregar página
