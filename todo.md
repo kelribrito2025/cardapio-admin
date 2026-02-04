@@ -4940,3 +4940,17 @@
 
 ## Aba Acima do Overlay do Modal
 - [x] Aumentar z-index da aba quando o modal de configuração estiver aberto para ficar acima do overlay escuro
+
+
+## Aba Fixa em Todas as Páginas
+- [ ] Adicionar opção no modal de configuração para aba fixa em todas as páginas (exceto PDV)
+- [ ] Criar componente global da aba que aparece em todas as páginas quando ativado
+- [ ] Persistir configuração no localStorage
+- [ ] Ao clicar na aba de qualquer página, abrir a slidebar do PDV de mesas
+
+
+## Aba Fixa em Todas as Páginas (Exceto PDV)
+- [x] Adicionar opção no modal de configuração para aba fixa em todas as páginas
+- [x] Criar componente GlobalPDVHandle para mostrar a aba globalmente
+- [x] Excluir páginas de PDV e Mesas da exibição global
+- [x] Persistir configuração no localStorage

@@ -27,6 +27,7 @@ import PDV from "./pages/PDV";
 import AccountSecurity from "./pages/AccountSecurity";
 import Ajuda from "./pages/Ajuda";
 import MesasComandas from "./pages/MesasComandas";
+import { GlobalPDVHandle } from "./components/GlobalPDVHandle";
 
 
 // Auth Pages
@@ -39,6 +40,7 @@ import Onboarding from "./pages/Onboarding";
 function AdminRoutes() {
   return (
     <NewOrdersProvider>
+      <GlobalPDVHandle />
       <Switch>
         {/* App routes - Admin Panel */}
         <Route path="/" component={Dashboard} />

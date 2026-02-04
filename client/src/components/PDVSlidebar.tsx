@@ -26,17 +26,38 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Slider } from "@/components/ui/slider";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 // Constantes para configuração da aba
 const HANDLE_CONFIG_KEY = 'pdv-slidebar-handle-config';
+const GLOBAL_HANDLE_KEY = 'pdv-slidebar-global-handle';
 const DEFAULT_HANDLE_CONFIG = {
   positionY: 15, // percentual (0-100)
   height: 76, // pixels
   width: 32, // pixels
+  showGlobally: false, // mostrar em todas as páginas
 };
 
 type HandleConfig = typeof DEFAULT_HANDLE_CONFIG;
+
+// Função para obter configuração global
+export function getGlobalHandleConfig(): HandleConfig {
+  try {
+    const saved = localStorage.getItem(HANDLE_CONFIG_KEY);
+    if (saved) {
+      return { ...DEFAULT_HANDLE_CONFIG, ...JSON.parse(saved) };
+    }
+  } catch (e) {
+    console.error('Erro ao carregar configuração da aba:', e);
+  }
+  return DEFAULT_HANDLE_CONFIG;
+}
+
+// Função para verificar se a aba global está ativada
+export function isGlobalHandleEnabled(): boolean {
+  return getGlobalHandleConfig().showGlobally;
+}
 
 // Tipos
 type CartItem = {
@@ -1344,6 +1365,23 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                 step={4}
                 className="w-full"
               />
+            </div>
+
+            {/* Opção de Aba Global */}
+            <div className="space-y-3 border-t pt-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Aba Fixa em Todas as Páginas</Label>
+                  <p className="text-xs text-muted-foreground">Mostrar a aba em todas as páginas (exceto PDV)</p>
+                </div>
+                <Switch
+                  checked={tempHandleConfig.showGlobally}
+                  onCheckedChange={(checked) => {
+                    setTempHandleConfig(prev => ({ ...prev, showGlobally: checked }));
+                    setHandleConfig(prev => ({ ...prev, showGlobally: checked }));
+                  }}
+                />
+              </div>
             </div>
 
             {/* Dica de preview ao vivo */}
