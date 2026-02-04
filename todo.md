@@ -4679,3 +4679,16 @@
 
 ## PDV - Corrigir Notificações Duplicadas
 - [x] Corrigir notificações duplicadas ao adicionar item ao carrinho
+
+
+## Remodelação da Página de Planos (Billing & Subscription)
+- [x] Criar estrutura base da página com 3 seções (Seleção de Planos, Plano Atual, Billing History)
+- [x] Implementar toggle Monthly/Annual Plan no cabeçalho
+- [x] Criar card do Plano Free (R$ 0, funcionalidades limitadas)
+- [x] Criar card do Plano Basic (R$ 29/mês, funcionalidades intermediárias)
+- [x] Criar card do Plano Pro com destaque visual (Most Popular, gradiente, sombra)
+- [x] Implementar seção Plano Atual do Usuário (Your Plan + Next Payment)
+- [x] Implementar seção Billing History com tabela e filtros
+- [x] Adicionar botão Export no histórico de faturas
+- [x] Garantir responsividade completa da página
+- [x] Preparar layout para integração futura com Pix/Cartão
