@@ -126,10 +126,7 @@ export function GlobalPDVHandle() {
               </>
             )}
           </div>
-          {/* Indicador de mesa */}
-          <span className="text-[10px] text-white/80 mt-1 font-medium">
-            M{selectedTable.number}
-          </span>
+
         </button>
       </div>
 

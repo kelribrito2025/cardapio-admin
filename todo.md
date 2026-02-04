@@ -4954,3 +4954,7 @@
 - [x] Criar componente GlobalPDVHandle para mostrar a aba globalmente
 - [x] Excluir páginas de PDV e Mesas da exibição global
 - [x] Persistir configuração no localStorage
+
+
+## Ajuste na Aba Global
+- [x] Remover indicador "M1" (número da mesa) da aba, deixando apenas as setas
