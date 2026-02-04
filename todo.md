@@ -4699,3 +4699,6 @@
 
 ## Notificações - Aplicar Modelo Snackbar
 - [x] Aplicar modelo Snackbar (estilo Material Design) no canto superior direito
+
+## Notificações - Aplicar Modelo 6 (Badge Compacto)
+- [x] Aplicar modelo 6 (Badge Compacto) no sistema de notificações
