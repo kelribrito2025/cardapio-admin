@@ -106,7 +106,17 @@ export default function Dashboard() {
 
   return (
     <AdminLayout>
-      <div className="mb-6">
+      {/* Background blur effects */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        {/* Blur superior direito - azul */}
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl" />
+        {/* Blur inferior esquerdo - verde */}
+        <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-emerald-400/15 rounded-full blur-3xl" />
+        {/* Blur central direito - amarelo/laranja */}
+        <div className="absolute top-1/2 -right-20 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl" />
+      </div>
+      
+      <div className="relative z-10 mb-6">
         <PageHeader 
           title="Dashboard" 
           description="Visão geral do seu estabelecimento"
@@ -114,7 +124,7 @@ export default function Dashboard() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
         <StatCard
           title="Pedidos Hoje"
           value={stats?.ordersToday ?? 0}
@@ -146,7 +156,7 @@ export default function Dashboard() {
       </div>
 
       {/* Weekly Revenue Card + Mapa de Calor */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
+      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
         <div className="lg:col-span-3">
           <WeeklyRevenueCard
             thisWeek={weeklyRevenue?.thisWeek ?? []}
@@ -162,7 +172,7 @@ export default function Dashboard() {
       </div>
 
       {/* Charts and Recent Orders */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Chart */}
         <SectionCard 
           title="Últimos 7 dias" 
