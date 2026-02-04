@@ -4817,3 +4817,7 @@
 
 ## Layout Responsivo do Botão Salvar no Card de Segurança
 - [x] Botão no header em desktop, na posição original em mobile no card Alterar Senha
+
+## Correção do Campo de Troco no PDV
+- [x] Aplicar formatação padrão do sistema no campo de troco
+- [x] Garantir que observação do troco apareça no recibo

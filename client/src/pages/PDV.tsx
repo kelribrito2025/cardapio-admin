@@ -494,6 +494,11 @@ export default function PDV() {
       customerAddress = `Mesa ${tableNumber}`;
     }
 
+    // Calcular o valor do troco para exibir no recibo
+    // changeAmount contém o valor que o cliente vai pagar (ex: "50,00")
+    // receivedAmount contém o valor recebido no sidebar de entrega
+    const changeValue = changeAmount || receivedAmount;
+    
     createOrderMutation.mutate({
       establishmentId,
       orderNumber,
@@ -508,6 +513,8 @@ export default function PDV() {
       couponCode: appliedCoupon?.code || undefined,
       couponId: appliedCoupon?.couponId || undefined,
       total: Math.max(0, total).toFixed(2),
+      // Enviar o valor do troco quando pagamento for em dinheiro
+      changeAmount: paymentMethod === "cash" && changeValue ? changeValue.replace(",", ".") : undefined,
       notes: orderType === "mesa" ? `Mesa: ${tableNumber}` : undefined,
       status: "preparing", // Pedidos do PDV já vão direto para preparação
       source: "pdv",
@@ -1916,13 +1923,30 @@ export default function PDV() {
                     {paymentMethod === "cash" && (
                       <div className="ml-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
                         <label className="block text-sm font-medium text-gray-600 mb-2">Troco para quanto?</label>
-                        <Input
-                          type="text"
-                          placeholder="Ex: R$ 50,00"
-                          value={changeAmount}
-                          onChange={(e) => setChangeAmount(e.target.value)}
-                          className="border-gray-200 focus:border-red-500 focus:ring-red-500/20"
-                        />
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">R$</span>
+                          <Input
+                            type="text"
+                            inputMode="decimal"
+                            placeholder="0,00"
+                            value={changeAmount}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              // Remove tudo que não é número
+                              const numbers = value.replace(/\D/g, '');
+                              // Converte para centavos e depois para reais
+                              const cents = parseInt(numbers || '0', 10);
+                              const reais = cents / 100;
+                              // Formata com 2 casas decimais
+                              const formatted = reais.toLocaleString('pt-BR', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              });
+                              setChangeAmount(formatted === '0,00' ? '' : formatted);
+                            }}
+                            className="pl-10 border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                          />
+                        </div>
                         <p className="text-xs text-gray-500 mt-1">Deixe em branco se não precisar de troco</p>
                       </div>
                     )}
@@ -2126,28 +2150,31 @@ export default function PDV() {
                         <p className="text-sm text-gray-600">Qual valor recebido?</p>
                         
                         {/* Campo Valor Recebido */}
-                        <Input
-                          type="text"
-                          inputMode="numeric"
-                          placeholder="0,00"
-                          value={receivedAmount}
-                          onChange={(e) => {
-                            // Remove tudo que não é número
-                            const onlyNumbers = e.target.value.replace(/\D/g, "");
-                            
-                            // Se não tiver números, limpa o campo
-                            if (!onlyNumbers) {
-                              setReceivedAmount("");
-                              return;
-                            }
-                            
-                            // Converte para centavos e formata
-                            const cents = parseInt(onlyNumbers, 10);
-                            const formatted = (cents / 100).toFixed(2).replace(".", ",");
-                            setReceivedAmount(formatted);
-                          }}
-                          className="w-full text-lg bg-gray-50 border-gray-200 rounded-xl"
-                        />
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">R$</span>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            placeholder="0,00"
+                            value={receivedAmount}
+                            onChange={(e) => {
+                              // Remove tudo que não é número
+                              const onlyNumbers = e.target.value.replace(/\D/g, "");
+                              
+                              // Se não tiver números, limpa o campo
+                              if (!onlyNumbers) {
+                                setReceivedAmount("");
+                                return;
+                              }
+                              
+                              // Converte para centavos e formata
+                              const cents = parseInt(onlyNumbers, 10);
+                              const formatted = (cents / 100).toFixed(2).replace(".", ",");
+                              setReceivedAmount(formatted);
+                            }}
+                            className="w-full pl-10 text-lg bg-gray-50 border-gray-200 rounded-xl"
+                          />
+                        </div>
                         
                         <p className="text-xs text-gray-400">Deixe em branco se não precisar de troco</p>
                         

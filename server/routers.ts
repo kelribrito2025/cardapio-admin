@@ -870,6 +870,7 @@ export const appRouter = router({
         couponCode: z.string().optional(),
         couponId: z.number().optional(),
         total: z.string(),
+        changeAmount: z.string().optional(),
         notes: z.string().optional(),
         status: z.enum(["pending_confirmation", "new", "preparing", "ready", "completed", "cancelled"]).optional(),
         source: z.enum(["internal", "ifood", "rappi", "ubereats", "pdv"]).optional(),
