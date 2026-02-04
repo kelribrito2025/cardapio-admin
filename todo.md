@@ -5031,7 +5031,3 @@
 - [x] Adicionar data de renovação no cabeçalho
 - [x] Adicionar botão Cancel Plan no canto superior direito
 - [x] Adicionar link Upgrade Plan no rodapé
-
-
-## Badge de Plano Ativo na Lista de Planos
-- [x] Adicionar badge ou destaque visual no plano atualmente ativo
