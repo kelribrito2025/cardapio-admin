@@ -4702,3 +4702,6 @@
 
 ## Notificações - Aplicar Modelo 6 (Badge Compacto)
 - [x] Aplicar modelo 6 (Badge Compacto) no sistema de notificações
+
+## Notificações - Aplicar Modelo 1 (Minimalista com Barra)
+- [x] Aplicar modelo 1 (Minimalista com Barra) no sistema de notificações
