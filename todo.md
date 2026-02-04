@@ -4696,3 +4696,6 @@
 
 ## Notificações - Corrigir Estilo Vermelho Restante
 - [x] Identificar e corrigir todas as notificações que ainda aparecem com fundo vermelho
+
+## Notificações - Aplicar Modelo Snackbar
+- [x] Aplicar modelo Snackbar (estilo Material Design) no canto superior direito

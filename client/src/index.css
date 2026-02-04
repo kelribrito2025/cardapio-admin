@@ -441,35 +441,50 @@
 }
 
 
-/* Sonner Toast - Estilo Notion (fundo escuro) */
+/* Sonner Toast - Estilo Snackbar Material Design */
 [data-sonner-toaster] [data-sonner-toast] {
   background-color: #111827 !important;
   border-color: #111827 !important;
-  color: #e5e7eb !important;
+  color: white !important;
+  border-radius: 9999px !important;
+  padding: 0.75rem 1.25rem !important;
+  min-width: 250px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast] [data-title] {
-  color: #e5e7eb !important;
+  color: white !important;
+  font-weight: 500 !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast] [data-description] {
-  color: #9ca3af !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-icon] {
+  background-color: #dc2626 !important;
+  border-radius: 9999px !important;
+  padding: 0.375rem !important;
+  margin-right: 0.25rem !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast] [data-icon] svg {
-  color: #4ade80 !important;
-  fill: #4ade80 !important;
+  color: white !important;
+  fill: white !important;
+  width: 1rem !important;
+  height: 1rem !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast] [data-close-button] {
-  color: #9ca3af !important;
+  color: #f87171 !important;
   background-color: transparent !important;
   border: none !important;
+  font-weight: 600 !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast] [data-close-button]:hover {
-  color: #e5e7eb !important;
-  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #fca5a5 !important;
+  background-color: transparent !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast][data-type="success"],
@@ -485,7 +500,6 @@
   border-color: #1f2937 !important;
 }
 
-[data-sonner-toaster] [data-sonner-toast][data-type="error"] [data-icon] svg {
-  color: #f87171 !important;
-  fill: #f87171 !important;
+[data-sonner-toaster] [data-sonner-toast][data-type="error"] [data-icon] {
+  background-color: #b91c1c !important;
 }
