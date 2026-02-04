@@ -4821,3 +4821,6 @@
 ## Correção do Campo de Troco no PDV
 - [x] Aplicar formatação padrão do sistema no campo de troco
 - [x] Garantir que observação do troco apareça no recibo
+
+## Observação de Não Precisa de Troco
+- [x] Adicionar observação no recibo quando pagamento em dinheiro não precisar de troco

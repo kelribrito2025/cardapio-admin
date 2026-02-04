@@ -510,12 +510,12 @@ function generateReceiptHTML(
     </div>
   </div>
   
-  ${order.paymentMethod === 'cash' && order.changeAmount ? `
+  ${order.paymentMethod === 'cash' ? `
   <div style="margin: 8px 0; text-align: center;">
     <div style="border-top: 1px dashed #000; margin-bottom: 8px;"></div>
     <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: ${baseFontSize}; font-weight: ${baseFontWeight};">
       <img src="/info-icon.svg" style="width: 16px; height: 16px;" alt="info" />
-      <span>Obs: Troco para ${formatCurrency(order.changeAmount)}</span>
+      <span>Obs: ${order.changeAmount ? `Troco para ${formatCurrency(order.changeAmount)}` : 'Não precisa de troco'}</span>
     </div>
     <div style="border-top: 1px dashed #000; margin-top: 8px;"></div>
   </div>

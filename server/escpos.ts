@@ -624,12 +624,16 @@ export class EscPosGenerator {
       .line(paymentMethodText[order.paymentMethod || ''] || order.paymentMethod || 'Nao informado');
 
     // Troco (se pagamento em dinheiro)
-    if (order.paymentMethod === 'cash' && order.changeFor && order.changeFor > order.total) {
-      const change = order.changeFor - order.total;
-      this.line(`Troco para: ${formatCurrency(order.changeFor)}`);
-      this.bold()
-        .line(`Troco: ${formatCurrency(change)}`)
-        .bold(false);
+    if (order.paymentMethod === 'cash') {
+      if (order.changeFor && order.changeFor > order.total) {
+        const change = order.changeFor - order.total;
+        this.line(`Troco para: ${formatCurrency(order.changeFor)}`);
+        this.bold()
+          .line(`Troco: ${formatCurrency(change)}`)
+          .bold(false);
+      } else {
+        this.line('Nao precisa de troco');
+      }
     }
 
     // Rodapé
@@ -828,10 +832,14 @@ export function generatePlainTextReceipt(
   receipt += 'FORMA DE PAGAMENTO\n';
   receipt += (paymentMethodText[order.paymentMethod || ''] || order.paymentMethod || 'Nao informado') + '\n';
 
-  if (order.paymentMethod === 'cash' && order.changeFor && order.changeFor > order.total) {
-    const change = order.changeFor - order.total;
-    receipt += `Troco para: ${formatCurrency(order.changeFor)}\n`;
-    receipt += `Troco: ${formatCurrency(change)}\n`;
+  if (order.paymentMethod === 'cash') {
+    if (order.changeFor && order.changeFor > order.total) {
+      const change = order.changeFor - order.total;
+      receipt += `Troco para: ${formatCurrency(order.changeFor)}\n`;
+      receipt += `Troco: ${formatCurrency(change)}\n`;
+    } else {
+      receipt += 'Nao precisa de troco\n';
+    }
   }
 
   // Rodapé
