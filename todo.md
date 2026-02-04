@@ -4765,3 +4765,6 @@
 
 ## Ajuste de Largura da Sidebar de Entrega
 - [x] Reduzir largura da sidebar "Dados da Entrega" em 15%
+
+## Ajuste do Card Troco a Devolver
+- [x] Reduzir tamanho do card "Troco a devolver" no modal de Forma de Pagamento em 17%
