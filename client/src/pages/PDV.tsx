@@ -212,7 +212,7 @@ export default function PDV() {
 
   // Estados para sidebar de pagamento (Retirada)
   const [showPaymentSidebar, setShowPaymentSidebar] = useState(false);
-  const [selectedPaymentInSidebar, setSelectedPaymentInSidebar] = useState<PaymentMethodType>(null);
+  const [selectedPaymentInSidebar, setSelectedPaymentInSidebar] = useState<PaymentMethodType>("cash");
   const [receivedAmount, setReceivedAmount] = useState("");
 
   // Estados para cupom
@@ -2064,7 +2064,7 @@ export default function PDV() {
       <Sheet open={showPaymentSidebar} onOpenChange={(open) => {
         setShowPaymentSidebar(open);
         if (!open) {
-          setSelectedPaymentInSidebar(null);
+          setSelectedPaymentInSidebar("cash");
           setReceivedAmount("");
         }
       }}>
@@ -2246,7 +2246,7 @@ export default function PDV() {
                   }
                 }
                 setShowPaymentSidebar(false);
-                setSelectedPaymentInSidebar(null);
+                setSelectedPaymentInSidebar("cash");
                 setReceivedAmount("");
               }}
               disabled={!selectedPaymentInSidebar && availablePaymentMethods.length > 0}

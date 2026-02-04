@@ -4830,3 +4830,7 @@
 
 ## Pré-seleção de Forma de Pagamento
 - [x] Pré-selecionar dinheiro como forma de pagamento padrão no PDV
+
+## Pré-seleção de Dinheiro nos Modais do PDV
+- [x] Garantir pré-seleção de dinheiro no modal de entrega
+- [x] Garantir pré-seleção de dinheiro no modal de pagamento (retirada)
