@@ -4772,3 +4772,6 @@
 ## Implementação de Impressão ESC/POS
 - [x] Criar utilitário de geração de comandos ESC/POS
 - [x] Integrar ESC/POS com sistema de impressão quando toggle HTML estiver desativado
+
+## Ajuste de Sombra nos Cards de Estoque
+- [x] Remover shadow-soft dos cards da página de Estoque para ficar igual à página de Categorias

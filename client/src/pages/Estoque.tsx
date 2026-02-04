@@ -348,7 +348,7 @@ export default function Estoque() {
         {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {/* Total */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-blue-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-blue-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Total</p>
@@ -363,7 +363,7 @@ export default function Estoque() {
             </div>
           </div>
           {/* OK */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-green-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-green-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">OK</p>
@@ -378,7 +378,7 @@ export default function Estoque() {
             </div>
           </div>
           {/* Baixo */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-yellow-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-yellow-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Baixo</p>
@@ -393,7 +393,7 @@ export default function Estoque() {
             </div>
           </div>
           {/* Crítico */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-orange-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-orange-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Crítico</p>
@@ -408,7 +408,7 @@ export default function Estoque() {
             </div>
           </div>
           {/* Em falta */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-red-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-red-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Em falta</p>
