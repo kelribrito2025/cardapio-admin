@@ -71,7 +71,7 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className, 
 
   return (
     <div className={cn(
-      "bg-card rounded-xl overflow-hidden border border-border/50 border-t-4 transition-all duration-200 hover:bg-muted/30",
+      "bg-card rounded-xl overflow-hidden border border-border/50 border-t-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
       colors.borderColor,
       className
     )}>

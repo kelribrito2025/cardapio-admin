@@ -4753,3 +4753,6 @@
 
 ## Ajuste de Sombra nos Cards do Dashboard
 - [x] Remover shadow-soft dos cards da página de Dashboard para ficar igual à página de Categorias
+
+## Restaurar Efeito Hover nos Cards
+- [x] Restaurar efeito de hover com elevação suave nos StatCards do Dashboard
