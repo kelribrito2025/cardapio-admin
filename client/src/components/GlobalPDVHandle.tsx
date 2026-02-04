@@ -77,6 +77,32 @@ export function GlobalPDVHandle() {
     }
   }, [tables]);
 
+  // Atalhos de teclado F2 para abrir e ESC para fechar
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Não capturar se estiver em um input ou textarea
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return;
+      }
+      
+      // F2 para abrir a slidebar
+      if (e.key === 'F2') {
+        e.preventDefault();
+        setIsSlidebarOpen(true);
+      }
+      
+      // ESC para fechar a slidebar
+      if (e.key === 'Escape' && isSlidebarOpen) {
+        e.preventDefault();
+        setIsSlidebarOpen(false);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSlidebarOpen]);
+
   // Não mostrar nas páginas de PDV ou Mesas
   const excludedPaths = ['/pdv', '/mesas'];
   const shouldShow = isEnabled && !excludedPaths.some(path => location.startsWith(path));

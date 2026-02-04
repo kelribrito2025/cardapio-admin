@@ -178,6 +178,32 @@ export default function MesasComandas() {
       }
     }
   }, [persistedTableId, tables, selectedTable]);
+
+  // Atalhos de teclado F2 para abrir e ESC para fechar a slidebar
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Não capturar se estiver em um input ou textarea
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return;
+      }
+      
+      // F2 para abrir a slidebar (se houver mesa selecionada)
+      if (e.key === 'F2' && selectedTable) {
+        e.preventDefault();
+        setShowPDVSlidebar(true);
+      }
+      
+      // ESC para fechar a slidebar
+      if (e.key === 'Escape' && showPDVSlidebar) {
+        e.preventDefault();
+        setShowPDVSlidebar(false);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedTable, showPDVSlidebar]);
   
   // Mutations
   const createBatchMutation = trpc.tables.createBatch.useMutation({

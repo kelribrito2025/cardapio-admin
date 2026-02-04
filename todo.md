@@ -4958,3 +4958,9 @@
 
 ## Ajuste na Aba Global
 - [x] Remover indicador "M1" (número da mesa) da aba, deixando apenas as setas
+
+
+## Atalhos de Teclado para Slidebar PDV
+- [x] Implementar tecla F2 para abrir a slidebar
+- [x] Implementar tecla ESC para fechar a slidebar
+- [x] Atalhos funcionando em todas as páginas (exceto PDV)
