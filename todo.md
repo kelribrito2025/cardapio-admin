@@ -4718,11 +4718,3 @@
 
 ## Ajuste na Página de Planos
 - [x] Adicionar card do plano gratuito à esquerda do card Basic
-
-- [x] Adicionar efeito blur/gradiente azul no canto superior direito do card Pro
-
-## Teste Visual - Efeito Blur na Sidebar
-- [x] Adicionar efeito blur/gradiente azul na barra de menu lateral (teste)
-
-## Efeito Blur no Dashboard
-- [x] Adicionar efeitos blur/gradiente em algumas partes do background do Dashboard

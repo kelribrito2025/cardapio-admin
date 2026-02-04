@@ -474,7 +474,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col overflow-hidden",
+          "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col",
           sidebarWidth,
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
           "lg:translate-x-0"
@@ -483,8 +483,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           background: "#ffffff"
         }}
       >
-        {/* Blur effect no canto superior direito */}
-        <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-400/30 rounded-full blur-3xl pointer-events-none" />
         {/* Logo + Toggle button na mesma linha */}
         <div className={cn(
           "flex items-center h-[58px] border-b border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
