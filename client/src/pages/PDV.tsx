@@ -1941,12 +1941,32 @@ export default function PDV() {
                         <Banknote className="h-5 w-5" />
                       </div>
                       <div className="flex-1 text-left">
-                        <p className={cn(
-                          "font-medium",
-                          paymentMethod === "cash" ? "text-red-700" : "text-gray-700"
-                        )}>Dinheiro</p>
+                        <div className="flex items-center gap-2">
+                          <p className={cn(
+                            "font-medium",
+                            paymentMethod === "cash" ? "text-red-700" : "text-gray-700"
+                          )}>Dinheiro</p>
+                          {favoritePaymentMethod === "cash" && (
+                            <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Favorito</span>
+                          )}
+                        </div>
                         <p className="text-xs text-gray-500">Pagamento na entrega</p>
                       </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSetFavoritePayment("cash");
+                        }}
+                        className={cn(
+                          "p-2 rounded-lg transition-all hover:scale-110",
+                          favoritePaymentMethod === "cash"
+                            ? "text-amber-500"
+                            : "text-gray-300 hover:text-amber-400"
+                        )}
+                        title={favoritePaymentMethod === "cash" ? "Remover favorito" : "Marcar como favorito"}
+                      >
+                        <Star className={cn("h-5 w-5", favoritePaymentMethod === "cash" && "fill-current")} />
+                      </button>
                       {paymentMethod === "cash" && (
                         <Check className="h-5 w-5 text-red-500" />
                       )}
@@ -2004,12 +2024,32 @@ export default function PDV() {
                       <CreditCard className="h-5 w-5" />
                     </div>
                     <div className="flex-1 text-left">
-                      <p className={cn(
-                        "font-medium",
-                        paymentMethod === "card" ? "text-red-700" : "text-gray-700"
-                      )}>Cartão</p>
+                      <div className="flex items-center gap-2">
+                        <p className={cn(
+                          "font-medium",
+                          paymentMethod === "card" ? "text-red-700" : "text-gray-700"
+                        )}>Cartão</p>
+                        {favoritePaymentMethod === "card" && (
+                          <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Favorito</span>
+                        )}
+                      </div>
                       <p className="text-xs text-gray-500">Débito ou Crédito na entrega</p>
                     </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSetFavoritePayment("card");
+                      }}
+                      className={cn(
+                        "p-2 rounded-lg transition-all hover:scale-110",
+                        favoritePaymentMethod === "card"
+                          ? "text-amber-500"
+                          : "text-gray-300 hover:text-amber-400"
+                      )}
+                      title={favoritePaymentMethod === "card" ? "Remover favorito" : "Marcar como favorito"}
+                    >
+                      <Star className={cn("h-5 w-5", favoritePaymentMethod === "card" && "fill-current")} />
+                    </button>
                     {paymentMethod === "card" && (
                       <Check className="h-5 w-5 text-red-500" />
                     )}
@@ -2035,12 +2075,32 @@ export default function PDV() {
                         <QrCode className="h-5 w-5" />
                       </div>
                       <div className="flex-1 text-left">
-                        <p className={cn(
-                          "font-medium",
-                          paymentMethod === "pix" ? "text-red-700" : "text-gray-700"
-                        )}>Pix</p>
+                        <div className="flex items-center gap-2">
+                          <p className={cn(
+                            "font-medium",
+                            paymentMethod === "pix" ? "text-red-700" : "text-gray-700"
+                          )}>Pix</p>
+                          {favoritePaymentMethod === "pix" && (
+                            <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Favorito</span>
+                          )}
+                        </div>
                         <p className="text-xs text-gray-500">Pagamento instantâneo</p>
                       </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSetFavoritePayment("pix");
+                        }}
+                        className={cn(
+                          "p-2 rounded-lg transition-all hover:scale-110",
+                          favoritePaymentMethod === "pix"
+                            ? "text-amber-500"
+                            : "text-gray-300 hover:text-amber-400"
+                        )}
+                        title={favoritePaymentMethod === "pix" ? "Remover favorito" : "Marcar como favorito"}
+                      >
+                        <Star className={cn("h-5 w-5", favoritePaymentMethod === "pix" && "fill-current")} />
+                      </button>
                       {paymentMethod === "pix" && (
                         <Check className="h-5 w-5 text-red-500" />
                       )}

@@ -4840,3 +4840,6 @@
 - [x] Implementar lógica de favorito com salvamento no localStorage
 - [x] Pré-selecionar forma favorita ao abrir o modal
 - [x] Garantir apenas uma forma favorita por vez
+
+## Favoritar Forma de Pagamento no Sidebar de Entrega
+- [x] Adicionar ícone de estrela nas formas de pagamento do sidebar de entrega
