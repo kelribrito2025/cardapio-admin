@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import DashboardLayout from "@/components/DashboardLayout";
+import { AdminLayout } from "@/components/AdminLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -278,7 +278,7 @@ export default function MesasComandas() {
   ];
 
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <div className="p-6 space-y-6">
         {/* Header */}
         <div>
@@ -688,6 +688,6 @@ export default function MesasComandas() {
           )}
         </SheetContent>
       </Sheet>
-    </DashboardLayout>
+    </AdminLayout>
   );
 }
