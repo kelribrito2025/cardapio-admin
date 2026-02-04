@@ -4787,3 +4787,7 @@
 
 ## Ajuste de Sombra nos Cards de Campanhas
 - [x] Remover sombra de todos os cards da página de Campanhas
+
+## Atualização de Placeholder SMS
+- [x] Atualizar placeholder do campo de mensagem SMS na página de Campanhas
+- [x] Atualizar texto padrão do card de preview

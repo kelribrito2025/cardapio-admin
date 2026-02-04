@@ -281,7 +281,7 @@ export default function Campanhas() {
   };
 
   // Preview da mensagem com substituições
-  const previewMensagem = mensagem || "Sua mensagem aparecerá aqui...";
+  const previewMensagem = mensagem || "Você ganhou R$15 de desconto! Use o cupom #15OFF em pedidos acima de R$ 100. Aproveite!";
 
   return (
     <AdminLayout>
@@ -355,7 +355,7 @@ export default function Campanhas() {
                       setMensagem(e.target.value);
                     }
                   }}
-                  placeholder="Digite sua mensagem promocional aqui..."
+                  placeholder="Você ganhou R$15 de desconto! Use o cupom #15OFF em pedidos acima de R$ 100. Aproveite!"
                   className="min-h-[44px] resize-none flex-1"
                   rows={1}
                   style={{ height: 'auto', minHeight: '44px' }}
