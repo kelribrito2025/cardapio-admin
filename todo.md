@@ -4750,3 +4750,6 @@
 
 ## Ajuste de Sombra nos Cards do Catálogo
 - [x] Aplicar o mesmo estilo de sombra dos cards de Categorias nos cards de Catálogo
+
+## Ajuste de Sombra nos Cards do Dashboard
+- [x] Remover shadow-soft dos cards da página de Dashboard para ficar igual à página de Categorias

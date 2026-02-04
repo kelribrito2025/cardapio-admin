@@ -54,7 +54,7 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className, 
   if (loading) {
     return (
       <div className={cn(
-        "bg-card rounded-xl overflow-hidden border border-border/50 border-t-4 shadow-sm",
+        "bg-card rounded-xl overflow-hidden border border-border/50 border-t-4",
         colors.borderColor,
         className
       )}>
@@ -71,7 +71,7 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className, 
 
   return (
     <div className={cn(
-      "bg-card rounded-xl overflow-hidden border border-border/50 border-t-4 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
+      "bg-card rounded-xl overflow-hidden border border-border/50 border-t-4 transition-all duration-200 hover:bg-muted/30",
       colors.borderColor,
       className
     )}>
@@ -204,7 +204,7 @@ interface TableSkeletonProps {
 
 export function TableSkeleton({ rows = 5, columns = 5 }: TableSkeletonProps) {
   return (
-    <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-soft">
+    <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
       <div className="p-6 border-b border-border/50">
         <div className="skeleton h-7 w-60 rounded-lg" />
       </div>
@@ -233,7 +233,7 @@ interface SectionCardProps {
 
 export function SectionCard({ title, description, children, actions, className, noPadding }: SectionCardProps) {
   return (
-    <div className={cn("bg-card rounded-xl border border-border/50 shadow-soft", className)}>
+    <div className={cn("bg-card rounded-xl border border-border/50", className)}>
       {(title || actions) && (
         <div className="flex items-center justify-between px-6 py-3 border-b border-border/50" style={{height: '46px'}}>
           <div>
