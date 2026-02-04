@@ -4993,3 +4993,15 @@
 - [x] Ajustar duração para 250-350ms (atualmente 400ms)
 - [x] Usar ease-in-out em vez de cubic-bezier
 - [x] Manter responsividade e fluidez
+
+
+## Padronização do Modal de Detalhes do Item
+- [ ] Identificar o modal de detalhes da página de Mesas
+- [ ] Padronizar layout e tamanhos para ficar igual ao modal do PDV
+- [ ] Usar checkbox quadrado com nome e preço na mesma linha
+
+
+## Padronização do Modal de Detalhes do Item
+- [x] Padronizar modal de Mesas para ficar igual ao modal do PDV
+- [x] Usar mesmos tamanhos de fonte e espaçamentos
+- [x] Usar mesmo estilo de checkbox/radio

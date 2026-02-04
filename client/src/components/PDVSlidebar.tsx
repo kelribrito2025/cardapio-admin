@@ -1022,14 +1022,14 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
           />
           
-          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
-            {/* Imagem */}
+          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{ touchAction: 'pan-y' }}>
+            {/* Imagem do Produto ou Complemento Selecionado */}
             {(() => {
               const displayImage = selectedComplementImage || selectedProduct.images?.[0];
               
               if (displayImage) {
                 return (
-                  <div className="relative w-full h-[180px] sm:h-48 flex-shrink-0">
+                  <div className="relative w-full h-[215px] sm:h-60 md:h-72 flex-shrink-0">
                     <img
                       src={displayImage}
                       alt={selectedProduct.name}
@@ -1046,8 +1046,8 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               }
               
               return (
-                <div className="relative w-full h-[150px] flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
-                  <UtensilsCrossed className="h-12 w-12 text-white/80 animate-placeholder-pulse" />
+                <div className="relative w-full h-[180px] sm:h-48 md:h-56 flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                  <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80 animate-placeholder-pulse" />
                   <button 
                     onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
                     className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
@@ -1060,41 +1060,44 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             
             {/* Conteúdo */}
             <div className="flex-1 overflow-y-auto overscroll-contain">
-              <div className="p-4 space-y-3">
+              <div className="p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
+                {/* Título e Preço */}
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">{selectedProduct.name}</h3>
+                  <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
                   {Number(selectedProduct.price) > 0 && (
-                    <p className="text-base font-semibold text-red-500 mt-1">
+                    <p className="text-lg font-semibold text-red-500 mt-1">
                       {formatCurrency(parseFloat(selectedProduct.price))}
                     </p>
                   )}
                 </div>
 
+                {/* Descrição */}
                 {selectedProduct.description && (
                   <p className="text-sm text-gray-600 leading-relaxed">
                     {selectedProduct.description}
                   </p>
                 )}
 
-                {/* Grupos de Complementos */}
+                {/* Grupos de Complementos - Estilo Menu Público */}
                 {productComplements && productComplements.length > 0 && (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {productComplements.map((group) => {
                       const selectedInGroup = selectedComplements.get(group.id) || new Map<number, number>();
                       const isRadio = group.maxQuantity === 1;
                       
                       return (
-                        <div key={group.id} className="border border-gray-200 rounded-lg overflow-hidden">
-                          <div className="bg-gray-50 px-3 py-2 border-b border-gray-200">
+                        <div key={group.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                          {/* Header do Grupo */}
+                          <div className="bg-gray-50 px-4 py-3 border-b border-gray-200" style={{paddingTop: '8px', height: '58px'}}>
                             <div className="flex items-center justify-between">
-                              <h4 className="font-semibold text-sm text-gray-900">{group.name}</h4>
+                              <h4 className="font-semibold text-gray-900">{group.name}</h4>
                               {group.isRequired && (
-                                <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full font-medium">
+                                <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
                                   Obrigatório
                                 </span>
                               )}
                             </div>
-                            <p className="text-[10px] text-gray-500 mt-0.5">
+                            <p className="text-xs text-gray-500 mt-0.5">
                               {group.minQuantity > 0 ? `Mín: ${group.minQuantity}` : ''}
                               {group.minQuantity > 0 && group.maxQuantity > 1 ? ' | ' : ''}
                               {group.maxQuantity > 1 ? `Máx: ${group.maxQuantity}` : ''}
@@ -1102,36 +1105,43 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                             </p>
                           </div>
                           
+                          {/* Itens do Grupo */}
                           <div className="divide-y divide-gray-100">
                             {group.items.map((item) => {
                               const itemQuantity = selectedInGroup.get(item.id) || 0;
                               const isSelected = itemQuantity > 0;
+                              const itemImageUrl = item.imageUrl;
                               const displayPrice = Number(item.price);
                               
+                              // Função para toggle (checkbox/radio)
                               const handleToggle = () => {
                                 setSelectedComplements((prev) => {
                                   const newMap = new Map(prev);
                                   const currentGroupMap = new Map(prev.get(group.id) || []);
                                   
                                   if (isRadio) {
+                                    // Radio: substitui a seleção com quantidade 1
                                     const newGroupMap = new Map<number, number>();
                                     newGroupMap.set(item.id, 1);
                                     newMap.set(group.id, newGroupMap);
-                                    if (item.imageUrl) {
-                                      setSelectedComplementImage(item.imageUrl);
+                                    if (itemImageUrl) {
+                                      setSelectedComplementImage(itemImageUrl);
+                                    } else {
+                                      setSelectedComplementImage(null);
                                     }
                                   } else {
+                                    // Checkbox: toggle
                                     if (isSelected) {
                                       currentGroupMap.delete(item.id);
-                                      if (item.imageUrl && selectedComplementImage === item.imageUrl) {
+                                      if (itemImageUrl && selectedComplementImage === itemImageUrl) {
                                         setSelectedComplementImage(null);
                                       }
                                     } else {
                                       const totalInGroup = Array.from(currentGroupMap.values()).reduce((a, b) => a + b, 0);
                                       if (group.maxQuantity === 0 || totalInGroup < group.maxQuantity) {
                                         currentGroupMap.set(item.id, 1);
-                                        if (item.imageUrl) {
-                                          setSelectedComplementImage(item.imageUrl);
+                                        if (itemImageUrl) {
+                                          setSelectedComplementImage(itemImageUrl);
                                         }
                                       }
                                     }
@@ -1144,42 +1154,27 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                               return (
                                 <div
                                   key={item.id}
-                                  onClick={handleToggle}
-                                  className={cn(
-                                    "flex items-center justify-between p-2.5 cursor-pointer transition-colors",
-                                    isSelected ? "bg-red-50" : "hover:bg-gray-50"
-                                  )}
+                                  className={`flex items-center justify-between px-4 py-3 transition-colors ${
+                                    isSelected ? 'bg-red-50' : 'hover:bg-gray-50'
+                                  }`}
                                 >
-                                  <div className="flex items-center gap-2 flex-1">
-                                    {item.imageUrl && (
-                                      <img
-                                        src={item.imageUrl}
-                                        alt={item.name}
-                                        className="w-8 h-8 rounded object-cover"
-                                      />
-                                    )}
-                                    <div>
-                                      <p className={cn(
-                                        "text-xs font-medium",
-                                        isSelected ? "text-red-700" : "text-gray-700"
-                                      )}>
-                                        {item.name}
-                                      </p>
-                                      {displayPrice > 0 && (
-                                        <p className="text-[10px] text-gray-500">
-                                          + {formatCurrency(displayPrice)}
-                                        </p>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className={cn(
-                                    "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors",
-                                    isSelected
-                                      ? "border-red-500 bg-red-500"
-                                      : "border-gray-300"
-                                  )}>
-                                    {isSelected && <Check className="h-3 w-3 text-white" />}
-                                  </div>
+                                  <label className="flex items-center gap-3 cursor-pointer flex-1">
+                                    <input
+                                      type={isRadio ? 'radio' : 'checkbox'}
+                                      name={`group-${group.id}`}
+                                      checked={isSelected}
+                                      onChange={handleToggle}
+                                      className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500"
+                                    />
+                                    <span className="text-sm text-gray-900">{item.name}</span>
+                                  </label>
+                                  
+                                  {/* Preço */}
+                                  {displayPrice > 0 && (
+                                    <span className="text-sm text-gray-600 min-w-[70px] text-right">
+                                      + {formatCurrency(displayPrice)}
+                                    </span>
+                                  )}
                                 </div>
                               );
                             })}
@@ -1190,56 +1185,58 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   </div>
                 )}
 
-                {/* Observação */}
+                {/* Campo de Observação */}
                 <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">
-                    Observação (opcional)
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Observações
                   </label>
-                  <Input
-                    placeholder="Ex: Sem cebola, bem passado..."
+                  <textarea
                     value={productObservation}
                     onChange={(e) => setProductObservation(e.target.value)}
-                    className="text-sm"
+                    placeholder="Ex: Sem cebola, bem passado..."
+                    rows={2}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="p-4 border-t border-gray-200 bg-gray-50">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200 p-1">
-                  <button
-                    onClick={() => setProductQuantity(Math.max(1, productQuantity - 1))}
-                    className="p-1.5 rounded hover:bg-gray-100 transition-colors"
-                  >
-                    <Minus className="h-4 w-4 text-gray-600" />
-                  </button>
-                  <span className="w-8 text-center font-semibold text-sm">{productQuantity}</span>
-                  <button
-                    onClick={() => setProductQuantity(productQuantity + 1)}
-                    className="p-1.5 rounded hover:bg-gray-100 transition-colors"
-                  >
-                    <Plus className="h-4 w-4 text-gray-600" />
-                  </button>
-                </div>
-                <Button
-                  onClick={handleAddToCart}
-                  className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+            {/* Footer - Quantidade e Adicionar */}
+            <div className="border-t p-4 bg-white flex items-center gap-4">
+              {/* Controle de Quantidade */}
+              <div className="flex items-center gap-3 bg-gray-100 rounded-full px-2 py-1">
+                <button
+                  onClick={() => setProductQuantity(Math.max(1, productQuantity - 1))}
+                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
                 >
-                  {isEditingMode ? "Atualizar" : "Adicionar"} • {formatCurrency(
-                    (parseFloat(selectedProduct.price) + 
-                      Array.from(selectedComplements.values()).reduce((total, groupMap) => {
-                        return total + Array.from(groupMap.entries()).reduce((sum, [itemId, qty]) => {
-                          const group = productComplements?.find(g => g.items.some(i => i.id === itemId));
-                          const item = group?.items.find(i => i.id === itemId);
-                          return sum + (item ? parseFloat(item.price) * qty : 0);
-                        }, 0);
-                      }, 0)
-                    ) * productQuantity
-                  )}
-                </Button>
+                  <Minus className="h-4 w-4" />
+                </button>
+                <span className="w-8 text-center font-semibold">{productQuantity}</span>
+                <button
+                  onClick={() => setProductQuantity(productQuantity + 1)}
+                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
               </div>
+
+              {/* Botão Adicionar */}
+              <Button
+                onClick={handleAddToCart}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white rounded-full py-3"
+              >
+                + {isEditingMode ? "Atualizar" : "Adicionar"} {formatCurrency(
+                  (parseFloat(selectedProduct.price) + 
+                    Array.from(selectedComplements.values()).reduce((total, groupMap) => {
+                      return total + Array.from(groupMap.entries()).reduce((sum, [itemId, qty]) => {
+                        const group = productComplements?.find(g => g.items.some(i => i.id === itemId));
+                        const item = group?.items.find(i => i.id === itemId);
+                        return sum + (item ? parseFloat(item.price) * qty : 0);
+                      }, 0);
+                    }, 0)
+                  ) * productQuantity
+                )}
+              </Button>
             </div>
           </div>
         </div>
