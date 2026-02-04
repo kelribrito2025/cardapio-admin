@@ -2933,6 +2933,55 @@ export const appRouter = router({
       }),
   }),
 
+  // ============ TABLE SPACES (ESPAÇOS) ============
+  tableSpaces: router({
+    // Listar espaços do estabelecimento
+    list: protectedProcedure.query(async ({ ctx }) => {
+      const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+      if (!establishment) return [];
+      return db.getTableSpaces(establishment.id);
+    }),
+
+    // Criar espaço
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1, "Nome é obrigatório"),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: "NOT_FOUND", message: "Estabelecimento não encontrado" });
+        
+        const id = await db.createTableSpace({
+          establishmentId: establishment.id,
+          name: input.name,
+        });
+        
+        return { id };
+      }),
+
+    // Atualizar espaço
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        sortOrder: z.number().optional(),
+        isActive: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await db.updateTableSpace(id, data);
+        return { success: true };
+      }),
+
+    // Deletar espaço
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteTableSpace(input.id);
+        return { success: true };
+      }),
+  }),
+
   // ============ TABLES (MESAS) ============
   tables: router({
     // Listar mesas do estabelecimento
@@ -2959,6 +3008,7 @@ export const appRouter = router({
         number: z.number(),
         name: z.string().optional(),
         capacity: z.number().optional(),
+        spaceId: z.number().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const establishment = await db.getEstablishmentByUserId(ctx.user.id);
@@ -2969,6 +3019,7 @@ export const appRouter = router({
           number: input.number,
           name: input.name,
           capacity: input.capacity || 4,
+          spaceId: input.spaceId,
         });
         
         return { id };
@@ -2981,12 +3032,14 @@ export const appRouter = router({
         number: z.number().optional(),
         name: z.string().optional(),
         capacity: z.number().optional(),
+        spaceId: z.number().nullable().optional(),
       }))
       .mutation(async ({ input }) => {
         await db.updateTable(input.id, {
           number: input.number,
           name: input.name,
           capacity: input.capacity,
+          spaceId: input.spaceId,
         });
         return { success: true };
       }),
@@ -3044,10 +3097,28 @@ export const appRouter = router({
         startNumber: z.number(),
         count: z.number(),
         capacity: z.number().optional(),
+        spaceId: z.number().optional(),
+        spaceName: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const establishment = await db.getEstablishmentByUserId(ctx.user.id);
         if (!establishment) throw new TRPCError({ code: "NOT_FOUND", message: "Estabelecimento não encontrado" });
+        
+        // Se foi fornecido um nome de espaço, criar ou buscar o espaço
+        let spaceId = input.spaceId;
+        if (input.spaceName && !spaceId) {
+          // Verificar se já existe um espaço com esse nome
+          const existingSpace = await db.getTableSpaceByName(establishment.id, input.spaceName);
+          if (existingSpace) {
+            spaceId = existingSpace.id;
+          } else {
+            // Criar novo espaço
+            spaceId = await db.createTableSpace({
+              establishmentId: establishment.id,
+              name: input.spaceName,
+            });
+          }
+        }
         
         const ids: number[] = [];
         for (let i = 0; i < input.count; i++) {
@@ -3056,11 +3127,12 @@ export const appRouter = router({
             number: input.startNumber + i,
             capacity: input.capacity || 4,
             sortOrder: i,
+            spaceId: spaceId,
           });
           ids.push(id);
         }
         
-        return { ids, count: ids.length };
+        return { ids, count: ids.length, spaceId };
       }),
   }),
 

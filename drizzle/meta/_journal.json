@@ -393,6 +393,13 @@
       "when": 1770229372010,
       "tag": "0055_handy_the_initiative",
       "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "5",
+      "when": 1770249092309,
+      "tag": "0056_square_human_torch",
+      "breakpoints": true
     }
   ]
 }

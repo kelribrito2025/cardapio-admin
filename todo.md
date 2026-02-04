@@ -5045,3 +5045,13 @@
 
 ## Ajuste de marginRight no PDVSlidebar
 - [x] Alterar marginRight de -3px para -4px no div do handle
+
+
+## Sistema de Espaços para Mesas
+- [x] Atualizar schema do banco para incluir tabela de espaços (table_spaces)
+- [x] Adicionar campo 'Nome do espaço' no modal de criar mesa
+- [x] Transformar filtros de status em seletor de espaços
+- [x] Manter filtro 'Todas' para ver todas as mesas
+- [x] Tornar legenda de status clicável para filtrar mesas
+- [x] Criar modal de gerenciamento de espaços (adicionar, editar, excluir)
+- [x] Mostrar contagem de mesas por espaço nos botões de filtro

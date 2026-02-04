@@ -606,10 +606,25 @@ export type SmsTransaction = typeof smsTransactions.$inferSelect;
 export type InsertSmsTransaction = typeof smsTransactions.$inferInsert;
 
 
+// Espaços/Locais do estabelecimento (ex: Salão, Varanda, Área Externa)
+export const tableSpaces = mysqlTable("tableSpaces", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  name: varchar("name", { length: 100 }).notNull(), // Nome do espaço (ex: "Salão", "Varanda")
+  sortOrder: int("sortOrder").default(0).notNull(), // Ordem de exibição
+  isActive: boolean("isActive").default(true).notNull(), // Se o espaço está ativo
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type TableSpace = typeof tableSpaces.$inferSelect;
+export type InsertTableSpace = typeof tableSpaces.$inferInsert;
+
 // Mesas do estabelecimento
 export const tables = mysqlTable("tables", {
   id: int("id").autoincrement().primaryKey(),
   establishmentId: int("establishmentId").notNull(),
+  spaceId: int("spaceId"), // ID do espaço onde a mesa está localizada
   number: int("number").notNull(), // Número da mesa
   name: varchar("name", { length: 100 }), // Nome opcional (ex: "Mesa VIP", "Varanda")
   capacity: int("capacity").default(4).notNull(), // Capacidade de pessoas

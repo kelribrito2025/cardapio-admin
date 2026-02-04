@@ -31,6 +31,7 @@ import {
   menuViewsHourly, InsertMenuViewsHourly, MenuViewsHourly,
   smsBalance, InsertSmsBalance, SmsBalance,
   smsTransactions, InsertSmsTransaction, SmsTransaction,
+  tableSpaces, InsertTableSpace, TableSpace,
   tables, InsertTable, Table,
   tabs, InsertTab, Tab,
   tabItems, InsertTabItem, TabItem
@@ -4875,8 +4876,80 @@ export async function getLastSmsDispatch(establishmentId: number): Promise<SmsTr
 
 // ============ TABLE (MESA) FUNCTIONS ============
 
+// ============ TABLE SPACES (ESPAÇOS) ============
+
 /**
- * Busca todas as mesas de um estabelecimento
+ * Lista espaços de um estabelecimento
+ */
+export async function getTableSpaces(establishmentId: number): Promise<TableSpace[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(tableSpaces)
+    .where(and(
+      eq(tableSpaces.establishmentId, establishmentId),
+      eq(tableSpaces.isActive, true)
+    ))
+    .orderBy(asc(tableSpaces.sortOrder), asc(tableSpaces.name));
+}
+
+/**
+ * Busca um espaço por nome
+ */
+export async function getTableSpaceByName(establishmentId: number, name: string): Promise<TableSpace | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(tableSpaces)
+    .where(and(
+      eq(tableSpaces.establishmentId, establishmentId),
+      eq(tableSpaces.name, name),
+      eq(tableSpaces.isActive, true)
+    ))
+    .limit(1);
+  
+  return result[0];
+}
+
+/**
+ * Cria um novo espaço
+ */
+export async function createTableSpace(data: InsertTableSpace): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(tableSpaces).values(data);
+  return result[0].insertId;
+}
+
+/**
+ * Atualiza um espaço
+ */
+export async function updateTableSpace(id: number, data: Partial<InsertTableSpace>): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  await db.update(tableSpaces)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(tableSpaces.id, id));
+}
+
+/**
+ * Deleta um espaço (soft delete - marca como inativo)
+ */
+export async function deleteTableSpace(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  await db.update(tableSpaces)
+    .set({ isActive: false, updatedAt: new Date() })
+    .where(eq(tableSpaces.id, id));
+}
+
+// ============ TABLES (MESAS) ============
+
+/**
+ * Lista mesas de um estabelecimento
  */
 export async function getTablesByEstablishment(establishmentId: number): Promise<Table[]> {
   const db = await getDb();

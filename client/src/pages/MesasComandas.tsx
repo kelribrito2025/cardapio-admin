@@ -25,10 +25,20 @@ import {
   Utensils,
   Printer,
   Loader2,
+  MapPin,
+  Settings,
+  Pencil,
 } from "lucide-react";
 
 // Tipos
 type TableStatus = "free" | "occupied" | "reserved" | "requesting_bill";
+
+interface TableSpace {
+  id: number;
+  name: string;
+  sortOrder: number;
+  isActive: boolean;
+}
 
 interface TabItem {
   id: number;
@@ -69,6 +79,7 @@ interface Table {
   reservedFor?: Date | string | null;
   reservedName?: string | null;
   reservedPhone?: string | null;
+  spaceId?: number | null;
   tab?: Tab;
   items?: TabItem[];
 }
@@ -83,6 +94,7 @@ const getStatusConfig = (status: TableStatus) => {
         borderColor: "border-l-emerald-500",
         textColor: "text-emerald-600",
         bgLight: "bg-emerald-50",
+        hoverBg: "hover:bg-emerald-50",
       };
     case "occupied":
       return {
@@ -91,6 +103,7 @@ const getStatusConfig = (status: TableStatus) => {
         borderColor: "border-l-amber-500",
         textColor: "text-amber-600",
         bgLight: "bg-amber-50",
+        hoverBg: "hover:bg-amber-50",
       };
     case "reserved":
       return {
@@ -99,6 +112,7 @@ const getStatusConfig = (status: TableStatus) => {
         borderColor: "border-l-blue-500",
         textColor: "text-blue-600",
         bgLight: "bg-blue-50",
+        hoverBg: "hover:bg-blue-50",
       };
     case "requesting_bill":
       return {
@@ -107,6 +121,7 @@ const getStatusConfig = (status: TableStatus) => {
         borderColor: "border-l-red-500",
         textColor: "text-red-600",
         bgLight: "bg-red-50",
+        hoverBg: "hover:bg-red-50",
       };
   }
 };
@@ -136,12 +151,20 @@ export default function MesasComandas() {
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showPDVSlidebar, setShowPDVSlidebar] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<TableStatus | "all">("all");
+  const [selectedSpaceId, setSelectedSpaceId] = useState<number | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<TableStatus | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showManageSpacesDialog, setShowManageSpacesDialog] = useState(false);
   const [newTableCount, setNewTableCount] = useState(10);
   const [newTableCapacity, setNewTableCapacity] = useState(4);
+  const [newSpaceName, setNewSpaceName] = useState("");
   const [persistedTableId, setPersistedTableId] = useState<number | null>(null);
+  
+  // Estados para gerenciar espaços
+  const [editingSpaceId, setEditingSpaceId] = useState<number | null>(null);
+  const [editingSpaceName, setEditingSpaceName] = useState("");
+  const [newSpaceNameInput, setNewSpaceNameInput] = useState("");
 
   // Carregar mesa selecionada do localStorage
   useEffect(() => {
@@ -168,6 +191,9 @@ export default function MesasComandas() {
 
   // Buscar mesas do banco
   const { data: tables = [], isLoading, refetch } = trpc.tables.list.useQuery();
+  
+  // Buscar espaços do banco
+  const { data: spaces = [], refetch: refetchSpaces } = trpc.tableSpaces.list.useQuery();
 
   // Restaurar mesa selecionada quando as mesas carregarem
   useEffect(() => {
@@ -205,12 +231,14 @@ export default function MesasComandas() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedTable, showPDVSlidebar]);
   
-  // Mutations
+  // Mutations para mesas
   const createBatchMutation = trpc.tables.createBatch.useMutation({
     onSuccess: (data) => {
       toast.success(`${data.count} mesas criadas com sucesso!`);
       setShowCreateDialog(false);
+      setNewSpaceName("");
       refetch();
+      refetchSpaces();
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao criar mesas");
@@ -258,6 +286,39 @@ export default function MesasComandas() {
     },
   });
 
+  // Mutations para espaços
+  const createSpaceMutation = trpc.tableSpaces.create.useMutation({
+    onSuccess: () => {
+      toast.success("Espaço criado com sucesso!");
+      setNewSpaceNameInput("");
+      refetchSpaces();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao criar espaço");
+    },
+  });
+
+  const updateSpaceMutation = trpc.tableSpaces.update.useMutation({
+    onSuccess: () => {
+      toast.success("Espaço atualizado!");
+      setEditingSpaceId(null);
+      refetchSpaces();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao atualizar espaço");
+    },
+  });
+
+  const deleteSpaceMutation = trpc.tableSpaces.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Espaço removido!");
+      refetchSpaces();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao remover espaço");
+    },
+  });
+
   // Cálculos de resumo
   const summary = useMemo(() => {
     const free = tables.filter((t) => t.status === "free").length;
@@ -289,14 +350,40 @@ export default function MesasComandas() {
     };
   }, [tables]);
 
-  // Filtrar mesas
+  // Contagem de mesas por status (para a legenda)
+  const statusCounts = useMemo(() => {
+    return {
+      free: tables.filter((t) => t.status === "free").length,
+      occupied: tables.filter((t) => t.status === "occupied").length,
+      requesting_bill: tables.filter((t) => t.status === "requesting_bill").length,
+      reserved: tables.filter((t) => t.status === "reserved").length,
+    };
+  }, [tables]);
+
+  // Filtrar mesas por espaço e status
   const filteredTables = useMemo(() => {
     return tables.filter((table) => {
-      const matchesStatus = statusFilter === "all" || table.status === statusFilter;
+      // Filtro por espaço
+      const matchesSpace = selectedSpaceId === "all" || table.spaceId === selectedSpaceId;
+      // Filtro por status (da legenda)
+      const matchesStatus = statusFilter === null || table.status === statusFilter;
+      // Filtro por busca
       const matchesSearch = searchQuery === "" || table.number.toString().includes(searchQuery);
-      return matchesStatus && matchesSearch;
+      return matchesSpace && matchesStatus && matchesSearch;
     });
-  }, [tables, statusFilter, searchQuery]);
+  }, [tables, selectedSpaceId, statusFilter, searchQuery]);
+
+  // Contagem de mesas por espaço
+  const spaceTablesCount = useMemo(() => {
+    const counts: Record<string | number, number> = { all: tables.length };
+    spaces.forEach(space => {
+      counts[space.id] = tables.filter(t => t.spaceId === space.id).length;
+    });
+    // Mesas sem espaço definido
+    const noSpaceCount = tables.filter(t => !t.spaceId).length;
+    counts.noSpace = noSpaceCount;
+    return counts;
+  }, [tables, spaces]);
 
   const handleTableClick = (table: Table) => {
     setSelectedTable(table);
@@ -327,6 +414,7 @@ export default function MesasComandas() {
   };
 
   const handleRequestBill = (table: Table) => {
+    if (!table.tab) return;
     requestBillMutation.mutate({ tableId: table.id });
   };
 
@@ -344,15 +432,47 @@ export default function MesasComandas() {
       startNumber: maxNumber + 1,
       count: newTableCount,
       capacity: newTableCapacity,
+      spaceName: newSpaceName || undefined,
     });
   };
 
-  const statusFilters: { value: TableStatus | "all"; label: string }[] = [
-    { value: "all", label: "Todas" },
-    { value: "free", label: "Livres" },
-    { value: "occupied", label: "Ocupadas" },
-    { value: "requesting_bill", label: "Pedindo conta" },
-    { value: "reserved", label: "Reservadas" },
+  const handleStatusFilterClick = (status: TableStatus) => {
+    // Toggle: se já está selecionado, desseleciona
+    if (statusFilter === status) {
+      setStatusFilter(null);
+    } else {
+      setStatusFilter(status);
+    }
+  };
+
+  const handleCreateSpace = () => {
+    if (!newSpaceNameInput.trim()) {
+      toast.error("Digite um nome para o espaço");
+      return;
+    }
+    createSpaceMutation.mutate({ name: newSpaceNameInput.trim() });
+  };
+
+  const handleUpdateSpace = (id: number) => {
+    if (!editingSpaceName.trim()) {
+      toast.error("Digite um nome para o espaço");
+      return;
+    }
+    updateSpaceMutation.mutate({ id, name: editingSpaceName.trim() });
+  };
+
+  const handleDeleteSpace = (id: number) => {
+    if (confirm("Tem certeza que deseja remover este espaço? As mesas não serão excluídas.")) {
+      deleteSpaceMutation.mutate({ id });
+    }
+  };
+
+  // Lista de status para a legenda clicável
+  const statusLegend: { status: TableStatus; label: string; color: string }[] = [
+    { status: "free", label: "Livre", color: "bg-emerald-500" },
+    { status: "occupied", label: "Ocupada", color: "bg-amber-500" },
+    { status: "requesting_bill", label: "Pedindo conta", color: "bg-red-500" },
+    { status: "reserved", label: "Reservada", color: "bg-blue-500" },
   ];
 
   // Se não há mesas, mostrar tela de criação
@@ -387,6 +507,19 @@ export default function MesasComandas() {
               <DialogTitle>Criar Mesas</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700">Nome do espaço das mesas</label>
+                <Input
+                  type="text"
+                  value={newSpaceName}
+                  onChange={(e) => setNewSpaceName(e.target.value)}
+                  placeholder="Ex: Salão, Varanda, Área Externa..."
+                  className="mt-1"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Opcional. Agrupa as mesas por local físico do restaurante.
+                </p>
+              </div>
               <div>
                 <label className="text-sm font-medium text-gray-700">Quantidade de mesas</label>
                 <Input
@@ -478,39 +611,64 @@ export default function MesasComandas() {
           </div>
         </div>
 
-        {/* Filtros e Controles */}
+        {/* Filtros de Espaços e Controles */}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          {/* Filtros de Status */}
+          {/* Filtros de Espaços */}
           <div className="flex flex-wrap gap-2">
-            {statusFilters.map((filter) => {
-              // Calcular contagem para cada filtro
-              const count = filter.value === "all" 
-                ? tables.length 
-                : tables.filter(t => t.status === filter.value).length;
-              
-              return (
-                <button
-                  key={filter.value}
-                  onClick={() => setStatusFilter(filter.value)}
-                  className={cn(
-                    "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
-                    statusFilter === filter.value
-                      ? "bg-red-500 text-white"
-                      : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
-                  )}
-                >
-                  {filter.label}
-                  <span className={cn(
-                    "px-1.5 py-0.5 rounded-full text-xs font-semibold min-w-[20px] text-center",
-                    statusFilter === filter.value
-                      ? "bg-white/20 text-white"
-                      : "bg-red-500 text-white"
-                  )}>
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
+            {/* Botão "Todas" */}
+            <button
+              onClick={() => setSelectedSpaceId("all")}
+              className={cn(
+                "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
+                selectedSpaceId === "all"
+                  ? "bg-red-500 text-white"
+                  : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
+              )}
+            >
+              <MapPin className="h-4 w-4" />
+              Todas
+              <span className={cn(
+                "px-1.5 py-0.5 rounded-full text-xs font-semibold min-w-[20px] text-center",
+                selectedSpaceId === "all"
+                  ? "bg-white/20 text-white"
+                  : "bg-red-500 text-white"
+              )}>
+                {tables.length}
+              </span>
+            </button>
+
+            {/* Botões de Espaços */}
+            {spaces.map((space) => (
+              <button
+                key={space.id}
+                onClick={() => setSelectedSpaceId(space.id)}
+                className={cn(
+                  "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
+                  selectedSpaceId === space.id
+                    ? "bg-red-500 text-white"
+                    : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
+                )}
+              >
+                {space.name}
+                <span className={cn(
+                  "px-1.5 py-0.5 rounded-full text-xs font-semibold min-w-[20px] text-center",
+                  selectedSpaceId === space.id
+                    ? "bg-white/20 text-white"
+                    : "bg-red-500 text-white"
+                )}>
+                  {spaceTablesCount[space.id] || 0}
+                </span>
+              </button>
+            ))}
+
+            {/* Botão para gerenciar espaços */}
+            <button
+              onClick={() => setShowManageSpacesDialog(true)}
+              className="px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-white border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700"
+              title="Gerenciar espaços"
+            >
+              <Settings className="h-4 w-4" />
+            </button>
           </div>
 
           {/* Busca e Botão Adicionar */}
@@ -530,25 +688,34 @@ export default function MesasComandas() {
           </div>
         </div>
 
-        {/* Legenda de Status */}
-        <div className="flex items-center gap-6 text-sm text-gray-600">
+        {/* Legenda de Status (clicável) */}
+        <div className="flex items-center gap-4 text-sm text-gray-600 flex-wrap">
           <span className="font-medium">Status:</span>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-emerald-500" />
-            <span>Livre</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-amber-500" />
-            <span>Ocupada</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500" />
-            <span>Pedindo conta</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-blue-500" />
-            <span>Reservada</span>
-          </div>
+          {statusLegend.map((item) => (
+            <button
+              key={item.status}
+              onClick={() => handleStatusFilterClick(item.status)}
+              className={cn(
+                "flex items-center gap-2 px-2 py-1 rounded-md transition-all",
+                statusFilter === item.status
+                  ? "bg-gray-100 ring-2 ring-gray-300"
+                  : "hover:bg-gray-50"
+              )}
+            >
+              <div className={cn("w-3 h-3 rounded-full", item.color)} />
+              <span>{item.label}</span>
+              <span className="text-xs text-gray-400">({statusCounts[item.status]})</span>
+            </button>
+          ))}
+          {statusFilter && (
+            <button
+              onClick={() => setStatusFilter(null)}
+              className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
+            >
+              <X className="h-3 w-3" />
+              Limpar filtro
+            </button>
+          )}
         </div>
 
         {/* Loading */}
@@ -620,6 +787,24 @@ export default function MesasComandas() {
                 </button>
               );
             })}
+          </div>
+        )}
+
+        {/* Mensagem quando não há mesas no filtro */}
+        {!isLoading && filteredTables.length === 0 && tables.length > 0 && (
+          <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+            <AlertCircle className="h-10 w-10 mb-3 text-gray-300" />
+            <p>Nenhuma mesa encontrada com os filtros selecionados.</p>
+            <button
+              onClick={() => {
+                setSelectedSpaceId("all");
+                setStatusFilter(null);
+                setSearchQuery("");
+              }}
+              className="text-sm text-red-500 hover:text-red-700 mt-2"
+            >
+              Limpar todos os filtros
+            </button>
           </div>
         )}
       </div>
@@ -841,6 +1026,19 @@ export default function MesasComandas() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
+              <label className="text-sm font-medium text-gray-700">Nome do espaço das mesas</label>
+              <Input
+                type="text"
+                value={newSpaceName}
+                onChange={(e) => setNewSpaceName(e.target.value)}
+                placeholder="Ex: Salão, Varanda, Área Externa..."
+                className="mt-1"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Opcional. Agrupa as mesas por local físico do restaurante.
+              </p>
+            </div>
+            <div>
               <label className="text-sm font-medium text-gray-700">Quantidade de mesas</label>
               <Input
                 type="number"
@@ -877,6 +1075,117 @@ export default function MesasComandas() {
                 <Plus className="h-4 w-4 mr-2" />
               )}
               Criar {newTableCount} Mesas
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog para gerenciar espaços */}
+      <Dialog open={showManageSpacesDialog} onOpenChange={setShowManageSpacesDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5" />
+              Gerenciar Espaços
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {/* Lista de espaços existentes */}
+            {spaces.length > 0 ? (
+              <div className="space-y-2">
+                {spaces.map((space) => (
+                  <div key={space.id} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                    {editingSpaceId === space.id ? (
+                      <>
+                        <Input
+                          value={editingSpaceName}
+                          onChange={(e) => setEditingSpaceName(e.target.value)}
+                          className="flex-1"
+                          autoFocus
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => handleUpdateSpace(space.id)}
+                          disabled={updateSpaceMutation.isPending}
+                        >
+                          {updateSpaceMutation.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            "Salvar"
+                          )}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setEditingSpaceId(null)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="flex-1 font-medium">{space.name}</span>
+                        <span className="text-sm text-gray-500">
+                          {spaceTablesCount[space.id] || 0} mesas
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setEditingSpaceId(space.id);
+                            setEditingSpaceName(space.name);
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-red-500 hover:text-red-700"
+                          onClick={() => handleDeleteSpace(space.id)}
+                          disabled={deleteSpaceMutation.isPending}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-6 text-gray-500">
+                <MapPin className="h-10 w-10 mx-auto mb-2 text-gray-300" />
+                <p>Nenhum espaço cadastrado.</p>
+                <p className="text-sm">Crie espaços para organizar suas mesas.</p>
+              </div>
+            )}
+
+            {/* Criar novo espaço */}
+            <div className="border-t pt-4">
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Adicionar novo espaço</label>
+              <div className="flex gap-2">
+                <Input
+                  value={newSpaceNameInput}
+                  onChange={(e) => setNewSpaceNameInput(e.target.value)}
+                  placeholder="Nome do espaço..."
+                  className="flex-1"
+                />
+                <Button
+                  onClick={handleCreateSpace}
+                  disabled={createSpaceMutation.isPending || !newSpaceNameInput.trim()}
+                >
+                  {createSpaceMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Plus className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowManageSpacesDialog(false)}>
+              Fechar
             </Button>
           </DialogFooter>
         </DialogContent>
