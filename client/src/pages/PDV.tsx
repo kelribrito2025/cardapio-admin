@@ -841,13 +841,13 @@ export default function PDV() {
                     setPaymentMethod(null);
                   }}
                   className={cn(
-                    "flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-xl text-sm font-medium transition-all",
+                    "flex-1 flex flex-col items-center gap-1 py-2 px-1.5 rounded-lg text-xs font-medium transition-all",
                     orderType === "mesa"
                       ? "bg-red-500 text-white shadow-md"
                       : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
                   )}
                 >
-                  <UtensilsCrossed className="h-5 w-5" />
+                  <UtensilsCrossed className="h-4 w-4" />
                   Consumo
                 </button>
                 <button
@@ -856,13 +856,13 @@ export default function PDV() {
                     setPaymentMethod(null);
                   }}
                   className={cn(
-                    "flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-xl text-sm font-medium transition-all",
+                    "flex-1 flex flex-col items-center gap-1 py-2 px-1.5 rounded-lg text-xs font-medium transition-all",
                     orderType === "retirada"
                       ? "bg-red-500 text-white shadow-md"
                       : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
                   )}
                 >
-                  <ShoppingBag className="h-5 w-5" />
+                  <ShoppingBag className="h-4 w-4" />
                   Retirada
                 </button>
                 <button
@@ -873,13 +873,13 @@ export default function PDV() {
                     setShowDeliverySidebar(true);
                   }}
                   className={cn(
-                    "flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-xl text-sm font-medium transition-all",
+                    "flex-1 flex flex-col items-center gap-1 py-2 px-1.5 rounded-lg text-xs font-medium transition-all",
                     orderType === "entrega"
                       ? "bg-red-500 text-white shadow-md"
                       : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
                   )}
                 >
-                  <Truck className="h-5 w-5" />
+                  <Truck className="h-4 w-4" />
                   Entrega
                 </button>
               </div>

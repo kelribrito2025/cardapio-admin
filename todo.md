@@ -4759,3 +4759,6 @@
 
 ## Ajuste de Sombra nos Cards Acumulado e Heatmap
 - [x] Remover shadow-soft dos cards WeeklyRevenueCard e HeatmapCard
+
+## Ajuste de Tamanho dos Cards de Tipo de Pedido
+- [x] Reduzir tamanho dos cards Consumo, Retirada e Entrega em 20%
