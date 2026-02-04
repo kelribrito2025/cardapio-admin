@@ -29,7 +29,8 @@ import {
   ChevronUp,
   Ticket,
   Wallet,
-  DollarSign
+  DollarSign,
+  Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -212,8 +213,40 @@ export default function PDV() {
 
   // Estados para sidebar de pagamento (Retirada)
   const [showPaymentSidebar, setShowPaymentSidebar] = useState(false);
-  const [selectedPaymentInSidebar, setSelectedPaymentInSidebar] = useState<PaymentMethodType>("cash");
+  const [selectedPaymentInSidebar, setSelectedPaymentInSidebar] = useState<PaymentMethodType>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('pdv_favorite_payment_method');
+      return (saved as PaymentMethodType) || "cash";
+    }
+    return "cash";
+  });
   const [receivedAmount, setReceivedAmount] = useState("");
+  
+  // Estado para forma de pagamento favorita (salva no localStorage)
+  const [favoritePaymentMethod, setFavoritePaymentMethod] = useState<PaymentMethodType>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('pdv_favorite_payment_method');
+      return (saved as PaymentMethodType) || null;
+    }
+    return null;
+  });
+  
+  // Função para definir forma de pagamento favorita
+  const handleSetFavoritePayment = (method: PaymentMethodType) => {
+    if (favoritePaymentMethod === method) {
+      // Se já é favorito, remove
+      setFavoritePaymentMethod(null);
+      localStorage.removeItem('pdv_favorite_payment_method');
+      toast.success('Favorito removido');
+    } else {
+      // Define como favorito
+      setFavoritePaymentMethod(method);
+      if (method) {
+        localStorage.setItem('pdv_favorite_payment_method', method);
+        toast.success('Forma de pagamento favorita definida!');
+      }
+    }
+  };
 
   // Estados para cupom
   const [showCouponField, setShowCouponField] = useState(false);
@@ -2063,8 +2096,12 @@ export default function PDV() {
       {/* Sidebar de Pagamento (para Retirada) */}
       <Sheet open={showPaymentSidebar} onOpenChange={(open) => {
         setShowPaymentSidebar(open);
-        if (!open) {
-          setSelectedPaymentInSidebar("cash");
+        if (open) {
+          // Ao abrir, pré-seleciona o favorito ou dinheiro como padrão
+          setSelectedPaymentInSidebar(favoritePaymentMethod || "cash");
+        } else {
+          // Ao fechar, reseta para o favorito ou dinheiro
+          setSelectedPaymentInSidebar(favoritePaymentMethod || "cash");
           setReceivedAmount("");
         }
       }}>
@@ -2130,12 +2167,32 @@ export default function PDV() {
                         {method.icon}
                       </div>
                       <div className="flex-1 text-left">
-                        <p className={cn(
-                          "font-semibold text-base",
-                          selectedPaymentInSidebar === method.id ? "text-red-700" : "text-gray-800"
-                        )}>{method.name}</p>
+                        <div className="flex items-center gap-2">
+                          <p className={cn(
+                            "font-semibold text-base",
+                            selectedPaymentInSidebar === method.id ? "text-red-700" : "text-gray-800"
+                          )}>{method.name}</p>
+                          {favoritePaymentMethod === method.id && (
+                            <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Favorito</span>
+                          )}
+                        </div>
                         <p className="text-sm text-gray-500">{method.description}</p>
                       </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSetFavoritePayment(method.id);
+                        }}
+                        className={cn(
+                          "p-2 rounded-lg transition-all hover:scale-110",
+                          favoritePaymentMethod === method.id
+                            ? "text-amber-500"
+                            : "text-gray-300 hover:text-amber-400"
+                        )}
+                        title={favoritePaymentMethod === method.id ? "Remover favorito" : "Marcar como favorito"}
+                      >
+                        <Star className={cn("h-5 w-5", favoritePaymentMethod === method.id && "fill-current")} />
+                      </button>
                       {selectedPaymentInSidebar === method.id ? (
                         <Check className="h-5 w-5 text-red-500" />
                       ) : (
@@ -2246,7 +2303,7 @@ export default function PDV() {
                   }
                 }
                 setShowPaymentSidebar(false);
-                setSelectedPaymentInSidebar("cash");
+                setSelectedPaymentInSidebar(favoritePaymentMethod || "cash");
                 setReceivedAmount("");
               }}
               disabled={!selectedPaymentInSidebar && availablePaymentMethods.length > 0}

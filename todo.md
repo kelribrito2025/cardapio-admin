@@ -4834,3 +4834,9 @@
 ## Pré-seleção de Dinheiro nos Modais do PDV
 - [x] Garantir pré-seleção de dinheiro no modal de entrega
 - [x] Garantir pré-seleção de dinheiro no modal de pagamento (retirada)
+
+## Forma de Pagamento Favorita no PDV
+- [x] Adicionar ícone de estrela ao lado de cada forma de pagamento
+- [x] Implementar lógica de favorito com salvamento no localStorage
+- [x] Pré-selecionar forma favorita ao abrir o modal
+- [x] Garantir apenas uma forma favorita por vez
