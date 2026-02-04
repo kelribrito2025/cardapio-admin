@@ -2048,7 +2048,7 @@ export default function PDV() {
             <Button
               onClick={() => setShowDeliverySidebar(false)}
               className="w-full bg-red-500 hover:bg-red-600 text-white py-3"
-              disabled={!deliveryAddress.street || !deliveryAddress.number || !deliveryAddress.neighborhood}
+              disabled={!deliveryAddress.street || !deliveryAddress.number || !deliveryAddress.neighborhood || !paymentMethod}
             >
               <Check className="h-5 w-5 mr-2" />
               Confirmar Dados

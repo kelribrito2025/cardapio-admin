@@ -4824,3 +4824,6 @@
 
 ## Observação de Não Precisa de Troco
 - [x] Adicionar observação no recibo quando pagamento em dinheiro não precisar de troco
+
+## Validação de Forma de Pagamento no Modal de Entrega
+- [x] Impedir confirmação de dados sem selecionar forma de pagamento
