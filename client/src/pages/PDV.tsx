@@ -2153,7 +2153,7 @@ export default function PDV() {
                         
                         {/* Troco a Devolver - mostra em destaque quando valor recebido for digitado */}
                         {receivedAmount && parseFloat(receivedAmount.replace(",", ".")) > 0 && (
-                          <div className="mt-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg shadow-sm">
+                          <div className="mt-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg shadow-sm" style={{borderRadius: '16px'}}>
                             <div className="flex items-center justify-between">
                               <div>
                                 <p className="text-xs font-medium text-green-700">Troco a devolver</p>
