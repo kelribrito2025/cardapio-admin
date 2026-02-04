@@ -4676,3 +4676,6 @@
 
 ## PDV - Remover Título Pedido Atual
 - [x] Remover o título "Pedido Atual" da página do PDV
+
+## PDV - Corrigir Notificações Duplicadas
+- [x] Corrigir notificações duplicadas ao adicionar item ao carrinho

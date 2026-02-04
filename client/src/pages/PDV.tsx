@@ -814,7 +814,6 @@ export default function PDV() {
                               e.stopPropagation();
                               // Adicionar diretamente ao carrinho sem abrir modal
                               addToCart(product, 1, '', []);
-                              toast.success(`${product.name} adicionado ao carrinho`);
                             }}
                             disabled={!product.hasStock}
                           >
