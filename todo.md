@@ -4811,3 +4811,6 @@
 
 ## Reposicionamento do Botão Salvar
 - [x] Mover botão Salvar alterações para a mesma linha do título Dados da Conta
+
+## Layout Responsivo do Botão Salvar
+- [x] Botão no header em desktop, na posição original em mobile

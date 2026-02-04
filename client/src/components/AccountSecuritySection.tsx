@@ -194,9 +194,11 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
                 Informações do estabelecimento e do responsável
               </CardDescription>
             </div>
+            {/* Botão visível apenas em desktop (md+) */}
             <Button 
               onClick={handleSaveAccountData}
               disabled={updateAccountMutation.isPending}
+              className="hidden md:flex"
             >
               {updateAccountMutation.isPending ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -291,7 +293,20 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
             </div>
           </div>
           
-          
+          {/* Botão visível apenas em mobile */}
+          <div className="flex justify-end pt-4 border-t md:hidden">
+            <Button 
+              onClick={handleSaveAccountData}
+              disabled={updateAccountMutation.isPending}
+            >
+              {updateAccountMutation.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
+              )}
+              Salvar alterações
+            </Button>
+          </div>
         </CardContent>
       </Card>
       
