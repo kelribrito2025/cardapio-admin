@@ -441,45 +441,51 @@
 }
 
 
-/* Sonner Toast - Estilo vermelho personalizado */
+/* Sonner Toast - Estilo Notion (fundo escuro) */
 [data-sonner-toaster] [data-sonner-toast] {
-  background-color: #dc2626 !important;
-  border-color: #dc2626 !important;
-  color: white !important;
+  background-color: #111827 !important;
+  border-color: #111827 !important;
+  color: #e5e7eb !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast] [data-title] {
-  color: white !important;
+  color: #e5e7eb !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast] [data-description] {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: #9ca3af !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast] [data-icon] svg {
-  color: white !important;
-  fill: white !important;
+  color: #4ade80 !important;
+  fill: #4ade80 !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast] [data-close-button] {
-  color: white !important;
-  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #9ca3af !important;
+  background-color: transparent !important;
   border: none !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast] [data-close-button]:hover {
-  background-color: rgba(255, 255, 255, 0.3) !important;
+  color: #e5e7eb !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast][data-type="success"],
 [data-sonner-toaster] [data-sonner-toast][data-type="info"],
 [data-sonner-toaster] [data-sonner-toast][data-type="warning"],
 [data-sonner-toaster] [data-sonner-toast][data-type="loading"] {
-  background-color: #dc2626 !important;
-  border-color: #dc2626 !important;
+  background-color: #111827 !important;
+  border-color: #111827 !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast][data-type="error"] {
-  background-color: #b91c1c !important;
-  border-color: #b91c1c !important;
+  background-color: #1f2937 !important;
+  border-color: #1f2937 !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="error"] [data-icon] svg {
+  color: #f87171 !important;
+  fill: #f87171 !important;
 }

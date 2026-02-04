@@ -4693,3 +4693,6 @@
 
 ## Notificações - Aplicar Modelo 20 (Estilo Notion)
 - [x] Aplicar modelo 20 (Estilo Notion) como notificação padrão do sistema no canto superior direito
+
+## Notificações - Corrigir Estilo Vermelho Restante
+- [x] Identificar e corrigir todas as notificações que ainda aparecem com fundo vermelho
