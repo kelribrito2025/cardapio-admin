@@ -174,10 +174,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(sidebarCollapsed));
   }, [sidebarCollapsed]);
 
-  // Minimizar menu automaticamente ao acessar a página PDV, Pedidos ou Configurações
+  // Minimizar menu automaticamente ao acessar a página PDV, Pedidos, Configurações ou Mesas
   // Usa um pequeno delay para permitir que a transição seja visível
   useEffect(() => {
-    if (location === "/pdv" || location === "/pedidos" || location === "/configuracoes") {
+    if (location === "/pdv" || location === "/pedidos" || location === "/configuracoes" || location === "/mesas") {
       // Pequeno delay para garantir que a transição seja visível
       const timer = setTimeout(() => {
         setSidebarCollapsed(true);

@@ -4864,3 +4864,7 @@
 - [x] Corrigir layout da página Mesas e Comandas para usar AdminLayout em vez de DashboardLayout
 
 - [x] Remover badge "Breve" do menu Mesas e Comandas para habilitar a página
+
+- [x] Ajustar espaçamentos da página Mesas e Comandas para consistência com outras páginas
+- [x] Alterar bordas dos cards de mesa para modelo Dashboard (borda superior colorida em vez de lateral)
+- [x] Minimizar sidebar automaticamente ao acessar página de Mesas

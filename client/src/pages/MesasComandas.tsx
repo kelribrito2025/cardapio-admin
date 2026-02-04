@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
+import { PageHeader } from "@/components/shared";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -179,6 +180,7 @@ const getStatusConfig = (status: TableStatus) => {
       return {
         label: "Livre",
         color: "bg-emerald-500",
+        borderColor: "border-t-emerald-500",
         textColor: "text-emerald-600",
         bgLight: "bg-emerald-50",
       };
@@ -186,6 +188,7 @@ const getStatusConfig = (status: TableStatus) => {
       return {
         label: "Ocupada",
         color: "bg-amber-500",
+        borderColor: "border-t-amber-500",
         textColor: "text-amber-600",
         bgLight: "bg-amber-50",
       };
@@ -193,6 +196,7 @@ const getStatusConfig = (status: TableStatus) => {
       return {
         label: "Reservada",
         color: "bg-blue-500",
+        borderColor: "border-t-blue-500",
         textColor: "text-blue-600",
         bgLight: "bg-blue-50",
       };
@@ -200,6 +204,7 @@ const getStatusConfig = (status: TableStatus) => {
       return {
         label: "Pedindo conta",
         color: "bg-red-500",
+        borderColor: "border-t-red-500",
         textColor: "text-red-600",
         bgLight: "bg-red-50",
       };
@@ -279,12 +284,14 @@ export default function MesasComandas() {
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Mesas e Comandas</h1>
-          <p className="text-gray-500">Controle de mesas e comandas do salão</p>
-        </div>
+      <div className="mb-6">
+        <PageHeader 
+          title="Mesas e Comandas" 
+          description="Controle de mesas e comandas do salão"
+        />
+      </div>
+
+      <div className="space-y-5">
 
         {/* Cards de Resumo */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -428,14 +435,12 @@ export default function MesasComandas() {
               <button
                 key={table.id}
                 onClick={() => handleTableClick(table)}
-                className="bg-white rounded-xl border border-border/50 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all text-left group"
+                className={cn(
+                  "bg-white rounded-xl border border-border/50 border-t-4 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all text-left group",
+                  statusConfig.borderColor
+                )}
               >
-                <div className="flex h-full">
-                  {/* Barra lateral colorida */}
-                  <div className={cn("w-1.5 shrink-0", statusConfig.color)} />
-                  
-                  {/* Conteúdo do card */}
-                  <div className="flex-1 p-4">
+                <div className="p-4">
                     {/* Número da mesa e tempo/status */}
                     <div className="flex items-start justify-between mb-3">
                       <span className="text-2xl font-bold text-gray-900">{table.number}</span>
@@ -491,7 +496,6 @@ export default function MesasComandas() {
                         <div className="w-full h-6" /> 
                       )}
                     </div>
-                  </div>
                 </div>
               </button>
             );
