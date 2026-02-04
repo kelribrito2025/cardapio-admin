@@ -5024,3 +5024,10 @@
 ## Animação da Slidebar do PDV igual à de Configurações
 - [x] Analisar o efeito de animação da slidebar de configurações
 - [x] Aplicar o mesmo efeito na slidebar do PDV na página de Mesas
+
+
+## Correção do Card Seu Plano na Página de Plano
+- [x] Ajustar layout do card para duas colunas (Business Plan | Next Payment)
+- [x] Adicionar data de renovação no cabeçalho
+- [x] Adicionar botão Cancel Plan no canto superior direito
+- [x] Adicionar link Upgrade Plan no rodapé

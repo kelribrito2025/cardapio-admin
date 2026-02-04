@@ -386,18 +386,28 @@ export default function Planos() {
       </div>
 
       {/* Your Plan Section */}
-      <div className="bg-card rounded-xl border border-border/50 p-6 mb-8">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-          {/* Left side - Plan info */}
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-sm font-medium text-muted-foreground">Seu Plano</span>
-              <span className="text-sm text-muted-foreground">
-                Renova em {currentPlan.renewalDate}
-              </span>
-            </div>
-            
-            <h3 className="text-lg font-semibold text-blue-600 mb-2">
+      <div className="bg-card rounded-xl border border-border/50 overflow-hidden mb-8">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-foreground">Seu Plano</span>
+            <span className="text-sm text-muted-foreground">
+              Renova em {currentPlan.renewalDate}
+            </span>
+          </div>
+          <Button
+            variant="outline"
+            className="text-foreground border-border hover:bg-muted"
+          >
+            Cancelar Plano
+          </Button>
+        </div>
+        
+        {/* Content - Two columns */}
+        <div className="flex flex-col md:flex-row">
+          {/* Left column - Plan info */}
+          <div className="flex-1 px-6 py-5 md:border-r border-border/50">
+            <h3 className="text-sm font-medium text-blue-600 mb-3">
               {currentPlan.name}
             </h3>
             
@@ -413,33 +423,27 @@ export default function Planos() {
             <p className="text-sm text-muted-foreground">
               E-mail de cobrança: {currentPlan.billingEmail}
             </p>
-            
-            <button className="text-blue-600 text-sm font-medium mt-3 hover:underline">
-              Fazer Upgrade
-            </button>
           </div>
 
-          {/* Right side - Next Payment & Cancel */}
-          <div className="flex flex-col items-end gap-4">
-            <Button
-              variant="outline"
-              className="text-foreground border-border hover:bg-muted"
-            >
-              Cancelar Plano
-            </Button>
-            
-            <div className="text-right">
-              <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                Próximo Pagamento
-              </h4>
-              <p className="text-lg font-semibold text-foreground">
-                Sem cobranças pendentes
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Sua assinatura está pausada ou inativa.
-              </p>
-            </div>
+          {/* Right column - Next Payment */}
+          <div className="flex-1 px-6 py-5 border-t md:border-t-0 border-border/50">
+            <h4 className="text-sm font-medium text-blue-600 mb-3">
+              Próximo Pagamento
+            </h4>
+            <p className="text-2xl font-bold text-foreground mb-1">
+              Sem cobranças pendentes
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Sua assinatura está pausada ou inativa.
+            </p>
           </div>
+        </div>
+        
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-border/50">
+          <button className="text-blue-600 text-sm font-medium hover:underline">
+            Fazer Upgrade
+          </button>
         </div>
       </div>
 
