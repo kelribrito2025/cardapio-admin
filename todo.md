@@ -4784,3 +4784,6 @@
 
 ## Ajuste de Sombra no Card de Lista de Cupons
 - [x] Remover sombra do card de lista de cupons
+
+## Ajuste de Sombra nos Cards de Campanhas
+- [x] Remover sombra de todos os cards da página de Campanhas

@@ -324,7 +324,7 @@ export default function Campanhas() {
           {/* Coluna Esquerda - Editor */}
           <div className="lg:col-span-3 space-y-6">
             {/* Editor de Mensagem */}
-            <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm">
+            <div className="bg-card rounded-xl border border-border/50 p-5">
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center">
                   <MessageSquare className="h-5 w-5 text-blue-600" />
@@ -377,7 +377,7 @@ export default function Campanhas() {
             </div>
 
             {/* Seleção de Destinatários */}
-            <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm">
+            <div className="bg-card rounded-xl border border-border/50 p-5">
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-10 w-10 rounded-xl bg-purple-100 flex items-center justify-center">
                   <Users className="h-5 w-5 text-purple-600" />
@@ -567,7 +567,7 @@ export default function Campanhas() {
             </div>
 
             {/* Resumo e Botão de Envio */}
-            <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm">
+            <div className="bg-card rounded-xl border border-border/50 p-5">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">
@@ -603,7 +603,7 @@ export default function Campanhas() {
 
           {/* Coluna Direita - Preview */}
           <div className="lg:col-span-2">
-            <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm sticky top-6">
+            <div className="bg-card rounded-xl border border-border/50 p-5 sticky top-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-10 w-10 rounded-xl bg-gray-100 flex items-center justify-center">
                   <MessageSquare className="h-5 w-5 text-gray-600" />
