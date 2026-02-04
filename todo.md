@@ -5036,3 +5036,8 @@
 ## Atualização do Título da Página de Mesas
 - [x] Alterar título de "Mesas e Comandas" para "Mapa de mesas"
 - [x] Alterar subtítulo para refletir o novo nome
+
+
+## Ajustes de Espaçamento no PDVSlidebar
+- [x] Aplicar marginRight: -3px no div (linha 606)
+- [x] Aplicar ajustes de padding/margin no botão (linha 625)
