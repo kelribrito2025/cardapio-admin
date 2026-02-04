@@ -136,7 +136,7 @@ export function GlobalPDVHandle() {
           top: `${handleConfig.positionY}%`,
           transform: 'translateY(-50%)',
           right: isSlidebarOpen ? '78%' : '0',
-          transition: 'right 0.4s cubic-bezier(0.32, 0.72, 0, 1)'
+          transition: 'right 0.3s ease-in-out'
         }}
         onClick={handleToggle}
       >

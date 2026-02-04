@@ -4987,3 +4987,9 @@
 ## Ajustes nos Cards de Produtos da Slidebar PDV
 - [x] Adicionar texto "Adicionar" no botão junto com o ícone +
 - [x] Aumentar tamanho dos cards em 10%
+
+
+## Otimização da Animação da Slidebar PDV
+- [x] Ajustar duração para 250-350ms (atualmente 400ms)
+- [x] Usar ease-in-out em vez de cubic-bezier
+- [x] Manter responsividade e fluidez

@@ -618,7 +618,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             top: `${handleConfig.positionY}%`,
             transform: `translateY(-50%) translateX(${isDraggingHandle ? dragOffset : 0}px)`,
             right: isOpen ? '78%' : '0',
-            transition: isDraggingHandle ? 'none' : 'right 0.4s cubic-bezier(0.32, 0.72, 0, 1), transform 0.15s ease-out'
+            transition: isDraggingHandle ? 'none' : 'right 0.3s ease-in-out, transform 0.15s ease-out'
           }}
         >
           {/* Botão principal para abrir/fechar */}
@@ -667,7 +667,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
         style={{ 
           width: '78%',
           transform: isDraggingHandle && isOpen ? `translateX(${Math.max(0, dragOffset)}px)` : undefined,
-          transition: isDraggingHandle ? 'none' : 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)'
+          transition: isDraggingHandle ? 'none' : 'transform 0.3s ease-in-out'
         }}
       >
         {/* Header */}
