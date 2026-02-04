@@ -834,8 +834,6 @@ export default function PDV() {
           <div className="w-96 border-l border-border/50 bg-gray-50 flex flex-col">
             {/* Header do Carrinho */}
             <div className="p-4 border-b border-border/50 bg-white">
-              <h2 className="text-lg font-bold text-foreground mb-3">Pedido Atual</h2>
-              
               {/* Tipo de Pedido */}
               <div className="flex gap-2">
                 <button

@@ -4673,3 +4673,6 @@
 
 ## PDV - Remover Redirecionamento Após Finalizar Pedido
 - [x] Remover redirecionamento automático para /pedidos após finalizar pedido no PDV
+
+## PDV - Remover Título Pedido Atual
+- [x] Remover o título "Pedido Atual" da página do PDV
