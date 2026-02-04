@@ -4768,3 +4768,7 @@
 
 ## Ajuste do Card Troco a Devolver
 - [x] Reduzir tamanho do card "Troco a devolver" no modal de Forma de Pagamento em 17%
+
+## Implementação de Impressão ESC/POS
+- [x] Criar utilitário de geração de comandos ESC/POS
+- [x] Integrar ESC/POS com sistema de impressão quando toggle HTML estiver desativado

@@ -974,11 +974,50 @@ async function startServer() {
       const establishment = await getEstablishmentById(order.establishmentId);
       const settings = await getPrinterSettings(order.establishmentId);
       
-      // Gerar HTML otimizado para impressora térmica 58mm/80mm
-      const html = generateReceiptHTML(order, orderItemsList, establishment, settings);
+      // Verificar se deve usar ESC/POS ou HTML
+      const useEscPos = settings?.htmlPrintEnabled === false;
       
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      res.send(html);
+      if (useEscPos) {
+        // Gerar recibo em formato texto puro ESC/POS
+        const { generatePlainTextReceipt } = await import('../escpos');
+        
+        const orderData = {
+          orderNumber: order.orderNumber,
+          createdAt: order.createdAt,
+          deliveryType: order.deliveryType as 'delivery' | 'pickup' | 'dine_in',
+          customerName: order.customerName || undefined,
+          customerPhone: order.customerPhone || undefined,
+          address: order.customerAddress || undefined,
+          paymentMethod: order.paymentMethod || undefined,
+          changeFor: order.changeAmount ? parseFloat(order.changeAmount) : undefined,
+          items: orderItemsList.map(item => ({
+            productName: item.productName,
+            quantity: item.quantity,
+            totalPrice: parseFloat(item.totalPrice as any) || 0,
+            notes: item.notes || undefined,
+            complements: item.complements || undefined,
+          })),
+          subtotal: parseFloat(order.subtotal as any) || 0,
+          deliveryFee: order.deliveryFee ? parseFloat(order.deliveryFee as any) : undefined,
+          discount: order.discount ? parseFloat(order.discount as any) : undefined,
+          total: parseFloat(order.total as any) || 0,
+        };
+        
+        const textReceipt = generatePlainTextReceipt(
+          orderData,
+          establishment,
+          (settings?.paperWidth as '58mm' | '80mm') || '80mm'
+        );
+        
+        res.setHeader("Content-Type", "text/plain; charset=utf-8");
+        res.send(textReceipt);
+      } else {
+        // Gerar HTML otimizado para impressora térmica 58mm/80mm
+        const html = generateReceiptHTML(order, orderItemsList, establishment, settings);
+        
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.send(html);
+      }
     } catch (error) {
       console.error("[Print] Erro ao gerar recibo:", error);
       res.status(500).send("Erro ao gerar recibo");
@@ -1007,8 +1046,6 @@ async function startServer() {
         customerName: "João Silva",
         customerPhone: "11999998888",
         customerAddress: "Rua das Flores, 123 - Centro",
-        addressComplement: "Apto 45",
-        neighborhood: "Centro",
         subtotal: "90.80",
         deliveryFee: "5.00",
         discount: "0",
@@ -1049,11 +1086,49 @@ async function startServer() {
         }
       ];
       
-      // Usar EXATAMENTE a mesma função que gera o recibo real
-      const html = generateReceiptHTML(sampleOrder, sampleItems, establishment, settings);
+      // Verificar se deve usar ESC/POS ou HTML
+      const useEscPos = settings?.htmlPrintEnabled === false;
       
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      res.send(html);
+      if (useEscPos) {
+        // Gerar recibo em formato texto puro ESC/POS
+        const { generatePlainTextReceipt } = await import('../escpos');
+        
+        const orderData = {
+          orderNumber: sampleOrder.orderNumber,
+          createdAt: sampleOrder.createdAt,
+          deliveryType: sampleOrder.deliveryType as 'delivery' | 'pickup' | 'dine_in',
+          customerName: sampleOrder.customerName,
+          customerPhone: sampleOrder.customerPhone,
+          address: sampleOrder.customerAddress,
+          paymentMethod: sampleOrder.paymentMethod,
+          items: sampleItems.map(item => ({
+            productName: item.productName,
+            quantity: item.quantity,
+            totalPrice: parseFloat(item.totalPrice),
+            notes: item.notes || undefined,
+            complements: item.complements || undefined,
+          })),
+          subtotal: parseFloat(sampleOrder.subtotal),
+          deliveryFee: parseFloat(sampleOrder.deliveryFee),
+          discount: parseFloat(sampleOrder.discount),
+          total: parseFloat(sampleOrder.total),
+        };
+        
+        const textReceipt = generatePlainTextReceipt(
+          orderData,
+          establishment,
+          (settings?.paperWidth as '58mm' | '80mm') || '80mm'
+        );
+        
+        res.setHeader("Content-Type", "text/plain; charset=utf-8");
+        res.send(textReceipt);
+      } else {
+        // Usar EXATAMENTE a mesma função que gera o recibo real
+        const html = generateReceiptHTML(sampleOrder, sampleItems, establishment, settings);
+        
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.send(html);
+      }
     } catch (error) {
       console.error("[Print Test] Erro ao gerar recibo de teste:", error);
       res.status(500).send("Erro ao gerar recibo de teste");
