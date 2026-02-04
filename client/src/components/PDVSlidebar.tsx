@@ -222,6 +222,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   // Resetar configuração da aba
   const resetHandleConfig = () => {
     setTempHandleConfig(DEFAULT_HANDLE_CONFIG);
+    setHandleConfig(DEFAULT_HANDLE_CONFIG);
   };
 
   // Ref para drag de categorias
@@ -1294,7 +1295,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               </div>
               <Slider
                 value={[tempHandleConfig.positionY]}
-                onValueChange={([value]) => setTempHandleConfig(prev => ({ ...prev, positionY: value }))}
+                onValueChange={([value]) => {
+                  setTempHandleConfig(prev => ({ ...prev, positionY: value }));
+                  setHandleConfig(prev => ({ ...prev, positionY: value }));
+                }}
                 min={10}
                 max={90}
                 step={1}
@@ -1311,7 +1315,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               </div>
               <Slider
                 value={[tempHandleConfig.height]}
-                onValueChange={([value]) => setTempHandleConfig(prev => ({ ...prev, height: value }))}
+                onValueChange={([value]) => {
+                  setTempHandleConfig(prev => ({ ...prev, height: value }));
+                  setHandleConfig(prev => ({ ...prev, height: value }));
+                }}
                 min={40}
                 max={120}
                 step={4}
@@ -1327,7 +1334,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               </div>
               <Slider
                 value={[tempHandleConfig.width]}
-                onValueChange={([value]) => setTempHandleConfig(prev => ({ ...prev, width: value }))}
+                onValueChange={([value]) => {
+                  setTempHandleConfig(prev => ({ ...prev, width: value }));
+                  setHandleConfig(prev => ({ ...prev, width: value }));
+                }}
                 min={16}
                 max={48}
                 step={4}
@@ -1335,24 +1345,12 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               />
             </div>
 
-            {/* Preview */}
-            <div className="border rounded-lg p-4 bg-muted/30">
-              <p className="text-sm font-medium mb-2">Preview</p>
-              <div className="relative h-24 bg-gray-100 rounded-lg overflow-hidden">
-                <div 
-                  className="absolute bg-gradient-to-r from-red-500 to-red-600 rounded-l-lg flex flex-col items-center justify-center"
-                  style={{
-                    width: `${tempHandleConfig.width}px`,
-                    height: `${tempHandleConfig.height}px`,
-                    top: `${tempHandleConfig.positionY}%`,
-                    transform: 'translateY(-50%)',
-                    right: 0
-                  }}
-                >
-                  <ChevronLeft className="h-4 w-4 text-white" />
-                  <Settings className="h-2 w-2 text-white/80 mt-1" />
-                </div>
-              </div>
+            {/* Dica de preview ao vivo */}
+            <div className="border rounded-lg p-3 bg-blue-50 border-blue-200">
+              <p className="text-sm text-blue-700 flex items-center gap-2">
+                <span className="text-blue-500">💡</span>
+                As alterações são aplicadas em tempo real na aba. Olhe para a aba na tela para ver o resultado.
+              </p>
             </div>
           </div>
           <DialogFooter className="flex gap-2">

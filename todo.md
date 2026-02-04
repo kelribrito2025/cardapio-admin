@@ -4930,3 +4930,9 @@
 
 ## Configuração Padrão da Aba da Slidebar
 - [x] Alterar valores padrão: posição vertical 15%, altura 76px, largura 32px
+
+
+## Preview ao Vivo da Configuração da Aba
+- [x] Modificar modal para aplicar alterações em tempo real na aba real da tela
+- [x] Remover preview estático do modal
+- [x] Aba real deve refletir as mudanças enquanto o usuário ajusta os sliders
