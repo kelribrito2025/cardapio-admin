@@ -4802,3 +4802,6 @@
 
 ## Ajuste de Sombra na Aba Templates do WhatsApp
 - [x] Remover sombra dos cards na aba Templates
+
+## Reorganização de Campos na Aba Dados da Conta
+- [x] Mover campo CNPJ para ao lado do campo nome do estabelecimento

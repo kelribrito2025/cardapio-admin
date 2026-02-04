@@ -203,14 +203,28 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
               </h3>
               
               <div className="space-y-3">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Nome do estabelecimento</Label>
-                  <Input
-                    id="name"
-                    value={accountData.name}
-                    onChange={(e) => setAccountData({ ...accountData, name: e.target.value })}
-                    placeholder="Nome do seu estabelecimento"
-                  />
+                {/* Nome e CNPJ lado a lado */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Nome do estabelecimento</Label>
+                    <Input
+                      id="name"
+                      value={accountData.name}
+                      onChange={(e) => setAccountData({ ...accountData, name: e.target.value })}
+                      placeholder="Nome do seu estabelecimento"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="cnpj">CNPJ</Label>
+                    <Input
+                      id="cnpj"
+                      value={accountData.cnpj}
+                      onChange={(e) => setAccountData({ ...accountData, cnpj: formatCNPJ(e.target.value) })}
+                      placeholder="00.000.000/0000-00"
+                      maxLength={18}
+                    />
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
@@ -226,17 +240,6 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
                   <p className="text-xs text-muted-foreground">
                     Este é o e-mail cadastrado na plataforma e não pode ser alterado aqui
                   </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="cnpj">CNPJ</Label>
-                  <Input
-                    id="cnpj"
-                    value={accountData.cnpj}
-                    onChange={(e) => setAccountData({ ...accountData, cnpj: formatCNPJ(e.target.value) })}
-                    placeholder="00.000.000/0000-00"
-                    maxLength={18}
-                  />
                 </div>
               </div>
             </div>
