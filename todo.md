@@ -4843,3 +4843,20 @@
 
 ## Favoritar Forma de Pagamento no Sidebar de Entrega
 - [x] Adicionar ícone de estrela nas formas de pagamento do sidebar de entrega
+
+## Nova Página: Mesas e Comandas
+- [ ] Criar estrutura base da página MesasComandas.tsx
+- [ ] Implementar cards de resumo no topo (Livres, Ocupadas, Reservadas, Ticket Médio, Tempo Médio, Faturamento)
+- [ ] Implementar filtros por status e busca por número da mesa
+- [ ] Implementar grid de mesas com cards visuais (barra lateral colorida por status)
+- [ ] Implementar sidebar lateral com detalhes da comanda
+- [ ] Adicionar rota no App.tsx e menu no DashboardLayout
+
+
+## Nova Página: Mesas e Comandas
+- [x] Criar estrutura base da página MesasComandas.tsx
+- [x] Implementar cards de resumo no topo (Livres, Ocupadas, Reservadas, Pedindo Conta, Ticket Médio, Faturamento)
+- [x] Implementar filtros por status e busca por número da mesa
+- [x] Implementar grid de mesas com cards visuais (barra lateral colorida por status)
+- [x] Implementar sidebar lateral com detalhes da comanda
+- [x] Adicionar rota no App.tsx e menu no AdminLayout
