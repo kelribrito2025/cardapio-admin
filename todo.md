@@ -4781,3 +4781,6 @@
 
 ## Ajuste de Sombra no Card de Lista de Estoque
 - [x] Remover sombra do card de lista de itens de estoque
+
+## Ajuste de Sombra no Card de Lista de Cupons
+- [x] Remover sombra do card de lista de cupons

@@ -269,7 +269,7 @@ export default function Cupons() {
         </div>
 
         {/* Table */}
-        <Card style={{paddingTop: '0px', paddingBottom: '0px'}}>
+        <Card className="shadow-none" style={{paddingTop: '0px', paddingBottom: '0px'}}>
           <CardContent className="p-0">
             {isLoading ? (
               <div className="p-4 space-y-3">
