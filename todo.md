@@ -4740,3 +4740,6 @@
 
 ## Verificação de Cabeçalho - Ajuda vs Dashboard
 - [x] Verificar e ajustar cabeçalho da página de Ajuda para usar o mesmo padrão do Dashboard
+
+## Efeito Blur no Card Pro - Página de Planos
+- [x] Adicionar efeito blur/gradiente azul no canto superior direito do card Pro
