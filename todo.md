@@ -4690,3 +4690,6 @@
 - [ ] Criar página de demonstração com diferentes modelos de notificação para escolha
 
 - [x] Adicionar mais 25 modelos de notificação na página de demonstração
+
+## Notificações - Aplicar Modelo 20 (Estilo Notion)
+- [x] Aplicar modelo 20 (Estilo Notion) como notificação padrão do sistema no canto superior direito
