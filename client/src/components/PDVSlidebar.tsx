@@ -804,15 +804,15 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   <p className="text-xs">Tente ajustar os filtros ou busca</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 gap-3">
                   {filteredProducts.map((product) => (
                     <div
                       key={product.id}
                       onClick={() => handleProductClick(product)}
                       className="bg-card rounded-lg border border-border/50 border-t-4 border-t-red-500 overflow-hidden cursor-pointer shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
                     >
-                      {/* Imagem - 20% menor */}
-                      <div className="h-[90px] bg-gradient-to-br from-red-500 to-red-600 relative overflow-hidden">
+                      {/* Imagem - aumentada 10% */}
+                      <div className="h-[100px] bg-gradient-to-br from-red-500 to-red-600 relative overflow-hidden">
                         {product.images?.[0] ? (
                           <img
                             src={product.images[0]}
@@ -821,7 +821,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <UtensilsCrossed className="h-8 w-8 text-white animate-placeholder-pulse" />
+                            <UtensilsCrossed className="h-9 w-9 text-white animate-placeholder-pulse" />
                           </div>
                         )}
                         {!product.hasStock && (
@@ -833,22 +833,22 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                         )}
                       </div>
 
-                      {/* Info - 20% menor */}
-                      <div className="p-2 flex flex-col h-[96px]">
-                        <h3 className="font-semibold text-xs line-clamp-1 mb-0.5">
+                      {/* Info - aumentada 10% */}
+                      <div className="p-2.5 flex flex-col h-[106px]">
+                        <h3 className="font-semibold text-sm line-clamp-1 mb-0.5">
                           {product.name}
                         </h3>
-                        <p className="text-[10px] text-muted-foreground line-clamp-2 mb-1 flex-1">
+                        <p className="text-[11px] text-muted-foreground line-clamp-2 mb-1 flex-1">
                           {product.description || ''}
                         </p>
                         <div className="flex items-center justify-between mt-auto gap-1">
-                          <span className="text-red-600 font-bold text-xs whitespace-nowrap">
+                          <span className="text-red-600 font-bold text-sm whitespace-nowrap">
                             {formatCurrency(parseFloat(product.price))}
                           </span>
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-6 px-1.5 text-[10px] border-red-200 text-red-600 hover:bg-red-50 shrink-0"
+                            className="h-7 px-2 text-[11px] border-red-200 text-red-600 hover:bg-red-50 shrink-0"
                             onClick={(e) => {
                               e.stopPropagation();
                               addToCart(product, 1, '', []);
@@ -856,7 +856,8 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                             }}
                             disabled={!product.hasStock}
                           >
-                            <Plus className="h-3 w-3" />
+                            <Plus className="h-3.5 w-3.5 mr-1" />
+                            Adicionar
                           </Button>
                         </div>
                       </div>

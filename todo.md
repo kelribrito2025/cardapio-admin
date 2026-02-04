@@ -4982,3 +4982,8 @@
 - [x] Adicionar transição mais suave na abertura (direita para esquerda)
 - [x] Adicionar transição mais suave no fechamento (esquerda para direita)
 - [x] Manter responsividade e fluidez
+
+
+## Ajustes nos Cards de Produtos da Slidebar PDV
+- [x] Adicionar texto "Adicionar" no botão junto com o ícone +
+- [x] Aumentar tamanho dos cards em 10%
