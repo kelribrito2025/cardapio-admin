@@ -4873,3 +4873,22 @@
 - [x] Remover cards de Livres/Ocupadas/Reservadas/Pedindo Conta (manter apenas Ticket Médio e Faturamento)
 - [x] Cards de Ticket Médio e Faturamento: adicionar borda superior colorida
 - [x] Filtros de status: adicionar badges de contagem ao lado direito
+
+## Slidebar PDV na página de Mesas e Comandas
+- [ ] Criar slidebar lateral (59% largura) que abre da esquerda para direita
+- [ ] Reutilizar PDV existente dentro da slidebar com mesmo visual
+- [ ] Tipo de pedido "Consumo" pré-selecionado automaticamente
+- [ ] Número da mesa preenchido e bloqueado automaticamente
+- [ ] Grade de produtos com máximo 3 itens por linha
+- [ ] Cards de produto com tamanho reduzido em 20%
+- [ ] Modal de detalhes do item igual ao PDV/menu público
+
+
+## Slidebar PDV na Página de Mesas
+- [x] Criar componente PDVSlidebar reutilizando o PDV existente
+- [x] Slidebar entra da esquerda para direita com 59% da largura
+- [x] Tipo de pedido "Consumo" pré-selecionado automaticamente
+- [x] Número da mesa preenchido e bloqueado automaticamente
+- [x] Grid de produtos com máximo 3 colunas e cards 20% menores
+- [x] Modal de detalhes do produto igual ao PDV/menu público
+- [x] Integrar PDVSlidebar na página MesasComandas

@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
 import { PageHeader } from "@/components/shared";
+import { PDVSlidebar } from "@/components/PDVSlidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -229,6 +230,7 @@ export default function MesasComandas() {
   const [tables] = useState<Table[]>(mockTables);
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [showPDVSlidebar, setShowPDVSlidebar] = useState(false);
   const [statusFilter, setStatusFilter] = useState<TableStatus | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -271,7 +273,17 @@ export default function MesasComandas() {
 
   const handleTableClick = (table: Table) => {
     setSelectedTable(table);
-    setShowSidebar(true);
+    setShowPDVSlidebar(true);
+  };
+
+  const handlePDVSlidebarClose = () => {
+    setShowPDVSlidebar(false);
+  };
+
+  const handleOrderCreated = () => {
+    // Aqui poderia atualizar os dados da mesa
+    // Por enquanto apenas fecha a slidebar
+    setShowPDVSlidebar(false);
   };
 
   const statusFilters: { value: TableStatus | "all"; label: string }[] = [
@@ -661,6 +673,14 @@ export default function MesasComandas() {
           )}
         </SheetContent>
       </Sheet>
+
+      {/* PDV Slidebar */}
+      <PDVSlidebar
+        isOpen={showPDVSlidebar}
+        onClose={handlePDVSlidebarClose}
+        tableNumber={selectedTable?.number || 0}
+        onOrderCreated={handleOrderCreated}
+      />
     </AdminLayout>
   );
 }
