@@ -4762,3 +4762,6 @@
 
 ## Ajuste de Tamanho dos Cards de Tipo de Pedido
 - [x] Reduzir tamanho dos cards Consumo, Retirada e Entrega em 20%
+
+## Ajuste de Largura da Sidebar de Entrega
+- [x] Reduzir largura da sidebar "Dados da Entrega" em 15%

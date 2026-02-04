@@ -1657,7 +1657,7 @@ export default function PDV() {
 
       {/* Sidebar de Entrega usando Sheet do shadcn/ui */}
       <Sheet open={showDeliverySidebar} onOpenChange={setShowDeliverySidebar}>
-        <SheetContent side="right" className="w-[437px] sm:max-w-[437px] p-0 flex flex-col" hideCloseButton>
+        <SheetContent side="right" className="w-[371px] sm:max-w-[371px] p-0 flex flex-col" hideCloseButton>
           {/* Header */}
           <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
             <div className="flex items-center justify-between">
@@ -2044,7 +2044,7 @@ export default function PDV() {
           setReceivedAmount("");
         }
       }}>
-        <SheetContent side="right" className="w-[437px] sm:max-w-[437px] p-0 flex flex-col" hideCloseButton>
+        <SheetContent side="right" className="w-[371px] sm:max-w-[371px] p-0 flex flex-col" hideCloseButton>
           {/* Header */}
           <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
             <div className="flex items-center justify-between">
