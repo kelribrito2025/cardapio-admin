@@ -55,6 +55,21 @@ interface Plan {
 
 const plans: Plan[] = [
   {
+    id: "free",
+    name: "Free",
+    price: {
+      monthly: 0,
+      annual: 0,
+    },
+    features: [
+      { text: "Limited transactions" },
+      { text: "1 bank account" },
+      { text: "Basic categories" },
+      { text: "Basic reports" },
+    ],
+    buttonText: "Current Plan",
+  },
+  {
     id: "basic",
     name: "Basic",
     price: {
@@ -259,7 +274,7 @@ export default function Planos() {
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-foreground mb-4">Select Plan</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {plans.map((plan) => {
             const price = isAnnual ? plan.price.annual : plan.price.monthly;
             const period = isAnnual ? "/year" : "/month";
@@ -291,11 +306,13 @@ export default function Planos() {
                 {/* Price */}
                 <div className="flex items-baseline gap-1 mb-6">
                   <span className="text-4xl font-bold text-foreground">
-                    {formatCurrency(price)}
+                    {price === 0 ? "Free" : formatCurrency(price)}
                   </span>
-                  <span className="text-muted-foreground text-sm">
-                    {period}
-                  </span>
+                  {price > 0 && (
+                    <span className="text-muted-foreground text-sm">
+                      {period}
+                    </span>
+                  )}
                 </div>
 
                 {/* Divider with "What's Include" */}
@@ -329,8 +346,11 @@ export default function Planos() {
                     "w-full font-medium",
                     plan.highlighted
                       ? "bg-blue-600 hover:bg-blue-700 text-white"
+                      : plan.id === "free"
+                      ? "bg-gray-100 hover:bg-gray-100 text-muted-foreground cursor-default"
                       : "bg-white hover:bg-gray-50 text-foreground border border-border"
                   )}
+                  disabled={plan.id === "free"}
                 >
                   {plan.buttonText}
                 </Button>

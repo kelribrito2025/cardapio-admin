@@ -4715,3 +4715,6 @@
 - [x] Redesenhar Billing History com paginação
 - [x] Adicionar checkbox de seleção nas linhas da tabela
 - [x] Melhorar visual dos badges de status (Success, Processing)
+
+## Ajuste na Página de Planos
+- [x] Adicionar card do plano gratuito à esquerda do card Basic
