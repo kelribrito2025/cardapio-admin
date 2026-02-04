@@ -196,7 +196,7 @@ export default function Cupons() {
         {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {/* Ativos */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-green-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-green-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Ativos</p>
@@ -211,7 +211,7 @@ export default function Cupons() {
             </div>
           </div>
           {/* Inativos */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-gray-400 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-gray-400 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Inativos</p>
@@ -226,7 +226,7 @@ export default function Cupons() {
             </div>
           </div>
           {/* Expirados */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-orange-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-orange-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Expirados</p>
@@ -241,7 +241,7 @@ export default function Cupons() {
             </div>
           </div>
           {/* Esgotados */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-red-500 shadow-soft transition-all duration-200 hover:shadow-elevated hover:-translate-y-0.5">
+          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-red-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Esgotados</p>
