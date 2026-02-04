@@ -4936,3 +4936,7 @@
 - [x] Modificar modal para aplicar alterações em tempo real na aba real da tela
 - [x] Remover preview estático do modal
 - [x] Aba real deve refletir as mudanças enquanto o usuário ajusta os sliders
+
+
+## Aba Acima do Overlay do Modal
+- [x] Aumentar z-index da aba quando o modal de configuração estiver aberto para ficar acima do overlay escuro

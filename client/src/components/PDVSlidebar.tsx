@@ -585,10 +585,11 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
         <div
           ref={handleRef as any}
           className={cn(
-            "fixed z-50 flex flex-col items-center justify-center cursor-pointer select-none touch-none",
+            "fixed flex flex-col items-center justify-center cursor-pointer select-none touch-none",
             "bg-gradient-to-r from-red-500 to-red-600 rounded-l-lg shadow-lg",
             "hover:from-red-600 hover:to-red-700 transition-all duration-200",
-            !isOpen && "animate-handle-pulse"
+            !isOpen && "animate-handle-pulse",
+            showHandleConfig ? "z-[100]" : "z-50"
           )}
           style={{
             width: `${handleConfig.width}px`,
