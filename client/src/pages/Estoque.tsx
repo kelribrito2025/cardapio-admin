@@ -425,7 +425,7 @@ export default function Estoque() {
         </div>
 
         {/* Stock Items Table */}
-        <Card className="overflow-hidden rounded-xl" style={{paddingTop: '0px', paddingBottom: '0px'}}>
+        <Card className="overflow-hidden rounded-xl shadow-none" style={{paddingTop: '0px', paddingBottom: '0px'}}>
           {isLoadingItems ? (
             <div className="p-4 space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (

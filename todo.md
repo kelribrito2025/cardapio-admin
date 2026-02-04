@@ -4778,3 +4778,6 @@
 
 ## Ajuste de Sombra nos Cards de Cupons
 - [x] Remover shadow-soft dos cards de status (ativos, inativos, expirados, esgotados) e lista de cupons
+
+## Ajuste de Sombra no Card de Lista de Estoque
+- [x] Remover sombra do card de lista de itens de estoque
