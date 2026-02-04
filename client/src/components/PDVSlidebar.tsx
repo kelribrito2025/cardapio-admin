@@ -628,14 +628,13 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             onTouchStart={handleDragStart}
             className="flex-1 w-full flex items-center justify-center"
           >
-            {isOpen ? (
-              <ChevronRight className="h-5 w-5 text-white" />
-            ) : (
-              <div className="flex items-center">
-                <ChevronLeft className="h-5 w-5 text-white animate-arrow-bounce-left" />
-                <ChevronLeft className="h-5 w-5 text-white/60 -ml-3 animate-arrow-bounce-left-delayed" />
-              </div>
-            )}
+            <div className="flex items-center">
+              {isOpen ? (
+                <ChevronRight className="h-5 w-5 text-white" />
+              ) : (
+                <ChevronLeft className="h-5 w-5 text-white" />
+              )}
+            </div>
           </button>
           {/* Botão de configuração */}
           <button

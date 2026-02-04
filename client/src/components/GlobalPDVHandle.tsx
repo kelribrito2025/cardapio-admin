@@ -141,15 +141,12 @@ export function GlobalPDVHandle() {
         onClick={handleToggle}
       >
         <button className="flex flex-col items-center justify-center w-full h-full">
-          {/* Setas animadas */}
+          {/* Seta */}
           <div className="flex items-center">
             {isSlidebarOpen ? (
-              <ChevronRight className="h-4 w-4 text-white" />
+              <ChevronRight className="h-5 w-5 text-white" />
             ) : (
-              <>
-                <ChevronLeft className="h-3 w-3 text-white animate-bounce-left" />
-                <ChevronLeft className="h-3 w-3 text-white animate-bounce-left-delayed -ml-1" />
-              </>
+              <ChevronLeft className="h-5 w-5 text-white" />
             )}
           </div>
 

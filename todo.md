@@ -4964,3 +4964,8 @@
 - [x] Implementar tecla F2 para abrir a slidebar
 - [x] Implementar tecla ESC para fechar a slidebar
 - [x] Atalhos funcionando em todas as páginas (exceto PDV)
+
+
+## Padronização do Ícone da Aba
+- [x] Usar o mesmo ícone de seta na aba quando aberta e fechada
+- [x] Padronizar ícone nas demais páginas (GlobalPDVHandle)
