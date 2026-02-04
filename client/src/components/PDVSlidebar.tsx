@@ -31,9 +31,9 @@ import { toast } from "sonner";
 // Constantes para configuração da aba
 const HANDLE_CONFIG_KEY = 'pdv-slidebar-handle-config';
 const DEFAULT_HANDLE_CONFIG = {
-  positionY: 50, // percentual (0-100)
-  height: 64, // pixels
-  width: 24, // pixels
+  positionY: 15, // percentual (0-100)
+  height: 76, // pixels
+  width: 32, // pixels
 };
 
 type HandleConfig = typeof DEFAULT_HANDLE_CONFIG;

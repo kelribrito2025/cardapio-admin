@@ -4926,3 +4926,7 @@
 
 ## Efeito de Movimento na Aba da Slidebar
 - [x] Adicionar animação de movimento/pulsação na aba (handle) da slidebar PDV para dar destaque visual
+
+
+## Configuração Padrão da Aba da Slidebar
+- [x] Alterar valores padrão: posição vertical 15%, altura 76px, largura 32px
