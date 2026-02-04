@@ -4969,3 +4969,10 @@
 ## Padronização do Ícone da Aba
 - [x] Usar o mesmo ícone de seta na aba quando aberta e fechada
 - [x] Padronizar ícone nas demais páginas (GlobalPDVHandle)
+
+
+## Ajustes na Slidebar PDV
+- [x] Corrigir badges cortados nas categorias
+- [x] Aumentar tamanho dos botões de categoria em 10%
+- [x] Aumentar largura do carrinho em 17%
+- [x] Mudar de 3 para 4 itens por linha no grid de produtos

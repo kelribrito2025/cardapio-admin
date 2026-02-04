@@ -713,7 +713,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   <button
                     onClick={() => setSelectedCategory(null)}
                     className={cn(
-                      "relative px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all shrink-0",
+                      "relative px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0 mt-2",
                       selectedCategory === null
                         ? "bg-red-500 text-white shadow-sm"
                         : "bg-card text-muted-foreground hover:bg-muted border border-border/50"
@@ -721,7 +721,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   >
                     Todos
                     <span className={cn(
-                      "absolute -top-1 -right-1 min-w-[18px] h-4 flex items-center justify-center px-1 rounded-full text-[10px] font-semibold",
+                      "absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-[10px] font-semibold",
                       selectedCategory === null ? "bg-white text-red-500" : "bg-red-500 text-white"
                     )}>
                       {productsList.filter((p) => p.status === 'active').length || 0}
@@ -742,7 +742,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                           key={category.id}
                           onClick={() => setSelectedCategory(category.id)}
                           className={cn(
-                            "relative px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all shrink-0",
+                            "relative px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0 mt-2",
                             selectedCategory === category.id
                               ? "bg-red-500 text-white shadow-sm"
                               : "bg-card text-muted-foreground hover:bg-muted border border-border/50"
@@ -750,7 +750,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                         >
                           {categoryNameWithoutEmoji}
                           <span className={cn(
-                            "absolute -top-1 -right-1 min-w-[18px] h-4 flex items-center justify-center px-1 rounded-full text-[10px] font-semibold",
+                            "absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-[10px] font-semibold",
                             selectedCategory === category.id ? "bg-white text-red-500" : "bg-red-500 text-white"
                           )}>
                             {count}
@@ -781,10 +781,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               </div>
             </div>
 
-            {/* Grid de Produtos - 3 colunas, cards 20% menores */}
+            {/* Grid de Produtos - 4 colunas */}
             <div className="flex-1 overflow-y-auto p-3">
               {productsLoading ? (
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-4 gap-2">
                   {Array.from({ length: 9 }).map((_, i) => (
                     <div key={i} className="bg-card rounded-lg border border-border/50 overflow-hidden">
                       <Skeleton className="aspect-square" />
@@ -803,7 +803,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   <p className="text-xs">Tente ajustar os filtros ou busca</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-4 gap-2">
                   {filteredProducts.map((product) => (
                     <div
                       key={product.id}
@@ -867,7 +867,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           </div>
 
           {/* Coluna Direita - Carrinho */}
-          <div className="w-72 bg-gray-50 flex flex-col">
+          <div className="w-[336px] bg-gray-50 flex flex-col">
             {/* Header do Carrinho */}
             <div className="p-3 border-b border-border/50 bg-white">
               {/* Tipo de Pedido - Consumo fixo */}
