@@ -4901,3 +4901,13 @@
 - [x] Integrar página MesasComandas com dados reais do banco
 - [x] Sincronizar comanda com mesa ao criar pedido pela slidebar
 - [x] Adicionar botão de impressão de comanda na slidebar
+
+
+## Aba Fixa (Handle) para Slidebar PDV
+- [x] Criar aba vertical fixa na borda da slidebar do PDV
+- [x] Aba sempre visível (fechada ou aberta)
+- [x] Suporte a clique para abrir/fechar
+- [x] Suporte a arrastar (drag) para abrir/fechar
+- [x] Visual com cor vermelha, bordas arredondadas e sombra
+- [x] Animação suave ao abrir/fechar (ease-in-out)
+- [x] Ícone de seta indicando direção

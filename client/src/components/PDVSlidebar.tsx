@@ -13,6 +13,8 @@ import {
   Menu,
   Check,
   ChevronsRight,
+  ChevronLeft,
+  ChevronRight,
   Pencil,
   Lock,
   Printer
@@ -55,13 +57,15 @@ type Category = {
 interface PDVSlidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  onToggle?: () => void;
   tableNumber: number;
   tableId?: number;
   tabId?: number;
   onOrderCreated?: () => void;
+  showHandle?: boolean;
 }
 
-export function PDVSlidebar({ isOpen, onClose, tableNumber, tableId, tabId, onOrderCreated }: PDVSlidebarProps) {
+export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, tabId, onOrderCreated, showHandle = false }: PDVSlidebarProps) {
   const { data: establishment } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
 
@@ -461,15 +465,93 @@ export function PDVSlidebar({ isOpen, onClose, tableNumber, tableId, tabId, onOr
     }
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  // Estado para drag da aba
+  const [isDraggingHandle, setIsDraggingHandle] = useState(false);
+  const [dragStartX, setDragStartX] = useState(0);
+  const handleRef = useRef<HTMLButtonElement>(null);
+
+  // Handlers para drag da aba
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    setIsDraggingHandle(true);
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    setDragStartX(clientX);
+  };
+
+  const handleDragMove = (e: MouseEvent | TouchEvent) => {
+    if (!isDraggingHandle) return;
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const diff = clientX - dragStartX;
+    const threshold = 50;
+    
+    if (isOpen && diff > threshold) {
+      // Arrastar para direita = fechar
+      onClose();
+      setIsDraggingHandle(false);
+    } else if (!isOpen && diff < -threshold && onToggle) {
+      // Arrastar para esquerda = abrir
+      onToggle();
+      setIsDraggingHandle(false);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setIsDraggingHandle(false);
+  };
+
+  // Event listeners para drag
+  useEffect(() => {
+    if (isDraggingHandle) {
+      document.addEventListener('mousemove', handleDragMove);
+      document.addEventListener('mouseup', handleDragEnd);
+      document.addEventListener('touchmove', handleDragMove);
+      document.addEventListener('touchend', handleDragEnd);
+    }
+    return () => {
+      document.removeEventListener('mousemove', handleDragMove);
+      document.removeEventListener('mouseup', handleDragEnd);
+      document.removeEventListener('touchmove', handleDragMove);
+      document.removeEventListener('touchend', handleDragEnd);
+    };
+  }, [isDraggingHandle, dragStartX, isOpen, onToggle, onClose]);
+
+  // Se showHandle é true, sempre renderiza a aba (mesmo quando fechado)
+  if (!showHandle && !isOpen) return null;
 
   return (
     <>
-      {/* Overlay */}
-      <div 
-        className="fixed inset-0 bg-black/50 z-40 transition-opacity"
-        onClick={onClose}
-      />
+      {/* Aba fixa (Handle) - sempre visível quando showHandle é true */}
+      {showHandle && (
+        <button
+          ref={handleRef}
+          onClick={() => isOpen ? onClose() : onToggle?.()}
+          onMouseDown={handleDragStart}
+          onTouchStart={handleDragStart}
+          className={cn(
+            "fixed z-50 flex items-center justify-center cursor-pointer select-none touch-none",
+            "w-6 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-l-lg shadow-lg",
+            "hover:from-red-600 hover:to-red-700 transition-all duration-200",
+            "top-1/2 -translate-y-1/2",
+            isOpen ? "right-[59%]" : "right-0"
+          )}
+          style={{
+            transition: isDraggingHandle ? 'none' : 'right 0.3s ease-out'
+          }}
+        >
+          {isOpen ? (
+            <ChevronRight className="h-5 w-5 text-white" />
+          ) : (
+            <ChevronLeft className="h-5 w-5 text-white" />
+          )}
+        </button>
+      )}
+
+      {/* Overlay - só aparece quando aberto */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+          onClick={onClose}
+        />
+      )}
 
       {/* Slidebar */}
       <div 

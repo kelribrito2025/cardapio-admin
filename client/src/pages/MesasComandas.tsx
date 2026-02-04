@@ -823,10 +823,12 @@ export default function MesasComandas() {
       <PDVSlidebar
         isOpen={showPDVSlidebar}
         onClose={handlePDVSlidebarClose}
+        onToggle={() => setShowPDVSlidebar(true)}
         tableNumber={selectedTable?.number || 0}
         tableId={selectedTable?.id}
         tabId={selectedTable?.tab?.id}
         onOrderCreated={handleOrderCreated}
+        showHandle={!!selectedTable}
       />
     </AdminLayout>
   );
