@@ -361,8 +361,8 @@ export default function MesasComandas() {
       <AdminLayout>
         <div className="mb-6">
           <PageHeader 
-            title="Mesas e Comandas" 
-            description="Controle de mesas e comandas do salão"
+            title="Mapa de mesas" 
+            description="Visualização e controle das mesas do salão"
           />
         </div>
 
@@ -436,8 +436,8 @@ export default function MesasComandas() {
     <AdminLayout>
       <div className="mb-6">
         <PageHeader 
-          title="Mesas e Comandas" 
-          description="Controle de mesas e comandas do salão"
+          title="Mapa de mesas" 
+          description="Visualização e controle das mesas do salão"
         />
       </div>
 

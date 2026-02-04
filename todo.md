@@ -5031,3 +5031,8 @@
 - [x] Adicionar data de renovação no cabeçalho
 - [x] Adicionar botão Cancel Plan no canto superior direito
 - [x] Adicionar link Upgrade Plan no rodapé
+
+
+## Atualização do Título da Página de Mesas
+- [x] Alterar título de "Mesas e Comandas" para "Mapa de mesas"
+- [x] Alterar subtítulo para refletir o novo nome
