@@ -4718,3 +4718,10 @@
 
 ## Ajuste na Página de Planos
 - [x] Adicionar card do plano gratuito à esquerda do card Basic
+
+
+## Remodelação da Página de Ajuda
+- [x] Remodelar página de Ajuda com novo design baseado na referência
+- [x] Cards de contato (WhatsApp, Email, Telefone) com ícones coloridos
+- [x] Seção Tutorial com player de vídeo e lista de capítulos
+- [x] Seção FAQ com accordion expansível
