@@ -320,13 +320,30 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
         {/* Card - Alterar Senha */}
         <Card className="shadow-none">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Lock className="h-4 w-4" />
-              Alterar senha
-            </CardTitle>
-            <CardDescription>
-              Mantenha sua conta segura alterando sua senha periodicamente
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Lock className="h-4 w-4" />
+                  Alterar senha
+                </CardTitle>
+                <CardDescription>
+                  Mantenha sua conta segura alterando sua senha periodicamente
+                </CardDescription>
+              </div>
+              {/* Botão visível apenas em desktop (md+) */}
+              <Button 
+                onClick={handleChangePassword}
+                disabled={changePasswordMutation.isPending || !passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
+                className="hidden md:flex"
+              >
+                {changePasswordMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Lock className="h-4 w-4 mr-2" />
+                )}
+                Salvar nova senha
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Campos de senha em linha horizontal */}
@@ -414,7 +431,8 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
               A senha deve ter pelo menos 8 caracteres
             </p>
             
-            <div className="flex justify-end pt-2">
+            {/* Botão visível apenas em mobile */}
+            <div className="flex justify-end pt-2 border-t md:hidden">
               <Button 
                 onClick={handleChangePassword}
                 disabled={changePasswordMutation.isPending || !passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}

@@ -4814,3 +4814,6 @@
 
 ## Layout Responsivo do Botão Salvar
 - [x] Botão no header em desktop, na posição original em mobile
+
+## Layout Responsivo do Botão Salvar no Card de Segurança
+- [x] Botão no header em desktop, na posição original em mobile no card Alterar Senha
