@@ -4734,3 +4734,6 @@
 
 ## Atualização do Email na Página de Ajuda
 - [x] Atualizar email de contato para contato@mindi.com.br
+
+## Atualização do Telefone na Página de Ajuda
+- [x] Atualizar número de telefone de suporte para 5534998807793

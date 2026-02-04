@@ -185,8 +185,8 @@ export default function Ajuda() {
             icon={<Phone className="h-5 w-5 text-white" />}
             iconBg="bg-cyan-500"
             title="Suporte por Telefone"
-            subtitle="+55 (11) 99999-9999"
-            href="tel:+5511999999999"
+            subtitle="+55 (34) 99880-7793"
+            href="tel:+5534998807793"
           />
         </div>
       </div>
