@@ -61,7 +61,7 @@ const menuSections = [
     items: [
       { icon: LayoutDashboard, label: "Dashboard", href: "/", disabled: false },
       { icon: Monitor, label: "PDV", href: "/pdv", disabled: true, comingSoon: true },
-      { icon: Utensils, label: "Mesas e Comandas", href: "/mesas", disabled: true, comingSoon: true },
+      { icon: Utensils, label: "Mesas e Comandas", href: "/mesas", disabled: false },
     ]
   },
   {

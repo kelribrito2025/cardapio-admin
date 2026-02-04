@@ -4862,3 +4862,5 @@
 - [x] Adicionar rota no App.tsx e menu no AdminLayout
 
 - [x] Corrigir layout da página Mesas e Comandas para usar AdminLayout em vez de DashboardLayout
+
+- [x] Remover badge "Breve" do menu Mesas e Comandas para habilitar a página
