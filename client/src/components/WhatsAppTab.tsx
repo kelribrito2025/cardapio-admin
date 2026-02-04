@@ -189,7 +189,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
     <div className="space-y-6">
       {/* Status Card - oculto quando hideConnectionCard=true */}
       {!hideConnectionCard && (
-        <Card>
+        <Card className="shadow-none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5 text-green-500" />
@@ -303,7 +303,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
       {/* Modo showOnlyContent - renderiza apenas o conteúdo da aba selecionada */}
       {showOnlyContent && activeSubTab === "notifications" && (
         <div className="space-y-4">
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <CardTitle>Notificações Automáticas</CardTitle>
               <CardDescription>
@@ -464,7 +464,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
         
         {/* Notifications Tab */}
         <TabsContent value="notifications" className="space-y-4 mt-4">
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <CardTitle>Notificações Automáticas</CardTitle>
               <CardDescription>

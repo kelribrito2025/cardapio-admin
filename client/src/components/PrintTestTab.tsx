@@ -756,7 +756,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
   return (
     <div className="space-y-6">
       {/* Card de Impressoras Cadastradas */}
-      <Card>
+      <Card className="shadow-none">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <div>
             <CardTitle>Impressoras Cadastradas</CardTitle>
@@ -851,7 +851,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
         
         {/* Layout Tab */}
         <TabsContent value="layout" className="space-y-4 mt-4">
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <CardTitle>Configurações de Layout</CardTitle>
               <CardDescription>
@@ -1003,7 +1003,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
         
         {/* Fonts Tab */}
         <TabsContent value="fonts" className="space-y-4 mt-4">
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <CardTitle>Configurações de Fonte</CardTitle>
               <CardDescription>
@@ -1155,7 +1155,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
         
         {/* Test Tab */}
         <TabsContent value="test" className="space-y-4 mt-4">
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <CardTitle>Imprimir Recibo de Teste</CardTitle>
               <CardDescription>
