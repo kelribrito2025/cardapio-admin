@@ -178,8 +178,8 @@ export default function Ajuda() {
             icon={<Mail className="h-5 w-5 text-white" />}
             iconBg="bg-amber-400"
             title="Envie um E-mail"
-            subtitle="suporte@seudominio.com"
-            href="mailto:suporte@seudominio.com"
+            subtitle="contato@mindi.com.br"
+            href="mailto:contato@mindi.com.br"
           />
           <ContactCard
             icon={<Phone className="h-5 w-5 text-white" />}

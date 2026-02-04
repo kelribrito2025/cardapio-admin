@@ -4731,3 +4731,6 @@
 
 ## Atualização do WhatsApp na Página de Ajuda
 - [x] Atualizar link do WhatsApp para número 5534998807793 com mensagem pré-definida
+
+## Atualização do Email na Página de Ajuda
+- [x] Atualizar email de contato para contato@mindi.com.br
