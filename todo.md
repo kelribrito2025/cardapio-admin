@@ -4679,3 +4679,6 @@
 
 ## PDV - Corrigir Notificações Duplicadas
 - [x] Corrigir notificações duplicadas ao adicionar item ao carrinho
+
+## Notificações - Novo Estilo Visual
+- [x] Alterar estilo das notificações para fundo vermelho com ícones e textos brancos

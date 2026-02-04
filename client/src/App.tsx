@@ -94,7 +94,25 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
-          <Toaster position="top-right" closeButton />
+          <Toaster 
+            position="top-right" 
+            closeButton 
+            toastOptions={{
+              classNames: {
+                toast: 'bg-red-600 border-red-600 text-white',
+                title: 'text-white font-medium',
+                description: 'text-white/90',
+                actionButton: 'bg-white text-red-600 hover:bg-white/90',
+                cancelButton: 'bg-white/20 text-white hover:bg-white/30',
+                closeButton: 'bg-white/20 text-white hover:bg-white/30 border-0',
+                success: 'bg-red-600 border-red-600',
+                error: 'bg-red-700 border-red-700',
+                info: 'bg-red-600 border-red-600',
+                warning: 'bg-red-600 border-red-600',
+                loading: 'bg-red-600 border-red-600',
+              },
+            }}
+          />
           <Router />
         </TooltipProvider>
       </ThemeProvider>
