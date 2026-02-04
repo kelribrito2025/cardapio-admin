@@ -5019,3 +5019,8 @@
 ## Correção da Aba do PDV na Página de Mesas
 - [x] Fazer a aba do PDV aparecer automaticamente ao acessar a página de Mesas
 - [x] Remover dependência do clique em uma mesa para exibir a aba
+
+
+## Animação da Slidebar do PDV igual à de Configurações
+- [x] Analisar o efeito de animação da slidebar de configurações
+- [x] Aplicar o mesmo efeito na slidebar do PDV na página de Mesas
