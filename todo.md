@@ -4922,3 +4922,7 @@
 - [x] Modal de configuração: ajustar tamanho da aba (altura/largura)
 - [x] Preview em tempo real das alterações no modal
 - [x] Persistir configurações no localStorage
+
+
+## Efeito de Movimento na Aba da Slidebar
+- [x] Adicionar animação de movimento/pulsação na aba (handle) da slidebar PDV para dar destaque visual

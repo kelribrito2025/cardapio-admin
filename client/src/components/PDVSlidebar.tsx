@@ -586,7 +586,8 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           className={cn(
             "fixed z-50 flex flex-col items-center justify-center cursor-pointer select-none touch-none",
             "bg-gradient-to-r from-red-500 to-red-600 rounded-l-lg shadow-lg",
-            "hover:from-red-600 hover:to-red-700 transition-all duration-200"
+            "hover:from-red-600 hover:to-red-700 transition-all duration-200",
+            !isOpen && "animate-handle-pulse"
           )}
           style={{
             width: `${handleConfig.width}px`,
@@ -607,7 +608,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             {isOpen ? (
               <ChevronRight className="h-5 w-5 text-white" />
             ) : (
-              <ChevronLeft className="h-5 w-5 text-white" />
+              <div className="flex items-center">
+                <ChevronLeft className="h-5 w-5 text-white animate-arrow-bounce-left" />
+                <ChevronLeft className="h-5 w-5 text-white/60 -ml-3 animate-arrow-bounce-left-delayed" />
+              </div>
             )}
           </button>
           {/* Botão de configuração */}
