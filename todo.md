@@ -5010,3 +5010,7 @@
 ## Cor dos Badges nos Filtros da Página de Mesas
 - [x] Alterar cor dos badges (Todas, Livres, Ocupadas, Pedindo conta, Reservadas) para vermelho
 - [x] Manter posição atual dos badges
+
+
+## Largura dos Cards na Página de Mesas
+- [x] Aumentar largura dos cards de Ticket Médio e Faturamento em 17%

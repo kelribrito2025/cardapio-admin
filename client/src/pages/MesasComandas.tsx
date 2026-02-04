@@ -444,7 +444,7 @@ export default function MesasComandas() {
       <div className="space-y-5">
 
         {/* Cards de Resumo - Apenas Ticket Médio e Faturamento */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-[585px]">
           {/* Ticket Médio */}
           <div className="bg-white rounded-xl border border-border/50 border-t-4 border-t-blue-500 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
             <div className="flex items-center justify-between">
