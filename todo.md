@@ -4976,3 +4976,9 @@
 - [x] Aumentar tamanho dos botões de categoria em 10%
 - [x] Aumentar largura do carrinho em 17%
 - [x] Mudar de 3 para 4 itens por linha no grid de produtos
+
+
+## Animação Suave na Slidebar PDV
+- [x] Adicionar transição mais suave na abertura (direita para esquerda)
+- [x] Adicionar transição mais suave no fechamento (esquerda para direita)
+- [x] Manter responsividade e fluidez
