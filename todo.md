@@ -4808,3 +4808,6 @@
 
 ## Reorganização dos Campos de Senha
 - [x] Colocar campos de senha atual, nova e confirmar na mesma linha horizontal
+
+## Reposicionamento do Botão Salvar
+- [x] Mover botão Salvar alterações para a mesma linha do título Dados da Conta

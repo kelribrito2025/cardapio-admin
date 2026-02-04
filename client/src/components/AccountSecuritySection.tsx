@@ -184,13 +184,28 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
       {/* Seção 1 - Dados da Conta */}
       <Card className="shadow-none">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5" />
-            Dados da Conta
-          </CardTitle>
-          <CardDescription>
-            Informações do estabelecimento e do responsável
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Building2 className="h-5 w-5" />
+                Dados da Conta
+              </CardTitle>
+              <CardDescription>
+                Informações do estabelecimento e do responsável
+              </CardDescription>
+            </div>
+            <Button 
+              onClick={handleSaveAccountData}
+              disabled={updateAccountMutation.isPending}
+            >
+              {updateAccountMutation.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
+              )}
+              Salvar alterações
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Grid com duas colunas no desktop */}
@@ -276,20 +291,7 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
             </div>
           </div>
           
-          {/* Botão Salvar */}
-          <div className="flex justify-end pt-4 border-t">
-            <Button 
-              onClick={handleSaveAccountData}
-              disabled={updateAccountMutation.isPending}
-            >
-              {updateAccountMutation.isPending ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <Save className="h-4 w-4 mr-2" />
-              )}
-              Salvar alterações
-            </Button>
-          </div>
+          
         </CardContent>
       </Card>
       
