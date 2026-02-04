@@ -172,7 +172,7 @@ export default function Ajuda() {
             iconBg="bg-green-500"
             title="Suporte via WhatsApp"
             subtitle="Fale conosco instantaneamente"
-            href="https://wa.me/5511999999999"
+            href="https://wa.me/5534998807793?text=Ol%C3%A1%2C%20queria%20tirar%20uma%20duvida%2C%20pode%20me%20ajudar%3F"
           />
           <ContactCard
             icon={<Mail className="h-5 w-5 text-white" />}

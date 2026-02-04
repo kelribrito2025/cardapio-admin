@@ -4728,3 +4728,6 @@
 
 ## Tradução da Página de Ajuda
 - [x] Traduzir todo o conteúdo da página de Ajuda para português brasileiro
+
+## Atualização do WhatsApp na Página de Ajuda
+- [x] Atualizar link do WhatsApp para número 5534998807793 com mensagem pré-definida
