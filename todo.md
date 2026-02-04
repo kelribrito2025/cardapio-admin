@@ -4704,3 +4704,14 @@
 - [x] Implementar bloco FAQ com accordion expansível
 - [x] Garantir responsividade completa da página
 - [x] Registrar rota /ajuda no App.tsx
+
+
+## Remodelação da Página de Planos v2
+- [x] Redesenhar com 2 cards de planos (Basic e Pro) lado a lado
+- [x] Remover card Free, manter apenas Basic ($29/mês) e Pro ($120/ano)
+- [x] Adicionar badge "Most Popular" no card Pro com borda azul
+- [x] Redesenhar seção Your Plan com botão Cancel Plan
+- [x] Adicionar informação de renovação (Renews date)
+- [x] Redesenhar Billing History com paginação
+- [x] Adicionar checkbox de seleção nas linhas da tabela
+- [x] Melhorar visual dos badges de status (Success, Processing)

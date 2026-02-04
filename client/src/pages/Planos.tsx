@@ -2,8 +2,8 @@ import { useState } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
 import { PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -27,19 +27,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Check,
-  Crown,
-  Zap,
-  Star,
   Download,
-  MoreHorizontal,
+  MoreVertical,
   Eye,
   FileText,
-  Mail,
-  Calendar,
-  CreditCard,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 
 interface PlanFeature {
@@ -56,27 +51,9 @@ interface Plan {
   features: PlanFeature[];
   buttonText: string;
   highlighted?: boolean;
-  icon: React.ReactNode;
-  badge?: string;
 }
 
 const plans: Plan[] = [
-  {
-    id: "free",
-    name: "Free",
-    price: {
-      monthly: 0,
-      annual: 0,
-    },
-    icon: <Star className="h-5 w-5" />,
-    features: [
-      { text: "Limited transactions" },
-      { text: "1 bank account" },
-      { text: "Basic categories" },
-      { text: "Basic financial overview" },
-    ],
-    buttonText: "Start Free",
-  },
   {
     id: "basic",
     name: "Basic",
@@ -84,104 +61,136 @@ const plans: Plan[] = [
       monthly: 29,
       annual: 290,
     },
-    icon: <Zap className="h-5 w-5" />,
     features: [
       { text: "Unlimited transactions" },
-      { text: "Connect up to 5 bank accounts" },
+      { text: "Connect 5 bank accounts" },
       { text: "Custom categories" },
       { text: "Financial reports" },
       { text: "Email support" },
     ],
-    buttonText: "Upgrade",
+    buttonText: "Get Started",
   },
   {
     id: "pro",
     name: "Pro",
     price: {
       monthly: 59,
-      annual: 590,
+      annual: 120,
     },
-    icon: <Crown className="h-5 w-5" />,
     highlighted: true,
-    badge: "Most Popular",
     features: [
-      { text: "Everything in Basic" },
+      { text: "Everything in Monthly" },
       { text: "Unlimited bank accounts" },
       { text: "Advanced analytics" },
       { text: "AI financial assistant" },
       { text: "Custom reports" },
     ],
-    buttonText: "Upgrade to Pro",
+    buttonText: "Get Started",
   },
 ];
 
-// Mock data for billing history
+// Mock data for billing history with more entries for pagination
 const billingHistory = [
   {
-    id: "INV-001",
-    plan: "Pro",
-    purchaseDate: "2024-01-15",
-    amount: 590,
-    endDate: "2025-01-15",
+    id: "INV_00092323",
+    plan: "Business",
+    planType: "Annual",
+    purchaseDate: "2025-08-30",
+    amount: 120,
+    endDate: "2026-08-30",
     status: "success" as const,
   },
   {
-    id: "INV-002",
-    plan: "Basic",
-    purchaseDate: "2023-12-01",
-    amount: 29,
-    endDate: "2024-01-01",
+    id: "INV_00092323",
+    plan: "Pro Plan",
+    planType: "Annual",
+    purchaseDate: "2025-08-26",
+    amount: 120,
+    endDate: "2025-09-25",
+    status: "processing" as const,
+  },
+  {
+    id: "INV_00092323",
+    plan: "Pro Plan",
+    planType: "Monthly",
+    purchaseDate: "2025-08-20",
+    amount: 72,
+    endDate: "2025-09-20",
     status: "success" as const,
   },
   {
-    id: "INV-003",
-    plan: "Pro",
-    purchaseDate: "2023-11-15",
-    amount: 59,
-    endDate: "2023-12-15",
-    status: "failed" as const,
+    id: "INV_00092323",
+    plan: "Pro Plan",
+    planType: "Monthly",
+    purchaseDate: "2025-08-15",
+    amount: 72,
+    endDate: "2025-09-16",
+    status: "success" as const,
+  },
+  {
+    id: "INV_00092323",
+    plan: "Pro Plan",
+    planType: "Annual",
+    purchaseDate: "2024-08-12",
+    amount: 120,
+    endDate: "2025-08-22",
+    status: "success" as const,
   },
 ];
 
 type BillingStatus = "all" | "success" | "processing" | "failed";
 
 export default function Planos() {
-  const [isAnnual, setIsAnnual] = useState(false);
+  const [isAnnual, setIsAnnual] = useState(true);
   const [statusFilter, setStatusFilter] = useState<BillingStatus>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const { user } = useAuth();
+  const itemsPerPage = 4;
 
-  // Mock current plan - in real app, this would come from user data
+  // Mock current plan
   const currentPlan = {
-    id: "free",
-    name: "Free",
-    price: 0,
-    renewalDate: null,
-    billingEmail: user?.email || "usuario@email.com",
+    id: "business",
+    name: "Business Plan",
+    price: 120,
+    period: "year",
+    renewalDate: "10 Dec 2025",
+    billingEmail: user?.email || "critozcore@gmail.com",
+    isActive: false,
   };
 
   const filteredHistory = billingHistory.filter(
     (item) => statusFilter === "all" || item.status === statusFilter
   );
 
+  const totalPages = Math.ceil(filteredHistory.length / itemsPerPage);
+  const paginatedHistory = filteredHistory.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "success":
         return (
-          <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
-            Success
-          </Badge>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-green-500" />
+            <span className="text-green-600 font-medium text-sm">Success</span>
+          </div>
         );
       case "processing":
         return (
-          <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100">
-            Processing
-          </Badge>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-amber-500" />
+            <span className="text-amber-600 font-medium text-sm">Processing</span>
+          </div>
         );
       case "failed":
         return (
-          <Badge className="bg-red-100 text-red-700 hover:bg-red-100">
-            Failed
-          </Badge>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-red-500" />
+            <span className="text-red-600 font-medium text-sm">Failed</span>
+          </div>
         );
       default:
         return null;
@@ -189,332 +198,363 @@ export default function Planos() {
   };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
+    return `$${value.toFixed(2)}`;
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("pt-BR", {
+    return new Date(dateString).toLocaleDateString("en-US", {
       day: "2-digit",
       month: "short",
       year: "numeric",
     });
   };
 
+  const toggleRowSelection = (id: string) => {
+    setSelectedRows((prev) =>
+      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
+    );
+  };
+
+  const toggleAllRows = () => {
+    if (selectedRows.length === paginatedHistory.length) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows(paginatedHistory.map((_, index) => `row-${index}`));
+    }
+  };
+
   return (
     <AdminLayout>
       {/* Header with Toggle */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <PageHeader
-          title="Billing & Subscription"
-          description="Gerencie seu plano e histórico de pagamentos"
-        />
+        <h1 className="text-2xl font-bold text-foreground">Billing & Subscription</h1>
         
-        <div className="flex items-center gap-3 bg-card border border-border/50 rounded-full px-4 py-2 shadow-sm">
-          <span className={cn(
-            "text-sm font-medium transition-colors",
-            !isAnnual ? "text-foreground" : "text-muted-foreground"
-          )}>
+        <div className="flex items-center bg-muted/50 rounded-full p-1">
+          <button
+            onClick={() => setIsAnnual(false)}
+            className={cn(
+              "px-4 py-2 text-sm font-medium rounded-full transition-all",
+              !isAnnual
+                ? "bg-white text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
             Monthly Plan
-          </span>
-          <Switch
-            checked={isAnnual}
-            onCheckedChange={setIsAnnual}
-            className="data-[state=checked]:bg-primary"
-          />
-          <span className={cn(
-            "text-sm font-medium transition-colors",
-            isAnnual ? "text-foreground" : "text-muted-foreground"
-          )}>
+          </button>
+          <button
+            onClick={() => setIsAnnual(true)}
+            className={cn(
+              "px-4 py-2 text-sm font-medium rounded-full transition-all",
+              isAnnual
+                ? "bg-white text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
             Annual Plan
-          </span>
-          {isAnnual && (
-            <Badge variant="secondary" className="bg-green-100 text-green-700 text-xs">
-              Save 17%
-            </Badge>
-          )}
+          </button>
         </div>
       </div>
 
-      {/* Plans Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-        {plans.map((plan) => {
-          const isCurrentPlan = plan.id === currentPlan.id;
-          const price = isAnnual ? plan.price.annual : plan.price.monthly;
-          const period = plan.id === "free" ? "" : isAnnual ? "/year" : "/month";
+      {/* Select Plan Section */}
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold text-foreground mb-4">Select Plan</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {plans.map((plan) => {
+            const price = isAnnual ? plan.price.annual : plan.price.monthly;
+            const period = isAnnual ? "/year" : "/month";
 
-          return (
-            <div
-              key={plan.id}
-              className={cn(
-                "relative bg-card rounded-2xl border overflow-hidden transition-all duration-300",
-                plan.highlighted
-                  ? "border-primary shadow-lg shadow-primary/10 scale-[1.02]"
-                  : "border-border/50 shadow-soft hover:shadow-elevated hover:-translate-y-1"
-              )}
-            >
-              {/* Badge */}
-              {plan.badge && (
-                <div className="absolute top-4 right-4">
-                  <Badge className="bg-primary text-primary-foreground text-xs font-semibold px-3 py-1">
-                    {plan.badge}
-                  </Badge>
-                </div>
-              )}
+            return (
+              <div
+                key={plan.id}
+                className={cn(
+                  "relative bg-card rounded-xl border p-6 transition-all duration-300",
+                  plan.highlighted
+                    ? "border-blue-500 border-2"
+                    : "border-border/50 hover:border-border"
+                )}
+              >
+                {/* Most Popular Badge */}
+                {plan.highlighted && (
+                  <div className="absolute top-4 right-4">
+                    <Badge className="bg-blue-100 text-blue-700 text-xs font-medium px-3 py-1 rounded-full">
+                      Most Popular
+                    </Badge>
+                  </div>
+                )}
 
-              {/* Gradient overlay for Pro */}
-              {plan.highlighted && (
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 pointer-events-none" />
-              )}
-
-              {/* Header */}
-              <div className="relative p-6 pb-4">
-                <div
-                  className={cn(
-                    "w-11 h-11 rounded-xl flex items-center justify-center mb-4",
-                    plan.highlighted
-                      ? "bg-primary text-primary-foreground"
-                      : plan.id === "free"
-                      ? "bg-gray-100 text-gray-600"
-                      : "bg-blue-100 text-blue-600"
-                  )}
-                >
-                  {plan.icon}
-                </div>
-
-                <h3 className="text-xl font-bold text-foreground mb-3">
+                {/* Plan Name */}
+                <h3 className="text-xl font-bold text-foreground mb-4">
                   {plan.name}
                 </h3>
 
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-foreground">
+                {/* Price */}
+                <div className="flex items-baseline gap-1 mb-6">
+                  <span className="text-4xl font-bold text-foreground">
                     {formatCurrency(price)}
                   </span>
-                  {period && (
-                    <span className="text-muted-foreground text-sm">
-                      {period}
-                    </span>
-                  )}
+                  <span className="text-muted-foreground text-sm">
+                    {period}
+                  </span>
                 </div>
 
-                {plan.id === "free" && (
-                  <p className="text-xs text-muted-foreground mt-2">
-                    No credit card required
-                  </p>
-                )}
-              </div>
+                {/* Divider with "What's Include" */}
+                <div className="relative mb-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-border/50"></div>
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="bg-card px-3 text-sm text-muted-foreground">
+                      What's Include :
+                    </span>
+                  </div>
+                </div>
 
-              {/* Features */}
-              <div className="relative p-6 pt-4 border-t border-border/50">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
-                  What's included:
-                </p>
+                {/* Features */}
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((feature, index) => (
                     <li
                       key={index}
-                      className="flex items-start gap-3 text-sm text-foreground"
+                      className="flex items-center gap-3 text-sm text-foreground"
                     >
-                      <div
-                        className={cn(
-                          "w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
-                          plan.highlighted
-                            ? "bg-primary/10 text-primary"
-                            : "bg-green-100 text-green-600"
-                        )}
-                      >
-                        <Check className="h-3 w-3" />
-                      </div>
+                      <Check className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                       <span>{feature.text}</span>
                     </li>
                   ))}
                 </ul>
 
+                {/* Button */}
                 <Button
                   className={cn(
-                    "w-full font-semibold",
-                    isCurrentPlan
-                      ? "bg-muted text-muted-foreground hover:bg-muted cursor-default"
-                      : plan.highlighted
-                      ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-                      : "bg-foreground hover:bg-foreground/90 text-background"
+                    "w-full font-medium",
+                    plan.highlighted
+                      ? "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-white hover:bg-gray-50 text-foreground border border-border"
                   )}
-                  disabled={isCurrentPlan}
                 >
-                  {isCurrentPlan ? "Current Plan" : plan.buttonText}
+                  {plan.buttonText}
                 </Button>
+
+                {/* Visit here link */}
+                <p className="text-center text-sm text-muted-foreground mt-4">
+                  For a more details{" "}
+                  <a href="#" className="text-foreground underline hover:no-underline">
+                    Visit here
+                  </a>
+                </p>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
-      {/* Current Plan Section */}
-      <div className="bg-card rounded-2xl border border-border/50 shadow-soft p-6 mb-8">
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-          {/* Left side - Your Plan */}
+      {/* Your Plan Section */}
+      <div className="bg-card rounded-xl border border-border/50 p-6 mb-8">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+          {/* Left side - Plan info */}
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-4">
-              <CreditCard className="h-5 w-5 text-muted-foreground" />
-              <h3 className="text-lg font-semibold text-foreground">Your Plan</h3>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-sm font-medium text-muted-foreground">Your Plan</span>
+              <span className="text-sm text-muted-foreground">
+                Renews {currentPlan.renewalDate}
+              </span>
             </div>
             
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Badge variant="outline" className="text-sm font-medium px-3 py-1">
-                  {currentPlan.name}
-                </Badge>
-                <span className="text-2xl font-bold text-foreground">
-                  {formatCurrency(currentPlan.price)}
-                </span>
-                {currentPlan.price > 0 && (
-                  <span className="text-muted-foreground text-sm">/month</span>
-                )}
-              </div>
-              
-              {currentPlan.renewalDate && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  <span>Renews on {formatDate(currentPlan.renewalDate)}</span>
-                </div>
-              )}
-              
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Mail className="h-4 w-4" />
-                <span>Billing email: {currentPlan.billingEmail}</span>
-              </div>
-              
-              {currentPlan.id !== "pro" && (
-                <Button variant="link" className="p-0 h-auto text-primary font-medium">
-                  Upgrade Plan →
-                </Button>
-              )}
+            <h3 className="text-lg font-semibold text-blue-600 mb-2">
+              {currentPlan.name}
+            </h3>
+            
+            <div className="flex items-baseline gap-1 mb-2">
+              <span className="text-3xl font-bold text-foreground">
+                R$ {currentPlan.price.toFixed(2)}
+              </span>
+              <span className="text-muted-foreground text-sm">
+                /{currentPlan.period}
+              </span>
             </div>
+            
+            <p className="text-sm text-muted-foreground">
+              Billing email: {currentPlan.billingEmail}
+            </p>
+            
+            <button className="text-blue-600 text-sm font-medium mt-3 hover:underline">
+              Upgrade Plan
+            </button>
           </div>
 
-          {/* Divider */}
-          <div className="hidden lg:block w-px bg-border/50 self-stretch" />
-
-          {/* Right side - Next Payment */}
-          <div className="flex-1 lg:pl-6">
-            <div className="flex items-center gap-2 mb-4">
-              <FileText className="h-5 w-5 text-muted-foreground" />
-              <h3 className="text-lg font-semibold text-foreground">Next Payment</h3>
-            </div>
+          {/* Right side - Next Payment & Cancel */}
+          <div className="flex flex-col items-end gap-4">
+            <Button
+              variant="outline"
+              className="text-foreground border-border hover:bg-muted"
+            >
+              Cancel Plan
+            </Button>
             
-            {currentPlan.price === 0 ? (
-              <div className="text-muted-foreground">
-                <p className="text-sm">No upcoming charges</p>
-                <p className="text-xs mt-1">Upgrade to a paid plan to access premium features</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl font-bold text-foreground">
-                    {formatCurrency(currentPlan.price)}
-                  </span>
-                  <span className="text-muted-foreground text-sm">
-                    on {currentPlan.renewalDate ? formatDate(currentPlan.renewalDate) : "N/A"}
-                  </span>
-                </div>
-                <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700">
-                  Cancel Plan
-                </Button>
-              </div>
-            )}
+            <div className="text-right">
+              <h4 className="text-sm font-medium text-muted-foreground mb-1">
+                Next Payment
+              </h4>
+              <p className="text-lg font-semibold text-foreground">
+                No upcoming charges
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Your subscription is paused or inactive.
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Billing History Section */}
-      <div className="bg-card rounded-2xl border border-border/50 shadow-soft overflow-hidden">
-        <div className="p-6 border-b border-border/50">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h3 className="text-lg font-semibold text-foreground">Billing History</h3>
+      <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+        <div className="p-6 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <h2 className="text-lg font-semibold text-foreground">Billing History</h2>
+          
+          <div className="flex items-center gap-3">
+            <Select
+              value={statusFilter}
+              onValueChange={(value) => {
+                setStatusFilter(value as BillingStatus);
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="w-[160px] bg-white border-border">
+                <span className="text-sm text-muted-foreground mr-1">Status:</span>
+                <SelectValue placeholder="All History" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All History</SelectItem>
+                <SelectItem value="success">Success</SelectItem>
+                <SelectItem value="processing">Processing</SelectItem>
+                <SelectItem value="failed">Failed</SelectItem>
+              </SelectContent>
+            </Select>
             
-            <div className="flex items-center gap-3">
-              <Select
-                value={statusFilter}
-                onValueChange={(value) => setStatusFilter(value as BillingStatus)}
-              >
-                <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="success">Success</SelectItem>
-                  <SelectItem value="processing">Processing</SelectItem>
-                  <SelectItem value="failed">Failed</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Button variant="outline" size="sm" className="gap-2">
-                <Download className="h-4 w-4" />
-                Export
-              </Button>
-            </div>
+            <Button variant="outline" className="gap-2">
+              <Download className="h-4 w-4" />
+              Export
+            </Button>
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/30">
-                <TableHead className="font-semibold">Invoice</TableHead>
-                <TableHead className="font-semibold">Plan</TableHead>
-                <TableHead className="font-semibold">Purchase Date</TableHead>
-                <TableHead className="font-semibold">Amount</TableHead>
-                <TableHead className="font-semibold">End Date</TableHead>
-                <TableHead className="font-semibold">Status</TableHead>
-                <TableHead className="font-semibold w-[50px]">Actions</TableHead>
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/30 hover:bg-muted/30">
+              <TableHead className="w-12">
+                <Checkbox
+                  checked={selectedRows.length === paginatedHistory.length && paginatedHistory.length > 0}
+                  onCheckedChange={toggleAllRows}
+                />
+              </TableHead>
+              <TableHead className="font-semibold text-foreground">INVOICE</TableHead>
+              <TableHead className="font-semibold text-foreground">PLAN</TableHead>
+              <TableHead className="font-semibold text-foreground">PURCHASE DATE</TableHead>
+              <TableHead className="font-semibold text-foreground">AMOUNTS</TableHead>
+              <TableHead className="font-semibold text-foreground">END DATE</TableHead>
+              <TableHead className="font-semibold text-foreground">STATUS</TableHead>
+              <TableHead className="font-semibold text-foreground text-right">ACTIONS</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedHistory.map((item, index) => (
+              <TableRow key={`${item.id}-${index}`} className="hover:bg-muted/20">
+                <TableCell>
+                  <Checkbox
+                    checked={selectedRows.includes(`row-${index}`)}
+                    onCheckedChange={() => toggleRowSelection(`row-${index}`)}
+                  />
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium text-foreground">{item.id}</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div>
+                    <span className="font-medium text-foreground">{item.plan}</span>
+                    <span className="text-muted-foreground text-sm ml-1">({item.planType})</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {formatDate(item.purchaseDate)}
+                </TableCell>
+                <TableCell className="font-medium text-foreground">
+                  ${item.amount.toFixed(2)}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {formatDate(item.endDate)}
+                </TableCell>
+                <TableCell>{getStatusBadge(item.status)}</TableCell>
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>
+                        <Eye className="h-4 w-4 mr-2" />
+                        View Details
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Download className="h-4 w-4 mr-2" />
+                        Download Invoice
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredHistory.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                    No billing history found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredHistory.map((item) => (
-                  <TableRow key={item.id} className="hover:bg-muted/20">
-                    <TableCell className="font-medium">{item.id}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{item.plan}</Badge>
-                    </TableCell>
-                    <TableCell>{formatDate(item.purchaseDate)}</TableCell>
-                    <TableCell className="font-medium">
-                      {formatCurrency(item.amount)}
-                    </TableCell>
-                    <TableCell>{formatDate(item.endDate)}</TableCell>
-                    <TableCell>{getStatusBadge(item.status)}</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem className="gap-2">
-                            <Eye className="h-4 w-4" />
-                            View Details
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="gap-2">
-                            <Download className="h-4 w-4" />
-                            Download Invoice
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+            ))}
+          </TableBody>
+        </Table>
+
+        {/* Pagination */}
+        <div className="p-4 border-t border-border/50 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Showing {(currentPage - 1) * itemsPerPage + 1}-
+            {Math.min(currentPage * itemsPerPage, filteredHistory.length)} from{" "}
+            {filteredHistory.length}
+          </p>
+          
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                variant={currentPage === page ? "default" : "outline"}
+                size="icon"
+                className={cn(
+                  "h-8 w-8",
+                  currentPage === page && "bg-foreground text-background"
+                )}
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </Button>
+            ))}
+            
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </AdminLayout>
