@@ -56,34 +56,34 @@ interface Plan {
 const plans: Plan[] = [
   {
     id: "free",
-    name: "Free",
+    name: "Gratuito",
     price: {
       monthly: 0,
       annual: 0,
     },
     features: [
-      { text: "Limited transactions" },
-      { text: "1 bank account" },
-      { text: "Basic categories" },
-      { text: "Basic reports" },
+      { text: "Transações limitadas" },
+      { text: "1 estabelecimento" },
+      { text: "Categorias básicas" },
+      { text: "Relatórios básicos" },
     ],
-    buttonText: "Current Plan",
+    buttonText: "Plano Atual",
   },
   {
     id: "basic",
-    name: "Basic",
+    name: "Básico",
     price: {
       monthly: 29,
       annual: 290,
     },
     features: [
-      { text: "Unlimited transactions" },
-      { text: "Connect 5 bank accounts" },
-      { text: "Custom categories" },
-      { text: "Financial reports" },
-      { text: "Email support" },
+      { text: "Transações ilimitadas" },
+      { text: "Até 5 estabelecimentos" },
+      { text: "Categorias personalizadas" },
+      { text: "Relatórios financeiros" },
+      { text: "Suporte por e-mail" },
     ],
-    buttonText: "Get Started",
+    buttonText: "Começar Agora",
   },
   {
     id: "pro",
@@ -94,13 +94,13 @@ const plans: Plan[] = [
     },
     highlighted: true,
     features: [
-      { text: "Everything in Monthly" },
-      { text: "Unlimited bank accounts" },
-      { text: "Advanced analytics" },
-      { text: "AI financial assistant" },
-      { text: "Custom reports" },
+      { text: "Tudo do plano Básico" },
+      { text: "Estabelecimentos ilimitados" },
+      { text: "Análises avançadas" },
+      { text: "Assistente de IA" },
+      { text: "Relatórios personalizados" },
     ],
-    buttonText: "Get Started",
+    buttonText: "Começar Agora",
   },
 ];
 
@@ -109,7 +109,7 @@ const billingHistory = [
   {
     id: "INV_00092323",
     plan: "Business",
-    planType: "Annual",
+    planType: "Anual",
     purchaseDate: "2025-08-30",
     amount: 120,
     endDate: "2026-08-30",
@@ -117,8 +117,8 @@ const billingHistory = [
   },
   {
     id: "INV_00092323",
-    plan: "Pro Plan",
-    planType: "Annual",
+    plan: "Plano Pro",
+    planType: "Anual",
     purchaseDate: "2025-08-26",
     amount: 120,
     endDate: "2025-09-25",
@@ -126,8 +126,8 @@ const billingHistory = [
   },
   {
     id: "INV_00092323",
-    plan: "Pro Plan",
-    planType: "Monthly",
+    plan: "Plano Pro",
+    planType: "Mensal",
     purchaseDate: "2025-08-20",
     amount: 72,
     endDate: "2025-09-20",
@@ -135,8 +135,8 @@ const billingHistory = [
   },
   {
     id: "INV_00092323",
-    plan: "Pro Plan",
-    planType: "Monthly",
+    plan: "Plano Pro",
+    planType: "Mensal",
     purchaseDate: "2025-08-15",
     amount: 72,
     endDate: "2025-09-16",
@@ -144,8 +144,8 @@ const billingHistory = [
   },
   {
     id: "INV_00092323",
-    plan: "Pro Plan",
-    planType: "Annual",
+    plan: "Plano Pro",
+    planType: "Anual",
     purchaseDate: "2024-08-12",
     amount: 120,
     endDate: "2025-08-22",
@@ -166,10 +166,10 @@ export default function Planos() {
   // Mock current plan
   const currentPlan = {
     id: "business",
-    name: "Business Plan",
+    name: "Plano Business",
     price: 120,
-    period: "year",
-    renewalDate: "10 Dec 2025",
+    period: "ano",
+    renewalDate: "10 Dez 2025",
     billingEmail: user?.email || "critozcore@gmail.com",
     isActive: false,
   };
@@ -190,21 +190,21 @@ export default function Planos() {
         return (
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span className="text-green-600 font-medium text-sm">Success</span>
+            <span className="text-green-600 font-medium text-sm">Sucesso</span>
           </div>
         );
       case "processing":
         return (
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-amber-500" />
-            <span className="text-amber-600 font-medium text-sm">Processing</span>
+            <span className="text-amber-600 font-medium text-sm">Processando</span>
           </div>
         );
       case "failed":
         return (
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-red-500" />
-            <span className="text-red-600 font-medium text-sm">Failed</span>
+            <span className="text-red-600 font-medium text-sm">Falhou</span>
           </div>
         );
       default:
@@ -213,11 +213,14 @@ export default function Planos() {
   };
 
   const formatCurrency = (value: number) => {
-    return `$${value.toFixed(2)}`;
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    return new Date(dateString).toLocaleDateString("pt-BR", {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -240,10 +243,16 @@ export default function Planos() {
 
   return (
     <AdminLayout>
-      {/* Header with Toggle */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Billing & Subscription</h1>
-        
+      {/* Header */}
+      <div className="mb-6">
+        <PageHeader 
+          title="Planos e Assinatura" 
+          description="Gerencie seu plano e histórico de pagamentos"
+        />
+      </div>
+
+      {/* Toggle Mensal/Anual */}
+      <div className="flex justify-end mb-6">
         <div className="flex items-center bg-muted/50 rounded-full p-1">
           <button
             onClick={() => setIsAnnual(false)}
@@ -254,7 +263,7 @@ export default function Planos() {
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
-            Monthly Plan
+            Plano Mensal
           </button>
           <button
             onClick={() => setIsAnnual(true)}
@@ -265,19 +274,19 @@ export default function Planos() {
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
-            Annual Plan
+            Plano Anual
           </button>
         </div>
       </div>
 
       {/* Select Plan Section */}
       <div className="mb-8">
-        <h2 className="text-lg font-semibold text-foreground mb-4">Select Plan</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-4">Selecione um Plano</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {plans.map((plan) => {
             const price = isAnnual ? plan.price.annual : plan.price.monthly;
-            const period = isAnnual ? "/year" : "/month";
+            const period = isAnnual ? "/ano" : "/mês";
 
             return (
               <div
@@ -301,7 +310,7 @@ export default function Planos() {
                 {plan.highlighted && (
                   <div className="absolute top-4 right-4 z-10">
                     <Badge className="bg-blue-100 text-blue-700 text-xs font-medium px-3 py-1 rounded-full">
-                      Most Popular
+                      Mais Popular
                     </Badge>
                   </div>
                 )}
@@ -314,7 +323,7 @@ export default function Planos() {
                 {/* Price */}
                 <div className="flex items-baseline gap-1 mb-6">
                   <span className="text-4xl font-bold text-foreground">
-                    {price === 0 ? "Free" : formatCurrency(price)}
+                    {price === 0 ? "Grátis" : formatCurrency(price)}
                   </span>
                   {price > 0 && (
                     <span className="text-muted-foreground text-sm">
@@ -323,14 +332,14 @@ export default function Planos() {
                   )}
                 </div>
 
-                {/* Divider with "What's Include" */}
+                {/* Divider with "O que está incluso" */}
                 <div className="relative mb-6">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-border/50"></div>
                   </div>
                   <div className="relative flex justify-center">
                     <span className="bg-card px-3 text-sm text-muted-foreground">
-                      What's Include :
+                      O que está incluso:
                     </span>
                   </div>
                 </div>
@@ -365,9 +374,9 @@ export default function Planos() {
 
                 {/* Visit here link */}
                 <p className="text-center text-sm text-muted-foreground mt-4">
-                  For a more details{" "}
+                  Para mais detalhes{" "}
                   <a href="#" className="text-foreground underline hover:no-underline">
-                    Visit here
+                    Clique aqui
                   </a>
                 </p>
               </div>
@@ -382,9 +391,9 @@ export default function Planos() {
           {/* Left side - Plan info */}
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-sm font-medium text-muted-foreground">Your Plan</span>
+              <span className="text-sm font-medium text-muted-foreground">Seu Plano</span>
               <span className="text-sm text-muted-foreground">
-                Renews {currentPlan.renewalDate}
+                Renova em {currentPlan.renewalDate}
               </span>
             </div>
             
@@ -394,7 +403,7 @@ export default function Planos() {
             
             <div className="flex items-baseline gap-1 mb-2">
               <span className="text-3xl font-bold text-foreground">
-                R$ {currentPlan.price.toFixed(2)}
+                {formatCurrency(currentPlan.price)}
               </span>
               <span className="text-muted-foreground text-sm">
                 /{currentPlan.period}
@@ -402,11 +411,11 @@ export default function Planos() {
             </div>
             
             <p className="text-sm text-muted-foreground">
-              Billing email: {currentPlan.billingEmail}
+              E-mail de cobrança: {currentPlan.billingEmail}
             </p>
             
             <button className="text-blue-600 text-sm font-medium mt-3 hover:underline">
-              Upgrade Plan
+              Fazer Upgrade
             </button>
           </div>
 
@@ -416,18 +425,18 @@ export default function Planos() {
               variant="outline"
               className="text-foreground border-border hover:bg-muted"
             >
-              Cancel Plan
+              Cancelar Plano
             </Button>
             
             <div className="text-right">
               <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                Next Payment
+                Próximo Pagamento
               </h4>
               <p className="text-lg font-semibold text-foreground">
-                No upcoming charges
+                Sem cobranças pendentes
               </p>
               <p className="text-sm text-muted-foreground">
-                Your subscription is paused or inactive.
+                Sua assinatura está pausada ou inativa.
               </p>
             </div>
           </div>
@@ -437,7 +446,7 @@ export default function Planos() {
       {/* Billing History Section */}
       <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
         <div className="p-6 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h2 className="text-lg font-semibold text-foreground">Billing History</h2>
+          <h2 className="text-lg font-semibold text-foreground">Histórico de Pagamentos</h2>
           
           <div className="flex items-center gap-3">
             <Select
@@ -447,21 +456,21 @@ export default function Planos() {
                 setCurrentPage(1);
               }}
             >
-              <SelectTrigger className="w-[160px] bg-white border-border">
+              <SelectTrigger className="w-[180px] bg-white border-border">
                 <span className="text-sm text-muted-foreground mr-1">Status:</span>
-                <SelectValue placeholder="All History" />
+                <SelectValue placeholder="Todo Histórico" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All History</SelectItem>
-                <SelectItem value="success">Success</SelectItem>
-                <SelectItem value="processing">Processing</SelectItem>
-                <SelectItem value="failed">Failed</SelectItem>
+                <SelectItem value="all">Todo Histórico</SelectItem>
+                <SelectItem value="success">Sucesso</SelectItem>
+                <SelectItem value="processing">Processando</SelectItem>
+                <SelectItem value="failed">Falhou</SelectItem>
               </SelectContent>
             </Select>
             
             <Button variant="outline" className="gap-2">
               <Download className="h-4 w-4" />
-              Export
+              Exportar
             </Button>
           </div>
         </div>
@@ -475,13 +484,13 @@ export default function Planos() {
                   onCheckedChange={toggleAllRows}
                 />
               </TableHead>
-              <TableHead className="font-semibold text-foreground">INVOICE</TableHead>
-              <TableHead className="font-semibold text-foreground">PLAN</TableHead>
-              <TableHead className="font-semibold text-foreground">PURCHASE DATE</TableHead>
-              <TableHead className="font-semibold text-foreground">AMOUNTS</TableHead>
-              <TableHead className="font-semibold text-foreground">END DATE</TableHead>
+              <TableHead className="font-semibold text-foreground">FATURA</TableHead>
+              <TableHead className="font-semibold text-foreground">PLANO</TableHead>
+              <TableHead className="font-semibold text-foreground">DATA DA COMPRA</TableHead>
+              <TableHead className="font-semibold text-foreground">VALOR</TableHead>
+              <TableHead className="font-semibold text-foreground">DATA FINAL</TableHead>
               <TableHead className="font-semibold text-foreground">STATUS</TableHead>
-              <TableHead className="font-semibold text-foreground text-right">ACTIONS</TableHead>
+              <TableHead className="font-semibold text-foreground text-right">AÇÕES</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -509,7 +518,7 @@ export default function Planos() {
                   {formatDate(item.purchaseDate)}
                 </TableCell>
                 <TableCell className="font-medium text-foreground">
-                  ${item.amount.toFixed(2)}
+                  {formatCurrency(item.amount)}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {formatDate(item.endDate)}
@@ -525,11 +534,11 @@ export default function Planos() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>
                         <Eye className="h-4 w-4 mr-2" />
-                        View Details
+                        Ver Detalhes
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Download className="h-4 w-4 mr-2" />
-                        Download Invoice
+                        Baixar Fatura
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -542,8 +551,8 @@ export default function Planos() {
         {/* Pagination */}
         <div className="p-4 border-t border-border/50 flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            Showing {(currentPage - 1) * itemsPerPage + 1}-
-            {Math.min(currentPage * itemsPerPage, filteredHistory.length)} from{" "}
+            Mostrando {(currentPage - 1) * itemsPerPage + 1}-
+            {Math.min(currentPage * itemsPerPage, filteredHistory.length)} de{" "}
             {filteredHistory.length}
           </p>
           

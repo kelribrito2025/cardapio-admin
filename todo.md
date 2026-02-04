@@ -4743,3 +4743,7 @@
 
 ## Efeito Blur no Card Pro - Página de Planos
 - [x] Adicionar efeito blur/gradiente azul no canto superior direito do card Pro
+
+## Tradução e Ajuste da Página de Planos
+- [x] Traduzir todos os textos da página de Planos para português brasileiro
+- [x] Ajustar cabeçalho para usar o componente PageHeader igual ao Dashboard
