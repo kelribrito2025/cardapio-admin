@@ -4827,3 +4827,6 @@
 
 ## Validação de Forma de Pagamento no Modal de Entrega
 - [x] Impedir confirmação de dados sem selecionar forma de pagamento
+
+## Pré-seleção de Forma de Pagamento
+- [x] Pré-selecionar dinheiro como forma de pagamento padrão no PDV

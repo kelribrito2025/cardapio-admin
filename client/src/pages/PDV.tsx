@@ -204,7 +204,7 @@ export default function PDV() {
     complement: "",
     reference: ""
   });
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("cash");
   const [changeAmount, setChangeAmount] = useState("");
   const [showDeliverySidebar, setShowDeliverySidebar] = useState(false);
   const [showNeighborhoodSelector, setShowNeighborhoodSelector] = useState(false);
