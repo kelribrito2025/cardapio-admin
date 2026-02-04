@@ -182,7 +182,7 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
   return (
     <div className="space-y-6">
       {/* Seção 1 - Dados da Conta */}
-      <Card>
+      <Card className="shadow-none">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
@@ -298,7 +298,7 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
         </h2>
         
         {/* Card - Alterar Senha */}
-        <Card>
+        <Card className="shadow-none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <Lock className="h-4 w-4" />
@@ -407,7 +407,7 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
         </Card>
         
         {/* Card - Verificação em duas etapas */}
-        <Card>
+        <Card className="shadow-none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <Shield className="h-4 w-4" />

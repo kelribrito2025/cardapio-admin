@@ -4791,3 +4791,7 @@
 ## Atualização de Placeholder SMS
 - [x] Atualizar placeholder do campo de mensagem SMS na página de Campanhas
 - [x] Atualizar texto padrão do card de preview
+
+## Ajuste de Estilo na Aba Conta e Segurança
+- [x] Remover sombra dos cards na aba Conta e Segurança
+- [x] Ajustar estilo igual à página de Planos
