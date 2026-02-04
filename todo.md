@@ -4747,3 +4747,6 @@
 ## Tradução e Ajuste da Página de Planos
 - [x] Traduzir todos os textos da página de Planos para português brasileiro
 - [x] Ajustar cabeçalho para usar o componente PageHeader igual ao Dashboard
+
+## Ajuste de Sombra nos Cards do Catálogo
+- [x] Aplicar o mesmo estilo de sombra dos cards de Categorias nos cards de Catálogo

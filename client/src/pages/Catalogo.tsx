@@ -627,7 +627,7 @@ export default function Catalogo() {
       {isLoading ? (
         <div className="space-y-5">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-card rounded-xl border border-border/50 p-4 shadow-soft">
+            <div key={i} className="bg-card rounded-xl border border-border/50 p-4">
               <div className="skeleton h-5 w-28 rounded-md mb-4" />
               <div className="space-y-3">
                 {[1, 2].map((j) => (
@@ -674,7 +674,7 @@ export default function Catalogo() {
               <div 
                 key={category.id} 
                 className={cn(
-                  "bg-card rounded-xl border border-border/50 shadow-soft overflow-hidden transition-all duration-200",
+                  "bg-card rounded-xl border border-border/50 overflow-hidden transition-all duration-200",
                   isDropTarget && "ring-2 ring-primary/50 ring-offset-2",
                   "border-t-4 border-t-red-500"
                 )}
@@ -798,7 +798,7 @@ export default function Catalogo() {
           {(localProductsByCategory[0] && localProductsByCategory[0].length > 0) || activeProduct ? (
             <div 
               className={cn(
-                "bg-card rounded-2xl border border-border/50 shadow-soft overflow-hidden transition-all duration-200",
+                "bg-card rounded-xl border border-border/50 overflow-hidden transition-all duration-200",
                 activeProduct && activeProductCategoryId !== 0 && "ring-2 ring-primary/50 ring-offset-2"
               )}
             >
