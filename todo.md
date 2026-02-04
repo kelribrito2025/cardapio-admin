@@ -5041,3 +5041,7 @@
 ## Ajustes de Espaçamento no PDVSlidebar
 - [x] Aplicar marginRight: -3px no div (linha 606)
 - [x] Aplicar ajustes de padding/margin no botão (linha 625)
+
+
+## Ajuste de marginRight no PDVSlidebar
+- [x] Alterar marginRight de -3px para -4px no div do handle

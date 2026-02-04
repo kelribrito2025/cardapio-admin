@@ -618,7 +618,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             top: `${handleConfig.positionY}%`,
             transform: `translateY(-50%) translateX(${isDraggingHandle ? dragOffset : 0}px)`,
             right: isOpen ? '78%' : '0',
-            marginRight: '-3px',
+            marginRight: '-4px',
             transition: isDraggingHandle ? 'none' : 'right 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.15s ease-out'
           }}
         >
