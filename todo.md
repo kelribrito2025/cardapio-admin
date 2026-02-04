@@ -4718,3 +4718,5 @@
 
 ## Ajuste na Página de Planos
 - [x] Adicionar card do plano gratuito à esquerda do card Basic
+
+- [x] Adicionar efeito blur/gradiente azul no canto superior direito do card Pro

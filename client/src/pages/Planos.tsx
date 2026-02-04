@@ -283,15 +283,20 @@ export default function Planos() {
               <div
                 key={plan.id}
                 className={cn(
-                  "relative bg-card rounded-xl border p-6 transition-all duration-300",
+                  "relative bg-card rounded-xl border p-6 transition-all duration-300 overflow-hidden",
                   plan.highlighted
                     ? "border-blue-500 border-2"
                     : "border-border/50 hover:border-border"
                 )}
               >
+                {/* Blur effect for Pro card */}
+                {plan.highlighted && (
+                  <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-400/30 rounded-full blur-3xl pointer-events-none" />
+                )}
+                
                 {/* Most Popular Badge */}
                 {plan.highlighted && (
-                  <div className="absolute top-4 right-4">
+                  <div className="absolute top-4 right-4 z-10">
                     <Badge className="bg-blue-100 text-blue-700 text-xs font-medium px-3 py-1 rounded-full">
                       Most Popular
                     </Badge>
