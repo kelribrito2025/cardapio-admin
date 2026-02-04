@@ -180,7 +180,7 @@ const getStatusConfig = (status: TableStatus) => {
       return {
         label: "Livre",
         color: "bg-emerald-500",
-        borderColor: "border-t-emerald-500",
+        borderColor: "border-l-emerald-500",
         textColor: "text-emerald-600",
         bgLight: "bg-emerald-50",
       };
@@ -188,7 +188,7 @@ const getStatusConfig = (status: TableStatus) => {
       return {
         label: "Ocupada",
         color: "bg-amber-500",
-        borderColor: "border-t-amber-500",
+        borderColor: "border-l-amber-500",
         textColor: "text-amber-600",
         bgLight: "bg-amber-50",
       };
@@ -196,7 +196,7 @@ const getStatusConfig = (status: TableStatus) => {
       return {
         label: "Reservada",
         color: "bg-blue-500",
-        borderColor: "border-t-blue-500",
+        borderColor: "border-l-blue-500",
         textColor: "text-blue-600",
         bgLight: "bg-blue-50",
       };
@@ -204,7 +204,7 @@ const getStatusConfig = (status: TableStatus) => {
       return {
         label: "Pedindo conta",
         color: "bg-red-500",
-        borderColor: "border-t-red-500",
+        borderColor: "border-l-red-500",
         textColor: "text-red-600",
         bgLight: "bg-red-50",
       };
@@ -293,82 +293,36 @@ export default function MesasComandas() {
 
       <div className="space-y-5">
 
-        {/* Cards de Resumo */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {/* Mesas Livres */}
-          <div className="bg-white rounded-xl border border-border/50 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Livres</p>
-                <p className="text-2xl font-bold text-emerald-600 mt-1">{summary.free}</p>
-              </div>
-              <div className="p-2 bg-emerald-100 rounded-lg">
-                <Utensils className="h-5 w-5 text-emerald-600" />
-              </div>
-            </div>
-          </div>
-
-          {/* Mesas Ocupadas */}
-          <div className="bg-white rounded-xl border border-border/50 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Ocupadas</p>
-                <p className="text-2xl font-bold text-amber-600 mt-1">{summary.occupied}</p>
-              </div>
-              <div className="p-2 bg-amber-100 rounded-lg">
-                <Users className="h-5 w-5 text-amber-600" />
-              </div>
-            </div>
-          </div>
-
-          {/* Mesas Reservadas */}
-          <div className="bg-white rounded-xl border border-border/50 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Reservadas</p>
-                <p className="text-2xl font-bold text-blue-600 mt-1">{summary.reserved}</p>
-              </div>
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Clock className="h-5 w-5 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          {/* Pedindo Conta */}
-          <div className="bg-white rounded-xl border border-border/50 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Pedindo Conta</p>
-                <p className="text-2xl font-bold text-red-600 mt-1">{summary.requestingBill}</p>
-              </div>
-              <div className="p-2 bg-red-100 rounded-lg">
-                <AlertCircle className="h-5 w-5 text-red-600" />
-              </div>
-            </div>
-          </div>
-
+        {/* Cards de Resumo - Apenas Ticket Médio e Faturamento */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
           {/* Ticket Médio */}
-          <div className="bg-white rounded-xl border border-border/50 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <div className="bg-white rounded-xl border border-border/50 border-t-4 border-t-blue-500 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Ticket Médio</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{formatCurrency(summary.avgTicket)}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500" />
+                  <span className="text-2xl font-bold text-gray-900">{formatCurrency(summary.avgTicket)}</span>
+                </div>
               </div>
-              <div className="p-2 bg-gray-100 rounded-lg">
-                <TrendingUp className="h-5 w-5 text-gray-600" />
+              <div className="p-2.5 bg-blue-100 rounded-lg">
+                <TrendingUp className="h-5 w-5 text-blue-600" />
               </div>
             </div>
           </div>
 
           {/* Faturamento */}
-          <div className="bg-white rounded-xl border border-border/50 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <div className="bg-white rounded-xl border border-border/50 border-t-4 border-t-emerald-500 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Faturamento</p>
-                <p className="text-2xl font-bold text-green-600 mt-1">{formatCurrency(summary.totalRevenue)}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span className="text-2xl font-bold text-gray-900">{formatCurrency(summary.totalRevenue)}</span>
+                </div>
               </div>
-              <div className="p-2 bg-green-100 rounded-lg">
-                <DollarSign className="h-5 w-5 text-green-600" />
+              <div className="p-2.5 bg-emerald-100 rounded-lg">
+                <DollarSign className="h-5 w-5 text-emerald-600" />
               </div>
             </div>
           </div>
@@ -378,20 +332,35 @@ export default function MesasComandas() {
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
           {/* Filtros de Status */}
           <div className="flex flex-wrap gap-2">
-            {statusFilters.map((filter) => (
-              <button
-                key={filter.value}
-                onClick={() => setStatusFilter(filter.value)}
-                className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-all",
-                  statusFilter === filter.value
-                    ? "bg-red-500 text-white"
-                    : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
-                )}
-              >
-                {filter.label}
-              </button>
-            ))}
+            {statusFilters.map((filter) => {
+              // Calcular contagem para cada filtro
+              const count = filter.value === "all" 
+                ? mockTables.length 
+                : mockTables.filter(t => t.status === filter.value).length;
+              
+              return (
+                <button
+                  key={filter.value}
+                  onClick={() => setStatusFilter(filter.value)}
+                  className={cn(
+                    "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
+                    statusFilter === filter.value
+                      ? "bg-red-500 text-white"
+                      : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
+                  )}
+                >
+                  {filter.label}
+                  <span className={cn(
+                    "px-1.5 py-0.5 rounded-full text-xs font-semibold min-w-[20px] text-center",
+                    statusFilter === filter.value
+                      ? "bg-white/20 text-white"
+                      : "bg-gray-100 text-gray-600"
+                  )}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Busca */}
@@ -436,7 +405,7 @@ export default function MesasComandas() {
                 key={table.id}
                 onClick={() => handleTableClick(table)}
                 className={cn(
-                  "bg-white rounded-xl border border-border/50 border-t-4 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all text-left group",
+                  "bg-white rounded-xl border border-border/50 border-l-4 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all text-left group",
                   statusConfig.borderColor
                 )}
               >

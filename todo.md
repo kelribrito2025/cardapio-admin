@@ -4868,3 +4868,8 @@
 - [x] Ajustar espaçamentos da página Mesas e Comandas para consistência com outras páginas
 - [x] Alterar bordas dos cards de mesa para modelo Dashboard (borda superior colorida em vez de lateral)
 - [x] Minimizar sidebar automaticamente ao acessar página de Mesas
+
+- [x] Cards de mesa: voltar borda colorida para lado esquerdo
+- [x] Remover cards de Livres/Ocupadas/Reservadas/Pedindo Conta (manter apenas Ticket Médio e Faturamento)
+- [x] Cards de Ticket Médio e Faturamento: adicionar borda superior colorida
+- [x] Filtros de status: adicionar badges de contagem ao lado direito
