@@ -439,3 +439,47 @@
 .animate-slide-in-from-left {
   animation: slide-in-from-left 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
+
+
+/* Sonner Toast - Estilo vermelho personalizado */
+[data-sonner-toaster] [data-sonner-toast] {
+  background-color: #dc2626 !important;
+  border-color: #dc2626 !important;
+  color: white !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-title] {
+  color: white !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-description] {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-icon] svg {
+  color: white !important;
+  fill: white !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-close-button] {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  border: none !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-close-button]:hover {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="success"],
+[data-sonner-toaster] [data-sonner-toast][data-type="info"],
+[data-sonner-toaster] [data-sonner-toast][data-type="warning"],
+[data-sonner-toaster] [data-sonner-toast][data-type="loading"] {
+  background-color: #dc2626 !important;
+  border-color: #dc2626 !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="error"] {
+  background-color: #b91c1c !important;
+  border-color: #b91c1c !important;
+}

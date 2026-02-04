@@ -4682,3 +4682,11 @@
 
 ## Notificações - Novo Estilo Visual
 - [x] Alterar estilo das notificações para fundo vermelho com ícones e textos brancos
+
+## Notificações - Correção do Estilo Visual
+- [ ] Corrigir configuração do Toaster para aplicar estilo vermelho com textos brancos
+
+## Notificações - Criar Opções de Modelos
+- [ ] Criar página de demonstração com diferentes modelos de notificação para escolha
+
+- [x] Adicionar mais 25 modelos de notificação na página de demonstração

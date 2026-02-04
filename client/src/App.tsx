@@ -25,6 +25,7 @@ import Complementos from "./pages/Complementos";
 import Campanhas from "./pages/Campanhas";
 import PDV from "./pages/PDV";
 import AccountSecurity from "./pages/AccountSecurity";
+import NotificationDemo from "./pages/NotificationDemo";
 
 
 // Auth Pages
@@ -57,6 +58,7 @@ function AdminRoutes() {
         <Route path="/campanhas" component={Campanhas} />
         <Route path="/pdv" component={PDV} />
         <Route path="/conta-seguranca" component={AccountSecurity} />
+        <Route path="/notification-demo" component={NotificationDemo} />
         
         
         <Route path="/404" component={NotFound} />
@@ -98,18 +100,15 @@ function App() {
             position="top-right" 
             closeButton 
             toastOptions={{
+              unstyled: true,
               classNames: {
-                toast: 'bg-red-600 border-red-600 text-white',
-                title: 'text-white font-medium',
-                description: 'text-white/90',
-                actionButton: 'bg-white text-red-600 hover:bg-white/90',
-                cancelButton: 'bg-white/20 text-white hover:bg-white/30',
-                closeButton: 'bg-white/20 text-white hover:bg-white/30 border-0',
-                success: 'bg-red-600 border-red-600',
-                error: 'bg-red-700 border-red-700',
-                info: 'bg-red-600 border-red-600',
-                warning: 'bg-red-600 border-red-600',
-                loading: 'bg-red-600 border-red-600',
+                toast: 'flex items-center gap-3 p-4 rounded-lg shadow-lg bg-[#dc2626] border border-[#dc2626]',
+                title: 'text-white font-medium text-sm',
+                description: 'text-white/90 text-sm',
+                actionButton: 'bg-white text-[#dc2626] px-3 py-1.5 rounded text-sm font-medium hover:bg-white/90',
+                cancelButton: 'bg-white/20 text-white px-3 py-1.5 rounded text-sm hover:bg-white/30',
+                closeButton: 'text-white hover:bg-white/20 rounded-full p-1',
+                icon: 'text-white',
               },
             }}
           />
