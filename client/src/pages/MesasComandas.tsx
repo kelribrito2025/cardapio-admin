@@ -891,7 +891,7 @@ export default function MesasComandas() {
         tableId={selectedTable?.id}
         tabId={selectedTable?.tab?.id}
         onOrderCreated={handleOrderCreated}
-        showHandle={!!selectedTable}
+        showHandle={true}
       />
     </AdminLayout>
   );

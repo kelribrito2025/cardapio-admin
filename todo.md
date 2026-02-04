@@ -5014,3 +5014,8 @@
 
 ## Largura dos Cards na Página de Mesas
 - [x] Aumentar largura dos cards de Ticket Médio e Faturamento em 17%
+
+
+## Correção da Aba do PDV na Página de Mesas
+- [x] Fazer a aba do PDV aparecer automaticamente ao acessar a página de Mesas
+- [x] Remover dependência do clique em uma mesa para exibir a aba
