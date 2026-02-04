@@ -228,7 +228,7 @@ export function TemplatesEditor({
       </div>
 
       {/* Card de Variáveis - Novo Design Minimalista */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+      <div className="bg-white rounded-2xl border border-slate-200 p-5">
         <div className="flex items-center gap-2 mb-4">
           <Info className="h-4 w-4 text-blue-500" />
           <span className="text-sm font-semibold text-slate-700">Variáveis disponíveis</span>
@@ -261,7 +261,7 @@ export function TemplatesEditor({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Card do Editor - Novo Design Clean */}
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
           {/* Header do Editor */}
           <div className="px-5 py-4 border-b border-slate-100 bg-slate-50">
             <div className="flex items-center justify-between">
@@ -311,7 +311,7 @@ export function TemplatesEditor({
         </div>
 
         {/* Card de Preview WhatsApp - Design Realista */}
-        <div className="bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-300">
+        <div className="bg-slate-200 rounded-2xl overflow-hidden border border-slate-300">
           {/* Header do WhatsApp - Perspectiva do Cliente (recebendo mensagem do restaurante) */}
           <div className="bg-[#008069] px-4 py-3">
             <div className="flex items-center justify-between">

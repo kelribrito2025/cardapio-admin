@@ -4799,3 +4799,6 @@
 ## Ajuste de Sombra nas Abas de Impressora/Teste e WhatsApp
 - [x] Remover sombra dos cards na aba de Impressora e Teste
 - [x] Remover sombra dos cards na aba de WhatsApp
+
+## Ajuste de Sombra na Aba Templates do WhatsApp
+- [x] Remover sombra dos cards na aba Templates
