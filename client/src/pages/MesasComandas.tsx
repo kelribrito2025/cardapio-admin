@@ -129,6 +129,9 @@ const formatTime = (date: Date | string | null | undefined) => {
   return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 };
 
+// Constante para persistência da mesa selecionada
+const SELECTED_TABLE_KEY = 'mesas-selected-table-id';
+
 export default function MesasComandas() {
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -138,9 +141,43 @@ export default function MesasComandas() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newTableCount, setNewTableCount] = useState(10);
   const [newTableCapacity, setNewTableCapacity] = useState(4);
+  const [persistedTableId, setPersistedTableId] = useState<number | null>(null);
+
+  // Carregar mesa selecionada do localStorage
+  useEffect(() => {
+    try {
+      const savedId = localStorage.getItem(SELECTED_TABLE_KEY);
+      if (savedId) {
+        setPersistedTableId(parseInt(savedId, 10));
+      }
+    } catch (e) {
+      console.error('Erro ao carregar mesa selecionada:', e);
+    }
+  }, []);
+
+  // Persistir mesa selecionada no localStorage
+  useEffect(() => {
+    if (selectedTable) {
+      try {
+        localStorage.setItem(SELECTED_TABLE_KEY, selectedTable.id.toString());
+      } catch (e) {
+        console.error('Erro ao salvar mesa selecionada:', e);
+      }
+    }
+  }, [selectedTable]);
 
   // Buscar mesas do banco
   const { data: tables = [], isLoading, refetch } = trpc.tables.list.useQuery();
+
+  // Restaurar mesa selecionada quando as mesas carregarem
+  useEffect(() => {
+    if (persistedTableId && tables.length > 0 && !selectedTable) {
+      const table = tables.find(t => t.id === persistedTableId);
+      if (table) {
+        setSelectedTable(table as Table);
+      }
+    }
+  }, [persistedTableId, tables, selectedTable]);
   
   // Mutations
   const createBatchMutation = trpc.tables.createBatch.useMutation({

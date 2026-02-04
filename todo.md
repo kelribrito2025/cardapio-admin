@@ -4911,3 +4911,14 @@
 - [x] Visual com cor vermelha, bordas arredondadas e sombra
 - [x] Animação suave ao abrir/fechar (ease-in-out)
 - [x] Ícone de seta indicando direção
+
+
+## Melhorias na Slidebar PDV - Mesas e Comandas
+- [x] Feedback visual no drag: animação de "puxar" mostrando a slidebar seguindo o dedo
+- [x] Persistir mesa selecionada: manter a última mesa selecionada para a aba continuar visível
+- [x] Aumentar largura da slidebar em 19% (de 59% para 78%)
+- [x] Adicionar ícone de configuração (⚙️) na aba abaixo da seta
+- [x] Modal de configuração: ajustar altura vertical da aba (posição Y)
+- [x] Modal de configuração: ajustar tamanho da aba (altura/largura)
+- [x] Preview em tempo real das alterações no modal
+- [x] Persistir configurações no localStorage

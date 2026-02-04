@@ -17,12 +17,26 @@ import {
   ChevronRight,
   Pencil,
   Lock,
-  Printer
+  Printer,
+  Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Slider } from "@/components/ui/slider";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+
+// Constantes para configuração da aba
+const HANDLE_CONFIG_KEY = 'pdv-slidebar-handle-config';
+const DEFAULT_HANDLE_CONFIG = {
+  positionY: 50, // percentual (0-100)
+  height: 64, // pixels
+  width: 24, // pixels
+};
+
+type HandleConfig = typeof DEFAULT_HANDLE_CONFIG;
 
 // Tipos
 type CartItem = {
@@ -171,6 +185,44 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   const [expandedCartItem, setExpandedCartItem] = useState<number | null>(null);
   const [editingCartItem, setEditingCartItem] = useState<{index: number; item: CartItem} | null>(null);
   const [isEditingMode, setIsEditingMode] = useState(false);
+
+  // Estados para configuração da aba (handle)
+  const [showHandleConfig, setShowHandleConfig] = useState(false);
+  const [handleConfig, setHandleConfig] = useState<HandleConfig>(DEFAULT_HANDLE_CONFIG);
+  const [tempHandleConfig, setTempHandleConfig] = useState<HandleConfig>(DEFAULT_HANDLE_CONFIG);
+  const [dragOffset, setDragOffset] = useState(0); // Para feedback visual do drag
+
+  // Carregar configuração da aba do localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(HANDLE_CONFIG_KEY);
+      if (saved) {
+        const config = JSON.parse(saved) as HandleConfig;
+        setHandleConfig(config);
+        setTempHandleConfig(config);
+      }
+    } catch (e) {
+      console.error('Erro ao carregar configuração da aba:', e);
+    }
+  }, []);
+
+  // Salvar configuração da aba no localStorage
+  const saveHandleConfig = () => {
+    try {
+      localStorage.setItem(HANDLE_CONFIG_KEY, JSON.stringify(tempHandleConfig));
+      setHandleConfig(tempHandleConfig);
+      setShowHandleConfig(false);
+      toast.success('Configuração da aba salva!');
+    } catch (e) {
+      console.error('Erro ao salvar configuração da aba:', e);
+      toast.error('Erro ao salvar configuração');
+    }
+  };
+
+  // Resetar configuração da aba
+  const resetHandleConfig = () => {
+    setTempHandleConfig(DEFAULT_HANDLE_CONFIG);
+  };
 
   // Ref para drag de categorias
   const categoriesContainerRef = useRef<HTMLDivElement>(null);
@@ -481,21 +533,29 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
     if (!isDraggingHandle) return;
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const diff = clientX - dragStartX;
-    const threshold = 50;
+    const threshold = 100;
+    const maxDrag = 300; // Máximo de pixels para arrastar
+    
+    // Atualizar offset para feedback visual (limitado)
+    const clampedDiff = Math.max(-maxDrag, Math.min(maxDrag, diff));
+    setDragOffset(clampedDiff);
     
     if (isOpen && diff > threshold) {
       // Arrastar para direita = fechar
       onClose();
       setIsDraggingHandle(false);
+      setDragOffset(0);
     } else if (!isOpen && diff < -threshold && onToggle) {
       // Arrastar para esquerda = abrir
       onToggle();
       setIsDraggingHandle(false);
+      setDragOffset(0);
     }
   };
 
   const handleDragEnd = () => {
     setIsDraggingHandle(false);
+    setDragOffset(0);
   };
 
   // Event listeners para drag
@@ -521,28 +581,47 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
     <>
       {/* Aba fixa (Handle) - sempre visível quando showHandle é true */}
       {showHandle && (
-        <button
-          ref={handleRef}
-          onClick={() => isOpen ? onClose() : onToggle?.()}
-          onMouseDown={handleDragStart}
-          onTouchStart={handleDragStart}
+        <div
+          ref={handleRef as any}
           className={cn(
-            "fixed z-50 flex items-center justify-center cursor-pointer select-none touch-none",
-            "w-6 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-l-lg shadow-lg",
-            "hover:from-red-600 hover:to-red-700 transition-all duration-200",
-            "top-1/2 -translate-y-1/2",
-            isOpen ? "right-[59%]" : "right-0"
+            "fixed z-50 flex flex-col items-center justify-center cursor-pointer select-none touch-none",
+            "bg-gradient-to-r from-red-500 to-red-600 rounded-l-lg shadow-lg",
+            "hover:from-red-600 hover:to-red-700 transition-all duration-200"
           )}
           style={{
-            transition: isDraggingHandle ? 'none' : 'right 0.3s ease-out'
+            width: `${handleConfig.width}px`,
+            height: `${handleConfig.height}px`,
+            top: `${handleConfig.positionY}%`,
+            transform: `translateY(-50%) translateX(${isDraggingHandle ? dragOffset : 0}px)`,
+            right: isOpen ? '78%' : '0',
+            transition: isDraggingHandle ? 'none' : 'right 0.3s ease-out, transform 0.15s ease-out'
           }}
         >
-          {isOpen ? (
-            <ChevronRight className="h-5 w-5 text-white" />
-          ) : (
-            <ChevronLeft className="h-5 w-5 text-white" />
-          )}
-        </button>
+          {/* Botão principal para abrir/fechar */}
+          <button
+            onClick={() => isOpen ? onClose() : onToggle?.()}
+            onMouseDown={handleDragStart}
+            onTouchStart={handleDragStart}
+            className="flex-1 w-full flex items-center justify-center"
+          >
+            {isOpen ? (
+              <ChevronRight className="h-5 w-5 text-white" />
+            ) : (
+              <ChevronLeft className="h-5 w-5 text-white" />
+            )}
+          </button>
+          {/* Botão de configuração */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setTempHandleConfig(handleConfig);
+              setShowHandleConfig(true);
+            }}
+            className="w-full py-1 flex items-center justify-center border-t border-white/20 hover:bg-white/10 transition-colors"
+          >
+            <Settings className="h-3 w-3 text-white/80" />
+          </button>
+        </div>
       )}
 
       {/* Overlay - só aparece quando aberto */}
@@ -559,7 +638,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           "fixed top-0 right-0 h-full bg-white z-50 shadow-2xl flex flex-col transition-transform duration-300 ease-out",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
-        style={{ width: '59%' }}
+        style={{ 
+          width: '78%',
+          transform: isDraggingHandle && isOpen ? `translateX(${Math.max(0, dragOffset)}px)` : undefined
+        }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
@@ -1193,6 +1275,92 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           </div>
         </div>
       )}
+      {/* Modal de Configuração da Aba */}
+      <Dialog open={showHandleConfig} onOpenChange={setShowHandleConfig}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Configuração da Aba</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            {/* Posição Vertical */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label>Posição Vertical</Label>
+                <span className="text-sm text-muted-foreground">{tempHandleConfig.positionY}%</span>
+              </div>
+              <Slider
+                value={[tempHandleConfig.positionY]}
+                onValueChange={([value]) => setTempHandleConfig(prev => ({ ...prev, positionY: value }))}
+                min={10}
+                max={90}
+                step={1}
+                className="w-full"
+              />
+              <p className="text-xs text-muted-foreground">Ajuste a posição vertical da aba na tela</p>
+            </div>
+
+            {/* Altura da Aba */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label>Altura da Aba</Label>
+                <span className="text-sm text-muted-foreground">{tempHandleConfig.height}px</span>
+              </div>
+              <Slider
+                value={[tempHandleConfig.height]}
+                onValueChange={([value]) => setTempHandleConfig(prev => ({ ...prev, height: value }))}
+                min={40}
+                max={120}
+                step={4}
+                className="w-full"
+              />
+            </div>
+
+            {/* Largura da Aba */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label>Largura da Aba</Label>
+                <span className="text-sm text-muted-foreground">{tempHandleConfig.width}px</span>
+              </div>
+              <Slider
+                value={[tempHandleConfig.width]}
+                onValueChange={([value]) => setTempHandleConfig(prev => ({ ...prev, width: value }))}
+                min={16}
+                max={48}
+                step={4}
+                className="w-full"
+              />
+            </div>
+
+            {/* Preview */}
+            <div className="border rounded-lg p-4 bg-muted/30">
+              <p className="text-sm font-medium mb-2">Preview</p>
+              <div className="relative h-24 bg-gray-100 rounded-lg overflow-hidden">
+                <div 
+                  className="absolute bg-gradient-to-r from-red-500 to-red-600 rounded-l-lg flex flex-col items-center justify-center"
+                  style={{
+                    width: `${tempHandleConfig.width}px`,
+                    height: `${tempHandleConfig.height}px`,
+                    top: `${tempHandleConfig.positionY}%`,
+                    transform: 'translateY(-50%)',
+                    right: 0
+                  }}
+                >
+                  <ChevronLeft className="h-4 w-4 text-white" />
+                  <Settings className="h-2 w-2 text-white/80 mt-1" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="flex gap-2">
+            <Button variant="outline" onClick={resetHandleConfig}>
+              Resetar
+            </Button>
+            <Button onClick={saveHandleConfig} className="bg-red-500 hover:bg-red-600">
+              Salvar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
