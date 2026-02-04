@@ -532,7 +532,7 @@ export default function MesasComandas() {
 
         {/* Legenda de Status */}
         <div className="flex items-center gap-6 text-sm text-gray-600">
-          <span className="font-medium">Status da mesa:</span>
+          <span className="font-medium">Status:</span>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-emerald-500" />
             <span>Livre</span>
