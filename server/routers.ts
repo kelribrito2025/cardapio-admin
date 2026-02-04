@@ -2932,6 +2932,233 @@ export const appRouter = router({
         };
       }),
   }),
+
+  // ============ TABLES (MESAS) ============
+  tables: router({
+    // Listar mesas do estabelecimento
+    list: protectedProcedure.query(async ({ ctx }) => {
+      const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+      if (!establishment) return [];
+      return db.getTablesWithTabs(establishment.id);
+    }),
+
+    // Buscar mesa por ID
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const table = await db.getTableById(input.id);
+        if (!table) return null;
+        const tab = await db.getActiveTabByTable(table.id);
+        const items = tab ? await db.getTabItems(tab.id) : [];
+        return { ...table, tab, items };
+      }),
+
+    // Criar nova mesa
+    create: protectedProcedure
+      .input(z.object({
+        number: z.number(),
+        name: z.string().optional(),
+        capacity: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: "NOT_FOUND", message: "Estabelecimento não encontrado" });
+        
+        const id = await db.createTable({
+          establishmentId: establishment.id,
+          number: input.number,
+          name: input.name,
+          capacity: input.capacity || 4,
+        });
+        
+        return { id };
+      }),
+
+    // Atualizar mesa
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        number: z.number().optional(),
+        name: z.string().optional(),
+        capacity: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateTable(input.id, {
+          number: input.number,
+          name: input.name,
+          capacity: input.capacity,
+        });
+        return { success: true };
+      }),
+
+    // Deletar mesa
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteTable(input.id);
+        return { success: true };
+      }),
+
+    // Abrir mesa (criar comanda)
+    open: protectedProcedure
+      .input(z.object({
+        tableId: z.number(),
+        guests: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: "NOT_FOUND", message: "Estabelecimento não encontrado" });
+        
+        const result = await db.openTable(establishment.id, input.tableId, input.guests || 1);
+        return result;
+      }),
+
+    // Fechar mesa
+    close: protectedProcedure
+      .input(z.object({
+        tableId: z.number(),
+        paymentMethod: z.string(),
+        paidAmount: z.number(),
+        changeAmount: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.closeTable(input.tableId, input.paymentMethod, input.paidAmount, input.changeAmount || 0);
+        return { success: true };
+      }),
+
+    // Atualizar status da mesa
+    updateStatus: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        status: z.enum(["free", "occupied", "reserved", "requesting_bill"]),
+        guests: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateTableStatus(input.id, input.status, input.guests);
+        return { success: true };
+      }),
+
+    // Criar múltiplas mesas de uma vez
+    createBatch: protectedProcedure
+      .input(z.object({
+        startNumber: z.number(),
+        count: z.number(),
+        capacity: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: "NOT_FOUND", message: "Estabelecimento não encontrado" });
+        
+        const ids: number[] = [];
+        for (let i = 0; i < input.count; i++) {
+          const id = await db.createTable({
+            establishmentId: establishment.id,
+            number: input.startNumber + i,
+            capacity: input.capacity || 4,
+            sortOrder: i,
+          });
+          ids.push(id);
+        }
+        
+        return { ids, count: ids.length };
+      }),
+  }),
+
+  // ============ TABS (COMANDAS) ============
+  tabs: router({
+    // Buscar comanda por ID
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const tab = await db.getTabById(input.id);
+        if (!tab) return null;
+        const items = await db.getTabItems(tab.id);
+        return { ...tab, items };
+      }),
+
+    // Buscar comanda ativa de uma mesa
+    getByTable: protectedProcedure
+      .input(z.object({ tableId: z.number() }))
+      .query(async ({ input }) => {
+        const tab = await db.getActiveTabByTable(input.tableId);
+        if (!tab) return null;
+        const items = await db.getTabItems(tab.id);
+        return { ...tab, items };
+      }),
+
+    // Adicionar itens à comanda
+    addItems: protectedProcedure
+      .input(z.object({
+        tabId: z.number(),
+        items: z.array(z.object({
+          productId: z.number(),
+          productName: z.string(),
+          quantity: z.number(),
+          unitPrice: z.string(),
+          totalPrice: z.string(),
+          complements: z.array(z.object({
+            name: z.string(),
+            price: z.number(),
+            quantity: z.number(),
+          })).optional(),
+          notes: z.string().optional(),
+        })),
+      }))
+      .mutation(async ({ input }) => {
+        await db.addItemsToTab(input.tabId, input.items);
+        return { success: true };
+      }),
+
+    // Atualizar item da comanda
+    updateItem: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        quantity: z.number().optional(),
+        status: z.enum(["pending", "preparing", "ready", "delivered", "cancelled"]).optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await db.updateTabItem(id, data);
+        return { success: true };
+      }),
+
+    // Cancelar item da comanda
+    cancelItem: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.cancelTabItem(input.id);
+        return { success: true };
+      }),
+
+    // Atualizar comanda (desconto, taxa de serviço, etc)
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        discount: z.string().optional(),
+        serviceCharge: z.string().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await db.updateTab(id, data);
+        // Recalcular totais
+        await db.recalculateTabTotals(id);
+        return { success: true };
+      }),
+
+    // Pedir conta (mudar status para requesting_bill)
+    requestBill: protectedProcedure
+      .input(z.object({ tableId: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.updateTableStatus(input.tableId, "requesting_bill");
+        const tab = await db.getActiveTabByTable(input.tableId);
+        if (tab) {
+          await db.updateTab(tab.id, { status: "requesting_bill" });
+        }
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

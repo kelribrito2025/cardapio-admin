@@ -1,12 +1,15 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
 import { PageHeader } from "@/components/shared";
 import { PDVSlidebar } from "@/components/PDVSlidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/utils";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 import {
   Search,
   Clock,
@@ -20,159 +23,55 @@ import {
   X,
   ChefHat,
   Utensils,
+  Printer,
+  Loader2,
 } from "lucide-react";
 
 // Tipos
 type TableStatus = "free" | "occupied" | "reserved" | "requesting_bill";
 
-interface TableItem {
+interface TabItem {
   id: number;
-  name: string;
+  productId: number;
+  productName: string;
   quantity: number;
-  price: number;
-  notes?: string;
+  unitPrice: string;
+  totalPrice: string;
+  complements?: Array<{ name: string; price: number; quantity: number }> | null;
+  notes?: string | null;
+  status: string;
+  orderedAt: Date | string;
+  deliveredAt?: Date | string | null;
+}
+
+interface Tab {
+  id: number;
+  tabNumber: string;
+  customerName?: string | null;
+  customerPhone?: string | null;
+  status: string;
+  subtotal: string;
+  discount: string;
+  serviceCharge: string;
+  total: string;
+  openedAt: Date | string;
+  closedAt?: Date | string | null;
 }
 
 interface Table {
   id: number;
   number: number;
+  name?: string | null;
+  capacity: number;
   status: TableStatus;
-  guests: number;
-  startTime?: Date;
-  reservationTime?: Date;
-  items: TableItem[];
-  total: number;
+  currentGuests: number;
+  occupiedAt?: Date | string | null;
+  reservedFor?: Date | string | null;
+  reservedName?: string | null;
+  reservedPhone?: string | null;
+  tab?: Tab;
+  items?: TabItem[];
 }
-
-// Dados mockados para demonstração
-const mockTables: Table[] = [
-  {
-    id: 1,
-    number: 1,
-    status: "free",
-    guests: 0,
-    items: [],
-    total: 0,
-  },
-  {
-    id: 2,
-    number: 2,
-    status: "occupied",
-    guests: 4,
-    startTime: new Date(Date.now() - 1000 * 60 * 110), // 1h50 atrás
-    items: [
-      { id: 1, name: "Picanha na Brasa", quantity: 2, price: 89.90 },
-      { id: 2, name: "Refrigerante 2L", quantity: 1, price: 12.00 },
-      { id: 3, name: "Porção de Fritas", quantity: 1, price: 29.90 },
-    ],
-    total: 221.70,
-  },
-  {
-    id: 3,
-    number: 3,
-    status: "reserved",
-    guests: 2,
-    reservationTime: new Date(Date.now() + 1000 * 60 * 40), // 19:40
-    items: [],
-    total: 0,
-  },
-  {
-    id: 4,
-    number: 4,
-    status: "occupied",
-    guests: 3,
-    startTime: new Date(Date.now() - 1000 * 60 * 45), // 45min atrás
-    items: [
-      { id: 1, name: "Combo Família", quantity: 1, price: 159.90 },
-      { id: 2, name: "Suco Natural 1L", quantity: 2, price: 15.00 },
-    ],
-    total: 189.90,
-  },
-  {
-    id: 5,
-    number: 5,
-    status: "requesting_bill",
-    guests: 2,
-    startTime: new Date(Date.now() - 1000 * 60 * 165), // 2h45 atrás
-    items: [
-      { id: 1, name: "Pizza Grande", quantity: 1, price: 69.90 },
-      { id: 2, name: "Cerveja Long Neck", quantity: 6, price: 12.00 },
-      { id: 3, name: "Sobremesa Petit Gateau", quantity: 2, price: 24.90 },
-    ],
-    total: 191.70,
-  },
-  {
-    id: 6,
-    number: 6,
-    status: "free",
-    guests: 0,
-    items: [],
-    total: 0,
-  },
-  {
-    id: 7,
-    number: 7,
-    status: "occupied",
-    guests: 6,
-    startTime: new Date(Date.now() - 1000 * 60 * 30), // 30min atrás
-    items: [
-      { id: 1, name: "Rodízio Completo", quantity: 6, price: 79.90 },
-    ],
-    total: 479.40,
-  },
-  {
-    id: 8,
-    number: 8,
-    status: "free",
-    guests: 0,
-    items: [],
-    total: 0,
-  },
-  {
-    id: 9,
-    number: 9,
-    status: "reserved",
-    guests: 4,
-    reservationTime: new Date(Date.now() + 1000 * 60 * 120), // 21:00
-    items: [],
-    total: 0,
-  },
-  {
-    id: 10,
-    number: 10,
-    status: "occupied",
-    guests: 3,
-    startTime: new Date(Date.now() - 1000 * 60 * 50), // 50min atrás
-    items: [
-      { id: 1, name: "Hambúrguer Artesanal", quantity: 3, price: 42.90 },
-      { id: 2, name: "Batata Rústica", quantity: 2, price: 22.00 },
-      { id: 3, name: "Milk Shake", quantity: 3, price: 18.00 },
-    ],
-    total: 226.70,
-  },
-  {
-    id: 11,
-    number: 11,
-    status: "requesting_bill",
-    guests: 4,
-    startTime: new Date(Date.now() - 1000 * 60 * 165), // 2h45 atrás
-    items: [
-      { id: 1, name: "Costela no Bafo", quantity: 1, price: 129.90 },
-      { id: 2, name: "Arroz Carreteiro", quantity: 1, price: 35.00 },
-      { id: 3, name: "Cerveja 600ml", quantity: 4, price: 18.00 },
-      { id: 4, name: "Água Mineral", quantity: 2, price: 6.00 },
-    ],
-    total: 248.90,
-  },
-  {
-    id: 12,
-    number: 12,
-    status: "free",
-    guests: 0,
-    items: [],
-    total: 0,
-  },
-];
 
 // Helpers
 const getStatusConfig = (status: TableStatus) => {
@@ -212,8 +111,10 @@ const getStatusConfig = (status: TableStatus) => {
   }
 };
 
-const formatDuration = (startTime: Date) => {
-  const diff = Date.now() - startTime.getTime();
+const formatDuration = (startTime: Date | string | null | undefined) => {
+  if (!startTime) return "";
+  const start = typeof startTime === "string" ? new Date(startTime) : startTime;
+  const diff = Date.now() - start.getTime();
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
   if (hours > 0) {
@@ -222,17 +123,77 @@ const formatDuration = (startTime: Date) => {
   return `${minutes}min`;
 };
 
-const formatTime = (date: Date) => {
-  return date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+const formatTime = (date: Date | string | null | undefined) => {
+  if (!date) return "";
+  const d = typeof date === "string" ? new Date(date) : date;
+  return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 };
 
 export default function MesasComandas() {
-  const [tables] = useState<Table[]>(mockTables);
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showPDVSlidebar, setShowPDVSlidebar] = useState(false);
   const [statusFilter, setStatusFilter] = useState<TableStatus | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [newTableCount, setNewTableCount] = useState(10);
+  const [newTableCapacity, setNewTableCapacity] = useState(4);
+
+  // Buscar mesas do banco
+  const { data: tables = [], isLoading, refetch } = trpc.tables.list.useQuery();
+  
+  // Mutations
+  const createBatchMutation = trpc.tables.createBatch.useMutation({
+    onSuccess: (data) => {
+      toast.success(`${data.count} mesas criadas com sucesso!`);
+      setShowCreateDialog(false);
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao criar mesas");
+    },
+  });
+
+  const openTableMutation = trpc.tables.open.useMutation({
+    onSuccess: () => {
+      toast.success("Mesa aberta com sucesso!");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao abrir mesa");
+    },
+  });
+
+  const closeTableMutation = trpc.tables.close.useMutation({
+    onSuccess: () => {
+      toast.success("Mesa fechada com sucesso!");
+      setShowSidebar(false);
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao fechar mesa");
+    },
+  });
+
+  const updateStatusMutation = trpc.tables.updateStatus.useMutation({
+    onSuccess: () => {
+      toast.success("Status atualizado!");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao atualizar status");
+    },
+  });
+
+  const requestBillMutation = trpc.tabs.requestBill.useMutation({
+    onSuccess: () => {
+      toast.success("Conta solicitada!");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao solicitar conta");
+    },
+  });
 
   // Cálculos de resumo
   const summary = useMemo(() => {
@@ -242,12 +203,15 @@ export default function MesasComandas() {
     const requestingBill = tables.filter((t) => t.status === "requesting_bill").length;
     
     const occupiedTables = tables.filter((t) => t.status === "occupied" || t.status === "requesting_bill");
-    const totalRevenue = occupiedTables.reduce((sum, t) => sum + t.total, 0);
+    const totalRevenue = occupiedTables.reduce((sum, t) => sum + parseFloat(t.tab?.total || "0"), 0);
     const avgTicket = occupiedTables.length > 0 ? totalRevenue / occupiedTables.length : 0;
     
-    const tablesWithTime = occupiedTables.filter((t) => t.startTime);
+    const tablesWithTime = occupiedTables.filter((t) => t.occupiedAt);
     const avgTime = tablesWithTime.length > 0
-      ? tablesWithTime.reduce((sum, t) => sum + (Date.now() - t.startTime!.getTime()), 0) / tablesWithTime.length
+      ? tablesWithTime.reduce((sum, t) => {
+          const start = typeof t.occupiedAt === "string" ? new Date(t.occupiedAt) : t.occupiedAt;
+          return sum + (Date.now() - (start?.getTime() || Date.now()));
+        }, 0) / tablesWithTime.length
       : 0;
     const avgTimeMinutes = Math.floor(avgTime / (1000 * 60));
 
@@ -281,9 +245,43 @@ export default function MesasComandas() {
   };
 
   const handleOrderCreated = () => {
-    // Aqui poderia atualizar os dados da mesa
-    // Por enquanto apenas fecha a slidebar
+    // Atualizar os dados das mesas
+    refetch();
     setShowPDVSlidebar(false);
+  };
+
+  const handleOpenTable = (table: Table) => {
+    openTableMutation.mutate({ tableId: table.id, guests: 1 });
+  };
+
+  const handleCloseTable = (table: Table) => {
+    if (!table.tab) return;
+    closeTableMutation.mutate({
+      tableId: table.id,
+      paymentMethod: "dinheiro",
+      paidAmount: parseFloat(table.tab.total),
+    });
+  };
+
+  const handleRequestBill = (table: Table) => {
+    requestBillMutation.mutate({ tableId: table.id });
+  };
+
+  const handleClearTable = (table: Table) => {
+    updateStatusMutation.mutate({ id: table.id, status: "free" });
+  };
+
+  const handleCreateTables = () => {
+    // Encontrar o maior número de mesa existente
+    const maxNumber = tables.length > 0 
+      ? Math.max(...tables.map(t => t.number)) 
+      : 0;
+    
+    createBatchMutation.mutate({
+      startNumber: maxNumber + 1,
+      count: newTableCount,
+      capacity: newTableCapacity,
+    });
   };
 
   const statusFilters: { value: TableStatus | "all"; label: string }[] = [
@@ -293,6 +291,83 @@ export default function MesasComandas() {
     { value: "requesting_bill", label: "Pedindo conta" },
     { value: "reserved", label: "Reservadas" },
   ];
+
+  // Se não há mesas, mostrar tela de criação
+  if (!isLoading && tables.length === 0) {
+    return (
+      <AdminLayout>
+        <div className="mb-6">
+          <PageHeader 
+            title="Mesas e Comandas" 
+            description="Controle de mesas e comandas do salão"
+          />
+        </div>
+
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+            <Utensils className="h-10 w-10 text-gray-400" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">Nenhuma mesa cadastrada</h3>
+          <p className="text-gray-500 mb-6 text-center max-w-md">
+            Crie suas mesas para começar a gerenciar o salão do seu estabelecimento.
+          </p>
+          <Button onClick={() => setShowCreateDialog(true)} className="bg-primary hover:bg-primary/90">
+            <Plus className="h-4 w-4 mr-2" />
+            Criar Mesas
+          </Button>
+        </div>
+
+        {/* Dialog para criar mesas */}
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Criar Mesas</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700">Quantidade de mesas</label>
+                <Input
+                  type="number"
+                  value={newTableCount}
+                  onChange={(e) => setNewTableCount(parseInt(e.target.value) || 1)}
+                  min={1}
+                  max={100}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Capacidade por mesa</label>
+                <Input
+                  type="number"
+                  value={newTableCapacity}
+                  onChange={(e) => setNewTableCapacity(parseInt(e.target.value) || 4)}
+                  min={1}
+                  max={20}
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+                Cancelar
+              </Button>
+              <Button 
+                onClick={handleCreateTables}
+                disabled={createBatchMutation.isPending}
+              >
+                {createBatchMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Plus className="h-4 w-4 mr-2" />
+                )}
+                Criar {newTableCount} Mesas
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -347,8 +422,8 @@ export default function MesasComandas() {
             {statusFilters.map((filter) => {
               // Calcular contagem para cada filtro
               const count = filter.value === "all" 
-                ? mockTables.length 
-                : mockTables.filter(t => t.status === filter.value).length;
+                ? tables.length 
+                : tables.filter(t => t.status === filter.value).length;
               
               return (
                 <button
@@ -375,15 +450,20 @@ export default function MesasComandas() {
             })}
           </div>
 
-          {/* Busca */}
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Buscar mesa..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+          {/* Busca e Botão Adicionar */}
+          <div className="flex gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Buscar mesa..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Button onClick={() => setShowCreateDialog(true)} variant="outline">
+              <Plus className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 
@@ -408,254 +488,266 @@ export default function MesasComandas() {
           </div>
         </div>
 
+        {/* Loading */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          </div>
+        )}
+
         {/* Grid de Mesas */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-          {filteredTables.map((table) => {
-            const statusConfig = getStatusConfig(table.status);
-            return (
-              <button
-                key={table.id}
-                onClick={() => handleTableClick(table)}
-                className={cn(
-                  "bg-white rounded-xl border border-border/50 border-l-4 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all text-left group",
-                  statusConfig.borderColor
-                )}
-              >
-                <div className="p-4">
-                    {/* Número da mesa e tempo/status */}
-                    <div className="flex items-start justify-between mb-3">
-                      <span className="text-2xl font-bold text-gray-900">{table.number}</span>
-                      {table.status === "occupied" && table.startTime && (
-                        <div className="flex items-center gap-1 text-gray-500">
-                          <Clock className="h-4 w-4" />
-                          <span className="text-sm font-medium">{formatDuration(table.startTime)}</span>
+        {!isLoading && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {filteredTables.map((table) => {
+              const statusConfig = getStatusConfig(table.status as TableStatus);
+              const total = parseFloat(table.tab?.total || "0");
+              
+              return (
+                <button
+                  key={table.id}
+                  onClick={() => handleTableClick(table)}
+                  className={cn(
+                    "bg-white rounded-xl border border-border/50 p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
+                    "border-l-4",
+                    statusConfig.borderColor
+                  )}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <span className="text-3xl font-bold text-gray-900">{table.number}</span>
+                    <span className={cn("text-xs font-semibold", statusConfig.textColor)}>
+                      {statusConfig.label}
+                    </span>
+                  </div>
+                  
+                  {/* Informações da mesa ocupada */}
+                  {(table.status === "occupied" || table.status === "requesting_bill") && (
+                    <div className="space-y-1 text-sm text-gray-600">
+                      {table.occupiedAt && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3.5 w-3.5" />
+                          <span>{formatDuration(table.occupiedAt)}</span>
                         </div>
                       )}
-                      {table.status === "requesting_bill" && table.startTime && (
-                        <div className="flex items-center gap-1 text-red-500">
-                          <Clock className="h-4 w-4" />
-                          <span className="text-sm font-medium">{formatDuration(table.startTime)}</span>
+                      <div className="flex items-center gap-1">
+                        <Users className="h-3.5 w-3.5" />
+                        <span>{table.currentGuests}</span>
+                      </div>
+                      {total > 0 && (
+                        <div className="font-semibold text-gray-900">
+                          {formatCurrency(total)}
                         </div>
                       )}
-                      {table.status === "free" && (
-                        <span className={cn("text-sm font-medium", statusConfig.textColor)}>
-                          {statusConfig.label}
-                        </span>
-                      )}
-                      {table.status === "reserved" && (
-                        <span className={cn("text-sm font-medium", statusConfig.textColor)}>
-                          {statusConfig.label}
-                        </span>
+                    </div>
+                  )}
+
+                  {/* Informações da mesa reservada */}
+                  {table.status === "reserved" && (
+                    <div className="space-y-1 text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <Users className="h-3.5 w-3.5" />
+                        <span>{table.currentGuests || table.capacity}</span>
+                      </div>
+                      {table.reservedFor && (
+                        <div className={cn("font-semibold", statusConfig.textColor)}>
+                          {formatTime(table.reservedFor)}
+                        </div>
                       )}
                     </div>
-
-                    {/* Pessoas e valor / Horário reserva */}
-                    <div className="flex items-center justify-between">
-                      {(table.status === "occupied" || table.status === "requesting_bill") && (
-                        <>
-                          <div className="flex items-center gap-1 text-gray-500">
-                            <span className="text-sm font-medium">{table.guests}</span>
-                            <Users className="h-4 w-4" />
-                          </div>
-                          <span className="text-sm font-semibold text-gray-900">
-                            {formatCurrency(table.total)}
-                          </span>
-                        </>
-                      )}
-                      {table.status === "reserved" && table.reservationTime && (
-                        <>
-                          <div className="flex items-center gap-1 text-gray-500">
-                            <span className="text-sm font-medium">{table.guests}</span>
-                            <Users className="h-4 w-4" />
-                          </div>
-                          <span className="text-sm font-medium text-blue-600">
-                            {formatTime(table.reservationTime)}
-                          </span>
-                        </>
-                      )}
-                      {table.status === "free" && (
-                        <div className="w-full h-6" /> 
-                      )}
-                    </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Mensagem quando não há mesas */}
-        {filteredTables.length === 0 && (
-          <div className="text-center py-12">
-            <Utensils className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">Nenhuma mesa encontrada com os filtros selecionados</p>
+                  )}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
 
       {/* Sidebar de Detalhes da Mesa */}
       <Sheet open={showSidebar} onOpenChange={setShowSidebar}>
-        <SheetContent className="w-full sm:max-w-lg p-0 flex flex-col">
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
           {selectedTable && (
             <>
-              {/* Header da Sidebar */}
-              <SheetHeader className={cn(
-                "p-6",
-                selectedTable.status === "free" && "bg-emerald-500",
-                selectedTable.status === "occupied" && "bg-amber-500",
-                selectedTable.status === "reserved" && "bg-blue-500",
-                selectedTable.status === "requesting_bill" && "bg-red-500"
-              )}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-white/20 p-3 rounded-xl">
-                      <Utensils className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <SheetTitle className="text-white text-xl">Mesa {selectedTable.number}</SheetTitle>
-                      <p className="text-white/80 text-sm">
-                        {getStatusConfig(selectedTable.status).label}
-                        {selectedTable.startTime && ` • ${formatDuration(selectedTable.startTime)}`}
-                      </p>
-                    </div>
+              <SheetHeader className="mb-6">
+                <SheetTitle className="flex items-center gap-3">
+                  <div className={cn(
+                    "w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold",
+                    getStatusConfig(selectedTable.status as TableStatus).color
+                  )}>
+                    {selectedTable.number}
                   </div>
-                  <button
-                    onClick={() => setShowSidebar(false)}
-                    className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-                  >
-                    <X className="h-5 w-5 text-white" />
-                  </button>
-                </div>
-              </SheetHeader>
-
-              {/* Conteúdo da Sidebar */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                {/* Info da Mesa */}
-                {(selectedTable.status === "occupied" || selectedTable.status === "requesting_bill") && (
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                    <div className="flex items-center gap-2">
-                      <Users className="h-5 w-5 text-gray-500" />
-                      <span className="font-medium">{selectedTable.guests} pessoas</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-5 w-5 text-gray-500" />
-                      <span className="font-medium">{selectedTable.startTime && formatDuration(selectedTable.startTime)}</span>
-                    </div>
-                  </div>
-                )}
-
-                {selectedTable.status === "reserved" && selectedTable.reservationTime && (
-                  <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-xl">
-                    <div className="flex items-center gap-2">
-                      <Users className="h-5 w-5 text-blue-500" />
-                      <span className="font-medium text-blue-700">{selectedTable.guests} pessoas</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-5 w-5 text-blue-500" />
-                      <span className="font-medium text-blue-700">Reserva às {formatTime(selectedTable.reservationTime)}</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Lista de Itens da Comanda */}
-                {selectedTable.items.length > 0 ? (
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                      <Receipt className="h-5 w-5 text-gray-500" />
-                      Itens da Comanda
-                    </h3>
-                    <div className="space-y-2">
-                      {selectedTable.items.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-100"
-                        >
-                          <div className="flex-1">
-                            <p className="font-medium text-gray-900">{item.name}</p>
-                            <p className="text-sm text-gray-500">
-                              {item.quantity}x {formatCurrency(item.price)}
-                            </p>
-                          </div>
-                          <span className="font-semibold text-gray-900">
-                            {formatCurrency(item.quantity * item.price)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Totais */}
-                    <div className="border-t pt-4 space-y-2">
-                      <div className="flex justify-between text-gray-600">
-                        <span>Subtotal</span>
-                        <span>{formatCurrency(selectedTable.total)}</span>
-                      </div>
-                      <div className="flex justify-between text-lg font-bold text-gray-900">
-                        <span>Total</span>
-                        <span>{formatCurrency(selectedTable.total)}</span>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <ChefHat className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">
-                      {selectedTable.status === "free"
-                        ? "Mesa disponível para novos clientes"
-                        : selectedTable.status === "reserved"
-                        ? "Aguardando chegada dos clientes"
-                        : "Nenhum item na comanda ainda"}
+                  <div>
+                    <span className="text-xl">Mesa {selectedTable.number}</span>
+                    <p className={cn(
+                      "text-sm font-medium",
+                      getStatusConfig(selectedTable.status as TableStatus).textColor
+                    )}>
+                      {getStatusConfig(selectedTable.status as TableStatus).label}
                     </p>
                   </div>
-                )}
-              </div>
+                </SheetTitle>
+              </SheetHeader>
 
-              {/* Footer com Ações */}
-              <div className="border-t p-4 space-y-3 bg-white">
+              {/* Informações da Comanda */}
+              {selectedTable.tab && (
+                <div className="space-y-4 mb-6">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Comanda</span>
+                    <span className="font-medium">{selectedTable.tab.tabNumber}</span>
+                  </div>
+                  {selectedTable.occupiedAt && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">Tempo de uso</span>
+                      <span className="font-medium flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        {formatDuration(selectedTable.occupiedAt)}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Pessoas</span>
+                    <span className="font-medium flex items-center gap-1">
+                      <Users className="h-4 w-4" />
+                      {selectedTable.currentGuests}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Lista de Itens */}
+              {selectedTable.items && selectedTable.items.length > 0 && (
+                <div className="mb-6">
+                  <h4 className="font-medium text-gray-900 mb-3">Itens da Comanda</h4>
+                  <div className="space-y-2">
+                    {selectedTable.items.map((item) => (
+                      <div key={item.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">{item.productName}</p>
+                          <p className="text-sm text-gray-500">
+                            {item.quantity}x {formatCurrency(parseFloat(item.unitPrice))}
+                          </p>
+                          {item.notes && (
+                            <p className="text-xs text-gray-400 italic">{item.notes}</p>
+                          )}
+                        </div>
+                        <span className="font-semibold text-gray-900">
+                          {formatCurrency(parseFloat(item.totalPrice))}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Totais */}
+              {selectedTable.tab && (
+                <div className="border-t border-gray-200 pt-4 mb-6 space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Subtotal</span>
+                    <span>{formatCurrency(parseFloat(selectedTable.tab.subtotal))}</span>
+                  </div>
+                  {parseFloat(selectedTable.tab.serviceCharge) > 0 && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">Taxa de Serviço (10%)</span>
+                      <span>{formatCurrency(parseFloat(selectedTable.tab.serviceCharge))}</span>
+                    </div>
+                  )}
+                  {parseFloat(selectedTable.tab.discount) > 0 && (
+                    <div className="flex items-center justify-between text-sm text-emerald-600">
+                      <span>Desconto</span>
+                      <span>-{formatCurrency(parseFloat(selectedTable.tab.discount))}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between text-lg font-bold pt-2 border-t border-gray-200">
+                    <span>Total</span>
+                    <span>{formatCurrency(parseFloat(selectedTable.tab.total))}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Ações */}
+              <div className="space-y-3">
                 {selectedTable.status === "free" && (
-                  <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white">
-                    <Plus className="h-4 w-4 mr-2" />
+                  <Button 
+                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+                    onClick={() => handleOpenTable(selectedTable)}
+                    disabled={openTableMutation.isPending}
+                  >
+                    {openTableMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Users className="h-4 w-4 mr-2" />
+                    )}
                     Abrir Mesa
                   </Button>
                 )}
 
                 {selectedTable.status === "occupied" && (
                   <>
-                    <Button className="w-full bg-red-500 hover:bg-red-600 text-white">
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary/90 text-white"
+                      onClick={() => {
+                        setShowSidebar(false);
+                        setShowPDVSlidebar(true);
+                      }}
+                    >
                       <Plus className="h-4 w-4 mr-2" />
                       Adicionar Item
                     </Button>
-                    <div className="grid grid-cols-2 gap-3">
-                      <Button variant="outline" className="border-amber-500 text-amber-600 hover:bg-amber-50">
-                        <AlertCircle className="h-4 w-4 mr-2" />
-                        Pedir Conta
-                      </Button>
-                      <Button variant="outline" className="border-gray-300 text-gray-600 hover:bg-gray-50">
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-amber-300 text-amber-600 hover:bg-amber-50"
+                      onClick={() => handleRequestBill(selectedTable)}
+                      disabled={requestBillMutation.isPending}
+                    >
+                      {requestBillMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
                         <Receipt className="h-4 w-4 mr-2" />
-                        Fechar Conta
-                      </Button>
-                    </div>
+                      )}
+                      Pedir Conta
+                    </Button>
                   </>
                 )}
 
                 {selectedTable.status === "requesting_bill" && (
                   <>
-                    <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
-                      <Receipt className="h-4 w-4 mr-2" />
+                    <Button 
+                      className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+                      onClick={() => handleCloseTable(selectedTable)}
+                      disabled={closeTableMutation.isPending}
+                    >
+                      {closeTableMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <DollarSign className="h-4 w-4 mr-2" />
+                      )}
                       Fechar Conta
                     </Button>
-                    <Button variant="outline" className="w-full border-gray-300 text-gray-600 hover:bg-gray-50">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Adicionar Item
+                    <Button variant="outline" className="w-full">
+                      <Printer className="h-4 w-4 mr-2" />
+                      Imprimir Comanda
                     </Button>
                   </>
                 )}
 
                 {selectedTable.status === "reserved" && (
                   <>
-                    <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white">
-                      <Users className="h-4 w-4 mr-2" />
+                    <Button 
+                      className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+                      onClick={() => handleOpenTable(selectedTable)}
+                      disabled={openTableMutation.isPending}
+                    >
+                      {openTableMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Users className="h-4 w-4 mr-2" />
+                      )}
                       Confirmar Chegada
                     </Button>
-                    <Button variant="outline" className="w-full border-red-300 text-red-600 hover:bg-red-50">
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-red-300 text-red-600 hover:bg-red-50"
+                      onClick={() => handleClearTable(selectedTable)}
+                    >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Cancelar Reserva
                     </Button>
@@ -663,7 +755,11 @@ export default function MesasComandas() {
                 )}
 
                 {(selectedTable.status === "occupied" || selectedTable.status === "requesting_bill") && (
-                  <Button variant="ghost" className="w-full text-gray-500 hover:text-gray-700">
+                  <Button 
+                    variant="ghost" 
+                    className="w-full text-gray-500 hover:text-gray-700"
+                    onClick={() => handleClearTable(selectedTable)}
+                  >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Limpar Mesa
                   </Button>
@@ -674,11 +770,62 @@ export default function MesasComandas() {
         </SheetContent>
       </Sheet>
 
+      {/* Dialog para criar mesas */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Criar Mesas</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm font-medium text-gray-700">Quantidade de mesas</label>
+              <Input
+                type="number"
+                value={newTableCount}
+                onChange={(e) => setNewTableCount(parseInt(e.target.value) || 1)}
+                min={1}
+                max={100}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700">Capacidade por mesa</label>
+              <Input
+                type="number"
+                value={newTableCapacity}
+                onChange={(e) => setNewTableCapacity(parseInt(e.target.value) || 4)}
+                min={1}
+                max={20}
+                className="mt-1"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleCreateTables}
+              disabled={createBatchMutation.isPending}
+            >
+              {createBatchMutation.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Plus className="h-4 w-4 mr-2" />
+              )}
+              Criar {newTableCount} Mesas
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* PDV Slidebar */}
       <PDVSlidebar
         isOpen={showPDVSlidebar}
         onClose={handlePDVSlidebarClose}
         tableNumber={selectedTable?.number || 0}
+        tableId={selectedTable?.id}
+        tabId={selectedTable?.tab?.id}
         onOrderCreated={handleOrderCreated}
       />
     </AdminLayout>

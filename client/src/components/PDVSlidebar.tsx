@@ -14,7 +14,8 @@ import {
   Check,
   ChevronsRight,
   Pencil,
-  Lock
+  Lock,
+  Printer
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,10 +56,12 @@ interface PDVSlidebarProps {
   isOpen: boolean;
   onClose: () => void;
   tableNumber: number;
+  tableId?: number;
+  tabId?: number;
   onOrderCreated?: () => void;
 }
 
-export function PDVSlidebar({ isOpen, onClose, tableNumber, onOrderCreated }: PDVSlidebarProps) {
+export function PDVSlidebar({ isOpen, onClose, tableNumber, tableId, tabId, onOrderCreated }: PDVSlidebarProps) {
   const { data: establishment } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
 
@@ -373,6 +376,18 @@ export function PDVSlidebar({ isOpen, onClose, tableNumber, onOrderCreated }: PD
     return `${timestamp}`;
   };
 
+  // Mutation para adicionar itens à comanda
+  const addTabItemsMutation = trpc.tabs.addItems.useMutation({
+    onSuccess: () => {
+      toast.success("Itens adicionados à comanda!");
+      clearCart();
+      onOrderCreated?.();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao adicionar itens");
+    }
+  });
+
   // Finalizar pedido
   const handleFinishOrder = () => {
     if (cart.length === 0) {
@@ -380,6 +395,28 @@ export function PDVSlidebar({ isOpen, onClose, tableNumber, onOrderCreated }: PD
       return;
     }
 
+    // Se tem tabId, adiciona diretamente à comanda
+    if (tabId) {
+      addTabItemsMutation.mutate({
+        tabId,
+        items: cart.map(item => ({
+          productId: item.productId,
+          productName: item.name,
+          quantity: item.quantity,
+          unitPrice: item.price,
+          totalPrice: ((parseFloat(item.price) + item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0)) * item.quantity).toFixed(2),
+          complements: item.complements.map(c => ({
+            name: c.name,
+            price: parseFloat(c.price),
+            quantity: c.quantity
+          })),
+          notes: item.observation || undefined
+        }))
+      });
+      return;
+    }
+
+    // Caso contrário, cria um pedido normal
     const orderNumber = generateOrderNumber();
     const subtotal = calculateTotal();
 
@@ -437,8 +474,8 @@ export function PDVSlidebar({ isOpen, onClose, tableNumber, onOrderCreated }: PD
       {/* Slidebar */}
       <div 
         className={cn(
-          "fixed top-0 left-0 h-full bg-white z-50 shadow-2xl flex flex-col transition-transform duration-300 ease-out",
-          isOpen ? "translate-x-0" : "-translate-x-full"
+          "fixed top-0 right-0 h-full bg-white z-50 shadow-2xl flex flex-col transition-transform duration-300 ease-out",
+          isOpen ? "translate-x-0" : "translate-x-full"
         )}
         style={{ width: '59%' }}
       >
@@ -759,13 +796,27 @@ export function PDVSlidebar({ isOpen, onClose, tableNumber, onOrderCreated }: PD
                 <span className="font-semibold">Total</span>
                 <span className="text-lg font-bold text-red-600">{formatCurrency(calculateTotal())}</span>
               </div>
-              <Button
-                onClick={handleFinishOrder}
-                disabled={cart.length === 0 || createOrderMutation.isPending}
-                className="w-full bg-red-500 hover:bg-red-600 text-white"
-              >
-                {createOrderMutation.isPending ? "Enviando..." : "Finalizar Pedido"}
-              </Button>
+              <div className="flex gap-2">
+                {tabId && (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      toast.info("Enviando para impressora...");
+                      // Aqui seria integrado com o sistema de impressão ESC/POS
+                    }}
+                    className="flex-shrink-0"
+                  >
+                    <Printer className="h-4 w-4" />
+                  </Button>
+                )}
+                <Button
+                  onClick={handleFinishOrder}
+                  disabled={cart.length === 0 || createOrderMutation.isPending || addTabItemsMutation.isPending}
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                >
+                  {(createOrderMutation.isPending || addTabItemsMutation.isPending) ? "Enviando..." : tabId ? "Adicionar à Comanda" : "Finalizar Pedido"}
+                </Button>
+              </div>
             </div>
           </div>
         </div>

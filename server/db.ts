@@ -30,7 +30,10 @@ import {
   menuViewsDaily, InsertMenuViewsDaily, MenuViewsDaily,
   menuViewsHourly, InsertMenuViewsHourly, MenuViewsHourly,
   smsBalance, InsertSmsBalance, SmsBalance,
-  smsTransactions, InsertSmsTransaction, SmsTransaction
+  smsTransactions, InsertSmsTransaction, SmsTransaction,
+  tables, InsertTable, Table,
+  tabs, InsertTab, Tab,
+  tabItems, InsertTabItem, TabItem
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -4867,4 +4870,415 @@ export async function getLastSmsDispatch(establishmentId: number): Promise<SmsTr
     .limit(1);
   
   return lastDispatch || null;
+}
+
+
+// ============ TABLE (MESA) FUNCTIONS ============
+
+/**
+ * Busca todas as mesas de um estabelecimento
+ */
+export async function getTablesByEstablishment(establishmentId: number): Promise<Table[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(tables)
+    .where(and(
+      eq(tables.establishmentId, establishmentId),
+      eq(tables.isActive, true)
+    ))
+    .orderBy(asc(tables.sortOrder), asc(tables.number));
+}
+
+/**
+ * Busca uma mesa por ID
+ */
+export async function getTableById(id: number): Promise<Table | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(tables)
+    .where(eq(tables.id, id))
+    .limit(1);
+  
+  return result[0];
+}
+
+/**
+ * Cria uma nova mesa
+ */
+export async function createTable(data: InsertTable): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(tables).values(data);
+  return result[0].insertId;
+}
+
+/**
+ * Atualiza uma mesa
+ */
+export async function updateTable(id: number, data: Partial<InsertTable>): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  await db.update(tables)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(tables.id, id));
+}
+
+/**
+ * Atualiza o status de uma mesa
+ */
+export async function updateTableStatus(
+  id: number, 
+  status: "free" | "occupied" | "reserved" | "requesting_bill",
+  guests?: number
+): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  const updateData: any = { status, updatedAt: new Date() };
+  
+  if (status === "occupied") {
+    updateData.occupiedAt = new Date();
+    updateData.currentGuests = guests || 0;
+  } else if (status === "free") {
+    updateData.occupiedAt = null;
+    updateData.currentGuests = 0;
+    updateData.reservedFor = null;
+    updateData.reservedName = null;
+    updateData.reservedPhone = null;
+  }
+  
+  await db.update(tables)
+    .set(updateData)
+    .where(eq(tables.id, id));
+}
+
+/**
+ * Deleta uma mesa (soft delete - marca como inativa)
+ */
+export async function deleteTable(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  await db.update(tables)
+    .set({ isActive: false, updatedAt: new Date() })
+    .where(eq(tables.id, id));
+}
+
+// ============ TAB (COMANDA) FUNCTIONS ============
+
+/**
+ * Busca todas as comandas abertas de um estabelecimento
+ */
+export async function getOpenTabsByEstablishment(establishmentId: number): Promise<Tab[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(tabs)
+    .where(and(
+      eq(tabs.establishmentId, establishmentId),
+      or(eq(tabs.status, "open"), eq(tabs.status, "requesting_bill"))
+    ))
+    .orderBy(desc(tabs.openedAt));
+}
+
+/**
+ * Busca a comanda ativa de uma mesa
+ */
+export async function getActiveTabByTable(tableId: number): Promise<Tab | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(tabs)
+    .where(and(
+      eq(tabs.tableId, tableId),
+      or(eq(tabs.status, "open"), eq(tabs.status, "requesting_bill"))
+    ))
+    .limit(1);
+  
+  return result[0];
+}
+
+/**
+ * Busca uma comanda por ID
+ */
+export async function getTabById(id: number): Promise<Tab | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(tabs)
+    .where(eq(tabs.id, id))
+    .limit(1);
+  
+  return result[0];
+}
+
+/**
+ * Cria uma nova comanda
+ */
+export async function createTab(data: InsertTab): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(tabs).values(data);
+  return result[0].insertId;
+}
+
+/**
+ * Atualiza uma comanda
+ */
+export async function updateTab(id: number, data: Partial<InsertTab>): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  await db.update(tabs)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(tabs.id, id));
+}
+
+/**
+ * Fecha uma comanda
+ */
+export async function closeTab(id: number, paymentMethod: string, paidAmount: number, changeAmount: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  await db.update(tabs)
+    .set({ 
+      status: "closed",
+      paymentMethod,
+      paidAmount: paidAmount.toFixed(2),
+      changeAmount: changeAmount.toFixed(2),
+      closedAt: new Date(),
+      updatedAt: new Date()
+    })
+    .where(eq(tabs.id, id));
+}
+
+/**
+ * Recalcula os totais de uma comanda
+ */
+export async function recalculateTabTotals(tabId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  // Buscar todos os itens da comanda (exceto cancelados)
+  const items = await db.select().from(tabItems)
+    .where(and(
+      eq(tabItems.tabId, tabId),
+      ne(tabItems.status, "cancelled")
+    ));
+  
+  // Calcular subtotal
+  const subtotal = items.reduce((sum, item) => sum + parseFloat(item.totalPrice), 0);
+  
+  // Buscar a comanda para pegar o desconto e taxa de serviço
+  const tab = await getTabById(tabId);
+  if (!tab) return;
+  
+  const discount = parseFloat(tab.discount);
+  const serviceCharge = parseFloat(tab.serviceCharge);
+  const total = subtotal - discount + serviceCharge;
+  
+  // Atualizar a comanda
+  await db.update(tabs)
+    .set({ 
+      subtotal: subtotal.toFixed(2),
+      total: Math.max(0, total).toFixed(2),
+      updatedAt: new Date()
+    })
+    .where(eq(tabs.id, tabId));
+}
+
+// ============ TAB ITEM FUNCTIONS ============
+
+/**
+ * Busca todos os itens de uma comanda
+ */
+export async function getTabItems(tabId: number): Promise<TabItem[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(tabItems)
+    .where(eq(tabItems.tabId, tabId))
+    .orderBy(desc(tabItems.orderedAt));
+}
+
+/**
+ * Adiciona um item à comanda
+ */
+export async function addTabItem(data: InsertTabItem): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(tabItems).values(data);
+  
+  // Recalcular totais da comanda
+  await recalculateTabTotals(data.tabId);
+  
+  return result[0].insertId;
+}
+
+/**
+ * Atualiza um item da comanda
+ */
+export async function updateTabItem(id: number, data: Partial<InsertTabItem>): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  // Buscar o item para pegar o tabId
+  const item = await db.select().from(tabItems)
+    .where(eq(tabItems.id, id))
+    .limit(1);
+  
+  if (item.length === 0) return;
+  
+  await db.update(tabItems)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(tabItems.id, id));
+  
+  // Recalcular totais da comanda
+  await recalculateTabTotals(item[0].tabId);
+}
+
+/**
+ * Remove um item da comanda (marca como cancelado)
+ */
+export async function cancelTabItem(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  // Buscar o item para pegar o tabId
+  const item = await db.select().from(tabItems)
+    .where(eq(tabItems.id, id))
+    .limit(1);
+  
+  if (item.length === 0) return;
+  
+  await db.update(tabItems)
+    .set({ status: "cancelled", updatedAt: new Date() })
+    .where(eq(tabItems.id, id));
+  
+  // Recalcular totais da comanda
+  await recalculateTabTotals(item[0].tabId);
+}
+
+/**
+ * Abre uma mesa (cria comanda e atualiza status)
+ */
+export async function openTable(
+  establishmentId: number, 
+  tableId: number, 
+  guests: number = 1
+): Promise<{ tableId: number; tabId: number }> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Buscar a mesa
+  const table = await getTableById(tableId);
+  if (!table) throw new Error("Mesa não encontrada");
+  
+  // Verificar se já tem comanda aberta
+  const existingTab = await getActiveTabByTable(tableId);
+  if (existingTab) {
+    return { tableId, tabId: existingTab.id };
+  }
+  
+  // Gerar número da comanda
+  const tabNumber = `M${table.number}-${Date.now().toString().slice(-6)}`;
+  
+  // Criar comanda
+  const tabId = await createTab({
+    establishmentId,
+    tableId,
+    tabNumber,
+    customerName: `Mesa ${table.number}`,
+  });
+  
+  // Atualizar status da mesa
+  await updateTableStatus(tableId, "occupied", guests);
+  
+  return { tableId, tabId };
+}
+
+/**
+ * Fecha uma mesa (fecha comanda e libera mesa)
+ */
+export async function closeTable(
+  tableId: number,
+  paymentMethod: string,
+  paidAmount: number,
+  changeAmount: number
+): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  // Buscar comanda ativa
+  const tab = await getActiveTabByTable(tableId);
+  if (tab) {
+    await closeTab(tab.id, paymentMethod, paidAmount, changeAmount);
+  }
+  
+  // Liberar mesa
+  await updateTableStatus(tableId, "free");
+}
+
+/**
+ * Adiciona itens do carrinho à comanda de uma mesa
+ */
+export async function addItemsToTab(
+  tabId: number,
+  items: Array<{
+    productId: number;
+    productName: string;
+    quantity: number;
+    unitPrice: string;
+    totalPrice: string;
+    complements?: Array<{ name: string; price: number; quantity: number }>;
+    notes?: string;
+  }>
+): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  for (const item of items) {
+    await addTabItem({
+      tabId,
+      productId: item.productId,
+      productName: item.productName,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      totalPrice: item.totalPrice,
+      complements: item.complements || [],
+      notes: item.notes,
+    });
+  }
+}
+
+/**
+ * Busca mesas com suas comandas ativas
+ */
+export async function getTablesWithTabs(establishmentId: number): Promise<Array<Table & { tab?: Tab; items?: TabItem[] }>> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Buscar todas as mesas
+  const tablesList = await getTablesByEstablishment(establishmentId);
+  
+  // Para cada mesa, buscar a comanda ativa e seus itens
+  const result = await Promise.all(tablesList.map(async (table) => {
+    const tab = await getActiveTabByTable(table.id);
+    let items: TabItem[] = [];
+    
+    if (tab) {
+      items = await getTabItems(tab.id);
+    }
+    
+    return { ...table, tab, items };
+  }));
+  
+  return result;
 }

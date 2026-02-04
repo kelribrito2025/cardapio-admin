@@ -604,3 +604,73 @@ export const smsTransactions = mysqlTable("sms_transactions", {
 
 export type SmsTransaction = typeof smsTransactions.$inferSelect;
 export type InsertSmsTransaction = typeof smsTransactions.$inferInsert;
+
+
+// Mesas do estabelecimento
+export const tables = mysqlTable("tables", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  number: int("number").notNull(), // Número da mesa
+  name: varchar("name", { length: 100 }), // Nome opcional (ex: "Mesa VIP", "Varanda")
+  capacity: int("capacity").default(4).notNull(), // Capacidade de pessoas
+  status: mysqlEnum("status", ["free", "occupied", "reserved", "requesting_bill"]).default("free").notNull(),
+  currentGuests: int("currentGuests").default(0).notNull(), // Quantidade atual de pessoas
+  occupiedAt: timestamp("occupiedAt"), // Quando a mesa foi ocupada
+  reservedFor: timestamp("reservedFor"), // Horário da reserva (se reservada)
+  reservedName: varchar("reservedName", { length: 255 }), // Nome da reserva
+  reservedPhone: varchar("reservedPhone", { length: 30 }), // Telefone da reserva
+  isActive: boolean("isActive").default(true).notNull(), // Se a mesa está ativa
+  sortOrder: int("sortOrder").default(0).notNull(), // Ordem de exibição
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Table = typeof tables.$inferSelect;
+export type InsertTable = typeof tables.$inferInsert;
+
+// Comandas (vinculadas a mesas ou avulsas)
+export const tabs = mysqlTable("tabs", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  tableId: int("tableId"), // Mesa vinculada (null para comanda avulsa)
+  tabNumber: varchar("tabNumber", { length: 50 }).notNull(), // Número da comanda
+  customerName: varchar("customerName", { length: 255 }), // Nome do cliente
+  customerPhone: varchar("customerPhone", { length: 30 }), // Telefone do cliente
+  status: mysqlEnum("status", ["open", "requesting_bill", "closed", "cancelled"]).default("open").notNull(),
+  subtotal: decimal("subtotal", { precision: 10, scale: 2 }).default("0").notNull(),
+  discount: decimal("discount", { precision: 10, scale: 2 }).default("0").notNull(),
+  serviceCharge: decimal("serviceCharge", { precision: 10, scale: 2 }).default("0").notNull(), // Taxa de serviço (10%)
+  total: decimal("total", { precision: 10, scale: 2 }).default("0").notNull(),
+  paymentMethod: varchar("paymentMethod", { length: 50 }), // Forma de pagamento ao fechar
+  paidAmount: decimal("paidAmount", { precision: 10, scale: 2 }).default("0").notNull(), // Valor pago
+  changeAmount: decimal("changeAmount", { precision: 10, scale: 2 }).default("0").notNull(), // Troco
+  notes: text("notes"), // Observações gerais
+  openedAt: timestamp("openedAt").defaultNow().notNull(), // Quando a comanda foi aberta
+  closedAt: timestamp("closedAt"), // Quando foi fechada
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Tab = typeof tabs.$inferSelect;
+export type InsertTab = typeof tabs.$inferInsert;
+
+// Itens da comanda
+export const tabItems = mysqlTable("tabItems", {
+  id: int("id").autoincrement().primaryKey(),
+  tabId: int("tabId").notNull(), // Comanda vinculada
+  productId: int("productId").notNull(), // Produto
+  productName: varchar("productName", { length: 255 }).notNull(), // Nome do produto (snapshot)
+  quantity: int("quantity").default(1).notNull(),
+  unitPrice: decimal("unitPrice", { precision: 10, scale: 2 }).notNull(), // Preço unitário
+  totalPrice: decimal("totalPrice", { precision: 10, scale: 2 }).notNull(), // Preço total (qty * unit + complementos)
+  complements: json("complements").$type<Array<{ name: string; price: number; quantity: number }>>(), // Complementos
+  notes: text("notes"), // Observações do item
+  status: mysqlEnum("status", ["pending", "preparing", "ready", "delivered", "cancelled"]).default("pending").notNull(),
+  orderedAt: timestamp("orderedAt").defaultNow().notNull(), // Quando foi pedido
+  deliveredAt: timestamp("deliveredAt"), // Quando foi entregue
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type TabItem = typeof tabItems.$inferSelect;
+export type InsertTabItem = typeof tabItems.$inferInsert;

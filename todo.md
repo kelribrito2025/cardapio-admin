@@ -4892,3 +4892,12 @@
 - [x] Grid de produtos com máximo 3 colunas e cards 20% menores
 - [x] Modal de detalhes do produto igual ao PDV/menu público
 - [x] Integrar PDVSlidebar na página MesasComandas
+
+
+## Correções e Melhorias na Página de Mesas
+- [x] Corrigir direção da slidebar PDV (da direita para esquerda)
+- [x] Criar tabelas de mesas e comandas no schema do banco de dados
+- [x] Criar endpoints tRPC para CRUD de mesas e comandas
+- [x] Integrar página MesasComandas com dados reais do banco
+- [x] Sincronizar comanda com mesa ao criar pedido pela slidebar
+- [x] Adicionar botão de impressão de comanda na slidebar
