@@ -28,6 +28,7 @@ import {
   Layers,
   Megaphone,
   Monitor,
+  HelpCircle,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -880,9 +881,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   )}
                   <div className="p-1">
                     <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
-                      <Link href="/configuracoes">
-                        <Settings className="h-4 w-4 mr-2.5" />
-                        Configurações
+                      <Link href="/ajuda">
+                        <HelpCircle className="h-4 w-4 mr-2.5" />
+                        Ajuda e suporte
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem 

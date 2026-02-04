@@ -4692,3 +4692,6 @@
 - [x] Adicionar botão Export no histórico de faturas
 - [x] Garantir responsividade completa da página
 - [x] Preparar layout para integração futura com Pix/Cartão
+
+## Ajustes no Menu do Perfil
+- [x] Alterar "Configurações" para "Ajuda e suporte" no dropdown do perfil
