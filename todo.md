@@ -5172,3 +5172,9 @@
 
 ## Alterar texto do card de seleção de entrega
 - [x] Mudar "Entrega" para "Taxa de entrega" no card de seleção do modal de tipo de entrega
+
+
+## Destaque visual para entrega grátis
+- [x] Criar selo verde destacado para entrega grátis no card de taxa de entrega (sidebar)
+- [x] Criar selo verde destacado para entrega grátis no modal de tipo de entrega
+- [x] Criar selo verde destacado para entrega grátis na área de totais da sacola

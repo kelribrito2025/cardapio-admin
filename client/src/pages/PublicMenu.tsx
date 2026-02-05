@@ -2015,9 +2015,18 @@ export default function PublicMenu() {
                     </div>
                     {/* Badge Grátis */}
                     {establishment.deliveryFeeType === "free" && (
-                      <button className="px-5 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all">
-                        Grátis
-                      </button>
+                      <div className="relative">
+                        <div className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold rounded-xl shadow-lg animate-pulse">
+                          <span className="flex items-center gap-1.5">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            Grátis!
+                          </span>
+                        </div>
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-ping"></div>
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full"></div>
+                      </div>
                     )}
                     {establishment.deliveryFeeType === "fixed" && establishment.deliveryFeeFixed && (
                       <span className="px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded-xl" style={{paddingTop: '6px', paddingBottom: '0px', height: '36px'}}>
@@ -2128,11 +2137,18 @@ export default function PublicMenu() {
                         <span className="text-gray-600">{formatPrice(subtotal)}</span>
                       </div>
                       {deliveryType === 'delivery' && (
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm items-center">
                           <span className="text-gray-600">Taxa de entrega</span>
-                          <span className={deliveryFeeValue === 0 ? "text-green-600 font-medium" : "text-gray-600"}>
-                            {deliveryFeeValue === 0 ? "Grátis" : formatPrice(deliveryFeeValue)}
-                          </span>
+                          {deliveryFeeValue === 0 ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 font-bold rounded-full text-xs">
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                              Grátis!
+                            </span>
+                          ) : (
+                            <span className="text-gray-600">{formatPrice(deliveryFeeValue)}</span>
+                          )}
                         </div>
                       )}
                       {deliveryType === 'pickup' && (
@@ -3104,17 +3120,22 @@ export default function PublicMenu() {
                             {deliveryType === "delivery" && "Taxa de entrega"}
                             {deliveryType === "dine_in" && "Consumir no local"}
                           </span>
-                          <span className="ml-2 text-sm text-green-600 font-medium">
-                            {deliveryType === "pickup" || deliveryType === "dine_in" 
-                              ? "Grátis" 
-                              : establishment.deliveryFeeType === "free" 
-                                ? "Grátis" 
-                                : establishment.deliveryFeeType === "fixed" 
-                                  ? `R$ ${Number(establishment.deliveryFeeFixed || 0).toFixed(2).replace('.', ',')}` 
-                                  : selectedNeighborhood 
-                                    ? `R$ ${Number(selectedNeighborhood.fee).toFixed(2).replace('.', ',')}` 
-                                    : ""}
-                          </span>
+                          {(deliveryType === "pickup" || deliveryType === "dine_in" || establishment.deliveryFeeType === "free") ? (
+                            <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 font-bold rounded-full text-xs">
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                              Grátis!
+                            </span>
+                          ) : (
+                            <span className="ml-2 text-sm text-red-600 font-semibold">
+                              {establishment.deliveryFeeType === "fixed" 
+                                ? `R$ ${Number(establishment.deliveryFeeFixed || 0).toFixed(2).replace('.', ',')}` 
+                                : selectedNeighborhood 
+                                  ? `R$ ${Number(selectedNeighborhood.fee).toFixed(2).replace('.', ',')}` 
+                                  : ""}
+                            </span>
+                          )}
                         </div>
                       </div>
                       <button
@@ -3578,11 +3599,18 @@ export default function PublicMenu() {
                           <span className="text-gray-600">{formatPrice(subtotal)}</span>
                         </div>
                         {deliveryType === 'delivery' && (
-                          <div className="flex justify-between text-sm">
+                          <div className="flex justify-between text-sm items-center">
                             <span className="text-gray-600">Taxa de entrega</span>
-                            <span className={deliveryFeeValue === 0 ? "text-green-600 font-medium" : "text-gray-600"}>
-                              {deliveryFeeValue === 0 ? "Grátis" : formatPrice(deliveryFeeValue)}
-                            </span>
+                            {deliveryFeeValue === 0 ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 font-bold rounded-full text-xs">
+                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                Grátis!
+                              </span>
+                            ) : (
+                              <span className="text-gray-600">{formatPrice(deliveryFeeValue)}</span>
+                            )}
                           </div>
                         )}
                         {deliveryType === 'pickup' && (
