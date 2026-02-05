@@ -5268,3 +5268,8 @@
 ## Bugs - PDV Slidebar
 - [x] Corrigir botões de mesas na barra de atalhos do PDV Slidebar para mostrar status correto (vermelho para mesas com itens na comanda, verde para mesas livres)
 - [x] Desabilitar botão Comanda quando mesa estiver livre (sem itens na comanda)
+- [x] Corrigir botão Fechar conta na aba Comanda - está desabilitado mesmo com itens na comanda
+- [x] Corrigir cálculo do Subtotal/Total na aba Comanda - mostra R$ 0,00 ao invés do valor correto dos itens
+- [x] Botão de impressão na aba Comanda deve mostrar opções (impressão normal e múltiplas impressoras Android)
+- [x] Reposicionar ícone de impressora ao lado direito do botão de cupom
+- [x] Alterar texto do botão de "Fechar conta" para "Fechar Mesa X" na aba Comanda

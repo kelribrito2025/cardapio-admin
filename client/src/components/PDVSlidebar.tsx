@@ -31,6 +31,12 @@ import { Slider } from "@/components/ui/slider";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 // Constantes para configuração da aba
@@ -544,6 +550,26 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
       const complementsPrice = item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0);
       return total + (itemPrice + complementsPrice) * item.quantity;
     }, 0);
+  };
+
+  // Calcula o total dos itens da comanda (para a aba Comanda)
+  const calculateTabTotal = () => {
+    if (!tabData?.items) return 0;
+    return tabData.items
+      .filter((item: any) => item.status !== 'cancelled')
+      .reduce((total: number, item: any) => {
+        const itemPrice = parseFloat(item.unitPrice || '0');
+        const complementsPrice = item.complements?.reduce((sum: number, c: any) => sum + parseFloat(c.price || '0') * (c.quantity || 1), 0) || 0;
+        return total + (itemPrice + complementsPrice) * item.quantity;
+      }, 0);
+  };
+
+  // Retorna o total apropriado baseado na aba selecionada
+  const getDisplayTotal = () => {
+    if (selectedTab === 'comanda') {
+      return calculateTabTotal();
+    }
+    return calculateTotal();
   };
 
   // Handlers
@@ -1550,7 +1576,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             <div className="p-3 border-t border-border/50 bg-white space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Subtotal</span>
-                <span className="text-sm font-semibold">{formatCurrency(calculateTotal())}</span>
+                <span className="text-sm font-semibold">{formatCurrency(getDisplayTotal())}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Consumo no local</span>
@@ -1566,7 +1592,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               <div className="flex items-center justify-between pt-2 border-t">
                 <span className="font-semibold">Total</span>
                 <span className="text-lg font-bold text-red-600">
-                  {formatCurrency(Math.max(0, calculateTotal() - (appliedCoupon?.discount || 0)))}
+                  {formatCurrency(Math.max(0, getDisplayTotal() - (appliedCoupon?.discount || 0)))}
                 </span>
               </div>
               <div className="flex gap-2">
@@ -1579,6 +1605,69 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                 >
                   <Ticket className={cn("h-4 w-4", showCouponField ? "text-red-500" : "text-gray-500")} />
                 </Button>
+                {/* Botão Imprimir - ao lado do cupom, apenas quando aba Comanda está selecionada */}
+                {selectedTab === 'comanda' && tabId && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="px-3 flex-shrink-0 border-gray-300 hover:bg-gray-100"
+                        title="Opções de impressão"
+                      >
+                        <Printer className="h-4 w-4 text-gray-600" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                      <DropdownMenuItem
+                        onClick={() => {
+                          // Buscar o orderId associado à comanda para impressão
+                          const receiptUrl = `${window.location.origin}/api/print/tab-receipt/${tabId}`;
+                          const iframe = document.createElement('iframe');
+                          iframe.style.position = 'fixed';
+                          iframe.style.right = '0';
+                          iframe.style.bottom = '0';
+                          iframe.style.width = '0';
+                          iframe.style.height = '0';
+                          iframe.style.border = 'none';
+                          iframe.src = receiptUrl;
+                          document.body.appendChild(iframe);
+                          iframe.onload = () => {
+                            setTimeout(() => {
+                              iframe.contentWindow?.print();
+                              setTimeout(() => {
+                                document.body.removeChild(iframe);
+                              }, 1000);
+                            }, 500);
+                          };
+                          toast.info("Abrindo impressão normal...");
+                        }}
+                      >
+                        <Printer className="h-4 w-4 mr-2" />
+                        Impressão Normal
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={async () => {
+                          try {
+                            const response = await fetch(`${window.location.origin}/api/print/multiprinter-tab/${tabId}`);
+                            const data = await response.json();
+                            if (data.success && data.deepLink) {
+                              window.location.href = data.deepLink;
+                              toast.info("Abrindo múltiplas impressoras Android...");
+                            } else {
+                              toast.error("Erro ao gerar link de impressão");
+                            }
+                          } catch (error) {
+                            console.error("Erro ao imprimir em múltiplas impressoras:", error);
+                            toast.error("Erro ao conectar com impressoras");
+                          }
+                        }}
+                      >
+                        <Receipt className="h-4 w-4 mr-2" />
+                        Múltiplas Impressoras (Android)
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
                 {/* Botão Limpar/Desfazer */}
                 <Button
                   variant="outline"
@@ -1595,35 +1684,21 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     "Limpar"
                   )}
                 </Button>
-                {/* Botão Imprimir - apenas quando aba Comanda está selecionada */}
-                {selectedTab === 'comanda' && (
-                  <Button
-                    variant="outline"
-                    className="px-3 flex-shrink-0 border-gray-300 hover:bg-gray-100"
-                    title="Imprimir comanda"
-                    onClick={() => {
-                      if (tabId) {
-                        // Imprimir comanda da mesa
-                        toast.info("Imprimindo comanda...");
-                        // Aqui pode ser implementada a lógica de impressão da comanda
-                      } else {
-                        toast.warning("Nenhuma comanda aberta para esta mesa");
-                      }
-                    }}
-                  >
-                    <Printer className="h-4 w-4 text-gray-600" />
-                  </Button>
-                )}
                 {/* Botão Fechar conta / Adicionar à Comanda */}
                 <Button
                   onClick={handleFinishOrder}
-                  disabled={cart.length === 0 || createOrderMutation.isPending || addTabItemsMutation.isPending || openTableMutation.isPending}
+                  disabled={
+                    (selectedTab === 'comanda' 
+                      ? (!tabData?.items || tabData.items.filter((item: any) => item.status !== 'cancelled').length === 0)
+                      : cart.length === 0
+                    ) || createOrderMutation.isPending || addTabItemsMutation.isPending || openTableMutation.isPending
+                  }
                   className="flex-1 bg-red-500 hover:bg-red-600 text-white"
                 >
                   {(createOrderMutation.isPending || addTabItemsMutation.isPending || openTableMutation.isPending) 
                     ? "Enviando..." 
                     : selectedTab === 'comanda' 
-                      ? "Fechar conta" 
+                      ? `Fechar Mesa ${tableNumber}` 
                       : "Enviar pedido"}
                 </Button>
               </div>
