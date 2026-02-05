@@ -20,7 +20,8 @@ import {
   Printer,
   Settings,
   Ticket,
-  Undo2
+  Undo2,
+  Armchair
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -744,12 +745,13 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     onClick={() => onTableChange?.(table)}
                     disabled={table.number === tableNumber}
                     className={cn(
-                      "relative px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
+                      "relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
                       table.number === tableNumber
                         ? "bg-emerald-500 text-white shadow-sm cursor-default"
                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
                     )}
                   >
+                    <Armchair className="h-4 w-4" />
                     {table.number}
                     {table.status === "occupied" && (
                       <span className={cn(
