@@ -711,7 +711,8 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
         {/* Header */}
         <div className="border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
           <div className="flex items-center justify-between px-4 py-3">
-            <div className="flex items-center gap-3">
+            {/* Título e descrição à esquerda */}
+            <div className="flex items-center gap-3 shrink-0">
               <div className="p-2 bg-white/20 rounded-lg">
                 <UtensilsCrossed className="h-5 w-5 text-white" />
               </div>
@@ -720,42 +721,43 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                 <p className="text-sm text-white/80">Adicionar itens à comanda</p>
               </div>
             </div>
+            
+            {/* Atalhos de Mesas centralizados */}
+            {tables.length > 0 && (
+              <div className="flex-1 flex justify-center mx-4 overflow-x-auto scrollbar-hide">
+                <div className="flex items-center gap-1.5">
+                  {tables.map((table) => (
+                    <button
+                      key={table.id}
+                      onClick={() => onTableChange?.(table)}
+                      disabled={table.number === tableNumber}
+                      className={cn(
+                        "px-2.5 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap",
+                        table.number === tableNumber
+                          ? "bg-white text-red-600 cursor-default"
+                          : table.status === "occupied"
+                            ? "bg-white/30 text-white hover:bg-white/40 border border-white/50"
+                            : "bg-white/20 text-white/90 hover:bg-white/30"
+                      )}
+                    >
+                      {table.number}
+                      {table.status === "occupied" && (
+                        <span className="ml-1 inline-block w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Botão fechar à direita */}
             <button
               onClick={onClose}
-              className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+              className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors shrink-0"
             >
               <X className="h-5 w-5 text-white" />
             </button>
           </div>
-          
-          {/* Atalhos de Mesas */}
-          {tables.length > 0 && (
-            <div className="px-4 pb-3">
-              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-                <span className="text-xs text-white/70 whitespace-nowrap">Ir para:</span>
-                {tables.map((table) => (
-                  <button
-                    key={table.id}
-                    onClick={() => onTableChange?.(table)}
-                    disabled={table.number === tableNumber}
-                    className={cn(
-                      "px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap",
-                      table.number === tableNumber
-                        ? "bg-white text-red-600 cursor-default"
-                        : table.status === "occupied"
-                          ? "bg-white/30 text-white hover:bg-white/40 border border-white/50"
-                          : "bg-white/20 text-white/90 hover:bg-white/30"
-                    )}
-                  >
-                    Mesa {table.number}
-                    {table.status === "occupied" && (
-                      <span className="ml-1 inline-block w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Content */}

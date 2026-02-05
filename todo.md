@@ -5196,3 +5196,7 @@
 
 ## Atalhos de mesas na barra vermelha do PDVSlidebar
 - [x] Adicionar atalhos de navegação entre mesas na barra vermelha da sidebar do PDV
+
+
+## Ajustar layout dos atalhos de mesas na barra vermelha
+- [x] Mover atalhos de mesas para a mesma linha que o título e descrição, centralizados
