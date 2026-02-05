@@ -5168,3 +5168,7 @@
 ## Correção da cor dos badges "Breve" em Configurações
 - [x] Mudar cor do badge "Breve" no menu Ajuda e Suporte de vermelho para amarelo
 - [x] Mudar cor do badge "Breve" no menu Integrações de vermelho para amarelo
+
+
+## Alterar texto do card de seleção de entrega
+- [x] Mudar "Entrega" para "Taxa de entrega" no card de seleção do modal de tipo de entrega
