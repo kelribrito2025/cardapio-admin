@@ -5030,15 +5030,25 @@ export async function updateTableStatus(
 }
 
 /**
- * Deleta uma mesa (soft delete - marca como inativa)
+ * Deleta uma mesa e todos os dados associados (comanda e itens)
  */
 export async function deleteTable(id: number): Promise<void> {
   const db = await getDb();
   if (!db) return;
   
-  await db.update(tables)
-    .set({ isActive: false, updatedAt: new Date() })
-    .where(eq(tables.id, id));
+  // Buscar comanda ativa da mesa
+  const activeTab = await getActiveTabByTable(id);
+  
+  if (activeTab) {
+    // Deletar itens da comanda
+    await db.delete(tabItems).where(eq(tabItems.tabId, activeTab.id));
+    
+    // Deletar a comanda
+    await db.delete(tabs).where(eq(tabs.id, activeTab.id));
+  }
+  
+  // Deletar a mesa (hard delete)
+  await db.delete(tables).where(eq(tables.id, id));
 }
 
 // ============ TAB (COMANDA) FUNCTIONS ============

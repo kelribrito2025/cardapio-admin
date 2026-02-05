@@ -5243,3 +5243,16 @@
 ## Bug: Sidebar fecha após enviar pedido e texto do botão incorreto
 - [x] Sidebar não deve fechar após enviar pedido
 - [x] Texto do botão deve ser "Enviar pedido" e não "Adicionar à comanda"
+
+## Bug: Pedido não chega na página de pedidos após enviar
+- [x] Pedido deve ser enviado tanto para a comanda quanto para a página de pedidos
+- [x] Corrigir a lógica de handleFinishOrder para criar o pedido na tabela orders
+
+## Bug: Card da mesa zera itens e valor após enviar pedido
+- [x] Card da mesa deve exibir os itens e valor da comanda (tabItems) após enviar o pedido
+- [x] Não deve mostrar 0 itens e R$ 0,00 quando há itens na comanda
+
+## Funcionalidade: Excluir mesas no modal Gerenciar Espaços
+- [x] Adicionar botão de excluir mesa no modal de Gerenciar Espaços
+- [x] Ao excluir mesa, excluir também todos os itens da comanda associados
+- [x] Adicionar confirmação antes de excluir

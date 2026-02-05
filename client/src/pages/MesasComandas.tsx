@@ -206,9 +206,35 @@ export default function MesasComandas() {
     };
   }, []);
 
-  // Função para verificar se mesa tem itens
+  // Função para verificar se mesa tem itens (carrinho local ou comanda)
   const tableHasItems = (tableId: number) => {
-    return (cartsPerTable[tableId]?.length || 0) > 0;
+    const cartItems = cartsPerTable[tableId]?.length || 0;
+    const table = tables.find(t => t.id === tableId);
+    const tabItems = table?.items?.length || 0;
+    return cartItems > 0 || tabItems > 0;
+  };
+
+  // Função para obter total de itens da mesa (carrinho + comanda)
+  const getTableItemsCount = (tableId: number) => {
+    const cartItems = cartsPerTable[tableId]?.length || 0;
+    const table = tables.find(t => t.id === tableId);
+    const tabItems = table?.items?.length || 0;
+    return cartItems + tabItems;
+  };
+
+  // Função para calcular total da mesa (carrinho + comanda)
+  const getTableTotal = (tableId: number) => {
+    const cartItems = cartsPerTable[tableId] || [];
+    const cartTotal = cartItems.reduce((sum, item) => {
+      const itemPrice = parseFloat(item.price);
+      const complementsPrice = item.complements.reduce((s, c) => s + parseFloat(c.price) * c.quantity, 0);
+      return sum + (itemPrice + complementsPrice) * item.quantity;
+    }, 0);
+    
+    const table = tables.find(t => t.id === tableId);
+    const tabTotal = table?.items?.reduce((sum, item) => sum + parseFloat(item.totalPrice), 0) || 0;
+    
+    return cartTotal + tabTotal;
   };
 
   // Função para obter status derivado da mesa
@@ -385,7 +411,17 @@ export default function MesasComandas() {
     },
   });
 
-  // Cálculos de resumo (usando status derivado baseado em itens)
+  const deleteTableMutation = trpc.tables.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Mesa excluída com sucesso!");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao excluir mesa");
+    },
+  });
+
+  // Cálculos de resumo (usando status derivado baseado em itens do carrinho + comanda)
   const summary = useMemo(() => {
     // Contar mesas por status derivado
     let free = 0;
@@ -394,7 +430,10 @@ export default function MesasComandas() {
     let totalRevenue = 0;
     
     tables.forEach((t) => {
-      const hasItems = (cartsPerTable[t.id]?.length || 0) > 0;
+      const cartItemsCount = cartsPerTable[t.id]?.length || 0;
+      const tabItemsCount = t.items?.length || 0;
+      const hasItems = cartItemsCount > 0 || tabItemsCount > 0;
+      
       if (hasItems) {
         occupied++;
         // Calcular total do carrinho
@@ -404,7 +443,9 @@ export default function MesasComandas() {
           const complementsPrice = item.complements.reduce((s, c) => s + parseFloat(c.price) * c.quantity, 0);
           return sum + (itemPrice + complementsPrice) * item.quantity;
         }, 0);
-        totalRevenue += cartTotal;
+        // Calcular total da comanda
+        const tabTotal = t.items?.reduce((sum, item) => sum + parseFloat(item.totalPrice), 0) || 0;
+        totalRevenue += cartTotal + tabTotal;
       } else if (t.status === "reserved") {
         reserved++;
       } else {
@@ -554,6 +595,12 @@ export default function MesasComandas() {
   const handleDeleteSpace = (id: number) => {
     if (confirm("Tem certeza que deseja remover este espaço? As mesas não serão excluídas.")) {
       deleteSpaceMutation.mutate({ id });
+    }
+  };
+
+  const handleDeleteTable = (tableId: number, tableNumber: number) => {
+    if (confirm(`Tem certeza que deseja excluir a Mesa ${tableNumber}? Todos os itens da comanda também serão excluídos.`)) {
+      deleteTableMutation.mutate({ id: tableId });
     }
   };
 
@@ -837,16 +884,12 @@ export default function MesasComandas() {
         {!isLoading && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {filteredTables.map((table) => {
-              // Status derivado baseado em itens no carrinho
+              // Status derivado baseado em itens no carrinho ou comanda
               const derivedStatus = getDerivedStatus(table);
               const statusConfig = getStatusConfig(derivedStatus);
               const hasItems = tableHasItems(table.id);
-              const cartItems = cartsPerTable[table.id] || [];
-              const cartTotal = cartItems.reduce((sum, item) => {
-                const itemPrice = parseFloat(item.price);
-                const complementsPrice = item.complements.reduce((s, c) => s + parseFloat(c.price) * c.quantity, 0);
-                return sum + (itemPrice + complementsPrice) * item.quantity;
-              }, 0);
+              const itemsCount = getTableItemsCount(table.id);
+              const tableTotal = getTableTotal(table.id);
               
               return (
                 <button
@@ -862,16 +905,16 @@ export default function MesasComandas() {
                     <span className="text-3xl font-bold text-gray-900">{table.number}</span>
                   </div>
                   
-                  {/* Informações da mesa ocupada (com itens no carrinho) */}
+                  {/* Informações da mesa ocupada (com itens no carrinho ou comanda) */}
                   {hasItems && (
                     <div className="space-y-1 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
                         <Receipt className="h-3.5 w-3.5" />
-                        <span>{cartItems.length} {cartItems.length === 1 ? 'item' : 'itens'}</span>
+                        <span>{itemsCount} {itemsCount === 1 ? 'item' : 'itens'}</span>
                       </div>
-                      {cartTotal > 0 && (
+                      {tableTotal > 0 && (
                         <div className="font-semibold text-gray-900">
-                          {formatCurrency(cartTotal)}
+                          {formatCurrency(tableTotal)}
                         </div>
                       )}
                     </div>
@@ -1246,6 +1289,31 @@ export default function MesasComandas() {
               </div>
             )}
 
+            {/* Lista de mesas para excluir */}
+            {tables.length > 0 && (
+              <div className="mt-6 pt-4 border-t">
+                <h4 className="font-medium mb-3 flex items-center gap-2">
+                  <Utensils className="h-4 w-4" />
+                  Mesas ({tables.length})
+                </h4>
+                <div className="max-h-48 overflow-y-auto space-y-1">
+                  {tables.map((table) => (
+                    <div key={table.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg text-sm">
+                      <span>Mesa {table.number}</span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => handleDeleteTable(table.id, table.number)}
+                        disabled={deleteTableMutation.isPending}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
           </div>
           <DialogFooter>

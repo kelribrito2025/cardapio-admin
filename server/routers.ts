@@ -3176,8 +3176,64 @@ export const appRouter = router({
           notes: z.string().optional(),
         })),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        // Adicionar itens à comanda
         await db.addItemsToTab(input.tabId, input.items);
+        
+        // Buscar a comanda para obter informações da mesa
+        const tab = await db.getTabById(input.tabId);
+        if (!tab) {
+          return { success: true };
+        }
+        
+        // Buscar a mesa para obter o número
+        if (!tab.tableId) {
+          return { success: true };
+        }
+        const table = await db.getTableById(tab.tableId);
+        if (!table) {
+          return { success: true };
+        }
+        
+        // Buscar o estabelecimento
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) {
+          return { success: true };
+        }
+        
+        // Calcular o total dos itens
+        const subtotal = input.items.reduce((sum, item) => sum + parseFloat(item.totalPrice), 0);
+        
+        // Gerar número do pedido
+        const orderNumber = Date.now().toString().slice(-6);
+        
+        // Criar o pedido na tabela orders
+        await db.createOrder({
+          establishmentId: establishment.id,
+          orderNumber,
+          customerName: `Mesa ${table.number}`,
+          customerPhone: "",
+          customerAddress: "",
+          deliveryType: "dine_in",
+          paymentMethod: "cash",
+          subtotal: subtotal.toFixed(2),
+          deliveryFee: "0.00",
+          discount: "0.00",
+          total: subtotal.toFixed(2),
+          notes: `Comanda da Mesa ${table.number}`,
+          status: "preparing",
+          source: "pdv",
+        }, input.items.map(item => ({
+          orderId: 0, // Será preenchido pela função createOrder
+          productId: item.productId,
+          productName: item.productName,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          totalPrice: item.totalPrice,
+          complements: item.complements || [],
+          notes: item.notes,
+        })));
+        
         return { success: true };
       }),
 
