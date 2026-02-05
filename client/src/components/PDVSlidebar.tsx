@@ -21,7 +21,8 @@ import {
   Settings,
   Ticket,
   Undo2,
-  ArrowUpDown
+  ArrowUpDown,
+  Receipt
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -273,6 +274,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
   // Estados para limpar/desfazer
   const [clearedCart, setClearedCart] = useState<CartItem[] | null>(null);
+
+  // Estado para aba selecionada (consumo ou comanda)
+  const [selectedTab, setSelectedTab] = useState<'consumo' | 'comanda'>('consumo');
 
   // Resetar clearedCart quando trocar de mesa
   useEffect(() => {
@@ -1253,23 +1257,35 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           <div className="w-[370px] bg-gray-50 flex flex-col">
             {/* Header do Carrinho */}
             <div className="p-3 border-b border-border/50 bg-white">
-              {/* Tipo de Pedido e Mesa - lado a lado */}
+              {/* Abas: Mesa (Consumo) e Comanda - lado a lado */}
               <div className="flex gap-2">
-                {/* Consumo - 50% */}
-                <div className="flex-1 flex items-center justify-center gap-2 p-2 bg-red-500 text-white rounded-lg">
+                {/* Mesa (número) - aba Consumo */}
+                <button
+                  onClick={() => setSelectedTab('consumo')}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2 p-2 rounded-lg transition-all",
+                    selectedTab === 'consumo'
+                      ? "bg-red-500 text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  )}
+                >
                   <UtensilsCrossed className="h-4 w-4" />
-                  <span className="text-sm font-medium">Consumo</span>
-                </div>
+                  <span className="text-sm font-medium">Mesa {tableNumber}</span>
+                </button>
 
-                {/* Mesa - 50% */}
-                <div className="flex-1 relative">
-                  <Input
-                    value={`Mesa ${tableNumber}`}
-                    disabled
-                    className="text-center font-medium bg-gray-100 cursor-not-allowed h-full"
-                  />
-                  <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                </div>
+                {/* Comanda - aba Comanda */}
+                <button
+                  onClick={() => setSelectedTab('comanda')}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2 p-2 rounded-lg transition-all",
+                    selectedTab === 'comanda'
+                      ? "bg-red-500 text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  )}
+                >
+                  <Receipt className="h-4 w-4" />
+                  <span className="text-sm font-medium">Comanda</span>
+                </button>
               </div>
             </div>
 
@@ -1436,13 +1452,38 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     "Limpar"
                   )}
                 </Button>
-                {/* Botão Finalizar */}
+                {/* Botão Imprimir - apenas quando aba Comanda está selecionada */}
+                {selectedTab === 'comanda' && (
+                  <Button
+                    variant="outline"
+                    className="px-3 flex-shrink-0 border-gray-300 hover:bg-gray-100"
+                    title="Imprimir comanda"
+                    onClick={() => {
+                      if (tabId) {
+                        // Imprimir comanda da mesa
+                        toast.info("Imprimindo comanda...");
+                        // Aqui pode ser implementada a lógica de impressão da comanda
+                      } else {
+                        toast.warning("Nenhuma comanda aberta para esta mesa");
+                      }
+                    }}
+                  >
+                    <Printer className="h-4 w-4 text-gray-600" />
+                  </Button>
+                )}
+                {/* Botão Fechar conta / Adicionar à Comanda */}
                 <Button
                   onClick={handleFinishOrder}
                   disabled={cart.length === 0 || createOrderMutation.isPending || addTabItemsMutation.isPending}
                   className="flex-1 bg-red-500 hover:bg-red-600 text-white"
                 >
-                  {(createOrderMutation.isPending || addTabItemsMutation.isPending) ? "Enviando..." : tabId ? "Adicionar à Comanda" : "Finalizar Pedido"}
+                  {(createOrderMutation.isPending || addTabItemsMutation.isPending) 
+                    ? "Enviando..." 
+                    : selectedTab === 'comanda' 
+                      ? "Fechar conta" 
+                      : tabId 
+                        ? "Adicionar à Comanda" 
+                        : "Finalizar Pedido"}
                 </Button>
               </div>
 

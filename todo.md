@@ -5224,3 +5224,9 @@
 
 ## Bug Fix: Botão Limpar/Desfazer no PDV Slidebar
 - [x] Corrigir bug onde o botão Limpar/Desfazer não resetava ao trocar de mesa
+
+## Alterações na Sidebar do PDV - Labels e Botões
+- [x] Trocar label "Consumo" para número da mesa selecionada (ex: "Mesa 3")
+- [x] Trocar label "Mesa X" para "Comanda" com ícone de recibo
+- [x] Exibir botão "Imprimir" entre "Limpar" e "Fechar conta" ao selecionar Comanda
+- [x] Renomear "Finalizar Pedido" para "Fechar conta"
