@@ -5178,3 +5178,7 @@
 - [x] Criar selo verde destacado para entrega grátis no card de taxa de entrega (sidebar)
 - [x] Criar selo verde destacado para entrega grátis no modal de tipo de entrega
 - [x] Criar selo verde destacado para entrega grátis na área de totais da sacola
+
+
+## Reverter estilo do botão Grátis
+- [x] Reverter botão Grátis para estilo vermelho com pulsação normal (sem ponto amarelo e sem gradiente verde)
