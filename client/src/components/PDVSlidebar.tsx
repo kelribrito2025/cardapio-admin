@@ -274,6 +274,11 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   // Estados para limpar/desfazer
   const [clearedCart, setClearedCart] = useState<CartItem[] | null>(null);
 
+  // Resetar clearedCart quando trocar de mesa
+  useEffect(() => {
+    setClearedCart(null);
+  }, [tableId, tableNumber]);
+
   // Estado para inversão das barras de mesas e categorias
   const [barsSwapped, setBarsSwapped] = useState(() => {
     try {

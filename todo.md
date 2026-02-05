@@ -5220,3 +5220,7 @@
 - [x] Bug: Status das mesas não atualiza em tempo real ao adicionar/remover itens da comanda (requer F5)
 - [ ] Corrigir agrupamento de itens iguais no carrinho (ex: 5x em vez de 5 cards separados)
 - [x] Implementar drag scroll na lista de mesas igual ao da lista de categorias
+- [ ] Bug: Botão Desfazer/Limpar não reseta ao trocar de mesa no PDVSlidebar
+
+## Bug Fix: Botão Limpar/Desfazer no PDV Slidebar
+- [x] Corrigir bug onde o botão Limpar/Desfazer não resetava ao trocar de mesa
