@@ -5139,3 +5139,9 @@
 
 ## Remover Texto de Prazo de Entrega no Modal de Confirmação
 - [x] Remover o texto "O prazo de entrega está entre 30 a 45 minutos" do modal de confirmação no menu público
+
+
+## Botão de Cupom e Limpar/Desfazer nas Páginas de Mesas e PDV
+- [x] Adicionar botão de cupom na sidebar da página de Mesas (ao lado esquerdo do botão Finalizar Pedido)
+- [x] Adicionar botão Limpar na sidebar da página de Mesas com funcionalidade de Desfazer
+- [x] Implementar funcionalidade de Limpar/Desfazer na página de PDV

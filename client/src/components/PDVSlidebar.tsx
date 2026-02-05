@@ -18,7 +18,9 @@ import {
   Pencil,
   Lock,
   Printer,
-  Settings
+  Settings,
+  Ticket,
+  Undo2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -207,6 +209,15 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   const [editingCartItem, setEditingCartItem] = useState<{index: number; item: CartItem} | null>(null);
   const [isEditingMode, setIsEditingMode] = useState(false);
 
+  // Estados para cupom
+  const [showCouponField, setShowCouponField] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{code: string; discount: number; couponId: number} | null>(null);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+
+  // Estados para limpar/desfazer
+  const [clearedCart, setClearedCart] = useState<CartItem[] | null>(null);
+
   // Estados para configuração da aba (handle)
   const [showHandleConfig, setShowHandleConfig] = useState(false);
   const [handleConfig, setHandleConfig] = useState<HandleConfig>(DEFAULT_HANDLE_CONFIG);
@@ -334,8 +345,25 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   };
 
   const clearCart = () => {
+    // Salvar itens atuais para possível desfazer
+    if (cart.length > 0) {
+      setClearedCart([...cart]);
+    }
     setCart([]);
     setExpandedCartItem(null);
+    // Limpar cupom também
+    setShowCouponField(false);
+    setCouponCode("");
+    setAppliedCoupon(null);
+  };
+
+  // Função para desfazer a limpeza
+  const undoClearCart = () => {
+    if (clearedCart) {
+      setCart(clearedCart);
+      setClearedCart(null);
+      toast.success("Itens restaurados!");
+    }
   };
 
   const calculateTotal = () => {
@@ -988,23 +1016,46 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                 <span className="text-sm text-gray-600">Consumo no local</span>
                 <span className="text-sm text-green-600 font-medium">Grátis</span>
               </div>
+              {/* Desconto do Cupom */}
+              {appliedCoupon && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Desconto ({appliedCoupon.code})</span>
+                  <span className="font-medium text-green-600">-{formatCurrency(appliedCoupon.discount)}</span>
+                </div>
+              )}
               <div className="flex items-center justify-between pt-2 border-t">
                 <span className="font-semibold">Total</span>
-                <span className="text-lg font-bold text-red-600">{formatCurrency(calculateTotal())}</span>
+                <span className="text-lg font-bold text-red-600">
+                  {formatCurrency(Math.max(0, calculateTotal() - (appliedCoupon?.discount || 0)))}
+                </span>
               </div>
               <div className="flex gap-2">
-                {tabId && (
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      toast.info("Enviando para impressora...");
-                      // Aqui seria integrado com o sistema de impressão ESC/POS
-                    }}
-                    className="flex-shrink-0"
-                  >
-                    <Printer className="h-4 w-4" />
-                  </Button>
-                )}
+                {/* Botão de Cupom */}
+                <Button
+                  variant="outline"
+                  className={cn("px-3 flex-shrink-0", showCouponField && "border-red-500 bg-red-50")}
+                  title="Adicionar cupom"
+                  onClick={() => setShowCouponField(!showCouponField)}
+                >
+                  <Ticket className={cn("h-4 w-4", showCouponField ? "text-red-500" : "text-gray-500")} />
+                </Button>
+                {/* Botão Limpar/Desfazer */}
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={clearedCart ? undoClearCart : clearCart}
+                  disabled={cart.length === 0 && !clearedCart}
+                >
+                  {clearedCart ? (
+                    <>
+                      <Undo2 className="h-4 w-4 mr-1" />
+                      Desfazer
+                    </>
+                  ) : (
+                    "Limpar"
+                  )}
+                </Button>
+                {/* Botão Finalizar */}
                 <Button
                   onClick={handleFinishOrder}
                   disabled={cart.length === 0 || createOrderMutation.isPending || addTabItemsMutation.isPending}
@@ -1013,6 +1064,89 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   {(createOrderMutation.isPending || addTabItemsMutation.isPending) ? "Enviando..." : tabId ? "Adicionar à Comanda" : "Finalizar Pedido"}
                 </Button>
               </div>
+
+              {/* Campo de Cupom */}
+              {showCouponField && (
+                <div className="mt-2 flex gap-2">
+                  {appliedCoupon ? (
+                    <div className="flex-1 flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+                      <div className="flex items-center gap-2">
+                        <Ticket className="h-4 w-4 text-green-600" />
+                        <span className="text-green-700 font-medium text-sm">{appliedCoupon.code}</span>
+                        <span className="text-green-600 text-xs">(-{formatCurrency(appliedCoupon.discount)})</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2 text-red-500 hover:text-red-600 hover:bg-red-50"
+                        onClick={() => {
+                          setAppliedCoupon(null);
+                          setCouponCode("");
+                          toast.success("Cupom removido");
+                        }}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Input
+                        placeholder="Código do cupom"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                        className="flex-1 h-9 text-sm"
+                      />
+                      <Button
+                        variant="outline"
+                        className="px-4 h-9 text-sm border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                        onClick={async () => {
+                          if (!couponCode.trim()) {
+                            toast.error("Digite o código do cupom");
+                            return;
+                          }
+                          if (!establishmentId) {
+                            toast.error("Estabelecimento não encontrado");
+                            return;
+                          }
+                          
+                          setIsValidatingCoupon(true);
+                          try {
+                            const response = await fetch(`/api/trpc/coupon.validate?input=${encodeURIComponent(JSON.stringify({
+                              json: {
+                                establishmentId,
+                                code: couponCode.toUpperCase(),
+                                orderValue: calculateTotal(),
+                                deliveryType: "self_service"
+                              }
+                            }))}`).then(res => res.json());
+                            
+                            const result = response.result?.data?.json || response.result?.data;
+                            
+                            if (result?.valid && result?.coupon) {
+                              toast.success(`Cupom ${couponCode} aplicado!`);
+                              setAppliedCoupon({ 
+                                code: couponCode.toUpperCase(), 
+                                discount: result.discount,
+                                couponId: result.coupon.id
+                              });
+                            } else {
+                              toast.error(result?.error || "Cupom inválido");
+                            }
+                          } catch (error) {
+                            console.error("Erro ao validar cupom:", error);
+                            toast.error("Erro ao validar cupom");
+                          } finally {
+                            setIsValidatingCoupon(false);
+                          }
+                        }}
+                        disabled={!couponCode.trim() || isValidatingCoupon}
+                      >
+                        {isValidatingCoupon ? "..." : "Aplicar"}
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

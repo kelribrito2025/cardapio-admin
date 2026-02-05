@@ -30,7 +30,8 @@ import {
   Ticket,
   Wallet,
   DollarSign,
-  Star
+  Star,
+  Undo2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -254,6 +255,9 @@ export default function PDV() {
   const [appliedCoupon, setAppliedCoupon] = useState<{code: string; discount: number; couponId: number} | null>(null);
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
 
+  // Estados para limpar/desfazer
+  const [clearedCart, setClearedCart] = useState<CartItem[] | null>(null);
+
   // Query para buscar taxas por bairro
   const { data: neighborhoodFees } = trpc.neighborhoodFees.list.useQuery(
     { establishmentId: establishmentId! },
@@ -418,6 +422,10 @@ export default function PDV() {
   };
 
   const clearCart = () => {
+    // Salvar itens atuais para possível desfazer
+    if (cart.length > 0) {
+      setClearedCart([...cart]);
+    }
     setCart([]);
     setTableNumber("");
     setPaymentMethod(null);
@@ -436,6 +444,15 @@ export default function PDV() {
     setShowCouponField(false);
     setCouponCode("");
     setAppliedCoupon(null);
+  };
+
+  // Função para desfazer a limpeza
+  const undoClearCart = () => {
+    if (clearedCart) {
+      setCart(clearedCart);
+      setClearedCart(null);
+      toast.success("Itens restaurados!");
+    }
   };
 
   // Calcular total
@@ -1131,10 +1148,17 @@ export default function PDV() {
                 <Button
                   variant="outline"
                   className="flex-1"
-                  onClick={clearCart}
-                  disabled={cart.length === 0}
+                  onClick={clearedCart ? undoClearCart : clearCart}
+                  disabled={cart.length === 0 && !clearedCart}
                 >
-                  Limpar
+                  {clearedCart ? (
+                    <>
+                      <Undo2 className="h-4 w-4 mr-1" />
+                      Desfazer
+                    </>
+                  ) : (
+                    "Limpar"
+                  )}
                 </Button>
                 <Button
                   className="flex-1 bg-red-500 hover:bg-red-600 text-white"
