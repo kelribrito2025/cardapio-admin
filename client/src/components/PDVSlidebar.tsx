@@ -750,7 +750,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                         : "bg-transparent text-gray-600 hover:bg-gray-200"
                     )}
                   >
-                    Mesa {table.number}
+                    {table.number}
                     {table.status === "occupied" && table.number !== tableNumber && (
                       <span className="ml-1.5 inline-block w-2 h-2 rounded-full bg-red-500"></span>
                     )}
