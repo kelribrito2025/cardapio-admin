@@ -495,7 +495,7 @@ function generateReceiptHTML(
   </div>
   ` : order.deliveryType === 'dine_in' ? `
   <div class="section-box">
-    <div class="section-content"><strong>Consumo:</strong> Cliente irá consumir no local</div>
+    <div class="section-content"><strong>${order.customerName?.startsWith('Mesa') ? order.customerName : 'Consumo'}:</strong> ${order.customerName?.startsWith('Mesa') ? 'Comanda da ' + order.customerName : 'Cliente irá consumir no local'}</div>
   </div>
   ` : `
   <div class="section-box">

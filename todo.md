@@ -5310,3 +5310,6 @@
 
 ## Delay na Abertura do Dropdown de Itens
 - [x] Adicionar delay/efeito mais lento na abertura do dropdown dos itens do carrinho
+
+## Correção Impressão Mesa no Pedido
+- [x] Corrigir impressão de pedidos da slidebar para mostrar "Mesa X" em vez de "Consumo"
