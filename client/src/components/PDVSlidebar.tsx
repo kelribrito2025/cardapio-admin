@@ -898,7 +898,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           </div>
 
           {/* Coluna Direita - Carrinho */}
-          <div className="w-[336px] bg-gray-50 flex flex-col">
+          <div className="w-[370px] bg-gray-50 flex flex-col">
             {/* Header do Carrinho */}
             <div className="p-3 border-b border-border/50 bg-white">
               {/* Tipo de Pedido e Mesa - lado a lado */}
@@ -944,18 +944,18 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                       onMouseLeave={() => setExpandedCartItem(null)}
                     >
                       <div 
-                        className="flex items-center justify-between p-2 cursor-pointer"
+                        className="flex items-center justify-between p-3 cursor-pointer"
                         onClick={() => setExpandedCartItem(isExpanded ? null : index)}
                       >
-                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                          <span className="text-[10px] font-medium text-red-600 bg-red-50 px-1 py-0.5 rounded">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <span className="text-xs font-medium text-red-600 bg-red-50 px-1.5 py-1 rounded">
                             {item.quantity}x
                           </span>
-                          <h4 className="font-semibold text-xs text-gray-800 truncate">
+                          <h4 className="font-semibold text-sm text-gray-800 truncate">
                             {item.name}
                           </h4>
                         </div>
-                        <span className="text-xs font-bold text-gray-900 ml-2">
+                        <span className="text-sm font-bold text-gray-900 ml-2">
                           {formatCurrency(itemTotal)}
                         </span>
                       </div>
@@ -965,11 +965,11 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                         <div className="border-t border-gray-100">
                           {/* Complementos */}
                           {item.complements.length > 0 && (
-                            <div className="px-2 py-1.5 bg-gray-50">
-                              <p className="text-[10px] text-gray-500 font-medium mb-1">Complementos:</p>
-                              <div className="space-y-0.5">
+                            <div className="px-3 py-2 bg-gray-50">
+                              <p className="text-xs text-gray-500 font-medium mb-1.5">Complementos:</p>
+                              <div className="space-y-1">
                                 {item.complements.map((comp, idx) => (
-                                  <div key={idx} className="flex items-center justify-between text-[10px]">
+                                  <div key={idx} className="flex items-center justify-between text-xs">
                                     <span className="text-gray-700">
                                       {comp.quantity > 1 ? `${comp.quantity}x ` : ""}{comp.name}
                                     </span>
@@ -983,15 +983,15 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                           )}
                           {/* Observação */}
                           {item.observation && (
-                            <div className="px-2 py-1 bg-yellow-50">
-                              <p className="text-[10px] text-yellow-700 italic">
+                            <div className="px-3 py-1.5 bg-yellow-50">
+                              <p className="text-xs text-yellow-700 italic">
                                 <span className="font-medium">Obs:</span> {item.observation}
                               </p>
                             </div>
                           )}
                           {/* Botões de ação */}
-                          <div className="px-2 pb-2 pt-2 flex items-center justify-between">
-                            <div className="flex items-center gap-1">
+                          <div className="px-3 pb-2.5 pt-2.5 flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
                               <button
                                 onClick={() => {
                                   if (item.quantity > 1) {
@@ -1000,30 +1000,30 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                                     removeFromCart(index);
                                   }
                                 }}
-                                className="p-1 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
+                                className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
                               >
-                                <Minus className="h-3 w-3 text-gray-600" />
+                                <Minus className="h-3.5 w-3.5 text-gray-600" />
                               </button>
-                              <span className="text-xs font-medium w-6 text-center">{item.quantity}</span>
+                              <span className="text-sm font-medium w-7 text-center">{item.quantity}</span>
                               <button
                                 onClick={() => updateCartItem(index, { quantity: item.quantity + 1 })}
-                                className="p-1 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
+                                className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
                               >
-                                <Plus className="h-3 w-3 text-gray-600" />
+                                <Plus className="h-3.5 w-3.5 text-gray-600" />
                               </button>
                             </div>
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1.5">
                               <button
                                 onClick={() => handleEditCartItem(index, item)}
-                                className="p-1 rounded bg-blue-100 hover:bg-blue-200 transition-colors"
+                                className="p-1.5 rounded bg-blue-100 hover:bg-blue-200 transition-colors"
                               >
-                                <Pencil className="h-3 w-3 text-blue-600" />
+                                <Pencil className="h-3.5 w-3.5 text-blue-600" />
                               </button>
                               <button
                                 onClick={() => removeFromCart(index)}
-                                className="p-1 rounded bg-red-100 hover:bg-red-200 transition-colors"
+                                className="p-1.5 rounded bg-red-100 hover:bg-red-200 transition-colors"
                               >
-                                <Trash2 className="h-3 w-3 text-red-600" />
+                                <Trash2 className="h-3.5 w-3.5 text-red-600" />
                               </button>
                             </div>
                           </div>

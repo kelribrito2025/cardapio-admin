@@ -5186,3 +5186,9 @@
 
 ## Adicionar ícone de check ao botão Grátis
 - [x] Adicionar ícone de check ao botão Grátis mantendo cor vermelha e pulsação
+
+
+## Aumentar tamanho da sidebar e cards do PDV
+- [x] Aumentar largura da sidebar do PDV em 10%
+- [x] Aumentar tamanho dos cards da lista de itens em 10%
+- [x] Aumentar tamanho dos textos da lista de itens em 10%
