@@ -5099,3 +5099,7 @@
 - [x] Acessar cardápio público do Palácio do Açaí
 - [x] Extrair categorias, produtos, complementos e grupos
 - [x] Importar dados para o estabelecimento ID 90001
+
+
+## Valor Padrão da Notificação Finalizado
+- [x] Alterar valor padrão da notificação "Finalizado" para ativada (true) quando nova conta for criada

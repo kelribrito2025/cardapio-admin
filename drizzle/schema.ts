@@ -470,7 +470,7 @@ export const whatsappConfig = mysqlTable("whatsappConfig", {
   notifyOnNewOrder: boolean("notifyOnNewOrder").default(true).notNull(), // Notificar cliente quando pedido é criado
   notifyOnPreparing: boolean("notifyOnPreparing").default(true).notNull(), // Notificar quando pedido está sendo preparado
   notifyOnReady: boolean("notifyOnReady").default(true).notNull(), // Notificar quando pedido está pronto
-  notifyOnCompleted: boolean("notifyOnCompleted").default(false).notNull(), // Notificar quando pedido é finalizado
+  notifyOnCompleted: boolean("notifyOnCompleted").default(true).notNull(), // Notificar quando pedido é finalizado
   notifyOnCancelled: boolean("notifyOnCancelled").default(true).notNull(), // Notificar quando pedido é cancelado
   // Templates de mensagem personalizados
   templateNewOrder: text("templateNewOrder"), // Template para novo pedido
