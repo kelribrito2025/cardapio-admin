@@ -5103,3 +5103,7 @@
 
 ## Valor Padrão da Notificação Finalizado
 - [x] Alterar valor padrão da notificação "Finalizado" para ativada (true) quando nova conta for criada
+
+
+## Importação de Taxas por Bairro - Palácio do Açaí
+- [x] Importar 25 bairros com taxas de entrega para o estabelecimento ID 90001
