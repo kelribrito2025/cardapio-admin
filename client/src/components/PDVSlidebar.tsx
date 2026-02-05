@@ -20,7 +20,8 @@ import {
   Printer,
   Settings,
   Ticket,
-  Undo2
+  Undo2,
+  ArrowUpDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -226,6 +227,27 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
   // Estados para limpar/desfazer
   const [clearedCart, setClearedCart] = useState<CartItem[] | null>(null);
+
+  // Estado para inversão das barras de mesas e categorias
+  const [barsSwapped, setBarsSwapped] = useState(() => {
+    try {
+      const saved = localStorage.getItem('pdv-bars-swapped');
+      return saved === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  // Salvar preferência de inversão no localStorage
+  const toggleBarsSwapped = () => {
+    const newValue = !barsSwapped;
+    setBarsSwapped(newValue);
+    try {
+      localStorage.setItem('pdv-bars-swapped', String(newValue));
+    } catch (e) {
+      console.error('Erro ao salvar preferência de inversão:', e);
+    }
+  };
 
   // Estados para configuração da aba (handle)
   const [showHandleConfig, setShowHandleConfig] = useState(false);
@@ -734,44 +756,18 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             </div>
           </div>
           
-          {/* Abas de Mesas */}
-          {tables.length > 0 && (
-            <div className="bg-gray-100 px-4 py-2.5 overflow-x-auto scrollbar-hide">
-              <div className="flex items-center gap-4">
-                {tables.map((table) => (
-                  <button
-                    key={table.id}
-                    onClick={() => onTableChange?.(table)}
-                    disabled={table.number === tableNumber}
-                    className={cn(
-                      "relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
-                      table.number === tableNumber
-                        ? "bg-emerald-500 text-white shadow-sm cursor-default"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
-                    )}
-                  >
-                    <UtensilsCrossed className="h-4 w-4" />
-                    {table.number}
-                    {table.status === "occupied" && (
-                      <span className={cn(
-                        "absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full",
-                        table.number === tableNumber ? "bg-white" : "bg-red-500"
-                      )}></span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="flex flex-1 overflow-hidden">
-          {/* Coluna Esquerda - Produtos */}
-          <div className="flex-1 flex flex-col overflow-hidden border-r border-border/50">
-            {/* Barra de Categorias */}
+          {/* Barra Superior - Mesas ou Categorias (depend da inversão) */}
+          {barsSwapped ? (
+            /* Barra de Categorias no topo quando invertido */
             <div className="relative px-3 py-2 border-b border-border/50 bg-muted/20">
               <div className="flex items-center gap-2">
+                <button
+                  onClick={toggleBarsSwapped}
+                  className="flex items-center justify-center w-9 h-9 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0"
+                  title="Trocar posição das barras"
+                >
+                  <ArrowUpDown className="h-4 w-4" />
+                </button>
                 <button
                   onClick={() => setShowCategoriesModal(true)}
                   className="flex items-center justify-center w-9 h-9 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0"
@@ -844,6 +840,158 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                 </div>
               )}
             </div>
+          ) : (
+            /* Abas de Mesas no topo (padrão) */
+            tables.length > 0 && (
+              <div className="bg-gray-100 px-4 py-2.5 overflow-x-auto scrollbar-hide">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={toggleBarsSwapped}
+                    className="flex items-center justify-center w-9 h-9 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0"
+                    title="Trocar posição das barras"
+                  >
+                    <ArrowUpDown className="h-4 w-4" />
+                  </button>
+                  {tables.map((table) => (
+                    <button
+                      key={table.id}
+                      onClick={() => onTableChange?.(table)}
+                      disabled={table.number === tableNumber}
+                      className={cn(
+                        "relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
+                        table.number === tableNumber
+                          ? "bg-emerald-500 text-white shadow-sm cursor-default"
+                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+                      )}
+                    >
+                      <UtensilsCrossed className="h-4 w-4" />
+                      {table.number}
+                      {table.status === "occupied" && (
+                        <span className={cn(
+                          "absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full",
+                          table.number === tableNumber ? "bg-white" : "bg-red-500"
+                        )}></span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* Coluna Esquerda - Produtos */}
+          <div className="flex-1 flex flex-col overflow-hidden border-r border-border/50">
+            {/* Barra Secundária - Mesas ou Categorias (depend da inversão) */}
+            {barsSwapped ? (
+              /* Abas de Mesas embaixo quando invertido */
+              tables.length > 0 && (
+                <div className="bg-gray-100 px-4 py-2.5 overflow-x-auto scrollbar-hide border-b border-border/50">
+                  <div className="flex items-center gap-4">
+                    {tables.map((table) => (
+                      <button
+                        key={table.id}
+                        onClick={() => onTableChange?.(table)}
+                        disabled={table.number === tableNumber}
+                        className={cn(
+                          "relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
+                          table.number === tableNumber
+                            ? "bg-emerald-500 text-white shadow-sm cursor-default"
+                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+                        )}
+                      >
+                        <UtensilsCrossed className="h-4 w-4" />
+                        {table.number}
+                        {table.status === "occupied" && (
+                          <span className={cn(
+                            "absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full",
+                            table.number === tableNumber ? "bg-white" : "bg-red-500"
+                          )}></span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )
+            ) : (
+              /* Barra de Categorias embaixo (padrão) */
+              <div className="relative px-3 py-2 border-b border-border/50 bg-muted/20">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowCategoriesModal(true)}
+                    className="flex items-center justify-center w-9 h-9 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0"
+                  >
+                    <Menu className="h-4 w-4" />
+                  </button>
+                  <div 
+                    ref={categoriesContainerRef}
+                    className={cn(
+                      "flex items-center gap-2 overflow-x-auto pr-20 scrollbar-hide select-none flex-1",
+                      isDragging ? "cursor-grabbing" : "cursor-grab"
+                    )}
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    onMouseDown={handleMouseDown}
+                  >
+                    <button
+                      onClick={() => setSelectedCategory(null)}
+                      className={cn(
+                        "relative px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0 mt-2",
+                        selectedCategory === null
+                          ? "bg-red-500 text-white shadow-sm"
+                          : "bg-card text-muted-foreground hover:bg-muted border border-border/50"
+                      )}
+                    >
+                      Todos
+                      <span className={cn(
+                        "absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-[10px] font-semibold",
+                        selectedCategory === null ? "bg-white text-red-500" : "bg-red-500 text-white"
+                      )}>
+                        {productsList.filter((p) => p.status === 'active').length || 0}
+                      </span>
+                    </button>
+                    {categoriesLoading ? (
+                      Array.from({ length: 4 }).map((_, i) => (
+                        <Skeleton key={i} className="h-8 w-24" />
+                      ))
+                    ) : (
+                      sortedCategories.map((category) => {
+                        const count = productsList.filter(
+                          (p) => p.status === 'active' && p.categoryId === category.id
+                        ).length || 0;
+                        const categoryNameWithoutEmoji = category.name.replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]+|[\u2600-\u27BF]/g, '').trim();
+                        return (
+                          <button
+                            key={category.id}
+                            onClick={() => setSelectedCategory(category.id)}
+                            className={cn(
+                              "relative px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0 mt-2",
+                              selectedCategory === category.id
+                                ? "bg-red-500 text-white shadow-sm"
+                                : "bg-card text-muted-foreground hover:bg-muted border border-border/50"
+                            )}
+                          >
+                            {categoryNameWithoutEmoji}
+                            <span className={cn(
+                              "absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-[10px] font-semibold",
+                              selectedCategory === category.id ? "bg-white text-red-500" : "bg-red-500 text-white"
+                            )}>
+                              {count}
+                            </span>
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+                {hasOverflow && (
+                  <div className="absolute right-0 top-0 bottom-0 flex items-center pointer-events-none pr-2">
+                    <ChevronsRight className="h-5 w-5 text-red-400 animate-bounce-x" />
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Barra de Busca */}
             <div className="px-3 py-2 border-b border-border/50">
