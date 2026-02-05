@@ -5307,3 +5307,6 @@
 
 ## Remoção Linha Consumo no Local
 - [x] Remover linha "Consumo no local - Grátis" da slidebar do PDV
+
+## Delay na Abertura do Dropdown de Itens
+- [x] Adicionar delay/efeito mais lento na abertura do dropdown dos itens do carrinho

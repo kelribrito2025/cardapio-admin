@@ -303,6 +303,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   const [expandedCartItem, setExpandedCartItem] = useState<number | null>(null);
   const [editingCartItem, setEditingCartItem] = useState<{index: number; item: CartItem} | null>(null);
   const [isEditingMode, setIsEditingMode] = useState(false);
+  
+  // Ref para delay na abertura do dropdown de itens
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Estados para cupom
   const [showCouponField, setShowCouponField] = useState(false);
@@ -1539,9 +1542,25 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                       return (
                         <div
                           key={`${item.productId}-${index}`}
-                          className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-red-500 overflow-hidden transition-all duration-200"
-                          onMouseEnter={() => setExpandedCartItem(index)}
-                          onMouseLeave={() => setExpandedCartItem(null)}
+                          className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-red-500 overflow-hidden transition-all duration-300"
+                          onMouseEnter={() => {
+                            // Limpar timeout anterior se existir
+                            if (hoverTimeoutRef.current) {
+                              clearTimeout(hoverTimeoutRef.current);
+                            }
+                            // Adicionar delay de 300ms antes de expandir
+                            hoverTimeoutRef.current = setTimeout(() => {
+                              setExpandedCartItem(index);
+                            }, 300);
+                          }}
+                          onMouseLeave={() => {
+                            // Limpar timeout se sair antes de completar o delay
+                            if (hoverTimeoutRef.current) {
+                              clearTimeout(hoverTimeoutRef.current);
+                              hoverTimeoutRef.current = null;
+                            }
+                            setExpandedCartItem(null);
+                          }}
                         >
                           <div 
                             className="flex items-center justify-between p-3 cursor-pointer"
