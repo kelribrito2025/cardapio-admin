@@ -5273,3 +5273,6 @@
 - [x] Botão de impressão na aba Comanda deve mostrar opções (impressão normal e múltiplas impressoras Android)
 - [x] Reposicionar ícone de impressora ao lado direito do botão de cupom
 - [x] Alterar texto do botão de "Fechar conta" para "Fechar Mesa X" na aba Comanda
+- [x] Atualizar dropdown de impressão do PDV Slidebar para ter o mesmo formato da página de Pedidos (título "Imprimir" e estrelinhas para favoritar)
+- [x] Corrigir botão Comanda que não fica clicável após enviar o pedido
+- [x] Corrigir erro 404 na impressão do recibo da comanda no PDV Slidebar

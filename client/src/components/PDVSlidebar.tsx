@@ -22,7 +22,8 @@ import {
   Ticket,
   Undo2,
   ArrowUpDown,
-  Receipt
+  Receipt,
+  Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,7 +37,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toast } from "sonner";
 
 // Constantes para configuração da aba
@@ -147,6 +155,28 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
     { establishmentId: establishmentId ?? 0 },
     { enabled: !!establishmentId && establishmentId > 0 }
   );
+
+  const utils = trpc.useUtils();
+
+  // Mutation para atualizar método de impressão favorito
+  const updatePrintMethodMutation = trpc.printer.saveSettings.useMutation({
+    onSuccess: () => {
+      utils.printer.getSettings.invalidate();
+      toast.success("Método de impressão favorito atualizado!");
+    },
+    onError: () => {
+      toast.error("Erro ao atualizar método de impressão");
+    },
+  });
+
+  // Função para alternar o método de impressão favorito
+  const handleToggleFavoritePrintMethod = (method: 'normal' | 'android') => {
+    if (!establishmentId) return;
+    updatePrintMethodMutation.mutate({
+      establishmentId,
+      defaultPrintMethod: method,
+    });
+  };
 
   // Função para imprimir pedido
   const handlePrintOrderDirect = async (orderId: number) => {
@@ -1617,10 +1647,12 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                         <Printer className="h-4 w-4 text-gray-600" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start">
-                      <DropdownMenuItem
+                    <DropdownMenuContent align="start" className="w-64">
+                      <DropdownMenuLabel>Imprimir</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <div 
+                        className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" 
                         onClick={() => {
-                          // Buscar o orderId associado à comanda para impressão
                           const receiptUrl = `${window.location.origin}/api/print/tab-receipt/${tabId}`;
                           const iframe = document.createElement('iframe');
                           iframe.style.position = 'fixed';
@@ -1642,10 +1674,37 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                           toast.info("Abrindo impressão normal...");
                         }}
                       >
-                        <Printer className="h-4 w-4 mr-2" />
-                        Impressão Normal
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
+                        <div className="flex items-center">
+                          <Printer className="h-4 w-4 mr-2" />
+                          <span className="text-sm">Impressão Normal</span>
+                        </div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggleFavoritePrintMethod('normal');
+                              }}
+                              className="p-1 hover:bg-accent-foreground/10 rounded"
+                            >
+                              <Star 
+                                className={cn(
+                                  "h-4 w-4 transition-colors",
+                                  printerSettings?.defaultPrintMethod === 'normal' 
+                                    ? "fill-amber-500 text-amber-500" 
+                                    : "text-amber-500"
+                                )} 
+                              />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="left" className="max-w-[220px]">
+                            <p className="font-medium">Definir como impressão padrão</p>
+                            <p className="text-xs text-muted-foreground">Ao marcar como favorito, essa opção será usada automaticamente ao clicar em Aceitar pedido.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <div 
+                        className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" 
                         onClick={async () => {
                           try {
                             const response = await fetch(`${window.location.origin}/api/print/multiprinter-tab/${tabId}`);
@@ -1662,9 +1721,35 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                           }
                         }}
                       >
-                        <Receipt className="h-4 w-4 mr-2" />
-                        Múltiplas Impressoras (Android)
-                      </DropdownMenuItem>
+                        <div className="flex items-center">
+                          <Printer className="h-4 w-4 mr-2" />
+                          <span className="text-sm">Múltiplas Impressoras (Android)</span>
+                        </div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggleFavoritePrintMethod('android');
+                              }}
+                              className="p-1 hover:bg-accent-foreground/10 rounded"
+                            >
+                              <Star 
+                                className={cn(
+                                  "h-4 w-4 transition-colors",
+                                  printerSettings?.defaultPrintMethod === 'android' 
+                                    ? "fill-amber-500 text-amber-500" 
+                                    : "text-amber-500"
+                                )} 
+                              />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="left" className="max-w-[220px]">
+                            <p className="font-medium">Definir como impressão padrão</p>
+                            <p className="text-xs text-muted-foreground">Ao marcar como favorito, essa opção será usada automaticamente ao clicar em Aceitar pedido.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )}

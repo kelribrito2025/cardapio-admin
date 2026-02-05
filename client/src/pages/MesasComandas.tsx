@@ -529,9 +529,19 @@ export default function MesasComandas() {
     setShowPDVSlidebar(false);
   };
 
-  const handleOrderCreated = () => {
+  const handleOrderCreated = async () => {
     // Atualizar os dados das mesas
-    refetch();
+    const result = await refetch();
+    // Atualizar selectedTable com os dados atualizados (incluindo tabId)
+    if (result.data && selectedTable) {
+      const updatedTable = result.data.find(t => t.id === selectedTable.id);
+      if (updatedTable) {
+        setSelectedTable({
+          ...updatedTable,
+          status: updatedTable.status === "requesting_bill" ? "occupied" : updatedTable.status as TableStatus
+        } as Table);
+      }
+    }
     // Não fechar a sidebar após enviar pedido para permitir adicionar mais itens
   };
 

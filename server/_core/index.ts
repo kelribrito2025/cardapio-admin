@@ -9,7 +9,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, sendAllOrdersHeartbeat } from "./sse";
-import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrderById, getOrderItems, getOrderItemsWithPrinter, getEstablishmentById, getPrinterSettings, getActivePrinters } from "../db";
+import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrderById, getOrderItems, getOrderItemsWithPrinter, getEstablishmentById, getPrinterSettings, getActivePrinters, getTabById, getTabItems, getTableById } from "../db";
 import { sdk } from "./sdk";
 
 // Função para gerar HTML do recibo otimizado para impressora térmica
@@ -776,6 +776,284 @@ function generateSectorReceiptHTML(
   `.trim();
 }
 
+// Função para gerar HTML do recibo de comanda (tab)
+function generateTabReceiptHTML(
+  tab: any,
+  items: any[],
+  table: any,
+  establishment: any,
+  settings: any
+): string {
+  const formatCurrency = (value: number | string | null) => {
+    const num = typeof value === 'string' ? parseFloat(value) : (value || 0);
+    return `R$ ${num.toFixed(2).replace('.', ',')}`;
+  };
+  
+  const formatDate = (date: Date | string) => {
+    const d = new Date(date);
+    return d.toLocaleString('pt-BR', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+  
+  // Configurar largura do papel
+  const is58mm = settings?.paperWidth === '58mm';
+  const paperWidth = is58mm ? '48mm' : '72mm';
+  
+  const baseFontSize = `${settings?.fontSize || (is58mm ? 11 : 12)}px`;
+  const baseFontWeight = settings?.fontWeight || 500;
+  const headerFontSize = `${settings?.titleFontSize || (is58mm ? 14 : 16)}px`;
+  const headerFontWeight = settings?.titleFontWeight || 700;
+  const itemFontSize = `${settings?.itemFontSize || (is58mm ? 11 : 12)}px`;
+  const itemFontWeight = settings?.itemFontWeight || 700;
+  const smallFontSize = `${settings?.obsFontSize || (is58mm ? 10 : 11)}px`;
+  
+  let itemsHTML = '';
+  let subtotal = 0;
+  
+  for (const item of items) {
+    const itemTotal = parseFloat(item.totalPrice) || 0;
+    subtotal += itemTotal;
+    
+    let itemHTML = `
+      <div class="item">
+        <div class="item-header">
+          <span>${item.quantity}x ${item.productName}</span>
+          <span>${formatCurrency(itemTotal)}</span>
+        </div>
+    `;
+    if (item.notes) {
+      itemHTML += `<div class="item-obs">Obs: ${item.notes}</div>`;
+    }
+    // Parse complements if exists
+    if (item.complements) {
+      try {
+        const complements = typeof item.complements === 'string' ? JSON.parse(item.complements) : item.complements;
+        if (Array.isArray(complements)) {
+          for (const comp of complements) {
+            if (comp.items && Array.isArray(comp.items)) {
+              for (const ci of comp.items) {
+                const qty = ci.quantity || 1;
+                const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+                itemHTML += `<div class="item-complement">+ ${qtyPrefix}${ci.name}${ci.price > 0 ? ` (${formatCurrency(ci.price * qty)})` : ''}</div>`;
+              }
+            } else if (comp.name) {
+              const qty = comp.quantity || 1;
+              const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+              itemHTML += `<div class="item-complement">+ ${qtyPrefix}${comp.name}${comp.price > 0 ? ` (${formatCurrency(comp.price * qty)})` : ''}</div>`;
+            }
+          }
+        }
+      } catch (e) {}
+    }
+    itemHTML += `</div>`;
+    itemsHTML += itemHTML;
+  }
+  
+  const discount = parseFloat(tab.discount) || 0;
+  const serviceCharge = parseFloat(tab.serviceCharge) || 0;
+  const total = subtotal - discount + serviceCharge;
+  
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comanda - Mesa ${table?.number || tab.tableId}</title>
+  <style>
+    @page {
+      size: ${paperWidth} auto;
+      margin: 0;
+    }
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+    html {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      background: #e5e5e0;
+    }
+    body { 
+      font-family: 'Arial', 'Helvetica', sans-serif; 
+      font-size: ${baseFontSize}; 
+      font-weight: ${baseFontWeight};
+      line-height: 1.4;
+      width: 100%; 
+      max-width: 320px;
+      padding: 20px;
+      background: #f5f5f0;
+      color: #000;
+      -webkit-font-smoothing: antialiased;
+      margin: 0 auto;
+    }
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html {
+        background: #fff;
+        display: block;
+      }
+      body {
+        background: #fff;
+        max-width: 100%;
+        padding: 8px;
+      }
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .header h1 {
+      font-size: ${headerFontSize};
+      font-weight: ${headerFontWeight};
+      margin-bottom: 4px;
+    }
+    .header p {
+      font-size: ${smallFontSize};
+      color: #666;
+    }
+    .table-info {
+      text-align: center;
+      padding: 12px;
+      background: #000;
+      color: #fff;
+      margin-bottom: 16px;
+      font-size: ${headerFontSize};
+      font-weight: ${headerFontWeight};
+    }
+    .date-info {
+      text-align: center;
+      font-size: ${smallFontSize};
+      color: #666;
+      margin-bottom: 12px;
+    }
+    .divider {
+      border: none;
+      border-top: 1px dashed #ccc;
+      margin: 12px 0;
+    }
+    .item {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .item:last-child {
+      border-bottom: none;
+    }
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: ${itemFontSize};
+      font-weight: ${itemFontWeight};
+    }
+    .item-obs {
+      font-size: ${smallFontSize};
+      color: #666;
+      margin-top: 4px;
+      font-style: italic;
+    }
+    .item-complement {
+      font-size: ${smallFontSize};
+      color: #444;
+      margin-top: 2px;
+      padding-left: 12px;
+    }
+    .totals {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 2px solid #000;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: ${baseFontSize};
+    }
+    .total-final {
+      font-size: ${headerFontSize};
+      font-weight: ${headerFontWeight};
+      background: #000;
+      color: #fff;
+      padding: 8px;
+      margin-top: 8px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 16px;
+      font-size: ${smallFontSize};
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>${establishment?.name || 'Estabelecimento'}</h1>
+    <p>Comanda</p>
+  </div>
+  
+  <div class="table-info">Mesa ${table?.number || tab.tableId}</div>
+  
+  <div class="date-info">
+    Aberta em: ${formatDate(tab.openedAt)}
+  </div>
+  
+  <hr class="divider">
+  
+  <div class="items">
+    ${itemsHTML}
+  </div>
+  
+  <div class="totals">
+    <div class="total-row">
+      <span>Subtotal:</span>
+      <span>${formatCurrency(subtotal)}</span>
+    </div>
+    ${discount > 0 ? `
+    <div class="total-row">
+      <span>Desconto:</span>
+      <span>-${formatCurrency(discount)}</span>
+    </div>
+    ` : ''}
+    ${serviceCharge > 0 ? `
+    <div class="total-row">
+      <span>Taxa de serviço:</span>
+      <span>${formatCurrency(serviceCharge)}</span>
+    </div>
+    ` : ''}
+    <div class="total-row total-final">
+      <span>TOTAL:</span>
+      <span>${formatCurrency(total)}</span>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <p>Obrigado pela preferência!</p>
+  </div>
+</body>
+<script>
+  window.onload = function() {
+    var isInIframe = window !== window.parent;
+    if (!isInIframe) {
+      setTimeout(function() {
+        window.print();
+      }, 300);
+    }
+  };
+</script>
+</html>
+  `.trim();
+}
+
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
     const server = net.createServer();
@@ -1525,6 +1803,89 @@ async function startServer() {
     } catch (error) {
       console.error("[Receipt Sector] Erro:", error);
       res.status(500).send("Erro ao gerar recibo");
+    }
+  });
+
+  // Rota para gerar HTML do recibo de comanda (tab) para impressão
+  app.get("/api/print/tab-receipt/:tabId", async (req, res) => {
+    try {
+      const tabId = parseInt(req.params.tabId);
+      if (isNaN(tabId)) {
+        res.status(400).send("ID da comanda inválido");
+        return;
+      }
+      
+      const tab = await getTabById(tabId);
+      if (!tab) {
+        res.status(404).send("Comanda não encontrada");
+        return;
+      }
+      
+      const tabItemsList = await getTabItems(tabId);
+      const table = tab.tableId ? await getTableById(tab.tableId) : null;
+      const establishment = await getEstablishmentById(tab.establishmentId);
+      const settings = await getPrinterSettings(tab.establishmentId);
+      
+      // Gerar HTML do recibo da comanda
+      const html = generateTabReceiptHTML(tab, tabItemsList, table, establishment, settings);
+      
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (error) {
+      console.error("[Print Tab] Erro ao gerar recibo:", error);
+      res.status(500).send("Erro ao gerar recibo da comanda");
+    }
+  });
+
+  // Endpoint para gerar deep link de impressão de comanda em múltiplas impressoras Android
+  app.get("/api/print/multiprinter-tab/:tabId", async (req, res) => {
+    try {
+      const tabId = parseInt(req.params.tabId);
+      if (isNaN(tabId)) {
+        res.status(400).json({ error: "ID da comanda inválido" });
+        return;
+      }
+      
+      const tab = await getTabById(tabId);
+      if (!tab) {
+        res.status(404).json({ error: "Comanda não encontrada" });
+        return;
+      }
+      
+      // Buscar impressoras ativas do estabelecimento
+      const printers = await getActivePrinters(tab.establishmentId);
+      
+      if (printers.length === 0) {
+        res.status(400).json({ error: "Nenhuma impressora configurada" });
+        return;
+      }
+      
+      // URL pública do recibo da comanda
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const receiptUrl = `${baseUrl}/api/print/tab-receipt/${tabId}`;
+      
+      // Gerar deep link para o app Multi Printer
+      const printJobs = printers.map((printer: any) => ({
+        srcTp: "uri",
+        srcData: receiptUrl,
+        printerIpAddr: printer.ipAddress || "",
+        printerPort: printer.port || 9100,
+        printerName: printer.name || "Impressora",
+        copies: 1
+      }));
+      
+      const deepLinkData = encodeURIComponent(JSON.stringify(printJobs));
+      const deepLink = `multiprinter://print?data=${deepLinkData}`;
+      
+      res.json({
+        success: true,
+        deepLink,
+        printers: printers.map((p: any) => ({ name: p.name, ip: p.ipAddress })),
+        tabId
+      });
+    } catch (error) {
+      console.error("[MultiPrinter Tab] Erro ao gerar deep link:", error);
+      res.status(500).json({ error: "Erro ao gerar link de impressão" });
     }
   });
 
