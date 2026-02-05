@@ -407,6 +407,13 @@
       "when": 1770259262937,
       "tag": "0057_greedy_hammerhead",
       "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "5",
+      "when": 1770291222705,
+      "tag": "0058_faithful_the_captain",
+      "breakpoints": true
     }
   ]
 }

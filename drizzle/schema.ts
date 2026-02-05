@@ -421,7 +421,7 @@ export const printerSettings = mysqlTable("printerSettings", {
   itemFontWeight: int("itemFontWeight").default(700).notNull(), // Peso da fonte de itens
   obsFontSize: int("obsFontSize").default(11).notNull(), // Tamanho da fonte de observações
   obsFontWeight: int("obsFontWeight").default(500).notNull(), // Peso da fonte de observações
-  showDividers: boolean("showDividers").default(true).notNull(), // Mostrar divisores
+  showDividers: boolean("showDividers").default(false).notNull(), // Mostrar divisores
   boxPadding: int("boxPadding").default(12).notNull(), // Espaçamento interno das caixas com bordas redondas
   itemBorderStyle: varchar("itemBorderStyle", { length: 20 }).default("rounded").notNull(), // Estilo de borda dos itens: rounded ou dashed
   // Preferência de impressão padrão ao aceitar pedidos

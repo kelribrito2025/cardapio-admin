@@ -5127,3 +5127,7 @@
 
 ## Badge Breve no Menu Ajuda e Suporte
 - [x] Adicionar badge "Breve" no menu Ajuda e Suporte
+
+
+## Valor Padrão da Opção Mostrar Divisores
+- [x] Alterar valor padrão de "Mostrar divisores" para false quando nova conta for criada
