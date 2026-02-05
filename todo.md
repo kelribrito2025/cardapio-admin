@@ -5290,3 +5290,6 @@
 ## Correção Visual Itens da Comanda
 - [x] Remover badge "Pendente" dos itens da comanda no PDV Slidebar
 - [x] Restaurar borda vermelha nos itens da comanda como estava antes
+
+## Ícone no Botão Enviar Pedido
+- [x] Adicionar ícone da página de pedidos no botão "Enviar pedido" do PDV Slidebar

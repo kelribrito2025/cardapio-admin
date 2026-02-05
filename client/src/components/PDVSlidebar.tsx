@@ -23,7 +23,8 @@ import {
   Undo2,
   ArrowUpDown,
   Receipt,
-  Star
+  Star,
+  ClipboardList
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1849,6 +1850,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   }
                   className="flex-1 bg-red-500 hover:bg-red-600 text-white"
                 >
+                  {selectedTab !== 'comanda' && <ClipboardList className="h-4 w-4 mr-2" />}
                   {(createOrderMutation.isPending || addTabItemsMutation.isPending || openTableMutation.isPending || closeTableMutation.isPending) 
                     ? (closeTableMutation.isPending ? "Fechando..." : "Enviando...") 
                     : selectedTab === 'comanda' 
