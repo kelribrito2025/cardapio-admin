@@ -5150,3 +5150,7 @@
 ## Alteração de Status de Mesas
 - [x] Trocar a cor do status "Ocupada" para vermelho (cor atual de "Pedindo conta")
 - [x] Remover o status "Pedindo conta" dos filtros e do sistema
+
+
+## Bug: Complementos não aparecem no hover do item do carrinho (PDVSlidebar)
+- [x] Corrigir exibição dos complementos quando passa o hover no item do carrinho na slidebar do PDV

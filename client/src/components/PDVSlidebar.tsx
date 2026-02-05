@@ -962,41 +962,70 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
                       {/* Ações expandidas */}
                       {isExpanded && (
-                        <div className="px-2 pb-2 flex items-center justify-between border-t border-gray-100 pt-2">
-                          <div className="flex items-center gap-1">
-                            <button
-                              onClick={() => {
-                                if (item.quantity > 1) {
-                                  updateCartItem(index, { quantity: item.quantity - 1 });
-                                } else {
-                                  removeFromCart(index);
-                                }
-                              }}
-                              className="p-1 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
-                            >
-                              <Minus className="h-3 w-3 text-gray-600" />
-                            </button>
-                            <span className="text-xs font-medium w-6 text-center">{item.quantity}</span>
-                            <button
-                              onClick={() => updateCartItem(index, { quantity: item.quantity + 1 })}
-                              className="p-1 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
-                            >
-                              <Plus className="h-3 w-3 text-gray-600" />
-                            </button>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <button
-                              onClick={() => handleEditCartItem(index, item)}
-                              className="p-1 rounded bg-blue-100 hover:bg-blue-200 transition-colors"
-                            >
-                              <Pencil className="h-3 w-3 text-blue-600" />
-                            </button>
-                            <button
-                              onClick={() => removeFromCart(index)}
-                              className="p-1 rounded bg-red-100 hover:bg-red-200 transition-colors"
-                            >
-                              <Trash2 className="h-3 w-3 text-red-600" />
-                            </button>
+                        <div className="border-t border-gray-100">
+                          {/* Complementos */}
+                          {item.complements.length > 0 && (
+                            <div className="px-2 py-1.5 bg-gray-50">
+                              <p className="text-[10px] text-gray-500 font-medium mb-1">Complementos:</p>
+                              <div className="space-y-0.5">
+                                {item.complements.map((comp, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-[10px]">
+                                    <span className="text-gray-700">
+                                      {comp.quantity > 1 ? `${comp.quantity}x ` : ""}{comp.name}
+                                    </span>
+                                    <span className="text-gray-600">
+                                      {parseFloat(comp.price) > 0 ? `+${formatCurrency(parseFloat(comp.price) * comp.quantity)}` : "Grátis"}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {/* Observação */}
+                          {item.observation && (
+                            <div className="px-2 py-1 bg-yellow-50">
+                              <p className="text-[10px] text-yellow-700 italic">
+                                <span className="font-medium">Obs:</span> {item.observation}
+                              </p>
+                            </div>
+                          )}
+                          {/* Botões de ação */}
+                          <div className="px-2 pb-2 pt-2 flex items-center justify-between">
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => {
+                                  if (item.quantity > 1) {
+                                    updateCartItem(index, { quantity: item.quantity - 1 });
+                                  } else {
+                                    removeFromCart(index);
+                                  }
+                                }}
+                                className="p-1 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
+                              >
+                                <Minus className="h-3 w-3 text-gray-600" />
+                              </button>
+                              <span className="text-xs font-medium w-6 text-center">{item.quantity}</span>
+                              <button
+                                onClick={() => updateCartItem(index, { quantity: item.quantity + 1 })}
+                                className="p-1 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
+                              >
+                                <Plus className="h-3 w-3 text-gray-600" />
+                              </button>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => handleEditCartItem(index, item)}
+                                className="p-1 rounded bg-blue-100 hover:bg-blue-200 transition-colors"
+                              >
+                                <Pencil className="h-3 w-3 text-blue-600" />
+                              </button>
+                              <button
+                                onClick={() => removeFromCart(index)}
+                                className="p-1 rounded bg-red-100 hover:bg-red-200 transition-colors"
+                              >
+                                <Trash2 className="h-3 w-3 text-red-600" />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       )}
