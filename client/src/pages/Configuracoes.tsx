@@ -919,19 +919,36 @@ export default function Configuracoes() {
                 <div className="absolute -top-16 left-6">
                   <div className="relative">
                     {/* Balão de Nota - exibe sempre que existir nota ativa */}
-                    {publicNote && publicNoteCreatedAt && (
-                      <div className="absolute -top-14 left-0 z-20 animate-float-balloon">
-                        <div className="relative">
-                          {/* Balão estilo bolha */}
-                          <div className="bg-white rounded-[20px] px-3 py-1.5 shadow-md border border-gray-200 max-w-[140px]">
-                            <p className="text-xs text-gray-700 text-center leading-tight break-words">{publicNote}</p>
+                    {publicNote && publicNoteCreatedAt && (() => {
+                      // Obter estilos do balão baseado no noteStyle selecionado
+                      const balloonStyles: Record<string, { bg: string; text: string; border: string; arrowBg: string }> = {
+                        default: { bg: "bg-white", text: "text-gray-700", border: "border-gray-200", arrowBg: "bg-white border border-gray-200" },
+                        ocean: { bg: "bg-gradient-to-r from-cyan-400 to-blue-500", text: "text-white", border: "border-transparent", arrowBg: "bg-blue-500" },
+                        forest: { bg: "bg-gradient-to-r from-green-400 to-emerald-500", text: "text-white", border: "border-transparent", arrowBg: "bg-emerald-500" },
+                        fire: { bg: "bg-gradient-to-r from-red-500 to-orange-500", text: "text-white", border: "border-transparent", arrowBg: "bg-orange-500" },
+                        gold: { bg: "bg-gradient-to-r from-yellow-400 to-amber-500", text: "text-white", border: "border-transparent", arrowBg: "bg-amber-500" },
+                        night: { bg: "bg-gradient-to-r from-gray-700 to-gray-900", text: "text-white", border: "border-transparent", arrowBg: "bg-gray-900" },
+                        acai: { bg: "bg-gradient-to-r from-purple-600 to-purple-900", text: "text-white", border: "border-transparent", arrowBg: "bg-purple-900" },
+                      };
+                      const currentStyle = balloonStyles[noteStyle] || balloonStyles.default;
+                      return (
+                        <div className="absolute -top-14 left-0 z-20 animate-float-balloon">
+                          <div className="relative">
+                            {/* Balão estilo bolha */}
+                            <div className={cn(
+                              "rounded-[20px] px-3 py-1.5 shadow-md max-w-[140px]",
+                              currentStyle.bg,
+                              currentStyle.border !== "border-transparent" && "border " + currentStyle.border
+                            )}>
+                              <p className={cn("text-xs text-center leading-tight break-words", currentStyle.text)}>{publicNote}</p>
+                            </div>
+                            {/* Bico do balão em formato de balão de pensamento - círculo maior à esquerda, menor à direita */}
+                            <div className={cn("absolute -bottom-2.5 left-4 w-3.5 h-3.5 rounded-full shadow-sm", currentStyle.arrowBg)}></div>
+                            <div className={cn("absolute -bottom-5 left-7 w-2 h-2 rounded-full shadow-sm", currentStyle.arrowBg)}></div>
                           </div>
-                          {/* Bico do balão em formato de balão de pensamento - círculo maior à esquerda, menor à direita */}
-                          <div className="absolute -bottom-2.5 left-4 w-3.5 h-3.5 bg-white rounded-full border border-gray-200 shadow-sm"></div>
-                          <div className="absolute -bottom-5 left-7 w-2 h-2 bg-white rounded-full border border-gray-200 shadow-sm"></div>
                         </div>
-                      </div>
-                    )}
+                      );
+                    })()}
                     <div className={cn(
                       "w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden",
                       "bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center"

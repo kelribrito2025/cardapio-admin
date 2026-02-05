@@ -5154,3 +5154,7 @@
 
 ## Bug: Complementos não aparecem no hover do item do carrinho (PDVSlidebar)
 - [x] Corrigir exibição dos complementos quando passa o hover no item do carrinho na slidebar do PDV
+
+
+## Bug: Cor do balão da nota não aplica no preview do perfil público
+- [x] Corrigir a aplicação da cor selecionada do balão no preview do perfil público na página de configurações
