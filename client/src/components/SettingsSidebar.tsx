@@ -82,7 +82,7 @@ export function SettingsSidebar({ activeSection, onSectionChange }: SettingsSide
                 )} />
                 <span>{item.label}</span>
                 {isDisabled && (
-                  <span className="ml-auto text-[9px] font-semibold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                  <span className="ml-auto text-[9px] font-semibold bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded-full">
                     Breve
                   </span>
                 )}
@@ -157,7 +157,7 @@ export function SettingsSidebar({ activeSection, onSectionChange }: SettingsSide
                   )} />
                   <span className="flex-1 text-left">{item.label}</span>
                   {isDisabled ? (
-                    <span className="text-[9px] font-semibold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                    <span className="text-[9px] font-semibold bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded-full">
                       Breve
                     </span>
                   ) : isActive && (

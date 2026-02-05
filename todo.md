@@ -5163,3 +5163,8 @@
 ## Bug: Taxa de entrega fixa não exibe valor correto no menu público
 - [x] Corrigir exibição da taxa de entrega fixa - mostra R$ 0,00 em vez do valor configurado (R$ 3,00)
 - [x] Corrigir label "Retirar no local" - deve mostrar "Taxa de entrega" quando é delivery
+
+
+## Correção da cor dos badges "Breve" em Configurações
+- [x] Mudar cor do badge "Breve" no menu Ajuda e Suporte de vermelho para amarelo
+- [x] Mudar cor do badge "Breve" no menu Integrações de vermelho para amarelo
