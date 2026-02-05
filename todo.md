@@ -5077,3 +5077,7 @@
 
 ## Remoção de Funcionalidade
 - [x] Remover funcionalidade de vincular mesas aos espaços (seletor de espaço no Sheet)
+
+
+## Ajuste Visual na Legenda de Status
+- [x] Substituir texto "Status:" por ícone de filtro

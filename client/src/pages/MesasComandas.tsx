@@ -30,6 +30,7 @@ import {
   MapPin,
   Settings,
   Pencil,
+  Filter,
 } from "lucide-react";
 
 // Tipos
@@ -710,7 +711,7 @@ export default function MesasComandas() {
 
         {/* Legenda de Status (clicável) */}
         <div className="flex items-center gap-4 text-sm text-gray-600 flex-wrap">
-          <span className="font-medium">Status:</span>
+          <Filter className="h-5 w-5 text-gray-400" />
           {statusLegend.map((item) => (
             <button
               key={item.status}
