@@ -1483,7 +1483,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                       ? "Fechar conta" 
                       : tabId 
                         ? "Adicionar à Comanda" 
-                        : "Finalizar Pedido"}
+                        : "Enviar pedido"}
                 </Button>
               </div>
 
