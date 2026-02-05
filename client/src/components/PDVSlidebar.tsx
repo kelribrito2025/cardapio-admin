@@ -873,20 +873,23 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           <div className="w-[336px] bg-gray-50 flex flex-col">
             {/* Header do Carrinho */}
             <div className="p-3 border-b border-border/50 bg-white">
-              {/* Tipo de Pedido - Consumo fixo */}
-              <div className="flex items-center gap-2 p-2 bg-red-500 text-white rounded-lg">
-                <UtensilsCrossed className="h-4 w-4" />
-                <span className="text-sm font-medium">Consumo</span>
-              </div>
+              {/* Tipo de Pedido e Mesa - lado a lado */}
+              <div className="flex gap-2">
+                {/* Consumo - 50% */}
+                <div className="flex-1 flex items-center justify-center gap-2 p-2 bg-red-500 text-white rounded-lg">
+                  <UtensilsCrossed className="h-4 w-4" />
+                  <span className="text-sm font-medium">Consumo</span>
+                </div>
 
-              {/* Campo de Mesa - Bloqueado */}
-              <div className="mt-2 relative">
-                <Input
-                  value={`Mesa ${tableNumber}`}
-                  disabled
-                  className="text-center font-medium bg-gray-100 cursor-not-allowed"
-                />
-                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                {/* Mesa - 50% */}
+                <div className="flex-1 relative">
+                  <Input
+                    value={`Mesa ${tableNumber}`}
+                    disabled
+                    className="text-center font-medium bg-gray-100 cursor-not-allowed h-full"
+                  />
+                  <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                </div>
               </div>
             </div>
 

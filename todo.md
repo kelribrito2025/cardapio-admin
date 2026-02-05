@@ -5081,3 +5081,7 @@
 
 ## Ajuste Visual na Legenda de Status
 - [x] Substituir texto "Status:" por ícone de filtro
+
+
+## Ajuste Layout PDV Slidebar
+- [x] Colocar cards Consumo e Mesa lado a lado com 50% cada
