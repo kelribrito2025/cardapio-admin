@@ -1119,7 +1119,7 @@ function generateTabReceiptHTML(
       <div class="order-number">Comanda ${tabNumber}</div>
       <div class="order-date">📅 ${formatDate(tab.openedAt)}</div>
     </div>
-    <div class="delivery-badge">CONSUMO</div>
+    <div class="delivery-badge">Mesa ${table?.number || tab.tableId}</div>
   </div>
   
   <hr class="divider">

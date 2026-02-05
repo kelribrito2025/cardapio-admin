@@ -5277,3 +5277,4 @@
 - [x] Corrigir botão Comanda que não fica clicável após enviar o pedido
 - [x] Corrigir erro 404 na impressão do recibo da comanda no PDV Slidebar
 - [x] Atualizar layout do recibo da comanda no PDV Slidebar para usar o mesmo formato profissional da página de Pedidos
+- [x] Alterar badge do recibo da comanda de "CONSUMO" para "Mesa X" no PDV Slidebar
