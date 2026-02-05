@@ -650,19 +650,27 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                             </div>
                           </TooltipTrigger>
                           <TooltipContent side="right" className="font-medium">
-                            {item.label} (Em breve)
+                            <p>{item.label}</p>
+                            <p className="text-xs text-muted-foreground">Funcionalidade em desenvolvimento</p>
                           </TooltipContent>
                         </Tooltip>
                       );
                     }
                     return (
-                      <div
-                        key={item.href}
-                        className={navClassName}
-                        style={{borderRadius: '12px'}}
-                      >
-                        {navContent}
-                      </div>
+                      <Tooltip key={item.href} delayDuration={0}>
+                        <TooltipTrigger asChild>
+                          <div
+                            className={navClassName}
+                            style={{borderRadius: '12px'}}
+                          >
+                            {navContent}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="font-medium">
+                          <p>Funcionalidade em desenvolvimento</p>
+                          <p className="text-xs text-muted-foreground">Disponível em breve!</p>
+                        </TooltipContent>
+                      </Tooltip>
                     );
                   }
 

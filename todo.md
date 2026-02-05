@@ -5115,3 +5115,7 @@
 
 ## Badge Breve no Menu Mapa de Mesas
 - [x] Adicionar badge "Breve" no menu lateral para Mapa de Mesas
+
+
+## Tooltip nos Itens com Badge Breve
+- [x] Adicionar tooltip explicativo nos itens do menu com badge "Breve"
