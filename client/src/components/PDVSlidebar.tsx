@@ -895,14 +895,13 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                             ? tableHasItems
                               ? "bg-red-500 text-white shadow-sm cursor-default"
                               : "bg-emerald-500 text-white shadow-sm cursor-default"
-                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+                            : tableHasItems
+                              ? "bg-red-100 text-red-700 hover:bg-red-200"
+                              : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
                         )}
                       >
                         <UtensilsCrossed className="h-4 w-4" />
                         {table.number}
-                        {tableHasItems && table.number !== tableNumber && (
-                          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500"></span>
-                        )}
                       </button>
                     );
                   })}
@@ -943,14 +942,13 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                               ? tableHasItems
                                 ? "bg-red-500 text-white shadow-sm cursor-default"
                                 : "bg-emerald-500 text-white shadow-sm cursor-default"
-                              : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+                              : tableHasItems
+                                ? "bg-red-100 text-red-700 hover:bg-red-200"
+                                : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
                           )}
                         >
                           <UtensilsCrossed className="h-4 w-4" />
                           {table.number}
-                          {tableHasItems && table.number !== tableNumber && (
-                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500"></span>
-                          )}
                         </button>
                       );
                     })}

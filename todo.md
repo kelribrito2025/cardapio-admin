@@ -5216,3 +5216,4 @@
 - [ ] Atualizar feedback visual no PDV (vermelho/verde baseado em itens)
 - [ ] Atualizar feedback visual na página de Mesas (borda vermelha/verde)
 - [x] Remover textos de status (Livre, Ocupada, Reservada) dos cards das mesas
+- [x] Ajustar botões de mesas na barra PDV: usar cores de fundo (vermelho/verde claro) em vez de badge redondo
