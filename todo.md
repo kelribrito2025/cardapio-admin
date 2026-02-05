@@ -5215,3 +5215,4 @@
 - [ ] Implementar status automático: mesa com itens = Ocupada, mesa sem itens = Livre
 - [ ] Atualizar feedback visual no PDV (vermelho/verde baseado em itens)
 - [ ] Atualizar feedback visual na página de Mesas (borda vermelha/verde)
+- [x] Remover textos de status (Livre, Ocupada, Reservada) dos cards das mesas

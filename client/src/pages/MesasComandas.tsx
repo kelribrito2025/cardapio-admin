@@ -847,11 +847,8 @@ export default function MesasComandas() {
                     statusConfig.borderColor
                   )}
                 >
-                  <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-start justify-between">
                     <span className="text-3xl font-bold text-gray-900">{table.number}</span>
-                    <span className={cn("text-xs font-semibold", statusConfig.textColor)}>
-                      {statusConfig.label}
-                    </span>
                   </div>
                   
                   {/* Informações da mesa ocupada (com itens no carrinho) */}
