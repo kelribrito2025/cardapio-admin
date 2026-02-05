@@ -1320,15 +1320,19 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   <span className="text-sm font-medium">Mesa {tableNumber}</span>
                 </button>
 
-                {/* Comanda - aba Comanda */}
+                {/* Comanda - aba Comanda (desabilitado se não houver comanda aberta) */}
                 <button
                   onClick={() => setSelectedTab('comanda')}
+                  disabled={!tabId}
                   className={cn(
                     "flex-1 flex items-center justify-center gap-2 p-2 rounded-lg transition-all",
-                    selectedTab === 'comanda'
-                      ? "bg-red-500 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    !tabId
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
+                      : selectedTab === 'comanda'
+                        ? "bg-red-500 text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   )}
+                  title={!tabId ? "Mesa sem comanda aberta" : "Ver itens da comanda"}
                 >
                   <Receipt className="h-4 w-4" />
                   <span className="text-sm font-medium">Comanda</span>

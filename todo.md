@@ -5267,3 +5267,4 @@
 
 ## Bugs - PDV Slidebar
 - [x] Corrigir botões de mesas na barra de atalhos do PDV Slidebar para mostrar status correto (vermelho para mesas com itens na comanda, verde para mesas livres)
+- [x] Desabilitar botão Comanda quando mesa estiver livre (sem itens na comanda)
