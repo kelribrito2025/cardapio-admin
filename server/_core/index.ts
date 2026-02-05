@@ -808,9 +808,14 @@ function generateTabReceiptHTML(
   const baseFontWeight = settings?.fontWeight || 500;
   const headerFontSize = `${settings?.titleFontSize || (is58mm ? 14 : 16)}px`;
   const headerFontWeight = settings?.titleFontWeight || 700;
+  const orderNumberSize = `${(settings?.titleFontSize || (is58mm ? 14 : 16)) + 4}px`;
   const itemFontSize = `${settings?.itemFontSize || (is58mm ? 11 : 12)}px`;
   const itemFontWeight = settings?.itemFontWeight || 700;
   const smallFontSize = `${settings?.obsFontSize || (is58mm ? 10 : 11)}px`;
+  const smallFontWeight = settings?.obsFontWeight || 500;
+  const showDividers = settings?.showDividers ?? true;
+  const boxPadding = `${(settings as any)?.boxPadding || 12}px`;
+  const itemBorderStyle = (settings as any)?.itemBorderStyle || 'rounded';
   
   let itemsHTML = '';
   let subtotal = 0;
@@ -858,13 +863,16 @@ function generateTabReceiptHTML(
   const serviceCharge = parseFloat(tab.serviceCharge) || 0;
   const total = subtotal - discount + serviceCharge;
   
+  // Gerar número da comanda baseado no ID da tab
+  const tabNumber = `C${String(tab.id).padStart(3, '0')}`;
+  
   return `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Comanda - Mesa ${table?.number || tab.tableId}</title>
+  <title>Comanda ${tabNumber} - Mesa ${table?.number || tab.tableId}</title>
   <style>
     @page {
       size: ${paperWidth} auto;
@@ -899,6 +907,7 @@ function generateTabReceiptHTML(
       * {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+        color-adjust: exact !important;
       }
       html {
         background: #fff;
@@ -909,46 +918,84 @@ function generateTabReceiptHTML(
         max-width: 100%;
         padding: 8px;
       }
+      .delivery-badge {
+        background: #000 !important;
+        color: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .total-final {
+        background: #000 !important;
+        color: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
     }
-    .header {
+    
+    /* CABEÇALHO */
+    .logo {
       text-align: center;
-      margin-bottom: 16px;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      ${showDividers ? 'border-bottom: 1px solid #000;' : ''}
     }
-    .header h1 {
-      font-size: ${headerFontSize};
+    .logo h1 {
+      font-size: ${orderNumberSize};
       font-weight: ${headerFontWeight};
-      margin-bottom: 4px;
+      margin: 0;
     }
-    .header p {
+    .logo p {
       font-size: ${smallFontSize};
-      color: #666;
+      font-weight: ${smallFontWeight};
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
     }
-    .table-info {
-      text-align: center;
-      padding: 12px;
-      background: #000;
-      color: #fff;
-      margin-bottom: 16px;
-      font-size: ${headerFontSize};
-      font-weight: ${headerFontWeight};
-    }
-    .date-info {
-      text-align: center;
-      font-size: ${smallFontSize};
-      color: #666;
+    .order-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 12px;
     }
-    .divider {
+    .order-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .order-number {
+      font-size: ${orderNumberSize};
+      font-weight: ${headerFontWeight};
+      margin-bottom: 2px;
+    }
+    .order-date {
+      font-size: ${smallFontSize};
+      font-weight: ${headerFontWeight};
+      display: inline-flex;
+      align-items: center;
+    }
+    .delivery-badge {
+      display: inline-block;
+      background: #000;
+      color: #fff;
+      font-size: ${smallFontSize};
+      font-weight: ${headerFontWeight};
+      padding: 6px 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      align-self: center;
+    }
+    
+    /* DIVISOR */
+    .divider { 
       border: none;
-      border-top: 1px dashed #ccc;
-      margin: 12px 0;
+      ${showDividers ? 'border-top: 2px dashed #000;' : ''} 
+      margin: 10px 0; 
     }
+    
+    /* ITENS */
     .item {
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
-    }
-    .item:last-child {
-      border-bottom: none;
+      margin: 8px 0;
+      padding: ${itemBorderStyle === 'rounded' ? boxPadding : '8px 0'};
+      ${itemBorderStyle === 'rounded' ? 'border: 2px solid #000; border-radius: 8px;' : 'border: none; border-top: 1px dashed #000; border-bottom: 1px dashed #000;'}
     }
     .item-header {
       display: flex;
@@ -958,53 +1005,121 @@ function generateTabReceiptHTML(
     }
     .item-obs {
       font-size: ${smallFontSize};
-      color: #666;
-      margin-top: 4px;
-      font-style: italic;
+      font-weight: ${smallFontWeight};
+      margin-top: 2px;
+      padding-left: 5px;
     }
     .item-complement {
       font-size: ${smallFontSize};
-      color: #444;
+      font-weight: ${smallFontWeight};
       margin-top: 2px;
-      padding-left: 12px;
+      padding-left: 10px;
     }
-    .totals {
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 2px solid #000;
+    
+    /* TOTAIS */
+    .totals { 
+      margin: 12px 0; 
     }
-    .total-row {
+    .total-row { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      margin: 6px 0; 
+      font-size: ${itemFontSize};
+    }
+    .total-final { 
       display: flex;
       justify-content: space-between;
-      padding: 4px 0;
-      font-size: ${baseFontSize};
-    }
-    .total-final {
-      font-size: ${headerFontSize};
-      font-weight: ${headerFontWeight};
+      align-items: center;
       background: #000;
       color: #fff;
-      padding: 8px;
+      font-weight: ${headerFontWeight}; 
+      font-size: ${itemFontSize}; 
+      margin-top: 10px;
+      padding: 8px 12px;
+      text-transform: uppercase;
+    }
+    
+    /* SEÇÕES */
+    .section-box {
+      border: 2px solid #000;
+      border-radius: 8px;
+      padding: ${boxPadding};
+      margin: 12px 0;
+    }
+    .section-title {
+      font-weight: ${headerFontWeight};
+      font-size: ${itemFontSize};
+      margin-bottom: 8px;
+    }
+    .section-content {
+      font-size: ${baseFontSize};
+      font-weight: ${baseFontWeight};
+      line-height: 1.4;
+    }
+    
+    /* OBSERVAÇÕES */
+    .notes { 
+      background: #f0f0f0; 
+      padding: 8px; 
+      margin: 10px 0; 
+      font-size: ${smallFontSize};
+      border: 2px solid #000;
+    }
+    .notes-title {
+      font-weight: ${baseFontWeight};
+      margin-bottom: 4px;
+    }
+    
+    /* QR CODE */
+    .qrcode-box {
+      padding: 12px 0;
+      margin: 12px 0;
+      text-align: center;
+    }
+    .qrcode-box .section-title {
+      margin-bottom: 8px;
+    }
+    .qrcode-box img {
+      width: 144px;
+      height: 144px;
+      display: block;
+      margin: 0 auto;
+    }
+    
+    /* RODAPÉ */
+    .footer { 
+      text-align: center; 
+      margin-top: 16px; 
+      font-size: ${smallFontSize}; 
+    }
+    .footer-thanks {
+      font-weight: ${headerFontWeight};
+      font-size: ${itemFontSize};
       margin-top: 8px;
     }
-    .footer {
-      text-align: center;
-      margin-top: 16px;
-      font-size: ${smallFontSize};
-      color: #666;
+    
+    /* PRINT STYLES */
+    @media print {
+      body {
+        width: ${paperWidth};
+        padding: 2mm;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="header">
+  <div class="logo">
     <h1>${establishment?.name || 'Estabelecimento'}</h1>
-    <p>Comanda</p>
+    <p>Sistema de Pedidos</p>
   </div>
   
-  <div class="table-info">Mesa ${table?.number || tab.tableId}</div>
-  
-  <div class="date-info">
-    Aberta em: ${formatDate(tab.openedAt)}
+  <div class="order-info">
+    <div class="order-text">
+      <div class="order-number">Comanda ${tabNumber}</div>
+      <div class="order-date">📅 ${formatDate(tab.openedAt)}</div>
+    </div>
+    <div class="delivery-badge">CONSUMO</div>
   </div>
   
   <hr class="divider">
@@ -1012,6 +1127,8 @@ function generateTabReceiptHTML(
   <div class="items">
     ${itemsHTML}
   </div>
+  
+  <hr class="divider">
   
   <div class="totals">
     <div class="total-row">
@@ -1036,8 +1153,41 @@ function generateTabReceiptHTML(
     </div>
   </div>
   
+  <hr class="divider">
+  
+  <div class="section-box">
+    <div class="section-content"><strong>Consumo:</strong> Cliente irá consumir no local</div>
+  </div>
+  
+  <div class="section-box">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;">⭐ Cliente</span>
+      <span style="font-weight: ${headerFontWeight};">Mesa ${table?.number || tab.tableId}</span>
+    </div>
+  </div>
+  
+  ${settings?.showQrCode && settings?.qrCodeUrl ? `
+  <div class="qrcode-box">
+    <div class="section-title">PIX - Escaneie para pagar</div>
+    <img src="${settings.qrCodeUrl}" alt="QR Code PIX" />
+  </div>
+  ` : ''}
+  
+  ${tab.notes ? `
+  <div class="notes">
+    <div class="notes-title">OBSERVACOES:</div>
+    ${tab.notes}
+  </div>
+  ` : `
+  <div class="notes">
+    <div class="notes-title">OBSERVACOES:</div>
+    Comanda da Mesa ${table?.number || tab.tableId}
+  </div>
+  `}
+  
   <div class="footer">
-    <p>Obrigado pela preferência!</p>
+    ${settings?.footerMessage ? `<p>${settings.footerMessage}</p>` : ''}
+    <p>Pedido realizado via v2.mindi.com.br</p>
   </div>
 </body>
 <script>
