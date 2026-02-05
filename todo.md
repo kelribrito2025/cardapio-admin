@@ -5145,3 +5145,8 @@
 - [x] Adicionar botão de cupom na sidebar da página de Mesas (ao lado esquerdo do botão Finalizar Pedido)
 - [x] Adicionar botão Limpar na sidebar da página de Mesas com funcionalidade de Desfazer
 - [x] Implementar funcionalidade de Limpar/Desfazer na página de PDV
+
+
+## Alteração de Status de Mesas
+- [x] Trocar a cor do status "Ocupada" para vermelho (cor atual de "Pedindo conta")
+- [x] Remover o status "Pedindo conta" dos filtros e do sistema

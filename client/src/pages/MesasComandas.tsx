@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 
 // Tipos
-type TableStatus = "free" | "occupied" | "reserved" | "requesting_bill";
+type TableStatus = "free" | "occupied" | "reserved";
 
 interface TableSpace {
   id: number;
@@ -102,11 +102,11 @@ const getStatusConfig = (status: TableStatus) => {
     case "occupied":
       return {
         label: "Ocupada",
-        color: "bg-amber-500",
-        borderColor: "border-l-amber-500",
-        textColor: "text-amber-600",
-        bgLight: "bg-amber-50",
-        hoverBg: "hover:bg-amber-50",
+        color: "bg-red-500",
+        borderColor: "border-l-red-500",
+        textColor: "text-red-600",
+        bgLight: "bg-red-50",
+        hoverBg: "hover:bg-red-50",
       };
     case "reserved":
       return {
@@ -117,14 +117,14 @@ const getStatusConfig = (status: TableStatus) => {
         bgLight: "bg-blue-50",
         hoverBg: "hover:bg-blue-50",
       };
-    case "requesting_bill":
+    default:
       return {
-        label: "Pedindo conta",
-        color: "bg-red-500",
-        borderColor: "border-l-red-500",
-        textColor: "text-red-600",
-        bgLight: "bg-red-50",
-        hoverBg: "hover:bg-red-50",
+        label: "Livre",
+        color: "bg-emerald-500",
+        borderColor: "border-l-emerald-500",
+        textColor: "text-emerald-600",
+        bgLight: "bg-emerald-50",
+        hoverBg: "hover:bg-emerald-50",
       };
   }
 };
@@ -327,9 +327,8 @@ export default function MesasComandas() {
     const free = tables.filter((t) => t.status === "free").length;
     const occupied = tables.filter((t) => t.status === "occupied").length;
     const reserved = tables.filter((t) => t.status === "reserved").length;
-    const requestingBill = tables.filter((t) => t.status === "requesting_bill").length;
     
-    const occupiedTables = tables.filter((t) => t.status === "occupied" || t.status === "requesting_bill");
+    const occupiedTables = tables.filter((t) => t.status === "occupied");
     const totalRevenue = occupiedTables.reduce((sum, t) => sum + parseFloat(t.tab?.total || "0"), 0);
     const avgTicket = occupiedTables.length > 0 ? totalRevenue / occupiedTables.length : 0;
     
@@ -346,7 +345,6 @@ export default function MesasComandas() {
       free,
       occupied,
       reserved,
-      requestingBill,
       totalRevenue,
       avgTicket,
       avgTimeMinutes,
@@ -358,7 +356,6 @@ export default function MesasComandas() {
     return {
       free: tables.filter((t) => t.status === "free").length,
       occupied: tables.filter((t) => t.status === "occupied").length,
-      requesting_bill: tables.filter((t) => t.status === "requesting_bill").length,
       reserved: tables.filter((t) => t.status === "reserved").length,
     };
   }, [tables]);
@@ -388,8 +385,13 @@ export default function MesasComandas() {
     return counts;
   }, [tables, spaces]);
 
-  const handleTableClick = (table: Table) => {
-    setSelectedTable(table);
+  const handleTableClick = (table: typeof tables[number]) => {
+    // Cast para Table, tratando requesting_bill como occupied
+    const normalizedTable: Table = {
+      ...table,
+      status: table.status === "requesting_bill" ? "occupied" : table.status as TableStatus
+    };
+    setSelectedTable(normalizedTable);
     setShowPDVSlidebar(true);
   };
 
@@ -473,8 +475,7 @@ export default function MesasComandas() {
   // Lista de status para a legenda clicável
   const statusLegend: { status: TableStatus; label: string; color: string }[] = [
     { status: "free", label: "Livre", color: "bg-emerald-500" },
-    { status: "occupied", label: "Ocupada", color: "bg-amber-500" },
-    { status: "requesting_bill", label: "Pedindo conta", color: "bg-red-500" },
+    { status: "occupied", label: "Ocupada", color: "bg-red-500" },
     { status: "reserved", label: "Reservada", color: "bg-blue-500" },
   ];
 
@@ -978,27 +979,6 @@ export default function MesasComandas() {
                   </>
                 )}
 
-                {selectedTable.status === "requesting_bill" && (
-                  <>
-                    <Button 
-                      className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
-                      onClick={() => handleCloseTable(selectedTable)}
-                      disabled={closeTableMutation.isPending}
-                    >
-                      {closeTableMutation.isPending ? (
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      ) : (
-                        <DollarSign className="h-4 w-4 mr-2" />
-                      )}
-                      Fechar Conta
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <Printer className="h-4 w-4 mr-2" />
-                      Imprimir Comanda
-                    </Button>
-                  </>
-                )}
-
                 {selectedTable.status === "reserved" && (
                   <>
                     <Button 
@@ -1024,7 +1004,7 @@ export default function MesasComandas() {
                   </>
                 )}
 
-                {(selectedTable.status === "occupied" || selectedTable.status === "requesting_bill") && (
+                {selectedTable.status === "occupied" && (
                   <Button 
                     variant="ghost" 
                     className="w-full text-gray-500 hover:text-gray-700"
