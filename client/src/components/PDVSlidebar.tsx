@@ -736,23 +736,26 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           
           {/* Abas de Mesas */}
           {tables.length > 0 && (
-            <div className="bg-gray-100 px-4 py-2 overflow-x-auto scrollbar-hide">
-              <div className="flex items-center gap-2">
+            <div className="bg-gray-100 px-4 py-2.5 overflow-x-auto scrollbar-hide">
+              <div className="flex items-center gap-4">
                 {tables.map((table) => (
                   <button
                     key={table.id}
                     onClick={() => onTableChange?.(table)}
                     disabled={table.number === tableNumber}
                     className={cn(
-                      "px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap",
+                      "relative px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
                       table.number === tableNumber
-                        ? "bg-emerald-500 text-white shadow-md cursor-default"
-                        : "bg-transparent text-gray-600 hover:bg-gray-200"
+                        ? "bg-emerald-500 text-white shadow-sm cursor-default"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
                     )}
                   >
                     {table.number}
-                    {table.status === "occupied" && table.number !== tableNumber && (
-                      <span className="ml-1.5 inline-block w-2 h-2 rounded-full bg-red-500"></span>
+                    {table.status === "occupied" && (
+                      <span className={cn(
+                        "absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full",
+                        table.number === tableNumber ? "bg-white" : "bg-red-500"
+                      )}></span>
                     )}
                   </button>
                 ))}

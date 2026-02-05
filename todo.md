@@ -5204,3 +5204,4 @@
 
 ## Estilo de abas para atalhos de mesas
 - [x] Alterar estilo dos atalhos de mesas para formato de abas (aba selecionada em verde, outras em cinza)
+- [x] Ajustar estilo dos botões de números das mesas para seguir o mesmo padrão dos botões de categorias
