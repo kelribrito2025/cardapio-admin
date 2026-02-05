@@ -5317,3 +5317,6 @@
 
 ## Correção Modal Conferência - Divisores
 - [x] Respeitar configuração de "mostrar divisores" no modal de conferência de pedido
+
+## Remoção Card Observações no Recibo de Mesa
+- [x] Remover card "OBSERVAÇÕES: Comanda da Mesa X" do recibo de fechamento de mesa

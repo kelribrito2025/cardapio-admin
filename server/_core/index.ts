@@ -535,7 +535,7 @@ function generateReceiptHTML(
   </div>
   ` : ''}
   
-  ${order.notes ? `
+  ${order.notes && !order.notes.startsWith('Comanda da Mesa') ? `
   <div class="notes">
     <div class="notes-title">OBSERVACOES:</div>
     ${order.notes}
@@ -1178,12 +1178,7 @@ function generateTabReceiptHTML(
     <div class="notes-title">OBSERVACOES:</div>
     ${tab.notes}
   </div>
-  ` : `
-  <div class="notes">
-    <div class="notes-title">OBSERVACOES:</div>
-    Comanda da Mesa ${table?.number || tab.tableId}
-  </div>
-  `}
+  ` : ''}
   
   <div class="footer">
     ${settings?.footerMessage ? `<p>${settings.footerMessage}</p>` : ''}
