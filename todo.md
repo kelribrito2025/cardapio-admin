@@ -5069,3 +5069,7 @@
 ## Melhorias na Interface de Mesas
 - [x] Adicionar tooltips nos botões + e gerenciar espaços
 - [x] Implementar funcionalidade de vincular mesas aos espaços
+
+
+## Ajuste Visual do Botão de Adicionar Mesas
+- [x] Alterar cor do botão + para vermelho (igual ao botão Todas selecionado)

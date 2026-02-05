@@ -678,7 +678,7 @@ export default function MesasComandas() {
               <TooltipTrigger asChild>
                 <button
                   onClick={() => setShowCreateDialog(true)}
-                  className="px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-white border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                  className="px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-red-500 text-white hover:bg-red-600"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
