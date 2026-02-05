@@ -35,6 +35,7 @@ import { toast } from "sonner";
 // Constantes para configuração da aba
 const HANDLE_CONFIG_KEY = 'pdv-slidebar-handle-config';
 const GLOBAL_HANDLE_KEY = 'pdv-slidebar-global-handle';
+const CARTS_PER_TABLE_KEY = 'pdv-carts-per-table';
 const DEFAULT_HANDLE_CONFIG = {
   positionY: 15, // percentual (0-100)
   height: 76, // pixels
@@ -205,9 +206,44 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
     },
   });
 
+  // Estado para carrinhos por mesa (indexado por tableId)
+  const [cartsPerTable, setCartsPerTable] = useState<Record<number, CartItem[]>>(() => {
+    try {
+      const saved = localStorage.getItem(CARTS_PER_TABLE_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.error('Erro ao carregar carrinhos:', e);
+    }
+    return {};
+  });
+
+  // Carrinho da mesa atual (derivado do tableId)
+  const cart = useMemo(() => {
+    if (!tableId) return [];
+    return cartsPerTable[tableId] || [];
+  }, [cartsPerTable, tableId]);
+
+  // Função para atualizar o carrinho da mesa atual
+  const setCart = (updater: CartItem[] | ((prev: CartItem[]) => CartItem[])) => {
+    if (!tableId) return;
+    setCartsPerTable(prev => {
+      const currentCart = prev[tableId] || [];
+      const newCart = typeof updater === 'function' ? updater(currentCart) : updater;
+      const updated = { ...prev, [tableId]: newCart };
+      // Persistir no localStorage
+      try {
+        localStorage.setItem(CARTS_PER_TABLE_KEY, JSON.stringify(updated));
+      } catch (e) {
+        console.error('Erro ao salvar carrinhos:', e);
+      }
+      return updated;
+    });
+  };
+
   // Estados
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [cart, setCart] = useState<CartItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productQuantity, setProductQuantity] = useState(1);
@@ -845,28 +881,31 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   >
                     <ArrowUpDown className="h-4 w-4" />
                   </button>
-                  {tables.map((table) => (
-                    <button
-                      key={table.id}
-                      onClick={() => onTableChange?.(table)}
-                      disabled={table.number === tableNumber}
-                      className={cn(
-                        "relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
-                        table.number === tableNumber
-                          ? "bg-emerald-500 text-white shadow-sm cursor-default"
-                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
-                      )}
-                    >
-                      <UtensilsCrossed className="h-4 w-4" />
-                      {table.number}
-                      {table.status === "occupied" && (
-                        <span className={cn(
-                          "absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full",
-                          table.number === tableNumber ? "bg-white" : "bg-red-500"
-                        )}></span>
-                      )}
-                    </button>
-                  ))}
+                  {tables.map((table) => {
+                    // Status baseado em itens no carrinho da mesa
+                    const tableHasItems = (cartsPerTable[table.id]?.length || 0) > 0;
+                    return (
+                      <button
+                        key={table.id}
+                        onClick={() => onTableChange?.(table)}
+                        disabled={table.number === tableNumber}
+                        className={cn(
+                          "relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
+                          table.number === tableNumber
+                            ? tableHasItems
+                              ? "bg-red-500 text-white shadow-sm cursor-default"
+                              : "bg-emerald-500 text-white shadow-sm cursor-default"
+                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+                        )}
+                      >
+                        <UtensilsCrossed className="h-4 w-4" />
+                        {table.number}
+                        {tableHasItems && table.number !== tableNumber && (
+                          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )
@@ -890,28 +929,31 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     >
                       <ArrowUpDown className="h-4 w-4" />
                     </button>
-                    {tables.map((table) => (
-                      <button
-                        key={table.id}
-                        onClick={() => onTableChange?.(table)}
-                        disabled={table.number === tableNumber}
-                        className={cn(
-                          "relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
-                          table.number === tableNumber
-                            ? "bg-emerald-500 text-white shadow-sm cursor-default"
-                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
-                        )}
-                      >
-                        <UtensilsCrossed className="h-4 w-4" />
-                        {table.number}
-                        {table.status === "occupied" && (
-                          <span className={cn(
-                            "absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full",
-                            table.number === tableNumber ? "bg-white" : "bg-red-500"
-                          )}></span>
-                        )}
-                      </button>
-                    ))}
+                    {tables.map((table) => {
+                      // Status baseado em itens no carrinho da mesa
+                      const tableHasItems = (cartsPerTable[table.id]?.length || 0) > 0;
+                      return (
+                        <button
+                          key={table.id}
+                          onClick={() => onTableChange?.(table)}
+                          disabled={table.number === tableNumber}
+                          className={cn(
+                            "relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
+                            table.number === tableNumber
+                              ? tableHasItems
+                                ? "bg-red-500 text-white shadow-sm cursor-default"
+                                : "bg-emerald-500 text-white shadow-sm cursor-default"
+                              : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+                          )}
+                        >
+                          <UtensilsCrossed className="h-4 w-4" />
+                          {table.number}
+                          {tableHasItems && table.number !== tableNumber && (
+                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )

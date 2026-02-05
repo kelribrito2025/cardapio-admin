@@ -149,11 +149,63 @@ const formatTime = (date: Date | string | null | undefined) => {
 
 // Constante para persistência da mesa selecionada
 const SELECTED_TABLE_KEY = 'mesas-selected-table-id';
+const CARTS_PER_TABLE_KEY = 'pdv-carts-per-table';
+
+// Tipo para itens do carrinho
+interface CartItem {
+  productId: number;
+  name: string;
+  price: string;
+  quantity: number;
+  observation: string;
+  image: string | null;
+  complements: Array<{ id: number; name: string; price: string; quantity: number }>;
+}
 
 export default function MesasComandas() {
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showPDVSlidebar, setShowPDVSlidebar] = useState(false);
+  
+  // Estado para carrinhos por mesa (sincronizado com PDVSlidebar)
+  const [cartsPerTable, setCartsPerTable] = useState<Record<number, CartItem[]>>(() => {
+    try {
+      const saved = localStorage.getItem(CARTS_PER_TABLE_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.error('Erro ao carregar carrinhos:', e);
+    }
+    return {};
+  });
+
+  // Sincronizar carrinhos quando localStorage mudar
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === CARTS_PER_TABLE_KEY && e.newValue) {
+        try {
+          setCartsPerTable(JSON.parse(e.newValue));
+        } catch (err) {
+          console.error('Erro ao parsear carrinhos:', err);
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  // Função para verificar se mesa tem itens
+  const tableHasItems = (tableId: number) => {
+    return (cartsPerTable[tableId]?.length || 0) > 0;
+  };
+
+  // Função para obter status derivado da mesa
+  const getDerivedStatus = (table: typeof tables[number]): TableStatus => {
+    if (tableHasItems(table.id)) return "occupied";
+    if (table.status === "reserved") return "reserved";
+    return "free";
+  };
   const [selectedSpaceId, setSelectedSpaceId] = useState<number | "all">("all");
   const [statusFilter, setStatusFilter] = useState<TableStatus | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -322,24 +374,34 @@ export default function MesasComandas() {
     },
   });
 
-  // Cálculos de resumo
+  // Cálculos de resumo (usando status derivado baseado em itens)
   const summary = useMemo(() => {
-    const free = tables.filter((t) => t.status === "free").length;
-    const occupied = tables.filter((t) => t.status === "occupied").length;
-    const reserved = tables.filter((t) => t.status === "reserved").length;
+    // Contar mesas por status derivado
+    let free = 0;
+    let occupied = 0;
+    let reserved = 0;
+    let totalRevenue = 0;
     
-    const occupiedTables = tables.filter((t) => t.status === "occupied");
-    const totalRevenue = occupiedTables.reduce((sum, t) => sum + parseFloat(t.tab?.total || "0"), 0);
-    const avgTicket = occupiedTables.length > 0 ? totalRevenue / occupiedTables.length : 0;
+    tables.forEach((t) => {
+      const hasItems = (cartsPerTable[t.id]?.length || 0) > 0;
+      if (hasItems) {
+        occupied++;
+        // Calcular total do carrinho
+        const cartItems = cartsPerTable[t.id] || [];
+        const cartTotal = cartItems.reduce((sum, item) => {
+          const itemPrice = parseFloat(item.price);
+          const complementsPrice = item.complements.reduce((s, c) => s + parseFloat(c.price) * c.quantity, 0);
+          return sum + (itemPrice + complementsPrice) * item.quantity;
+        }, 0);
+        totalRevenue += cartTotal;
+      } else if (t.status === "reserved") {
+        reserved++;
+      } else {
+        free++;
+      }
+    });
     
-    const tablesWithTime = occupiedTables.filter((t) => t.occupiedAt);
-    const avgTime = tablesWithTime.length > 0
-      ? tablesWithTime.reduce((sum, t) => {
-          const start = typeof t.occupiedAt === "string" ? new Date(t.occupiedAt) : t.occupiedAt;
-          return sum + (Date.now() - (start?.getTime() || Date.now()));
-        }, 0) / tablesWithTime.length
-      : 0;
-    const avgTimeMinutes = Math.floor(avgTime / (1000 * 60));
+    const avgTicket = occupied > 0 ? totalRevenue / occupied : 0;
 
     return {
       free,
@@ -347,31 +409,43 @@ export default function MesasComandas() {
       reserved,
       totalRevenue,
       avgTicket,
-      avgTimeMinutes,
+      avgTimeMinutes: 0, // Não temos mais tempo de ocupação
     };
-  }, [tables]);
+  }, [tables, cartsPerTable]);
 
-  // Contagem de mesas por status (para a legenda)
+  // Contagem de mesas por status (para a legenda) - usando status derivado
   const statusCounts = useMemo(() => {
-    return {
-      free: tables.filter((t) => t.status === "free").length,
-      occupied: tables.filter((t) => t.status === "occupied").length,
-      reserved: tables.filter((t) => t.status === "reserved").length,
-    };
-  }, [tables]);
+    let free = 0;
+    let occupied = 0;
+    let reserved = 0;
+    
+    tables.forEach((t) => {
+      const hasItems = (cartsPerTable[t.id]?.length || 0) > 0;
+      if (hasItems) {
+        occupied++;
+      } else if (t.status === "reserved") {
+        reserved++;
+      } else {
+        free++;
+      }
+    });
+    
+    return { free, occupied, reserved };
+  }, [tables, cartsPerTable]);
 
-  // Filtrar mesas por espaço e status
+  // Filtrar mesas por espaço e status (usando status derivado)
   const filteredTables = useMemo(() => {
     return tables.filter((table) => {
       // Filtro por espaço
       const matchesSpace = selectedSpaceId === "all" || table.spaceId === selectedSpaceId;
-      // Filtro por status (da legenda)
-      const matchesStatus = statusFilter === null || table.status === statusFilter;
+      // Filtro por status derivado (da legenda)
+      const derivedStatus = getDerivedStatus(table);
+      const matchesStatus = statusFilter === null || derivedStatus === statusFilter;
       // Filtro por busca
       const matchesSearch = searchQuery === "" || table.number.toString().includes(searchQuery);
       return matchesSpace && matchesStatus && matchesSearch;
     });
-  }, [tables, selectedSpaceId, statusFilter, searchQuery]);
+  }, [tables, selectedSpaceId, statusFilter, searchQuery, cartsPerTable]);
 
   // Contagem de mesas por espaço
   const spaceTablesCount = useMemo(() => {
@@ -752,8 +826,16 @@ export default function MesasComandas() {
         {!isLoading && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {filteredTables.map((table) => {
-              const statusConfig = getStatusConfig(table.status as TableStatus);
-              const total = parseFloat(table.tab?.total || "0");
+              // Status derivado baseado em itens no carrinho
+              const derivedStatus = getDerivedStatus(table);
+              const statusConfig = getStatusConfig(derivedStatus);
+              const hasItems = tableHasItems(table.id);
+              const cartItems = cartsPerTable[table.id] || [];
+              const cartTotal = cartItems.reduce((sum, item) => {
+                const itemPrice = parseFloat(item.price);
+                const complementsPrice = item.complements.reduce((s, c) => s + parseFloat(c.price) * c.quantity, 0);
+                return sum + (itemPrice + complementsPrice) * item.quantity;
+              }, 0);
               
               return (
                 <button
@@ -772,29 +854,23 @@ export default function MesasComandas() {
                     </span>
                   </div>
                   
-                  {/* Informações da mesa ocupada */}
-                  {(table.status === "occupied" || table.status === "requesting_bill") && (
+                  {/* Informações da mesa ocupada (com itens no carrinho) */}
+                  {hasItems && (
                     <div className="space-y-1 text-sm text-gray-600">
-                      {table.occupiedAt && (
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-3.5 w-3.5" />
-                          <span>{formatDuration(table.occupiedAt)}</span>
-                        </div>
-                      )}
                       <div className="flex items-center gap-1">
-                        <Users className="h-3.5 w-3.5" />
-                        <span>{table.currentGuests}</span>
+                        <Receipt className="h-3.5 w-3.5" />
+                        <span>{cartItems.length} {cartItems.length === 1 ? 'item' : 'itens'}</span>
                       </div>
-                      {total > 0 && (
+                      {cartTotal > 0 && (
                         <div className="font-semibold text-gray-900">
-                          {formatCurrency(total)}
+                          {formatCurrency(cartTotal)}
                         </div>
                       )}
                     </div>
                   )}
 
                   {/* Informações da mesa reservada */}
-                  {table.status === "reserved" && (
+                  {table.status === "reserved" && !hasItems && (
                     <div className="space-y-1 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
                         <Users className="h-3.5 w-3.5" />

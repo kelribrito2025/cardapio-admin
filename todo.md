@@ -5211,3 +5211,7 @@
 - [x] Corrigir alinhamento do botão de troca com botão de categorias
 - [x] Aplicar mesma borda do botão de categorias no botão de troca
 - [x] Botão de troca deve acompanhar as mesas quando barras são invertidas
+- [x] Bug crítico: Isolar carrinho por mesa (cada mesa com sua própria comanda)
+- [ ] Implementar status automático: mesa com itens = Ocupada, mesa sem itens = Livre
+- [ ] Atualizar feedback visual no PDV (vermelho/verde baseado em itens)
+- [ ] Atualizar feedback visual na página de Mesas (borda vermelha/verde)
