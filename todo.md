@@ -5208,3 +5208,6 @@
 - [x] Adicionar ícone de mesa ao lado do número na barra de atalhos de mesas
 - [x] Trocar ícone de mesa (Armchair) pelo ícone de garfo e faca (UtensilsCrossed)
 - [x] Adicionar botão de troca para inverter posição das barras de mesas e categorias
+- [x] Corrigir alinhamento do botão de troca com botão de categorias
+- [x] Aplicar mesma borda do botão de categorias no botão de troca
+- [x] Botão de troca deve acompanhar as mesas quando barras são invertidas
