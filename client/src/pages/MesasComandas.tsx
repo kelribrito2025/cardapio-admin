@@ -661,6 +661,15 @@ export default function MesasComandas() {
               </button>
             ))}
 
+            {/* Botão para adicionar mesa/espaço */}
+            <button
+              onClick={() => setShowCreateDialog(true)}
+              className="px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-white border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700"
+              title="Adicionar mesas"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+
             {/* Botão para gerenciar espaços */}
             <button
               onClick={() => setShowManageSpacesDialog(true)}
@@ -671,7 +680,7 @@ export default function MesasComandas() {
             </button>
           </div>
 
-          {/* Busca e Botão Adicionar */}
+          {/* Busca */}
           <div className="flex gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -682,9 +691,6 @@ export default function MesasComandas() {
                 className="pl-10"
               />
             </div>
-            <Button onClick={() => setShowCreateDialog(true)} variant="outline">
-              <Plus className="h-4 w-4" />
-            </Button>
           </div>
         </div>
 

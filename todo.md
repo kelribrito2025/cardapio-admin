@@ -5059,3 +5059,8 @@
 
 ## Ajuste no Modal de Gerenciar Espaços
 - [x] Remover campo "Adicionar novo espaço" do modal de Gerenciar Espaços
+
+
+## Ajuste no Botão de Adicionar Mesa/Espaço
+- [x] Mover botão + para o lado esquerdo do botão de gerenciar espaços
+- [x] Aplicar mesmo estilo visual do botão de gerenciar espaços no botão +
