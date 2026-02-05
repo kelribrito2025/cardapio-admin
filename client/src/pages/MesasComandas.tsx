@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
@@ -316,6 +318,16 @@ export default function MesasComandas() {
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao remover espaço");
+    },
+  });
+
+  const updateTableMutation = trpc.tables.update.useMutation({
+    onSuccess: () => {
+      toast.success("Mesa atualizada!");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao atualizar mesa");
     },
   });
 
@@ -662,22 +674,34 @@ export default function MesasComandas() {
             ))}
 
             {/* Botão para adicionar mesa/espaço */}
-            <button
-              onClick={() => setShowCreateDialog(true)}
-              className="px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-white border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700"
-              title="Adicionar mesas"
-            >
-              <Plus className="h-4 w-4" />
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setShowCreateDialog(true)}
+                  className="px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-white border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Adicionar mesas</p>
+              </TooltipContent>
+            </Tooltip>
 
             {/* Botão para gerenciar espaços */}
-            <button
-              onClick={() => setShowManageSpacesDialog(true)}
-              className="px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-white border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700"
-              title="Gerenciar espaços"
-            >
-              <Settings className="h-4 w-4" />
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setShowManageSpacesDialog(true)}
+                  className="px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-white border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                >
+                  <Settings className="h-4 w-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Gerenciar espaços</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
 
           {/* Busca */}
@@ -839,6 +863,40 @@ export default function MesasComandas() {
                   </div>
                 </SheetTitle>
               </SheetHeader>
+
+              {/* Espaço da Mesa */}
+              <div className="mb-6 p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    Espaço
+                  </span>
+                  <Select
+                    value={selectedTable.spaceId?.toString() || "none"}
+                    onValueChange={(value) => {
+                      const spaceId = value === "none" ? null : parseInt(value);
+                      updateTableMutation.mutate({
+                        id: selectedTable.id,
+                        spaceId,
+                      });
+                      // Atualiza o estado local para feedback imediato
+                      setSelectedTable({ ...selectedTable, spaceId });
+                    }}
+                  >
+                    <SelectTrigger className="w-[160px] h-8 text-sm">
+                      <SelectValue placeholder="Selecionar espaço" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Sem espaço</SelectItem>
+                      {spaces.map((space) => (
+                        <SelectItem key={space.id} value={space.id.toString()}>
+                          {space.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
 
               {/* Informações da Comanda */}
               {selectedTable.tab && (

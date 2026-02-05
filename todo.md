@@ -5064,3 +5064,8 @@
 ## Ajuste no Botão de Adicionar Mesa/Espaço
 - [x] Mover botão + para o lado esquerdo do botão de gerenciar espaços
 - [x] Aplicar mesmo estilo visual do botão de gerenciar espaços no botão +
+
+
+## Melhorias na Interface de Mesas
+- [x] Adicionar tooltips nos botões + e gerenciar espaços
+- [x] Implementar funcionalidade de vincular mesas aos espaços
