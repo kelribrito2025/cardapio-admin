@@ -5111,3 +5111,7 @@
 
 ## Nova Cor no Card de Nota do Restaurante
 - [x] Adicionar opção de cor "Açaí" no card de nota do restaurante nas configurações
+
+
+## Badge Breve no Menu Mapa de Mesas
+- [x] Adicionar badge "Breve" no menu lateral para Mapa de Mesas
