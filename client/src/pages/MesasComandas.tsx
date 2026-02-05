@@ -1156,32 +1156,11 @@ export default function MesasComandas() {
               <div className="text-center py-6 text-gray-500">
                 <MapPin className="h-10 w-10 mx-auto mb-2 text-gray-300" />
                 <p>Nenhum espaço cadastrado.</p>
-                <p className="text-sm">Crie espaços para organizar suas mesas.</p>
+                <p className="text-sm">Use o botão <strong>+</strong> ao lado do campo de busca para criar espaços.</p>
               </div>
             )}
 
-            {/* Criar novo espaço */}
-            <div className="border-t pt-4">
-              <label className="text-sm font-medium text-gray-700 mb-2 block">Adicionar novo espaço</label>
-              <div className="flex gap-2">
-                <Input
-                  value={newSpaceNameInput}
-                  onChange={(e) => setNewSpaceNameInput(e.target.value)}
-                  placeholder="Nome do espaço..."
-                  className="flex-1"
-                />
-                <Button
-                  onClick={handleCreateSpace}
-                  disabled={createSpaceMutation.isPending || !newSpaceNameInput.trim()}
-                >
-                  {createSpaceMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Plus className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
+
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowManageSpacesDialog(false)}>

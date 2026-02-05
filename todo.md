@@ -5055,3 +5055,7 @@
 - [x] Tornar legenda de status clicável para filtrar mesas
 - [x] Criar modal de gerenciamento de espaços (adicionar, editar, excluir)
 - [x] Mostrar contagem de mesas por espaço nos botões de filtro
+
+
+## Ajuste no Modal de Gerenciar Espaços
+- [x] Remover campo "Adicionar novo espaço" do modal de Gerenciar Espaços
