@@ -5093,3 +5093,9 @@
 
 ## Remover Validação de Tamanho da Imagem de Capa
 - [x] Remover validação de tamanho mínimo de 1200px para imagem de capa do menu público
+
+
+## Importação de Cardápio - Palácio do Açaí
+- [x] Acessar cardápio público do Palácio do Açaí
+- [x] Extrair categorias, produtos, complementos e grupos
+- [x] Importar dados para o estabelecimento ID 90001
