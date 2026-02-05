@@ -315,6 +315,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   // Estado para aba selecionada (consumo ou comanda)
   const [selectedTab, setSelectedTab] = useState<'consumo' | 'comanda'>('consumo');
 
+  // Estado para modal de conferência ao fechar mesa
+  const [showCloseTableModal, setShowCloseTableModal] = useState(false);
+
   // Query para buscar itens da comanda (pedidos já enviados)
   const { data: tabData, isLoading: tabItemsLoading, refetch: refetchTabItems } = trpc.tabs.getByTable.useQuery(
     { tableId: tableId! },
@@ -748,8 +751,88 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
     }
   });
 
+  // Mutation para fechar mesa
+  const closeTableMutation = trpc.tables.close.useMutation({
+    onSuccess: () => {
+      toast.success(`Mesa ${tableNumber} fechada com sucesso!`);
+      clearCart();
+      onOrderCreated?.();
+      onClose?.();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao fechar mesa");
+    }
+  });
+
+  // Função para imprimir recibo da comanda usando método favorito
+  const handlePrintTabReceipt = async () => {
+    if (!tabId) return;
+    const printMethod = printerSettings?.defaultPrintMethod || 'normal';
+    
+    if (printMethod === 'android') {
+      try {
+        const response = await fetch(`${window.location.origin}/api/print/multiprinter-tab/${tabId}`);
+        const data = await response.json();
+        if (data.success && data.deepLink) {
+          window.location.href = data.deepLink;
+        }
+      } catch (error) {
+        console.error("Erro ao imprimir em múltiplas impressoras:", error);
+      }
+    } else {
+      try {
+        const receiptUrl = `${window.location.origin}/api/print/tab-receipt/${tabId}`;
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = 'none';
+        iframe.src = receiptUrl;
+        document.body.appendChild(iframe);
+        iframe.onload = () => {
+          setTimeout(() => {
+            iframe.contentWindow?.print();
+            setTimeout(() => {
+              document.body.removeChild(iframe);
+            }, 1000);
+          }, 500);
+        };
+      } catch (error) {
+        console.error("Erro ao imprimir recibo:", error);
+      }
+    }
+  };
+
+  // Função para confirmar fechamento da mesa (chamada pelo modal)
+  const handleConfirmCloseTable = async () => {
+    if (!tableId || !tabId) return;
+    
+    // Primeiro imprime o recibo
+    await handlePrintTabReceipt();
+    
+    // Depois fecha a mesa
+    closeTableMutation.mutate({
+      tableId: tableId!,
+      paymentMethod: 'cash',
+      paidAmount: calculateTabTotal(),
+      changeAmount: 0
+    });
+    
+    // Fecha o modal
+    setShowCloseTableModal(false);
+  };
+
   // Finalizar pedido
   const handleFinishOrder = () => {
+    // Se estiver na aba Comanda e tem itens na comanda, abrir modal de conferência
+    if (selectedTab === 'comanda' && tabId && tabData?.items && tabData.items.filter((item: any) => item.status !== 'cancelled').length > 0) {
+      // Abrir modal de conferência em vez de fechar diretamente
+      setShowCloseTableModal(true);
+      return;
+    }
+    
     if (cart.length === 0) {
       toast.error("Adicione itens ao pedido");
       return;
@@ -1776,12 +1859,12 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     (selectedTab === 'comanda' 
                       ? (!tabData?.items || tabData.items.filter((item: any) => item.status !== 'cancelled').length === 0)
                       : cart.length === 0
-                    ) || createOrderMutation.isPending || addTabItemsMutation.isPending || openTableMutation.isPending
+                    ) || createOrderMutation.isPending || addTabItemsMutation.isPending || openTableMutation.isPending || closeTableMutation.isPending
                   }
                   className="flex-1 bg-red-500 hover:bg-red-600 text-white"
                 >
-                  {(createOrderMutation.isPending || addTabItemsMutation.isPending || openTableMutation.isPending) 
-                    ? "Enviando..." 
+                  {(createOrderMutation.isPending || addTabItemsMutation.isPending || openTableMutation.isPending || closeTableMutation.isPending) 
+                    ? (closeTableMutation.isPending ? "Fechando..." : "Enviando...") 
                     : selectedTab === 'comanda' 
                       ? `Fechar Mesa ${tableNumber}` 
                       : "Enviar pedido"}
@@ -2161,6 +2244,136 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           </div>
         </div>
       )}
+      {/* Modal de Conferência ao Fechar Mesa */}
+      <Dialog open={showCloseTableModal} onOpenChange={setShowCloseTableModal}>
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader className="flex-shrink-0">
+            <DialogTitle className="text-center text-lg font-bold">Conferência do Pedido</DialogTitle>
+          </DialogHeader>
+          
+          {/* Layout do Recibo */}
+          <div className="flex-1 overflow-y-auto px-1">
+            <div className="bg-[#f5f5f0] rounded-lg p-4 font-sans text-sm">
+              {/* Cabeçalho */}
+              <div className="text-center pb-3 mb-3 border-b border-black">
+                <h1 className="text-lg font-bold">{establishment?.name || 'Estabelecimento'}</h1>
+                <p className="text-xs uppercase tracking-wider mt-1">Sistema de Pedidos</p>
+              </div>
+              
+              {/* Info do Pedido */}
+              <div className="flex justify-between items-center mb-3">
+                <div>
+                  <div className="text-lg font-bold">Comanda C{String(tabData?.id || 0).padStart(3, '0')}</div>
+                  <div className="text-xs font-bold flex items-center gap-1">
+                    📅 {tabData?.openedAt ? new Date(tabData.openedAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
+                  </div>
+                </div>
+                <div className="bg-black text-white text-xs font-bold px-3 py-1.5 uppercase tracking-wider">
+                  Mesa {tableNumber}
+                </div>
+              </div>
+              
+              {/* Divisor */}
+              <hr className="border-t-2 border-dashed border-black my-3" />
+              
+              {/* Itens */}
+              <div className="space-y-2">
+                {tabData?.items?.filter((item: any) => item.status !== 'cancelled').map((item: any, index: number) => {
+                  const itemTotal = parseFloat(item.totalPrice) || 0;
+                  let complements: any[] = [];
+                  try {
+                    complements = typeof item.complements === 'string' ? JSON.parse(item.complements) : (item.complements || []);
+                  } catch (e) {}
+                  
+                  return (
+                    <div key={index} className="border-2 border-black rounded-lg p-3">
+                      <div className="flex justify-between font-bold text-sm">
+                        <span>{item.quantity}x {item.productName}</span>
+                        <span>{formatCurrency(itemTotal)}</span>
+                      </div>
+                      {item.notes && (
+                        <div className="text-xs mt-1 pl-1">Obs: {item.notes}</div>
+                      )}
+                      {complements.map((comp: any, cIndex: number) => {
+                        if (comp.items && Array.isArray(comp.items)) {
+                          return comp.items.map((ci: any, ciIndex: number) => {
+                            const qty = ci.quantity || 1;
+                            const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+                            return (
+                              <div key={`${cIndex}-${ciIndex}`} className="text-xs mt-1 pl-2">
+                                + {qtyPrefix}{ci.name}{ci.price > 0 ? ` (${formatCurrency(ci.price * qty)})` : ''}
+                              </div>
+                            );
+                          });
+                        } else if (comp.name) {
+                          const qty = comp.quantity || 1;
+                          const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+                          return (
+                            <div key={cIndex} className="text-xs mt-1 pl-2">
+                              + {qtyPrefix}{comp.name}{comp.price > 0 ? ` (${formatCurrency(comp.price * qty)})` : ''}
+                            </div>
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {/* Divisor */}
+              <hr className="border-t-2 border-dashed border-black my-3" />
+              
+              {/* Totais */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span>Subtotal:</span>
+                  <span>{formatCurrency(calculateTabTotal())}</span>
+                </div>
+                <div className="flex justify-between bg-black text-white font-bold text-sm p-2 mt-2 uppercase">
+                  <span>TOTAL:</span>
+                  <span>{formatCurrency(calculateTabTotal())}</span>
+                </div>
+              </div>
+              
+              {/* Divisor */}
+              <hr className="border-t-2 border-dashed border-black my-3" />
+              
+              {/* Info do Cliente */}
+              <div className="border-2 border-black rounded-lg p-3">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold flex items-center gap-1">⭐ Cliente</span>
+                  <span className="font-bold">Mesa {tableNumber}</span>
+                </div>
+              </div>
+              
+              {/* Consumo */}
+              <div className="border-2 border-black rounded-lg p-3 mt-2">
+                <div><strong>Consumo:</strong> Cliente irá consumir no local</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Botões de Ação */}
+          <DialogFooter className="flex-shrink-0 flex gap-2 mt-4 pt-4 border-t">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowCloseTableModal(false)}
+              className="flex-1"
+            >
+              Voltar
+            </Button>
+            <Button 
+              onClick={handleConfirmCloseTable}
+              disabled={closeTableMutation.isPending}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+            >
+              {closeTableMutation.isPending ? "Fechando..." : "✅ Confirmar e Fechar Mesa"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Modal de Configuração da Aba */}
       <Dialog open={showHandleConfig} onOpenChange={setShowHandleConfig}>
         <DialogContent className="sm:max-w-md">

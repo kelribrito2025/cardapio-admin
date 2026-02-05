@@ -5278,3 +5278,11 @@
 - [x] Corrigir erro 404 na impressão do recibo da comanda no PDV Slidebar
 - [x] Atualizar layout do recibo da comanda no PDV Slidebar para usar o mesmo formato profissional da página de Pedidos
 - [x] Alterar badge do recibo da comanda de "CONSUMO" para "Mesa X" no PDV Slidebar
+- [x] Corrigir botão Fechar Mesa na aba Comanda - mostra "Adicione itens ao pedido" mesmo com itens na comanda
+
+## Modal de Conferência ao Fechar Mesa
+- [x] Criar modal de conferência do pedido ao clicar em "Fechar Mesa"
+- [x] Usar layout exato do recibo no modal
+- [x] Adicionar botão "Confirmar e fechar mesa"
+- [x] Adicionar botão "Voltar / Cancelar"
+- [x] Implementar impressão automática do recibo ao confirmar (usando impressora favoritada)
