@@ -1,0 +1,58 @@
+{
+  "query": "SELECT * FROM tabItems LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM tabItems LIMIT 10;",
+  "rows": [
+    {
+      "id": "77",
+      "tabId": "14",
+      "productId": "120003",
+      "productName": "SUNOMONO",
+      "quantity": "1",
+      "unitPrice": "16.00",
+      "totalPrice": "16.00",
+      "complements": "[]",
+      "notes": "NULL",
+      "status": "pending",
+      "orderedAt": "2026-02-05 20:29:22",
+      "deliveredAt": "NULL",
+      "createdAt": "2026-02-05 20:29:22",
+      "updatedAt": "2026-02-05 20:29:22"
+    },
+    {
+      "id": "78",
+      "tabId": "14",
+      "productId": "120004",
+      "productName": "DUPLA KANI",
+      "quantity": "1",
+      "unitPrice": "5.00",
+      "totalPrice": "5.00",
+      "complements": "[]",
+      "notes": "NULL",
+      "status": "pending",
+      "orderedAt": "2026-02-05 20:31:11",
+      "deliveredAt": "NULL",
+      "createdAt": "2026-02-05 20:31:11",
+      "updatedAt": "2026-02-05 20:31:11"
+    },
+    {
+      "id": "79",
+      "tabId": "15",
+      "productId": "120008",
+      "productName": "DUPLA DE GUNGA PATÊ DE CAMARÃO",
+      "quantity": "1",
+      "unitPrice": "7.00",
+      "totalPrice": "7.00",
+      "complements": "[]",
+      "notes": "NULL",
+      "status": "pending",
+      "orderedAt": "2026-02-05 20:32:52",
+      "deliveredAt": "NULL",
+      "createdAt": "2026-02-05 20:32:52",
+      "updatedAt": "2026-02-05 20:32:52"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttabId\tproductId\tproductName\tquantity\tunitPrice\ttotalPrice\tcomplements\tnotes\tstatus\torderedAt\tdeliveredAt\tcreatedAt\tupdatedAt\n77\t14\t120003\tSUNOMONO\t1\t16.00\t16.00\t[]\tNULL\tpending\t2026-02-05 20:29:22\tNULL\t2026-02-05 20:29:22\t2026-02-05 20:29:22\n78\t14\t120004\tDUPLA KANI\t1\t5.00\t5.00\t[]\tNULL\tpending\t2026-02-05 20:31:11\tNULL\t2026-02-05 20:31:11\t2026-02-05 20:31:11\n79\t15\t120008\tDUPLA DE GUNGA PATÊ DE CAMARÃO\t1\t7.00\t7.00\t[]\tNULL\tpending\t2026-02-05 20:32:52\tNULL\t2026-02-05 20:32:52\t2026-02-05 20:32:52\n",
+  "stderr": "",
+  "execution_time_ms": 98
+}

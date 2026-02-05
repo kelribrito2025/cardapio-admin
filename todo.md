@@ -5256,3 +5256,14 @@
 - [x] Adicionar botão de excluir mesa no modal de Gerenciar Espaços
 - [x] Ao excluir mesa, excluir também todos os itens da comanda associados
 - [x] Adicionar confirmação antes de excluir
+
+## Bug: Mesa volta a ficar verde após enviar pedido
+- [ ] Mesa deve permanecer vermelha (ocupada) enquanto houver itens na comanda
+- [ ] Corrigir lógica de status para considerar itens da comanda (tabItems)
+
+## Bug: Mesa volta a ficar verde após enviar pedido
+- [x] Mesa deve permanecer vermelha (ocupada) enquanto houver itens na comanda
+- [x] Corrigir a lógica de statusCounts para considerar itens da comanda (tabItems)
+
+## Bugs - PDV Slidebar
+- [x] Corrigir botões de mesas na barra de atalhos do PDV Slidebar para mostrar status correto (vermelho para mesas com itens na comanda, verde para mesas livres)

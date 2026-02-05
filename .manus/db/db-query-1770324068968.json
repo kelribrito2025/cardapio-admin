@@ -1,0 +1,34 @@
+{
+  "query": "SELECT t.id as tabId, t.tableId, t.status as tabStatus, tb.number as tableNumber, tb.status as tableStatus, (SELECT COUNT(*) FROM tabItems WHERE tabId = t.id) as itemCount FROM tabs t JOIN tables tb ON t.tableId = tb.id WHERE t.status = 'open';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT t.id as tabId, t.tableId, t.status as tabStatus, tb.number as tableNumber, tb.status as tableStatus, (SELECT COUNT(*) FROM tabItems WHERE tabId = t.id) as itemCount FROM tabs t JOIN tables tb ON t.tableId = tb.id WHERE t.status = 'open';",
+  "rows": [
+    {
+      "tabId": "15",
+      "tableId": "30022",
+      "tabStatus": "open",
+      "tableNumber": "2",
+      "tableStatus": "occupied",
+      "itemCount": "1"
+    },
+    {
+      "tabId": "16",
+      "tableId": "30027",
+      "tabStatus": "open",
+      "tableNumber": "7",
+      "tableStatus": "occupied",
+      "itemCount": "1"
+    },
+    {
+      "tabId": "14",
+      "tableId": "30021",
+      "tabStatus": "open",
+      "tableNumber": "1",
+      "tableStatus": "occupied",
+      "itemCount": "2"
+    }
+  ],
+  "messages": [],
+  "stdout": "tabId\ttableId\ttabStatus\ttableNumber\ttableStatus\titemCount\n15\t30022\topen\t2\toccupied\t1\n16\t30027\topen\t7\toccupied\t1\n14\t30021\topen\t1\toccupied\t2\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}

@@ -472,7 +472,11 @@ export default function MesasComandas() {
     let reserved = 0;
     
     tables.forEach((t) => {
-      const hasItems = (cartsPerTable[t.id]?.length || 0) > 0;
+      // Verificar itens no carrinho local E na comanda
+      const cartItems = cartsPerTable[t.id]?.length || 0;
+      const tabItems = t.items?.length || 0;
+      const hasItems = cartItems > 0 || tabItems > 0;
+      
       if (hasItems) {
         occupied++;
       } else if (t.status === "reserved") {
@@ -1338,7 +1342,8 @@ export default function MesasComandas() {
           id: t.id,
           number: t.number,
           status: t.status === "requesting_bill" ? "occupied" : t.status,
-          tabId: t.tab?.id
+          tabId: t.tab?.id,
+          tabItemsCount: t.items?.length || 0
         }))}
         onTableChange={(table) => {
           const fullTable = tables.find(t => t.id === table.id);

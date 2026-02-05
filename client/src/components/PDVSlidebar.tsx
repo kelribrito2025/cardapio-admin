@@ -99,6 +99,7 @@ interface TableShortcut {
   number: number;
   status: string;
   tabId?: number;
+  tabItemsCount?: number; // Quantidade de itens na comanda
 }
 
 interface PDVSlidebarProps {
@@ -1027,8 +1028,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     <ArrowUpDown className="h-4 w-4" />
                   </button>
                   {tables.map((table) => {
-                    // Status baseado em itens no carrinho da mesa
-                    const tableHasItems = (cartsPerTable[table.id]?.length || 0) > 0;
+                    // Status baseado em itens no carrinho da mesa OU na comanda
+                    const cartItemsCount = cartsPerTable[table.id]?.length || 0;
+                    const tabItemsCount = table.tabItemsCount || 0;
+                    const tableHasItems = cartItemsCount > 0 || tabItemsCount > 0;
                     return (
                       <button
                         key={`${table.id}-${cartsVersion}-${tableHasItems}`}
@@ -1087,8 +1090,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                       <ArrowUpDown className="h-4 w-4" />
                     </button>
                     {tables.map((table) => {
-                      // Status baseado em itens no carrinho da mesa
-                      const tableHasItems = (cartsPerTable[table.id]?.length || 0) > 0;
+                      // Status baseado em itens no carrinho da mesa OU na comanda
+                      const cartItemsCount = cartsPerTable[table.id]?.length || 0;
+                      const tabItemsCount = table.tabItemsCount || 0;
+                      const tableHasItems = cartItemsCount > 0 || tabItemsCount > 0;
                       return (
                         <button
                           key={`${table.id}-${cartsVersion}-${tableHasItems}`}
