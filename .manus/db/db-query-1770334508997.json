@@ -1,0 +1,26 @@
+{
+  "query": "SELECT id, orderNumber, customerName, deliveryType, source, notes FROM orders WHERE orderNumber LIKE '%37%' ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, customerName, deliveryType, source, notes FROM orders WHERE orderNumber LIKE '%37%' ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "360059",
+      "orderNumber": "#P37",
+      "customerName": "Mesa 1",
+      "deliveryType": "dine_in",
+      "source": "pdv",
+      "notes": "Comanda da Mesa 1"
+    },
+    {
+      "id": "360056",
+      "orderNumber": "#P37",
+      "customerName": "Isabela Juliani",
+      "deliveryType": "delivery",
+      "source": "internal",
+      "notes": "Sem molho, sem batata palha, sem tomate e sem alface "
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tcustomerName\tdeliveryType\tsource\tnotes\n360059\t#P37\tMesa 1\tdine_in\tpdv\tComanda da Mesa 1\n360056\t#P37\tIsabela Juliani\tdelivery\tinternal\tSem molho, sem batata palha, sem tomate e sem alface \n",
+  "stderr": "",
+  "execution_time_ms": 97
+}
