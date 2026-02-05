@@ -400,17 +400,48 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
     });
   }, [productsList, selectedCategory, searchQuery]);
 
+  // Função auxiliar para comparar complementos
+  const areComplementsEqual = (a: CartItem['complements'], b: CartItem['complements']): boolean => {
+    if (a.length !== b.length) return false;
+    // Ordenar por id para comparação consistente
+    const sortedA = [...a].sort((x, y) => x.id - y.id);
+    const sortedB = [...b].sort((x, y) => x.id - y.id);
+    return sortedA.every((itemA, index) => {
+      const itemB = sortedB[index];
+      return itemA.id === itemB.id && itemA.quantity === itemB.quantity;
+    });
+  };
+
   // Funções do carrinho
   const addToCart = (product: Product, quantity: number, observation: string, complements: CartItem['complements']) => {
-    setCart(prev => [...prev, {
-      productId: product.id,
-      name: product.name,
-      price: product.price,
-      quantity,
-      observation,
-      image: product.images?.[0] || null,
-      complements
-    }]);
+    setCart(prev => {
+      // Procurar item existente com mesmo produto, mesmos complementos e mesma observação
+      const existingIndex = prev.findIndex(item => 
+        item.productId === product.id && 
+        item.observation === observation &&
+        areComplementsEqual(item.complements, complements)
+      );
+
+      if (existingIndex !== -1) {
+        // Item existe, incrementar quantidade
+        return prev.map((item, index) => 
+          index === existingIndex 
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
+      } else {
+        // Item não existe, adicionar novo
+        return [...prev, {
+          productId: product.id,
+          name: product.name,
+          price: product.price,
+          quantity,
+          observation,
+          image: product.images?.[0] || null,
+          complements
+        }];
+      }
+    });
   };
 
   const updateCartItem = (index: number, updates: Partial<CartItem>) => {
