@@ -5107,3 +5107,7 @@
 
 ## Importação de Taxas por Bairro - Palácio do Açaí
 - [x] Importar 25 bairros com taxas de entrega para o estabelecimento ID 90001
+
+
+## Nova Cor no Card de Nota do Restaurante
+- [x] Adicionar opção de cor "Açaí" no card de nota do restaurante nas configurações

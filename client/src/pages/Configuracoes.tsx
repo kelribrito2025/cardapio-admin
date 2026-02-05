@@ -1403,6 +1403,7 @@ export default function Configuracoes() {
                     { id: "fire", name: "Fogo", bg: "bg-gradient-to-r from-red-500 to-orange-500", text: "text-white", border: "border-transparent", arrowBg: "bg-orange-500" },
                     { id: "gold", name: "Dourado", bg: "bg-gradient-to-r from-yellow-400 to-amber-500", text: "text-white", border: "border-transparent", arrowBg: "bg-amber-500" },
                     { id: "night", name: "Noite", bg: "bg-gradient-to-r from-gray-700 to-gray-900", text: "text-white", border: "border-transparent", arrowBg: "bg-gray-900" },
+                    { id: "acai", name: "Açaí", bg: "bg-gradient-to-r from-purple-600 to-purple-900", text: "text-white", border: "border-transparent", arrowBg: "bg-purple-900" },
                   ].map((style) => (
                     <button
                       key={style.id}

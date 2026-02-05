@@ -1628,7 +1628,8 @@ export default function PublicMenu() {
                     establishment.noteStyle === "candy" && "bg-gradient-to-r from-pink-400 to-rose-400",
                     establishment.noteStyle === "mint" && "bg-gradient-to-r from-teal-400 to-cyan-400",
                     establishment.noteStyle === "peach" && "bg-gradient-to-r from-orange-300 to-rose-300",
-                    establishment.noteStyle === "royal" && "bg-gradient-to-r from-indigo-500 to-purple-600"
+                    establishment.noteStyle === "royal" && "bg-gradient-to-r from-indigo-500 to-purple-600",
+                    establishment.noteStyle === "acai" && "bg-gradient-to-r from-purple-600 to-purple-900"
                   )}>
                     <p className={cn(
                       "text-xs text-center leading-tight break-words",
@@ -1650,7 +1651,8 @@ export default function PublicMenu() {
                     establishment.noteStyle === "candy" && "bg-rose-400",
                     establishment.noteStyle === "mint" && "bg-cyan-400",
                     establishment.noteStyle === "peach" && "bg-rose-300",
-                    establishment.noteStyle === "royal" && "bg-purple-600"
+                    establishment.noteStyle === "royal" && "bg-purple-600",
+                    establishment.noteStyle === "acai" && "bg-purple-900"
                   )}></div>
                   <div className={cn(
                     "absolute -bottom-5 left-7 w-2 h-2 rounded-full shadow-sm",
@@ -1665,7 +1667,8 @@ export default function PublicMenu() {
                     establishment.noteStyle === "candy" && "bg-rose-400",
                     establishment.noteStyle === "mint" && "bg-cyan-400",
                     establishment.noteStyle === "peach" && "bg-rose-300",
-                    establishment.noteStyle === "royal" && "bg-purple-600"
+                    establishment.noteStyle === "royal" && "bg-purple-600",
+                    establishment.noteStyle === "acai" && "bg-purple-900"
                   )}></div>
                 </div>
               </div>
