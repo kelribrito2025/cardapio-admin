@@ -278,6 +278,15 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   // Estado para aba selecionada (consumo ou comanda)
   const [selectedTab, setSelectedTab] = useState<'consumo' | 'comanda'>('consumo');
 
+  // Query para buscar itens da comanda (pedidos já enviados)
+  const { data: tabData, isLoading: tabItemsLoading, refetch: refetchTabItems } = trpc.tabs.getByTable.useQuery(
+    { tableId: tableId! },
+    { 
+      enabled: !!tableId && selectedTab === 'comanda',
+      refetchInterval: selectedTab === 'comanda' ? 5000 : false // Atualizar a cada 5s quando na aba comanda
+    }
+  );
+
   // Resetar clearedCart quando trocar de mesa
   useEffect(() => {
     setClearedCart(null);
@@ -1291,115 +1300,207 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
             {/* Lista de Itens */}
             <div className="flex-1 overflow-y-auto p-3 space-y-2">
-              {cart.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                  <ShoppingBag className="h-10 w-10 mb-3 opacity-30" />
-                  <p className="text-xs font-medium">Nenhum item no pedido</p>
-                  <p className="text-[10px]">Clique nos produtos para adicionar</p>
-                </div>
-              ) : (
-                cart.map((item, index) => {
-                  const isExpanded = expandedCartItem === index;
-                  const itemTotal = (parseFloat(item.price) + 
-                    item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0)
-                  ) * item.quantity;
-                  
-                  return (
-                    <div
-                      key={`${item.productId}-${index}`}
-                      className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-red-500 overflow-hidden transition-all duration-200"
-                      onMouseEnter={() => setExpandedCartItem(index)}
-                      onMouseLeave={() => setExpandedCartItem(null)}
-                    >
-                      <div 
-                        className="flex items-center justify-between p-3 cursor-pointer"
-                        onClick={() => setExpandedCartItem(isExpanded ? null : index)}
-                      >
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <span className="text-xs font-medium text-red-600 bg-red-50 px-1.5 py-1 rounded">
-                            {item.quantity}x
-                          </span>
-                          <h4 className="font-semibold text-sm text-gray-800 truncate">
-                            {item.name}
-                          </h4>
-                        </div>
-                        <span className="text-sm font-bold text-gray-900 ml-2">
-                          {formatCurrency(itemTotal)}
-                        </span>
-                      </div>
+              {/* Aba Mesa - Carrinho (itens pendentes) */}
+              {selectedTab === 'consumo' && (
+                <>
+                  {cart.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                      <ShoppingBag className="h-10 w-10 mb-3 opacity-30" />
+                      <p className="text-xs font-medium">Nenhum item no pedido</p>
+                      <p className="text-[10px]">Clique nos produtos para adicionar</p>
+                    </div>
+                  ) : (
+                    cart.map((item, index) => {
+                      const isExpanded = expandedCartItem === index;
+                      const itemTotal = (parseFloat(item.price) + 
+                        item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0)
+                      ) * item.quantity;
+                      
+                      return (
+                        <div
+                          key={`${item.productId}-${index}`}
+                          className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-red-500 overflow-hidden transition-all duration-200"
+                          onMouseEnter={() => setExpandedCartItem(index)}
+                          onMouseLeave={() => setExpandedCartItem(null)}
+                        >
+                          <div 
+                            className="flex items-center justify-between p-3 cursor-pointer"
+                            onClick={() => setExpandedCartItem(isExpanded ? null : index)}
+                          >
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <span className="text-xs font-medium text-red-600 bg-red-50 px-1.5 py-1 rounded">
+                                {item.quantity}x
+                              </span>
+                              <h4 className="font-semibold text-sm text-gray-800 truncate">
+                                {item.name}
+                              </h4>
+                            </div>
+                            <span className="text-sm font-bold text-gray-900 ml-2">
+                              {formatCurrency(itemTotal)}
+                            </span>
+                          </div>
 
-                      {/* Ações expandidas */}
-                      {isExpanded && (
-                        <div className="border-t border-gray-100">
-                          {/* Complementos */}
-                          {item.complements.length > 0 && (
-                            <div className="px-3 py-2 bg-gray-50">
-                              <p className="text-xs text-gray-500 font-medium mb-1.5">Complementos:</p>
-                              <div className="space-y-1">
-                                {item.complements.map((comp, idx) => (
-                                  <div key={idx} className="flex items-center justify-between text-xs">
-                                    <span className="text-gray-700">
-                                      {comp.quantity > 1 ? `${comp.quantity}x ` : ""}{comp.name}
-                                    </span>
-                                    <span className="text-gray-600">
-                                      {parseFloat(comp.price) > 0 ? `+${formatCurrency(parseFloat(comp.price) * comp.quantity)}` : "Grátis"}
-                                    </span>
+                          {/* Ações expandidas */}
+                          {isExpanded && (
+                            <div className="border-t border-gray-100">
+                              {/* Complementos */}
+                              {item.complements.length > 0 && (
+                                <div className="px-3 py-2 bg-gray-50">
+                                  <p className="text-xs text-gray-500 font-medium mb-1.5">Complementos:</p>
+                                  <div className="space-y-1">
+                                    {item.complements.map((comp, idx) => (
+                                      <div key={idx} className="flex items-center justify-between text-xs">
+                                        <span className="text-gray-700">
+                                          {comp.quantity > 1 ? `${comp.quantity}x ` : ""}{comp.name}
+                                        </span>
+                                        <span className="text-gray-600">
+                                          {parseFloat(comp.price) > 0 ? `+${formatCurrency(parseFloat(comp.price) * comp.quantity)}` : "Grátis"}
+                                        </span>
+                                      </div>
+                                    ))}
                                   </div>
-                                ))}
+                                </div>
+                              )}
+                              {/* Observação */}
+                              {item.observation && (
+                                <div className="px-3 py-1.5 bg-yellow-50">
+                                  <p className="text-xs text-yellow-700 italic">
+                                    <span className="font-medium">Obs:</span> {item.observation}
+                                  </p>
+                                </div>
+                              )}
+                              {/* Botões de ação */}
+                              <div className="px-3 pb-2.5 pt-2.5 flex items-center justify-between">
+                                <div className="flex items-center gap-1.5">
+                                  <button
+                                    onClick={() => {
+                                      if (item.quantity > 1) {
+                                        updateCartItem(index, { quantity: item.quantity - 1 });
+                                      } else {
+                                        removeFromCart(index);
+                                      }
+                                    }}
+                                    className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
+                                  >
+                                    <Minus className="h-3.5 w-3.5 text-gray-600" />
+                                  </button>
+                                  <span className="text-sm font-medium w-7 text-center">{item.quantity}</span>
+                                  <button
+                                    onClick={() => updateCartItem(index, { quantity: item.quantity + 1 })}
+                                    className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
+                                  >
+                                    <Plus className="h-3.5 w-3.5 text-gray-600" />
+                                  </button>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <button
+                                    onClick={() => handleEditCartItem(index, item)}
+                                    className="p-1.5 rounded bg-blue-100 hover:bg-blue-200 transition-colors"
+                                  >
+                                    <Pencil className="h-3.5 w-3.5 text-blue-600" />
+                                  </button>
+                                  <button
+                                    onClick={() => removeFromCart(index)}
+                                    className="p-1.5 rounded bg-red-100 hover:bg-red-200 transition-colors"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5 text-red-600" />
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           )}
-                          {/* Observação */}
-                          {item.observation && (
-                            <div className="px-3 py-1.5 bg-yellow-50">
-                              <p className="text-xs text-yellow-700 italic">
-                                <span className="font-medium">Obs:</span> {item.observation}
-                              </p>
-                            </div>
-                          )}
-                          {/* Botões de ação */}
-                          <div className="px-3 pb-2.5 pt-2.5 flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <button
-                                onClick={() => {
-                                  if (item.quantity > 1) {
-                                    updateCartItem(index, { quantity: item.quantity - 1 });
-                                  } else {
-                                    removeFromCart(index);
-                                  }
-                                }}
-                                className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
-                              >
-                                <Minus className="h-3.5 w-3.5 text-gray-600" />
-                              </button>
-                              <span className="text-sm font-medium w-7 text-center">{item.quantity}</span>
-                              <button
-                                onClick={() => updateCartItem(index, { quantity: item.quantity + 1 })}
-                                className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
-                              >
-                                <Plus className="h-3.5 w-3.5 text-gray-600" />
-                              </button>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <button
-                                onClick={() => handleEditCartItem(index, item)}
-                                className="p-1.5 rounded bg-blue-100 hover:bg-blue-200 transition-colors"
-                              >
-                                <Pencil className="h-3.5 w-3.5 text-blue-600" />
-                              </button>
-                              <button
-                                onClick={() => removeFromCart(index)}
-                                className="p-1.5 rounded bg-red-100 hover:bg-red-200 transition-colors"
-                              >
-                                <Trash2 className="h-3.5 w-3.5 text-red-600" />
-                              </button>
-                            </div>
-                          </div>
                         </div>
-                      )}
+                      );
+                    })
+                  )}
+                </>
+              )}
+
+              {/* Aba Comanda - Itens já enviados para preparo */}
+              {selectedTab === 'comanda' && (
+                <>
+                  {tabItemsLoading ? (
+                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500 mb-3"></div>
+                      <p className="text-xs font-medium">Carregando comanda...</p>
                     </div>
-                  );
-                })
+                  ) : !tabData?.items || tabData.items.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                      <Receipt className="h-10 w-10 mb-3 opacity-30" />
+                      <p className="text-xs font-medium">Nenhum item na comanda</p>
+                      <p className="text-[10px]">Os itens aparecerão aqui após enviar o pedido</p>
+                    </div>
+                  ) : (
+                    tabData.items
+                      .filter((item: any) => item.status !== 'cancelled')
+                      .map((item: any, index: number) => {
+                        const itemTotal = parseFloat(item.totalPrice);
+                        
+                        return (
+                          <div
+                            key={`tab-item-${item.id}-${index}`}
+                            className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-green-500 overflow-hidden transition-all duration-200"
+                          >
+                            <div className="flex items-center justify-between p-3">
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <span className="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-1 rounded">
+                                  {item.quantity}x
+                                </span>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-semibold text-sm text-gray-800 truncate">
+                                    {item.productName}
+                                  </h4>
+                                  {item.status && (
+                                    <span className={cn(
+                                      "text-[10px] px-1.5 py-0.5 rounded-full",
+                                      item.status === 'pending' && "bg-yellow-100 text-yellow-700",
+                                      item.status === 'preparing' && "bg-blue-100 text-blue-700",
+                                      item.status === 'ready' && "bg-green-100 text-green-700",
+                                      item.status === 'delivered' && "bg-gray-100 text-gray-700"
+                                    )}>
+                                      {item.status === 'pending' && "Pendente"}
+                                      {item.status === 'preparing' && "Preparando"}
+                                      {item.status === 'ready' && "Pronto"}
+                                      {item.status === 'delivered' && "Entregue"}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <span className="text-sm font-bold text-gray-900 ml-2">
+                                {formatCurrency(itemTotal)}
+                              </span>
+                            </div>
+                            {/* Complementos da comanda */}
+                            {item.complements && item.complements.length > 0 && (
+                              <div className="px-3 py-2 bg-gray-50 border-t border-gray-100">
+                                <p className="text-xs text-gray-500 font-medium mb-1">Complementos:</p>
+                                <div className="space-y-0.5">
+                                  {item.complements.map((comp: any, idx: number) => (
+                                    <div key={idx} className="flex items-center justify-between text-xs">
+                                      <span className="text-gray-700">
+                                        {comp.quantity > 1 ? `${comp.quantity}x ` : ""}{comp.name}
+                                      </span>
+                                      <span className="text-gray-600">
+                                        {parseFloat(comp.price) > 0 ? `+${formatCurrency(parseFloat(comp.price) * comp.quantity)}` : ""}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {/* Observação da comanda */}
+                            {item.observation && (
+                              <div className="px-3 py-1.5 bg-yellow-50 border-t border-gray-100">
+                                <p className="text-xs text-yellow-700 italic">
+                                  <span className="font-medium">Obs:</span> {item.observation}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })
+                  )}
+                </>
               )}
             </div>
 

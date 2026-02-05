@@ -5230,3 +5230,8 @@
 - [x] Trocar label "Mesa X" para "Comanda" com ícone de recibo
 - [x] Exibir botão "Imprimir" entre "Limpar" e "Fechar conta" ao selecionar Comanda
 - [x] Renomear "Finalizar Pedido" para "Fechar conta"
+
+## Separação de visualização entre aba Mesa e aba Comanda
+- [x] Aba Mesa: mostrar apenas itens no carrinho (pendentes de envio)
+- [x] Aba Comanda: mostrar apenas itens já enviados para preparo (pedidos confirmados)
+- [x] Buscar itens da comanda da mesa via API (tabItems)
