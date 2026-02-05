@@ -5296,3 +5296,8 @@
 
 ## Remoção Cabeçalho PDV Slidebar
 - [x] Remover cabeçalho vermelho com nome da mesa e descrição "Adicionar itens à comanda"
+
+## Botão Desfazer Temporário
+- [x] Implementar botão Desfazer por 10 segundos após clicar em Limpar
+- [x] Usar apenas estado local e setTimeout (sem backend)
+- [x] Após 10 segundos, voltar automaticamente para Limpar

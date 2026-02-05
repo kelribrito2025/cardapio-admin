@@ -312,6 +312,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
   // Estados para limpar/desfazer
   const [clearedCart, setClearedCart] = useState<CartItem[] | null>(null);
+  
+  // Ref para o timer de desfazer
+  const undoTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Estado para aba selecionada (consumo ou comanda)
   const [selectedTab, setSelectedTab] = useState<'consumo' | 'comanda'>('consumo');
@@ -331,6 +334,11 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   // Resetar clearedCart quando trocar de mesa
   useEffect(() => {
     setClearedCart(null);
+    // Limpar timer ao trocar de mesa
+    if (undoTimerRef.current) {
+      clearTimeout(undoTimerRef.current);
+      undoTimerRef.current = null;
+    }
   }, [tableId, tableNumber]);
 
   // Estado para inversão das barras de mesas e categorias
@@ -560,6 +568,17 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
     // Salvar itens atuais para possível desfazer
     if (cart.length > 0) {
       setClearedCart([...cart]);
+      
+      // Limpar timer anterior se existir
+      if (undoTimerRef.current) {
+        clearTimeout(undoTimerRef.current);
+      }
+      
+      // Iniciar timer de 10 segundos para expirar o desfazer
+      undoTimerRef.current = setTimeout(() => {
+        setClearedCart(null);
+        undoTimerRef.current = null;
+      }, 10000);
     }
     setCart([]);
     setExpandedCartItem(null);
@@ -572,11 +591,25 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   // Função para desfazer a limpeza
   const undoClearCart = () => {
     if (clearedCart) {
+      // Limpar o timer ao desfazer
+      if (undoTimerRef.current) {
+        clearTimeout(undoTimerRef.current);
+        undoTimerRef.current = null;
+      }
       setCart(clearedCart);
       setClearedCart(null);
       toast.success("Itens restaurados!");
     }
   };
+
+  // Limpar timer ao desmontar o componente
+  useEffect(() => {
+    return () => {
+      if (undoTimerRef.current) {
+        clearTimeout(undoTimerRef.current);
+      }
+    };
+  }, []);
 
   const calculateTotal = () => {
     return cart.reduce((total, item) => {
