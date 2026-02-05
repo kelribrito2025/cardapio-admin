@@ -665,6 +665,32 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
     }
   });
 
+  // Mutation para abrir mesa e criar comanda
+  const openTableMutation = trpc.tables.open.useMutation({
+    onSuccess: (data) => {
+      // Após abrir a mesa, adicionar os itens à comanda criada
+      addTabItemsMutation.mutate({
+        tabId: data.tabId,
+        items: cart.map(item => ({
+          productId: item.productId,
+          productName: item.name,
+          quantity: item.quantity,
+          unitPrice: item.price,
+          totalPrice: ((parseFloat(item.price) + item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0)) * item.quantity).toFixed(2),
+          complements: item.complements.map(c => ({
+            name: c.name,
+            price: parseFloat(c.price),
+            quantity: c.quantity
+          })),
+          notes: item.observation || undefined
+        }))
+      });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao abrir mesa");
+    }
+  });
+
   // Finalizar pedido
   const handleFinishOrder = () => {
     if (cart.length === 0) {
@@ -672,7 +698,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
       return;
     }
 
-    // Se tem tabId, adiciona diretamente à comanda
+    // Se tem tabId, adiciona diretamente à comanda existente
     if (tabId) {
       addTabItemsMutation.mutate({
         tabId,
@@ -693,23 +719,30 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
       return;
     }
 
-    // Caso contrário, cria um pedido normal
+    // Se tem tableId mas não tem tabId, precisa abrir a mesa primeiro (criar comanda)
+    // A openTableMutation vai criar a comanda e depois adicionar os itens
+    if (tableId) {
+      openTableMutation.mutate({ tableId, guests: 1 });
+      return;
+    }
+
+    // Caso contrário (sem mesa), cria um pedido normal
     const orderNumber = generateOrderNumber();
     const subtotal = calculateTotal();
 
     createOrderMutation.mutate({
       establishmentId: establishmentId!,
       orderNumber,
-      customerName: `Mesa ${tableNumber}`,
+      customerName: `Pedido Avulso`,
       customerPhone: "",
-      customerAddress: `Mesa ${tableNumber}`,
+      customerAddress: "",
       deliveryType: "dine_in",
       paymentMethod: "cash",
       subtotal: subtotal.toFixed(2),
       deliveryFee: "0.00",
       discount: "0.00",
       total: subtotal.toFixed(2),
-      notes: `Mesa: ${tableNumber}`,
+      notes: "",
       status: "preparing",
       source: "pdv",
       items: cart.map(item => ({
@@ -1575,16 +1608,14 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                 {/* Botão Fechar conta / Adicionar à Comanda */}
                 <Button
                   onClick={handleFinishOrder}
-                  disabled={cart.length === 0 || createOrderMutation.isPending || addTabItemsMutation.isPending}
+                  disabled={cart.length === 0 || createOrderMutation.isPending || addTabItemsMutation.isPending || openTableMutation.isPending}
                   className="flex-1 bg-red-500 hover:bg-red-600 text-white"
                 >
-                  {(createOrderMutation.isPending || addTabItemsMutation.isPending) 
+                  {(createOrderMutation.isPending || addTabItemsMutation.isPending || openTableMutation.isPending) 
                     ? "Enviando..." 
                     : selectedTab === 'comanda' 
                       ? "Fechar conta" 
-                      : tabId 
-                        ? "Adicionar à Comanda" 
-                        : "Enviar pedido"}
+                      : "Enviar pedido"}
                 </Button>
               </div>
 

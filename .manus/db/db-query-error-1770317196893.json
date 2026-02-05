@@ -1,0 +1,8 @@
+{
+  "query": "SELECT ti.*, t.tableId, t.status as tabStatus FROM tab_items ti JOIN tabs t ON ti.tabId = t.id WHERE t.tableId = (SELECT id FROM tables WHERE number = 13 LIMIT 1) ORDER BY ti.orderedAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT ti.*, t.tableId, t.status as tabStatus FROM tab_items ti JOIN tabs t ON ti.tabId = t.id WHERE t.tableId = (SELECT id FROM tables WHERE number = 13 LIMIT 1) ORDER BY ti.orderedAt DESC LIMIT 10;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table 'enmwmxpat34diouyku4te2.tab_items' doesn't exist"
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "query": "SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE();",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE();",
+  "rows": [
+    {
+      "table_name": "__drizzle_migrations"
+    },
+    {
+      "table_name": "users"
+    },
+    {
+      "table_name": "categories"
+    },
+    {
+      "table_name": "complementGroups"
+    },
+    {
+      "table_name": "complementItems"
+    },
+    {
+      "table_name": "establishments"
+    },
+    {
+      "table_name": "orderItems"
+    },
+    {
+      "table_name": "orders"
+    },
+    {
+      "table_name": "products"
+    },
+    {
+      "table_name": "stockCategories"
+    },
+    {
+      "table_name": "stockItems"
+    },
+    {
+      "table_name": "stockMovements"
+    },
+    {
+      "table_name": "coupons"
+    },
+    {
+      "table_name": "reviews"
+    },
+    {
+      "table_name": "businessHours"
+    },
+    {
+      "table_name": "neighborhoodFees"
+    },
+    {
+      "table_name": "loyaltyCards"
+    },
+    {
+      "table_name": "loyaltyStamps"
+    },
+    {
+      "table_name": "printers"
+    },
+    {
+      "table_name": "printerSettings"
+    },
+    {
+      "table_name": "pushSubscriptions"
+    },
+    {
+      "table_name": "whatsappConfig"
+    },
+    {
+      "table_name": "printQueue"
+    },
+    {
+      "table_name": "printerSectors"
+    },
+    {
+      "table_name": "ifoodConfig"
+    },
+    {
+      "table_name": "menu_sessions"
+    },
+    {
+      "table_name": "menu_views_daily"
+    },
+    {
+      "table_name": "menu_views_hourly"
+    },
+    {
+      "table_name": "sms_balance"
+    },
+    {
+      "table_name": "sms_transactions"
+    },
+    {
+      "table_name": "tables"
+    },
+    {
+      "table_name": "tabs"
+    },
+    {
+      "table_name": "tabItems"
+    },
+    {
+      "table_name": "tableSpaces"
+    },
+    {
+      "table_name": "table_spaces"
+    }
+  ],
+  "messages": [],
+  "stdout": "table_name\n__drizzle_migrations\nusers\ncategories\ncomplementGroups\ncomplementItems\nestablishments\norderItems\norders\nproducts\nstockCategories\nstockItems\nstockMovements\ncoupons\nreviews\nbusinessHours\nneighborhoodFees\nloyaltyCards\nloyaltyStamps\nprinters\nprinterSettings\npushSubscriptions\nwhatsappConfig\nprintQueue\nprinterSectors\nifoodConfig\nmenu_sessions\nmenu_views_daily\nmenu_views_hourly\nsms_balance\nsms_transactions\ntables\ntabs\ntabItems\ntableSpaces\ntable_spaces\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

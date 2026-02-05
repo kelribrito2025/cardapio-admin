@@ -5235,3 +5235,11 @@
 - [x] Aba Mesa: mostrar apenas itens no carrinho (pendentes de envio)
 - [x] Aba Comanda: mostrar apenas itens já enviados para preparo (pedidos confirmados)
 - [x] Buscar itens da comanda da mesa via API (tabItems)
+
+## Bug: Itens enviados não aparecem na aba Comanda
+- [ ] Investigar por que itens enviados para preparo não aparecem na aba Comanda
+- [ ] Corrigir a lógica de busca/exibição dos itens da comanda
+
+## Bug: Sidebar fecha após enviar pedido e texto do botão incorreto
+- [x] Sidebar não deve fechar após enviar pedido
+- [x] Texto do botão deve ser "Enviar pedido" e não "Adicionar à comanda"

@@ -487,7 +487,7 @@ export default function MesasComandas() {
   const handleOrderCreated = () => {
     // Atualizar os dados das mesas
     refetch();
-    setShowPDVSlidebar(false);
+    // Não fechar a sidebar após enviar pedido para permitir adicionar mais itens
   };
 
   const handleOpenTable = (table: Table) => {

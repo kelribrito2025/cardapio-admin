@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `tabItems` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `tabId` int NOT NULL,\n  `productId` int NOT NULL,\n  `productName` varchar(255) NOT NULL,\n  `quantity` int NOT NULL DEFAULT 1,\n  `unitPrice` decimal(10, 2) NOT NULL,\n  `totalPrice` decimal(10, 2) NOT NULL,\n  `complements` json,\n  `notes` text,\n  `status` enum('pending', 'preparing', 'ready', 'delivered', 'cancelled') NOT NULL DEFAULT 'pending',\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  CONSTRAINT `tabItems_id` PRIMARY KEY(`id`)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute CREATE TABLE IF NOT EXISTS `tabItems` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `tabId` int NOT NULL,\n  `productId` int NOT NULL,\n  `productName` varchar(255) NOT NULL,\n  `quantity` int NOT NULL DEFAULT 1,\n  `unitPrice` decimal(10, 2) NOT NULL,\n  `totalPrice` decimal(10, 2) NOT NULL,\n  `complements` json,\n  `notes` text,\n  `status` enum('pending', 'preparing', 'ready', 'delivered', 'cancelled') NOT NULL DEFAULT 'pending',\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  CONSTRAINT `tabItems_id` PRIMARY KEY(`id`)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 52
+}

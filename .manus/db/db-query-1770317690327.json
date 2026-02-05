@@ -1,0 +1,80 @@
+{
+  "query": "SELECT id, orderNumber, customerName, status, total FROM orders ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, customerName, status, total FROM orders ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "360006",
+      "orderNumber": "#P38",
+      "customerName": "Mesa 13",
+      "status": "preparing",
+      "total": "7.00"
+    },
+    {
+      "id": "360005",
+      "orderNumber": "#P37",
+      "customerName": "Mesa 13",
+      "status": "preparing",
+      "total": "5.00"
+    },
+    {
+      "id": "360004",
+      "orderNumber": "#P36",
+      "customerName": "Mesa 13",
+      "status": "preparing",
+      "total": "5.00"
+    },
+    {
+      "id": "360003",
+      "orderNumber": "#P35",
+      "customerName": "Mesa 13",
+      "status": "preparing",
+      "total": "65.00"
+    },
+    {
+      "id": "360002",
+      "orderNumber": "#P34",
+      "customerName": "Mesa 24",
+      "status": "preparing",
+      "total": "15.00"
+    },
+    {
+      "id": "360001",
+      "orderNumber": "#P33",
+      "customerName": "Brito",
+      "status": "cancelled",
+      "total": "113.00"
+    },
+    {
+      "id": "330015",
+      "orderNumber": "#P36",
+      "customerName": "Andrea ",
+      "status": "completed",
+      "total": "116.30"
+    },
+    {
+      "id": "330014",
+      "orderNumber": "#P35",
+      "customerName": "João Lucas ",
+      "status": "completed",
+      "total": "59.80"
+    },
+    {
+      "id": "330013",
+      "orderNumber": "#P32",
+      "customerName": "Mesa 1",
+      "status": "completed",
+      "total": "32.00"
+    },
+    {
+      "id": "330012",
+      "orderNumber": "#P31",
+      "customerName": "Mesa 1",
+      "status": "completed",
+      "total": "28.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tcustomerName\tstatus\ttotal\n360006\t#P38\tMesa 13\tpreparing\t7.00\n360005\t#P37\tMesa 13\tpreparing\t5.00\n360004\t#P36\tMesa 13\tpreparing\t5.00\n360003\t#P35\tMesa 13\tpreparing\t65.00\n360002\t#P34\tMesa 24\tpreparing\t15.00\n360001\t#P33\tBrito\tcancelled\t113.00\n330015\t#P36\tAndrea \tcompleted\t116.30\n330014\t#P35\tJoão Lucas \tcompleted\t59.80\n330013\t#P32\tMesa 1\tcompleted\t32.00\n330012\t#P31\tMesa 1\tcompleted\t28.00\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

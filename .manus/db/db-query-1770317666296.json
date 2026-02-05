@@ -1,0 +1,140 @@
+{
+  "query": "SELECT id, number, status FROM `tables` WHERE establishmentId = 30001 LIMIT 30;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, number, status FROM `tables` WHERE establishmentId = 30001 LIMIT 30;",
+  "rows": [
+    {
+      "id": "1",
+      "number": "1",
+      "status": "free"
+    },
+    {
+      "id": "2",
+      "number": "2",
+      "status": "free"
+    },
+    {
+      "id": "3",
+      "number": "3",
+      "status": "free"
+    },
+    {
+      "id": "4",
+      "number": "4",
+      "status": "free"
+    },
+    {
+      "id": "5",
+      "number": "5",
+      "status": "free"
+    },
+    {
+      "id": "6",
+      "number": "6",
+      "status": "free"
+    },
+    {
+      "id": "7",
+      "number": "7",
+      "status": "free"
+    },
+    {
+      "id": "8",
+      "number": "8",
+      "status": "free"
+    },
+    {
+      "id": "9",
+      "number": "9",
+      "status": "free"
+    },
+    {
+      "id": "10",
+      "number": "10",
+      "status": "free"
+    },
+    {
+      "id": "11",
+      "number": "11",
+      "status": "free"
+    },
+    {
+      "id": "12",
+      "number": "12",
+      "status": "free"
+    },
+    {
+      "id": "13",
+      "number": "13",
+      "status": "free"
+    },
+    {
+      "id": "14",
+      "number": "14",
+      "status": "free"
+    },
+    {
+      "id": "15",
+      "number": "15",
+      "status": "free"
+    },
+    {
+      "id": "16",
+      "number": "16",
+      "status": "free"
+    },
+    {
+      "id": "30001",
+      "number": "17",
+      "status": "free"
+    },
+    {
+      "id": "30002",
+      "number": "18",
+      "status": "free"
+    },
+    {
+      "id": "30003",
+      "number": "19",
+      "status": "free"
+    },
+    {
+      "id": "30004",
+      "number": "20",
+      "status": "free"
+    },
+    {
+      "id": "30005",
+      "number": "21",
+      "status": "free"
+    },
+    {
+      "id": "30006",
+      "number": "22",
+      "status": "free"
+    },
+    {
+      "id": "30007",
+      "number": "23",
+      "status": "free"
+    },
+    {
+      "id": "30008",
+      "number": "24",
+      "status": "free"
+    },
+    {
+      "id": "30009",
+      "number": "25",
+      "status": "free"
+    },
+    {
+      "id": "30010",
+      "number": "26",
+      "status": "free"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnumber\tstatus\n1\t1\tfree\n2\t2\tfree\n3\t3\tfree\n4\t4\tfree\n5\t5\tfree\n6\t6\tfree\n7\t7\tfree\n8\t8\tfree\n9\t9\tfree\n10\t10\tfree\n11\t11\tfree\n12\t12\tfree\n13\t13\tfree\n14\t14\tfree\n15\t15\tfree\n16\t16\tfree\n30001\t17\tfree\n30002\t18\tfree\n30003\t19\tfree\n30004\t20\tfree\n30005\t21\tfree\n30006\t22\tfree\n30007\t23\tfree\n30008\t24\tfree\n30009\t25\tfree\n30010\t26\tfree\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}
