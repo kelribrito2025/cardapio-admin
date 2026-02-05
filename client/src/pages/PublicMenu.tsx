@@ -3722,9 +3722,6 @@ export default function PublicMenu() {
                     <h3 className="text-2xl font-bold text-gray-900 mb-4">
                       Quase lá, {customerInfo.name.split(" ")[0]}!
                     </h3>
-                    <p className="text-gray-600 mb-2">
-                      O prazo de entrega está entre <strong>30 a 45 minutos</strong>.
-                    </p>
                     <p className="text-gray-500 text-sm">
                       Após o envio, o restaurante irá confirmar seu pedido. Você será notificado em seguida.
                     </p>
