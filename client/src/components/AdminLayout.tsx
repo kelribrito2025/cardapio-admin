@@ -651,7 +651,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           </TooltipTrigger>
                           <TooltipContent side="right" className="font-medium">
                             <p>{item.label}</p>
-                            <p className="text-xs text-orange-400">Funcionalidade em desenvolvimento</p>
+                            <p className="text-xs text-blue-400">Funcionalidade em desenvolvimento</p>
                           </TooltipContent>
                         </Tooltip>
                       );
@@ -668,7 +668,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                         </TooltipTrigger>
                         <TooltipContent side="right" className="font-medium">
                           <p>Funcionalidade em desenvolvimento</p>
-                          <p className="text-xs text-orange-400">Disponível em breve!</p>
+                          <p className="text-xs text-blue-400">Disponível em breve!</p>
                         </TooltipContent>
                       </Tooltip>
                     );
