@@ -5304,3 +5304,6 @@
 
 ## Contador Regressivo no Botão Desfazer
 - [x] Exibir contador regressivo no texto do botão: Desfazer (10) → Desfazer (1)
+
+## Remoção Linha Consumo no Local
+- [x] Remover linha "Consumo no local - Grátis" da slidebar do PDV

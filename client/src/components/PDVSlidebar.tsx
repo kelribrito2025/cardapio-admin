@@ -1716,10 +1716,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                 <span className="text-sm text-gray-600">Subtotal</span>
                 <span className="text-sm font-semibold">{formatCurrency(getDisplayTotal())}</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Consumo no local</span>
-                <span className="text-sm text-green-600 font-medium">Grátis</span>
-              </div>
+
               {/* Desconto do Cupom */}
               {appliedCoupon && (
                 <div className="flex items-center justify-between text-sm">
