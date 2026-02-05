@@ -5286,3 +5286,7 @@
 - [x] Adicionar botão "Confirmar e fechar mesa"
 - [x] Adicionar botão "Voltar / Cancelar"
 - [x] Implementar impressão automática do recibo ao confirmar (usando impressora favoritada)
+
+## Correção Visual Itens da Comanda
+- [x] Remover badge "Pendente" dos itens da comanda no PDV Slidebar
+- [x] Restaurar borda vermelha nos itens da comanda como estava antes

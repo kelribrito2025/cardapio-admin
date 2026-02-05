@@ -1620,31 +1620,17 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                         return (
                           <div
                             key={`tab-item-${item.id}-${index}`}
-                            className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-green-500 overflow-hidden transition-all duration-200"
+                            className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-red-500 overflow-hidden transition-all duration-200"
                           >
                             <div className="flex items-center justify-between p-3">
                               <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <span className="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-1 rounded">
+                                <span className="text-xs font-medium text-red-600 bg-red-50 px-1.5 py-1 rounded">
                                   {item.quantity}x
                                 </span>
                                 <div className="flex-1 min-w-0">
                                   <h4 className="font-semibold text-sm text-gray-800 truncate">
                                     {item.productName}
                                   </h4>
-                                  {item.status && (
-                                    <span className={cn(
-                                      "text-[10px] px-1.5 py-0.5 rounded-full",
-                                      item.status === 'pending' && "bg-yellow-100 text-yellow-700",
-                                      item.status === 'preparing' && "bg-blue-100 text-blue-700",
-                                      item.status === 'ready' && "bg-green-100 text-green-700",
-                                      item.status === 'delivered' && "bg-gray-100 text-gray-700"
-                                    )}>
-                                      {item.status === 'pending' && "Pendente"}
-                                      {item.status === 'preparing' && "Preparando"}
-                                      {item.status === 'ready' && "Pronto"}
-                                      {item.status === 'delivered' && "Entregue"}
-                                    </span>
-                                  )}
                                 </div>
                               </div>
                               <span className="text-sm font-bold text-gray-900 ml-2">
