@@ -5200,3 +5200,7 @@
 
 ## Ajustar layout dos atalhos de mesas na barra vermelha
 - [x] Mover atalhos de mesas para a mesma linha que o título e descrição, centralizados
+
+
+## Estilo de abas para atalhos de mesas
+- [x] Alterar estilo dos atalhos de mesas para formato de abas (aba selecionada em verde, outras em cinza)
