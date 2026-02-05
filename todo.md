@@ -5119,3 +5119,7 @@
 
 ## Tooltip nos Itens com Badge Breve
 - [x] Adicionar tooltip explicativo nos itens do menu com badge "Breve"
+
+
+## Melhorar Visibilidade do Tooltip
+- [x] Alterar cor da descrição do tooltip para laranja para melhor visibilidade
