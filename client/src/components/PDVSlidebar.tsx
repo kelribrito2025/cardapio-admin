@@ -20,8 +20,7 @@ import {
   Printer,
   Settings,
   Ticket,
-  Undo2,
-  Armchair
+  Undo2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -751,7 +750,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
                     )}
                   >
-                    <Armchair className="h-4 w-4" />
+                    <UtensilsCrossed className="h-4 w-4" />
                     {table.number}
                     {table.status === "occupied" && (
                       <span className={cn(
