@@ -712,7 +712,7 @@ export default function MesasComandas() {
         {/* Legenda de Status (clicável) */}
         <div className="flex items-center gap-4 text-sm text-gray-600 flex-wrap">
           <Filter className="h-5 w-5 text-gray-400" />
-          {statusLegend.map((item) => (
+          {statusLegend.map((item, index) => (
             <button
               key={item.status}
               onClick={() => handleStatusFilterClick(item.status)}
@@ -720,7 +720,8 @@ export default function MesasComandas() {
                 "flex items-center gap-2 px-2 py-1 rounded-md transition-all",
                 statusFilter === item.status
                   ? "bg-gray-100 ring-2 ring-gray-300"
-                  : "hover:bg-gray-50"
+                  : "hover:bg-gray-50",
+                index === 0 && "-ml-2.5"
               )}
             >
               <div className={cn("w-3 h-3 rounded-full", item.color)} />
