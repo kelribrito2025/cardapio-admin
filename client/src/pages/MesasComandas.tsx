@@ -180,7 +180,7 @@ export default function MesasComandas() {
     return {};
   });
 
-  // Sincronizar carrinhos quando localStorage mudar
+  // Sincronizar carrinhos quando localStorage mudar (outras abas) ou evento customizado (mesma aba)
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === CARTS_PER_TABLE_KEY && e.newValue) {
@@ -191,8 +191,19 @@ export default function MesasComandas() {
         }
       }
     };
+    
+    // Listener para evento customizado (atualizações na mesma aba)
+    const handleCartsUpdate = (e: CustomEvent<Record<number, CartItem[]>>) => {
+      setCartsPerTable(e.detail);
+    };
+    
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener('cartsPerTableUpdated', handleCartsUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('cartsPerTableUpdated', handleCartsUpdate as EventListener);
+    };
   }, []);
 
   // Função para verificar se mesa tem itens

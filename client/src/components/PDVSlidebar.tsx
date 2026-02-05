@@ -219,6 +219,14 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
     return {};
   });
 
+  // Contador para forçar re-render quando cartsPerTable muda (garante reatividade)
+  const [cartsVersion, setCartsVersion] = useState(0);
+
+  // useEffect para forçar re-render quando cartsPerTable muda
+  useEffect(() => {
+    setCartsVersion(v => v + 1);
+  }, [cartsPerTable]);
+
   // Carrinho da mesa atual (derivado do tableId)
   const cart = useMemo(() => {
     if (!tableId) return [];
@@ -235,6 +243,8 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
       // Persistir no localStorage
       try {
         localStorage.setItem(CARTS_PER_TABLE_KEY, JSON.stringify(updated));
+        // Disparar evento customizado para sincronizar com outros componentes na mesma aba
+        window.dispatchEvent(new CustomEvent('cartsPerTableUpdated', { detail: updated }));
       } catch (e) {
         console.error('Erro ao salvar carrinhos:', e);
       }
@@ -886,7 +896,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     const tableHasItems = (cartsPerTable[table.id]?.length || 0) > 0;
                     return (
                       <button
-                        key={table.id}
+                        key={`${table.id}-${cartsVersion}-${tableHasItems}`}
                         onClick={() => onTableChange?.(table)}
                         disabled={table.number === tableNumber}
                         className={cn(
@@ -933,7 +943,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                       const tableHasItems = (cartsPerTable[table.id]?.length || 0) > 0;
                       return (
                         <button
-                          key={table.id}
+                          key={`${table.id}-${cartsVersion}-${tableHasItems}`}
                           onClick={() => onTableChange?.(table)}
                           disabled={table.number === tableNumber}
                           className={cn(
