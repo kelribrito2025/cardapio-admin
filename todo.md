@@ -5320,3 +5320,6 @@
 
 ## Remoção Card Observações no Recibo de Mesa
 - [x] Remover card "OBSERVAÇÕES: Comanda da Mesa X" do recibo de fechamento de mesa
+
+## Correção Botão Desfazer após Enviar Pedido
+- [x] Corrigir botão Desfazer que aparece incorretamente após enviar pedido (só deve aparecer ao clicar em Limpar)

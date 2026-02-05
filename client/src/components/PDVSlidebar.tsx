@@ -235,7 +235,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
       if (data.id) {
         handlePrintWithFavoriteMethod(data.id);
       }
-      clearCart();
+      clearCartSilent();
       onOrderCreated?.();
     },
     onError: (error) => {
@@ -574,6 +574,27 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
     setCart(prev => prev.filter((_, i) => i !== index));
   };
 
+  // Função para limpar carrinho SEM ativar desfazer (usado após enviar pedido)
+  const clearCartSilent = () => {
+    setCart([]);
+    setExpandedCartItem(null);
+    setShowCouponField(false);
+    setCouponCode("");
+    setAppliedCoupon(null);
+    // Garantir que não há estado de desfazer ativo
+    setClearedCart(null);
+    setUndoCountdown(0);
+    if (undoTimerRef.current) {
+      clearTimeout(undoTimerRef.current);
+      undoTimerRef.current = null;
+    }
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+  };
+
+  // Função para limpar carrinho COM opção de desfazer (usado pelo botão Limpar)
   const clearCart = () => {
     // Salvar itens atuais para possível desfazer
     if (cart.length > 0) {
@@ -783,7 +804,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   const addTabItemsMutation = trpc.tabs.addItems.useMutation({
     onSuccess: () => {
       toast.success("Itens adicionados à comanda!");
-      clearCart();
+      clearCartSilent();
       onOrderCreated?.();
     },
     onError: (error) => {
@@ -821,7 +842,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   const closeTableMutation = trpc.tables.close.useMutation({
     onSuccess: () => {
       toast.success(`Mesa ${tableNumber} fechada com sucesso!`);
-      clearCart();
+      clearCartSilent();
       onOrderCreated?.();
       onClose?.();
     },
