@@ -5314,3 +5314,6 @@
 ## Correção Impressão Mesa no Pedido
 - [x] Corrigir impressão de pedidos da slidebar para mostrar "Mesa X" em vez de "Consumo"
 - [x] Corrigir badge preto no topo do recibo para mostrar "MESA X" em vez de "CONSUMO"
+
+## Correção Modal Conferência - Divisores
+- [x] Respeitar configuração de "mostrar divisores" no modal de conferência de pedido

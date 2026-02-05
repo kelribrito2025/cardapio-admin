@@ -2316,7 +2316,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               </div>
               
               {/* Divisor */}
-              <hr className="border-t-2 border-dashed border-black my-3" />
+              {printerSettings?.showDividers !== false && (
+                <hr className="border-t-2 border-dashed border-black my-3" />
+              )}
               
               {/* Itens */}
               <div className="space-y-2">
@@ -2364,7 +2366,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               </div>
               
               {/* Divisor */}
-              <hr className="border-t-2 border-dashed border-black my-3" />
+              {printerSettings?.showDividers !== false && (
+                <hr className="border-t-2 border-dashed border-black my-3" />
+              )}
               
               {/* Totais */}
               <div className="space-y-1">
@@ -2379,7 +2383,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               </div>
               
               {/* Divisor */}
-              <hr className="border-t-2 border-dashed border-black my-3" />
+              {printerSettings?.showDividers !== false && (
+                <hr className="border-t-2 border-dashed border-black my-3" />
+              )}
               
               {/* Info do Cliente */}
               <div className="border-2 border-black rounded-lg p-3">
