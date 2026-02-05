@@ -345,11 +345,11 @@ export default function PublicMenu() {
   // Definir deliveryType inicial baseado nas opções disponíveis
   useEffect(() => {
     if (data?.establishment) {
-      // Selecionar a primeira opção disponível
-      if (data.establishment.allowsPickup) {
-        setDeliveryType("pickup");
-      } else if (data.establishment.allowsDelivery) {
+      // Selecionar a primeira opção disponível - priorizar delivery para mostrar taxa corretamente
+      if (data.establishment.allowsDelivery) {
         setDeliveryType("delivery");
+      } else if (data.establishment.allowsPickup) {
+        setDeliveryType("pickup");
       } else if (data.establishment.allowsDineIn) {
         setDeliveryType("dine_in");
       }
@@ -2127,10 +2127,12 @@ export default function PublicMenu() {
                         <span className="text-gray-600">Subtotal</span>
                         <span className="text-gray-600">{formatPrice(subtotal)}</span>
                       </div>
-                      {deliveryType === 'delivery' && deliveryFeeValue > 0 && (
+                      {deliveryType === 'delivery' && (
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Taxa de entrega</span>
-                          <span className="text-gray-600">{formatPrice(deliveryFeeValue)}</span>
+                          <span className={deliveryFeeValue === 0 ? "text-green-600 font-medium" : "text-gray-600"}>
+                            {deliveryFeeValue === 0 ? "Grátis" : formatPrice(deliveryFeeValue)}
+                          </span>
                         </div>
                       )}
                       {deliveryType === 'pickup' && (
@@ -3575,10 +3577,12 @@ export default function PublicMenu() {
                           <span className="text-gray-600">Subtotal</span>
                           <span className="text-gray-600">{formatPrice(subtotal)}</span>
                         </div>
-                        {deliveryType === 'delivery' && deliveryFeeValue > 0 && (
+                        {deliveryType === 'delivery' && (
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Taxa de entrega</span>
-                            <span className="text-gray-600">{formatPrice(deliveryFeeValue)}</span>
+                            <span className={deliveryFeeValue === 0 ? "text-green-600 font-medium" : "text-gray-600"}>
+                              {deliveryFeeValue === 0 ? "Grátis" : formatPrice(deliveryFeeValue)}
+                            </span>
                           </div>
                         )}
                         {deliveryType === 'pickup' && (

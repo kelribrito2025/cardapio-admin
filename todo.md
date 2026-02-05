@@ -5158,3 +5158,8 @@
 
 ## Bug: Cor do balão da nota não aplica no preview do perfil público
 - [x] Corrigir a aplicação da cor selecionada do balão no preview do perfil público na página de configurações
+
+
+## Bug: Taxa de entrega fixa não exibe valor correto no menu público
+- [x] Corrigir exibição da taxa de entrega fixa - mostra R$ 0,00 em vez do valor configurado (R$ 3,00)
+- [x] Corrigir label "Retirar no local" - deve mostrar "Taxa de entrega" quando é delivery

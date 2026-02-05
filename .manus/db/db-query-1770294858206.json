@@ -1,0 +1,19 @@
+{
+  "query": "SELECT id, name, menuSlug, deliveryFeeType, deliveryFeeFixed, allowsDelivery, allowsPickup FROM establishments WHERE id = 30001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, menuSlug, deliveryFeeType, deliveryFeeFixed, allowsDelivery, allowsPickup FROM establishments WHERE id = 30001;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "menuSlug": "sushi_haruno",
+      "deliveryFeeType": "fixed",
+      "deliveryFeeFixed": "3.00",
+      "allowsDelivery": "1",
+      "allowsPickup": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tmenuSlug\tdeliveryFeeType\tdeliveryFeeFixed\tallowsDelivery\tallowsPickup\n30001\tSushi Haruno\tsushi_haruno\tfixed\t3.00\t1\t1\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}
