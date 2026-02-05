@@ -774,37 +774,14 @@ export default function Configuracoes() {
       return;
     }
 
-    // Validar dimensões mínimas para capa
-    if (type === "cover") {
-      const img = new Image();
-      img.onload = () => {
-        if (img.width < 1200) {
-          toast.error("A imagem de capa deve ter no mínimo 1200px de largura");
-          return;
-        }
-        // Abrir modal de crop
-        const reader = new FileReader();
-        reader.onload = () => {
-          setCropImageSrc(reader.result as string);
-          setCropType(type);
-          setCropModalOpen(true);
-        };
-        reader.readAsDataURL(file);
-      };
-      img.onerror = () => {
-        toast.error("Erro ao carregar imagem");
-      };
-      img.src = URL.createObjectURL(file);
-    } else {
-      // Para logo, abrir direto o modal
-      const reader = new FileReader();
-      reader.onload = () => {
-        setCropImageSrc(reader.result as string);
-        setCropType(type);
-        setCropModalOpen(true);
-      };
-      reader.readAsDataURL(file);
-    }
+    // Abrir modal de crop para qualquer imagem
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropImageSrc(reader.result as string);
+      setCropType(type);
+      setCropModalOpen(true);
+    };
+    reader.readAsDataURL(file);
   };
 
   // Processar imagem recortada e enviar para o servidor
@@ -2334,7 +2311,6 @@ export default function Configuracoes() {
         aspectRatio={cropType === "logo" ? 1 : 16 / 9}
         cropShape={cropType === "logo" ? "round" : "rect"}
         title={cropType === "logo" ? "Recortar Logo" : "Recortar Capa"}
-        minWidth={cropType === "cover" ? 1200 : undefined}
       />
     </AdminLayout>
   );

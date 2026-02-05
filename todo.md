@@ -5085,3 +5085,11 @@
 
 ## Ajuste Layout PDV Slidebar
 - [x] Colocar cards Consumo e Mesa lado a lado com 50% cada
+
+
+## Bug no Filtro de Busca do Cardápio
+- [ ] Corrigir filtro de busca na página de Cardápio para filtrar itens corretamente
+
+
+## Remover Validação de Tamanho da Imagem de Capa
+- [x] Remover validação de tamanho mínimo de 1200px para imagem de capa do menu público
