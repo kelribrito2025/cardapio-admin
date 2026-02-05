@@ -5182,3 +5182,7 @@
 
 ## Reverter estilo do botão Grátis
 - [x] Reverter botão Grátis para estilo vermelho com pulsação normal (sem ponto amarelo e sem gradiente verde)
+
+
+## Adicionar ícone de check ao botão Grátis
+- [x] Adicionar ícone de check ao botão Grátis mantendo cor vermelha e pulsação
