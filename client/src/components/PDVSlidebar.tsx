@@ -1046,30 +1046,6 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
       >
         {/* Header */}
         <div className="border-b border-border/50">
-          {/* Barra vermelha com título */}
-          <div className="bg-gradient-to-r from-red-500 to-red-600">
-            <div className="flex items-center justify-between px-4 py-3">
-              {/* Título e descrição à esquerda */}
-              <div className="flex items-center gap-3 shrink-0">
-                <div className="p-2 bg-white/20 rounded-lg">
-                  <UtensilsCrossed className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-bold text-white">Mesa {tableNumber}</h2>
-                  <p className="text-sm text-white/80">Adicionar itens à comanda</p>
-                </div>
-              </div>
-              
-              {/* Botão fechar à direita */}
-              <button
-                onClick={onClose}
-                className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors shrink-0"
-              >
-                <X className="h-5 w-5 text-white" />
-              </button>
-            </div>
-          </div>
-          
           {/* Barra Superior - Mesas ou Categorias (depend da inversão) */}
           {barsSwapped ? (
             /* Barra de Categorias no topo quando invertido */

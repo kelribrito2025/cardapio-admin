@@ -5293,3 +5293,6 @@
 
 ## Ícone no Botão Enviar Pedido
 - [x] Adicionar ícone da página de pedidos no botão "Enviar pedido" do PDV Slidebar
+
+## Remoção Cabeçalho PDV Slidebar
+- [x] Remover cabeçalho vermelho com nome da mesa e descrição "Adicionar itens à comanda"
