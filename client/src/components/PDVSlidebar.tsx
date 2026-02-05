@@ -312,9 +312,11 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
   // Estados para limpar/desfazer
   const [clearedCart, setClearedCart] = useState<CartItem[] | null>(null);
+  const [undoCountdown, setUndoCountdown] = useState<number>(0);
   
   // Ref para o timer de desfazer
   const undoTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Estado para aba selecionada (consumo ou comanda)
   const [selectedTab, setSelectedTab] = useState<'consumo' | 'comanda'>('consumo');
@@ -334,10 +336,15 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   // Resetar clearedCart quando trocar de mesa
   useEffect(() => {
     setClearedCart(null);
-    // Limpar timer ao trocar de mesa
+    setUndoCountdown(0);
+    // Limpar timers ao trocar de mesa
     if (undoTimerRef.current) {
       clearTimeout(undoTimerRef.current);
       undoTimerRef.current = null;
+    }
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
     }
   }, [tableId, tableNumber]);
 
@@ -568,17 +575,31 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
     // Salvar itens atuais para possível desfazer
     if (cart.length > 0) {
       setClearedCart([...cart]);
+      setUndoCountdown(10);
       
-      // Limpar timer anterior se existir
+      // Limpar timers anteriores se existirem
       if (undoTimerRef.current) {
         clearTimeout(undoTimerRef.current);
       }
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+      }
       
-      // Iniciar timer de 10 segundos para expirar o desfazer
-      undoTimerRef.current = setTimeout(() => {
-        setClearedCart(null);
-        undoTimerRef.current = null;
-      }, 10000);
+      // Iniciar contador regressivo visual
+      countdownIntervalRef.current = setInterval(() => {
+        setUndoCountdown(prev => {
+          if (prev <= 1) {
+            // Quando chegar a 0, limpar tudo
+            if (countdownIntervalRef.current) {
+              clearInterval(countdownIntervalRef.current);
+              countdownIntervalRef.current = null;
+            }
+            setClearedCart(null);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     }
     setCart([]);
     setExpandedCartItem(null);
@@ -591,22 +612,30 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   // Função para desfazer a limpeza
   const undoClearCart = () => {
     if (clearedCart) {
-      // Limpar o timer ao desfazer
+      // Limpar os timers ao desfazer
       if (undoTimerRef.current) {
         clearTimeout(undoTimerRef.current);
         undoTimerRef.current = null;
       }
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
+      }
       setCart(clearedCart);
       setClearedCart(null);
+      setUndoCountdown(0);
       toast.success("Itens restaurados!");
     }
   };
 
-  // Limpar timer ao desmontar o componente
+  // Limpar timers ao desmontar o componente
   useEffect(() => {
     return () => {
       if (undoTimerRef.current) {
         clearTimeout(undoTimerRef.current);
+      }
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
       }
     };
   }, []);
@@ -1842,7 +1871,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   {clearedCart ? (
                     <>
                       <Undo2 className="h-4 w-4 mr-1" />
-                      Desfazer
+                      Desfazer ({undoCountdown})
                     </>
                   ) : (
                     "Limpar"

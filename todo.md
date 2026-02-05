@@ -5301,3 +5301,6 @@
 - [x] Implementar botão Desfazer por 10 segundos após clicar em Limpar
 - [x] Usar apenas estado local e setTimeout (sem backend)
 - [x] Após 10 segundos, voltar automaticamente para Limpar
+
+## Contador Regressivo no Botão Desfazer
+- [x] Exibir contador regressivo no texto do botão: Desfazer (10) → Desfazer (1)
