@@ -5219,3 +5219,4 @@
 - [x] Ajustar botões de mesas na barra PDV: usar cores de fundo (vermelho/verde claro) em vez de badge redondo
 - [x] Bug: Status das mesas não atualiza em tempo real ao adicionar/remover itens da comanda (requer F5)
 - [ ] Corrigir agrupamento de itens iguais no carrinho (ex: 5x em vez de 5 cards separados)
+- [x] Implementar drag scroll na lista de mesas igual ao da lista de categorias

@@ -341,6 +341,13 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   const [scrollLeft, setScrollLeft] = useState(0);
   const [hasOverflow, setHasOverflow] = useState(false);
 
+  // Ref para drag de mesas
+  const tablesContainerRef = useRef<HTMLDivElement>(null);
+  const [isDraggingTables, setIsDraggingTables] = useState(false);
+  const [tablesStartX, setTablesStartX] = useState(0);
+  const [tablesScrollLeft, setTablesScrollLeft] = useState(0);
+  const [tablesHasOverflow, setTablesHasOverflow] = useState(false);
+
   // Verificar overflow das categorias
   useEffect(() => {
     const checkOverflow = () => {
@@ -378,6 +385,44 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
       document.removeEventListener('mousemove', handleMouseMove);
     };
   }, [isDragging, startX, scrollLeft]);
+
+  // Verificar overflow das mesas
+  useEffect(() => {
+    const checkTablesOverflow = () => {
+      const container = tablesContainerRef.current;
+      if (container) {
+        setTablesHasOverflow(container.scrollWidth > container.clientWidth);
+      }
+    };
+    checkTablesOverflow();
+    window.addEventListener('resize', checkTablesOverflow);
+    return () => window.removeEventListener('resize', checkTablesOverflow);
+  }, [tables]);
+
+  // Handlers para drag de mesas
+  const handleTablesMouseDown = (e: React.MouseEvent) => {
+    if (!tablesContainerRef.current) return;
+    setIsDraggingTables(true);
+    setTablesStartX(e.pageX - tablesContainerRef.current.offsetLeft);
+    setTablesScrollLeft(tablesContainerRef.current.scrollLeft);
+  };
+
+  useEffect(() => {
+    const handleTablesMouseUp = () => setIsDraggingTables(false);
+    const handleTablesMouseMove = (e: MouseEvent) => {
+      if (!isDraggingTables || !tablesContainerRef.current) return;
+      e.preventDefault();
+      const x = e.pageX - tablesContainerRef.current.offsetLeft;
+      const walk = (x - tablesStartX) * 2;
+      tablesContainerRef.current.scrollLeft = tablesScrollLeft - walk;
+    };
+    document.addEventListener('mouseup', handleTablesMouseUp);
+    document.addEventListener('mousemove', handleTablesMouseMove);
+    return () => {
+      document.removeEventListener('mouseup', handleTablesMouseUp);
+      document.removeEventListener('mousemove', handleTablesMouseMove);
+    };
+  }, [isDraggingTables, tablesStartX, tablesScrollLeft]);
 
   // Buscar complementos do produto selecionado
   const { data: productComplements } = trpc.publicMenu.getProductComplements.useQuery(
@@ -913,8 +958,16 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           ) : (
             /* Abas de Mesas no topo (padrão) */
             tables.length > 0 && (
-              <div className="bg-gray-100 px-3 py-2 overflow-x-auto scrollbar-hide">
-                <div className="flex items-center gap-2">
+              <div className="relative bg-gray-100 px-3 py-2">
+                <div 
+                  ref={tablesContainerRef}
+                  className={cn(
+                    "flex items-center gap-2 overflow-x-auto pr-8 scrollbar-hide select-none",
+                    isDraggingTables ? "cursor-grabbing" : "cursor-grab"
+                  )}
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                  onMouseDown={handleTablesMouseDown}
+                >
                   <button
                     onClick={toggleBarsSwapped}
                     className="flex items-center justify-center w-9 h-9 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0"
@@ -947,6 +1000,11 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     );
                   })}
                 </div>
+                {tablesHasOverflow && (
+                  <div className="absolute right-0 top-0 bottom-0 flex items-center pointer-events-none pr-2">
+                    <ChevronsRight className="h-5 w-5 text-emerald-400 animate-bounce-x" />
+                  </div>
+                )}
               </div>
             )
           )}
@@ -960,8 +1018,16 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             {barsSwapped ? (
               /* Abas de Mesas embaixo quando invertido */
               tables.length > 0 && (
-                <div className="bg-gray-100 px-3 py-2 overflow-x-auto scrollbar-hide border-b border-border/50">
-                  <div className="flex items-center gap-2">
+                <div className="relative bg-gray-100 px-3 py-2 border-b border-border/50">
+                  <div 
+                    ref={!barsSwapped ? undefined : tablesContainerRef}
+                    className={cn(
+                      "flex items-center gap-2 overflow-x-auto pr-8 scrollbar-hide select-none",
+                      isDraggingTables ? "cursor-grabbing" : "cursor-grab"
+                    )}
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    onMouseDown={handleTablesMouseDown}
+                  >
                     <button
                       onClick={toggleBarsSwapped}
                       className="flex items-center justify-center w-9 h-9 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0"
@@ -994,6 +1060,11 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                       );
                     })}
                   </div>
+                  {tablesHasOverflow && (
+                    <div className="absolute right-0 top-0 bottom-0 flex items-center pointer-events-none pr-2">
+                      <ChevronsRight className="h-5 w-5 text-emerald-400 animate-bounce-x" />
+                    </div>
+                  )}
                 </div>
               )
             ) : (
