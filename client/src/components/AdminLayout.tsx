@@ -890,11 +890,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     </div>
                   )}
                   <div className="p-1">
-                    <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
-                      <Link href="/ajuda">
-                        <HelpCircle className="h-4 w-4 mr-2.5" />
-                        Ajuda e suporte
-                      </Link>
+                    <DropdownMenuItem 
+                      className="rounded-lg cursor-default opacity-50" 
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      <HelpCircle className="h-4 w-4 mr-2.5" />
+                      Ajuda e suporte
+                      <span className="ml-auto text-[9px] font-semibold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                        Breve
+                      </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       className="rounded-lg cursor-default opacity-50" 

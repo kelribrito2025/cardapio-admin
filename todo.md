@@ -5123,3 +5123,7 @@
 
 ## Melhorar Visibilidade do Tooltip
 - [x] Alterar cor da descrição do tooltip para laranja para melhor visibilidade
+
+
+## Badge Breve no Menu Ajuda e Suporte
+- [x] Adicionar badge "Breve" no menu Ajuda e Suporte
