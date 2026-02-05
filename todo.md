@@ -5192,3 +5192,7 @@
 - [x] Aumentar largura da sidebar do PDV em 10%
 - [x] Aumentar tamanho dos cards da lista de itens em 10%
 - [x] Aumentar tamanho dos textos da lista de itens em 10%
+
+
+## Atalhos de mesas na barra vermelha do PDVSlidebar
+- [x] Adicionar atalhos de navegação entre mesas na barra vermelha da sidebar do PDV

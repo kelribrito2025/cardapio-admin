@@ -1182,6 +1182,21 @@ export default function MesasComandas() {
         tabId={selectedTable?.tab?.id}
         onOrderCreated={handleOrderCreated}
         showHandle={true}
+        tables={tables.map(t => ({
+          id: t.id,
+          number: t.number,
+          status: t.status === "requesting_bill" ? "occupied" : t.status,
+          tabId: t.tab?.id
+        }))}
+        onTableChange={(table) => {
+          const fullTable = tables.find(t => t.id === table.id);
+          if (fullTable) {
+            setSelectedTable({
+              ...fullTable,
+              status: fullTable.status === "requesting_bill" ? "occupied" : fullTable.status as TableStatus
+            } as Table);
+          }
+        }}
       />
     </AdminLayout>
   );
