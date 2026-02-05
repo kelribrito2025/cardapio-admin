@@ -5131,3 +5131,7 @@
 
 ## Valor Padrão da Opção Mostrar Divisores
 - [x] Alterar valor padrão de "Mostrar divisores" para false quando nova conta for criada
+
+
+## Badge Breve no Menu Integrações
+- [x] Adicionar badge "Breve" no menu Integrações nas configurações

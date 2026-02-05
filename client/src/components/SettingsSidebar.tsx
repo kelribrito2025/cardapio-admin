@@ -24,12 +24,12 @@ interface SettingsSidebarProps {
   onSectionChange: (section: SettingsSection) => void;
 }
 
-const menuItems: { id: SettingsSection; label: string; icon: React.ElementType }[] = [
+const menuItems: { id: SettingsSection; label: string; icon: React.ElementType; disabled?: boolean }[] = [
   { id: "estabelecimento", label: "Estabelecimento", icon: Store },
   { id: "atendimento", label: "Atendimento", icon: Clock },
   { id: "whatsapp", label: "WhatsApp", icon: MessageCircle },
   { id: "impressora", label: "Impressora e Teste", icon: Printer },
-  { id: "integracoes", label: "Integrações", icon: Puzzle },
+  { id: "integracoes", label: "Integrações", icon: Puzzle, disabled: true },
   { id: "conta-seguranca", label: "Conta e Segurança", icon: ShieldCheck },
 ];
 
@@ -59,24 +59,33 @@ export function SettingsSidebar({ activeSection, onSectionChange }: SettingsSide
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
+            const isDisabled = item.disabled;
             
             return (
               <button
                 key={item.id}
-                onClick={() => onSectionChange(item.id)}
+                onClick={() => !isDisabled && onSectionChange(item.id)}
+                disabled={isDisabled}
                 className={cn(
                   "w-full flex items-center gap-3 py-2.5 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative",
-                  isActive
-                    ? "bg-red-200/60 text-red-800 rounded-r-xl -ml-3 pl-6 border-r-4 border-red-500"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground px-3 rounded-lg"
+                  isDisabled
+                    ? "text-muted-foreground/50 cursor-not-allowed px-3"
+                    : isActive
+                      ? "bg-red-200/60 text-red-800 rounded-r-xl -ml-3 pl-6 border-r-4 border-red-500"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground px-3 rounded-lg"
                 )}
-                style={isActive ? { borderRadius: '12px', marginRight: '-12px', paddingLeft: '14px', marginLeft: '-3px' } : { paddingLeft: '14px', marginLeft: '-3px' }}
+                style={isActive && !isDisabled ? { borderRadius: '12px', marginRight: '-12px', paddingLeft: '14px', marginLeft: '-3px' } : { paddingLeft: '14px', marginLeft: '-3px' }}
               >
                 <Icon className={cn(
                   "h-5 w-5 flex-shrink-0",
-                  isActive ? "text-red-800" : "text-muted-foreground"
+                  isDisabled ? "text-muted-foreground/50" : isActive ? "text-red-800" : "text-muted-foreground"
                 )} />
                 <span>{item.label}</span>
+                {isDisabled && (
+                  <span className="ml-auto text-[9px] font-semibold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                    Breve
+                  </span>
+                )}
               </button>
             );
           })}
@@ -125,25 +134,33 @@ export function SettingsSidebar({ activeSection, onSectionChange }: SettingsSide
             {menuItems.map((item, index) => {
               const Icon = item.icon;
               const isActive = activeSection === item.id;
+              const isDisabled = item.disabled;
               
               return (
                 <button
                   key={item.id}
-                  onClick={() => handleSectionClick(item.id)}
+                  onClick={() => !isDisabled && handleSectionClick(item.id)}
+                  disabled={isDisabled}
                   className={cn(
                     "w-full flex items-center gap-3 p-3 text-sm font-medium transition-all duration-200",
-                    isActive
-                      ? "bg-red-100 text-red-800 border-l-4 border-red-500"
-                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+                    isDisabled
+                      ? "text-muted-foreground/50 cursor-not-allowed"
+                      : isActive
+                        ? "bg-red-100 text-red-800 border-l-4 border-red-500"
+                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                     index !== menuItems.length - 1 && "border-b border-border/30"
                   )}
                 >
                   <Icon className={cn(
                     "h-5 w-5 flex-shrink-0",
-                    isActive ? "text-red-800" : "text-muted-foreground"
+                    isDisabled ? "text-muted-foreground/50" : isActive ? "text-red-800" : "text-muted-foreground"
                   )} />
                   <span className="flex-1 text-left">{item.label}</span>
-                  {isActive && (
+                  {isDisabled ? (
+                    <span className="text-[9px] font-semibold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                      Breve
+                    </span>
+                  ) : isActive && (
                     <div className="w-2 h-2 rounded-full bg-red-500" />
                   )}
                 </button>
