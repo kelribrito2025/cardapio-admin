@@ -321,16 +321,6 @@ export default function MesasComandas() {
     },
   });
 
-  const updateTableMutation = trpc.tables.update.useMutation({
-    onSuccess: () => {
-      toast.success("Mesa atualizada!");
-      refetch();
-    },
-    onError: (error) => {
-      toast.error(error.message || "Erro ao atualizar mesa");
-    },
-  });
-
   // Cálculos de resumo
   const summary = useMemo(() => {
     const free = tables.filter((t) => t.status === "free").length;
@@ -863,40 +853,6 @@ export default function MesasComandas() {
                   </div>
                 </SheetTitle>
               </SheetHeader>
-
-              {/* Espaço da Mesa */}
-              <div className="mb-6 p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    Espaço
-                  </span>
-                  <Select
-                    value={selectedTable.spaceId?.toString() || "none"}
-                    onValueChange={(value) => {
-                      const spaceId = value === "none" ? null : parseInt(value);
-                      updateTableMutation.mutate({
-                        id: selectedTable.id,
-                        spaceId,
-                      });
-                      // Atualiza o estado local para feedback imediato
-                      setSelectedTable({ ...selectedTable, spaceId });
-                    }}
-                  >
-                    <SelectTrigger className="w-[160px] h-8 text-sm">
-                      <SelectValue placeholder="Selecionar espaço" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">Sem espaço</SelectItem>
-                      {spaces.map((space) => (
-                        <SelectItem key={space.id} value={space.id.toString()}>
-                          {space.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
 
               {/* Informações da Comanda */}
               {selectedTable.tab && (

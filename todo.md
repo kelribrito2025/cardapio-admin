@@ -5073,3 +5073,7 @@
 
 ## Ajuste Visual do Botão de Adicionar Mesas
 - [x] Alterar cor do botão + para vermelho (igual ao botão Todas selecionado)
+
+
+## Remoção de Funcionalidade
+- [x] Remover funcionalidade de vincular mesas aos espaços (seletor de espaço no Sheet)
