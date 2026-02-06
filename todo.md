@@ -5384,3 +5384,9 @@
 
 ## Bug: Título da Mesa Combinada no PDVSlidebar
 - [x] Corrigir título "Mesa 3" para mostrar "Mesa 3-4-5" quando for mesa combinada
+
+
+## Indicador Visual Drag and Drop de Mesas
+- [x] Destacar mesa de destino com cor/borda diferente durante o drag
+- [x] Adicionar overlay com texto "Solte para juntar"
+- [x] Efeito de escala e sombra na mesa de destino
