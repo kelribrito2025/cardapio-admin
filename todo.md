@@ -5393,3 +5393,7 @@
 
 ## Bug: Número da Mesa Combinada nos Pedidos
 - [x] Corrigir card do pedido para mostrar "Mesa 2-3-5" em vez de apenas "Mesa 2" para mesas combinadas
+
+
+## Modal de Conferência de Pedido na Sidebar de Mesas
+- [x] Replicar visual do modal de conferência de pedido da página /pdv na sidebar de mesas

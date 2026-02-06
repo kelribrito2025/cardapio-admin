@@ -24,7 +24,8 @@ import {
   ArrowUpDown,
   Receipt,
   Star,
-  ClipboardList
+  ClipboardList,
+  Eye
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -2318,41 +2319,68 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           </div>
         </div>
       )}
-      {/* Modal de Conferência ao Fechar Mesa */}
-      <Dialog open={showCloseTableModal} onOpenChange={setShowCloseTableModal}>
-        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden flex flex-col">
-          <DialogHeader className="flex-shrink-0">
-            <DialogTitle className="text-center text-lg font-bold">Conferência do Pedido</DialogTitle>
-          </DialogHeader>
+      {/* Modal de Conferência ao Fechar Mesa - Estilo PDV */}
+      {showCloseTableModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+          {/* Overlay */}
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowCloseTableModal(false)}
+          />
           
-          {/* Layout do Recibo */}
-          <div className="flex-1 overflow-y-auto px-1">
-            <div className="bg-[#f5f5f0] rounded-lg p-4 font-sans text-sm">
-              {/* Cabeçalho */}
-              <div className="text-center pb-3 mb-3 border-b border-black">
-                <h1 className="text-lg font-bold">{establishment?.name || 'Estabelecimento'}</h1>
-                <p className="text-xs uppercase tracking-wider mt-1">Sistema de Pedidos</p>
-              </div>
-              
-              {/* Info do Pedido */}
-              <div className="flex justify-between items-center mb-3">
-                <div>
-                  <div className="text-lg font-bold">Comanda C{String(tabData?.id || 0).padStart(3, '0')}</div>
-                  <div className="text-xs font-bold flex items-center gap-1">
-                    📅 {tabData?.openedAt ? new Date(tabData.openedAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
+          {/* Modal */}
+          <div className="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-md max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-red-500 to-red-600 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <Eye className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Conferência do Pedido</h2>
+                    <p className="text-sm text-white/80">Consumo no local</p>
                   </div>
                 </div>
-                <div className="bg-black text-white text-xs font-bold px-3 py-1.5 uppercase tracking-wider">
-                  Mesa {tableDisplayName}
-                </div>
+                <button
+                  onClick={() => setShowCloseTableModal(false)}
+                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                >
+                  <X className="h-5 w-5 text-white" />
+                </button>
               </div>
-              
-              {/* Divisor */}
+            </div>
+
+            {/* Conteúdo do Recibo */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {/* Nome do Estabelecimento */}
+              <div className="text-center pb-3 border-b border-dashed border-gray-300">
+                <h3 className="font-bold text-lg">{establishment?.name || 'Estabelecimento'}</h3>
+                <p className="text-xs text-gray-500">SISTEMA DE PEDIDOS</p>
+              </div>
+
+              {/* Tipo do Pedido */}
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Tipo:</span>
+                <span className="px-3 py-1 bg-gray-900 text-white text-xs font-bold rounded">
+                  CONSUMO
+                </span>
+              </div>
+
+              {/* Info da Mesa */}
+              <div className="p-3 bg-gray-50 rounded-lg space-y-1">
+                <p className="text-xs font-semibold text-gray-700">Mesa:</p>
+                <p className="text-sm font-bold">Mesa {tableDisplayName}</p>
+                <p className="text-xs text-gray-500">
+                  Comanda C{String(tabData?.id || 0).padStart(3, '0')} • Aberta em {tabData?.openedAt ? new Date(tabData.openedAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
+                </p>
+              </div>
+
+              {/* Lista de Itens */}
               {printerSettings?.showDividers !== false && (
-                <hr className="border-t-2 border-dashed border-black my-3" />
+                <div className="border-t border-dashed border-gray-300" />
               )}
               
-              {/* Itens */}
               <div className="space-y-2">
                 {tabData?.items?.filter((item: any) => item.status !== 'cancelled').map((item: any, index: number) => {
                   const itemTotal = parseFloat(item.totalPrice) || 0;
@@ -2362,97 +2390,120 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   } catch (e) {}
                   
                   return (
-                    <div key={index} className="border-2 border-black rounded-lg p-3">
-                      <div className="flex justify-between font-bold text-sm">
-                        <span>{item.quantity}x {item.productName}</span>
-                        <span>{formatCurrency(itemTotal)}</span>
-                      </div>
-                      {item.notes && (
-                        <div className="text-xs mt-1 pl-1">Obs: {item.notes}</div>
-                      )}
-                      {complements.map((comp: any, cIndex: number) => {
-                        if (comp.items && Array.isArray(comp.items)) {
-                          return comp.items.map((ci: any, ciIndex: number) => {
-                            const qty = ci.quantity || 1;
-                            const qtyPrefix = qty > 1 ? `${qty}x ` : '';
-                            return (
-                              <div key={`${cIndex}-${ciIndex}`} className="text-xs mt-1 pl-2">
-                                + {qtyPrefix}{ci.name}{ci.price > 0 ? ` (${formatCurrency(ci.price * qty)})` : ''}
-                              </div>
-                            );
-                          });
-                        } else if (comp.name) {
-                          const qty = comp.quantity || 1;
-                          const qtyPrefix = qty > 1 ? `${qty}x ` : '';
-                          return (
-                            <div key={cIndex} className="text-xs mt-1 pl-2">
-                              + {qtyPrefix}{comp.name}{comp.price > 0 ? ` (${formatCurrency(comp.price * qty)})` : ''}
+                    <div key={index} className="p-3 border border-gray-200 rounded-lg">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">
+                            {item.quantity}x {item.productName}
+                          </p>
+                          {complements.length > 0 && (
+                            <div className="mt-1 space-y-0.5">
+                              {complements.map((comp: any, cIndex: number) => {
+                                if (comp.items && Array.isArray(comp.items)) {
+                                  return comp.items.map((ci: any, ciIndex: number) => {
+                                    const qty = ci.quantity || 1;
+                                    const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+                                    return (
+                                      <p key={`${cIndex}-${ciIndex}`} className="text-xs text-gray-500 pl-2">
+                                        + {qtyPrefix}{ci.name}
+                                        {ci.price > 0 && (
+                                          <span className="ml-1 text-gray-400">
+                                            ({formatCurrency(ci.price * qty)})
+                                          </span>
+                                        )}
+                                      </p>
+                                    );
+                                  });
+                                } else if (comp.name) {
+                                  const qty = comp.quantity || 1;
+                                  const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+                                  return (
+                                    <p key={cIndex} className="text-xs text-gray-500 pl-2">
+                                      + {qtyPrefix}{comp.name}
+                                      {comp.price > 0 && (
+                                        <span className="ml-1 text-gray-400">
+                                          ({formatCurrency(comp.price * qty)})
+                                        </span>
+                                      )}
+                                    </p>
+                                  );
+                                }
+                                return null;
+                              })}
                             </div>
-                          );
-                        }
-                        return null;
-                      })}
+                          )}
+                          {item.notes && (
+                            <p className="text-xs text-gray-500 mt-1 italic">Obs: {item.notes}</p>
+                          )}
+                        </div>
+                        <p className="font-semibold text-sm">
+                          {formatCurrency(itemTotal)}
+                        </p>
+                      </div>
                     </div>
                   );
                 })}
               </div>
-              
-              {/* Divisor */}
+
               {printerSettings?.showDividers !== false && (
-                <hr className="border-t-2 border-dashed border-black my-3" />
+                <div className="border-t border-dashed border-gray-300" />
               )}
-              
+
               {/* Totais */}
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Subtotal:</span>
                   <span>{formatCurrency(calculateTabTotal())}</span>
                 </div>
-                <div className="flex justify-between bg-black text-white font-bold text-sm p-2 mt-2 uppercase">
+                
+                <div className="flex justify-between font-bold text-lg pt-2 border-t border-gray-200">
                   <span>TOTAL:</span>
-                  <span>{formatCurrency(calculateTabTotal())}</span>
+                  <span className="text-red-600">
+                    {formatCurrency(calculateTabTotal())}
+                  </span>
                 </div>
               </div>
-              
-              {/* Divisor */}
-              {printerSettings?.showDividers !== false && (
-                <hr className="border-t-2 border-dashed border-black my-3" />
-              )}
-              
-              {/* Info do Cliente */}
-              <div className="border-2 border-black rounded-lg p-3">
-                <div className="flex justify-between items-center">
-                  <span className="font-bold flex items-center gap-1">⭐ Cliente</span>
-                  <span className="font-bold">Mesa {tableDisplayName}</span>
+
+              {/* Forma de Pagamento */}
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Pagamento:</span>
+                  <span className="font-medium">Dinheiro</span>
                 </div>
-              </div>
-              
-              {/* Consumo */}
-              <div className="border-2 border-black rounded-lg p-3 mt-2">
-                <div><strong>Consumo:</strong> Cliente irá consumir no local</div>
               </div>
             </div>
+
+            {/* Botões */}
+            <div className="p-4 border-t border-gray-200 space-y-2">
+              <Button
+                onClick={handleConfirmCloseTable}
+                disabled={closeTableMutation.isPending}
+                className="w-full py-3 bg-green-600 hover:bg-green-700 text-white"
+              >
+                {closeTableMutation.isPending ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                    Fechando...
+                  </>
+                ) : (
+                  <>
+                    <Check className="h-5 w-5 mr-2" />
+                    Confirmar e Fechar Mesa
+                  </>
+                )}
+              </Button>
+              <Button
+                onClick={() => setShowCloseTableModal(false)}
+                variant="outline"
+                className="w-full py-3"
+                disabled={closeTableMutation.isPending}
+              >
+                Voltar e Revisar
+              </Button>
+            </div>
           </div>
-          
-          {/* Botões de Ação */}
-          <DialogFooter className="flex-shrink-0 flex gap-2 mt-4 pt-4 border-t">
-            <Button 
-              variant="outline" 
-              onClick={() => setShowCloseTableModal(false)}
-              className="flex-1"
-            >
-              Voltar
-            </Button>
-            <Button 
-              onClick={handleConfirmCloseTable}
-              disabled={closeTableMutation.isPending}
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-            >
-              {closeTableMutation.isPending ? "Fechando..." : "✅ Confirmar e Fechar Mesa"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
       {/* Modal de Configuração da Aba */}
       <Dialog open={showHandleConfig} onOpenChange={setShowHandleConfig}>
