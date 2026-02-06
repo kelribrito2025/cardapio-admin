@@ -1275,187 +1275,156 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           )}
         </div>
 
+        {/* Barra Secundária - Full Width - Mesas ou Categorias (depend da inversão) */}
+        {barsSwapped ? (
+          /* Abas de Mesas embaixo quando invertido */
+          tables.length > 0 && (
+            <div className="relative bg-gray-100 px-3 py-2 border-b border-border/50">
+              <div 
+                ref={!barsSwapped ? undefined : tablesContainerRef}
+                className={cn(
+                  "flex items-center gap-2 overflow-x-auto pr-8 scrollbar-hide select-none",
+                  isDraggingTables ? "cursor-grabbing" : "cursor-grab"
+                )}
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                onMouseDown={handleTablesMouseDown}
+              >
+                <button
+                  onClick={toggleBarsSwapped}
+                  className="flex items-center justify-center w-9 h-9 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0"
+                  title="Trocar posição das barras"
+                >
+                  <ArrowUpDown className="h-4 w-4" />
+                </button>
+                {tables
+                  .filter(table => !table.mergedIntoId)
+                  .map((table) => {
+                  const cartItemsCount = cartsPerTable[table.id]?.length || 0;
+                  const tabItemsCount = table.tabItemsCount || 0;
+                  const tableHasItems = cartItemsCount > 0 || tabItemsCount > 0;
+                  const displayNum = table.displayNumber || table.number.toString();
+                  return (
+                    <button
+                      key={`${table.id}-${cartsVersion}-${tableHasItems}`}
+                      onClick={() => onTableChange?.(table)}
+                      disabled={table.number === tableNumber}
+                      className={cn(
+                        "relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
+                        table.number === tableNumber
+                          ? tableHasItems
+                            ? "bg-red-500 text-white shadow-sm cursor-default"
+                            : "bg-emerald-500 text-white shadow-sm cursor-default"
+                          : tableHasItems
+                            ? "bg-red-100 text-red-700 hover:bg-red-200"
+                            : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                      )}
+                    >
+                      <UtensilsCrossed className="h-4 w-4" />
+                      {displayNum}
+                    </button>
+                  );
+                })}
+              </div>
+              {tablesHasOverflow && (
+                <div className="absolute right-0 top-0 bottom-0 flex items-center pointer-events-none pr-2">
+                  <ChevronsRight className="h-5 w-5 text-emerald-400 animate-bounce-x" />
+                </div>
+              )}
+            </div>
+          )
+        ) : (
+          /* Barra de Categorias embaixo (padrão) - full width */
+          <div className="relative px-3 py-2 border-b border-border/50 bg-muted/20">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowCategoriesModal(true)}
+                className="flex items-center justify-center w-9 h-9 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0"
+              >
+                <Menu className="h-4 w-4" />
+              </button>
+              <div 
+                ref={categoriesContainerRef}
+                className={cn(
+                  "flex items-center gap-2 overflow-x-auto pr-20 scrollbar-hide select-none flex-1",
+                  isDragging ? "cursor-grabbing" : "cursor-grab"
+                )}
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                onMouseDown={handleMouseDown}
+              >
+                <button
+                  onClick={() => setSelectedCategory(null)}
+                  className={cn(
+                    "relative px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0 mt-2",
+                    selectedCategory === null
+                      ? "bg-red-500 text-white shadow-sm"
+                      : "bg-card text-muted-foreground hover:bg-muted border border-border/50"
+                  )}
+                >
+                  Todos
+                  <span className={cn(
+                    "absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-[10px] font-semibold",
+                    selectedCategory === null ? "bg-white text-red-500" : "bg-red-500 text-white"
+                  )}>
+                    {productsList.filter((p) => p.status === 'active').length || 0}
+                  </span>
+                </button>
+                {categoriesLoading ? (
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <Skeleton key={i} className="h-8 w-24" />
+                  ))
+                ) : (
+                  sortedCategories.map((category) => {
+                    const count = productsList.filter(
+                      (p) => p.status === 'active' && p.categoryId === category.id
+                    ).length || 0;
+                    const categoryNameWithoutEmoji = category.name.replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]+|[\u2600-\u27BF]/g, '').trim();
+                    return (
+                      <button
+                        key={category.id}
+                        onClick={() => setSelectedCategory(category.id)}
+                        className={cn(
+                          "relative px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0 mt-2",
+                          selectedCategory === category.id
+                            ? "bg-red-500 text-white shadow-sm"
+                            : "bg-card text-muted-foreground hover:bg-muted border border-border/50"
+                        )}
+                      >
+                        {categoryNameWithoutEmoji}
+                        <span className={cn(
+                          "absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-[10px] font-semibold",
+                          selectedCategory === category.id ? "bg-white text-red-500" : "bg-red-500 text-white"
+                        )}>
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+            {hasOverflow && (
+              <div className="absolute right-0 top-0 bottom-0 flex items-center pointer-events-none pr-2">
+                <ChevronsRight className="h-5 w-5 text-red-400 animate-bounce-x" />
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Content */}
         <div className="flex flex-1 overflow-hidden">
           {/* Coluna Esquerda - Produtos */}
           <div className="flex-1 flex flex-col overflow-hidden border-r border-border/50">
-            {/* Barra Secundária - Mesas ou Categorias (depend da inversão) */}
-            {barsSwapped ? (
-              /* Abas de Mesas embaixo quando invertido */
-              tables.length > 0 && (
-                <div className="relative bg-gray-100 px-3 py-2 border-b border-border/50">
-                  <div 
-                    ref={!barsSwapped ? undefined : tablesContainerRef}
-                    className={cn(
-                      "flex items-center gap-2 overflow-x-auto pr-8 scrollbar-hide select-none",
-                      isDraggingTables ? "cursor-grabbing" : "cursor-grab"
-                    )}
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                    onMouseDown={handleTablesMouseDown}
-                  >
-                    <button
-                      onClick={toggleBarsSwapped}
-                      className="flex items-center justify-center w-9 h-9 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0"
-                      title="Trocar posição das barras"
-                    >
-                      <ArrowUpDown className="h-4 w-4" />
-                    </button>
-                    {tables
-                      .filter(table => !table.mergedIntoId) // Ocultar mesas juntadas
-                      .map((table) => {
-                      // Status baseado em itens no carrinho da mesa OU na comanda
-                      const cartItemsCount = cartsPerTable[table.id]?.length || 0;
-                      const tabItemsCount = table.tabItemsCount || 0;
-                      const tableHasItems = cartItemsCount > 0 || tabItemsCount > 0;
-                      const displayNum = table.displayNumber || table.number.toString();
-                      return (
-                        <button
-                          key={`${table.id}-${cartsVersion}-${tableHasItems}`}
-                          onClick={() => onTableChange?.(table)}
-                          disabled={table.number === tableNumber}
-                          className={cn(
-                            "relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
-                            table.number === tableNumber
-                              ? tableHasItems
-                                ? "bg-red-500 text-white shadow-sm cursor-default"
-                                : "bg-emerald-500 text-white shadow-sm cursor-default"
-                              : tableHasItems
-                                ? "bg-red-100 text-red-700 hover:bg-red-200"
-                                : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
-                          )}
-                        >
-                          <UtensilsCrossed className="h-4 w-4" />
-                          {displayNum}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {tablesHasOverflow && (
-                    <div className="absolute right-0 top-0 bottom-0 flex items-center pointer-events-none pr-2">
-                      <ChevronsRight className="h-5 w-5 text-emerald-400 animate-bounce-x" />
-                    </div>
-                  )}
-                </div>
-              )
-            ) : (
-              /* Barra de Categorias embaixo (padrão) */
-              <div className="relative px-3 py-2 border-b border-border/50 bg-muted/20">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setShowCategoriesModal(true)}
-                    className="flex items-center justify-center w-9 h-9 rounded-lg bg-card text-muted-foreground hover:bg-muted border border-border/50 transition-all shrink-0"
-                  >
-                    <Menu className="h-4 w-4" />
-                  </button>
-                  <div 
-                    ref={categoriesContainerRef}
-                    className={cn(
-                      "flex items-center gap-2 overflow-x-auto pr-20 scrollbar-hide select-none flex-1",
-                      isDragging ? "cursor-grabbing" : "cursor-grab"
-                    )}
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                    onMouseDown={handleMouseDown}
-                  >
-                    <button
-                      onClick={() => setSelectedCategory(null)}
-                      className={cn(
-                        "relative px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0 mt-2",
-                        selectedCategory === null
-                          ? "bg-red-500 text-white shadow-sm"
-                          : "bg-card text-muted-foreground hover:bg-muted border border-border/50"
-                      )}
-                    >
-                      Todos
-                      <span className={cn(
-                        "absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-[10px] font-semibold",
-                        selectedCategory === null ? "bg-white text-red-500" : "bg-red-500 text-white"
-                      )}>
-                        {productsList.filter((p) => p.status === 'active').length || 0}
-                      </span>
-                    </button>
-                    {categoriesLoading ? (
-                      Array.from({ length: 4 }).map((_, i) => (
-                        <Skeleton key={i} className="h-8 w-24" />
-                      ))
-                    ) : (
-                      sortedCategories.map((category) => {
-                        const count = productsList.filter(
-                          (p) => p.status === 'active' && p.categoryId === category.id
-                        ).length || 0;
-                        const categoryNameWithoutEmoji = category.name.replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]+|[\u2600-\u27BF]/g, '').trim();
-                        return (
-                          <button
-                            key={category.id}
-                            onClick={() => setSelectedCategory(category.id)}
-                            className={cn(
-                              "relative px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0 mt-2",
-                              selectedCategory === category.id
-                                ? "bg-red-500 text-white shadow-sm"
-                                : "bg-card text-muted-foreground hover:bg-muted border border-border/50"
-                            )}
-                          >
-                            {categoryNameWithoutEmoji}
-                            <span className={cn(
-                              "absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-[10px] font-semibold",
-                              selectedCategory === category.id ? "bg-white text-red-500" : "bg-red-500 text-white"
-                            )}>
-                              {count}
-                            </span>
-                          </button>
-                        );
-                      })
-                    )}
-                  </div>
-                </div>
-                {hasOverflow && (
-                  <div className="absolute right-0 top-0 bottom-0 flex items-center pointer-events-none pr-2">
-                    <ChevronsRight className="h-5 w-5 text-red-400 animate-bounce-x" />
-                  </div>
-                )}
-              </div>
-            )}
 
-            {/* Barra de Busca + Abas Mesa/Comanda */}
+            {/* Barra de Busca */}
             <div className="px-3 py-2 border-b border-border/50">
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar produto..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 h-9 text-sm"
-                  />
-                </div>
-                {/* Abas Mesa e Comanda ao lado da busca */}
-                <button
-                  onClick={() => setSelectedTab('consumo')}
-                  className={cn(
-                    "flex items-center gap-1.5 px-3 h-9 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
-                    selectedTab === 'consumo'
-                      ? "bg-red-500 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  )}
-                >
-                  <UtensilsCrossed className="h-3.5 w-3.5" />
-                  Mesa {tableDisplayName}
-                </button>
-                <button
-                  onClick={() => setSelectedTab('comanda')}
-                  disabled={!tabId}
-                  className={cn(
-                    "flex items-center gap-1.5 px-3 h-9 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
-                    !tabId
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
-                      : selectedTab === 'comanda'
-                        ? "bg-red-500 text-white"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  )}
-                  title={!tabId ? "Mesa sem comanda aberta" : "Ver itens da comanda"}
-                >
-                  <Receipt className="h-3.5 w-3.5" />
-                  Comanda
-                </button>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar produto..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 h-9 text-sm"
+                />
               </div>
             </div>
 
@@ -1547,6 +1516,43 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
           {/* Coluna Direita - Carrinho */}
           <div className="w-[370px] bg-gray-50 flex flex-col">
+            {/* Header do Carrinho */}
+            <div className="p-3 border-b border-border/50 bg-white">
+              {/* Abas: Mesa (Consumo) e Comanda - lado a lado */}
+              <div className="flex gap-2">
+                {/* Mesa (número) - aba Consumo */}
+                <button
+                  onClick={() => setSelectedTab('consumo')}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2 p-2 rounded-lg transition-all",
+                    selectedTab === 'consumo'
+                      ? "bg-red-500 text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  )}
+                >
+                  <UtensilsCrossed className="h-4 w-4" />
+                  <span className="text-sm font-medium">Mesa {tableDisplayName}</span>
+                </button>
+
+                {/* Comanda - aba Comanda (desabilitado se não houver comanda aberta) */}
+                <button
+                  onClick={() => setSelectedTab('comanda')}
+                  disabled={!tabId}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2 p-2 rounded-lg transition-all",
+                    !tabId
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
+                      : selectedTab === 'comanda'
+                        ? "bg-red-500 text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  )}
+                  title={!tabId ? "Mesa sem comanda aberta" : "Ver itens da comanda"}
+                >
+                  <Receipt className="h-4 w-4" />
+                  <span className="text-sm font-medium">Comanda</span>
+                </button>
+              </div>
+            </div>
 
             {/* Lista de Itens */}
             <div className="flex-1 overflow-y-auto p-3 space-y-2">
