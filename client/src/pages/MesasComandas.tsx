@@ -1022,18 +1022,32 @@ export default function MesasComandas() {
                         <Link2 className="h-3 w-3" />
                         Mesas unidas
                       </span>
-                      <button
+                      <span
+                        role="button"
+                        tabIndex={0}
                         onClick={(e) => {
                           e.stopPropagation();
-                          splitTablesMutation.mutate({ tableId: table.id });
+                          if (!splitTablesMutation.isPending) {
+                            splitTablesMutation.mutate({ tableId: table.id });
+                          }
                         }}
-                        disabled={splitTablesMutation.isPending}
-                        className="text-xs text-gray-500 hover:text-red-600 hover:bg-red-50 px-1.5 py-0.5 rounded transition-colors flex items-center gap-1"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.stopPropagation();
+                            if (!splitTablesMutation.isPending) {
+                              splitTablesMutation.mutate({ tableId: table.id });
+                            }
+                          }
+                        }}
+                        className={cn(
+                          "text-xs text-gray-500 hover:text-red-600 hover:bg-red-50 px-1.5 py-0.5 rounded transition-colors flex items-center gap-1 cursor-pointer",
+                          splitTablesMutation.isPending && "opacity-50 cursor-not-allowed"
+                        )}
                         title="Separar mesas"
                       >
                         <Unlink className="h-3 w-3" />
                         <span>Separar</span>
-                      </button>
+                      </span>
                     </div>
                   )}
                   
