@@ -1,5 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { extractMenuSlug, generateOgMetaTags, injectOgTags } from "./_core/vite";
+import { extractMenuSlug, generateOgMetaTags, injectOgTags, escapeHtml } from "./_core/vite";
+
+describe("escapeHtml", () => {
+  it("escapa & < > \" '", () => {
+    expect(escapeHtml('A & B')).toBe('A &amp; B');
+    expect(escapeHtml('<script>')).toBe('&lt;script&gt;');
+    expect(escapeHtml('"quoted"')).toBe('&quot;quoted&quot;');
+    expect(escapeHtml("it's")).toBe("it&#039;s");
+  });
+
+  it("não altera texto sem caracteres especiais", () => {
+    expect(escapeHtml("Sushi Haruno")).toBe("Sushi Haruno");
+  });
+});
 
 describe("extractMenuSlug", () => {
   it("extrai slug de URL válida /menu/:slug", () => {
@@ -54,11 +67,39 @@ describe("generateOgMetaTags", () => {
     expect(tags).toContain('og:type');
     expect(tags).toContain("website");
     expect(tags).toContain('og:image');
-    // Deve usar coverImage como prioridade
-    expect(tags).toContain("https://example.com/cover.jpg");
   });
 
-  it("usa logo quando coverImage não existe", () => {
+  it("inclui og:url com URL canônica", () => {
+    const tags = generateOgMetaTags({
+      name: "Burger King",
+      logo: null,
+      coverImage: null,
+      city: null,
+      neighborhood: null,
+      menuSlug: "burger_king",
+    });
+
+    expect(tags).toContain('og:url');
+    expect(tags).toContain("https://v2.mindi.com.br/menu/burger_king");
+  });
+
+  it("usa endpoint de imagem OG dinâmica quando há coverImage", () => {
+    const tags = generateOgMetaTags(
+      {
+        name: "Pizzaria Legal",
+        logo: "https://example.com/logo.png",
+        coverImage: "https://example.com/cover.jpg",
+        city: null,
+        neighborhood: null,
+        menuSlug: "pizzaria_legal",
+      },
+      "https://v2.mindi.com.br"
+    );
+
+    expect(tags).toContain("/api/og-image/pizzaria_legal");
+  });
+
+  it("usa logo direto quando não há coverImage", () => {
     const tags = generateOgMetaTags({
       name: "Burger King",
       logo: "https://example.com/logo.png",
@@ -69,6 +110,7 @@ describe("generateOgMetaTags", () => {
     });
 
     expect(tags).toContain("https://example.com/logo.png");
+    expect(tags).not.toContain("/api/og-image/");
   });
 
   it("gera descrição sem cidade quando não disponível", () => {
@@ -130,6 +172,20 @@ describe("generateOgMetaTags", () => {
     expect(tags).toContain('"summary"');
     expect(tags).not.toContain("summary_large_image");
   });
+
+  it("codifica slug com caracteres especiais na og:url", () => {
+    const tags = generateOgMetaTags({
+      name: "Café do João",
+      logo: null,
+      coverImage: null,
+      city: null,
+      neighborhood: null,
+      menuSlug: "café_do_joão",
+    });
+
+    expect(tags).toContain("og:url");
+    expect(tags).toContain(encodeURIComponent("café_do_joão"));
+  });
 });
 
 describe("injectOgTags", () => {
@@ -173,7 +229,7 @@ describe("injectOgTags", () => {
     expect(result).not.toContain("Sistema de gerenciamento");
   });
 
-  it("injeta OG tags antes do </head>", () => {
+  it("injeta OG tags e link canônico antes do </head>", () => {
     const result = injectOgTags(sampleHtml, {
       name: "Pizzaria Legal",
       logo: "https://example.com/logo.jpg",
@@ -186,11 +242,28 @@ describe("injectOgTags", () => {
     expect(result).toContain("<!-- Open Graph Meta Tags -->");
     expect(result).toContain('property="og:title"');
     expect(result).toContain('property="og:description"');
+    expect(result).toContain('property="og:url"');
     expect(result).toContain('property="og:image"');
+    expect(result).toContain('rel="canonical"');
+    expect(result).toContain("https://v2.mindi.com.br/menu/pizzaria_legal");
+
     // As OG tags devem estar antes do </head>
     const ogIndex = result.indexOf("og:title");
     const headCloseIndex = result.indexOf("</head>");
     expect(ogIndex).toBeLessThan(headCloseIndex);
+  });
+
+  it("inclui link canônico com URL correta", () => {
+    const result = injectOgTags(sampleHtml, {
+      name: "Teste",
+      logo: null,
+      coverImage: null,
+      city: null,
+      neighborhood: null,
+      menuSlug: "meu_restaurante",
+    });
+
+    expect(result).toContain('<link rel="canonical" href="https://v2.mindi.com.br/menu/meu_restaurante" />');
   });
 
   it("mantém o restante do HTML intacto", () => {
@@ -206,5 +279,22 @@ describe("injectOgTags", () => {
     expect(result).toContain('<div id="root"></div>');
     expect(result).toContain('lang="pt-BR"');
     expect(result).toContain('<meta charset="UTF-8" />');
+  });
+
+  it("passa requestBaseUrl para gerar URL de imagem OG dinâmica", () => {
+    const result = injectOgTags(
+      sampleHtml,
+      {
+        name: "Restaurante X",
+        logo: "https://example.com/logo.png",
+        coverImage: "https://example.com/cover.jpg",
+        city: null,
+        neighborhood: null,
+        menuSlug: "restaurante_x",
+      },
+      "https://meusite.com"
+    );
+
+    expect(result).toContain("https://meusite.com/api/og-image/restaurante_x");
   });
 });
