@@ -5330,3 +5330,8 @@
 ## Unificação Slidebar PDV em Todas as Páginas
 - [x] Verificar diferenças entre a slidebar da página de Mesas e a slidebar das demais páginas
 - [x] Unificar para que sejam exatamente iguais (exceto na página /pdv)
+
+## Modal de Conferência no PDV
+- [x] Adicionar modal de Conferência do Pedido na página de PDV para Consumo, Entrega e Retirada
+- [x] Exibir recibo completo antes de finalizar o pedido
+- [x] Botões de Confirmar e Cancelar no modal

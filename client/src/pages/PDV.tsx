@@ -257,6 +257,10 @@ export default function PDV() {
 
   // Estados para limpar/desfazer
   const [clearedCart, setClearedCart] = useState<CartItem[] | null>(null);
+  
+  // Estado para modal de conferência do pedido
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [isClosingOrder, setIsClosingOrder] = useState(false);
 
   // Query para buscar taxas por bairro
   const { data: neighborhoodFees } = trpc.neighborhoodFees.list.useQuery(
@@ -500,8 +504,8 @@ export default function PDV() {
       return;
     }
 
-    // Criar pedido
-    createOrder();
+    // Abrir modal de conferência do pedido
+    setShowConfirmationModal(true);
   };
 
   // Criar pedido no banco de dados
@@ -2379,6 +2383,237 @@ export default function PDV() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Modal de Conferência do Pedido */}
+      {showConfirmationModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+          {/* Overlay */}
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowConfirmationModal(false)}
+          />
+          
+          {/* Modal */}
+          <div className="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-md max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-red-500 to-red-600 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <Eye className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Conferência do Pedido</h2>
+                    <p className="text-sm text-white/80">
+                      {orderType === "mesa" ? "Consumo no local" : 
+                       orderType === "retirada" ? "Retirada" : "Entrega"}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowConfirmationModal(false)}
+                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                >
+                  <X className="h-5 w-5 text-white" />
+                </button>
+              </div>
+            </div>
+
+            {/* Conteúdo do Recibo */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {/* Nome do Estabelecimento */}
+              <div className="text-center pb-3 border-b border-dashed border-gray-300">
+                <h3 className="font-bold text-lg">{establishment?.name || 'Estabelecimento'}</h3>
+                <p className="text-xs text-gray-500">SISTEMA DE PEDIDOS</p>
+              </div>
+
+              {/* Tipo do Pedido */}
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Tipo:</span>
+                <span className="px-3 py-1 bg-gray-900 text-white text-xs font-bold rounded">
+                  {orderType === "mesa" ? "CONSUMO" : 
+                   orderType === "retirada" ? "RETIRADA" : "ENTREGA"}
+                </span>
+              </div>
+
+              {/* Dados de Entrega (se for entrega) */}
+              {orderType === "entrega" && deliveryAddress.street && (
+                <div className="p-3 bg-gray-50 rounded-lg space-y-1">
+                  <p className="text-xs font-semibold text-gray-700">Endereço de Entrega:</p>
+                  <p className="text-sm">
+                    {deliveryAddress.street}, {deliveryAddress.number}
+                    {deliveryAddress.complement && ` - ${deliveryAddress.complement}`}
+                  </p>
+                  <p className="text-sm">{deliveryAddress.neighborhood}</p>
+                  {deliveryAddress.reference && (
+                    <p className="text-xs text-gray-500">Ref: {deliveryAddress.reference}</p>
+                  )}
+                  {deliveryAddress.name && (
+                    <p className="text-xs text-gray-600 mt-2">Cliente: {deliveryAddress.name}</p>
+                  )}
+                  {deliveryAddress.phone && (
+                    <p className="text-xs text-gray-600">Tel: {deliveryAddress.phone}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Lista de Itens */}
+              {printerSettings?.showDividers !== false && (
+                <div className="border-t border-dashed border-gray-300" />
+              )}
+              
+              <div className="space-y-2">
+                {cart.map((item, index) => (
+                  <div key={index} className="p-3 border border-gray-200 rounded-lg">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">
+                          {item.quantity}x {item.name}
+                        </p>
+                        {item.complements && item.complements.length > 0 && (
+                          <div className="mt-1 space-y-0.5">
+                            {item.complements.map((comp, idx) => (
+                              <p key={idx} className="text-xs text-gray-500 pl-2">
+                                + {comp.quantity}x {comp.name}
+                                {parseFloat(comp.price) > 0 && (
+                                  <span className="ml-1 text-gray-400">
+                                    ({formatCurrency(parseFloat(comp.price) * comp.quantity)})
+                                  </span>
+                                )}
+                              </p>
+                            ))}
+                          </div>
+                        )}
+                        {item.observation && (
+                          <p className="text-xs text-gray-500 mt-1 italic">Obs: {item.observation}</p>
+                        )}
+                      </div>
+                      <p className="font-semibold text-sm">
+                        {formatCurrency(
+                          (parseFloat(item.price) + 
+                            (item.complements?.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0) || 0)
+                          ) * item.quantity
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {printerSettings?.showDividers !== false && (
+                <div className="border-t border-dashed border-gray-300" />
+              )}
+
+              {/* Totais */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Subtotal:</span>
+                  <span>{formatCurrency(calculateTotal())}</span>
+                </div>
+                
+                {orderType === "entrega" && selectedNeighborhoodFee && (
+                  <div className="flex justify-between text-sm">
+                    <span>Taxa de entrega:</span>
+                    <span>{formatCurrency(parseFloat(selectedNeighborhoodFee.fee))}</span>
+                  </div>
+                )}
+                
+                {appliedCoupon && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Desconto ({appliedCoupon.code}):</span>
+                    <span>-{formatCurrency(appliedCoupon.discount)}</span>
+                  </div>
+                )}
+                
+                <div className="flex justify-between font-bold text-lg pt-2 border-t border-gray-200">
+                  <span>TOTAL:</span>
+                  <span className="text-red-600">
+                    {formatCurrency(
+                      Math.max(0, calculateTotal() + 
+                        (orderType === "entrega" && selectedNeighborhoodFee 
+                          ? parseFloat(selectedNeighborhoodFee.fee) 
+                          : 0) -
+                        (appliedCoupon?.discount || 0)
+                      )
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              {/* Forma de Pagamento */}
+              {paymentMethod && (
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Pagamento:</span>
+                    <span className="font-medium">
+                      {paymentMethod === "cash" ? "Dinheiro" : 
+                       paymentMethod === "card" ? "Cartão" : "PIX"}
+                    </span>
+                  </div>
+                  {paymentMethod === "cash" && (changeAmount || receivedAmount) && (
+                    <div className="mt-2 pt-2 border-t border-gray-200">
+                      <div className="flex justify-between text-sm">
+                        <span>Valor recebido:</span>
+                        <span>R$ {changeAmount || receivedAmount}</span>
+                      </div>
+                      <div className="flex justify-between text-sm font-medium text-green-600">
+                        <span>Troco:</span>
+                        <span>
+                          {formatCurrency(
+                            Math.max(0, 
+                              parseFloat((changeAmount || receivedAmount).replace(",", ".")) - 
+                              (calculateTotal() + 
+                                (orderType === "entrega" && selectedNeighborhoodFee 
+                                  ? parseFloat(selectedNeighborhoodFee.fee) 
+                                  : 0) -
+                                (appliedCoupon?.discount || 0)
+                              )
+                            )
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Botões */}
+            <div className="p-4 border-t border-gray-200 space-y-2">
+              <Button
+                onClick={() => {
+                  setIsClosingOrder(true);
+                  createOrder();
+                  setShowConfirmationModal(false);
+                  setIsClosingOrder(false);
+                }}
+                disabled={isClosingOrder || createOrderMutation.isPending}
+                className="w-full py-3 bg-green-600 hover:bg-green-700 text-white"
+              >
+                {isClosingOrder || createOrderMutation.isPending ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                    Finalizando...
+                  </>
+                ) : (
+                  <>
+                    <Check className="h-5 w-5 mr-2" />
+                    Confirmar e Finalizar Pedido
+                  </>
+                )}
+              </Button>
+              <Button
+                onClick={() => setShowConfirmationModal(false)}
+                variant="outline"
+                className="w-full py-3"
+                disabled={isClosingOrder || createOrderMutation.isPending}
+              >
+                Voltar e Revisar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
       
     </AdminLayout>
   );
