@@ -5417,3 +5417,4 @@
 - [ ] Impressão: remover info de mesa/comanda, pagamento, obs e cliente da impressão de pedidos de mesa (normal e multi-impressora android)
 - [x] Bug: Cannot update MesasComandas while rendering PDVSlidebar - setState durante render (queueMicrotask fix)
 - [x] Impressão: remover info de mesa/comanda, pagamento, obs e cliente da impressão de pedidos de mesa (HTML, setor, ESC/POS e texto puro)
+- [x] Remover badge "Breve" do menu "Mapa de mesas" na sidebar
