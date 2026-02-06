@@ -485,48 +485,68 @@ function generateReceiptHTML(
   
   <hr class="divider">
   
-  ${order.deliveryType === 'delivery' ? `
-  <div class="section-box">
-    <div class="section-title">Endereço:</div>
-    <div class="section-content">
-      ${order.customerAddress || ''} - ${order.neighborhood || ''}
-      ${order.addressComplement ? '<br>' + order.addressComplement : ''}
-    </div>
-  </div>
-  ` : order.deliveryType === 'dine_in' ? `
-  <div class="section-box">
-    <div class="section-content"><strong>${order.customerName?.startsWith('Mesa') ? order.customerName : 'Consumo'}:</strong> ${order.customerName?.startsWith('Mesa') ? 'Comanda da ' + order.customerName : 'Cliente irá consumir no local'}</div>
-  </div>
-  ` : `
-  <div class="section-box">
-    <div class="section-content"><strong>Retirada:</strong> Cliente irá retirar no estabelecimento</div>
-  </div>
-  `}
-  
-  <div class="section-box">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/payment-icon.png" class="section-icon" /> Pagamento</span>
-      <span style="font-weight: ${headerFontWeight};">${paymentMethodText[order.paymentMethod] || order.paymentMethod}</span>
-    </div>
-  </div>
-  
-  ${order.paymentMethod === 'cash' ? `
-  <div style="margin: 8px 0; text-align: center;">
-    <div style="border-top: 1px dashed #000; margin-bottom: 8px;"></div>
-    <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: ${baseFontSize}; font-weight: ${baseFontWeight};">
-      <img src="/info-icon.svg" style="width: 16px; height: 16px;" alt="info" />
-      <span>Obs: ${order.changeAmount ? `Troco para ${formatCurrency(order.changeAmount)}` : 'Não precisa de troco'}</span>
-    </div>
-    <div style="border-top: 1px dashed #000; margin-top: 8px;"></div>
-  </div>
-  ` : ''}
-  
-  <div class="section-box">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/client-icon.png" style="width: 13px; height: 13px; margin-right: 4px;" /> Cliente</span>
-      <span style="font-weight: ${headerFontWeight};">${order.customerName || 'Nao informado'}${order.customerPhone ? ' - ' + formatPhone(order.customerPhone) : ''}</span>
-    </div>
-  </div>
+  ${(() => {
+    // Pedidos de mesa: não exibir seções de comanda, pagamento, troco e cliente
+    const isTableOrder = order.deliveryType === 'dine_in' && order.customerName?.startsWith('Mesa');
+    if (isTableOrder) return '';
+    
+    let sections = '';
+    
+    // Seção de tipo de entrega
+    if (order.deliveryType === 'delivery') {
+      sections += `
+      <div class="section-box">
+        <div class="section-title">Endereço:</div>
+        <div class="section-content">
+          ${order.customerAddress || ''} - ${order.neighborhood || ''}
+          ${order.addressComplement ? '<br>' + order.addressComplement : ''}
+        </div>
+      </div>`;
+    } else if (order.deliveryType === 'dine_in') {
+      sections += `
+      <div class="section-box">
+        <div class="section-content"><strong>Consumo:</strong> Cliente irá consumir no local</div>
+      </div>`;
+    } else {
+      sections += `
+      <div class="section-box">
+        <div class="section-content"><strong>Retirada:</strong> Cliente irá retirar no estabelecimento</div>
+      </div>`;
+    }
+    
+    // Seção de pagamento
+    sections += `
+    <div class="section-box">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/payment-icon.png" class="section-icon" /> Pagamento</span>
+        <span style="font-weight: ${headerFontWeight};">${paymentMethodText[order.paymentMethod] || order.paymentMethod}</span>
+      </div>
+    </div>`;
+    
+    // Seção de troco
+    if (order.paymentMethod === 'cash') {
+      sections += `
+      <div style="margin: 8px 0; text-align: center;">
+        <div style="border-top: 1px dashed #000; margin-bottom: 8px;"></div>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: ${baseFontSize}; font-weight: ${baseFontWeight};">
+          <img src="/info-icon.svg" style="width: 16px; height: 16px;" alt="info" />
+          <span>Obs: ${order.changeAmount ? `Troco para ${formatCurrency(order.changeAmount)}` : 'Não precisa de troco'}</span>
+        </div>
+        <div style="border-top: 1px dashed #000; margin-top: 8px;"></div>
+      </div>`;
+    }
+    
+    // Seção de cliente
+    sections += `
+    <div class="section-box">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/client-icon.png" style="width: 13px; height: 13px; margin-right: 4px;" /> Cliente</span>
+        <span style="font-weight: ${headerFontWeight};">${order.customerName || 'Nao informado'}${order.customerPhone ? ' - ' + formatPhone(order.customerPhone) : ''}</span>
+      </div>
+    </div>`;
+    
+    return sections;
+  })()}
   
   ${settings?.showQrCode && settings?.qrCodeUrl ? `
   <div class="qrcode-box">
@@ -761,12 +781,16 @@ function generateSectorReceiptHTML(
   
   <hr class="divider">
   
-  <div class="customer-info">
+  ${(() => {
+    const isTableOrder = order.deliveryType === 'dine_in' && order.customerName?.startsWith('Mesa');
+    if (isTableOrder) return '';
+    return `<div class="customer-info">
     <div class="customer-name">${order.customerName || 'Cliente'}${order.customerPhone ? ' - ' + formatPhone(order.customerPhone) : ''}</div>
     ${order.deliveryType === 'delivery' && order.customerAddress ? `<div style="font-size: ${smallFontSize}; margin-top: 4px;">${order.customerAddress}</div>` : ''}
-  </div>
+  </div>`;
+  })()}
   
-  ${order.notes ? `
+  ${order.notes && !(order.deliveryType === 'dine_in' && order.customerName?.startsWith('Mesa')) ? `
   <div style="margin-top: 12px; padding: 8px; background: #f0f0f0; border: 2px solid #000;">
     <strong>OBS:</strong> ${order.notes}
   </div>

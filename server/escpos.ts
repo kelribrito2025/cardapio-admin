@@ -754,8 +754,11 @@ export function generatePlainTextReceipt(
   receipt += center(`[ ${deliveryTypeText[order.deliveryType] || 'PEDIDO'} ]`) + '\n';
   receipt += doubleDivider + '\n';
 
-  // Cliente
-  if (order.customerName || order.customerPhone) {
+  // Pedidos de mesa: não exibir dados do cliente, endereço e pagamento
+  const isTableOrder = order.deliveryType === 'dine_in' && order.customerName?.startsWith('Mesa');
+  
+  // Cliente (não exibir para pedidos de mesa)
+  if (!isTableOrder && (order.customerName || order.customerPhone)) {
     receipt += 'CLIENTE\n';
     if (order.customerName) receipt += normalize(order.customerName) + '\n';
     if (order.customerPhone) receipt += `Tel: ${order.customerPhone}\n`;
@@ -763,7 +766,7 @@ export function generatePlainTextReceipt(
   }
 
   // Endereço
-  if (order.deliveryType === 'delivery' && order.address) {
+  if (!isTableOrder && order.deliveryType === 'delivery' && order.address) {
     receipt += 'ENDERECO DE ENTREGA\n';
     receipt += normalize(order.address) + '\n';
     if (order.addressComplement) receipt += normalize(order.addressComplement) + '\n';
@@ -828,17 +831,19 @@ export function generatePlainTextReceipt(
   receipt += leftRight('*** TOTAL ***', formatCurrency(order.total)) + '\n';
   receipt += doubleDivider + '\n';
 
-  // Pagamento
-  receipt += 'FORMA DE PAGAMENTO\n';
-  receipt += (paymentMethodText[order.paymentMethod || ''] || order.paymentMethod || 'Nao informado') + '\n';
+  // Pagamento (não exibir para pedidos de mesa)
+  if (!isTableOrder) {
+    receipt += 'FORMA DE PAGAMENTO\n';
+    receipt += (paymentMethodText[order.paymentMethod || ''] || order.paymentMethod || 'Nao informado') + '\n';
 
-  if (order.paymentMethod === 'cash') {
-    if (order.changeFor && order.changeFor > order.total) {
-      const change = order.changeFor - order.total;
-      receipt += `Troco para: ${formatCurrency(order.changeFor)}\n`;
-      receipt += `Troco: ${formatCurrency(change)}\n`;
-    } else {
-      receipt += 'Nao precisa de troco\n';
+    if (order.paymentMethod === 'cash') {
+      if (order.changeFor && order.changeFor > order.total) {
+        const change = order.changeFor - order.total;
+        receipt += `Troco para: ${formatCurrency(order.changeFor)}\n`;
+        receipt += `Troco: ${formatCurrency(change)}\n`;
+      } else {
+        receipt += 'Nao precisa de troco\n';
+      }
     }
   }
 

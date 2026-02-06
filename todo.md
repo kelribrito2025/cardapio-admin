@@ -5413,3 +5413,7 @@
 - [x] PDV: mover botões Mesa e Comanda para a linha do campo de busca, liberando espaço para categorias/atalhos
 - [x] PDV: atalhos de mesa full-width acima das duas colunas, descer botões Mesa/Comanda no carrinho
 - [x] Mesas: cards de mesa só devem mostrar itens após envio do pedido, não quando adicionados no carrinho do PDV
+- [ ] Bug: Cannot update MesasComandas while rendering PDVSlidebar - setState durante render via cartsPerTableUpdated event
+- [ ] Impressão: remover info de mesa/comanda, pagamento, obs e cliente da impressão de pedidos de mesa (normal e multi-impressora android)
+- [x] Bug: Cannot update MesasComandas while rendering PDVSlidebar - setState durante render (queueMicrotask fix)
+- [x] Impressão: remover info de mesa/comanda, pagamento, obs e cliente da impressão de pedidos de mesa (HTML, setor, ESC/POS e texto puro)

@@ -166,30 +166,35 @@ export function generateEscPosReceipt(order: OrderData): string {
   receipt += COMMANDS.ALIGN_LEFT;
   receipt += divider('=') + '\n';
   
-  // Dados do cliente
-  receipt += COMMANDS.FONT_DOUBLE_HEIGHT;
-  receipt += COMMANDS.BOLD_ON;
-  receipt += 'CLIENTE\n';
-  receipt += COMMANDS.BOLD_OFF;
-  receipt += COMMANDS.FONT_NORMAL;
-  receipt += removeAccents(order.customerName) + '\n';
-  if (order.customerPhone) {
-    receipt += `Tel: ${order.customerPhone}\n`;
-  }
-  receipt += '\n';
+  // Pedidos de mesa: não exibir dados do cliente e endereço
+  const isTableOrder = order.deliveryType === 'table' || order.customerName?.startsWith('Mesa');
   
-  // Endereço (se delivery)
-  if (order.deliveryType === 'delivery' && order.address) {
+  if (!isTableOrder) {
+    // Dados do cliente
     receipt += COMMANDS.FONT_DOUBLE_HEIGHT;
     receipt += COMMANDS.BOLD_ON;
-    receipt += 'ENDERECO\n';
+    receipt += 'CLIENTE\n';
     receipt += COMMANDS.BOLD_OFF;
     receipt += COMMANDS.FONT_NORMAL;
-    receipt += removeAccents(order.address) + '\n';
-    if (order.neighborhood) {
-      receipt += removeAccents(order.neighborhood) + '\n';
+    receipt += removeAccents(order.customerName) + '\n';
+    if (order.customerPhone) {
+      receipt += `Tel: ${order.customerPhone}\n`;
     }
     receipt += '\n';
+    
+    // Endereço (se delivery)
+    if (order.deliveryType === 'delivery' && order.address) {
+      receipt += COMMANDS.FONT_DOUBLE_HEIGHT;
+      receipt += COMMANDS.BOLD_ON;
+      receipt += 'ENDERECO\n';
+      receipt += COMMANDS.BOLD_OFF;
+      receipt += COMMANDS.FONT_NORMAL;
+      receipt += removeAccents(order.address) + '\n';
+      if (order.neighborhood) {
+        receipt += removeAccents(order.neighborhood) + '\n';
+      }
+      receipt += '\n';
+    }
   }
   
   // Divisor
@@ -263,13 +268,15 @@ export function generateEscPosReceipt(order: OrderData): string {
   receipt += COMMANDS.FONT_NORMAL;
   receipt += '\n';
   
-  // Forma de pagamento
-  receipt += COMMANDS.FONT_DOUBLE_HEIGHT;
-  receipt += COMMANDS.BOLD_ON;
-  receipt += `PAGAMENTO: ${removeAccents(order.paymentMethod.toUpperCase())}\n`;
-  receipt += COMMANDS.BOLD_OFF;
-  receipt += COMMANDS.FONT_NORMAL;
-  receipt += '\n';
+  // Forma de pagamento (não exibir para pedidos de mesa)
+  if (!isTableOrder) {
+    receipt += COMMANDS.FONT_DOUBLE_HEIGHT;
+    receipt += COMMANDS.BOLD_ON;
+    receipt += `PAGAMENTO: ${removeAccents(order.paymentMethod.toUpperCase())}\n`;
+    receipt += COMMANDS.BOLD_OFF;
+    receipt += COMMANDS.FONT_NORMAL;
+    receipt += '\n';
+  }
   
   // Rodapé
   receipt += divider('=') + '\n';

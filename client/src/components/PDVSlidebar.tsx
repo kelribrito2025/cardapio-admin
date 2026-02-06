@@ -288,8 +288,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
       // Persistir no localStorage
       try {
         localStorage.setItem(CARTS_PER_TABLE_KEY, JSON.stringify(updated));
-        // Disparar evento customizado para sincronizar com outros componentes na mesma aba
-        window.dispatchEvent(new CustomEvent('cartsPerTableUpdated', { detail: updated }));
+        // Disparar evento customizado fora do ciclo de render para evitar setState durante render
+        queueMicrotask(() => {
+          window.dispatchEvent(new CustomEvent('cartsPerTableUpdated', { detail: updated }));
+        });
       } catch (e) {
         console.error('Erro ao salvar carrinhos:', e);
       }
