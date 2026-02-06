@@ -190,7 +190,7 @@ export default function Campanhas() {
         toast.error("Número já adicionado");
       }
     } else {
-      toast.error("Número inválido. Digite DDD + número (ex: 88 9 9929-0000)");
+      toast.error("Número inválido. Digite DDD + número (ex: 11 9 1234-5678)");
     }
   };
 
@@ -524,7 +524,7 @@ export default function Campanhas() {
                       <Input
                         value={numeroManual}
                         onChange={handleNumeroManualChange}
-                        placeholder="+55 88 9 9929-0000"
+                        placeholder="+55 11 9 1234-5678"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();

@@ -5491,3 +5491,6 @@
 
 ## Menu Sidebar
 - [x] Remover badge "Breve" do item Cupons no menu lateral
+
+## Página de Campanhas
+- [x] Trocar placeholder do campo de telefone para número genérico (11) 9 1234-5678
