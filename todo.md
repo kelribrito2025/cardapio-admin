@@ -5455,3 +5455,6 @@
 
 ## Bug: Taxa de Entrega "Grátis" na Sacola Desktop
 - [x] Quando taxa é por bairro, não mostrar "Grátis!" na sacola até o bairro ser selecionado (mostrar "A calcular" ou ocultar a linha)
+
+## Badge Grátis para Retirar/Consumir no Local
+- [x] Alterar "Retirar no local" e "Consumir no local" na sacola para usar o mesmo badge verde com check do Grátis
