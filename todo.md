@@ -5427,3 +5427,4 @@
 - [x] Configuração de auto-aceite no painel de Impressora
 - [x] Cache de configurações com invalidação ao salvar
 - [x] Testes vitest para o módulo autoAccept
+- [x] Fix: Maximum update depth exceeded na página /pedidos (useRef para allOrders no auto-accept timer)

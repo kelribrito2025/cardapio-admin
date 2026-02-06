@@ -335,6 +335,9 @@ export default function Pedidos() {
   const autoAcceptedRef = useRef<Set<number>>(new Set());
   const autoAcceptEnabled = printerSettings?.autoAcceptEnabled ?? false;
   const autoAcceptTimerSeconds = printerSettings?.autoAcceptTimerSeconds ?? 10;
+  // Ref estável para allOrders para evitar loop infinito no useEffect do auto-accept
+  const allOrdersRef = useRef(allOrders);
+  allOrdersRef.current = allOrders;
 
   const updateStatusMutation = trpc.orders.updateStatus.useMutation({
     onMutate: async (variables) => {
@@ -701,19 +704,26 @@ export default function Pedidos() {
   };
 
   // ============ AUTO-ACCEPT TIMER (efeito) ============
+  // Usa allOrdersRef para evitar que mudanças em allOrders (via optimistic update)
+  // re-disparem o effect e causem loop infinito (Maximum update depth exceeded)
   useEffect(() => {
     if (!autoAcceptEnabled) {
       setAutoAcceptCountdowns({});
       return;
     }
 
-    const currentNewOrders = allOrders.filter(o => o.status === 'new');
-    if (currentNewOrders.length === 0) {
-      setAutoAcceptCountdowns({});
-      return;
-    }
-
     const updateCountdowns = () => {
+      const currentOrders = allOrdersRef.current;
+      const currentNewOrders = currentOrders.filter(o => o.status === 'new');
+      
+      if (currentNewOrders.length === 0) {
+        setAutoAcceptCountdowns(prev => {
+          if (Object.keys(prev).length === 0) return prev;
+          return {};
+        });
+        return;
+      }
+
       const now = Date.now();
       const countdowns: Record<number, number> = {};
       
@@ -727,7 +737,8 @@ export default function Pedidos() {
         
         if (remaining <= 0 && !autoAcceptedRef.current.has(order.id)) {
           autoAcceptedRef.current.add(order.id);
-          handleStatusUpdate(order.id, 'preparing');
+          // Usar setTimeout para evitar setState durante render
+          setTimeout(() => handleStatusUpdate(order.id, 'preparing'), 0);
         }
       }
       
@@ -737,7 +748,7 @@ export default function Pedidos() {
     updateCountdowns();
     const interval = setInterval(updateCountdowns, 1000);
     return () => clearInterval(interval);
-  }, [autoAcceptEnabled, autoAcceptTimerSeconds, allOrders]);
+  }, [autoAcceptEnabled, autoAcceptTimerSeconds]);
 
   // Limpar pedidos auto-aceitos antigos do ref
   useEffect(() => {
