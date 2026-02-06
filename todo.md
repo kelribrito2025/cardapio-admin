@@ -5406,3 +5406,7 @@
 ## Fluxo de Pagamento no Consumo (Mesa) no PDV
 - [x] Adicionar etapa de seleção de forma de pagamento antes de finalizar pedido no tipo Consumo (mesa)
 - [x] Seguir o mesmo fluxo do tipo Retirada: botão Pagamento → selecionar forma → Finalizar Pedido
+
+
+## Bug: Modal de Configuração da Aba Duplicado
+- [x] Corrigir modal de Configuração da Aba que aparece duplicado (aba atrás da aba)

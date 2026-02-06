@@ -161,7 +161,7 @@ export function GlobalPDVHandle() {
         tableNumber={selectedTable.number}
         tableId={selectedTable.id}
         tabId={selectedTable.tabId}
-        showHandle={true}
+        showHandle={false}
         tables={tables?.map(t => ({
           id: t.id,
           number: t.number,
