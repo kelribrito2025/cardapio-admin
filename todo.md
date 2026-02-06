@@ -5471,3 +5471,6 @@
 
 ## Cores Diferentes na Borda de Categorias
 - [x] Implementar borda dinâmica por status: verde para ativo, vermelha para pausado
+
+## Borda Dinâmica nos Complementos
+- [x] Aplicar borda dinâmica por status nos cards de Complementos (verde=ativo, vermelho=pausado)

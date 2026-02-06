@@ -356,7 +356,8 @@ function ComplementRow({
     <Collapsible open={isExpanded} onOpenChange={() => onToggleExpand(complement.id)}>
       <div
         className={cn(
-          "bg-card border border-border/50 rounded-xl transition-all cursor-pointer hover:border-border border-l-4 border-l-red-500",
+          "bg-card border border-border/50 rounded-xl transition-all cursor-pointer hover:border-border border-l-4",
+          isActive ? "border-l-green-500" : "border-l-red-500",
           !isActive && "opacity-60"
         )}
         onClick={(e) => {
