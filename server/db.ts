@@ -5007,7 +5007,7 @@ export async function updateTableStatus(
   id: number, 
   status: "free" | "occupied" | "reserved" | "requesting_bill",
   guests?: number,
-  reservationData?: { reservedName?: string; reservedPhone?: string; reservedFor?: Date | null }
+  reservationData?: { reservedName?: string; reservedPhone?: string; reservedFor?: Date | null; reservedGuests?: number }
 ): Promise<void> {
   const db = await getDb();
   if (!db) return;
@@ -5023,10 +5023,12 @@ export async function updateTableStatus(
     updateData.reservedFor = null;
     updateData.reservedName = null;
     updateData.reservedPhone = null;
+    updateData.reservedGuests = null;
   } else if (status === "reserved") {
     updateData.reservedName = reservationData?.reservedName || null;
     updateData.reservedPhone = reservationData?.reservedPhone || null;
     updateData.reservedFor = reservationData?.reservedFor || null;
+    updateData.reservedGuests = reservationData?.reservedGuests || null;
   }
   
   await db.update(tables)

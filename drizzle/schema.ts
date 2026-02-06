@@ -634,6 +634,7 @@ export const tables = mysqlTable("tables", {
   reservedFor: timestamp("reservedFor"), // Horário da reserva (se reservada)
   reservedName: varchar("reservedName", { length: 255 }), // Nome da reserva
   reservedPhone: varchar("reservedPhone", { length: 30 }), // Telefone da reserva
+  reservedGuests: int("reservedGuests"), // Quantidade de pessoas da reserva
   isActive: boolean("isActive").default(true).notNull(), // Se a mesa está ativa
   sortOrder: int("sortOrder").default(0).notNull(), // Ordem de exibição
   // Campos para mesas combinadas

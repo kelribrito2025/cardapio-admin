@@ -97,6 +97,7 @@ interface Table {
   reservedFor?: Date | string | null;
   reservedName?: string | null;
   reservedPhone?: string | null;
+  reservedGuests?: number | null;
   spaceId?: number | null;
   // Campos para mesas combinadas
   mergedIntoId?: number | null;
@@ -274,6 +275,7 @@ export default function MesasComandas() {
   const [reserveName, setReserveName] = useState("");
   const [reservePhone, setReservePhone] = useState("");
   const [reserveTime, setReserveTime] = useState("");
+  const [reserveGuests, setReserveGuests] = useState("");
   
   // Estado para forçar re-render do timer de ocupação das mesas a cada minuto
   const [, setTimerTick] = useState(0);
@@ -627,6 +629,7 @@ export default function MesasComandas() {
     setReserveName("");
     setReservePhone("");
     setReserveTime("");
+    setReserveGuests("");
     setShowReserveDialog(true);
   };
 
@@ -642,6 +645,7 @@ export default function MesasComandas() {
       reservedName: reserveName || undefined,
       reservedPhone: reservePhone || undefined,
       reservedFor: reservedFor,
+      reservedGuests: reserveGuests ? parseInt(reserveGuests) : undefined,
     }, {
       onSuccess: () => {
         toast.success(`Mesa ${reserveTableNumber} reservada!`);
@@ -1194,12 +1198,18 @@ export default function MesasComandas() {
                             <span className="truncate">{table.reservedName}</span>
                           </div>
                         )}
+                        {table.reservedGuests && (
+                          <div className="flex items-center gap-1">
+                            <Users className="h-3.5 w-3.5" />
+                            <span>{table.reservedGuests} {table.reservedGuests === 1 ? 'pessoa' : 'pessoas'}</span>
+                          </div>
+                        )}
                         {table.reservedFor && (
                           <div className={cn("font-semibold", statusConfig.textColor)}>
                             {formatTime(table.reservedFor)}
                           </div>
                         )}
-                        {!table.reservedName && !table.reservedFor && (
+                        {!table.reservedName && !table.reservedGuests && !table.reservedFor && (
                           <div className="flex items-center gap-1">
                             <Users className="h-3.5 w-3.5" />
                             <span>{table.currentGuests || table.capacity}</span>
@@ -1640,6 +1650,20 @@ export default function MesasComandas() {
                   type="time"
                   value={reserveTime}
                   onChange={(e) => setReserveTime(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700">Quantidade de pessoas</label>
+              <div className="relative mt-1">
+                <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  type="number"
+                  min="1"
+                  value={reserveGuests}
+                  onChange={(e) => setReserveGuests(e.target.value)}
+                  placeholder="Ex: 4"
                   className="pl-9"
                 />
               </div>

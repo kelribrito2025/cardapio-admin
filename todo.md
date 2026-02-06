@@ -5429,3 +5429,9 @@
 
 ## Bug: Atalhos de Mesa no PDV não mostram cor azul para mesas reservadas
 - [x] Corrigir atalhos de mesa no PDV Slidebar para exibir cor azul quando mesa está reservada
+
+## Campo Quantidade de Pessoas na Reserva
+- [x] Adicionar campo reservedGuests no schema de tables
+- [x] Atualizar backend (db.ts e routers.ts) para aceitar reservedGuests
+- [x] Adicionar campo "Quantidade de pessoas" no modal de reserva no frontend
+- [x] Exibir quantidade de pessoas no card de mesa reservada

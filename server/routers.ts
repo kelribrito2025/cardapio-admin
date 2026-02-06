@@ -3088,12 +3088,14 @@ export const appRouter = router({
         reservedName: z.string().optional(),
         reservedPhone: z.string().optional(),
         reservedFor: z.string().optional(), // ISO string
+        reservedGuests: z.number().optional(),
       }))
       .mutation(async ({ input }) => {
         const reservationData = input.status === "reserved" ? {
           reservedName: input.reservedName,
           reservedPhone: input.reservedPhone,
           reservedFor: input.reservedFor ? new Date(input.reservedFor) : null,
+          reservedGuests: input.reservedGuests,
         } : undefined;
         await db.updateTableStatus(input.id, input.status, input.guests, reservationData);
         return { success: true };
