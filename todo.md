@@ -5474,3 +5474,8 @@
 
 ## Borda Dinâmica nos Complementos
 - [x] Aplicar borda dinâmica por status nos cards de Complementos (verde=ativo, vermelho=pausado)
+
+## Meta Tags Open Graph para Cardápio Público
+- [x] Implementar meta tags OG dinâmicas no servidor para rotas /menu/:slug
+- [x] Exibir nome do restaurante, descrição e logo/banner como og:image
+- [x] Manter meta tags padrão do admin para outras rotas
