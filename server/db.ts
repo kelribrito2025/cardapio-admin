@@ -1,4 +1,4 @@
-import { eq, desc, asc, and, like, sql, gte, lte, lt, or, ne, inArray, isNotNull } from "drizzle-orm";
+import { eq, desc, asc, and, like, notLike, sql, gte, lte, lt, or, ne, inArray, isNotNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate, notifyPrintOrder } from "./_core/sse";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
@@ -2259,12 +2259,18 @@ export async function getCouponsByEstablishment(
     status?: "active" | "inactive" | "expired" | "exhausted";
     limit?: number;
     offset?: number;
+    includeLoyalty?: boolean;
   }
 ) {
   const db = await getDb();
   if (!db) return { coupons: [], total: 0 };
   
   const conditions = [eq(coupons.establishmentId, establishmentId)];
+  
+  // Excluir cupons de fidelidade (código começa com FID) da listagem do admin
+  if (!filters?.includeLoyalty) {
+    conditions.push(notLike(coupons.code, 'FID%'));
+  }
   
   if (filters?.search) {
     conditions.push(like(coupons.code, `%${filters.search}%`));

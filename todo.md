@@ -5482,3 +5482,6 @@
 ## Correções Visuais dos Cards de Cupons
 - [x] Remover ícone % duplicado no card de cupom (manter apenas "10% Percentual")
 - [x] Tornar detalhes do cupom colapsáveis (dropdown ao clicar no card)
+
+## Filtro de Cupons na Página de Cupons
+- [x] Exibir apenas cupons criados manualmente na página de Cupons (excluir cupons de fidelidade)
