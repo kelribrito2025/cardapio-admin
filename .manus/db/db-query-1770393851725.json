@@ -1,0 +1,26 @@
+{
+  "query": "SELECT id, orderNumber, status, source, createdAt, updatedAt FROM orders WHERE establishmentId = 30001 ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, status, source, createdAt, updatedAt FROM orders WHERE establishmentId = 30001 ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "390038",
+      "orderNumber": "#P2",
+      "status": "preparing",
+      "source": "internal",
+      "createdAt": "2026-02-06 16:01:14",
+      "updatedAt": "2026-02-06 16:01:32"
+    },
+    {
+      "id": "390037",
+      "orderNumber": "#P1",
+      "status": "preparing",
+      "source": "internal",
+      "createdAt": "2026-02-06 15:59:52",
+      "updatedAt": "2026-02-06 16:00:03"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tstatus\tsource\tcreatedAt\tupdatedAt\n390038\t#P2\tpreparing\tinternal\t2026-02-06 16:01:14\t2026-02-06 16:01:32\n390037\t#P1\tpreparing\tinternal\t2026-02-06 15:59:52\t2026-02-06 16:00:03\n",
+  "stderr": "",
+  "execution_time_ms": 133
+}

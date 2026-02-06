@@ -5431,3 +5431,4 @@
 - [x] Auto-aceite: imprimir via rede server-side em vez de abrir Multi Printer (eliminar popup Android)
 - [x] Criar procedure tRPC para impressão server-side via rede
 - [x] Ajustar auto-aceite server-side para priorizar frontend e usar impressão via rede como fallback
+- [x] Bug CRÍTICO: pedidos do cardápio público vão direto para 'preparing' sem aparecer em 'Novos' - corrigido: countdown agora começa quando pedido aparece na tela (firstSeen), não desde createdAt

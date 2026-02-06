@@ -333,6 +333,9 @@ export default function Pedidos() {
   // ============ AUTO-ACCEPT TIMER (estados) ============
   const [autoAcceptCountdowns, setAutoAcceptCountdowns] = useState<Record<number, number>>({});
   const autoAcceptedRef = useRef<Set<number>>(new Set());
+  // Rastrear quando cada pedido foi visto pela primeira vez no frontend
+  // O countdown começa a partir deste momento, NÃO desde o createdAt
+  const orderFirstSeenRef = useRef<Map<number, number>>(new Map());
   const autoAcceptEnabled = printerSettings?.autoAcceptEnabled ?? false;
   const autoAcceptTimerSeconds = printerSettings?.autoAcceptTimerSeconds ?? 10;
   // Ref estável para allOrders para evitar loop infinito no useEffect do auto-accept
@@ -753,8 +756,15 @@ export default function Pedidos() {
       for (const order of currentNewOrders) {
         if (autoAcceptedRef.current.has(order.id)) continue;
         
-        const createdAt = new Date(order.createdAt).getTime();
-        const elapsed = (now - createdAt) / 1000;
+        // Registrar quando o pedido foi visto pela primeira vez no frontend
+        // O countdown começa a partir deste momento, garantindo que o usuário
+        // sempre veja o timer completo independente de quando o pedido foi criado
+        if (!orderFirstSeenRef.current.has(order.id)) {
+          orderFirstSeenRef.current.set(order.id, now);
+        }
+        
+        const firstSeen = orderFirstSeenRef.current.get(order.id)!;
+        const elapsed = (now - firstSeen) / 1000;
         const remaining = Math.max(0, Math.ceil(autoAcceptTimerSeconds - elapsed));
         countdowns[order.id] = remaining;
         
@@ -774,12 +784,18 @@ export default function Pedidos() {
     return () => clearInterval(interval);
   }, [autoAcceptEnabled, autoAcceptTimerSeconds]);
 
-  // Limpar pedidos auto-aceitos antigos do ref
+  // Limpar pedidos auto-aceitos antigos e firstSeen do ref
   useEffect(() => {
     const newOrderIds = new Set(allOrders.filter(o => o.status === 'new').map(o => o.id));
     autoAcceptedRef.current.forEach(id => {
       if (!newOrderIds.has(id)) {
         autoAcceptedRef.current.delete(id);
+      }
+    });
+    // Limpar firstSeen de pedidos que não são mais "new"
+    orderFirstSeenRef.current.forEach((_, id) => {
+      if (!newOrderIds.has(id)) {
+        orderFirstSeenRef.current.delete(id);
       }
     });
   }, [allOrders]);
