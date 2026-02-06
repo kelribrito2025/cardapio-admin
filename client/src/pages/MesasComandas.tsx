@@ -1017,7 +1017,7 @@ export default function MesasComandas() {
                   
                   {/* Espaço reservado para indicador de mesa combinada (mantém altura consistente) */}
                   <div className="min-h-[20px]">
-                  {isMergedTable && (
+                  {isMergedTable ? (
                     <div className="group/merged relative w-fit">
                       {/* Texto "Mesas unidas" - esconde no hover no desktop */}
                       <span className="text-xs text-blue-600 font-medium flex items-center gap-1 md:group-hover/merged:opacity-0 transition-opacity">
@@ -1054,7 +1054,7 @@ export default function MesasComandas() {
                         <span>Separar</span>
                       </span>
                     </div>
-                  )}
+                  ) : null}
                   </div>
                   
                   {/* Informações da mesa ocupada (com itens no carrinho ou comanda) */}
