@@ -5389,3 +5389,7 @@
 ## Desfazer Junção de Mesas
 - [x] Adicionar botão para separar mesas combinadas
 - [x] Restaurar mesas originais ao separar
+
+
+## Bug: Número da Mesa Combinada nos Pedidos
+- [x] Corrigir card do pedido para mostrar "Mesa 2-3-5" em vez de apenas "Mesa 2" para mesas combinadas

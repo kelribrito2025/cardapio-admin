@@ -3353,11 +3353,14 @@ export const appRouter = router({
         // Gerar número do pedido
         const orderNumber = Date.now().toString().slice(-6);
         
+        // Usar displayNumber para mesas combinadas, senão usar o número normal
+        const tableDisplayName = table.displayNumber || String(table.number);
+        
         // Criar o pedido na tabela orders
         await db.createOrder({
           establishmentId: establishment.id,
           orderNumber,
-          customerName: `Mesa ${table.number}`,
+          customerName: `Mesa ${tableDisplayName}`,
           customerPhone: "",
           customerAddress: "",
           deliveryType: "dine_in",
@@ -3366,7 +3369,7 @@ export const appRouter = router({
           deliveryFee: "0.00",
           discount: "0.00",
           total: subtotal.toFixed(2),
-          notes: `Comanda da Mesa ${table.number}`,
+          notes: `Comanda da Mesa ${tableDisplayName}`,
           status: "preparing",
           source: "pdv",
         }, input.items.map(item => ({

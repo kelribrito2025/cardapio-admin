@@ -5270,15 +5270,18 @@ export async function openTable(
     return { tableId, tabId: existingTab.id };
   }
   
+  // Usar displayNumber para mesas combinadas, senão usar o número normal
+  const tableDisplayName = table.displayNumber || String(table.number);
+  
   // Gerar número da comanda
-  const tabNumber = `M${table.number}-${Date.now().toString().slice(-6)}`;
+  const tabNumber = `M${tableDisplayName}-${Date.now().toString().slice(-6)}`;
   
   // Criar comanda
   const tabId = await createTab({
     establishmentId,
     tableId,
     tabNumber,
-    customerName: `Mesa ${table.number}`,
+    customerName: `Mesa ${tableDisplayName}`,
   });
   
   // Atualizar status da mesa
