@@ -5468,3 +5468,6 @@
 ## Borda Vermelha Lateral nos Cards
 - [x] Adicionar borda vermelha na lateral esquerda dos cards de Categorias
 - [x] Adicionar borda vermelha na lateral esquerda dos cards de Complementos
+
+## Cores Diferentes na Borda de Categorias
+- [x] Implementar borda dinâmica por status: verde para ativo, vermelha para pausado

@@ -134,7 +134,8 @@ function SortableCategoryItem({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "flex items-center gap-4 p-4 bg-card border border-border/50 rounded-xl hover:bg-muted/30 transition-colors border-l-4 border-l-red-500",
+        "flex items-center gap-4 p-4 bg-card border border-border/50 rounded-xl hover:bg-muted/30 transition-colors border-l-4",
+        isEffectivelyActive ? "border-l-green-500" : "border-l-red-500",
         isDragging && "shadow-lg",
         !isEffectivelyActive && "opacity-60"
       )}
