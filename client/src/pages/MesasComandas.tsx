@@ -1042,8 +1042,8 @@ export default function MesasComandas() {
                           }
                         }}
                         className={cn(
-                          "text-xs text-red-500 hover:text-red-600 hover:bg-red-50 px-1.5 py-0.5 rounded transition-all flex items-center gap-1 cursor-pointer",
-                          "md:absolute md:inset-0 md:opacity-0 md:group-hover/merged:opacity-100",
+                          "text-xs text-red-500 hover:text-red-600 hover:bg-red-50 px-1.5 py-0.5 rounded transition-all inline-flex items-center gap-1 cursor-pointer w-fit",
+                          "md:absolute md:top-0 md:left-0 md:opacity-0 md:group-hover/merged:opacity-100",
                           "max-md:mt-1",
                           splitTablesMutation.isPending && "opacity-50 cursor-not-allowed"
                         )}
