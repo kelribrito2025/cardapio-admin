@@ -5474,3 +5474,7 @@
 
 ## Borda Dinâmica nos Complementos
 - [x] Aplicar borda dinâmica por status nos cards de Complementos (verde=ativo, vermelho=pausado)
+
+## Layout Responsivo da Página de Cupons
+- [x] Exibir cupons em grade (grid) no desktop
+- [x] Exibir cupons em lista no mobile

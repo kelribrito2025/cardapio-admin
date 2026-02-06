@@ -65,6 +65,13 @@ const statusConfig: Record<CouponStatus, { label: string; color: string; bgColor
   exhausted: { label: "Esgotado", color: "text-red-700", bgColor: "bg-red-50", borderColor: "border-red-200", icon: <Ban className="h-3.5 w-3.5" /> },
 };
 
+const statusBorderLeft: Record<CouponStatus, string> = {
+  active: "border-l-green-500",
+  inactive: "border-l-gray-400",
+  expired: "border-l-orange-500",
+  exhausted: "border-l-red-500",
+};
+
 const dayLabels: Record<string, string> = {
   dom: "Dom",
   seg: "Seg",
@@ -178,6 +185,222 @@ export default function Cupons() {
   const expiredCoupons = coupons.filter((c: Coupon) => c.status === "expired").length;
   const exhaustedCoupons = coupons.filter((c: Coupon) => c.status === "exhausted").length;
 
+  // Dropdown de ações (reutilizado em ambos os layouts)
+  const renderActions = (coupon: Coupon) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="h-8 w-8">
+          <MoreVertical className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => navigate(`/cupons/${coupon.id}`)}>
+          <Edit className="h-4 w-4 mr-2" />
+          Editar
+        </DropdownMenuItem>
+        <DropdownMenuItem 
+          onClick={() => handleToggleStatus(coupon.id, coupon.status as CouponStatus)}
+          disabled={coupon.status === "expired" || coupon.status === "exhausted"}
+        >
+          {coupon.status === "active" ? (
+            <>
+              <ToggleLeft className="h-4 w-4 mr-2" />
+              Desativar
+            </>
+          ) : (
+            <>
+              <ToggleRight className="h-4 w-4 mr-2" />
+              Ativar
+            </>
+          )}
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem 
+          onClick={() => handleDelete(coupon.id)}
+          className="text-red-600 focus:text-red-600"
+        >
+          <Trash2 className="h-4 w-4 mr-2" />
+          Excluir
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  // Card mobile para cada cupom
+  const renderMobileCard = (coupon: Coupon) => {
+    const status = statusConfig[coupon.status as CouponStatus];
+    const borderLeft = statusBorderLeft[coupon.status as CouponStatus];
+    return (
+      <div
+        key={coupon.id}
+        className={`bg-card rounded-xl border border-border/50 border-l-4 ${borderLeft} p-4 cursor-pointer transition-all duration-200 hover:shadow-md active:scale-[0.99]`}
+        onClick={() => navigate(`/cupons/${coupon.id}`)}
+      >
+        {/* Topo: código + status + ações */}
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="p-1.5 bg-red-50 rounded shrink-0">
+              <Ticket className="h-4 w-4 text-red-600" />
+            </div>
+            <span className="font-mono font-bold text-base text-gray-900 truncate">{coupon.code}</span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <Badge 
+              variant="outline" 
+              className={`${status.bgColor} ${status.color} ${status.borderColor} gap-1 text-xs`}
+            >
+              {status.icon}
+              {status.label}
+            </Badge>
+            <div onClick={(e) => e.stopPropagation()}>
+              {renderActions(coupon)}
+            </div>
+          </div>
+        </div>
+
+        {/* Valor do desconto em destaque */}
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-1.5 bg-red-50 rounded-lg px-3 py-1.5">
+            {coupon.type === "percentage" ? (
+              <Percent className="h-4 w-4 text-red-600" />
+            ) : (
+              <DollarSign className="h-4 w-4 text-red-600" />
+            )}
+            <span className="font-bold text-lg text-red-600">
+              {coupon.type === "percentage" 
+                ? `${coupon.value}%` 
+                : formatCurrency(coupon.value)}
+            </span>
+          </div>
+          <span className="text-xs text-muted-foreground">
+            {coupon.type === "percentage" ? "Percentual" : "Valor fixo"}
+          </span>
+        </div>
+
+        {/* Detalhes em grid 2 colunas */}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+          <div>
+            <span className="text-muted-foreground text-xs">Máx. Desconto</span>
+            <p className="text-gray-700 font-medium">{formatCurrency(coupon.maxDiscount)}</p>
+          </div>
+          <div>
+            <span className="text-muted-foreground text-xs">Mín. Pedido</span>
+            <p className="text-gray-700 font-medium">{formatCurrency(coupon.minOrderValue)}</p>
+          </div>
+          <div>
+            <span className="text-muted-foreground text-xs flex items-center gap-1">
+              <Calendar className="h-3 w-3" /> Validade
+            </span>
+            <p className="text-gray-700 font-medium">{formatDateRange(coupon.startDate, coupon.endDate)}</p>
+          </div>
+          <div>
+            <span className="text-muted-foreground text-xs">Uso</span>
+            <p className="text-gray-700 font-medium">
+              {coupon.usedCount}
+              {coupon.quantity && `/${coupon.quantity}`}
+            </p>
+          </div>
+          <div>
+            <span className="text-muted-foreground text-xs">Dias</span>
+            <p className="text-gray-700 font-medium">{formatActiveDays(coupon.activeDays)}</p>
+          </div>
+          <div>
+            <span className="text-muted-foreground text-xs">Origem</span>
+            <p className="text-gray-700 font-medium">{formatValidOrigins(coupon.validOrigins)}</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Card desktop para grid
+  const renderDesktopCard = (coupon: Coupon) => {
+    const status = statusConfig[coupon.status as CouponStatus];
+    const borderLeft = statusBorderLeft[coupon.status as CouponStatus];
+    return (
+      <div
+        key={coupon.id}
+        className={`bg-card rounded-xl border border-border/50 border-l-4 ${borderLeft} p-5 cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5`}
+        onClick={() => navigate(`/cupons/${coupon.id}`)}
+      >
+        {/* Topo: código + ações */}
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="p-1.5 bg-red-50 rounded shrink-0">
+              <Ticket className="h-4 w-4 text-red-600" />
+            </div>
+            <span className="font-mono font-bold text-base text-gray-900 truncate">{coupon.code}</span>
+          </div>
+          <div onClick={(e) => e.stopPropagation()}>
+            {renderActions(coupon)}
+          </div>
+        </div>
+
+        {/* Valor do desconto + status */}
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex items-center gap-1.5 bg-red-50 rounded-lg px-3 py-1.5">
+            {coupon.type === "percentage" ? (
+              <Percent className="h-4 w-4 text-red-600" />
+            ) : (
+              <DollarSign className="h-4 w-4 text-red-600" />
+            )}
+            <span className="font-bold text-xl text-red-600">
+              {coupon.type === "percentage" 
+                ? `${coupon.value}%` 
+                : formatCurrency(coupon.value)}
+            </span>
+            <span className="text-xs text-muted-foreground ml-1">
+              {coupon.type === "percentage" ? "Percentual" : "Valor fixo"}
+            </span>
+          </div>
+          <Badge 
+            variant="outline" 
+            className={`${status.bgColor} ${status.color} ${status.borderColor} gap-1`}
+          >
+            {status.icon}
+            {status.label}
+          </Badge>
+        </div>
+
+        {/* Separador */}
+        <div className="border-t border-border/50 mb-3" />
+
+        {/* Detalhes */}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
+          <div>
+            <span className="text-muted-foreground text-xs">Máx. Desconto</span>
+            <p className="text-gray-700 font-medium">{formatCurrency(coupon.maxDiscount)}</p>
+          </div>
+          <div>
+            <span className="text-muted-foreground text-xs">Mín. Pedido</span>
+            <p className="text-gray-700 font-medium">{formatCurrency(coupon.minOrderValue)}</p>
+          </div>
+          <div>
+            <span className="text-muted-foreground text-xs flex items-center gap-1">
+              <Calendar className="h-3 w-3" /> Validade
+            </span>
+            <p className="text-gray-700 font-medium">{formatDateRange(coupon.startDate, coupon.endDate)}</p>
+          </div>
+          <div>
+            <span className="text-muted-foreground text-xs">Uso</span>
+            <p className="text-gray-700 font-medium">
+              {coupon.usedCount}
+              {coupon.quantity && `/${coupon.quantity}`}
+            </p>
+          </div>
+          <div>
+            <span className="text-muted-foreground text-xs">Dias</span>
+            <p className="text-gray-700 font-medium">{formatActiveDays(coupon.activeDays)}</p>
+          </div>
+          <div>
+            <span className="text-muted-foreground text-xs">Origem</span>
+            <p className="text-gray-700 font-medium">{formatValidOrigins(coupon.validOrigins)}</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-5">
@@ -268,16 +491,16 @@ export default function Cupons() {
           />
         </div>
 
-        {/* Table */}
-        <Card className="shadow-none" style={{paddingTop: '0px', paddingBottom: '0px'}}>
-          <CardContent className="p-0">
-            {isLoading ? (
-              <div className="p-4 space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-12 w-full" />
-                ))}
-              </div>
-            ) : coupons.length === 0 ? (
+        {/* Conteúdo: Loading / Empty / Cupons */}
+        {isLoading ? (
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-32 w-full rounded-xl" />
+            ))}
+          </div>
+        ) : coupons.length === 0 ? (
+          <Card className="shadow-none" style={{paddingTop: '0px', paddingBottom: '0px'}}>
+            <CardContent className="p-0">
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <div className="p-3 bg-gray-100 rounded-full mb-3">
                   <Ticket className="h-6 w-6 text-gray-400" />
@@ -293,144 +516,21 @@ export default function Cupons() {
                   </Button>
                 )}
               </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-gray-50/50">
-                      <TableHead className="font-medium">Código</TableHead>
-                      <TableHead className="font-medium">Tipo</TableHead>
-                      <TableHead className="font-medium">Valor</TableHead>
-                      <TableHead className="font-medium">Máx. Desconto</TableHead>
-                      <TableHead className="font-medium">Mín. Pedido</TableHead>
-                      <TableHead className="font-medium">Validade</TableHead>
-                      <TableHead className="font-medium">Dias</TableHead>
-                      <TableHead className="font-medium">Origem</TableHead>
-                      <TableHead className="font-medium">Status</TableHead>
-                      <TableHead className="font-medium">Uso</TableHead>
-                      <TableHead className="font-medium w-[50px]"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {coupons.map((coupon: Coupon) => {
-                      const status = statusConfig[coupon.status as CouponStatus];
-                      return (
-                        <TableRow 
-                          key={coupon.id} 
-                          className="cursor-pointer hover:bg-gray-50/50"
-                          onClick={() => navigate(`/cupons/${coupon.id}`)}
-                        >
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <div className="p-1.5 bg-red-50 rounded">
-                                <Ticket className="h-3.5 w-3.5 text-red-600" />
-                              </div>
-                              <span className="font-mono font-medium text-gray-900">{coupon.code}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1.5">
-                              {coupon.type === "percentage" ? (
-                                <>
-                                  <Percent className="h-3.5 w-3.5 text-gray-400" />
-                                  <span className="text-sm text-gray-600">Percentual</span>
-                                </>
-                              ) : (
-                                <>
-                                  <DollarSign className="h-3.5 w-3.5 text-gray-400" />
-                                  <span className="text-sm text-gray-600">Valor fixo</span>
-                                </>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <span className="font-medium text-gray-900">
-                              {coupon.type === "percentage" 
-                                ? `${coupon.value}%` 
-                                : formatCurrency(coupon.value)}
-                            </span>
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-600">
-                            {formatCurrency(coupon.maxDiscount)}
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-600">
-                            {formatCurrency(coupon.minOrderValue)}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1.5 text-sm text-gray-600">
-                              <Calendar className="h-3.5 w-3.5 text-gray-400" />
-                              {formatDateRange(coupon.startDate, coupon.endDate)}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-600">
-                            {formatActiveDays(coupon.activeDays)}
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-600">
-                            {formatValidOrigins(coupon.validOrigins)}
-                          </TableCell>
-                          <TableCell>
-                            <Badge 
-                              variant="outline" 
-                              className={`${status.bgColor} ${status.color} ${status.borderColor} gap-1`}
-                            >
-                              {status.icon}
-                              {status.label}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <span className="text-sm text-gray-600">
-                              {coupon.usedCount}
-                              {coupon.quantity && `/${coupon.quantity}`}
-                            </span>
-                          </TableCell>
-                          <TableCell onClick={(e) => e.stopPropagation()}>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                  <MoreVertical className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => navigate(`/cupons/${coupon.id}`)}>
-                                  <Edit className="h-4 w-4 mr-2" />
-                                  Editar
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  onClick={() => handleToggleStatus(coupon.id, coupon.status as CouponStatus)}
-                                  disabled={coupon.status === "expired" || coupon.status === "exhausted"}
-                                >
-                                  {coupon.status === "active" ? (
-                                    <>
-                                      <ToggleLeft className="h-4 w-4 mr-2" />
-                                      Desativar
-                                    </>
-                                  ) : (
-                                    <>
-                                      <ToggleRight className="h-4 w-4 mr-2" />
-                                      Ativar
-                                    </>
-                                  )}
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem 
-                                  onClick={() => handleDelete(coupon.id)}
-                                  className="text-red-600 focus:text-red-600"
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Excluir
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            {/* Desktop: Grid de cards (hidden no mobile) */}
+            <div className="hidden md:grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {coupons.map((coupon: Coupon) => renderDesktopCard(coupon))}
+            </div>
+
+            {/* Mobile: Lista de cards (hidden no desktop) */}
+            <div className="md:hidden space-y-3">
+              {coupons.map((coupon: Coupon) => renderMobileCard(coupon))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Delete Confirmation Dialog */}
