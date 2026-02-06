@@ -1731,6 +1731,8 @@ export default function PDV() {
       {/* Sidebar de Entrega usando Sheet do shadcn/ui */}
       <Sheet open={showDeliverySidebar} onOpenChange={setShowDeliverySidebar}>
         <SheetContent side="right" className="w-[371px] sm:max-w-[371px] p-0 flex flex-col" hideCloseButton>
+          <SheetTitle className="sr-only">Dados da Entrega</SheetTitle>
+          <SheetDescription className="sr-only">Preencha os dados para entrega</SheetDescription>
           {/* Header */}
           <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
             <div className="flex items-center justify-between">
@@ -2199,6 +2201,8 @@ export default function PDV() {
         }
       }}>
         <SheetContent side="right" className="w-[371px] sm:max-w-[371px] p-0 flex flex-col" hideCloseButton>
+          <SheetTitle className="sr-only">Forma de Pagamento</SheetTitle>
+          <SheetDescription className="sr-only">Selecione como o cliente vai pagar</SheetDescription>
           {/* Header */}
           <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
             <div className="flex items-center justify-between">
