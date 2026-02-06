@@ -998,25 +998,17 @@ export default function MesasComandas() {
                   onClick={() => handleTableClick(table)}
                   className={cn(
                     "bg-white rounded-xl border border-border/50 p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
-                    "border-l-4",
+                    "border-l-4 min-h-[120px]",
                     statusConfig.borderColor,
                     isDragging && "opacity-50 scale-95",
                     isDropTarget && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50"
                   )}
                 >
                   <div className="flex items-start justify-between">
-                    <span className="text-3xl font-bold text-gray-900">{displayNumber}</span>
-                    {/* Contador de tempo para mesas ocupadas */}
-                    {hasItems && table.occupiedAt && (
-                      <div className="flex items-center gap-1 text-sm text-gray-600">
-                        <Clock className="h-3.5 w-3.5" />
-                        <span>{formatDuration(table.occupiedAt)}</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Espaço reservado para indicador de mesa combinada (mantém altura consistente) */}
-                  <div className="min-h-[20px]">
+                    <div>
+                      <span className="text-3xl font-bold text-gray-900">{displayNumber}</span>
+                      {/* Espaço reservado para indicador de mesa combinada (mantém altura consistente) */}
+                      <div className="min-h-[20px]">
                   {isMergedTable ? (
                     <div className="group/merged relative w-fit">
                       {/* Texto "Mesas unidas" - esconde no hover no desktop */}
@@ -1055,6 +1047,15 @@ export default function MesasComandas() {
                       </span>
                     </div>
                   ) : null}
+                      </div>
+                    </div>
+                    {/* Contador de tempo para mesas ocupadas */}
+                    {hasItems && table.occupiedAt && (
+                      <div className="flex items-center gap-1 text-sm text-gray-600">
+                        <Clock className="h-3.5 w-3.5" />
+                        <span>{formatDuration(table.occupiedAt)}</span>
+                      </div>
+                    )}
                   </div>
                   
                   {/* Informações da mesa ocupada (com itens no carrinho ou comanda) */}
