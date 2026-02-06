@@ -5474,14 +5474,3 @@
 
 ## Borda Dinâmica nos Complementos
 - [x] Aplicar borda dinâmica por status nos cards de Complementos (verde=ativo, vermelho=pausado)
-
-## Meta Tags Open Graph para Cardápio Público
-- [x] Implementar meta tags OG dinâmicas no servidor para rotas /menu/:slug
-- [x] Exibir nome do restaurante, descrição e logo/banner como og:image
-- [x] Manter meta tags padrão do admin para outras rotas
-
-## Melhorias Open Graph - Fase 2
-- [x] Adicionar tag og:url com URL canônica (https://v2.mindi.com.br/menu/:slug)
-- [x] Gerar imagem OG personalizada com nome do restaurante sobre a capa
-- [x] Endpoint server-side para gerar imagem OG dinâmica (/api/og-image/:slug)
-- [x] Integrar imagem OG gerada nas meta tags existentes

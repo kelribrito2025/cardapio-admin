@@ -9,7 +9,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, sendAllOrdersHeartbeat } from "./sse";
-import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrderById, getOrderItems, getOrderItemsWithPrinter, getEstablishmentById, getEstablishmentBySlug, getPrinterSettings, getActivePrinters, getTabById, getTabItems, getTableById } from "../db";
+import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrderById, getOrderItems, getOrderItemsWithPrinter, getEstablishmentById, getPrinterSettings, getActivePrinters, getTabById, getTabItems, getTableById } from "../db";
 import { sdk } from "./sdk";
 
 // Função para gerar HTML do recibo otimizado para impressora térmica
@@ -2173,37 +2173,6 @@ async function startServer() {
     } catch (error) {
       console.error('[iFood Webhook] Erro:', error);
       res.status(200).json({ success: false, error: 'Internal error' });
-    }
-  });
-
-  // Endpoint para gerar imagem OG dinâmica para compartilhamento em redes sociais
-  app.get("/api/og-image/:slug", async (req, res) => {
-    try {
-      const slug = req.params.slug;
-      if (!slug) {
-        res.status(400).json({ error: "Slug é obrigatório" });
-        return;
-      }
-
-      const establishment = await getEstablishmentBySlug(slug);
-      if (!establishment) {
-        res.status(404).json({ error: "Estabelecimento não encontrado" });
-        return;
-      }
-
-      const { generateOgImage } = await import("../ogImage");
-      const imageBuffer = await generateOgImage(establishment);
-
-      // Cache por 1 hora, stale-while-revalidate por 24h
-      res.set({
-        "Content-Type": "image/png",
-        "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
-        "Content-Length": imageBuffer.length.toString(),
-      });
-      res.end(imageBuffer);
-    } catch (error) {
-      console.error("[OG Image] Erro ao gerar imagem:", error);
-      res.status(500).json({ error: "Erro ao gerar imagem" });
     }
   });
 
