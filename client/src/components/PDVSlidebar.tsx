@@ -1238,10 +1238,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   {tables
                     .filter(table => !table.mergedIntoId) // Ocultar mesas juntadas
                     .map((table) => {
-                    // Status baseado em itens no carrinho da mesa OU na comanda
-                    const cartItemsCount = cartsPerTable[table.id]?.length || 0;
+                    // Status baseado apenas em itens enviados (comanda), não carrinho local
                     const tabItemsCount = table.tabItemsCount || 0;
-                    const tableHasItems = cartItemsCount > 0 || tabItemsCount > 0;
+                    const tableHasItems = tabItemsCount > 0;
                     const displayNum = table.displayNumber || table.number.toString();
                     return (
                       <button
@@ -1299,9 +1298,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                 {tables
                   .filter(table => !table.mergedIntoId)
                   .map((table) => {
-                  const cartItemsCount = cartsPerTable[table.id]?.length || 0;
+                  // Status baseado apenas em itens enviados (comanda), não carrinho local
                   const tabItemsCount = table.tabItemsCount || 0;
-                  const tableHasItems = cartItemsCount > 0 || tabItemsCount > 0;
+                  const tableHasItems = tabItemsCount > 0;
                   const displayNum = table.displayNumber || table.number.toString();
                   return (
                     <button

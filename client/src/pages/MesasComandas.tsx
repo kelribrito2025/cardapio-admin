@@ -217,35 +217,25 @@ export default function MesasComandas() {
     };
   }, []);
 
-  // Função para verificar se mesa tem itens (carrinho local ou comanda)
+  // Função para verificar se mesa tem itens (apenas itens enviados/comanda, não carrinho local)
   const tableHasItems = (tableId: number) => {
-    const cartItems = cartsPerTable[tableId]?.length || 0;
     const table = tables.find(t => t.id === tableId);
     const tabItems = table?.items?.length || 0;
-    return cartItems > 0 || tabItems > 0;
+    return tabItems > 0;
   };
 
-  // Função para obter total de itens da mesa (carrinho + comanda)
+  // Função para obter total de itens da mesa (apenas itens enviados/comanda)
   const getTableItemsCount = (tableId: number) => {
-    const cartItems = cartsPerTable[tableId]?.length || 0;
     const table = tables.find(t => t.id === tableId);
     const tabItems = table?.items?.length || 0;
-    return cartItems + tabItems;
+    return tabItems;
   };
 
-  // Função para calcular total da mesa (carrinho + comanda)
+  // Função para calcular total da mesa (apenas itens enviados/comanda)
   const getTableTotal = (tableId: number) => {
-    const cartItems = cartsPerTable[tableId] || [];
-    const cartTotal = cartItems.reduce((sum, item) => {
-      const itemPrice = parseFloat(item.price);
-      const complementsPrice = item.complements.reduce((s, c) => s + parseFloat(c.price) * c.quantity, 0);
-      return sum + (itemPrice + complementsPrice) * item.quantity;
-    }, 0);
-    
     const table = tables.find(t => t.id === tableId);
     const tabTotal = table?.items?.reduce((sum, item) => sum + parseFloat(item.totalPrice), 0) || 0;
-    
-    return cartTotal + tabTotal;
+    return tabTotal;
   };
 
   // Função para obter status derivado da mesa
@@ -478,22 +468,14 @@ export default function MesasComandas() {
     let totalRevenue = 0;
     
     tables.forEach((t) => {
-      const cartItemsCount = cartsPerTable[t.id]?.length || 0;
       const tabItemsCount = t.items?.length || 0;
-      const hasItems = cartItemsCount > 0 || tabItemsCount > 0;
+      const hasItems = tabItemsCount > 0;
       
       if (hasItems) {
         occupied++;
-        // Calcular total do carrinho
-        const cartItems = cartsPerTable[t.id] || [];
-        const cartTotal = cartItems.reduce((sum, item) => {
-          const itemPrice = parseFloat(item.price);
-          const complementsPrice = item.complements.reduce((s, c) => s + parseFloat(c.price) * c.quantity, 0);
-          return sum + (itemPrice + complementsPrice) * item.quantity;
-        }, 0);
-        // Calcular total da comanda
+        // Calcular total da comanda (apenas itens enviados)
         const tabTotal = t.items?.reduce((sum, item) => sum + parseFloat(item.totalPrice), 0) || 0;
-        totalRevenue += cartTotal + tabTotal;
+        totalRevenue += tabTotal;
       } else if (t.status === "reserved") {
         reserved++;
       } else {
@@ -509,9 +491,9 @@ export default function MesasComandas() {
       reserved,
       totalRevenue,
       avgTicket,
-      avgTimeMinutes: 0, // Não temos mais tempo de ocupação
+      avgTimeMinutes: 0,
     };
-  }, [tables, cartsPerTable]);
+  }, [tables]);
 
   // Contagem de mesas por status (para a legenda) - usando status derivado
   const statusCounts = useMemo(() => {
@@ -520,10 +502,9 @@ export default function MesasComandas() {
     let reserved = 0;
     
     tables.forEach((t) => {
-      // Verificar itens no carrinho local E na comanda
-      const cartItems = cartsPerTable[t.id]?.length || 0;
+      // Verificar apenas itens enviados (comanda), não carrinho local
       const tabItems = t.items?.length || 0;
-      const hasItems = cartItems > 0 || tabItems > 0;
+      const hasItems = tabItems > 0;
       
       if (hasItems) {
         occupied++;
@@ -535,7 +516,7 @@ export default function MesasComandas() {
     });
     
     return { free, occupied, reserved };
-  }, [tables, cartsPerTable]);
+  }, [tables]);
 
   // Filtrar mesas por espaço e status (usando status derivado)
   const filteredTables = useMemo(() => {
@@ -552,7 +533,7 @@ export default function MesasComandas() {
       const matchesSearch = searchQuery === "" || displayNum.includes(searchQuery) || table.number.toString().includes(searchQuery);
       return matchesSpace && matchesStatus && matchesSearch;
     });
-  }, [tables, selectedSpaceId, statusFilter, searchQuery, cartsPerTable]);
+  }, [tables, selectedSpaceId, statusFilter, searchQuery]);
 
   // Contagem de mesas por espaço
   const spaceTablesCount = useMemo(() => {

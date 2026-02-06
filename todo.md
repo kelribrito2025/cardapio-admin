@@ -5412,3 +5412,4 @@
 - [x] Corrigir modal de Configuração da Aba que aparece duplicado (aba atrás da aba)
 - [x] PDV: mover botões Mesa e Comanda para a linha do campo de busca, liberando espaço para categorias/atalhos
 - [x] PDV: atalhos de mesa full-width acima das duas colunas, descer botões Mesa/Comanda no carrinho
+- [x] Mesas: cards de mesa só devem mostrar itens após envio do pedido, não quando adicionados no carrinho do PDV
