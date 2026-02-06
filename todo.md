@@ -5432,3 +5432,6 @@
 - [x] Verificar como a impressão é disparada no auto-aceite (frontend vs backend)
 - [x] Ajustar para priorizar impressão direta via rede (porta 9100) quando configurada
 - [x] Eliminar dependência do app Multi Printer no auto-aceite quando impressão direta disponível
+
+## Bug Fix
+- [x] Corrigir "Maximum update depth exceeded" na página /pedidos (setState em loop infinito na linha ~578)
