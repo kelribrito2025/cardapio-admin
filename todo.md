@@ -5380,3 +5380,7 @@
 - [x] Nome no formato menor-maior (ex: 3-4-5)
 - [x] Itens unificados em uma única comanda
 - [x] Indicador visual "Mesas unidas" no card
+
+
+## Bug: Título da Mesa Combinada no PDVSlidebar
+- [x] Corrigir título "Mesa 3" para mostrar "Mesa 3-4-5" quando for mesa combinada

@@ -1449,6 +1449,7 @@ export default function MesasComandas() {
         tabId={selectedTable?.tab?.id}
         onOrderCreated={handleOrderCreated}
         showHandle={true}
+        displayNumber={selectedTable?.displayNumber}
         tables={tables.map(t => ({
           id: t.id,
           number: t.number,

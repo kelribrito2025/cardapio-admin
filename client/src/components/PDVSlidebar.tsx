@@ -130,9 +130,12 @@ interface PDVSlidebarProps {
   showHandle?: boolean;
   tables?: TableShortcut[];
   onTableChange?: (table: TableShortcut) => void;
+  displayNumber?: string | null; // Número de exibição para mesas combinadas (ex: "3-4-5")
 }
 
-export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, tabId, onOrderCreated, showHandle = false, tables = [], onTableChange }: PDVSlidebarProps) {
+export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, tabId, onOrderCreated, showHandle = false, tables = [], onTableChange, displayNumber }: PDVSlidebarProps) {
+  // Número de exibição da mesa (usa displayNumber se for mesa combinada, senão usa tableNumber)
+  const tableDisplayName = displayNumber || tableNumber.toString();
   const { data: establishment } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
 
@@ -843,7 +846,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   // Mutation para fechar mesa
   const closeTableMutation = trpc.tables.close.useMutation({
     onSuccess: () => {
-      toast.success(`Mesa ${tableNumber} fechada com sucesso!`);
+      toast.success(`Mesa ${tableDisplayName} fechada com sucesso!`);
       clearCartSilent();
       onOrderCreated?.();
       onClose?.();
@@ -1527,7 +1530,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   )}
                 >
                   <UtensilsCrossed className="h-4 w-4" />
-                  <span className="text-sm font-medium">Mesa {tableNumber}</span>
+                  <span className="text-sm font-medium">Mesa {tableDisplayName}</span>
                 </button>
 
                 {/* Comanda - aba Comanda (desabilitado se não houver comanda aberta) */}
@@ -1937,7 +1940,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   {(createOrderMutation.isPending || addTabItemsMutation.isPending || openTableMutation.isPending || closeTableMutation.isPending) 
                     ? (closeTableMutation.isPending ? "Fechando..." : "Enviando...") 
                     : selectedTab === 'comanda' 
-                      ? `Fechar Mesa ${tableNumber}` 
+                      ? `Fechar Mesa ${tableDisplayName}` 
                       : "Enviar pedido"}
                 </Button>
               </div>
@@ -2340,7 +2343,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   </div>
                 </div>
                 <div className="bg-black text-white text-xs font-bold px-3 py-1.5 uppercase tracking-wider">
-                  Mesa {tableNumber}
+                  Mesa {tableDisplayName}
                 </div>
               </div>
               
@@ -2420,7 +2423,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               <div className="border-2 border-black rounded-lg p-3">
                 <div className="flex justify-between items-center">
                   <span className="font-bold flex items-center gap-1">⭐ Cliente</span>
-                  <span className="font-bold">Mesa {tableNumber}</span>
+                  <span className="font-bold">Mesa {tableDisplayName}</span>
                 </div>
               </div>
               
