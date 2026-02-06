@@ -421,6 +421,13 @@
       "when": 1770341295008,
       "tag": "0059_same_tinkerer",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "5",
+      "when": 1770388396555,
+      "tag": "0060_amused_slyde",
+      "breakpoints": true
     }
   ]
 }

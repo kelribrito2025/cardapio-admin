@@ -2144,6 +2144,8 @@ export const appRouter = router({
           obsFontWeight: 500,
           showDividers: true,
           defaultPrintMethod: 'normal' as const,
+          autoAcceptEnabled: false,
+          autoAcceptTimerSeconds: 10,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -2183,9 +2185,14 @@ export const appRouter = router({
         itemBorderStyle: z.enum(['rounded', 'dashed']).optional(),
         defaultPrintMethod: z.enum(['normal', 'android']).optional(),
         htmlPrintEnabled: z.boolean().optional(),
+        autoAcceptEnabled: z.boolean().optional(),
+        autoAcceptTimerSeconds: z.number().min(5).max(30).optional(),
       }))
       .mutation(async ({ input }) => {
         await db.upsertPrinterSettings(input);
+        // Invalidar cache de auto-aceite quando configuracoes mudam
+        const { invalidateAutoAcceptCache } = await import("./autoAccept");
+        invalidateAutoAcceptCache(input.establishmentId);
         return { success: true };
       }),
     

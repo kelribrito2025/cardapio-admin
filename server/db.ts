@@ -3437,6 +3437,8 @@ export async function upsertPrinterSettings(data: {
   itemBorderStyle?: string;
   defaultPrintMethod?: 'normal' | 'android';
   htmlPrintEnabled?: boolean;
+  autoAcceptEnabled?: boolean;
+  autoAcceptTimerSeconds?: number;
 }): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -3476,6 +3478,8 @@ export async function upsertPrinterSettings(data: {
         itemBorderStyle: data.itemBorderStyle ?? (existing as any).itemBorderStyle ?? 'rounded',
         defaultPrintMethod: data.defaultPrintMethod ?? (existing as any).defaultPrintMethod ?? 'normal',
         htmlPrintEnabled: data.htmlPrintEnabled ?? (existing as any).htmlPrintEnabled ?? true,
+        autoAcceptEnabled: data.autoAcceptEnabled ?? (existing as any).autoAcceptEnabled ?? false,
+        autoAcceptTimerSeconds: data.autoAcceptTimerSeconds ?? (existing as any).autoAcceptTimerSeconds ?? 10,
       })
       .where(eq(printerSettings.establishmentId, data.establishmentId));
   } else {
@@ -3511,6 +3515,8 @@ export async function upsertPrinterSettings(data: {
       itemBorderStyle: data.itemBorderStyle ?? 'rounded',
       defaultPrintMethod: data.defaultPrintMethod ?? 'normal',
       htmlPrintEnabled: data.htmlPrintEnabled ?? true,
+      autoAcceptEnabled: data.autoAcceptEnabled ?? false,
+      autoAcceptTimerSeconds: data.autoAcceptTimerSeconds ?? 10,
     });
   }
 }
@@ -5426,4 +5432,21 @@ export async function cancelTab(tabId: number): Promise<void> {
   await db.update(tabs)
     .set({ status: "cancelled", updatedAt: new Date() })
     .where(eq(tabs.id, tabId));
+}
+
+
+/**
+ * Busca IDs de estabelecimentos que possuem pedidos com status "new"
+ * Usado pelo módulo de auto-aceite para verificar quais estabelecimentos precisam ser processados
+ */
+export async function getEstablishmentsWithNewOrders(): Promise<number[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db.select({ establishmentId: orders.establishmentId })
+    .from(orders)
+    .where(eq(orders.status, "new"))
+    .groupBy(orders.establishmentId);
+  
+  return result.map(r => r.establishmentId);
 }

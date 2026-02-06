@@ -65,7 +65,7 @@ import {
   QrCode,
   Star,
 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
 import { formatDistanceToNow, format } from "date-fns";
@@ -329,6 +329,12 @@ export default function Pedidos() {
 
   // Hook para gerenciar contagem de pedidos novos na sidebar
   const { decrementCount } = useNewOrders();
+
+  // ============ AUTO-ACCEPT TIMER (estados) ============
+  const [autoAcceptCountdowns, setAutoAcceptCountdowns] = useState<Record<number, number>>({});
+  const autoAcceptedRef = useRef<Set<number>>(new Set());
+  const autoAcceptEnabled = printerSettings?.autoAcceptEnabled ?? false;
+  const autoAcceptTimerSeconds = printerSettings?.autoAcceptTimerSeconds ?? 10;
 
   const updateStatusMutation = trpc.orders.updateStatus.useMutation({
     onMutate: async (variables) => {
@@ -693,6 +699,55 @@ export default function Pedidos() {
       }
     }
   };
+
+  // ============ AUTO-ACCEPT TIMER (efeito) ============
+  useEffect(() => {
+    if (!autoAcceptEnabled) {
+      setAutoAcceptCountdowns({});
+      return;
+    }
+
+    const currentNewOrders = allOrders.filter(o => o.status === 'new');
+    if (currentNewOrders.length === 0) {
+      setAutoAcceptCountdowns({});
+      return;
+    }
+
+    const updateCountdowns = () => {
+      const now = Date.now();
+      const countdowns: Record<number, number> = {};
+      
+      for (const order of currentNewOrders) {
+        if (autoAcceptedRef.current.has(order.id)) continue;
+        
+        const createdAt = new Date(order.createdAt).getTime();
+        const elapsed = (now - createdAt) / 1000;
+        const remaining = Math.max(0, Math.ceil(autoAcceptTimerSeconds - elapsed));
+        countdowns[order.id] = remaining;
+        
+        if (remaining <= 0 && !autoAcceptedRef.current.has(order.id)) {
+          autoAcceptedRef.current.add(order.id);
+          handleStatusUpdate(order.id, 'preparing');
+        }
+      }
+      
+      setAutoAcceptCountdowns(countdowns);
+    };
+
+    updateCountdowns();
+    const interval = setInterval(updateCountdowns, 1000);
+    return () => clearInterval(interval);
+  }, [autoAcceptEnabled, autoAcceptTimerSeconds, allOrders]);
+
+  // Limpar pedidos auto-aceitos antigos do ref
+  useEffect(() => {
+    const newOrderIds = new Set(allOrders.filter(o => o.status === 'new').map(o => o.id));
+    autoAcceptedRef.current.forEach(id => {
+      if (!newOrderIds.has(id)) {
+        autoAcceptedRef.current.delete(id);
+      }
+    });
+  }, [allOrders]);
 
   const handleCancelOrder = () => {
     if (orderToCancel) {
@@ -1073,14 +1128,47 @@ export default function Pedidos() {
                             {nextAction && (
                               <Button
                                 size="sm"
-                                className="flex-1 h-9 rounded-lg shadow-sm text-sm"
+                                className={cn(
+                                  "flex-1 h-9 rounded-lg shadow-sm text-sm relative overflow-hidden",
+                                  autoAcceptEnabled && order.status === 'new' && autoAcceptCountdowns[order.id] !== undefined
+                                    ? "pr-10"
+                                    : ""
+                                )}
                                 onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
                                 disabled={loadingOrderId !== null}
                               >
                                 {loadingOrderId === order.id ? (
                                   <Loader2 className="h-4 w-4 animate-spin" />
                                 ) : (
-                                  nextAction.label
+                                  <>
+                                    {nextAction.label}
+                                    {autoAcceptEnabled && order.status === 'new' && autoAcceptCountdowns[order.id] !== undefined && autoAcceptCountdowns[order.id] > 0 && (
+                                      <span className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center justify-center">
+                                        <svg className="h-6 w-6 -rotate-90" viewBox="0 0 24 24">
+                                          <circle
+                                            cx="12" cy="12" r="10"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            opacity="0.2"
+                                          />
+                                          <circle
+                                            cx="12" cy="12" r="10"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2.5"
+                                            strokeDasharray={`${2 * Math.PI * 10}`}
+                                            strokeDashoffset={`${2 * Math.PI * 10 * (1 - autoAcceptCountdowns[order.id] / autoAcceptTimerSeconds)}`}
+                                            strokeLinecap="round"
+                                            className="transition-all duration-1000 ease-linear"
+                                          />
+                                        </svg>
+                                        <span className="absolute text-[9px] font-bold">
+                                          {autoAcceptCountdowns[order.id]}
+                                        </span>
+                                      </span>
+                                    )}
+                                  </>
                                 )}
                               </Button>
                             )}
