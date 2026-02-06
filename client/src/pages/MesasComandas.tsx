@@ -935,8 +935,8 @@ export default function MesasComandas() {
                     <span className="text-3xl font-bold text-gray-900">{table.number}</span>
                     {/* Contador de tempo para mesas ocupadas */}
                     {hasItems && table.occupiedAt && (
-                      <div className="flex items-center gap-1 text-xs text-gray-400">
-                        <Clock className="h-3 w-3" />
+                      <div className="flex items-center gap-1 text-sm text-gray-600">
+                        <Clock className="h-3.5 w-3.5" />
                         <span>{formatDuration(table.occupiedAt)}</span>
                       </div>
                     )}
