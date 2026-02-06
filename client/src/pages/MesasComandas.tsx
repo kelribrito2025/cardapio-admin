@@ -31,6 +31,7 @@ import {
   Settings,
   Pencil,
   Filter,
+  Unlink,
 } from "lucide-react";
 
 // Tipos
@@ -1013,10 +1014,24 @@ export default function MesasComandas() {
                     )}
                   </div>
                   
-                  {/* Indicador de mesa combinada */}
+                  {/* Indicador de mesa combinada com botão de separar */}
                   {isMergedTable && (
-                    <div className="text-xs text-blue-600 font-medium mt-1">
-                      Mesas unidas
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-xs text-blue-600 font-medium">
+                        Mesas unidas
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          splitTablesMutation.mutate({ tableId: table.id });
+                        }}
+                        disabled={splitTablesMutation.isPending}
+                        className="text-xs text-gray-500 hover:text-red-600 hover:bg-red-50 px-1.5 py-0.5 rounded transition-colors flex items-center gap-1"
+                        title="Separar mesas"
+                      >
+                        <Unlink className="h-3 w-3" />
+                        <span>Separar</span>
+                      </button>
                     </div>
                   )}
                   

@@ -5384,3 +5384,8 @@
 
 ## Bug: Título da Mesa Combinada no PDVSlidebar
 - [x] Corrigir título "Mesa 3" para mostrar "Mesa 3-4-5" quando for mesa combinada
+
+
+## Desfazer Junção de Mesas
+- [x] Adicionar botão para separar mesas combinadas
+- [x] Restaurar mesas originais ao separar
