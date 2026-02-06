@@ -268,7 +268,7 @@ export default function Cupons() {
             )}
             <span className="font-bold text-lg text-red-600">
               {coupon.type === "percentage" 
-                ? `${coupon.value}%` 
+                ? `${parseFloat(String(coupon.value))}%` 
                 : formatCurrency(coupon.value)}
             </span>
           </div>
@@ -346,7 +346,7 @@ export default function Cupons() {
             )}
             <span className="font-bold text-xl text-red-600">
               {coupon.type === "percentage" 
-                ? `${coupon.value}%` 
+                ? `${parseFloat(String(coupon.value))}%` 
                 : formatCurrency(coupon.value)}
             </span>
             <span className="text-xs text-muted-foreground ml-1">
