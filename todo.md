@@ -5410,3 +5410,4 @@
 
 ## Bug: Modal de Configuração da Aba Duplicado
 - [x] Corrigir modal de Configuração da Aba que aparece duplicado (aba atrás da aba)
+- [x] PDV: mover botões Mesa e Comanda para a linha do campo de busca, liberando espaço para categorias/atalhos

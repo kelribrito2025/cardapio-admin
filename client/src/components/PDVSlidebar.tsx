@@ -1415,16 +1415,47 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               </div>
             )}
 
-            {/* Barra de Busca */}
+            {/* Barra de Busca + Abas Mesa/Comanda */}
             <div className="px-3 py-2 border-b border-border/50">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar produto..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-9 text-sm"
-                />
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar produto..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 h-9 text-sm"
+                  />
+                </div>
+                {/* Abas Mesa e Comanda ao lado da busca */}
+                <button
+                  onClick={() => setSelectedTab('consumo')}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 h-9 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
+                    selectedTab === 'consumo'
+                      ? "bg-red-500 text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  )}
+                >
+                  <UtensilsCrossed className="h-3.5 w-3.5" />
+                  Mesa {tableDisplayName}
+                </button>
+                <button
+                  onClick={() => setSelectedTab('comanda')}
+                  disabled={!tabId}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 h-9 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0",
+                    !tabId
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
+                      : selectedTab === 'comanda'
+                        ? "bg-red-500 text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  )}
+                  title={!tabId ? "Mesa sem comanda aberta" : "Ver itens da comanda"}
+                >
+                  <Receipt className="h-3.5 w-3.5" />
+                  Comanda
+                </button>
               </div>
             </div>
 
@@ -1516,43 +1547,6 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
           {/* Coluna Direita - Carrinho */}
           <div className="w-[370px] bg-gray-50 flex flex-col">
-            {/* Header do Carrinho */}
-            <div className="p-3 border-b border-border/50 bg-white">
-              {/* Abas: Mesa (Consumo) e Comanda - lado a lado */}
-              <div className="flex gap-2">
-                {/* Mesa (número) - aba Consumo */}
-                <button
-                  onClick={() => setSelectedTab('consumo')}
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-2 p-2 rounded-lg transition-all",
-                    selectedTab === 'consumo'
-                      ? "bg-red-500 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  )}
-                >
-                  <UtensilsCrossed className="h-4 w-4" />
-                  <span className="text-sm font-medium">Mesa {tableDisplayName}</span>
-                </button>
-
-                {/* Comanda - aba Comanda (desabilitado se não houver comanda aberta) */}
-                <button
-                  onClick={() => setSelectedTab('comanda')}
-                  disabled={!tabId}
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-2 p-2 rounded-lg transition-all",
-                    !tabId
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
-                      : selectedTab === 'comanda'
-                        ? "bg-red-500 text-white"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  )}
-                  title={!tabId ? "Mesa sem comanda aberta" : "Ver itens da comanda"}
-                >
-                  <Receipt className="h-4 w-4" />
-                  <span className="text-sm font-medium">Comanda</span>
-                </button>
-              </div>
-            </div>
 
             {/* Lista de Itens */}
             <div className="flex-1 overflow-y-auto p-3 space-y-2">
