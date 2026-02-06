@@ -5323,3 +5323,6 @@
 
 ## Correção Botão Desfazer após Enviar Pedido
 - [x] Corrigir botão Desfazer que aparece incorretamente após enviar pedido (só deve aparecer ao clicar em Limpar)
+
+## Remoção Campo Número da Mesa no PDV
+- [x] Remover campo "Número da mesa" da página de PDV

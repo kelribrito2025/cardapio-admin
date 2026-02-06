@@ -187,7 +187,7 @@ export default function PDV() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productQuantity, setProductQuantity] = useState(1);
   const [productObservation, setProductObservation] = useState("");
-  const [tableNumber, setTableNumber] = useState("");
+  // Campo de mesa removido - agora usamos a página de Mesas
   // Map<groupId, Map<itemId, quantity>>
   const [selectedComplements, setSelectedComplements] = useState<Map<number, Map<number, number>>>(new Map());
   const [selectedComplementImage, setSelectedComplementImage] = useState<string | null>(null);
@@ -427,7 +427,6 @@ export default function PDV() {
       setClearedCart([...cart]);
     }
     setCart([]);
-    setTableNumber("");
     setPaymentMethod(null);
     setDeliveryAddress({
       name: "",
@@ -494,12 +493,6 @@ export default function PDV() {
       return;
     }
 
-    // Para Mesa: verificar número da mesa
-    if (orderType === "mesa" && !tableNumber) {
-      toast.error("Informe o número da mesa");
-      return;
-    }
-
     // Para Entrega: verificar endereço
     if (orderType === "entrega" && (!deliveryAddress.street || !deliveryAddress.number || !deliveryAddress.neighborhood)) {
       toast.error("Preencha os dados de entrega");
@@ -540,8 +533,6 @@ export default function PDV() {
       if (deliveryAddress.complement) customerAddress += ` - ${deliveryAddress.complement}`;
       customerAddress += ` - ${deliveryAddress.neighborhood}`;
       if (deliveryAddress.reference) customerAddress += ` (Ref: ${deliveryAddress.reference})`;
-    } else if (orderType === "mesa") {
-      customerAddress = `Mesa ${tableNumber}`;
     }
 
     // Calcular o valor do troco para exibir no recibo
@@ -552,7 +543,7 @@ export default function PDV() {
     createOrderMutation.mutate({
       establishmentId,
       orderNumber,
-      customerName: orderType === "mesa" ? `Mesa ${tableNumber}` : (deliveryAddress.name || "Cliente PDV"),
+      customerName: deliveryAddress.name || "Cliente PDV",
       customerPhone: deliveryAddress.phone || "",
       customerAddress,
       deliveryType: deliveryTypeMap[orderType],
@@ -565,7 +556,7 @@ export default function PDV() {
       total: Math.max(0, total).toFixed(2),
       // Enviar o valor do troco quando pagamento for em dinheiro
       changeAmount: paymentMethod === "cash" && changeValue ? changeValue.replace(",", ".") : undefined,
-      notes: orderType === "mesa" ? `Mesa: ${tableNumber}` : undefined,
+      notes: undefined,
       status: "preparing", // Pedidos do PDV já vão direto para preparação
       source: "pdv",
       items: cart.map(item => ({
@@ -942,17 +933,7 @@ export default function PDV() {
               </div>
 
 
-              {/* Campo de Mesa */}
-              {orderType === "mesa" && (
-                <div className="mt-3">
-                  <Input
-                    placeholder="Número da mesa"
-                    value={tableNumber}
-                    onChange={(e) => setTableNumber(e.target.value)}
-                    className="text-center font-medium"
-                  />
-                </div>
-              )}
+              {/* Campo de Mesa removido - agora usamos a página de Mesas */}
 
               {/* Indicador de forma de pagamento selecionada (Retirada) */}
               {orderType === "retirada" && paymentMethod && (
