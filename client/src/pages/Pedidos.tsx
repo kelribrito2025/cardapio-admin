@@ -335,9 +335,6 @@ export default function Pedidos() {
   const autoAcceptedRef = useRef<Set<number>>(new Set());
   const autoAcceptEnabled = printerSettings?.autoAcceptEnabled ?? false;
   const autoAcceptTimerSeconds = printerSettings?.autoAcceptTimerSeconds ?? 10;
-  // Ref estável para allOrders e handleStatusUpdate para evitar loop infinito no useEffect
-  const allOrdersRef = useRef(allOrders);
-  allOrdersRef.current = allOrders;
 
   const updateStatusMutation = trpc.orders.updateStatus.useMutation({
     onMutate: async (variables) => {
@@ -665,7 +662,7 @@ export default function Pedidos() {
     }).format(Number(value));
   };
 
-  const handleStatusUpdate = (orderId: number, newStatus: OrderStatus, isAutoAccepted?: boolean) => {
+  const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
     setLoadingOrderId(orderId);
     updateStatusMutation.mutate(
       { id: orderId, status: newStatus },
@@ -677,17 +674,7 @@ export default function Pedidos() {
     );
     
     if (newStatus === "preparing") {
-      // Se foi auto-aceito, a impressão é feita pelo servidor via rede direta (ESC/POS)
-      // Não precisamos abrir o app Multi Printer nem a tela de impressão do navegador
-      if (isAutoAccepted) {
-        toast.success("📦 Pedido auto-aceito!", {
-          description: "Impressão enviada automaticamente via rede.",
-          duration: 3000,
-        });
-        return;
-      }
-      
-      // Aceite manual - usar método de impressão favorito
+      // Verificar método de impressão favorito
       const printMethod = printerSettings?.defaultPrintMethod || 'normal';
       
       if (printMethod === 'android') {
@@ -714,26 +701,19 @@ export default function Pedidos() {
   };
 
   // ============ AUTO-ACCEPT TIMER (efeito) ============
-  // Usa refs para evitar que mudanças em allOrders (via optimistic update) re-disparem o effect
-  // e causem loop infinito (Maximum update depth exceeded)
   useEffect(() => {
     if (!autoAcceptEnabled) {
       setAutoAcceptCountdowns({});
       return;
     }
 
-    const updateCountdowns = () => {
-      const currentOrders = allOrdersRef.current;
-      const currentNewOrders = currentOrders.filter(o => o.status === 'new');
-      
-      if (currentNewOrders.length === 0) {
-        setAutoAcceptCountdowns(prev => {
-          if (Object.keys(prev).length === 0) return prev;
-          return {};
-        });
-        return;
-      }
+    const currentNewOrders = allOrders.filter(o => o.status === 'new');
+    if (currentNewOrders.length === 0) {
+      setAutoAcceptCountdowns({});
+      return;
+    }
 
+    const updateCountdowns = () => {
       const now = Date.now();
       const countdowns: Record<number, number> = {};
       
@@ -747,8 +727,7 @@ export default function Pedidos() {
         
         if (remaining <= 0 && !autoAcceptedRef.current.has(order.id)) {
           autoAcceptedRef.current.add(order.id);
-          // Usar setTimeout para evitar setState durante render
-          setTimeout(() => handleStatusUpdate(order.id, 'preparing', true), 0);
+          handleStatusUpdate(order.id, 'preparing');
         }
       }
       
@@ -758,7 +737,7 @@ export default function Pedidos() {
     updateCountdowns();
     const interval = setInterval(updateCountdowns, 1000);
     return () => clearInterval(interval);
-  }, [autoAcceptEnabled, autoAcceptTimerSeconds]);
+  }, [autoAcceptEnabled, autoAcceptTimerSeconds, allOrders]);
 
   // Limpar pedidos auto-aceitos antigos do ref
   useEffect(() => {

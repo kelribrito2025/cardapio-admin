@@ -7,21 +7,10 @@ vi.mock("./db", () => ({
   updateOrderStatus: vi.fn(),
   getEstablishmentById: vi.fn(),
   getEstablishmentsWithNewOrders: vi.fn(),
-  getActivePrinters: vi.fn().mockResolvedValue([]),
-  getOrderById: vi.fn(),
-  getOrderItems: vi.fn().mockResolvedValue([]),
 }));
 
 vi.mock("./_core/sse", () => ({
   notifyOrderUpdate: vi.fn(),
-}));
-
-vi.mock("./escposPrinter", () => ({
-  printOrderDirect: vi.fn().mockResolvedValue({ success: true, message: "OK" }),
-  printOrderToMultiplePrinters: vi.fn().mockResolvedValue({
-    success: true,
-    results: [{ ip: "192.168.1.100", success: true, message: "OK" }],
-  }),
 }));
 
 import { invalidateAutoAcceptCache, startAutoAcceptLoop, stopAutoAcceptLoop } from "./autoAccept";
@@ -59,12 +48,5 @@ describe("Auto-Accept Module", () => {
   it("should invalidate cache without errors", () => {
     invalidateAutoAcceptCache(1);
     invalidateAutoAcceptCache(999);
-  });
-
-  it("should handle multiple start/stop cycles", () => {
-    for (let i = 0; i < 5; i++) {
-      startAutoAcceptLoop();
-      stopAutoAcceptLoop();
-    }
   });
 });
