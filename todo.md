@@ -5326,3 +5326,7 @@
 
 ## Remoção Campo Número da Mesa no PDV
 - [x] Remover campo "Número da mesa" da página de PDV
+
+## Unificação Slidebar PDV em Todas as Páginas
+- [x] Verificar diferenças entre a slidebar da página de Mesas e a slidebar das demais páginas
+- [x] Unificar para que sejam exatamente iguais (exceto na página /pdv)

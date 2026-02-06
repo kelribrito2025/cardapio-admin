@@ -161,7 +161,23 @@ export function GlobalPDVHandle() {
         tableNumber={selectedTable.number}
         tableId={selectedTable.id}
         tabId={selectedTable.tabId}
-        showHandle={false}
+        showHandle={true}
+        tables={tables?.map(t => ({
+          id: t.id,
+          number: t.number,
+          status: t.status === "requesting_bill" ? "occupied" : t.status,
+          tabId: t.tab?.id,
+          tabItemsCount: t.items?.length || 0
+        })) || []}
+        onTableChange={(table) => {
+          setSelectedTable({
+            id: table.id,
+            number: table.number,
+            tabId: table.tabId
+          });
+          // Salvar a mesa selecionada
+          localStorage.setItem(LAST_TABLE_KEY, table.id.toString());
+        }}
       />
     </>
   );
