@@ -5418,3 +5418,14 @@
 - [x] Bug: Cannot update MesasComandas while rendering PDVSlidebar - setState durante render (queueMicrotask fix)
 - [x] Impressão: remover info de mesa/comanda, pagamento, obs e cliente da impressão de pedidos de mesa (HTML, setor, ESC/POS e texto puro)
 - [x] Remover badge "Breve" do menu "Mapa de mesas" na sidebar
+
+## Reserva de Mesas
+- [x] Adicionar campo isReserved no schema de tables
+- [x] Criar procedure tRPC para reservar/liberar mesa
+- [x] Adicionar ícone ⋮ no canto superior direito dos cards de mesa
+- [x] Menu dropdown com opção "Reservar mesa" / "Liberar reserva"
+- [x] Card reservado: borda azul, badge "Reservada"
+- [x] Atualizar filtro de status com contagem de reservadas
+
+## Bug: Atalhos de Mesa no PDV não mostram cor azul para mesas reservadas
+- [x] Corrigir atalhos de mesa no PDV Slidebar para exibir cor azul quando mesa está reservada

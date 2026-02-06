@@ -1243,6 +1243,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     // Status baseado apenas em itens enviados (comanda), não carrinho local
                     const tabItemsCount = table.tabItemsCount || 0;
                     const tableHasItems = tabItemsCount > 0;
+                    const isReserved = table.status === "reserved";
                     const displayNum = table.displayNumber || table.number.toString();
                     return (
                       <button
@@ -1254,10 +1255,14 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                           table.number === tableNumber
                             ? tableHasItems
                               ? "bg-red-500 text-white shadow-sm cursor-default"
-                              : "bg-emerald-500 text-white shadow-sm cursor-default"
+                              : isReserved
+                                ? "bg-blue-500 text-white shadow-sm cursor-default"
+                                : "bg-emerald-500 text-white shadow-sm cursor-default"
                             : tableHasItems
                               ? "bg-red-100 text-red-700 hover:bg-red-200"
-                              : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                              : isReserved
+                                ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                                : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
                         )}
                       >
                         <UtensilsCrossed className="h-4 w-4" />
@@ -1303,6 +1308,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   // Status baseado apenas em itens enviados (comanda), não carrinho local
                   const tabItemsCount = table.tabItemsCount || 0;
                   const tableHasItems = tabItemsCount > 0;
+                  const isReserved = table.status === "reserved";
                   const displayNum = table.displayNumber || table.number.toString();
                   return (
                     <button
@@ -1314,10 +1320,14 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                         table.number === tableNumber
                           ? tableHasItems
                             ? "bg-red-500 text-white shadow-sm cursor-default"
-                            : "bg-emerald-500 text-white shadow-sm cursor-default"
+                            : isReserved
+                              ? "bg-blue-500 text-white shadow-sm cursor-default"
+                              : "bg-emerald-500 text-white shadow-sm cursor-default"
                           : tableHasItems
                             ? "bg-red-100 text-red-700 hover:bg-red-200"
-                            : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                            : isReserved
+                              ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                              : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
                       )}
                     >
                       <UtensilsCrossed className="h-4 w-4" />

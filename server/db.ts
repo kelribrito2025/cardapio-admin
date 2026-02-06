@@ -5006,7 +5006,8 @@ export async function updateTable(id: number, data: Partial<InsertTable>): Promi
 export async function updateTableStatus(
   id: number, 
   status: "free" | "occupied" | "reserved" | "requesting_bill",
-  guests?: number
+  guests?: number,
+  reservationData?: { reservedName?: string; reservedPhone?: string; reservedFor?: Date | null }
 ): Promise<void> {
   const db = await getDb();
   if (!db) return;
@@ -5022,6 +5023,10 @@ export async function updateTableStatus(
     updateData.reservedFor = null;
     updateData.reservedName = null;
     updateData.reservedPhone = null;
+  } else if (status === "reserved") {
+    updateData.reservedName = reservationData?.reservedName || null;
+    updateData.reservedPhone = reservationData?.reservedPhone || null;
+    updateData.reservedFor = reservationData?.reservedFor || null;
   }
   
   await db.update(tables)

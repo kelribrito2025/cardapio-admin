@@ -3085,9 +3085,17 @@ export const appRouter = router({
         id: z.number(),
         status: z.enum(["free", "occupied", "reserved", "requesting_bill"]),
         guests: z.number().optional(),
+        reservedName: z.string().optional(),
+        reservedPhone: z.string().optional(),
+        reservedFor: z.string().optional(), // ISO string
       }))
       .mutation(async ({ input }) => {
-        await db.updateTableStatus(input.id, input.status, input.guests);
+        const reservationData = input.status === "reserved" ? {
+          reservedName: input.reservedName,
+          reservedPhone: input.reservedPhone,
+          reservedFor: input.reservedFor ? new Date(input.reservedFor) : null,
+        } : undefined;
+        await db.updateTableStatus(input.id, input.status, input.guests, reservationData);
         return { success: true };
       }),
 

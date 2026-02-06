@@ -33,7 +33,20 @@ import {
   Filter,
   Unlink,
   Link2,
+  MoreVertical,
+  CalendarClock,
+  Phone,
+  UserRound,
+  Ban,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
 // Tipos
 type TableStatus = "free" | "occupied" | "reserved";
@@ -253,6 +266,14 @@ export default function MesasComandas() {
   const [newTableCapacity, setNewTableCapacity] = useState(4);
   const [newSpaceName, setNewSpaceName] = useState("");
   const [persistedTableId, setPersistedTableId] = useState<number | null>(null);
+  
+  // Estados para reserva de mesa
+  const [showReserveDialog, setShowReserveDialog] = useState(false);
+  const [reserveTableId, setReserveTableId] = useState<number | null>(null);
+  const [reserveTableNumber, setReserveTableNumber] = useState<string>("");
+  const [reserveName, setReserveName] = useState("");
+  const [reservePhone, setReservePhone] = useState("");
+  const [reserveTime, setReserveTime] = useState("");
   
   // Estado para forçar re-render do timer de ocupação das mesas a cada minuto
   const [, setTimerTick] = useState(0);
@@ -599,6 +620,47 @@ export default function MesasComandas() {
     updateStatusMutation.mutate({ id: table.id, status: "free" });
   };
 
+  // Abrir modal de reserva
+  const handleOpenReserveDialog = (tableId: number, displayNum: string) => {
+    setReserveTableId(tableId);
+    setReserveTableNumber(displayNum);
+    setReserveName("");
+    setReservePhone("");
+    setReserveTime("");
+    setShowReserveDialog(true);
+  };
+
+  // Confirmar reserva
+  const handleConfirmReservation = () => {
+    if (!reserveTableId) return;
+    
+    const reservedFor = reserveTime ? new Date(`${new Date().toISOString().split('T')[0]}T${reserveTime}:00`).toISOString() : undefined;
+    
+    updateStatusMutation.mutate({
+      id: reserveTableId,
+      status: "reserved",
+      reservedName: reserveName || undefined,
+      reservedPhone: reservePhone || undefined,
+      reservedFor: reservedFor,
+    }, {
+      onSuccess: () => {
+        toast.success(`Mesa ${reserveTableNumber} reservada!`);
+        setShowReserveDialog(false);
+        refetch();
+      },
+    });
+  };
+
+  // Cancelar reserva
+  const handleCancelReservation = (tableId: number, displayNum: string) => {
+    updateStatusMutation.mutate({ id: tableId, status: "free" }, {
+      onSuccess: () => {
+        toast.success(`Reserva da Mesa ${displayNum} cancelada!`);
+        refetch();
+      },
+    });
+  };
+
   const handleCreateTables = () => {
     // Encontrar o maior número de mesa existente
     const maxNumber = tables.length > 0 
@@ -942,133 +1004,211 @@ export default function MesasComandas() {
               const isDropTarget = dropTargetId === table.id && draggedTableId !== table.id;
               
               return (
-                <button
+                <div
                   key={table.id}
-                  draggable
-                  onDragStart={(e) => {
-                    setDraggedTableId(table.id);
-                    e.dataTransfer.effectAllowed = 'move';
-                    // Adicionar dados para identificar a mesa
-                    e.dataTransfer.setData('text/plain', table.id.toString());
-                  }}
-                  onDragEnd={() => {
-                    setDraggedTableId(null);
-                    setDropTargetId(null);
-                  }}
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    if (draggedTableId && draggedTableId !== table.id) {
-                      setDropTargetId(table.id);
-                    }
-                  }}
-                  onDragLeave={() => {
-                    setDropTargetId(null);
-                  }}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    if (draggedTableId && draggedTableId !== table.id) {
-                      // Juntar mesas
-                      mergeTablesMutation.mutate({
-                        sourceTableId: draggedTableId,
-                        targetTableId: table.id,
-                      });
-                    }
-                    setDraggedTableId(null);
-                    setDropTargetId(null);
-                  }}
-                  onClick={() => handleTableClick(table)}
-                  className={cn(
-                    "bg-white rounded-xl border border-border/50 p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
-                    "border-l-4 min-h-[120px]",
-                    statusConfig.borderColor,
-                    isDragging && "opacity-50 scale-95",
-                    isDropTarget && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50"
-                  )}
+                  className="relative"
                 >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <span className="text-3xl font-bold text-gray-900">{displayNumber}</span>
-                      {/* Espaço reservado para indicador de mesa combinada (mantém altura consistente) */}
-                      <div className="min-h-[20px]">
-                  {isMergedTable ? (
-                    <div className="group/merged relative w-fit">
-                      {/* Texto "Mesas unidas" - esconde no hover no desktop */}
-                      <span className="text-xs text-blue-600 font-medium flex items-center gap-1 md:group-hover/merged:opacity-0 transition-opacity">
-                        <Link2 className="h-3 w-3" />
-                        Mesas unidas
-                      </span>
-                      {/* Botão separar - aparece no hover no desktop, sempre visível no mobile */}
-                      <span
-                        role="button"
-                        tabIndex={0}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!splitTablesMutation.isPending) {
-                            splitTablesMutation.mutate({ tableId: table.id });
-                          }
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.stopPropagation();
-                            if (!splitTablesMutation.isPending) {
-                              splitTablesMutation.mutate({ tableId: table.id });
-                            }
-                          }
-                        }}
-                        className={cn(
-                          "text-xs text-red-500 hover:text-red-600 hover:bg-red-50 px-1.5 py-0.5 rounded transition-all inline-flex items-center gap-1 cursor-pointer w-fit",
-                          "md:absolute md:top-0 md:left-0 md:opacity-0 md:group-hover/merged:opacity-100",
-                          "max-md:mt-1",
-                          splitTablesMutation.isPending && "opacity-50 cursor-not-allowed"
+                  {/* Botão ⋮ no canto superior direito */}
+                  <div className="absolute top-2 right-2 z-10">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          onClick={(e) => e.stopPropagation()}
+                          className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-gray-200/80 transition-colors text-gray-400 hover:text-gray-600"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        {derivedStatus === "free" && (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenReserveDialog(table.id, displayNumber);
+                            }}
+                            className="cursor-pointer"
+                          >
+                            <CalendarClock className="h-4 w-4 mr-2 text-blue-500" />
+                            Reservar mesa
+                          </DropdownMenuItem>
                         )}
-                        title="Separar mesas"
-                      >
-                        <Unlink className="h-3 w-3" />
-                        <span>Separar</span>
-                      </span>
-                    </div>
-                  ) : null}
+                        {derivedStatus === "reserved" && (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCancelReservation(table.id, displayNumber);
+                            }}
+                            className="cursor-pointer text-red-600 focus:text-red-600"
+                          >
+                            <Ban className="h-4 w-4 mr-2" />
+                            Cancelar reserva
+                          </DropdownMenuItem>
+                        )}
+                        {derivedStatus === "occupied" && (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleClearTable(table as Table);
+                            }}
+                            className="cursor-pointer text-red-600 focus:text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Limpar mesa
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteTable(table.id, table.number);
+                          }}
+                          className="cursor-pointer text-red-600 focus:text-red-600"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Excluir mesa
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
+                  <button
+                    draggable
+                    onDragStart={(e) => {
+                      setDraggedTableId(table.id);
+                      e.dataTransfer.effectAllowed = 'move';
+                      e.dataTransfer.setData('text/plain', table.id.toString());
+                    }}
+                    onDragEnd={() => {
+                      setDraggedTableId(null);
+                      setDropTargetId(null);
+                    }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      if (draggedTableId && draggedTableId !== table.id) {
+                        setDropTargetId(table.id);
+                      }
+                    }}
+                    onDragLeave={() => {
+                      setDropTargetId(null);
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (draggedTableId && draggedTableId !== table.id) {
+                        mergeTablesMutation.mutate({
+                          sourceTableId: draggedTableId,
+                          targetTableId: table.id,
+                        });
+                      }
+                      setDraggedTableId(null);
+                      setDropTargetId(null);
+                    }}
+                    onClick={() => handleTableClick(table)}
+                    className={cn(
+                      "w-full bg-white rounded-xl border border-border/50 p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
+                      "border-l-4 min-h-[120px]",
+                      statusConfig.borderColor,
+                      isDragging && "opacity-50 scale-95",
+                      isDropTarget && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50"
+                    )}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <span className="text-3xl font-bold text-gray-900">{displayNumber}</span>
+                        {/* Indicador de mesa combinada */}
+                        <div className="min-h-[20px]">
+                          {isMergedTable ? (
+                            <div className="group/merged relative w-fit">
+                              <span className="text-xs text-blue-600 font-medium flex items-center gap-1 md:group-hover/merged:opacity-0 transition-opacity">
+                                <Link2 className="h-3 w-3" />
+                                Mesas unidas
+                              </span>
+                              <span
+                                role="button"
+                                tabIndex={0}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (!splitTablesMutation.isPending) {
+                                    splitTablesMutation.mutate({ tableId: table.id });
+                                  }
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                    e.stopPropagation();
+                                    if (!splitTablesMutation.isPending) {
+                                      splitTablesMutation.mutate({ tableId: table.id });
+                                    }
+                                  }
+                                }}
+                                className={cn(
+                                  "text-xs text-red-500 hover:text-red-600 hover:bg-red-50 px-1.5 py-0.5 rounded transition-all inline-flex items-center gap-1 cursor-pointer w-fit",
+                                  "md:absolute md:top-0 md:left-0 md:opacity-0 md:group-hover/merged:opacity-100",
+                                  "max-md:mt-1",
+                                  splitTablesMutation.isPending && "opacity-50 cursor-not-allowed"
+                                )}
+                                title="Separar mesas"
+                              >
+                                <Unlink className="h-3 w-3" />
+                                <span>Separar</span>
+                              </span>
+                            </div>
+                          ) : null}
+                          {/* Badge Reservada */}
+                          {derivedStatus === "reserved" && !isMergedTable && (
+                            <span className="text-xs font-medium text-blue-600 flex items-center gap-1">
+                              <CalendarClock className="h-3 w-3" />
+                              Reservada
+                            </span>
+                          )}
+                        </div>
                       </div>
+                      {/* Contador de tempo para mesas ocupadas */}
+                      {hasItems && table.occupiedAt && (
+                        <div className="flex items-center gap-1 text-sm text-gray-600 mr-6">
+                          <Clock className="h-3.5 w-3.5" />
+                          <span>{formatDuration(table.occupiedAt)}</span>
+                        </div>
+                      )}
                     </div>
-                    {/* Contador de tempo para mesas ocupadas */}
-                    {hasItems && table.occupiedAt && (
-                      <div className="flex items-center gap-1 text-sm text-gray-600">
-                        <Clock className="h-3.5 w-3.5" />
-                        <span>{formatDuration(table.occupiedAt)}</span>
+                    
+                    {/* Informações da mesa ocupada */}
+                    {hasItems && (
+                      <div className="space-y-1 text-sm text-gray-600">
+                        <div className="flex items-center gap-1">
+                          <Receipt className="h-3.5 w-3.5" />
+                          <span>{itemsCount} {itemsCount === 1 ? 'item' : 'itens'}</span>
+                        </div>
+                        {tableTotal > 0 && (
+                          <div className="font-semibold text-gray-900">
+                            {formatCurrency(tableTotal)}
+                          </div>
+                        )}
                       </div>
                     )}
-                  </div>
-                  
-                  {/* Informações da mesa ocupada (com itens no carrinho ou comanda) */}
-                  {hasItems && (
-                    <div className="space-y-1 text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <Receipt className="h-3.5 w-3.5" />
-                        <span>{itemsCount} {itemsCount === 1 ? 'item' : 'itens'}</span>
-                      </div>
-                      {tableTotal > 0 && (
-                        <div className="font-semibold text-gray-900">
-                          {formatCurrency(tableTotal)}
-                        </div>
-                      )}
-                    </div>
-                  )}
 
-                  {/* Informações da mesa reservada */}
-                  {table.status === "reserved" && !hasItems && (
-                    <div className="space-y-1 text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <Users className="h-3.5 w-3.5" />
-                        <span>{table.currentGuests || table.capacity}</span>
+                    {/* Informações da mesa reservada */}
+                    {derivedStatus === "reserved" && !hasItems && (
+                      <div className="space-y-1 text-sm text-gray-600">
+                        {table.reservedName && (
+                          <div className="flex items-center gap-1">
+                            <UserRound className="h-3.5 w-3.5" />
+                            <span className="truncate">{table.reservedName}</span>
+                          </div>
+                        )}
+                        {table.reservedFor && (
+                          <div className={cn("font-semibold", statusConfig.textColor)}>
+                            {formatTime(table.reservedFor)}
+                          </div>
+                        )}
+                        {!table.reservedName && !table.reservedFor && (
+                          <div className="flex items-center gap-1">
+                            <Users className="h-3.5 w-3.5" />
+                            <span>{table.currentGuests || table.capacity}</span>
+                          </div>
+                        )}
                       </div>
-                      {table.reservedFor && (
-                        <div className={cn("font-semibold", statusConfig.textColor)}>
-                          {formatTime(table.reservedFor)}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </button>
+                    )}
+                  </button>
+                </div>
               );
             })}
           </div>
@@ -1453,6 +1593,74 @@ export default function MesasComandas() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowManageSpacesDialog(false)}>
               Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog para reservar mesa */}
+      <Dialog open={showReserveDialog} onOpenChange={setShowReserveDialog}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CalendarClock className="h-5 w-5 text-blue-500" />
+              Reservar Mesa {reserveTableNumber}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <label className="text-sm font-medium text-gray-700">Nome do cliente</label>
+              <div className="relative mt-1">
+                <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  value={reserveName}
+                  onChange={(e) => setReserveName(e.target.value)}
+                  placeholder="Ex: João Silva"
+                  className="pl-9"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700">Telefone</label>
+              <div className="relative mt-1">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  value={reservePhone}
+                  onChange={(e) => setReservePhone(e.target.value)}
+                  placeholder="(00) 00000-0000"
+                  className="pl-9"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700">Horário da reserva</label>
+              <div className="relative mt-1">
+                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  type="time"
+                  value={reserveTime}
+                  onChange={(e) => setReserveTime(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-gray-500">Todos os campos são opcionais.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowReserveDialog(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleConfirmReservation}
+              disabled={updateStatusMutation.isPending}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              {updateStatusMutation.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <CalendarClock className="h-4 w-4 mr-2" />
+              )}
+              Reservar
             </Button>
           </DialogFooter>
         </DialogContent>
