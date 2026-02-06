@@ -2133,7 +2133,9 @@ export default function PublicMenu() {
                       {deliveryType === 'delivery' && (
                         <div className="flex justify-between text-sm items-center">
                           <span className="text-gray-600">Taxa de entrega</span>
-                          {deliveryFeeValue === 0 ? (
+                          {establishment.deliveryFeeType === 'byNeighborhood' && !selectedNeighborhood ? (
+                            <span className="text-gray-400 text-xs italic">A calcular</span>
+                          ) : deliveryFeeValue === 0 ? (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 font-bold rounded-full text-xs">
                               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -3121,6 +3123,8 @@ export default function PublicMenu() {
                               </svg>
                               Grátis!
                             </span>
+                          ) : establishment.deliveryFeeType === 'byNeighborhood' && !selectedNeighborhood ? (
+                            <span className="ml-2 text-sm text-gray-400 italic">A calcular</span>
                           ) : (
                             <span className="ml-2 text-sm text-red-600 font-semibold">
                               {establishment.deliveryFeeType === "fixed" 
@@ -3595,7 +3599,9 @@ export default function PublicMenu() {
                         {deliveryType === 'delivery' && (
                           <div className="flex justify-between text-sm items-center">
                             <span className="text-gray-600">Taxa de entrega</span>
-                            {deliveryFeeValue === 0 ? (
+                            {establishment.deliveryFeeType === 'byNeighborhood' && !selectedNeighborhood ? (
+                              <span className="text-gray-400 text-xs italic">A calcular</span>
+                            ) : deliveryFeeValue === 0 ? (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 font-bold rounded-full text-xs">
                                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />

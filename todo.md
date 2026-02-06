@@ -5452,3 +5452,6 @@
 
 ## Bug: Ordenação das Mesas
 - [x] Corrigir ordenação das mesas para que novas mesas apareçam na posição correta (ordem numérica crescente) em vez de ficarem no meio das existentes
+
+## Bug: Taxa de Entrega "Grátis" na Sacola Desktop
+- [x] Quando taxa é por bairro, não mostrar "Grátis!" na sacola até o bairro ser selecionado (mostrar "A calcular" ou ocultar a linha)
