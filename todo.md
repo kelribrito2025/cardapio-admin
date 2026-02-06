@@ -5446,3 +5446,6 @@
 - [x] Adicionar toggle "Enviar confirmação de reserva por WhatsApp" em Configurações → Notificações
 - [x] Implementar lógica de envio automático no backend ao reservar mesa (se telefone preenchido e toggle ativo)
 - [x] Mensagem deve conter aviso sobre atraso e liberação da mesa
+
+## Formatação do Telefone na Reserva
+- [x] Alterar campo de telefone no modal de reserva para formato 88 9 9929-0000 (sem parênteses no DDD)

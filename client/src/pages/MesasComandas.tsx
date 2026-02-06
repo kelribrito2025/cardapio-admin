@@ -1637,12 +1637,23 @@ export default function MesasComandas() {
               <label className="text-sm font-medium text-gray-700">Telefone</label>
               <div className="relative mt-1">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  value={reservePhone}
-                  onChange={(e) => setReservePhone(e.target.value)}
-                  placeholder="(00) 00000-0000"
-                  className="pl-9"
-                />
+               <Input
+                   value={reservePhone}
+                   onChange={(e) => {
+                     const numbers = e.target.value.replace(/\D/g, '');
+                     const limited = numbers.slice(0, 11);
+                     let formatted = '';
+                     if (limited.length === 0) formatted = '';
+                     else if (limited.length <= 2) formatted = limited;
+                     else if (limited.length <= 3) formatted = `${limited.slice(0, 2)} ${limited.slice(2)}`;
+                     else if (limited.length <= 7) formatted = `${limited.slice(0, 2)} ${limited.slice(2, 3)} ${limited.slice(3)}`;
+                     else formatted = `${limited.slice(0, 2)} ${limited.slice(2, 3)} ${limited.slice(3, 7)}-${limited.slice(7)}`;
+                     setReservePhone(formatted);
+                   }}
+                   placeholder="88 9 9929-0000"
+                   maxLength={16}
+                   className="pl-9"
+                 />
               </div>
             </div>
             <div>
