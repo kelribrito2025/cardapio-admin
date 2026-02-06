@@ -32,6 +32,7 @@ import {
   Pencil,
   Filter,
   Unlink,
+  Link2,
 } from "lucide-react";
 
 // Tipos
@@ -1017,7 +1018,8 @@ export default function MesasComandas() {
                   {/* Indicador de mesa combinada com botão de separar */}
                   {isMergedTable && (
                     <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-blue-600 font-medium">
+                      <span className="text-xs text-blue-600 font-medium flex items-center gap-1">
+                        <Link2 className="h-3 w-3" />
                         Mesas unidas
                       </span>
                       <button
