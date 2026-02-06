@@ -5485,3 +5485,6 @@
 
 ## Filtro de Cupons na Página de Cupons
 - [x] Exibir apenas cupons criados manualmente na página de Cupons (excluir cupons de fidelidade)
+
+## Ajuste de Largura dos Cards de Cupons
+- [x] Diminuir largura dos cards de cupom no desktop em 25%
