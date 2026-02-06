@@ -1111,7 +1111,7 @@ export default function MesasComandas() {
                       isDropTarget && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50"
                     )}
                   >
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between" style={{ marginTop: "-5px" }}>
                       <div>
                         <span className="text-3xl font-bold text-gray-900">{displayNumber}</span>
                         {/* Indicador de mesa combinada */}
