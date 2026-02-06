@@ -1017,11 +1017,12 @@ export default function MesasComandas() {
                   
                   {/* Indicador de mesa combinada com botão de separar */}
                   {isMergedTable && (
-                    <div className="flex items-center justify-between mt-1">
+                    <div className="group/merged flex items-center justify-between mt-1">
                       <span className="text-xs text-blue-600 font-medium flex items-center gap-1">
                         <Link2 className="h-3 w-3" />
                         Mesas unidas
                       </span>
+                      {/* Botão separar - visível no mobile, hover no desktop */}
                       <span
                         role="button"
                         tabIndex={0}
@@ -1040,7 +1041,8 @@ export default function MesasComandas() {
                           }
                         }}
                         className={cn(
-                          "text-xs text-gray-500 hover:text-red-600 hover:bg-red-50 px-1.5 py-0.5 rounded transition-colors flex items-center gap-1 cursor-pointer",
+                          "text-xs text-gray-500 hover:text-red-600 hover:bg-red-50 px-1.5 py-0.5 rounded transition-all flex items-center gap-1 cursor-pointer",
+                          "md:opacity-0 md:group-hover/merged:opacity-100",
                           splitTablesMutation.isPending && "opacity-50 cursor-not-allowed"
                         )}
                         title="Separar mesas"
