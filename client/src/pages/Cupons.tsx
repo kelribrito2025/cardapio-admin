@@ -5,14 +5,6 @@ import { AdminLayout } from "@/components/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -42,15 +34,12 @@ import {
   Trash2,
   ToggleLeft,
   ToggleRight,
-  Percent,
-  DollarSign,
   Calendar,
-  Clock,
-  MapPin,
   CheckCircle,
   XCircle,
   AlertCircle,
   Ban,
+  ChevronDown,
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { format } from "date-fns";
@@ -94,6 +83,9 @@ export default function Cupons() {
 
   // Filters
   const [search, setSearch] = useState("");
+
+  // Expanded cards (para dropdown de detalhes)
+  const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
 
   // Delete dialog
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -148,6 +140,18 @@ export default function Cupons() {
     if (couponToDelete) {
       deleteMutation.mutate({ id: couponToDelete });
     }
+  };
+
+  const toggleExpand = (id: number) => {
+    setExpandedCards(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
   };
 
   const formatCurrency = (value: string | number | null | undefined) => {
@@ -226,87 +230,126 @@ export default function Cupons() {
     </DropdownMenu>
   );
 
+  // Detalhes colapsáveis (compartilhado entre mobile e desktop)
+  const renderDetails = (coupon: Coupon) => (
+    <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
+      <div>
+        <span className="text-muted-foreground text-xs">Máx. Desconto</span>
+        <p className="text-gray-700 font-medium">{formatCurrency(coupon.maxDiscount)}</p>
+      </div>
+      <div>
+        <span className="text-muted-foreground text-xs">Mín. Pedido</span>
+        <p className="text-gray-700 font-medium">{formatCurrency(coupon.minOrderValue)}</p>
+      </div>
+      <div>
+        <span className="text-muted-foreground text-xs flex items-center gap-1">
+          <Calendar className="h-3 w-3" /> Validade
+        </span>
+        <p className="text-gray-700 font-medium">{formatDateRange(coupon.startDate, coupon.endDate)}</p>
+      </div>
+      <div>
+        <span className="text-muted-foreground text-xs">Uso</span>
+        <p className="text-gray-700 font-medium">
+          {coupon.usedCount}
+          {coupon.quantity && `/${coupon.quantity}`}
+        </p>
+      </div>
+      <div>
+        <span className="text-muted-foreground text-xs">Dias</span>
+        <p className="text-gray-700 font-medium">{formatActiveDays(coupon.activeDays)}</p>
+      </div>
+      <div>
+        <span className="text-muted-foreground text-xs">Origem</span>
+        <p className="text-gray-700 font-medium">{formatValidOrigins(coupon.validOrigins)}</p>
+      </div>
+    </div>
+  );
+
+  // Formatação do valor do cupom (sem ícone % duplicado)
+  const formatCouponValue = (coupon: Coupon) => {
+    if (coupon.type === "percentage") {
+      return `${parseFloat(String(coupon.value))}%`;
+    }
+    return formatCurrency(coupon.value);
+  };
+
   // Card mobile para cada cupom
   const renderMobileCard = (coupon: Coupon) => {
     const status = statusConfig[coupon.status as CouponStatus];
     const borderLeft = statusBorderLeft[coupon.status as CouponStatus];
+    const isExpanded = expandedCards.has(coupon.id);
     return (
       <div
         key={coupon.id}
-        className={`bg-card rounded-xl border border-border/50 border-l-4 ${borderLeft} p-4 cursor-pointer transition-all duration-200 hover:shadow-md active:scale-[0.99]`}
-        onClick={() => navigate(`/cupons/${coupon.id}`)}
+        className={`bg-card rounded-xl border border-border/50 border-l-4 ${borderLeft} transition-all duration-200 hover:shadow-md`}
       >
-        {/* Topo: código + status + ações */}
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="p-1.5 bg-red-50 rounded shrink-0">
-              <Ticket className="h-4 w-4 text-red-600" />
+        {/* Parte clicável: resumo do cupom */}
+        <div
+          className="p-4 cursor-pointer"
+          onClick={() => toggleExpand(coupon.id)}
+        >
+          {/* Topo: código + status + ações */}
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="p-1.5 bg-red-50 rounded shrink-0">
+                <Ticket className="h-4 w-4 text-red-600" />
+              </div>
+              <span className="font-mono font-bold text-base text-gray-900 truncate">{coupon.code}</span>
             </div>
-            <span className="font-mono font-bold text-base text-gray-900 truncate">{coupon.code}</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <Badge 
+                variant="outline" 
+                className={`${status.bgColor} ${status.color} ${status.borderColor} gap-1 text-xs`}
+              >
+                {status.icon}
+                {status.label}
+              </Badge>
+              <div onClick={(e) => e.stopPropagation()}>
+                {renderActions(coupon)}
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <Badge 
-              variant="outline" 
-              className={`${status.bgColor} ${status.color} ${status.borderColor} gap-1 text-xs`}
-            >
-              {status.icon}
-              {status.label}
-            </Badge>
-            <div onClick={(e) => e.stopPropagation()}>
-              {renderActions(coupon)}
+
+          {/* Valor do desconto + seta de expandir */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 bg-red-50 rounded-lg px-3 py-1.5">
+                <span className="font-bold text-lg text-red-600">
+                  {formatCouponValue(coupon)}
+                </span>
+              </div>
+              <span className="text-xs text-muted-foreground">
+                {coupon.type === "percentage" ? "Percentual" : "Valor fixo"}
+              </span>
             </div>
+            <ChevronDown 
+              className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} 
+            />
           </div>
         </div>
 
-        {/* Valor do desconto em destaque */}
-        <div className="flex items-center gap-2 mb-3">
-          <div className="flex items-center gap-1.5 bg-red-50 rounded-lg px-3 py-1.5">
-            {coupon.type === "percentage" ? (
-              <Percent className="h-4 w-4 text-red-600" />
-            ) : (
-              <DollarSign className="h-4 w-4 text-red-600" />
-            )}
-            <span className="font-bold text-lg text-red-600">
-              {coupon.type === "percentage" 
-                ? `${parseFloat(String(coupon.value))}%` 
-                : formatCurrency(coupon.value)}
-            </span>
-          </div>
-          <span className="text-xs text-muted-foreground">
-            {coupon.type === "percentage" ? "Percentual" : "Valor fixo"}
-          </span>
-        </div>
-
-        {/* Detalhes em grid 2 colunas */}
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-          <div>
-            <span className="text-muted-foreground text-xs">Máx. Desconto</span>
-            <p className="text-gray-700 font-medium">{formatCurrency(coupon.maxDiscount)}</p>
-          </div>
-          <div>
-            <span className="text-muted-foreground text-xs">Mín. Pedido</span>
-            <p className="text-gray-700 font-medium">{formatCurrency(coupon.minOrderValue)}</p>
-          </div>
-          <div>
-            <span className="text-muted-foreground text-xs flex items-center gap-1">
-              <Calendar className="h-3 w-3" /> Validade
-            </span>
-            <p className="text-gray-700 font-medium">{formatDateRange(coupon.startDate, coupon.endDate)}</p>
-          </div>
-          <div>
-            <span className="text-muted-foreground text-xs">Uso</span>
-            <p className="text-gray-700 font-medium">
-              {coupon.usedCount}
-              {coupon.quantity && `/${coupon.quantity}`}
-            </p>
-          </div>
-          <div>
-            <span className="text-muted-foreground text-xs">Dias</span>
-            <p className="text-gray-700 font-medium">{formatActiveDays(coupon.activeDays)}</p>
-          </div>
-          <div>
-            <span className="text-muted-foreground text-xs">Origem</span>
-            <p className="text-gray-700 font-medium">{formatValidOrigins(coupon.validOrigins)}</p>
+        {/* Detalhes colapsáveis */}
+        <div
+          className={`overflow-hidden transition-all duration-200 ease-in-out ${isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
+        >
+          <div className="px-4 pb-4">
+            <div className="border-t border-border/50 pt-3">
+              {renderDetails(coupon)}
+              <div className="mt-3 flex justify-end">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/cupons/${coupon.id}`);
+                  }}
+                  className="text-xs"
+                >
+                  <Edit className="h-3.5 w-3.5 mr-1.5" />
+                  Editar cupom
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -317,84 +360,79 @@ export default function Cupons() {
   const renderDesktopCard = (coupon: Coupon) => {
     const status = statusConfig[coupon.status as CouponStatus];
     const borderLeft = statusBorderLeft[coupon.status as CouponStatus];
+    const isExpanded = expandedCards.has(coupon.id);
     return (
       <div
         key={coupon.id}
-        className={`bg-card rounded-xl border border-border/50 border-l-4 ${borderLeft} p-5 cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5`}
-        onClick={() => navigate(`/cupons/${coupon.id}`)}
+        className={`bg-card rounded-xl border border-border/50 border-l-4 ${borderLeft} transition-all duration-200 hover:shadow-lg`}
       >
-        {/* Topo: código + ações */}
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="p-1.5 bg-red-50 rounded shrink-0">
-              <Ticket className="h-4 w-4 text-red-600" />
+        {/* Parte clicável: resumo do cupom */}
+        <div
+          className="p-5 cursor-pointer"
+          onClick={() => toggleExpand(coupon.id)}
+        >
+          {/* Topo: código + ações */}
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="p-1.5 bg-red-50 rounded shrink-0">
+                <Ticket className="h-4 w-4 text-red-600" />
+              </div>
+              <span className="font-mono font-bold text-base text-gray-900 truncate">{coupon.code}</span>
             </div>
-            <span className="font-mono font-bold text-base text-gray-900 truncate">{coupon.code}</span>
+            <div onClick={(e) => e.stopPropagation()}>
+              {renderActions(coupon)}
+            </div>
           </div>
-          <div onClick={(e) => e.stopPropagation()}>
-            {renderActions(coupon)}
+
+          {/* Valor do desconto + status + seta */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 bg-red-50 rounded-lg px-3 py-1.5">
+                <span className="font-bold text-xl text-red-600">
+                  {formatCouponValue(coupon)}
+                </span>
+              </div>
+              <span className="text-xs text-muted-foreground">
+                {coupon.type === "percentage" ? "Percentual" : "Valor fixo"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge 
+                variant="outline" 
+                className={`${status.bgColor} ${status.color} ${status.borderColor} gap-1`}
+              >
+                {status.icon}
+                {status.label}
+              </Badge>
+              <ChevronDown 
+                className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} 
+              />
+            </div>
           </div>
         </div>
 
-        {/* Valor do desconto + status */}
-        <div className="flex items-center justify-between gap-2 mb-4">
-          <div className="flex items-center gap-1.5 bg-red-50 rounded-lg px-3 py-1.5">
-            {coupon.type === "percentage" ? (
-              <Percent className="h-4 w-4 text-red-600" />
-            ) : (
-              <DollarSign className="h-4 w-4 text-red-600" />
-            )}
-            <span className="font-bold text-xl text-red-600">
-              {coupon.type === "percentage" 
-                ? `${parseFloat(String(coupon.value))}%` 
-                : formatCurrency(coupon.value)}
-            </span>
-            <span className="text-xs text-muted-foreground ml-1">
-              {coupon.type === "percentage" ? "Percentual" : "Valor fixo"}
-            </span>
-          </div>
-          <Badge 
-            variant="outline" 
-            className={`${status.bgColor} ${status.color} ${status.borderColor} gap-1`}
-          >
-            {status.icon}
-            {status.label}
-          </Badge>
-        </div>
-
-        {/* Separador */}
-        <div className="border-t border-border/50 mb-3" />
-
-        {/* Detalhes */}
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
-          <div>
-            <span className="text-muted-foreground text-xs">Máx. Desconto</span>
-            <p className="text-gray-700 font-medium">{formatCurrency(coupon.maxDiscount)}</p>
-          </div>
-          <div>
-            <span className="text-muted-foreground text-xs">Mín. Pedido</span>
-            <p className="text-gray-700 font-medium">{formatCurrency(coupon.minOrderValue)}</p>
-          </div>
-          <div>
-            <span className="text-muted-foreground text-xs flex items-center gap-1">
-              <Calendar className="h-3 w-3" /> Validade
-            </span>
-            <p className="text-gray-700 font-medium">{formatDateRange(coupon.startDate, coupon.endDate)}</p>
-          </div>
-          <div>
-            <span className="text-muted-foreground text-xs">Uso</span>
-            <p className="text-gray-700 font-medium">
-              {coupon.usedCount}
-              {coupon.quantity && `/${coupon.quantity}`}
-            </p>
-          </div>
-          <div>
-            <span className="text-muted-foreground text-xs">Dias</span>
-            <p className="text-gray-700 font-medium">{formatActiveDays(coupon.activeDays)}</p>
-          </div>
-          <div>
-            <span className="text-muted-foreground text-xs">Origem</span>
-            <p className="text-gray-700 font-medium">{formatValidOrigins(coupon.validOrigins)}</p>
+        {/* Detalhes colapsáveis */}
+        <div
+          className={`overflow-hidden transition-all duration-200 ease-in-out ${isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
+        >
+          <div className="px-5 pb-5">
+            <div className="border-t border-border/50 pt-3">
+              {renderDetails(coupon)}
+              <div className="mt-3 flex justify-end">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/cupons/${coupon.id}`);
+                  }}
+                  className="text-xs"
+                >
+                  <Edit className="h-3.5 w-3.5 mr-1.5" />
+                  Editar cupom
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -495,7 +533,7 @@ export default function Cupons() {
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-32 w-full rounded-xl" />
+              <Skeleton key={i} className="h-24 w-full rounded-xl" />
             ))}
           </div>
         ) : coupons.length === 0 ? (

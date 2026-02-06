@@ -5478,3 +5478,7 @@
 ## Layout Responsivo da Página de Cupons
 - [x] Exibir cupons em grade (grid) no desktop
 - [x] Exibir cupons em lista no mobile
+
+## Correções Visuais dos Cards de Cupons
+- [x] Remover ícone % duplicado no card de cupom (manter apenas "10% Percentual")
+- [x] Tornar detalhes do cupom colapsáveis (dropdown ao clicar no card)
