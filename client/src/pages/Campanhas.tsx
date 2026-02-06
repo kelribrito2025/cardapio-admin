@@ -326,7 +326,7 @@ export default function Campanhas() {
             {/* Editor de Mensagem */}
             <div className="bg-card rounded-xl border border-border/50 p-5">
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-[12px] bg-blue-100 flex items-center justify-center">
                   <MessageSquare className="h-5 w-5 text-blue-600" />
                 </div>
                 <div className="flex-1">
@@ -379,7 +379,7 @@ export default function Campanhas() {
             {/* Seleção de Destinatários */}
             <div className="bg-card rounded-xl border border-border/50 p-5">
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-xl bg-purple-100 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-[12px] bg-purple-100 flex items-center justify-center">
                   <Users className="h-5 w-5 text-purple-600" />
                 </div>
                 <div className="flex-1">
