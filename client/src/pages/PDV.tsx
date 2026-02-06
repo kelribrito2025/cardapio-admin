@@ -491,6 +491,12 @@ export default function PDV() {
       return;
     }
 
+    // Para Mesa (Consumo): se não tem forma de pagamento, abre sidebar de pagamento
+    if (orderType === "mesa" && !paymentMethod) {
+      setShowPaymentSidebar(true);
+      return;
+    }
+
     // Para Retirada: se não tem forma de pagamento, abre sidebar de pagamento
     if (orderType === "retirada" && !paymentMethod) {
       setShowPaymentSidebar(true);
@@ -581,6 +587,15 @@ export default function PDV() {
 
   // Determinar texto e estado do botão principal
   const getMainButtonConfig = () => {
+    // Para Mesa (Consumo): se não tem forma de pagamento, mostrar botão Pagamento
+    if (orderType === "mesa" && !paymentMethod) {
+      return {
+        text: "Pagamento",
+        icon: <Wallet className="h-5 w-5 mr-2" />,
+        disabled: cart.length === 0
+      };
+    }
+    // Para Retirada: se não tem forma de pagamento, mostrar botão Pagamento
     if (orderType === "retirada" && !paymentMethod) {
       return {
         text: "Pagamento",
@@ -588,6 +603,7 @@ export default function PDV() {
         disabled: cart.length === 0
       };
     }
+    // Para Entrega: mostrar botão Avançar
     if (orderType === "entrega") {
       return {
         text: "Avançar",
@@ -595,6 +611,7 @@ export default function PDV() {
         disabled: cart.length === 0 || createOrderMutation.isPending
       };
     }
+    // Após selecionar pagamento: mostrar Finalizar Pedido
     return {
       text: "Finalizar Pedido",
       icon: null,
@@ -946,8 +963,8 @@ export default function PDV() {
 
               {/* Campo de Mesa removido - agora usamos a página de Mesas */}
 
-              {/* Indicador de forma de pagamento selecionada (Retirada) */}
-              {orderType === "retirada" && paymentMethod && (
+              {/* Indicador de forma de pagamento selecionada (Mesa ou Retirada) */}
+              {(orderType === "mesa" || orderType === "retirada") && paymentMethod && (
                 <div className="mt-3 flex items-center justify-between p-3 bg-green-50 rounded-xl border border-green-200">
                   <div className="flex items-center gap-2">
                     <div className="p-1.5 bg-green-500 text-white rounded-lg">

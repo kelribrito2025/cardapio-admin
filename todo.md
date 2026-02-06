@@ -5401,3 +5401,8 @@
 
 ## Botão Finalizar Pedido no PDV
 - [x] Alterar texto do botão de "Finalizar Pedido" para "Avançar" quando tipo de pedido for Entrega
+
+
+## Fluxo de Pagamento no Consumo (Mesa) no PDV
+- [x] Adicionar etapa de seleção de forma de pagamento antes de finalizar pedido no tipo Consumo (mesa)
+- [x] Seguir o mesmo fluxo do tipo Retirada: botão Pagamento → selecionar forma → Finalizar Pedido
