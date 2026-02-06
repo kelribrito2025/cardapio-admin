@@ -152,73 +152,69 @@ export default function Complementos() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <PageHeader
-          title="Complementos Globais"
-          description="Gerencie complementos de forma centralizada. Alterações aqui refletem em todos os produtos."
-        />
-
-        <SectionCard>
-          {/* Busca */}
-          <div className="mb-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar complemento..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-          </div>
-
-          {/* Lista de complementos */}
-          {!filteredComplements || filteredComplements.length === 0 ? (
-            <EmptyState
-              icon={Layers}
-              title="Nenhum complemento encontrado"
-              description={searchTerm ? "Tente buscar por outro termo" : "Os complementos cadastrados nos produtos aparecerão aqui"}
+      <PageHeader
+        title="Complementos Globais"
+        description="Gerencie complementos de forma centralizada. Alterações aqui refletem em todos os produtos."
+        actions={
+          <div className="relative w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar complemento..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 h-9"
             />
-          ) : (
-            <div className="space-y-3">
-              {filteredComplements.map((complement: { 
-                id: number; 
-                name: string; 
-                price: string; 
-                isActive: boolean; 
-                priceMode: "normal" | "free"; 
-                usageCount: number;
-                availabilityType: "always" | "scheduled";
-                availableDays: number[] | null;
-                availableHours: { day: number; startTime: string; endTime: string }[] | null;
-              }) => (
-                <ComplementRow
-                  key={complement.id}
-                  complement={complement}
-                  onToggleActive={handleToggleActive}
-                  onTogglePriceMode={handleTogglePriceMode}
-                  onUpdatePrice={handleUpdatePrice}
-                  onUpdateAvailability={handleUpdateAvailability}
-                  isUpdating={updateGlobalMutation.isPending}
-                  isExpanded={expandedComplementId === complement.id}
-                  onToggleExpand={(id) => setExpandedComplementId(expandedComplementId === id ? null : id)}
-                />
-              ))}
-            </div>
-          )}
-        </SectionCard>
+          </div>
+        }
+      />
 
-        {/* Legenda */}
-        <div className="text-sm text-muted-foreground bg-muted/50 p-4 rounded-lg">
-          <p className="font-medium mb-2">Como funciona:</p>
-          <ul className="space-y-1 list-disc list-inside">
-            <li><strong>Toggle Ativo/Pausado:</strong> Complemento pausado não aparece em nenhum produto no menu público</li>
-            <li><strong>Botão GRÁTIS:</strong> Quando ativo, o complemento aparece com R$ 0,00 em todos os produtos</li>
-            <li><strong>Editar preço:</strong> Clique no lápis para alterar o preço em todos os produtos</li>
-            <li><strong>Disponibilidade:</strong> Clique na seta para configurar dias e horários específicos</li>
-            <li><strong>Uso em X produtos:</strong> Indica em quantos grupos de complementos esse item está presente</li>
-          </ul>
+      {/* Lista de complementos */}
+      {!filteredComplements || filteredComplements.length === 0 ? (
+        <SectionCard className="mt-6">
+          <EmptyState
+            icon={Layers}
+            title="Nenhum complemento encontrado"
+            description={searchTerm ? "Tente buscar por outro termo" : "Os complementos cadastrados nos produtos aparecerão aqui"}
+          />
+        </SectionCard>
+      ) : (
+        <div className="space-y-3 mt-6">
+          {filteredComplements.map((complement: { 
+            id: number; 
+            name: string; 
+            price: string; 
+            isActive: boolean; 
+            priceMode: "normal" | "free"; 
+            usageCount: number;
+            availabilityType: "always" | "scheduled";
+            availableDays: number[] | null;
+            availableHours: { day: number; startTime: string; endTime: string }[] | null;
+          }) => (
+            <ComplementRow
+              key={complement.id}
+              complement={complement}
+              onToggleActive={handleToggleActive}
+              onTogglePriceMode={handleTogglePriceMode}
+              onUpdatePrice={handleUpdatePrice}
+              onUpdateAvailability={handleUpdateAvailability}
+              isUpdating={updateGlobalMutation.isPending}
+              isExpanded={expandedComplementId === complement.id}
+              onToggleExpand={(id) => setExpandedComplementId(expandedComplementId === id ? null : id)}
+            />
+          ))}
         </div>
+      )}
+
+      {/* Legenda */}
+      <div className="text-sm text-muted-foreground bg-muted/50 p-4 rounded-lg mt-6">
+        <p className="font-medium mb-2">Como funciona:</p>
+        <ul className="space-y-1 list-disc list-inside">
+          <li><strong>Toggle Ativo/Pausado:</strong> Complemento pausado não aparece em nenhum produto no menu público</li>
+          <li><strong>Botão GRÁTIS:</strong> Quando ativo, o complemento aparece com R$ 0,00 em todos os produtos</li>
+          <li><strong>Editar preço:</strong> Clique no lápis para alterar o preço em todos os produtos</li>
+          <li><strong>Disponibilidade:</strong> Clique na seta para configurar dias e horários específicos</li>
+          <li><strong>Uso em X produtos:</strong> Indica em quantos grupos de complementos esse item está presente</li>
+        </ul>
       </div>
     </AdminLayout>
   );

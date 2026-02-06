@@ -5458,3 +5458,9 @@
 
 ## Badge Grátis para Retirar/Consumir no Local
 - [x] Alterar "Retirar no local" e "Consumir no local" na sacola para usar o mesmo badge verde com check do Grátis
+
+## Padronizar Visual de Complementos Globais
+- [x] Remover container/card de fundo das listas de complementos
+- [x] Usar lista limpa, largura total, igual à página de Categorias
+- [x] Mesmo espaçamento, tipografia e hierarquia visual
+- [x] Manter ações (editar, preço, toggle) alinhadas à direita
