@@ -134,7 +134,7 @@ function SortableCategoryItem({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "flex items-center gap-4 p-4 bg-card border border-border/50 rounded-xl hover:bg-muted/30 transition-colors",
+        "flex items-center gap-4 p-4 bg-card border border-border/50 rounded-xl hover:bg-muted/30 transition-colors border-l-4 border-l-red-500",
         isDragging && "shadow-lg",
         !isEffectivelyActive && "opacity-60"
       )}
@@ -499,7 +499,7 @@ export default function Categorias() {
         />
         <div className="space-y-3 mt-6">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="bg-card rounded-xl border border-border/50 p-4">
+            <div key={i} className="bg-card rounded-xl border border-border/50 p-4 border-l-4 border-l-red-500">
               <div className="flex items-center gap-4">
                 <div className="skeleton h-5 w-5 rounded" />
                 <div className="skeleton h-5 w-48 rounded" />

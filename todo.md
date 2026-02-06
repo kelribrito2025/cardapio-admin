@@ -5464,3 +5464,7 @@
 - [x] Usar lista limpa, largura total, igual à página de Categorias
 - [x] Mesmo espaçamento, tipografia e hierarquia visual
 - [x] Manter ações (editar, preço, toggle) alinhadas à direita
+
+## Borda Vermelha Lateral nos Cards
+- [x] Adicionar borda vermelha na lateral esquerda dos cards de Categorias
+- [x] Adicionar borda vermelha na lateral esquerda dos cards de Complementos
