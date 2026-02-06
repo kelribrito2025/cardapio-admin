@@ -555,6 +555,11 @@ export default function MesasComandas() {
       const displayNum = table.displayNumber || table.number.toString();
       const matchesSearch = searchQuery === "" || displayNum.includes(searchQuery) || table.number.toString().includes(searchQuery);
       return matchesSpace && matchesStatus && matchesSearch;
+    }).sort((a, b) => {
+      // Ordenar por sortOrder primeiro, depois por número da mesa
+      const sortDiff = (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
+      if (sortDiff !== 0) return sortDiff;
+      return a.number - b.number;
     });
   }, [tables, selectedSpaceId, statusFilter, searchQuery]);
 

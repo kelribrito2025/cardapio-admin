@@ -3018,12 +3018,19 @@ export const appRouter = router({
         const establishment = await db.getEstablishmentByUserId(ctx.user.id);
         if (!establishment) throw new TRPCError({ code: "NOT_FOUND", message: "Estabelecimento não encontrado" });
         
+        // Buscar o maior sortOrder existente para que a nova mesa fique no final
+        const existingTables = await db.getTablesByEstablishment(establishment.id);
+        const maxSortOrder = existingTables.length > 0
+          ? Math.max(...existingTables.map(t => t.sortOrder ?? 0))
+          : -1;
+        
         const id = await db.createTable({
           establishmentId: establishment.id,
           number: input.number,
           name: input.name,
           capacity: input.capacity || 4,
           spaceId: input.spaceId,
+          sortOrder: maxSortOrder + 1,
         });
         
         return { id };
@@ -3170,13 +3177,19 @@ export const appRouter = router({
           }
         }
         
+        // Buscar o maior sortOrder existente para que novas mesas fiquem no final
+        const existingTables = await db.getTablesByEstablishment(establishment.id);
+        const maxSortOrder = existingTables.length > 0
+          ? Math.max(...existingTables.map(t => t.sortOrder ?? 0))
+          : -1;
+        
         const ids: number[] = [];
         for (let i = 0; i < input.count; i++) {
           const id = await db.createTable({
             establishmentId: establishment.id,
             number: input.startNumber + i,
             capacity: input.capacity || 4,
-            sortOrder: i,
+            sortOrder: maxSortOrder + 1 + i,
             spaceId: spaceId,
           });
           ids.push(id);

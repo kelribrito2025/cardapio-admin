@@ -5449,3 +5449,6 @@
 
 ## Formatação do Telefone na Reserva
 - [x] Alterar campo de telefone no modal de reserva para formato 88 9 9929-0000 (sem parênteses no DDD)
+
+## Bug: Ordenação das Mesas
+- [x] Corrigir ordenação das mesas para que novas mesas apareçam na posição correta (ordem numérica crescente) em vez de ficarem no meio das existentes
