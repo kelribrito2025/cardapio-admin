@@ -2610,6 +2610,7 @@ export const appRouter = router({
         notifyOnReady: z.boolean().optional(),
         notifyOnCompleted: z.boolean().optional(),
         notifyOnCancelled: z.boolean().optional(),
+        notifyOnReservation: z.boolean().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
@@ -2644,6 +2645,7 @@ export const appRouter = router({
           notifyOnReady: input.notifyOnReady,
           notifyOnCompleted: input.notifyOnCompleted,
           notifyOnCancelled: input.notifyOnCancelled,
+          notifyOnReservation: input.notifyOnReservation,
         });
         
         return { success: true };
@@ -2783,6 +2785,7 @@ export const appRouter = router({
         templateReady: z.string().nullable().optional(),
         templateCompleted: z.string().nullable().optional(),
         templateCancelled: z.string().nullable().optional(),
+        templateReservation: z.string().nullable().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
@@ -2797,6 +2800,7 @@ export const appRouter = router({
           templateReady: input.templateReady,
           templateCompleted: input.templateCompleted,
           templateCancelled: input.templateCancelled,
+          templateReservation: input.templateReservation,
         });
         
         return { success: true };
@@ -3090,7 +3094,7 @@ export const appRouter = router({
         reservedFor: z.string().optional(), // ISO string
         reservedGuests: z.number().optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const reservationData = input.status === "reserved" ? {
           reservedName: input.reservedName,
           reservedPhone: input.reservedPhone,
@@ -3098,6 +3102,42 @@ export const appRouter = router({
           reservedGuests: input.reservedGuests,
         } : undefined;
         await db.updateTableStatus(input.id, input.status, input.guests, reservationData);
+        
+        // Enviar WhatsApp de confirmação de reserva se telefone preenchido
+        if (input.status === "reserved" && input.reservedPhone) {
+          try {
+            const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+            if (establishment) {
+              const whatsappConfig = await db.getWhatsappConfig(establishment.id);
+              if (whatsappConfig?.instanceToken && whatsappConfig.notifyOnReservation) {
+                const { sendTextMessage } = await import('./_core/uazapi');
+                
+                // Buscar dados da mesa para pegar o número
+                const table = await db.getTableById(input.id);
+                const tableNumber = table?.number || input.id;
+                
+                // Gerar mensagem a partir do template ou usar padrão
+                const defaultTemplate = `Olá *{{cliente}}*! \ud83d\udc4b\ud83c\udffb\n\nSua reserva na *Mesa {{mesa}}* foi confirmada!\n\n\ud83d\udcc5 Horário: *{{horario}}*\n\ud83d\udc65 Pessoas: *{{pessoas}}*\n\n⚠️ *Obs:* Em caso de atraso, a mesa poderá ser ocupada.\n\nAguardamos você! \ud83d\ude0a\n\n*${establishment.name}*`;
+                
+                let message = whatsappConfig.templateReservation || defaultTemplate;
+                
+                // Substituir variáveis
+                message = message
+                  .replace(/\{\{mesa\}\}/g, String(tableNumber))
+                  .replace(/\{\{cliente\}\}/g, input.reservedName || 'Cliente')
+                  .replace(/\{\{horario\}\}/g, input.reservedFor ? new Date(input.reservedFor).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' }) : 'Não informado')
+                  .replace(/\{\{pessoas\}\}/g, input.reservedGuests ? String(input.reservedGuests) : 'Não informado');
+                
+                await sendTextMessage(whatsappConfig.instanceToken, input.reservedPhone, message);
+                console.log(`[WhatsApp] Confirmação de reserva enviada para ${input.reservedPhone} - Mesa ${tableNumber}`);
+              }
+            }
+          } catch (error) {
+            console.error('[WhatsApp] Erro ao enviar confirmação de reserva:', error);
+            // Não falhar a operação, apenas logar o erro
+          }
+        }
+        
         return { success: true };
       }),
 

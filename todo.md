@@ -5439,3 +5439,10 @@
 ## Ajustes Visuais na Reserva de Mesa
 - [x] Botão "Mesa X" no PDV Slidebar deve ficar azul quando mesa está reservada
 - [x] Mover horário da reserva para o topo do card (ao lado do ⋮) com ícone de relógio, igual ao timer de mesa ocupada
+
+## WhatsApp na Reserva de Mesa
+- [x] Criar template padrão "Reserva de Mesa – Confirmação" com variáveis {{mesa}}, {{cliente}}, {{horario}}, {{pessoas}}
+- [x] Adicionar template na UI de Configurações → WhatsApp → Templates
+- [x] Adicionar toggle "Enviar confirmação de reserva por WhatsApp" em Configurações → Notificações
+- [x] Implementar lógica de envio automático no backend ao reservar mesa (se telefone preenchido e toggle ativo)
+- [x] Mensagem deve conter aviso sobre atraso e liberação da mesa

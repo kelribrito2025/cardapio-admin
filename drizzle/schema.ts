@@ -478,6 +478,9 @@ export const whatsappConfig = mysqlTable("whatsappConfig", {
   templateReady: text("templateReady"), // Template para pronto
   templateCompleted: text("templateCompleted"), // Template para finalizado
   templateCancelled: text("templateCancelled"), // Template para cancelado
+  // Reserva de mesa
+  notifyOnReservation: boolean("notifyOnReservation").default(false).notNull(), // Enviar confirmação de reserva por WhatsApp
+  templateReservation: text("templateReservation"), // Template para reserva de mesa
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

@@ -43,6 +43,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
   const [notifyOnReady, setNotifyOnReady] = useState(true);
   const [notifyOnCompleted, setNotifyOnCompleted] = useState(false);
   const [notifyOnCancelled, setNotifyOnCancelled] = useState(true);
+  const [notifyOnReservation, setNotifyOnReservation] = useState(false);
   
   // Templates padrão
   const DEFAULT_TEMPLATES = {
@@ -51,6 +52,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
     ready: `✅ Seu pedido *{{orderNumber}}* está pronto!\n\n{{deliveryMessage}}`,
     completed: `Seu pedido {{orderNumber}} foi finalizado!\n\n📌 Atualização de fidelidade\n\n*+1 carimbo* adicionado ao seu cartão.\n\n❤️ Obrigado pela preferência!\n\n*{{establishmentName}}*`,
     cancelled: `Olá *{{customerName}}!*\n\n❌ Infelizmente seu pedido {{orderNumber}} foi cancelado.\n\nMotivo: *{{cancellationReason}}*`,
+    reservation: `Olá *{{cliente}}*! \ud83d\udc4b\ud83c\udffb\n\nSua reserva na *Mesa {{mesa}}* foi confirmada!\n\n\ud83d\udcc5 Horário: *{{horario}}*\n\ud83d\udc65 Pessoas: *{{pessoas}}*\n\n⚠️ *Obs:* Em caso de atraso, a mesa poderá ser ocupada.\n\nAguardamos você! \ud83d\ude0a`,
   };
   
   // Templates
@@ -59,6 +61,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
   const [templateReady, setTemplateReady] = useState(DEFAULT_TEMPLATES.ready);
   const [templateCompleted, setTemplateCompleted] = useState(DEFAULT_TEMPLATES.completed);
   const [templateCancelled, setTemplateCancelled] = useState(DEFAULT_TEMPLATES.cancelled);
+  const [templateReservation, setTemplateReservation] = useState(DEFAULT_TEMPLATES.reservation);
   
   const configQuery = trpc.whatsapp.getConfig.useQuery();
   const statusQuery = trpc.whatsapp.getStatus.useQuery(undefined, {
@@ -128,12 +131,14 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
       setNotifyOnReady(configQuery.data.notifyOnReady ?? true);
       setNotifyOnCompleted(configQuery.data.notifyOnCompleted ?? false);
       setNotifyOnCancelled(configQuery.data.notifyOnCancelled ?? true);
+      setNotifyOnReservation((configQuery.data as any).notifyOnReservation ?? false);
       // Usar templates salvos ou manter os padrões
       setTemplateNewOrder(configQuery.data.templateNewOrder || DEFAULT_TEMPLATES.newOrder);
       setTemplatePreparing(configQuery.data.templatePreparing || DEFAULT_TEMPLATES.preparing);
       setTemplateReady(configQuery.data.templateReady || DEFAULT_TEMPLATES.ready);
       setTemplateCompleted(configQuery.data.templateCompleted || DEFAULT_TEMPLATES.completed);
       setTemplateCancelled(configQuery.data.templateCancelled || DEFAULT_TEMPLATES.cancelled);
+      setTemplateReservation((configQuery.data as any).templateReservation || DEFAULT_TEMPLATES.reservation);
     }
   }, [configQuery.data]);
   
@@ -152,6 +157,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
       notifyOnReady,
       notifyOnCompleted,
       notifyOnCancelled,
+      notifyOnReservation,
     });
   };
   
@@ -178,6 +184,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
       templateReady: templateReady || null,
       templateCompleted: templateCompleted || null,
       templateCancelled: templateCancelled || null,
+      templateReservation: templateReservation || null,
     });
   };
   
@@ -412,6 +419,23 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
                     onCheckedChange={setNotifyOnCancelled}
                   />
                 </div>
+                
+                <div className="border-t pt-4">
+                  <p className="text-sm font-medium text-muted-foreground mb-4">Reserva de Mesa</p>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Confirmação de Reserva</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Enviar confirmação por WhatsApp ao reservar mesa
+                    </p>
+                  </div>
+                  <Switch
+                    checked={notifyOnReservation}
+                    onCheckedChange={setNotifyOnReservation}
+                  />
+                </div>
               </div>
               
               <Button 
@@ -440,6 +464,8 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
           setTemplateCompleted={setTemplateCompleted}
           templateCancelled={templateCancelled}
           setTemplateCancelled={setTemplateCancelled}
+          templateReservation={templateReservation}
+          setTemplateReservation={setTemplateReservation}
           onSave={handleSaveTemplates}
           isSaving={saveTemplatesMutation.isPending}
           defaultTemplates={DEFAULT_TEMPLATES}
@@ -573,6 +599,23 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
                     onCheckedChange={setNotifyOnCancelled}
                   />
                 </div>
+                
+                <div className="border-t pt-4">
+                  <p className="text-sm font-medium text-muted-foreground mb-4">Reserva de Mesa</p>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Confirmação de Reserva</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Enviar confirmação por WhatsApp ao reservar mesa
+                    </p>
+                  </div>
+                  <Switch
+                    checked={notifyOnReservation}
+                    onCheckedChange={setNotifyOnReservation}
+                  />
+                </div>
               </div>
               
               <Button 
@@ -601,6 +644,8 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
             setTemplateCompleted={setTemplateCompleted}
             templateCancelled={templateCancelled}
             setTemplateCancelled={setTemplateCancelled}
+            templateReservation={templateReservation}
+            setTemplateReservation={setTemplateReservation}
             onSave={handleSaveTemplates}
             isSaving={saveTemplatesMutation.isPending}
             defaultTemplates={DEFAULT_TEMPLATES}

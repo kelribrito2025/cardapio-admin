@@ -32,6 +32,8 @@ interface TemplatesEditorProps {
   setTemplateCompleted: (value: string) => void;
   templateCancelled: string;
   setTemplateCancelled: (value: string) => void;
+  templateReservation?: string;
+  setTemplateReservation?: (value: string) => void;
   onSave: () => void;
   isSaving: boolean;
   defaultTemplates: {
@@ -40,12 +42,13 @@ interface TemplatesEditorProps {
     ready: string;
     completed: string;
     cancelled: string;
+    reservation?: string;
   };
   restaurantName?: string;
   restaurantLogo?: string | null;
 }
 
-type TemplateType = 'newOrder' | 'preparing' | 'ready' | 'completed' | 'cancelled';
+type TemplateType = 'newOrder' | 'preparing' | 'ready' | 'completed' | 'cancelled' | 'reservation';
 
 const TEMPLATE_CONFIG: Record<TemplateType, { 
   label: string; 
@@ -89,6 +92,13 @@ const TEMPLATE_CONFIG: Record<TemplateType, {
     bgColor: 'bg-red-50 border-red-200',
     description: 'Enviada quando o pedido é cancelado'
   },
+  reservation: {
+    label: 'Reserva de Mesa',
+    icon: <ShoppingBag className="h-4 w-4" />,
+    color: 'text-cyan-600',
+    bgColor: 'bg-cyan-50 border-cyan-200',
+    description: 'Enviada ao confirmar reserva de mesa'
+  },
 };
 
 const VARIABLES = [
@@ -101,6 +111,13 @@ const VARIABLES = [
   { name: '{{itensPedido}}', label: 'Itens do pedido', description: 'Lista de itens do pedido' },
 ];
 
+const RESERVATION_VARIABLES = [
+  { name: '{{mesa}}', label: 'Nº da mesa', description: 'Número da mesa reservada' },
+  { name: '{{cliente}}', label: 'Nome do cliente', description: 'Nome do cliente da reserva' },
+  { name: '{{horario}}', label: 'Horário', description: 'Horário da reserva' },
+  { name: '{{pessoas}}', label: 'Qtd pessoas', description: 'Quantidade de pessoas' },
+];
+
 // Função para formatar texto estilo WhatsApp
 function formatWhatsAppText(text: string): React.ReactNode {
   // Substitui variáveis por valores de exemplo
@@ -109,9 +126,13 @@ function formatWhatsAppText(text: string): React.ReactNode {
     .replace(/\{\{orderNumber\}\}/g, '#1234')
     .replace(/\{\{establishmentName\}\}/g, 'Restaurante Exemplo')
     .replace(/\{\{greeting\}\}/g, 'Boa tarde')
-    .replace(/\{\{deliveryMessage\}\}/g, '🛵 Nosso entregador já está a caminho.')
+    .replace(/\{\{deliveryMessage\}\}/g, '\ud83d\udee5 Nosso entregador já está a caminho.')
     .replace(/\{\{cancellationReason\}\}/g, 'Item indisponível')
-    .replace(/\{\{itensPedido\}\}/g, '• 1x Pizza Margherita\n• 1x Refrigerante');
+    .replace(/\{\{itensPedido\}\}/g, '\u2022 1x Pizza Margherita\n\u2022 1x Refrigerante')
+    .replace(/\{\{mesa\}\}/g, '5')
+    .replace(/\{\{cliente\}\}/g, 'Maria Silva')
+    .replace(/\{\{horario\}\}/g, '19:30')
+    .replace(/\{\{pessoas\}\}/g, '4');
 
   // Processa formatação WhatsApp
   const parts: React.ReactNode[] = [];
@@ -150,6 +171,8 @@ export function TemplatesEditor({
   setTemplateCompleted,
   templateCancelled,
   setTemplateCancelled,
+  templateReservation,
+  setTemplateReservation,
   onSave,
   isSaving,
   defaultTemplates,
@@ -159,13 +182,17 @@ export function TemplatesEditor({
   const [activeTemplate, setActiveTemplate] = useState<TemplateType>('newOrder');
   const [copiedVar, setCopiedVar] = useState<string | null>(null);
 
-  const templates: Record<TemplateType, { value: string; setter: (v: string) => void; default: string }> = {
+  const baseTemplates: Partial<Record<TemplateType, { value: string; setter: (v: string) => void; default: string }>> = {
     newOrder: { value: templateNewOrder, setter: setTemplateNewOrder, default: defaultTemplates.newOrder },
     preparing: { value: templatePreparing, setter: setTemplatePreparing, default: defaultTemplates.preparing },
     ready: { value: templateReady, setter: setTemplateReady, default: defaultTemplates.ready },
     completed: { value: templateCompleted, setter: setTemplateCompleted, default: defaultTemplates.completed },
     cancelled: { value: templateCancelled, setter: setTemplateCancelled, default: defaultTemplates.cancelled },
   };
+  if (templateReservation !== undefined && setTemplateReservation && defaultTemplates.reservation) {
+    baseTemplates.reservation = { value: templateReservation, setter: setTemplateReservation, default: defaultTemplates.reservation };
+  }
+  const templates = baseTemplates as Record<TemplateType, { value: string; setter: (v: string) => void; default: string }>;
 
   const currentTemplate = templates[activeTemplate];
   const config = TEMPLATE_CONFIG[activeTemplate];
@@ -207,7 +234,7 @@ export function TemplatesEditor({
 
       {/* Tabs de navegação entre templates */}
       <div className="flex gap-2 overflow-x-auto pb-2">
-        {(Object.keys(TEMPLATE_CONFIG) as TemplateType[]).map((type) => {
+        {(Object.keys(TEMPLATE_CONFIG) as TemplateType[]).filter((type) => type !== 'reservation' || templates.reservation).map((type) => {
           const cfg = TEMPLATE_CONFIG[type];
           const isActive = activeTemplate === type;
           return (
@@ -235,7 +262,7 @@ export function TemplatesEditor({
           <span className="text-xs text-slate-400 ml-1">• Clique para inserir</span>
         </div>
         <div className="flex flex-wrap gap-2">
-          {VARIABLES.map((v) => (
+          {(activeTemplate === 'reservation' ? RESERVATION_VARIABLES : VARIABLES).map((v) => (
             <button
               key={v.name}
               onClick={() => handleInsertVariable(v.name)}

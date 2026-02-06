@@ -3677,6 +3677,8 @@ export async function upsertWhatsappConfig(data: {
   templateReady?: string | null;
   templateCompleted?: string | null;
   templateCancelled?: string | null;
+  notifyOnReservation?: boolean;
+  templateReservation?: string | null;
 }): Promise<number> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -3703,6 +3705,8 @@ export async function upsertWhatsappConfig(data: {
         templateReady: data.templateReady !== undefined ? data.templateReady : existing.templateReady,
         templateCompleted: data.templateCompleted !== undefined ? data.templateCompleted : existing.templateCompleted,
         templateCancelled: data.templateCancelled !== undefined ? data.templateCancelled : existing.templateCancelled,
+        notifyOnReservation: data.notifyOnReservation ?? existing.notifyOnReservation,
+        templateReservation: data.templateReservation !== undefined ? data.templateReservation : existing.templateReservation,
       })
       .where(eq(whatsappConfig.establishmentId, data.establishmentId));
     return existing.id;
@@ -3758,6 +3762,8 @@ Motivo: *{{cancellationReason}}*`;
     templateReady: data.templateReady || defaultTemplateReady,
     templateCompleted: data.templateCompleted || defaultTemplateCompleted,
     templateCancelled: data.templateCancelled || defaultTemplateCancelled,
+    notifyOnReservation: data.notifyOnReservation ?? false,
+    templateReservation: data.templateReservation || null,
   });
   
   return result[0].insertId;

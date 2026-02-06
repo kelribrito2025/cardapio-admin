@@ -8,10 +8,18 @@ vi.mock("./db", async (importOriginal) => {
   return {
     ...actual,
     updateTableStatus: vi.fn().mockResolvedValue(undefined),
+    getEstablishmentByUserId: vi.fn().mockResolvedValue({ id: 1, name: "Restaurante Teste" }),
+    getWhatsappConfig: vi.fn().mockResolvedValue(null),
+    getTableById: vi.fn().mockResolvedValue({ id: 1, number: 5 }),
   };
 });
 
-import { updateTableStatus } from "./db";
+// Mock uazapi
+vi.mock("./_core/uazapi", () => ({
+  sendTextMessage: vi.fn().mockResolvedValue(undefined),
+}));
+
+import { updateTableStatus, getWhatsappConfig } from "./db";
 
 type AuthenticatedUser = NonNullable<TrpcContext["user"]>;
 
@@ -47,7 +55,7 @@ describe("tables.updateStatus - reservation", () => {
     vi.clearAllMocks();
   });
 
-  it("should reserve a table with name, phone, and time", async () => {
+  it("should reserve a table with name, phone, time and guests", async () => {
     const { ctx } = createAuthContext();
     const caller = appRouter.createCaller(ctx);
 
@@ -57,6 +65,7 @@ describe("tables.updateStatus - reservation", () => {
       reservedName: "Maria Silva",
       reservedPhone: "(11) 99999-0000",
       reservedFor: "2026-02-06T19:00:00.000Z",
+      reservedGuests: 4,
     });
 
     expect(result).toEqual({ success: true });
@@ -68,6 +77,7 @@ describe("tables.updateStatus - reservation", () => {
         reservedName: "Maria Silva",
         reservedPhone: "(11) 99999-0000",
         reservedFor: expect.any(Date),
+        reservedGuests: 4,
       }
     );
   });
@@ -90,6 +100,7 @@ describe("tables.updateStatus - reservation", () => {
         reservedName: undefined,
         reservedPhone: undefined,
         reservedFor: null,
+        reservedGuests: undefined,
       }
     );
   });
@@ -141,5 +152,69 @@ describe("tables.updateStatus - reservation", () => {
         status: "invalid_status" as any,
       })
     ).rejects.toThrow();
+  });
+
+  it("should send WhatsApp when reserving with phone and notification enabled", async () => {
+    const { sendTextMessage } = await import("./_core/uazapi");
+    (getWhatsappConfig as any).mockResolvedValueOnce({
+      instanceToken: "test-token",
+      notifyOnReservation: true,
+      templateReservation: null,
+    });
+
+    const { ctx } = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+
+    await caller.tables.updateStatus({
+      id: 1,
+      status: "reserved",
+      reservedName: "João",
+      reservedPhone: "5511999990000",
+      reservedFor: "2026-02-06T19:30:00.000Z",
+      reservedGuests: 3,
+    });
+
+    expect(sendTextMessage).toHaveBeenCalledWith(
+      "test-token",
+      "5511999990000",
+      expect.stringContaining("Mesa 5")
+    );
+  });
+
+  it("should NOT send WhatsApp when notification is disabled", async () => {
+    const { sendTextMessage } = await import("./_core/uazapi");
+    (getWhatsappConfig as any).mockResolvedValueOnce({
+      instanceToken: "test-token",
+      notifyOnReservation: false,
+      templateReservation: null,
+    });
+
+    const { ctx } = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+
+    await caller.tables.updateStatus({
+      id: 1,
+      status: "reserved",
+      reservedName: "João",
+      reservedPhone: "5511999990000",
+    });
+
+    expect(sendTextMessage).not.toHaveBeenCalled();
+  });
+
+  it("should NOT send WhatsApp when phone is not provided", async () => {
+    const { sendTextMessage } = await import("./_core/uazapi");
+
+    const { ctx } = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+
+    await caller.tables.updateStatus({
+      id: 1,
+      status: "reserved",
+      reservedName: "João",
+    });
+
+    // No phone = no WhatsApp attempt
+    expect(sendTextMessage).not.toHaveBeenCalled();
   });
 });
