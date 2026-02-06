@@ -65,7 +65,7 @@ import {
   QrCode,
   Star,
 } from "lucide-react";
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
 import { formatDistanceToNow, format } from "date-fns";
@@ -329,18 +329,6 @@ export default function Pedidos() {
 
   // Hook para gerenciar contagem de pedidos novos na sidebar
   const { decrementCount } = useNewOrders();
-
-  // ============ AUTO-ACCEPT TIMER (estados) ============
-  const [autoAcceptCountdowns, setAutoAcceptCountdowns] = useState<Record<number, number>>({});
-  const autoAcceptedRef = useRef<Set<number>>(new Set());
-  // Rastrear quando cada pedido foi visto pela primeira vez no frontend
-  // O countdown começa a partir deste momento, NÃO desde o createdAt
-  const orderFirstSeenRef = useRef<Map<number, number>>(new Map());
-  const autoAcceptEnabled = printerSettings?.autoAcceptEnabled ?? false;
-  const autoAcceptTimerSeconds = printerSettings?.autoAcceptTimerSeconds ?? 10;
-  // Ref estável para allOrders para evitar loop infinito no useEffect do auto-accept
-  const allOrdersRef = useRef(allOrders);
-  allOrdersRef.current = allOrders;
 
   const updateStatusMutation = trpc.orders.updateStatus.useMutation({
     onMutate: async (variables) => {
@@ -668,10 +656,7 @@ export default function Pedidos() {
     }).format(Number(value));
   };
 
-  // Mutation para impressão server-side via rede (sem popup do Multi Printer)
-  const printServerSideMutation = trpc.printer.printServerSide.useMutation();
-
-  const handleStatusUpdate = (orderId: number, newStatus: OrderStatus, isAutoAccepted?: boolean) => {
+  const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
     setLoadingOrderId(orderId);
     updateStatusMutation.mutate(
       { id: orderId, status: newStatus },
@@ -683,27 +668,7 @@ export default function Pedidos() {
     );
     
     if (newStatus === "preparing") {
-      // Se foi auto-aceito, imprimir via rede server-side (sem popup do Multi Printer)
-      if (isAutoAccepted && establishmentId) {
-        toast.success("📦 Pedido auto-aceito!", {
-          description: "Impressão enviada automaticamente via rede.",
-          duration: 3000,
-        });
-        printServerSideMutation.mutate(
-          { orderId, establishmentId },
-          {
-            onError: (err) => {
-              console.error('[AutoAccept:Print] Erro:', err);
-              toast.error("Erro na impressão automática", {
-                description: "O pedido foi aceito mas houve erro na impressão via rede.",
-              });
-            },
-          }
-        );
-        return;
-      }
-      
-      // Aceite manual - usar método de impressão favorito
+      // Verificar método de impressão favorito
       const printMethod = printerSettings?.defaultPrintMethod || 'normal';
       
       if (printMethod === 'android') {
@@ -728,77 +693,6 @@ export default function Pedidos() {
       }
     }
   };
-
-  // ============ AUTO-ACCEPT TIMER (efeito) ============
-  // Usa allOrdersRef para evitar que mudanças em allOrders (via optimistic update)
-  // re-disparem o effect e causem loop infinito (Maximum update depth exceeded)
-  useEffect(() => {
-    if (!autoAcceptEnabled) {
-      setAutoAcceptCountdowns({});
-      return;
-    }
-
-    const updateCountdowns = () => {
-      const currentOrders = allOrdersRef.current;
-      const currentNewOrders = currentOrders.filter(o => o.status === 'new');
-      
-      if (currentNewOrders.length === 0) {
-        setAutoAcceptCountdowns(prev => {
-          if (Object.keys(prev).length === 0) return prev;
-          return {};
-        });
-        return;
-      }
-
-      const now = Date.now();
-      const countdowns: Record<number, number> = {};
-      
-      for (const order of currentNewOrders) {
-        if (autoAcceptedRef.current.has(order.id)) continue;
-        
-        // Registrar quando o pedido foi visto pela primeira vez no frontend
-        // O countdown começa a partir deste momento, garantindo que o usuário
-        // sempre veja o timer completo independente de quando o pedido foi criado
-        if (!orderFirstSeenRef.current.has(order.id)) {
-          orderFirstSeenRef.current.set(order.id, now);
-        }
-        
-        const firstSeen = orderFirstSeenRef.current.get(order.id)!;
-        const elapsed = (now - firstSeen) / 1000;
-        const remaining = Math.max(0, Math.ceil(autoAcceptTimerSeconds - elapsed));
-        countdowns[order.id] = remaining;
-        
-        if (remaining <= 0 && !autoAcceptedRef.current.has(order.id)) {
-          autoAcceptedRef.current.add(order.id);
-          // Usar setTimeout para evitar setState durante render
-          // Passar isAutoAccepted=true para usar impressão via rede server-side (sem popup Multi Printer)
-          setTimeout(() => handleStatusUpdate(order.id, 'preparing', true), 0);
-        }
-      }
-      
-      setAutoAcceptCountdowns(countdowns);
-    };
-
-    updateCountdowns();
-    const interval = setInterval(updateCountdowns, 1000);
-    return () => clearInterval(interval);
-  }, [autoAcceptEnabled, autoAcceptTimerSeconds]);
-
-  // Limpar pedidos auto-aceitos antigos e firstSeen do ref
-  useEffect(() => {
-    const newOrderIds = new Set(allOrders.filter(o => o.status === 'new').map(o => o.id));
-    autoAcceptedRef.current.forEach(id => {
-      if (!newOrderIds.has(id)) {
-        autoAcceptedRef.current.delete(id);
-      }
-    });
-    // Limpar firstSeen de pedidos que não são mais "new"
-    orderFirstSeenRef.current.forEach((_, id) => {
-      if (!newOrderIds.has(id)) {
-        orderFirstSeenRef.current.delete(id);
-      }
-    });
-  }, [allOrders]);
 
   const handleCancelOrder = () => {
     if (orderToCancel) {
@@ -1179,47 +1073,14 @@ export default function Pedidos() {
                             {nextAction && (
                               <Button
                                 size="sm"
-                                className={cn(
-                                  "flex-1 h-9 rounded-lg shadow-sm text-sm relative overflow-hidden",
-                                  autoAcceptEnabled && order.status === 'new' && autoAcceptCountdowns[order.id] !== undefined
-                                    ? "pr-10"
-                                    : ""
-                                )}
+                                className="flex-1 h-9 rounded-lg shadow-sm text-sm"
                                 onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
                                 disabled={loadingOrderId !== null}
                               >
                                 {loadingOrderId === order.id ? (
                                   <Loader2 className="h-4 w-4 animate-spin" />
                                 ) : (
-                                  <>
-                                    {nextAction.label}
-                                    {autoAcceptEnabled && order.status === 'new' && autoAcceptCountdowns[order.id] !== undefined && autoAcceptCountdowns[order.id] > 0 && (
-                                      <span className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center justify-center">
-                                        <svg className="h-6 w-6 -rotate-90" viewBox="0 0 24 24">
-                                          <circle
-                                            cx="12" cy="12" r="10"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            opacity="0.2"
-                                          />
-                                          <circle
-                                            cx="12" cy="12" r="10"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2.5"
-                                            strokeDasharray={`${2 * Math.PI * 10}`}
-                                            strokeDashoffset={`${2 * Math.PI * 10 * (1 - autoAcceptCountdowns[order.id] / autoAcceptTimerSeconds)}`}
-                                            strokeLinecap="round"
-                                            className="transition-all duration-1000 ease-linear"
-                                          />
-                                        </svg>
-                                        <span className="absolute text-[9px] font-bold">
-                                          {autoAcceptCountdowns[order.id]}
-                                        </span>
-                                      </span>
-                                    )}
-                                  </>
+                                  nextAction.label
                                 )}
                               </Button>
                             )}

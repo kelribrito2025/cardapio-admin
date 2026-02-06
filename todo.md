@@ -5410,25 +5410,3 @@
 
 ## Bug: Modal de Configuração da Aba Duplicado
 - [x] Corrigir modal de Configuração da Aba que aparece duplicado (aba atrás da aba)
-
-
-## Aceite Automático de Pedidos com Timer
-- [ ] Adicionar configuração de aceite automático no banco (tabela settings)
-- [ ] Criar procedures tRPC para ler/salvar configuração de aceite automático
-- [ ] Implementar timer no servidor para aceite automático persistente
-- [ ] Adicionar timer visual (countdown) no card do pedido no frontend
-- [ ] Adicionar opção de configuração no painel de settings
-- [ ] Integrar com impressão automática nas impressoras Android
-
-## Auto-Aceite de Pedidos
-- [x] Adicionar campos autoAcceptEnabled e autoAcceptTimerSeconds no schema
-- [x] Implementar lógica de timer server-side para aceite automático
-- [x] Timer visual circular no botão Aceitar (countdown)
-- [x] Configuração de auto-aceite no painel de Impressora
-- [x] Cache de configurações com invalidação ao salvar
-- [x] Testes vitest para o módulo autoAccept
-- [x] Fix: Maximum update depth exceeded na página /pedidos (useRef para allOrders no auto-accept timer)
-- [x] Auto-aceite: imprimir via rede server-side em vez de abrir Multi Printer (eliminar popup Android)
-- [x] Criar procedure tRPC para impressão server-side via rede
-- [x] Ajustar auto-aceite server-side para priorizar frontend e usar impressão via rede como fallback
-- [x] Bug CRÍTICO: pedidos do cardápio público vão direto para 'preparing' sem aparecer em 'Novos' - corrigido: countdown agora começa quando pedido aparece na tela (firstSeen), não desde createdAt

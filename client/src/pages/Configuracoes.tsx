@@ -79,8 +79,6 @@ import { PrintTestTab } from "@/components/PrintTestTab";
 import { IntegrationsTab } from "@/components/IntegrationsTab";
 import { SettingsSidebar, SettingsSection } from "@/components/SettingsSidebar";
 import { AccountSecuritySection } from "@/components/AccountSecuritySection";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Slider } from "@/components/ui/slider";
 
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
@@ -220,10 +218,6 @@ export default function Configuracoes() {
   const [isTestingPosPrinter, setIsTestingPosPrinter] = useState(false);
   const [posPrinterTestResult, setPosPrinterTestResult] = useState<{ success: boolean; message: string } | null>(null);
   
-  // Auto-accept state
-  const [autoAcceptEnabled, setAutoAcceptEnabled] = useState(false);
-  const [autoAcceptTimerSeconds, setAutoAcceptTimerSeconds] = useState(10);
-
   // Impressão Direta via Rede state
   const [directPrintEnabled, setDirectPrintEnabled] = useState(false);
   const [directPrintIp, setDirectPrintIp] = useState("");
@@ -361,9 +355,6 @@ export default function Configuracoes() {
       setDirectPrintEnabled((printerSettings as any).directPrintEnabled || false);
       setDirectPrintIp((printerSettings as any).directPrintIp || "");
       setDirectPrintPort((printerSettings as any).directPrintPort || 9100);
-      // Auto-accept
-      setAutoAcceptEnabled((printerSettings as any).autoAcceptEnabled || false);
-      setAutoAcceptTimerSeconds((printerSettings as any).autoAcceptTimerSeconds || 10);
     }
   }, [printerSettings]);
 
@@ -636,8 +627,6 @@ export default function Configuracoes() {
       directPrintEnabled,
       directPrintIp: directPrintIp || null,
       directPrintPort,
-      autoAcceptEnabled,
-      autoAcceptTimerSeconds,
     });
   };
   
@@ -2125,88 +2114,6 @@ export default function Configuracoes() {
           {/* Impressora e Teste Section */}
           {activeSection === "impressora" && (
             <div className="space-y-5">
-              {/* Auto-Aceite de Pedidos */}
-              <Card className="shadow-none border-border/50">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-emerald-100">
-                      <Clock className="h-4 w-4 text-emerald-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base">Aceite Automático de Pedidos</CardTitle>
-                      <CardDescription className="text-xs">
-                        Aceita pedidos automaticamente após o timer expirar
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="autoAcceptEnabled" className="text-sm font-medium">Ativar aceite automático</Label>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Pedidos novos serão aceitos automaticamente após o tempo configurado
-                      </p>
-                    </div>
-                    <Switch
-                      id="autoAcceptEnabled"
-                      checked={autoAcceptEnabled}
-                      onCheckedChange={setAutoAcceptEnabled}
-                    />
-                  </div>
-
-                  {autoAcceptEnabled && (
-                    <div className="space-y-3 pt-2 border-t border-border/50">
-                      <div>
-                        <Label className="text-sm font-medium">Tempo para aceite automático</Label>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          Segundos até o pedido ser aceito automaticamente: <span className="font-bold text-foreground">{autoAcceptTimerSeconds}s</span>
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <span className="text-xs text-muted-foreground w-6">5s</span>
-                        <Slider
-                          value={[autoAcceptTimerSeconds]}
-                          onValueChange={([v]) => setAutoAcceptTimerSeconds(v)}
-                          min={5}
-                          max={30}
-                          step={5}
-                          className="flex-1"
-                        />
-                        <span className="text-xs text-muted-foreground w-8">30s</span>
-                      </div>
-                      <div className="flex gap-2">
-                        {[5, 10, 15, 20, 30].map((s) => (
-                          <Button
-                            key={s}
-                            variant={autoAcceptTimerSeconds === s ? "default" : "outline"}
-                            size="sm"
-                            className="text-xs h-7 px-2.5"
-                            onClick={() => setAutoAcceptTimerSeconds(s)}
-                          >
-                            {s}s
-                          </Button>
-                        ))}
-                      </div>
-                      <p className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-2.5">
-                        Quando ativado, cada pedido novo exibirá um countdown no botão "Aceitar". Ao zerar, o pedido será aceito e impresso automaticamente.
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="flex justify-end">
-                    <Button 
-                      onClick={handleSavePrinterSettings} 
-                      disabled={savePrinterSettingsMutation.isPending}
-                      size="sm"
-                    >
-                      <Save className="h-4 w-4 mr-2" />
-                      {savePrinterSettingsMutation.isPending ? "Salvando..." : "Salvar"}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
               <PrintTestTab 
                 establishmentId={establishment?.id || 0}
                 printers={printers}

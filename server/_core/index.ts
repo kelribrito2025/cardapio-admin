@@ -2174,10 +2174,6 @@ async function startServer() {
     console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
 
-  // Iniciar loop de auto-aceite de pedidos
-  const { startAutoAcceptLoop } = await import("../autoAccept");
-  startAutoAcceptLoop();
-
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
   });

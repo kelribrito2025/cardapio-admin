@@ -427,10 +427,7 @@ export const printerSettings = mysqlTable("printerSettings", {
   // Preferência de impressão padrão ao aceitar pedidos
   defaultPrintMethod: mysqlEnum("defaultPrintMethod", ["normal", "android"]).default("normal").notNull(), // Método de impressão favorito
   // Modo de impressão HTML vs ESC/POS
-  htmlPrintEnabled: boolean("htmlPrintEnabled").default(true).notNull(),
-  // Aceite automatico de pedidos (para impressoras Android - NAO e iFood)
-  autoAcceptEnabled: boolean("autoAcceptEnabled").default(false).notNull(),
-  autoAcceptTimerSeconds: int("autoAcceptTimerSeconds").default(10).notNull(), // Tempo em segundos (10 ou 15)
+  htmlPrintEnabled: boolean("htmlPrintEnabled").default(true).notNull(), // Usar layout HTML (mais flexível) ou ESC/POS (compatível)
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

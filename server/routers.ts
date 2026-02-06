@@ -2144,8 +2144,6 @@ export const appRouter = router({
           obsFontWeight: 500,
           showDividers: true,
           defaultPrintMethod: 'normal' as const,
-          autoAcceptEnabled: false,
-          autoAcceptTimerSeconds: 10,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -2185,14 +2183,9 @@ export const appRouter = router({
         itemBorderStyle: z.enum(['rounded', 'dashed']).optional(),
         defaultPrintMethod: z.enum(['normal', 'android']).optional(),
         htmlPrintEnabled: z.boolean().optional(),
-        autoAcceptEnabled: z.boolean().optional(),
-        autoAcceptTimerSeconds: z.number().min(5).max(30).optional(),
       }))
       .mutation(async ({ input }) => {
         await db.upsertPrinterSettings(input);
-        // Invalidar cache de auto-aceite quando configuracoes mudam
-        const { invalidateAutoAcceptCache } = await import("./autoAccept");
-        invalidateAutoAcceptCache(input.establishmentId);
         return { success: true };
       }),
     
@@ -2370,84 +2363,6 @@ export const appRouter = router({
         });
       }),
     
-    // ============ IMPRESSÃO SERVER-SIDE VIA REDE ============
-    printServerSide: protectedProcedure
-      .input(z.object({
-        orderId: z.number(),
-        establishmentId: z.number(),
-      }))
-      .mutation(async ({ input }) => {
-        try {
-          const { printOrderDirect, printOrderToMultiplePrinters } = await import('./escposPrinter');
-          
-          // Buscar dados do pedido
-          const order = await db.getOrderById(input.orderId);
-          if (!order) {
-            throw new TRPCError({ code: 'NOT_FOUND', message: 'Pedido não encontrado' });
-          }
-          
-          const items = await db.getOrderItems(input.orderId);
-          const establishment = await db.getEstablishmentById(input.establishmentId);
-          const activePrinters = await db.getActivePrinters(input.establishmentId);
-          
-          // Extrair bairro do endereço
-          const addressParts = order.customerAddress?.split(',') || [];
-          const neighborhoodFromAddress = addressParts.length > 1 ? addressParts[addressParts.length - 1]?.trim() : undefined;
-          
-          const orderData = {
-            orderId: order.id,
-            orderNumber: parseInt(order.orderNumber) || 0,
-            customerName: order.customerName || 'Não informado',
-            customerPhone: order.customerPhone || undefined,
-            deliveryType: (order.deliveryType || 'delivery') as 'delivery' | 'pickup' | 'table',
-            address: order.customerAddress || undefined,
-            neighborhood: neighborhoodFromAddress,
-            paymentMethod: order.paymentMethod || 'Dinheiro',
-            items: items.map(item => ({
-              name: item.productName,
-              quantity: item.quantity ?? 1,
-              price: parseFloat(item.totalPrice) / (item.quantity ?? 1),
-              observation: item.notes || undefined,
-              complements: typeof item.complements === 'string' ? item.complements : undefined,
-            })),
-            subtotal: parseFloat(order.subtotal || '0'),
-            deliveryFee: parseFloat(order.deliveryFee || '0'),
-            discount: parseFloat(order.discount || '0'),
-            total: parseFloat(order.total),
-            observation: order.notes || undefined,
-            createdAt: new Date(order.createdAt),
-            establishmentName: establishment?.name || 'Estabelecimento',
-          };
-          
-          if (activePrinters.length > 0) {
-            const printerConfigs = activePrinters.map(p => ({
-              ip: p.ipAddress,
-              port: p.port || 9100,
-            }));
-            const result = await printOrderToMultiplePrinters(printerConfigs, orderData);
-            return {
-              success: result.results.some(r => r.success),
-              message: result.results.map(r => `${r.ip}: ${r.success ? 'OK' : r.message}`).join(', '),
-            };
-          }
-          
-          // Fallback: impressão direta se configurada
-          const settings = await db.getPrinterSettings(input.establishmentId);
-          if ((settings as any)?.directPrintEnabled && (settings as any)?.directPrintIp) {
-            const result = await printOrderDirect(
-              { ip: (settings as any).directPrintIp, port: (settings as any).directPrintPort || 9100 },
-              orderData
-            );
-            return result;
-          }
-          
-          return { success: false, message: 'Nenhuma impressora de rede configurada' };
-        } catch (error: any) {
-          console.error('[PrintServerSide] Erro:', error);
-          return { success: false, message: error.message || 'Erro ao imprimir' };
-        }
-      }),
-
     // ============ PRINT QUEUE (API para App Android) ============
     
     // Buscar pedidos pendentes na fila de impressão (polling)
