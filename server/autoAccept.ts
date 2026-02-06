@@ -10,7 +10,7 @@
  */
 
 import { getPrinterSettings, getOrdersByEstablishment, updateOrderStatus, getEstablishmentById, getActivePrinters, getOrderById, getOrderItems } from "./db";
-import { notifyOrderUpdate } from "./_core/sse";
+import { notifyOrderUpdate, getConnectionCount } from "./_core/sse";
 
 // Intervalo do loop de verificação (a cada 2 segundos)
 const CHECK_INTERVAL_MS = 2000;
@@ -184,6 +184,9 @@ async function checkAndAutoAcceptOrders(): Promise<void> {
       // Buscar pedidos "new" deste estabelecimento
       const newOrders = await getOrdersByEstablishment(establishmentId, "new");
       
+      // Verificar se há conexões SSE ativas (frontend aberto)
+      const hasActiveConnections = getConnectionCount(establishmentId) > 0;
+      
       for (const order of newOrders) {
         // Pular se já foi auto-aceito
         if (autoAcceptedOrders.has(order.id)) continue;
@@ -193,8 +196,16 @@ async function checkAndAutoAcceptOrders(): Promise<void> {
         const now = Date.now();
         const elapsedSeconds = (now - createdAt) / 1000;
         
+        // Se há frontend conectado, o frontend cuida do countdown visual e do aceite.
+        // O servidor só aceita como fallback se:
+        // 1) Não há frontend conectado (SSE offline), OU
+        // 2) O pedido já passou do DOBRO do timer (fallback de segurança caso frontend falhe)
+        const effectiveTimer = hasActiveConnections 
+          ? config.timerSeconds * 2 + 10  // Dar tempo extra quando frontend está ativo (timer*2 + 10s de margem)
+          : config.timerSeconds;            // Sem frontend, usar timer normal
+        
         // Se o tempo configurado já passou, auto-aceitar
-        if (elapsedSeconds >= config.timerSeconds) {
+        if (elapsedSeconds >= effectiveTimer) {
           try {
             console.log(`[AutoAccept] Auto-aceitando pedido #${order.orderNumber} (${order.id}) do estabelecimento ${establishmentId} após ${Math.round(elapsedSeconds)}s`);
             

@@ -5435,3 +5435,5 @@
 
 ## Bug Fix
 - [x] Corrigir "Maximum update depth exceeded" na página /pedidos (setState em loop infinito na linha ~578)
+- [x] Bug: pedidos do cardápio público vão direto para 'preparing' em vez de entrar como 'new'
+- [x] Bug: auto-aceite server-side aceita pedido antes do frontend exibir countdown - precisa dar tempo para o pedido aparecer em "Novos"

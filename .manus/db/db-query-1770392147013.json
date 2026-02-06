@@ -1,0 +1,34 @@
+{
+  "query": "SELECT establishmentId, autoAcceptEnabled, autoAcceptTimerSeconds, defaultPrintMethod FROM printerSettings;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT establishmentId, autoAcceptEnabled, autoAcceptTimerSeconds, defaultPrintMethod FROM printerSettings;",
+  "rows": [
+    {
+      "establishmentId": "30001",
+      "autoAcceptEnabled": "1",
+      "autoAcceptTimerSeconds": "10",
+      "defaultPrintMethod": "android"
+    },
+    {
+      "establishmentId": "60001",
+      "autoAcceptEnabled": "0",
+      "autoAcceptTimerSeconds": "10",
+      "defaultPrintMethod": "normal"
+    },
+    {
+      "establishmentId": "60018",
+      "autoAcceptEnabled": "0",
+      "autoAcceptTimerSeconds": "10",
+      "defaultPrintMethod": "normal"
+    },
+    {
+      "establishmentId": "90001",
+      "autoAcceptEnabled": "0",
+      "autoAcceptTimerSeconds": "10",
+      "defaultPrintMethod": "normal"
+    }
+  ],
+  "messages": [],
+  "stdout": "establishmentId\tautoAcceptEnabled\tautoAcceptTimerSeconds\tdefaultPrintMethod\n30001\t1\t10\tandroid\n60001\t0\t10\tnormal\n60018\t0\t10\tnormal\n90001\t0\t10\tnormal\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

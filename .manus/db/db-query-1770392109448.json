@@ -1,0 +1,90 @@
+{
+  "query": "SELECT id, orderNumber, status, source, createdAt, updatedAt FROM orders WHERE establishmentId = 30001 ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, status, source, createdAt, updatedAt FROM orders WHERE establishmentId = 30001 ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "390034",
+      "orderNumber": "#P83",
+      "status": "preparing",
+      "source": "internal",
+      "createdAt": "2026-02-06 15:33:17",
+      "updatedAt": "2026-02-06 15:33:27"
+    },
+    {
+      "id": "390033",
+      "orderNumber": "#P82",
+      "status": "preparing",
+      "source": "internal",
+      "createdAt": "2026-02-06 15:28:14",
+      "updatedAt": "2026-02-06 15:28:24"
+    },
+    {
+      "id": "390032",
+      "orderNumber": "#P81",
+      "status": "preparing",
+      "source": "internal",
+      "createdAt": "2026-02-06 15:26:41",
+      "updatedAt": "2026-02-06 15:26:51"
+    },
+    {
+      "id": "390031",
+      "orderNumber": "#P80",
+      "status": "preparing",
+      "source": "internal",
+      "createdAt": "2026-02-06 15:25:12",
+      "updatedAt": "2026-02-06 15:25:22"
+    },
+    {
+      "id": "390030",
+      "orderNumber": "#P79",
+      "status": "preparing",
+      "source": "internal",
+      "createdAt": "2026-02-06 15:12:03",
+      "updatedAt": "2026-02-06 15:12:13"
+    },
+    {
+      "id": "390029",
+      "orderNumber": "#P78",
+      "status": "preparing",
+      "source": "internal",
+      "createdAt": "2026-02-06 15:06:23",
+      "updatedAt": "2026-02-06 15:06:26"
+    },
+    {
+      "id": "390028",
+      "orderNumber": "#P77",
+      "status": "preparing",
+      "source": "internal",
+      "createdAt": "2026-02-06 15:05:51",
+      "updatedAt": "2026-02-06 15:06:01"
+    },
+    {
+      "id": "390027",
+      "orderNumber": "#P76",
+      "status": "preparing",
+      "source": "internal",
+      "createdAt": "2026-02-06 15:05:17",
+      "updatedAt": "2026-02-06 15:05:27"
+    },
+    {
+      "id": "390026",
+      "orderNumber": "#P75",
+      "status": "preparing",
+      "source": "internal",
+      "createdAt": "2026-02-06 15:04:46",
+      "updatedAt": "2026-02-06 15:04:56"
+    },
+    {
+      "id": "390025",
+      "orderNumber": "#P74",
+      "status": "preparing",
+      "source": "internal",
+      "createdAt": "2026-02-06 15:04:19",
+      "updatedAt": "2026-02-06 15:04:29"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tstatus\tsource\tcreatedAt\tupdatedAt\n390034\t#P83\tpreparing\tinternal\t2026-02-06 15:33:17\t2026-02-06 15:33:27\n390033\t#P82\tpreparing\tinternal\t2026-02-06 15:28:14\t2026-02-06 15:28:24\n390032\t#P81\tpreparing\tinternal\t2026-02-06 15:26:41\t2026-02-06 15:26:51\n390031\t#P80\tpreparing\tinternal\t2026-02-06 15:25:12\t2026-02-06 15:25:22\n390030\t#P79\tpreparing\tinternal\t2026-02-06 15:12:03\t2026-02-06 15:12:13\n390029\t#P78\tpreparing\tinternal\t2026-02-06 15:06:23\t2026-02-06 15:06:26\n390028\t#P77\tpreparing\tinternal\t2026-02-06 15:05:51\t2026-02-06 15:06:01\n390027\t#P76\tpreparing\tinternal\t2026-02-06 15:05:17\t2026-02-06 15:05:27\n390026\t#P75\tpreparing\tinternal\t2026-02-06 15:04:46\t2026-02-06 15:04:56\n390025\t#P74\tpreparing\tinternal\t2026-02-06 15:04:19\t2026-02-06 15:04:29\n",
+  "stderr": "",
+  "execution_time_ms": 554
+}
