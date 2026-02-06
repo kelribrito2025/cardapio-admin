@@ -662,7 +662,7 @@ export default function Pedidos() {
     }).format(Number(value));
   };
 
-  const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
+  const handleStatusUpdate = (orderId: number, newStatus: OrderStatus, isAutoAccepted?: boolean) => {
     setLoadingOrderId(orderId);
     updateStatusMutation.mutate(
       { id: orderId, status: newStatus },
@@ -674,7 +674,17 @@ export default function Pedidos() {
     );
     
     if (newStatus === "preparing") {
-      // Verificar método de impressão favorito
+      // Se foi auto-aceito, a impressão é feita pelo servidor via rede direta (ESC/POS)
+      // Não precisamos abrir o app Multi Printer nem a tela de impressão do navegador
+      if (isAutoAccepted) {
+        toast.success("📦 Pedido auto-aceito!", {
+          description: "Impressão enviada automaticamente via rede.",
+          duration: 3000,
+        });
+        return;
+      }
+      
+      // Aceite manual - usar método de impressão favorito
       const printMethod = printerSettings?.defaultPrintMethod || 'normal';
       
       if (printMethod === 'android') {
@@ -727,7 +737,7 @@ export default function Pedidos() {
         
         if (remaining <= 0 && !autoAcceptedRef.current.has(order.id)) {
           autoAcceptedRef.current.add(order.id);
-          handleStatusUpdate(order.id, 'preparing');
+          handleStatusUpdate(order.id, 'preparing', true);
         }
       }
       
