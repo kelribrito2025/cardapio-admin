@@ -5335,3 +5335,19 @@
 - [x] Adicionar modal de Conferência do Pedido na página de PDV para Consumo, Entrega e Retirada
 - [x] Exibir recibo completo antes de finalizar o pedido
 - [x] Botões de Confirmar e Cancelar no modal
+
+## Contador de Tempo nas Mesas Ocupadas
+- [ ] Adicionar contador de tempo no canto superior direito do card de mesa
+- [ ] Tempo só conta quando mesa está ocupada
+- [ ] Formato: 1Min, 1h, 2h40
+- [ ] Timer local no frontend baseado no timestamp de ocupação
+- [ ] Zerar ao liberar a mesa
+- [ ] Manter tempo correto ao recarregar página
+
+## Timer de Ocupação nas Mesas
+- [x] Adicionar contador de tempo no canto superior direito dos cards de mesa ocupada
+- [x] Formato do timer: 1Min, 1h, 2h40
+- [x] Timer só aparece quando mesa tem itens (carrinho ou comanda)
+- [x] Timer calcula tempo desde occupiedAt do banco de dados
+- [x] Timer atualiza automaticamente a cada minuto no frontend
+- [x] Mostrar "—" para mesas sem timestamp de ocupação

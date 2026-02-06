@@ -1,0 +1,31 @@
+{
+  "query": "SELECT id, number, status, occupiedAt, currentGuests FROM tables WHERE status = 'occupied' ORDER BY number;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, number, status, occupiedAt, currentGuests FROM tables WHERE status = 'occupied' ORDER BY number;",
+  "rows": [
+    {
+      "id": "30033",
+      "number": "3",
+      "status": "occupied",
+      "occupiedAt": "2026-02-06 00:37:39",
+      "currentGuests": "1"
+    },
+    {
+      "id": "30034",
+      "number": "4",
+      "status": "occupied",
+      "occupiedAt": "2026-02-05 23:55:50",
+      "currentGuests": "1"
+    },
+    {
+      "id": "30035",
+      "number": "5",
+      "status": "occupied",
+      "occupiedAt": "2026-02-05 23:59:56",
+      "currentGuests": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnumber\tstatus\toccupiedAt\tcurrentGuests\n30033\t3\toccupied\t2026-02-06 00:37:39\t1\n30034\t4\toccupied\t2026-02-05 23:55:50\t1\n30035\t5\toccupied\t2026-02-05 23:59:56\t1\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

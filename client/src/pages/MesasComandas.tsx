@@ -130,15 +130,20 @@ const getStatusConfig = (status: TableStatus) => {
 };
 
 const formatDuration = (startTime: Date | string | null | undefined) => {
-  if (!startTime) return "";
+  if (!startTime) return "—";
   const start = typeof startTime === "string" ? new Date(startTime) : startTime;
   const diff = Date.now() - start.getTime();
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  
+  // Formato: 1Min, 1h, 2h40
   if (hours > 0) {
-    return `${hours}h${minutes.toString().padStart(2, "0")}`;
+    if (minutes === 0) {
+      return `${hours}h`;
+    }
+    return `${hours}h${minutes}`;
   }
-  return `${minutes}min`;
+  return `${minutes}Min`;
 };
 
 const formatTime = (date: Date | string | null | undefined) => {
@@ -253,6 +258,9 @@ export default function MesasComandas() {
   const [newSpaceName, setNewSpaceName] = useState("");
   const [persistedTableId, setPersistedTableId] = useState<number | null>(null);
   
+  // Estado para forçar re-render do timer de ocupação das mesas a cada minuto
+  const [, setTimerTick] = useState(0);
+  
   // Estados para gerenciar espaços
   const [editingSpaceId, setEditingSpaceId] = useState<number | null>(null);
   const [editingSpaceName, setEditingSpaceName] = useState("");
@@ -296,6 +304,14 @@ export default function MesasComandas() {
       }
     }
   }, [persistedTableId, tables, selectedTable]);
+
+  // Timer para atualizar o contador de tempo das mesas ocupadas a cada minuto
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimerTick(tick => tick + 1);
+    }, 60000); // Atualiza a cada 1 minuto
+    return () => clearInterval(interval);
+  }, []);
 
   // Atalhos de teclado F2 para abrir e ESC para fechar a slidebar
   useEffect(() => {
@@ -917,6 +933,13 @@ export default function MesasComandas() {
                 >
                   <div className="flex items-start justify-between">
                     <span className="text-3xl font-bold text-gray-900">{table.number}</span>
+                    {/* Contador de tempo para mesas ocupadas */}
+                    {hasItems && table.occupiedAt && (
+                      <div className="flex items-center gap-1 text-xs text-gray-400">
+                        <Clock className="h-3 w-3" />
+                        <span>{formatDuration(table.occupiedAt)}</span>
+                      </div>
+                    )}
                   </div>
                   
                   {/* Informações da mesa ocupada (com itens no carrinho ou comanda) */}
