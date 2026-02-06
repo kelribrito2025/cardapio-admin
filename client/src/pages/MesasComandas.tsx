@@ -83,6 +83,10 @@ interface Table {
   reservedName?: string | null;
   reservedPhone?: string | null;
   spaceId?: number | null;
+  // Campos para mesas combinadas
+  mergedIntoId?: number | null;
+  mergedTableIds?: string | null;
+  displayNumber?: string | null;
   tab?: Tab;
   items?: TabItem[];
 }
@@ -437,6 +441,32 @@ export default function MesasComandas() {
     },
   });
 
+  // Mutation para juntar mesas
+  const mergeTablesMutation = trpc.tables.merge.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Mesas juntadas: ${data.displayNumber}`);
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao juntar mesas");
+    },
+  });
+
+  // Mutation para separar mesas
+  const splitTablesMutation = trpc.tables.split.useMutation({
+    onSuccess: () => {
+      toast.success("Mesas separadas com sucesso!");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao separar mesas");
+    },
+  });
+
+  // Estados para drag and drop
+  const [draggedTableId, setDraggedTableId] = useState<number | null>(null);
+  const [dropTargetId, setDropTargetId] = useState<number | null>(null);
+
   // Cálculos de resumo (usando status derivado baseado em itens do carrinho + comanda)
   const summary = useMemo(() => {
     // Contar mesas por status derivado
@@ -508,13 +538,16 @@ export default function MesasComandas() {
   // Filtrar mesas por espaço e status (usando status derivado)
   const filteredTables = useMemo(() => {
     return tables.filter((table) => {
+      // Ocultar mesas que foram juntadas a outra (mergedIntoId != null)
+      if (table.mergedIntoId) return false;
       // Filtro por espaço
       const matchesSpace = selectedSpaceId === "all" || table.spaceId === selectedSpaceId;
       // Filtro por status derivado (da legenda)
       const derivedStatus = getDerivedStatus(table);
       const matchesStatus = statusFilter === null || derivedStatus === statusFilter;
-      // Filtro por busca
-      const matchesSearch = searchQuery === "" || table.number.toString().includes(searchQuery);
+      // Filtro por busca (incluindo displayNumber para mesas combinadas)
+      const displayNum = table.displayNumber || table.number.toString();
+      const matchesSearch = searchQuery === "" || displayNum.includes(searchQuery) || table.number.toString().includes(searchQuery);
       return matchesSpace && matchesStatus && matchesSearch;
     });
   }, [tables, selectedSpaceId, statusFilter, searchQuery, cartsPerTable]);
@@ -920,19 +953,57 @@ export default function MesasComandas() {
               const hasItems = tableHasItems(table.id);
               const itemsCount = getTableItemsCount(table.id);
               const tableTotal = getTableTotal(table.id);
+              const isMergedTable = !!table.mergedTableIds;
+              const displayNumber = table.displayNumber || table.number.toString();
+              const isDragging = draggedTableId === table.id;
+              const isDropTarget = dropTargetId === table.id && draggedTableId !== table.id;
               
               return (
                 <button
                   key={table.id}
+                  draggable
+                  onDragStart={(e) => {
+                    setDraggedTableId(table.id);
+                    e.dataTransfer.effectAllowed = 'move';
+                    // Adicionar dados para identificar a mesa
+                    e.dataTransfer.setData('text/plain', table.id.toString());
+                  }}
+                  onDragEnd={() => {
+                    setDraggedTableId(null);
+                    setDropTargetId(null);
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    if (draggedTableId && draggedTableId !== table.id) {
+                      setDropTargetId(table.id);
+                    }
+                  }}
+                  onDragLeave={() => {
+                    setDropTargetId(null);
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (draggedTableId && draggedTableId !== table.id) {
+                      // Juntar mesas
+                      mergeTablesMutation.mutate({
+                        sourceTableId: draggedTableId,
+                        targetTableId: table.id,
+                      });
+                    }
+                    setDraggedTableId(null);
+                    setDropTargetId(null);
+                  }}
                   onClick={() => handleTableClick(table)}
                   className={cn(
                     "bg-white rounded-xl border border-border/50 p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
                     "border-l-4",
-                    statusConfig.borderColor
+                    statusConfig.borderColor,
+                    isDragging && "opacity-50 scale-95",
+                    isDropTarget && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50"
                   )}
                 >
                   <div className="flex items-start justify-between">
-                    <span className="text-3xl font-bold text-gray-900">{table.number}</span>
+                    <span className="text-3xl font-bold text-gray-900">{displayNumber}</span>
                     {/* Contador de tempo para mesas ocupadas */}
                     {hasItems && table.occupiedAt && (
                       <div className="flex items-center gap-1 text-sm text-gray-600">
@@ -941,6 +1012,13 @@ export default function MesasComandas() {
                       </div>
                     )}
                   </div>
+                  
+                  {/* Indicador de mesa combinada */}
+                  {isMergedTable && (
+                    <div className="text-xs text-blue-600 font-medium mt-1">
+                      Mesas unidas
+                    </div>
+                  )}
                   
                   {/* Informações da mesa ocupada (com itens no carrinho ou comanda) */}
                   {hasItems && (
@@ -1376,7 +1454,9 @@ export default function MesasComandas() {
           number: t.number,
           status: t.status === "requesting_bill" ? "occupied" : t.status,
           tabId: t.tab?.id,
-          tabItemsCount: t.items?.length || 0
+          tabItemsCount: t.items?.length || 0,
+          displayNumber: t.displayNumber,
+          mergedIntoId: t.mergedIntoId
         }))}
         onTableChange={(table) => {
           const fullTable = tables.find(t => t.id === table.id);

@@ -3134,6 +3134,152 @@ export const appRouter = router({
         
         return { ids, count: ids.length, spaceId };
       }),
+
+    // Juntar mesas (merge)
+    merge: protectedProcedure
+      .input(z.object({
+        sourceTableId: z.number(), // Mesa que está sendo arrastada
+        targetTableId: z.number(), // Mesa de destino
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: "NOT_FOUND", message: "Estabelecimento não encontrado" });
+        
+        // Buscar as duas mesas
+        const sourceTable = await db.getTableById(input.sourceTableId);
+        const targetTable = await db.getTableById(input.targetTableId);
+        
+        if (!sourceTable || !targetTable) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Mesa não encontrada" });
+        }
+        
+        // Verificar se alguma das mesas já está juntada a outra
+        if (sourceTable.mergedIntoId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Esta mesa já está juntada a outra" });
+        }
+        if (targetTable.mergedIntoId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "A mesa de destino já está juntada a outra" });
+        }
+        
+        // Determinar qual mesa será a principal (menor número)
+        const primaryTable = sourceTable.number < targetTable.number ? sourceTable : targetTable;
+        const secondaryTable = sourceTable.number < targetTable.number ? targetTable : sourceTable;
+        
+        // Coletar todos os números de mesas para o displayNumber
+        const existingMergedIds: number[] = primaryTable.mergedTableIds 
+          ? JSON.parse(primaryTable.mergedTableIds) 
+          : [];
+        
+        // Adicionar a mesa secundária e suas mesas já juntadas
+        const secondaryMergedIds: number[] = secondaryTable.mergedTableIds 
+          ? JSON.parse(secondaryTable.mergedTableIds) 
+          : [];
+        
+        const allMergedIds = [...existingMergedIds, secondaryTable.id, ...secondaryMergedIds];
+        
+        // Coletar todos os números para o displayNumber
+        const allNumbers = [primaryTable.number];
+        for (const id of allMergedIds) {
+          const t = await db.getTableById(id);
+          if (t) allNumbers.push(t.number);
+        }
+        allNumbers.sort((a, b) => a - b);
+        const displayNumber = allNumbers.join('-');
+        
+        // Transferir itens da comanda da mesa secundária para a principal
+        const sourceTab = await db.getActiveTabByTable(secondaryTable.id);
+        let targetTab = await db.getActiveTabByTable(primaryTable.id);
+        
+        if (sourceTab) {
+          // Se a mesa principal não tem comanda, criar uma
+          if (!targetTab) {
+            const result = await db.openTable(establishment.id, primaryTable.id, 1);
+            targetTab = await db.getTabById(result.tabId);
+          }
+          
+          if (targetTab) {
+            // Transferir itens
+            const sourceItems = await db.getTabItems(sourceTab.id);
+            if (sourceItems.length > 0) {
+              await db.addItemsToTab(targetTab.id, sourceItems.map(item => ({
+                productId: item.productId,
+                productName: item.productName,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                totalPrice: item.totalPrice,
+                complements: item.complements || undefined,
+                notes: item.notes || undefined,
+              })));
+            }
+            
+            // Fechar a comanda da mesa secundária (cancelar)
+            await db.cancelTab(sourceTab.id);
+          }
+        }
+        
+        // Atualizar a mesa principal com os IDs das mesas juntadas
+        await db.updateTableMerge(primaryTable.id, {
+          mergedTableIds: JSON.stringify(allMergedIds),
+          displayNumber,
+          status: 'occupied',
+          occupiedAt: primaryTable.occupiedAt || new Date(),
+        });
+        
+        // Marcar a mesa secundária como juntada
+        await db.updateTableMerge(secondaryTable.id, {
+          mergedIntoId: primaryTable.id,
+          mergedTableIds: null,
+          displayNumber: null,
+        });
+        
+        // Marcar mesas que estavam juntadas à secundária como juntadas à principal
+        for (const id of secondaryMergedIds) {
+          await db.updateTableMerge(id, {
+            mergedIntoId: primaryTable.id,
+          });
+        }
+        
+        return { 
+          success: true, 
+          primaryTableId: primaryTable.id,
+          displayNumber,
+        };
+      }),
+
+    // Separar mesas (split)
+    split: protectedProcedure
+      .input(z.object({
+        tableId: z.number(), // Mesa combinada a ser separada
+      }))
+      .mutation(async ({ input }) => {
+        const table = await db.getTableById(input.tableId);
+        if (!table) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Mesa não encontrada" });
+        }
+        
+        // Verificar se é uma mesa combinada
+        if (!table.mergedTableIds) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Esta mesa não está combinada" });
+        }
+        
+        const mergedIds: number[] = JSON.parse(table.mergedTableIds);
+        
+        // Limpar a mesa principal
+        await db.updateTableMerge(table.id, {
+          mergedTableIds: null,
+          displayNumber: null,
+        });
+        
+        // Liberar todas as mesas que estavam juntadas
+        for (const id of mergedIds) {
+          await db.updateTableMerge(id, {
+            mergedIntoId: null,
+            status: 'free',
+          });
+        }
+        
+        return { success: true };
+      }),
   }),
 
   // ============ TABS (COMANDAS) ============

@@ -5320,7 +5320,7 @@ export async function addItemsToTab(
     quantity: number;
     unitPrice: string;
     totalPrice: string;
-    complements?: Array<{ name: string; price: number; quantity: number }>;
+    complements?: Array<{ name: string; price: number; quantity: number }> | string;
     notes?: string;
   }>
 ): Promise<void> {
@@ -5328,6 +5328,16 @@ export async function addItemsToTab(
   if (!db) return;
   
   for (const item of items) {
+    // Parse complements se for string (vindo do banco)
+    let parsedComplements = item.complements;
+    if (typeof parsedComplements === 'string') {
+      try {
+        parsedComplements = JSON.parse(parsedComplements);
+      } catch {
+        parsedComplements = [];
+      }
+    }
+    
     await addTabItem({
       tabId,
       productId: item.productId,
@@ -5335,7 +5345,7 @@ export async function addItemsToTab(
       quantity: item.quantity,
       unitPrice: item.unitPrice,
       totalPrice: item.totalPrice,
-      complements: item.complements || [],
+      complements: (parsedComplements as Array<{ name: string; price: number; quantity: number }>) || [],
       notes: item.notes,
     });
   }
@@ -5364,4 +5374,53 @@ export async function getTablesWithTabs(establishmentId: number): Promise<Array<
   }));
   
   return result;
+}
+
+
+/**
+ * Atualiza campos de merge de uma mesa
+ */
+export async function updateTableMerge(id: number, data: {
+  mergedIntoId?: number | null;
+  mergedTableIds?: string | null;
+  displayNumber?: string | null;
+  status?: "free" | "occupied" | "reserved" | "requesting_bill";
+  occupiedAt?: Date | null;
+}): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  const updateData: any = { updatedAt: new Date() };
+  
+  if (data.mergedIntoId !== undefined) {
+    updateData.mergedIntoId = data.mergedIntoId;
+  }
+  if (data.mergedTableIds !== undefined) {
+    updateData.mergedTableIds = data.mergedTableIds;
+  }
+  if (data.displayNumber !== undefined) {
+    updateData.displayNumber = data.displayNumber;
+  }
+  if (data.status !== undefined) {
+    updateData.status = data.status;
+  }
+  if (data.occupiedAt !== undefined) {
+    updateData.occupiedAt = data.occupiedAt;
+  }
+  
+  await db.update(tables)
+    .set(updateData)
+    .where(eq(tables.id, id));
+}
+
+/**
+ * Cancela uma comanda (marca como cancelada)
+ */
+export async function cancelTab(tabId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  await db.update(tabs)
+    .set({ status: "cancelled", updatedAt: new Date() })
+    .where(eq(tabs.id, tabId));
 }

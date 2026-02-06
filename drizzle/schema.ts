@@ -636,6 +636,10 @@ export const tables = mysqlTable("tables", {
   reservedPhone: varchar("reservedPhone", { length: 30 }), // Telefone da reserva
   isActive: boolean("isActive").default(true).notNull(), // Se a mesa está ativa
   sortOrder: int("sortOrder").default(0).notNull(), // Ordem de exibição
+  // Campos para mesas combinadas
+  mergedIntoId: int("mergedIntoId"), // ID da mesa principal quando esta mesa foi juntada a outra
+  mergedTableIds: text("mergedTableIds"), // JSON array com IDs das mesas que foram juntadas a esta (ex: "[2,3]")
+  displayNumber: varchar("displayNumber", { length: 50 }), // Número de exibição para mesas combinadas (ex: "1-3")
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

@@ -5351,3 +5351,32 @@
 - [x] Timer calcula tempo desde occupiedAt do banco de dados
 - [x] Timer atualiza automaticamente a cada minuto no frontend
 - [x] Mostrar "—" para mesas sem timestamp de ocupação
+
+## Juntar Mesas (Arrastar e Soltar)
+- [ ] Atualizar schema do banco para suportar mesas combinadas (campo mergedWith ou similar)
+- [ ] Criar procedure tRPC para juntar mesas (mergeTables)
+- [ ] Criar procedure tRPC para separar mesas (splitTables)
+- [ ] Implementar drag and drop na lista de mesas (MesasComandas.tsx)
+- [ ] Destacar visualmente mesa de destino ao arrastar
+- [ ] Unificar itens das mesas ao juntar (carrinho local + comanda do banco)
+- [ ] Exibir nome combinado no formato menor-maior (ex: 1-3, 2-5)
+- [ ] Ocultar mesas originais após junção, exibir apenas mesa combinada
+- [ ] Atualizar sidebar do PDV para mostrar mesa combinada
+- [ ] Atualizar atalhos rápidos para mostrar mesa combinada
+- [ ] Mesa combinada funciona como mesa normal (adicionar/remover itens, fechar, imprimir)
+- [ ] Recibo mostra "Mesa: 1-3" para mesas combinadas
+- [ ] Persistir junção após refresh da página
+- [ ] Testar cenário: mesa vazia + mesa vazia
+- [ ] Testar cenário: mesa vazia + mesa com itens
+- [ ] Testar cenário: mesa com itens + mesa com itens
+
+
+## Juntar Mesas (Arrastar e Soltar) - CONCLUÍDO
+- [x] Schema do banco de dados atualizado (mergedIntoId, mergedTableIds, displayNumber)
+- [x] Procedures tRPC criadas (merge e split)
+- [x] Drag and drop implementado na lista de mesas
+- [x] Sidebar e atalhos atualizados para mesas combinadas
+- [x] Mesas juntadas ocultadas da lista (só aparece a mesa principal)
+- [x] Nome no formato menor-maior (ex: 3-4-5)
+- [x] Itens unificados em uma única comanda
+- [x] Indicador visual "Mesas unidas" no card

@@ -115,6 +115,8 @@ interface TableShortcut {
   status: string;
   tabId?: number;
   tabItemsCount?: number; // Quantidade de itens na comanda
+  displayNumber?: string | null; // Número de exibição para mesas combinadas (ex: "1-3")
+  mergedIntoId?: number | null; // ID da mesa principal se esta mesa foi juntada
 }
 
 interface PDVSlidebarProps {
@@ -1229,11 +1231,14 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   >
                     <ArrowUpDown className="h-4 w-4" />
                   </button>
-                  {tables.map((table) => {
+                  {tables
+                    .filter(table => !table.mergedIntoId) // Ocultar mesas juntadas
+                    .map((table) => {
                     // Status baseado em itens no carrinho da mesa OU na comanda
                     const cartItemsCount = cartsPerTable[table.id]?.length || 0;
                     const tabItemsCount = table.tabItemsCount || 0;
                     const tableHasItems = cartItemsCount > 0 || tabItemsCount > 0;
+                    const displayNum = table.displayNumber || table.number.toString();
                     return (
                       <button
                         key={`${table.id}-${cartsVersion}-${tableHasItems}`}
@@ -1251,7 +1256,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                         )}
                       >
                         <UtensilsCrossed className="h-4 w-4" />
-                        {table.number}
+                        {displayNum}
                       </button>
                     );
                   })}
@@ -1291,11 +1296,14 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     >
                       <ArrowUpDown className="h-4 w-4" />
                     </button>
-                    {tables.map((table) => {
+                    {tables
+                      .filter(table => !table.mergedIntoId) // Ocultar mesas juntadas
+                      .map((table) => {
                       // Status baseado em itens no carrinho da mesa OU na comanda
                       const cartItemsCount = cartsPerTable[table.id]?.length || 0;
                       const tabItemsCount = table.tabItemsCount || 0;
                       const tableHasItems = cartItemsCount > 0 || tabItemsCount > 0;
+                      const displayNum = table.displayNumber || table.number.toString();
                       return (
                         <button
                           key={`${table.id}-${cartsVersion}-${tableHasItems}`}
@@ -1313,7 +1321,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                           )}
                         >
                           <UtensilsCrossed className="h-4 w-4" />
-                          {table.number}
+                          {displayNum}
                         </button>
                       );
                     })}

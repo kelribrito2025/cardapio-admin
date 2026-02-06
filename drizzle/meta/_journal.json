@@ -414,6 +414,13 @@
       "when": 1770291222705,
       "tag": "0058_faithful_the_captain",
       "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "5",
+      "when": 1770341295008,
+      "tag": "0059_same_tinkerer",
+      "breakpoints": true
     }
   ]
 }
