@@ -665,7 +665,10 @@ export default function Pedidos() {
     }).format(Number(value));
   };
 
-  const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
+  // Mutation para impressão server-side via rede (sem popup do Multi Printer)
+  const printServerSideMutation = trpc.printer.printServerSide.useMutation();
+
+  const handleStatusUpdate = (orderId: number, newStatus: OrderStatus, isAutoAccepted?: boolean) => {
     setLoadingOrderId(orderId);
     updateStatusMutation.mutate(
       { id: orderId, status: newStatus },
@@ -677,7 +680,27 @@ export default function Pedidos() {
     );
     
     if (newStatus === "preparing") {
-      // Verificar método de impressão favorito
+      // Se foi auto-aceito, imprimir via rede server-side (sem popup do Multi Printer)
+      if (isAutoAccepted && establishmentId) {
+        toast.success("📦 Pedido auto-aceito!", {
+          description: "Impressão enviada automaticamente via rede.",
+          duration: 3000,
+        });
+        printServerSideMutation.mutate(
+          { orderId, establishmentId },
+          {
+            onError: (err) => {
+              console.error('[AutoAccept:Print] Erro:', err);
+              toast.error("Erro na impressão automática", {
+                description: "O pedido foi aceito mas houve erro na impressão via rede.",
+              });
+            },
+          }
+        );
+        return;
+      }
+      
+      // Aceite manual - usar método de impressão favorito
       const printMethod = printerSettings?.defaultPrintMethod || 'normal';
       
       if (printMethod === 'android') {
@@ -738,7 +761,8 @@ export default function Pedidos() {
         if (remaining <= 0 && !autoAcceptedRef.current.has(order.id)) {
           autoAcceptedRef.current.add(order.id);
           // Usar setTimeout para evitar setState durante render
-          setTimeout(() => handleStatusUpdate(order.id, 'preparing'), 0);
+          // Passar isAutoAccepted=true para usar impressão via rede server-side (sem popup Multi Printer)
+          setTimeout(() => handleStatusUpdate(order.id, 'preparing', true), 0);
         }
       }
       

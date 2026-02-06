@@ -5428,3 +5428,6 @@
 - [x] Cache de configurações com invalidação ao salvar
 - [x] Testes vitest para o módulo autoAccept
 - [x] Fix: Maximum update depth exceeded na página /pedidos (useRef para allOrders no auto-accept timer)
+- [x] Auto-aceite: imprimir via rede server-side em vez de abrir Multi Printer (eliminar popup Android)
+- [x] Criar procedure tRPC para impressão server-side via rede
+- [x] Ajustar auto-aceite server-side para priorizar frontend e usar impressão via rede como fallback

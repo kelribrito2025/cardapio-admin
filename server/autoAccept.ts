@@ -3,14 +3,19 @@
  * 
  * Gerencia o aceite automático de pedidos com timer server-side.
  * Quando habilitado, pedidos com status "new" são automaticamente aceitos
- * (status -> "preparing") após o tempo configurado (10s ou 15s).
+ * (status -> "preparing") após o tempo configurado.
+ * 
+ * PRIORIDADE:
+ * - Se há frontend conectado (SSE ativo): o frontend cuida do countdown visual e aceite.
+ *   O servidor só age como fallback de segurança (timer*2 + 10s de margem).
+ * - Se NÃO há frontend conectado: o servidor aceita com o timer normal e imprime via rede.
  * 
  * O timer é calculado com base no createdAt do pedido, garantindo
  * persistência mesmo se o usuário navegar para outra página ou fechar o browser.
  */
 
-import { getPrinterSettings, getOrdersByEstablishment, updateOrderStatus, getEstablishmentById } from "./db";
-import { notifyOrderUpdate } from "./_core/sse";
+import { getPrinterSettings, getOrdersByEstablishment, updateOrderStatus, getEstablishmentById, getActivePrinters, getOrderById, getOrderItems } from "./db";
+import { notifyOrderUpdate, getConnectionCount } from "./_core/sse";
 
 // Intervalo do loop de verificação (a cada 2 segundos)
 const CHECK_INTERVAL_MS = 2000;
@@ -25,6 +30,94 @@ const autoAcceptCache = new Map<number, { enabled: boolean; timerSeconds: number
 const CACHE_TTL_MS = 30000;
 
 let intervalId: ReturnType<typeof setInterval> | null = null;
+
+/**
+ * Imprime um pedido diretamente via rede (ESC/POS socket TCP)
+ * Sem depender do navegador ou app Multi Printer
+ */
+async function printOrderServerSide(orderId: number, establishmentId: number): Promise<void> {
+  try {
+    const activePrinters = await getActivePrinters(establishmentId);
+    
+    if (activePrinters.length === 0) {
+      const settings = await getPrinterSettings(establishmentId);
+      if (!(settings as any)?.directPrintEnabled || !(settings as any)?.directPrintIp) {
+        console.log(`[AutoAccept:Print] Nenhuma impressora configurada para estabelecimento ${establishmentId}`);
+        return;
+      }
+      
+      const { printOrderDirect } = await import('./escposPrinter');
+      const orderData = await buildOrderData(orderId, establishmentId);
+      if (!orderData) return;
+      
+      const result = await printOrderDirect(
+        { ip: (settings as any).directPrintIp, port: (settings as any).directPrintPort || 9100 },
+        orderData
+      );
+      
+      console.log(`[AutoAccept:Print] Impressão direta: ${result.success ? 'OK' : result.message}`);
+      return;
+    }
+    
+    const { printOrderToMultiplePrinters } = await import('./escposPrinter');
+    const orderData = await buildOrderData(orderId, establishmentId);
+    if (!orderData) return;
+    
+    const printerConfigs = activePrinters.map(p => ({
+      ip: p.ipAddress,
+      port: p.port || 9100,
+    }));
+    
+    const result = await printOrderToMultiplePrinters(printerConfigs, orderData);
+    
+    console.log(`[AutoAccept:Print] Impressão em ${activePrinters.length} impressora(s):`,
+      result.results.map(r => `${r.ip}: ${r.success ? 'OK' : r.message}`).join(', '));
+  } catch (error) {
+    console.error(`[AutoAccept:Print] Erro ao imprimir pedido ${orderId}:`, error);
+  }
+}
+
+/**
+ * Monta os dados do pedido no formato esperado pelo ESC/POS printer
+ */
+async function buildOrderData(orderId: number, establishmentId: number) {
+  const order = await getOrderById(orderId);
+  if (!order) {
+    console.error(`[AutoAccept:Print] Pedido ${orderId} não encontrado`);
+    return null;
+  }
+  
+  const items = await getOrderItems(orderId);
+  const establishment = await getEstablishmentById(establishmentId);
+  
+  const addressParts = order.customerAddress?.split(',') || [];
+  const neighborhoodFromAddress = addressParts.length > 1 ? addressParts[addressParts.length - 1]?.trim() : undefined;
+  
+  return {
+    orderId: order.id,
+    orderNumber: parseInt(order.orderNumber) || 0,
+    customerName: order.customerName || 'Não informado',
+    customerPhone: order.customerPhone || undefined,
+    deliveryType: (order.deliveryType || 'delivery') as 'delivery' | 'pickup' | 'table',
+    address: order.customerAddress || undefined,
+    neighborhood: neighborhoodFromAddress,
+    paymentMethod: order.paymentMethod || 'Dinheiro',
+    items: items.map(item => ({
+      name: item.productName,
+      quantity: item.quantity ?? 1,
+      price: parseFloat(item.totalPrice) / (item.quantity ?? 1),
+      observation: item.notes || undefined,
+      complements: typeof item.complements === 'string' ? item.complements : undefined,
+    })),
+    subtotal: parseFloat(order.subtotal || '0'),
+    deliveryFee: parseFloat(order.deliveryFee || '0'),
+    discount: parseFloat(order.discount || '0'),
+    total: parseFloat(order.total),
+    observation: order.notes || undefined,
+    createdAt: new Date(order.createdAt),
+    establishmentName: establishment?.name || 'Estabelecimento',
+  };
+}
 
 /**
  * Busca as configurações de auto-aceite de um estabelecimento (com cache)
@@ -68,18 +161,12 @@ export function invalidateAutoAcceptCache(establishmentId: number): void {
  */
 async function checkAndAutoAcceptOrders(): Promise<void> {
   try {
-    // Buscar todos os estabelecimentos que têm pedidos "new"
-    // Para otimizar, vamos iterar sobre os estabelecimentos no cache
-    // e também verificar novos que possam ter sido adicionados
-    
-    // Importar a função para buscar todos os estabelecimentos com pedidos novos
     const { getEstablishmentsWithNewOrders } = await import("./db");
     
     let establishmentIds: number[];
     try {
       establishmentIds = await getEstablishmentsWithNewOrders();
     } catch {
-      // Se a função não existir ainda, retornar silenciosamente
       return;
     }
     
@@ -91,6 +178,9 @@ async function checkAndAutoAcceptOrders(): Promise<void> {
       // Buscar pedidos "new" deste estabelecimento
       const newOrders = await getOrdersByEstablishment(establishmentId, "new");
       
+      // Verificar se há conexões SSE ativas (frontend aberto)
+      const hasActiveConnections = getConnectionCount(establishmentId) > 0;
+      
       for (const order of newOrders) {
         // Pular se já foi auto-aceito
         if (autoAcceptedOrders.has(order.id)) continue;
@@ -100,10 +190,18 @@ async function checkAndAutoAcceptOrders(): Promise<void> {
         const now = Date.now();
         const elapsedSeconds = (now - createdAt) / 1000;
         
+        // Se há frontend conectado, o frontend cuida do countdown visual e do aceite.
+        // O servidor só aceita como fallback se:
+        // 1) Não há frontend conectado (SSE offline), OU
+        // 2) O pedido já passou do DOBRO do timer + 10s (fallback de segurança caso frontend falhe)
+        const effectiveTimer = hasActiveConnections 
+          ? config.timerSeconds * 2 + 10  // Dar tempo extra quando frontend está ativo
+          : config.timerSeconds;            // Sem frontend, usar timer normal
+        
         // Se o tempo configurado já passou, auto-aceitar
-        if (elapsedSeconds >= config.timerSeconds) {
+        if (elapsedSeconds >= effectiveTimer) {
           try {
-            console.log(`[AutoAccept] Auto-aceitando pedido #${order.orderNumber} (${order.id}) do estabelecimento ${establishmentId} após ${Math.round(elapsedSeconds)}s`);
+            console.log(`[AutoAccept] Auto-aceitando pedido #${order.orderNumber} (${order.id}) do estabelecimento ${establishmentId} após ${Math.round(elapsedSeconds)}s (frontend ${hasActiveConnections ? 'ativo - fallback' : 'offline'})`);
             
             // Marcar como auto-aceito antes de processar (evitar duplicatas)
             autoAcceptedOrders.add(order.id);
@@ -119,18 +217,23 @@ async function checkAndAutoAcceptOrders(): Promise<void> {
               autoAccepted: true,
             });
             
+            // Imprimir via rede (ESC/POS) - sempre imprimir quando o servidor aceita
+            try {
+              await printOrderServerSide(order.id, establishmentId);
+            } catch (printError) {
+              console.error(`[AutoAccept] Erro na impressão do pedido #${order.orderNumber}:`, printError);
+            }
+            
             console.log(`[AutoAccept] Pedido #${order.orderNumber} auto-aceito com sucesso`);
           } catch (error) {
             console.error(`[AutoAccept] Erro ao auto-aceitar pedido ${order.id}:`, error);
-            // Remover do set para tentar novamente
             autoAcceptedOrders.delete(order.id);
           }
         }
       }
     }
     
-    // Limpar pedidos antigos do set (mais de 1 hora)
-    // Para evitar memory leak
+    // Limpar pedidos antigos do set para evitar memory leak
     if (autoAcceptedOrders.size > 1000) {
       autoAcceptedOrders.clear();
     }
