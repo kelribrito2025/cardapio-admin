@@ -77,7 +77,7 @@ const menuSections = [
   {
     title: "MARKETING",
     items: [
-      { icon: Ticket, label: "Cupons", href: "/cupons", disabled: true, comingSoon: true },
+      { icon: Ticket, label: "Cupons", href: "/cupons", disabled: false },
       { icon: Megaphone, label: "Campanhas", href: "/campanhas", disabled: true, comingSoon: true },
     ]
   },

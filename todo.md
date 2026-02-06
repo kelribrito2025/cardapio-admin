@@ -5488,3 +5488,6 @@
 
 ## Ajuste de Largura dos Cards de Cupons
 - [x] Diminuir largura dos cards de cupom no desktop em 25%
+
+## Menu Sidebar
+- [x] Remover badge "Breve" do item Cupons no menu lateral
