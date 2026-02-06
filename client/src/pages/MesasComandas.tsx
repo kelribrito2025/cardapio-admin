@@ -995,11 +995,11 @@ export default function MesasComandas() {
                   }}
                   onClick={() => handleTableClick(table)}
                   className={cn(
-                    "relative bg-white rounded-xl border border-border/50 p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
+                    "bg-white rounded-xl border border-border/50 p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
                     "border-l-4",
                     statusConfig.borderColor,
-                    isDragging && "opacity-50 scale-95 cursor-grabbing",
-                    isDropTarget && "ring-4 ring-emerald-500 ring-offset-2 bg-emerald-50 scale-105 shadow-lg border-emerald-500"
+                    isDragging && "opacity-50 scale-95",
+                    isDropTarget && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50"
                   )}
                 >
                   <div className="flex items-start justify-between">
@@ -1013,17 +1013,8 @@ export default function MesasComandas() {
                     )}
                   </div>
                   
-                  {/* Indicador de drop target */}
-                  {isDropTarget && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-emerald-500/20 rounded-xl">
-                      <div className="bg-emerald-500 text-white px-3 py-1.5 rounded-full text-sm font-semibold shadow-lg">
-                        Solte para juntar
-                      </div>
-                    </div>
-                  )}
-                  
                   {/* Indicador de mesa combinada */}
-                  {isMergedTable && !isDropTarget && (
+                  {isMergedTable && (
                     <div className="text-xs text-blue-600 font-medium mt-1">
                       Mesas unidas
                     </div>
