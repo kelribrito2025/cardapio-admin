@@ -153,8 +153,8 @@ export default function Complementos() {
   return (
     <AdminLayout>
       <PageHeader
-        title="Complementos Globais"
-        description="Gerencie complementos de forma centralizada. Alterações aqui refletem em todos os produtos."
+        title="Complementos"
+        description="Alterações aqui refletem em todos os produtos."
         actions={
           <div className="relative w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
