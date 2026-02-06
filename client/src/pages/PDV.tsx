@@ -588,6 +588,13 @@ export default function PDV() {
         disabled: cart.length === 0
       };
     }
+    if (orderType === "entrega") {
+      return {
+        text: "Avançar",
+        icon: null,
+        disabled: cart.length === 0 || createOrderMutation.isPending
+      };
+    }
     return {
       text: "Finalizar Pedido",
       icon: null,

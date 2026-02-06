@@ -5397,3 +5397,7 @@
 
 ## Modal de Conferência de Pedido na Sidebar de Mesas
 - [x] Replicar visual do modal de conferência de pedido da página /pdv na sidebar de mesas
+
+
+## Botão Finalizar Pedido no PDV
+- [x] Alterar texto do botão de "Finalizar Pedido" para "Avançar" quando tipo de pedido for Entrega
