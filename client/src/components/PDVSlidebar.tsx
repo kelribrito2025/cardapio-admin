@@ -137,6 +137,9 @@ interface PDVSlidebarProps {
 export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, tabId, onOrderCreated, showHandle = false, tables = [], onTableChange, displayNumber }: PDVSlidebarProps) {
   // Número de exibição da mesa (usa displayNumber se for mesa combinada, senão usa tableNumber)
   const tableDisplayName = displayNumber || tableNumber.toString();
+  // Verificar se a mesa atual está reservada
+  const currentTableData = tables.find(t => t.number === tableNumber);
+  const isCurrentTableReserved = currentTableData?.status === "reserved";
   const { data: establishment } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
 
@@ -1537,7 +1540,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   className={cn(
                     "flex-1 flex items-center justify-center gap-2 p-2 rounded-lg transition-all",
                     selectedTab === 'consumo'
-                      ? "bg-red-500 text-white"
+                      ? isCurrentTableReserved
+                        ? "bg-blue-500 text-white"
+                        : "bg-red-500 text-white"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   )}
                 >

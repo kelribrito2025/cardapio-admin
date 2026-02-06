@@ -1172,6 +1172,13 @@ export default function MesasComandas() {
                           <span>{formatDuration(table.occupiedAt)}</span>
                         </div>
                       )}
+                      {/* Horário da reserva no topo (ao lado do ⋮) */}
+                      {derivedStatus === "reserved" && !hasItems && table.reservedFor && (
+                        <div className="flex items-center gap-1 text-sm text-blue-600 font-semibold mr-6">
+                          <Clock className="h-3.5 w-3.5" />
+                          <span>{formatTime(table.reservedFor)}</span>
+                        </div>
+                      )}
                     </div>
                     
                     {/* Informações da mesa ocupada */}
@@ -1204,11 +1211,7 @@ export default function MesasComandas() {
                             <span>{table.reservedGuests} {table.reservedGuests === 1 ? 'pessoa' : 'pessoas'}</span>
                           </div>
                         )}
-                        {table.reservedFor && (
-                          <div className={cn("font-semibold", statusConfig.textColor)}>
-                            {formatTime(table.reservedFor)}
-                          </div>
-                        )}
+
                         {!table.reservedName && !table.reservedGuests && !table.reservedFor && (
                           <div className="flex items-center gap-1">
                             <Users className="h-3.5 w-3.5" />

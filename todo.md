@@ -5435,3 +5435,7 @@
 - [x] Atualizar backend (db.ts e routers.ts) para aceitar reservedGuests
 - [x] Adicionar campo "Quantidade de pessoas" no modal de reserva no frontend
 - [x] Exibir quantidade de pessoas no card de mesa reservada
+
+## Ajustes Visuais na Reserva de Mesa
+- [x] Botão "Mesa X" no PDV Slidebar deve ficar azul quando mesa está reservada
+- [x] Mover horário da reserva para o topo do card (ao lado do ⋮) com ícone de relógio, igual ao timer de mesa ocupada
