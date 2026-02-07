@@ -5621,3 +5621,5 @@
 - [x] Renomear botão "Abrir Dashboard Stripe" para "Gestão de Pagamentos"
 - [x] Remover texto extra e exemplos do card de taxas
 - [x] Remover card "Como funciona"
+- [x] Renomear título do card de taxas para "Pagamento online | Cartão"
+- [x] Remover bullet "Não se aplica a pagamentos em dinheiro, Pix ou cartão presencial"

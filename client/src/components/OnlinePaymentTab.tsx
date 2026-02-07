@@ -130,7 +130,7 @@ export function OnlinePaymentTab() {
           <div className="flex-1 space-y-3">
             <div>
               <h4 className="font-semibold text-amber-900 text-sm">
-                Taxas de Pagamento Online
+                Pagamento online | Cartão
               </h4>
               <div className="mt-2 flex items-baseline gap-1.5">
                 <span className="text-2xl font-bold text-amber-900">3,99%</span>
@@ -145,10 +145,7 @@ export function OnlinePaymentTab() {
                 <CheckCircle2 className="h-3.5 w-3.5 text-amber-600 shrink-0" />
                 Cobrado apenas em pagamentos online confirmados
               </p>
-              <p className="text-xs text-amber-800 flex items-center gap-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5 text-amber-600 shrink-0" />
-                Não se aplica a pagamentos em dinheiro, Pix ou cartão presencial
-              </p>
+
             </div>
           </div>
         </div>
