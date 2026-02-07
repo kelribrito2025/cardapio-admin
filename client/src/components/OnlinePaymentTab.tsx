@@ -156,7 +156,7 @@ export function OnlinePaymentTab() {
 
         {/* Status Details */}
         {hasAccount && (
-          <div className="grid grid-cols-2 gap-3 pt-2 border-t">
+          <div className="flex flex-wrap gap-4 pt-2 border-t">
             <div className="flex items-center gap-2 text-sm">
               {chargesEnabled ? (
                 <CheckCircle2 className="h-4 w-4 text-green-500" />
