@@ -1,0 +1,17 @@
+{
+  "query": "SELECT u.id as userId, u.email, e.id as establishmentId, sb.balance, sb.costPerSms FROM users u LEFT JOIN establishments e ON e.userId = u.id LEFT JOIN sms_balance sb ON sb.establishmentId = e.id WHERE u.email = 'admin@admin.com';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT u.id as userId, u.email, e.id as establishmentId, sb.balance, sb.costPerSms FROM users u LEFT JOIN establishments e ON e.userId = u.id LEFT JOIN sms_balance sb ON sb.establishmentId = e.id WHERE u.email = 'admin@admin.com';",
+  "rows": [
+    {
+      "userId": "180577",
+      "email": "admin@admin.com",
+      "establishmentId": "30001",
+      "balance": "0.00",
+      "costPerSms": "0.0970"
+    }
+  ],
+  "messages": [],
+  "stdout": "userId\temail\testablishmentId\tbalance\tcostPerSms\n180577\tadmin@admin.com\t30001\t0.00\t0.0970\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

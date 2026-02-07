@@ -1,0 +1,8 @@
+{
+  "query": "SELECT sc.id, sc.establishmentId, sc.message, sc.recipientCount, sc.status, sc.scheduledAt, sc.processedAt, sc.sentCount, sc.failCount, CAST(sc.costPerSms AS CHAR) as costPerSms, CAST(sc.totalCost AS CHAR) as totalCost, sc.createdAt FROM scheduled_campaigns sc ORDER BY sc.createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT sc.id, sc.establishmentId, sc.message, sc.recipientCount, sc.status, sc.scheduledAt, sc.processedAt, sc.sentCount, sc.failCount, CAST(sc.costPerSms AS CHAR) as costPerSms, CAST(sc.totalCost AS CHAR) as totalCost, sc.createdAt FROM scheduled_campaigns sc ORDER BY sc.createdAt DESC LIMIT 10;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'sc.processedat' in 'field list'"
+  ]
+}

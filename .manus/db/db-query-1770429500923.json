@@ -1,0 +1,27 @@
+{
+  "query": "SELECT * FROM scheduled_campaigns ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM scheduled_campaigns ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "establishmentId": "30001",
+      "campaignName": "Campanha Agendada",
+      "message": "Teste agendamento",
+      "recipients": "\"[{\\\"phone\\\":\\\"88999290000\\\",\\\"name\\\":\\\"Brito\\\"}]\"",
+      "recipientCount": "1",
+      "scheduledAt": "2026-02-07 01:54:00",
+      "status": "sent",
+      "sentAt": "2026-02-07 01:54:14",
+      "successCount": "1",
+      "failCount": "0",
+      "costPerSms": "0.10",
+      "totalCost": "0.10",
+      "createdAt": "2026-02-07 01:53:16",
+      "updatedAt": "2026-02-07 01:54:14"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\tcampaignName\tmessage\trecipients\trecipientCount\tscheduledAt\tstatus\tsentAt\tsuccessCount\tfailCount\tcostPerSms\ttotalCost\tcreatedAt\tupdatedAt\n1\t30001\tCampanha Agendada\tTeste agendamento\t\"[{\\\"phone\\\":\\\"88999290000\\\",\\\"name\\\":\\\"Brito\\\"}]\"\t1\t2026-02-07 01:54:00\tsent\t2026-02-07 01:54:14\t1\t0\t0.10\t0.10\t2026-02-07 01:53:16\t2026-02-07 01:54:14\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

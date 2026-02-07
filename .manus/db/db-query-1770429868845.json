@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE sms_balance SET balance = balance + 0.30 WHERE establishmentId = 30001; INSERT INTO sms_transactions (establishmentId, type, amount, smsCount, balanceBefore, balanceAfter, description, createdAt) VALUES (30001, 'credit', 0.30, 0, 0.00, 0.30, 'Recarga manual de créditos SMS', NOW());",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute UPDATE sms_balance SET balance = balance + 0.30 WHERE establishmentId = 30001; INSERT INTO sms_transactions (establishmentId, type, amount, smsCount, balanceBefore, balanceAfter, description, createdAt) VALUES (30001, 'credit', 0.30, 0, 0.00, 0.30, 'Recarga manual de créditos SMS', NOW());",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 62
+}

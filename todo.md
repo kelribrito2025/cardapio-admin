@@ -5544,3 +5544,7 @@
 
 ## Renomear Botão Agendar
 - [x] Alterar texto do botão "Agendar campanha" para "Agendar"
+
+## Atualização Automática do Saldo SMS
+- [x] Atualizar saldo automaticamente na UI após envio imediato de campanha (sem precisar recarregar a página)
+- [x] Melhorar feedback visual: toast mostra custo debitado no envio imediato e informa que saldo será debitado no envio para agendamentos

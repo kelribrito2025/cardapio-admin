@@ -321,19 +321,20 @@ export default function Campanhas() {
   // Mutation para enviar SMS
   const enviarSMSMutation = trpc.campanhas.enviarSMS.useMutation({
     onSuccess: (data) => {
+      const custoDebitado = data.enviados * custoPorSms;
       if (data.enviados > 0) {
-        toast.success(`SMS enviado com sucesso para ${data.enviados} destinatário(s)!`);
+        toast.success(`Campanha enviada! ${data.enviados} SMS enviado(s). Saldo debitado: R$ ${custoDebitado.toFixed(2)}`);
       }
       if (data.falhas > 0) {
-        toast.error(`Falha ao enviar para ${data.falhas} destinatário(s)`);
+        toast.error(`Falha ao enviar para ${data.falhas} destinatário(s). Créditos estornados.`);
       }
       // Limpar seleções
       setMensagem("");
       setClientesSelecionados([]);
       setNumerosImportados([]);
       setNumerosManual([]);
-      // Atualizar saldo após envio
-      refetchSaldo();
+      // Atualizar saldo após envio (com pequeno delay para garantir que o banco já atualizou)
+      setTimeout(() => refetchSaldo(), 500);
     },
     onError: (error) => {
       toast.error(`Erro ao enviar SMS: ${error.message}`);
@@ -347,7 +348,7 @@ export default function Campanhas() {
   const agendarMutation = trpc.campanhas.agendarCampanha.useMutation({
     onSuccess: (data) => {
       const dataFormatada = new Date(data.scheduledAt).toLocaleString('pt-BR');
-      toast.success(`Campanha agendada para ${dataFormatada}`);
+      toast.success(`Campanha agendada para ${dataFormatada}. O saldo será debitado no momento do envio.`);
       setShowAgendarModal(false);
       setAgendamentoData("");
       setAgendamentoHora("");
@@ -356,7 +357,6 @@ export default function Campanhas() {
       setNumerosImportados([]);
       setNumerosManual([]);
       refetchAgendadas();
-      refetchSaldo();
     },
     onError: (error) => {
       toast.error(`Erro ao agendar: ${error.message}`);
@@ -1185,7 +1185,7 @@ export default function Campanhas() {
               <div className="flex items-start gap-2">
                 <Info className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
                 <p className="text-xs text-blue-700">
-                  O saldo será verificado no momento do agendamento. O envio será processado automaticamente no horário definido. Você pode cancelar a campanha antes do envio.
+                  O saldo será debitado no momento do envio, não no agendamento. O envio será processado automaticamente no horário definido. Você pode cancelar a campanha antes do envio.
                 </p>
               </div>
             </div>
