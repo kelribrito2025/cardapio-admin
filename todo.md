@@ -5580,3 +5580,6 @@
 - [x] Adicionar opção de valor personalizado no modal de recarga (input de valor em R$)
 - [x] Calcular quantidade de SMS automaticamente com base no valor inserido
 - [x] Validar valor mínimo (R$ 1,00) e máximo (R$ 1.000,00)
+
+## Formatação Moeda no Campo Personalizado
+- [x] Implementar formatação de moeda brasileira no input (digitar 100 = 1,00, digitar 1000 = 10,00)

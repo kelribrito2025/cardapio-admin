@@ -289,11 +289,12 @@ export default function Campanhas() {
     },
   });
 
-  // Cálculos do valor personalizado
-  const customAmountValue = parseFloat(customAmount.replace(",", ".")) || 0;
-  const customAmountCents = Math.round(customAmountValue * 100);
+  // Cálculos do valor personalizado (customAmount armazena centavos como string numérica)
+  const customAmountCents = parseInt(customAmount || "0", 10);
+  const customAmountValue = customAmountCents / 100;
   const customSmsCount = Math.floor(customAmountValue / custoPorSms);
   const isCustomValid = customAmountCents >= 100 && customAmountCents <= 100000 && customSmsCount >= 1;
+  const customAmountFormatted = (customAmountCents / 100).toFixed(2).replace(".", ",");
 
   // Detectar retorno do Stripe (sucesso/cancelamento)
   useEffect(() => {
@@ -1435,12 +1436,15 @@ export default function Campanhas() {
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">R$</span>
                     <Input
                       type="text"
-                      inputMode="decimal"
+                      inputMode="numeric"
                       placeholder="0,00"
-                      value={customAmount}
+                      value={customAmountFormatted}
                       onChange={(e) => {
-                        const val = e.target.value.replace(/[^0-9,.]/g, "");
-                        setCustomAmount(val);
+                        const digits = e.target.value.replace(/\D/g, "");
+                        const cents = parseInt(digits || "0", 10);
+                        if (cents <= 9999999) {
+                          setCustomAmount(String(cents));
+                        }
                       }}
                       className="pl-10 text-lg font-semibold h-12"
                     />
