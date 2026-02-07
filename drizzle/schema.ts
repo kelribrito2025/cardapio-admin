@@ -724,3 +724,18 @@ export const scheduledCampaigns = mysqlTable("scheduled_campaigns", {
 
 export type ScheduledCampaign = typeof scheduledCampaigns.$inferSelect;
 export type InsertScheduledCampaign = typeof scheduledCampaigns.$inferInsert;
+
+// Pedidos online pendentes de pagamento (dados salvos antes do checkout Stripe)
+export const pendingOnlineOrders = mysqlTable("pending_online_orders", {
+  id: int("id").autoincrement().primaryKey(),
+  sessionId: varchar("sessionId", { length: 255 }).notNull().unique(), // Stripe checkout session ID
+  establishmentId: int("establishmentId").notNull(),
+  orderData: json("orderData").notNull(), // JSON completo com dados do pedido e itens
+  status: mysqlEnum("status", ["pending", "completed", "expired"]).default("pending").notNull(),
+  resultOrderId: int("resultOrderId"), // ID do pedido criado após pagamento
+  resultOrderNumber: varchar("resultOrderNumber", { length: 50 }), // Número do pedido criado
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type PendingOnlineOrder = typeof pendingOnlineOrders.$inferSelect;
+export type InsertPendingOnlineOrder = typeof pendingOnlineOrders.$inferInsert;

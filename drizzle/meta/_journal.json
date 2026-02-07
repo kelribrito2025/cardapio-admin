@@ -484,6 +484,13 @@
       "when": 1770476163260,
       "tag": "0068_grey_fantastic_four",
       "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "5",
+      "when": 1770504673275,
+      "tag": "0069_strange_professor_monster",
+      "breakpoints": true
     }
   ]
 }

@@ -5635,3 +5635,8 @@
 - [x] Modal "Aguardando pagamento" com polling de status
 - [x] Opção de tentar pagar novamente ou mudar forma de pagamento no estado aguardando
 - [x] Pedido só é criado após confirmação do webhook de pagamento
+- [x] Bug: Pedido não é criado após pagamento online confirmado (sem notificação WhatsApp e sem aparecer na página de pedidos)
+- [x] Criar tabela pending_online_orders para salvar dados do pedido antes do checkout
+- [x] Salvar dados do pedido no banco ao criar checkout session (em vez de metadata)
+- [x] Webhook busca dados do pedido no banco por session_id (em vez de metadata)
+- [x] Frontend polling retorna número do pedido após confirmação

@@ -3882,7 +3882,7 @@ export const appRouter = router({
         const deliveryFeeInCents = Math.round(parseFloat(input.deliveryFee || '0') * 100);
         
         // Salvar dados do pedido para usar no webhook
-        const orderData = JSON.stringify({
+        const orderDataObj = {
           customerName: input.customerName,
           customerPhone: input.customerPhone,
           customerAddress: input.customerAddress || '',
@@ -3898,7 +3898,7 @@ export const appRouter = router({
           couponId: input.couponId || null,
           loyaltyCardId: input.loyaltyCardId || null,
           items: input.items,
-        });
+        };
         
         const menuSlug = establishment.menuSlug || '';
         
@@ -3910,10 +3910,13 @@ export const appRouter = router({
           customerName: input.customerName,
           establishmentId: establishment.id,
           establishmentName: establishment.name,
-          orderData,
+          orderData: JSON.stringify({ type: 'pending_db' }), // Dados reais salvos no banco
           successUrl: `${origin}/menu/${menuSlug}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
           cancelUrl: `${origin}/menu/${menuSlug}?payment=cancelled`,
         });
+        
+        // Salvar dados completos do pedido no banco (evita limite de 500 chars do metadata Stripe)
+        await db.savePendingOnlineOrder(result.sessionId, establishment.id, orderDataObj);
         
         return result;
       }),
@@ -3927,6 +3930,19 @@ export const appRouter = router({
         try {
           const { getCheckoutSessionStatus } = await import("./stripeConnect");
           const result = await getCheckoutSessionStatus(input.sessionId);
+          
+          // Se pagamento confirmado, buscar dados do pedido criado
+          if (result.status === 'complete' && result.paymentStatus === 'paid') {
+            const pendingOrder = await db.getPendingOnlineOrder(input.sessionId);
+            if (pendingOrder && pendingOrder.status === 'completed') {
+              return {
+                ...result,
+                orderNumber: pendingOrder.resultOrderNumber || undefined,
+                orderId: pendingOrder.resultOrderId || undefined,
+              };
+            }
+          }
+          
           return result;
         } catch (error) {
           console.error('[checkPaymentStatus] Erro:', error);

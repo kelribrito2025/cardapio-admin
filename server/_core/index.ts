@@ -1315,13 +1315,27 @@ async function startServer() {
         // Processar pagamento de pedido online via Stripe Connect
         if (session.metadata?.type === "online_order") {
           const estId = parseInt(session.metadata.establishment_id || "0");
-          console.log(`[Stripe Webhook] Pedido online pago: estabelecimento ${estId}`);
+          console.log(`[Stripe Webhook] Pedido online pago: estabelecimento ${estId}, session: ${session.id}`);
           
           try {
-            const orderDataStr = session.metadata.order_data;
-            if (orderDataStr && estId > 0) {
-              const orderData = JSON.parse(orderDataStr);
-              const { createPublicOrder, getEstablishmentById, getPrinterSettings, addToPrintQueue } = await import("../db");
+            // Buscar dados do pedido no banco (evita limite de 500 chars do metadata Stripe)
+            const { getPendingOnlineOrder, completePendingOnlineOrder, createPublicOrder, getEstablishmentById, getPrinterSettings, addToPrintQueue } = await import("../db");
+            const pendingOrder = await getPendingOnlineOrder(session.id);
+            
+            // Fallback: tentar metadata se não encontrar no banco (compatibilidade)
+            let orderData: any = null;
+            if (pendingOrder) {
+              orderData = typeof pendingOrder.orderData === 'string' ? JSON.parse(pendingOrder.orderData) : pendingOrder.orderData;
+              console.log(`[Stripe Webhook] Dados do pedido encontrados no banco para session ${session.id}`);
+            } else {
+              const orderDataStr = session.metadata.order_data;
+              if (orderDataStr) {
+                orderData = JSON.parse(orderDataStr);
+                console.log(`[Stripe Webhook] Dados do pedido encontrados no metadata para session ${session.id}`);
+              }
+            }
+            
+            if (orderData && estId > 0) {
               
               // Criar o pedido no sistema
               const result = await createPublicOrder(
@@ -1354,6 +1368,14 @@ async function startServer() {
               );
               
               console.log(`[Stripe Webhook] Pedido online criado: #${result?.orderNumber} para estabelecimento ${estId}`);
+              
+              // Marcar pedido pendente como completo no banco
+              if (result && pendingOrder) {
+                try {
+                  await completePendingOnlineOrder(session.id, result.orderId, result.orderNumber);
+                  console.log(`[Stripe Webhook] Pedido pendente marcado como completo: session ${session.id}`);
+                } catch (e) { console.error("[Stripe Webhook] Erro ao completar pedido pendente:", e); }
+              }
               
               // Enviar SSE para notificar novo pedido
               if (result) {

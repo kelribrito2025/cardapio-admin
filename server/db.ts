@@ -5623,3 +5623,46 @@ export async function cancelScheduledCampaign(campaignId: number, establishmentI
 
   return (result[0] as any).affectedRows > 0;
 }
+
+
+// ============ PENDING ONLINE ORDERS FUNCTIONS ============
+
+/**
+ * Salva dados do pedido antes de criar o checkout Stripe
+ * Evita o limite de 500 chars do metadata do Stripe
+ */
+export async function savePendingOnlineOrder(sessionId: string, establishmentId: number, orderData: any): Promise<void> {
+  const database = await getDb();
+  const { pendingOnlineOrders } = await import("../drizzle/schema");
+  await database!.insert(pendingOnlineOrders).values({
+    sessionId,
+    establishmentId,
+    orderData,
+    status: "pending",
+  });
+}
+
+/**
+ * Busca pedido pendente por session ID do Stripe
+ */
+export async function getPendingOnlineOrder(sessionId: string) {
+  const database = await getDb();
+  const { pendingOnlineOrders } = await import("../drizzle/schema");
+  const { eq } = await import("drizzle-orm");
+  const rows = await database!.select().from(pendingOnlineOrders).where(eq(pendingOnlineOrders.sessionId, sessionId)).limit(1);
+  return rows[0] || null;
+}
+
+/**
+ * Marca pedido pendente como completo e salva o ID/número do pedido criado
+ */
+export async function completePendingOnlineOrder(sessionId: string, orderId: number, orderNumber: string): Promise<void> {
+  const database = await getDb();
+  const { pendingOnlineOrders } = await import("../drizzle/schema");
+  const { eq } = await import("drizzle-orm");
+  await database!.update(pendingOnlineOrders).set({
+    status: "completed",
+    resultOrderId: orderId,
+    resultOrderNumber: orderNumber,
+  }).where(eq(pendingOnlineOrders.sessionId, sessionId));
+}

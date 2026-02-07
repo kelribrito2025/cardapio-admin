@@ -163,6 +163,7 @@ export default function PublicMenu() {
   const [onlinePaymentSessionId, setOnlinePaymentSessionId] = useState<string | null>(null);
   const [onlinePaymentStatus, setOnlinePaymentStatus] = useState<'idle' | 'waiting' | 'confirmed' | 'expired'>('idle');
   const [onlinePaymentUrl, setOnlinePaymentUrl] = useState<string | null>(null);
+  const [createdOrderNumber, setCreatedOrderNumber] = useState<string | null>(null);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
   const [showMobileBag, setShowMobileBag] = useState(false);
   const [bagAutoOpenEnabled, setBagAutoOpenEnabled] = useState(true); // Controla se a sacola deve abrir automaticamente
@@ -285,12 +286,18 @@ export default function PublicMenu() {
     
     const pollInterval = setInterval(async () => {
       try {
-        const result = await trpcUtils.stripeConnect.checkPaymentStatus.fetch({ sessionId: onlinePaymentSessionId });
+        const result = await trpcUtils.stripeConnect.checkPaymentStatus.fetch({ sessionId: onlinePaymentSessionId }) as any;
         if (result.status === 'complete' && result.paymentStatus === 'paid') {
-          setOnlinePaymentStatus('confirmed');
-          setOrderSent(true);
-          setOrderStatus('sent');
-          clearInterval(pollInterval);
+          // Verificar se o pedido já foi criado pelo webhook (tem orderNumber)
+          if (result.orderNumber) {
+            setOnlinePaymentStatus('confirmed');
+            setOrderSent(true);
+            setOrderStatus('sent');
+            setCreatedOrderNumber(result.orderNumber);
+            clearInterval(pollInterval);
+          }
+          // Se pagou mas pedido ainda não foi criado, continuar polling
+          // (webhook pode demorar alguns segundos)
         } else if (result.status === 'expired') {
           setOnlinePaymentStatus('expired');
           clearInterval(pollInterval);
