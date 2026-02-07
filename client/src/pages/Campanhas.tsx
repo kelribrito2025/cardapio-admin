@@ -57,39 +57,39 @@ const DEFAULT_COST_PER_SMS = 0.10;
 // Templates de SMS sugeridos
 const SMS_TEMPLATES = [
   {
-    emoji: "⭐",
+    emoji: "VIP",
     title: "Cliente VIP",
-    text: "Você é cliente VIP! \u2b50\nPreparamos um desconto especial só pra você.\nUse o cupom VIP15 no seu próximo pedido.",
+    text: "Voce e cliente VIP! Preparamos um desconto especial so pra voce. Use o cupom VIP15 no seu proximo pedido.",
   },
   {
-    emoji: "👀",
+    emoji: "OFF",
     title: "Oferta Ativa",
-    text: "Só passando pra avisar \ud83d\udc40\nTem uma oferta ativa por tempo limitado no nosso cardápio.\nCorre aproveitar!",
+    text: "So passando pra avisar! Tem uma oferta ativa por tempo limitado no nosso cardapio. Corre aproveitar!",
   },
   {
-    emoji: "🍔",
+    emoji: "#10",
     title: "Sentimos sua falta",
-    text: "Sentimos sua falta! \ud83c\udf54\nVolte a pedir hoje e ganhe R$10 OFF no seu próximo pedido.\nCupom: VOLTA10\nVálido por 48h. Aproveite!",
+    text: "Sentimos sua falta! Volte a pedir hoje e ganhe R$10 OFF no seu proximo pedido. Cupom: VOLTA10. Valido por 48h. Aproveite!",
   },
   {
-    emoji: "😊",
+    emoji: "OLA",
     title: "Reativação",
-    text: "Oi! Já faz um tempo que você não pede com a gente \ud83d\ude0a\nQue tal matar a saudade hoje?\nTem novidade no cardápio esperando por você",
+    text: "Oi! Ja faz um tempo que voce nao pede com a gente. Que tal matar a saudade hoje? Tem novidade no cardapio esperando por voce!",
   },
   {
-    emoji: "😌",
+    emoji: "GO",
     title: "Delivery",
-    text: "Dia perfeito pra pedir em casa \ud83d\ude0c\nDelivery rápido e quentinho esperando por você.\nFaça seu pedido agora!",
+    text: "Dia perfeito pra pedir em casa! Delivery rapido e quentinho esperando por voce. Faca seu pedido agora!",
   },
   {
-    emoji: "🍕",
+    emoji: "NEW",
     title: "Novidade no Cardápio",
-    text: "Novidade no cardápio! \ud83c\udf55\nAcabamos de lançar um item novo.\nVem experimentar hoje e conta pra gente o que achou!",
+    text: "Novidade no cardapio! Acabamos de lancar um item novo. Vem experimentar hoje e conta pra gente o que achou!",
   },
   {
-    emoji: "🍻",
+    emoji: "HH",
     title: "Happy Hour",
-    text: "Happy Hour liberado! \ud83c\udf7b\nPedidos com desconto até às 19h.\nAproveite enquanto é tempo!",
+    text: "Happy Hour liberado! Pedidos com desconto ate as 19h. Aproveite enquanto e tempo!",
   },
 ];
 
@@ -466,7 +466,7 @@ export default function Campanhas() {
                           className="border rounded-lg p-4 hover:border-primary/50 hover:bg-muted/30 transition-all group"
                         >
                           <div className="flex items-start gap-3">
-                            <span className="text-2xl">{template.emoji}</span>
+                            <span className="text-[10px] font-bold bg-primary/10 text-primary rounded px-1.5 py-1 shrink-0">{template.emoji}</span>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between mb-1">
                                 <h4 className="text-sm font-semibold text-foreground">{template.title}</h4>
@@ -498,8 +498,11 @@ export default function Campanhas() {
                 <Textarea
                   value={mensagem}
                   onChange={(e) => {
-                    if (e.target.value.length <= SMS_CHAR_LIMIT) {
-                      setMensagem(e.target.value);
+                    // Remove emojis do texto
+                    const emojiRegex = new RegExp('[\\u{1F600}-\\u{1F64F}\\u{1F300}-\\u{1F5FF}\\u{1F680}-\\u{1F6FF}\\u{1F1E0}-\\u{1F1FF}\\u{2600}-\\u{26FF}\\u{2700}-\\u{27BF}\\u{FE00}-\\u{FE0F}\\u{1F900}-\\u{1F9FF}\\u{1FA00}-\\u{1FA6F}\\u{1FA70}-\\u{1FAFF}\\u{200D}\\u{20E3}\\u{E0020}-\\u{E007F}]', 'gu');
+                    const cleaned = e.target.value.replace(emojiRegex, '');
+                    if (cleaned.length <= SMS_CHAR_LIMIT) {
+                      setMensagem(cleaned);
                     }
                   }}
                   placeholder="Você ganhou R$15 de desconto! Use o cupom #15OFF em pedidos acima de R$ 100. Aproveite!"

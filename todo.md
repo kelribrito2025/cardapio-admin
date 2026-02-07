@@ -5516,3 +5516,7 @@
 
 ## Correção Template SMS
 - [x] Substituir quebras de linha por espaços ao inserir template no campo de mensagem SMS
+
+## Restrição de Emojis no SMS
+- [x] Remover emojis de todos os templates de SMS
+- [x] Bloquear inserção de emojis no campo de mensagem SMS
