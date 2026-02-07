@@ -5623,3 +5623,4 @@
 - [x] Remover card "Como funciona"
 - [x] Renomear título do card de taxas para "Pagamento online | Cartão"
 - [x] Remover bullet "Não se aplica a pagamentos em dinheiro, Pix ou cartão presencial"
+- [x] Remover banner amarelo de taxas de pagamento online

@@ -14,7 +14,6 @@ import {
   LayoutDashboard,
   Shield,
   Info,
-  Receipt,
 } from "lucide-react";
 import { useSearchParams } from "wouter";
 
@@ -121,35 +120,6 @@ export function OnlinePaymentTab() {
         </Button>
       </div>
 
-      {/* Banner de Taxas - Destaque principal */}
-      <div className="rounded-xl border-2 border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50 p-5">
-        <div className="flex items-start gap-3">
-          <div className="p-2.5 rounded-xl bg-amber-100 shrink-0">
-            <Receipt className="h-5 w-5 text-amber-700" />
-          </div>
-          <div className="flex-1 space-y-3">
-            <div>
-              <h4 className="font-semibold text-amber-900 text-sm">
-                Pagamento online | Cartão
-              </h4>
-              <div className="mt-2 flex items-baseline gap-1.5">
-                <span className="text-2xl font-bold text-amber-900">3,99%</span>
-                <span className="text-lg font-semibold text-amber-700">+</span>
-                <span className="text-2xl font-bold text-amber-900">R$ 0,89</span>
-                <span className="text-sm text-amber-700 ml-1">por transação</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <p className="text-xs text-amber-800 flex items-center gap-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5 text-amber-600 shrink-0" />
-                Cobrado apenas em pagamentos online confirmados
-              </p>
-
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Status Card */}
       <div className="rounded-xl border bg-gradient-to-br from-white to-slate-50 p-5 space-y-4">
