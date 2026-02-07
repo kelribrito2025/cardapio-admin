@@ -13,7 +13,9 @@ import {
   RefreshCw,
   LayoutDashboard,
   Shield,
-  Percent,
+  Info,
+  Receipt,
+  Calculator,
 } from "lucide-react";
 import { useSearchParams } from "wouter";
 
@@ -118,6 +120,59 @@ export function OnlinePaymentTab() {
         >
           <RefreshCw className="h-4 w-4" />
         </Button>
+      </div>
+
+      {/* Banner de Taxas - Destaque principal */}
+      <div className="rounded-xl border-2 border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50 p-5">
+        <div className="flex items-start gap-3">
+          <div className="p-2.5 rounded-xl bg-amber-100 shrink-0">
+            <Receipt className="h-5 w-5 text-amber-700" />
+          </div>
+          <div className="flex-1 space-y-3">
+            <div>
+              <h4 className="font-semibold text-amber-900 text-sm">
+                Taxas de Pagamento Online
+              </h4>
+              <div className="mt-2 flex items-baseline gap-1.5">
+                <span className="text-2xl font-bold text-amber-900">3,99%</span>
+                <span className="text-lg font-semibold text-amber-700">+</span>
+                <span className="text-2xl font-bold text-amber-900">R$ 0,89</span>
+                <span className="text-sm text-amber-700 ml-1">por transação</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <p className="text-xs text-amber-800 flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                Cobrado apenas em pagamentos online confirmados
+              </p>
+              <p className="text-xs text-amber-800 flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                Não se aplica a pagamentos em dinheiro, Pix ou cartão presencial
+              </p>
+              <p className="text-xs text-amber-800 flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                Inclui percentual (3,99%) + valor fixo (R$ 0,89) por transação
+              </p>
+            </div>
+
+            {/* Mini exemplo de cálculo */}
+            <div className="mt-1 rounded-lg bg-white/70 border border-amber-200 px-3.5 py-2.5">
+              <div className="flex items-center gap-2 text-xs text-amber-800">
+                <Calculator className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                <span className="font-medium">Exemplo:</span>
+                <span>
+                  Pedido de <strong>R$ 100,00</strong> → taxa de <strong>R$ 4,88</strong>
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-amber-700 mt-1 ml-5.5 pl-[22px]">
+                <span>
+                  Pedido de <strong>R$ 50,00</strong> → taxa de <strong>R$ 2,89</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Status Card */}
@@ -229,7 +284,7 @@ export function OnlinePaymentTab() {
         </div>
       </div>
 
-      {/* Toggle Online Payment */}
+      {/* Toggle Online Payment + Reforço de taxa */}
       {isOnboarded && chargesEnabled && (
         <div className="rounded-xl border p-5 space-y-4">
           <div className="flex items-center justify-between">
@@ -252,13 +307,20 @@ export function OnlinePaymentTab() {
               disabled={togglePaymentMutation.isPending}
             />
           </div>
+          {/* Reforço de taxa junto ao toggle */}
+          <div className="flex items-center gap-2 pt-2 border-t">
+            <Info className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <p className="text-xs text-muted-foreground">
+              Taxa por transação: <span className="font-semibold text-foreground">3,99% + R$ 0,89</span> — cobrada apenas em pagamentos online confirmados.
+            </p>
+          </div>
         </div>
       )}
 
-      {/* Info Card */}
+      {/* Info Card - Como funciona */}
       <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 space-y-3">
         <h4 className="font-medium text-sm text-blue-900 flex items-center gap-2">
-          <Percent className="h-4 w-4" />
+          <Info className="h-4 w-4" />
           Como funciona
         </h4>
         <ul className="text-xs text-blue-800 space-y-1.5">
@@ -280,7 +342,7 @@ export function OnlinePaymentTab() {
           </li>
           <li className="flex items-start gap-2">
             <span className="font-bold text-blue-600 mt-0.5">5.</span>
-            <span>O valor é transferido para sua conta bancária (taxa da plataforma: 1,5%)</span>
+            <span>O valor é transferido para sua conta bancária (taxa: 3,99% + R$ 0,89 por transação)</span>
           </li>
         </ul>
       </div>

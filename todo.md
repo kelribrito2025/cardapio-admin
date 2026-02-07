@@ -5614,3 +5614,7 @@
 - [x] Alterar taxa da plataforma de 4,6% para 4,3%
 - [x] Alterar taxa da plataforma de 4,3% para 3,99% + R$ 1,00 fixo por transação
 - [x] Alterar taxa fixa da plataforma de R$ 1,00 para R$ 0,89 por transação
+- [x] Exibir banner de taxas destacado no topo da seção Pagamento Online
+- [x] Adicionar reforço de taxa próximo ao toggle de ativar/desativar
+- [x] Incluir mini exemplo de cálculo (R$ 100 → R$ 4,88)
+- [x] Atualizar card 'Como funciona' com taxa correta
