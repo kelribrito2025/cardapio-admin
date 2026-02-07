@@ -5625,3 +5625,6 @@
 - [x] Remover bullet "Não se aplica a pagamentos em dinheiro, Pix ou cartão presencial"
 - [x] Remover banner amarelo de taxas de pagamento online
 - [x] Ajustar layout de "Cobranças ativas" e "Repasses ativos" para ficarem lado a lado próximos
+- [x] Dropdown no botão Cartão do menu público com "Trazer maquininha" e "Pagar online" quando Pagamento Online ativado
+- [x] Manter comportamento atual do botão Cartão quando Pagamento Online desativado
+- [x] Card "Pagar online" com ícone de segurança Stripe como já existe

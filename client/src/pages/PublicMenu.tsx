@@ -143,6 +143,7 @@ export default function PublicMenu() {
   const [orderObservation, setOrderObservation] = useState("");
   const [deliveryType, setDeliveryType] = useState<"pickup" | "delivery" | "dine_in">("pickup");
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "pix" | "card_online">("pix");
+  const [showCardOptions, setShowCardOptions] = useState(false);
   const [changeAmount, setChangeAmount] = useState("");
   const [changeAmountError, setChangeAmountError] = useState<string | null>(null);
   const [deliveryAddress, setDeliveryAddress] = useState({
@@ -3416,20 +3417,80 @@ export default function PublicMenu() {
                         </div>
                       )}
                     </div>
-                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
-                      paymentMethod === "card" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
-                    }`}>
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="card"
-                        checked={paymentMethod === "card"}
-                        onChange={() => setPaymentMethod("card")}
-                        className="w-4 h-4 text-red-500 focus:ring-red-500"
-                      />
-                      <CreditCard className="h-5 w-5 text-gray-600" />
-                      <span className="font-medium text-gray-800">Cartão</span>
-                    </label>
+                    {/* Cartão - com dropdown quando pagamento online ativo */}
+                    {deliveryType === "delivery" && establishment.onlinePaymentEnabled ? (
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => setShowCardOptions(!showCardOptions)}
+                          className={`w-full flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                            paymentMethod === "card" || paymentMethod === "card_online" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                          }`}
+                        >
+                          <CreditCard className="h-5 w-5 text-gray-600" />
+                          <span className="font-medium text-gray-800 flex-1 text-left">Cartão</span>
+                          <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${showCardOptions ? 'rotate-180' : ''}`} />
+                        </button>
+                        {showCardOptions && (
+                          <div className="mt-2 ml-4 space-y-2">
+                            {/* Opção: Trazer maquininha */}
+                            <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors ${
+                              paymentMethod === "card" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                            }`}>
+                              <input
+                                type="radio"
+                                name="paymentMethod"
+                                value="card"
+                                checked={paymentMethod === "card"}
+                                onChange={() => setPaymentMethod("card")}
+                                className="w-4 h-4 text-red-500 focus:ring-red-500"
+                              />
+                              <CreditCard className="h-4 w-4 text-gray-600" />
+                              <span className="font-medium text-gray-800 text-sm">Trazer maquininha</span>
+                            </label>
+                            {/* Opção: Pagar online */}
+                            <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors ${
+                              paymentMethod === "card_online" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
+                            }`}>
+                              <input
+                                type="radio"
+                                name="paymentMethod"
+                                value="card_online"
+                                checked={paymentMethod === "card_online"}
+                                onChange={() => setPaymentMethod("card_online")}
+                                className="w-4 h-4 text-blue-500 focus:ring-blue-500"
+                              />
+                              <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                <line x1="1" y1="10" x2="23" y2="10"/>
+                              </svg>
+                              <div className="flex-1">
+                                <span className="font-medium text-gray-800 text-sm">Pagar online</span>
+                                <span className="block text-xs text-blue-600">Pagamento seguro via Stripe</span>
+                              </div>
+                              <svg className="h-4 w-4 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                              </svg>
+                            </label>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                        paymentMethod === "card" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                      }`}>
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="card"
+                          checked={paymentMethod === "card"}
+                          onChange={() => setPaymentMethod("card")}
+                          className="w-4 h-4 text-red-500 focus:ring-red-500"
+                        />
+                        <CreditCard className="h-5 w-5 text-gray-600" />
+                        <span className="font-medium text-gray-800">Cartão</span>
+                      </label>
+                    )}
                     <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
                       paymentMethod === "pix" ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
                     }`}>
@@ -3444,32 +3505,6 @@ export default function PublicMenu() {
                       <QrCode className="h-5 w-5 text-gray-600" />
                       <span className="font-medium text-gray-800">Pix</span>
                     </label>
-                    {/* Cartão Online - apenas para delivery com pagamento online ativo */}
-                    {deliveryType === "delivery" && establishment.onlinePaymentEnabled && (
-                      <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
-                        paymentMethod === "card_online" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
-                      }`}>
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="card_online"
-                          checked={paymentMethod === "card_online"}
-                          onChange={() => setPaymentMethod("card_online")}
-                          className="w-4 h-4 text-blue-500 focus:ring-blue-500"
-                        />
-                        <svg className="h-5 w-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                          <line x1="1" y1="10" x2="23" y2="10"/>
-                        </svg>
-                        <div className="flex-1">
-                          <span className="font-medium text-gray-800">Pagar Online</span>
-                          <span className="block text-xs text-blue-600">Pagamento seguro via Stripe</span>
-                        </div>
-                        <svg className="h-5 w-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                      </label>
-                    )}
                   </div>
 
                   {/* Info Cartão Online */}
