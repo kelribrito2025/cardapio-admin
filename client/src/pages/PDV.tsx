@@ -2304,6 +2304,7 @@ export default function PDV() {
                           handleSelectPaymentMethod(method.id);
                         }
                       }}
+                      style={{ height: '67px' }}
                       className={cn(
                         "w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all",
                         selectedPaymentInSidebar === method.id
