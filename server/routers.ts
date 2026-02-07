@@ -2952,6 +2952,83 @@ export const appRouter = router({
           resultados,
         };
       }),
+
+    // Agendar campanha SMS
+    agendarCampanha: protectedProcedure
+      .input(z.object({
+        mensagem: z.string().min(1).max(160),
+        destinatarios: z.array(z.object({
+          phone: z.string(),
+          name: z.string(),
+        })).min(1),
+        nomeCampanha: z.string().optional(),
+        scheduledAt: z.string(), // ISO date string
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        const scheduledDate = new Date(input.scheduledAt);
+        if (scheduledDate <= new Date()) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'A data de agendamento deve ser no futuro' });
+        }
+        
+        // Verificar saldo antes de agendar
+        const balance = await db.getOrCreateSmsBalance(establishment.id);
+        const costPerSms = parseFloat(balance.costPerSms as string);
+        const totalCost = input.destinatarios.length * costPerSms;
+        const currentBalance = parseFloat(balance.balance as string);
+        
+        if (currentBalance < totalCost) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: `Saldo insuficiente. Necessário R$ ${totalCost.toFixed(2)}, disponível R$ ${currentBalance.toFixed(2)}`,
+          });
+        }
+        
+        const campaignId = await db.createScheduledCampaign({
+          establishmentId: establishment.id,
+          campaignName: input.nomeCampanha || `Campanha agendada ${establishment.name}`,
+          message: input.mensagem,
+          recipients: input.destinatarios,
+          recipientCount: input.destinatarios.length,
+          scheduledAt: scheduledDate,
+          costPerSms,
+          totalCost,
+        });
+        
+        return { id: campaignId, scheduledAt: scheduledDate };
+      }),
+
+    // Listar campanhas agendadas
+    listarAgendadas: protectedProcedure
+      .query(async ({ ctx }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        return await db.getScheduledCampaigns(establishment.id);
+      }),
+
+    // Cancelar campanha agendada
+    cancelarAgendada: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        const cancelled = await db.cancelScheduledCampaign(input.id, establishment.id);
+        if (!cancelled) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Campanha não encontrada ou já processada' });
+        }
+        
+        return { success: true };
+      }),
   }),
 
   // ============ TABLE SPACES (ESPAÇOS) ============

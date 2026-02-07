@@ -11,6 +11,7 @@ import { serveStatic, setupVite } from "./vite";
 import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, sendAllOrdersHeartbeat } from "./sse";
 import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrderById, getOrderItems, getOrderItemsWithPrinter, getEstablishmentById, getPrinterSettings, getActivePrinters, getTabById, getTabItems, getTableById } from "../db";
 import { sdk } from "./sdk";
+import { startScheduledCampaignJob } from "../scheduledCampaignJob";
 
 // Função para gerar HTML do recibo otimizado para impressora térmica
 // OTIMIZADO para melhor legibilidade em impressoras ESC POS 58mm/80mm
@@ -2200,6 +2201,9 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    
+    // Iniciar job de processamento de campanhas agendadas
+    startScheduledCampaignJob();
   });
 }
 

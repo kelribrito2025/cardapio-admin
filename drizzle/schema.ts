@@ -697,3 +697,25 @@ export const tabItems = mysqlTable("tabItems", {
 
 export type TabItem = typeof tabItems.$inferSelect;
 export type InsertTabItem = typeof tabItems.$inferInsert;
+
+// Campanhas SMS agendadas
+export const scheduledCampaigns = mysqlTable("scheduled_campaigns", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  campaignName: varchar("campaignName", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  recipients: json("recipients").notNull(), // Array de { phone: string, name?: string }
+  recipientCount: int("recipientCount").default(0).notNull(),
+  scheduledAt: timestamp("scheduledAt").notNull(), // Data/hora para disparo
+  status: mysqlEnum("status", ["pending", "sent", "cancelled", "failed"]).default("pending").notNull(),
+  sentAt: timestamp("sentAt"), // Quando foi efetivamente disparada
+  successCount: int("successCount").default(0).notNull(), // SMS enviados com sucesso
+  failCount: int("failCount").default(0).notNull(), // SMS que falharam
+  costPerSms: decimal("costPerSms", { precision: 10, scale: 2 }).default("0.10").notNull(),
+  totalCost: decimal("totalCost", { precision: 10, scale: 2 }).default("0").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ScheduledCampaign = typeof scheduledCampaigns.$inferSelect;
+export type InsertScheduledCampaign = typeof scheduledCampaigns.$inferInsert;

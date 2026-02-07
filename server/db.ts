@@ -34,7 +34,8 @@ import {
   tableSpaces, InsertTableSpace, TableSpace,
   tables, InsertTable, Table,
   tabs, InsertTab, Tab,
-  tabItems, InsertTabItem, TabItem
+  tabItems, InsertTabItem, TabItem,
+  scheduledCampaigns, InsertScheduledCampaign, ScheduledCampaign
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -5516,4 +5517,109 @@ export async function cancelTab(tabId: number): Promise<void> {
   await db.update(tabs)
     .set({ status: "cancelled", updatedAt: new Date() })
     .where(eq(tabs.id, tabId));
+}
+
+// ============ SCHEDULED CAMPAIGNS ============
+
+/**
+ * Cria uma campanha agendada
+ */
+export async function createScheduledCampaign(data: {
+  establishmentId: number;
+  campaignName: string;
+  message: string;
+  recipients: { phone: string; name: string }[];
+  recipientCount: number;
+  scheduledAt: Date;
+  costPerSms: number;
+  totalCost: number;
+}): Promise<number | null> {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db.insert(scheduledCampaigns).values({
+    establishmentId: data.establishmentId,
+    campaignName: data.campaignName,
+    message: data.message,
+    recipients: JSON.stringify(data.recipients),
+    recipientCount: data.recipientCount,
+    scheduledAt: data.scheduledAt,
+    status: "pending",
+    costPerSms: data.costPerSms.toFixed(2),
+    totalCost: data.totalCost.toFixed(2),
+  });
+
+  return result[0].insertId;
+}
+
+/**
+ * Lista campanhas agendadas de um estabelecimento
+ */
+export async function getScheduledCampaigns(establishmentId: number): Promise<ScheduledCampaign[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select()
+    .from(scheduledCampaigns)
+    .where(eq(scheduledCampaigns.establishmentId, establishmentId))
+    .orderBy(desc(scheduledCampaigns.createdAt));
+}
+
+/**
+ * Busca campanhas pendentes que já passaram do horário agendado
+ */
+export async function getPendingCampaignsDue(): Promise<ScheduledCampaign[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  const now = new Date();
+  return await db.select()
+    .from(scheduledCampaigns)
+    .where(
+      and(
+        eq(scheduledCampaigns.status, "pending"),
+        lte(scheduledCampaigns.scheduledAt, now)
+      )
+    );
+}
+
+/**
+ * Atualiza o status de uma campanha agendada
+ */
+export async function updateScheduledCampaignStatus(
+  campaignId: number,
+  status: "pending" | "sent" | "cancelled" | "failed",
+  extra?: { sentAt?: Date; successCount?: number; failCount?: number }
+): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.update(scheduledCampaigns)
+    .set({
+      status,
+      ...(extra?.sentAt && { sentAt: extra.sentAt }),
+      ...(extra?.successCount !== undefined && { successCount: extra.successCount }),
+      ...(extra?.failCount !== undefined && { failCount: extra.failCount }),
+    })
+    .where(eq(scheduledCampaigns.id, campaignId));
+}
+
+/**
+ * Cancela uma campanha agendada (só se estiver pendente)
+ */
+export async function cancelScheduledCampaign(campaignId: number, establishmentId: number): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+
+  const result = await db.update(scheduledCampaigns)
+    .set({ status: "cancelled" })
+    .where(
+      and(
+        eq(scheduledCampaigns.id, campaignId),
+        eq(scheduledCampaigns.establishmentId, establishmentId),
+        eq(scheduledCampaigns.status, "pending")
+      )
+    );
+
+  return (result[0] as any).affectedRows > 0;
 }

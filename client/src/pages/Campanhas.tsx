@@ -37,8 +37,11 @@ import {
   TicketCheck,
   BookOpen,
   Copy,
+  CalendarClock,
+  XCircle,
+  CheckCircle,
 } from "lucide-react";
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -162,6 +165,11 @@ export default function Campanhas() {
   const [isEnviando, setIsEnviando] = useState(false);
   const [selecionarTodos, setSelecionarTodos] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [showAgendarModal, setShowAgendarModal] = useState(false);
+  const [agendamentoData, setAgendamentoData] = useState("");
+  const [agendamentoHora, setAgendamentoHora] = useState("");
+  const [isAgendando, setIsAgendando] = useState(false);
+  const [showAgendadas, setShowAgendadas] = useState(false);
   
   // Estados dos filtros rápidos
   const [showFilters, setShowFilters] = useState(false);
@@ -331,6 +339,104 @@ export default function Campanhas() {
       toast.error(`Erro ao enviar SMS: ${error.message}`);
     },
   });
+
+  // Query para campanhas agendadas
+  const { data: campanhasAgendadas, refetch: refetchAgendadas } = trpc.campanhas.listarAgendadas.useQuery();
+
+  // Mutation para agendar campanha
+  const agendarMutation = trpc.campanhas.agendarCampanha.useMutation({
+    onSuccess: (data) => {
+      const dataFormatada = new Date(data.scheduledAt).toLocaleString('pt-BR');
+      toast.success(`Campanha agendada para ${dataFormatada}`);
+      setShowAgendarModal(false);
+      setAgendamentoData("");
+      setAgendamentoHora("");
+      setMensagem("");
+      setClientesSelecionados([]);
+      setNumerosImportados([]);
+      setNumerosManual([]);
+      refetchAgendadas();
+      refetchSaldo();
+    },
+    onError: (error) => {
+      toast.error(`Erro ao agendar: ${error.message}`);
+    },
+  });
+
+  // Mutation para cancelar campanha agendada
+  const cancelarAgendadaMutation = trpc.campanhas.cancelarAgendada.useMutation({
+    onSuccess: () => {
+      toast.success("Campanha cancelada com sucesso");
+      refetchAgendadas();
+    },
+    onError: (error) => {
+      toast.error(`Erro ao cancelar: ${error.message}`);
+    },
+  });
+
+  // Handler para agendar campanha
+  const handleAgendarCampanha = async () => {
+    if (!mensagem.trim()) {
+      toast.error("Digite uma mensagem para agendar");
+      return;
+    }
+    if (totalDestinatarios === 0) {
+      toast.error("Selecione pelo menos um destinatário");
+      return;
+    }
+    if (!agendamentoData || !agendamentoHora) {
+      toast.error("Selecione data e hora para o agendamento");
+      return;
+    }
+    if (custoTotal > saldo) {
+      toast.error(`Saldo insuficiente. Necessário R$ ${custoTotal.toFixed(2)}`);
+      return;
+    }
+
+    const scheduledAt = new Date(`${agendamentoData}T${agendamentoHora}:00`);
+    if (scheduledAt <= new Date()) {
+      toast.error("A data de agendamento deve ser no futuro");
+      return;
+    }
+
+    setIsAgendando(true);
+
+    // Coletar destinatários com nome e telefone
+    const destinatarios: { phone: string; name: string }[] = [];
+
+    if (clientesBase) {
+      clientesSelecionados.forEach(id => {
+        const cliente = clientesBase.find(c => c.id === id);
+        if (cliente?.phone) {
+          destinatarios.push({ phone: cliente.phone, name: cliente.name || "Cliente" });
+        }
+      });
+    }
+
+    numerosImportados.forEach(num => {
+      destinatarios.push({ phone: num, name: "Importado" });
+    });
+
+    numerosManual.forEach(num => {
+      destinatarios.push({ phone: num, name: "Manual" });
+    });
+
+    try {
+      await agendarMutation.mutateAsync({
+        mensagem: mensagem.trim(),
+        destinatarios,
+        nomeCampanha: "Campanha Agendada",
+        scheduledAt: scheduledAt.toISOString(),
+      });
+    } finally {
+      setIsAgendando(false);
+    }
+  };
+
+  // Contar campanhas pendentes
+  const campanhasPendentes = useMemo(() => {
+    return campanhasAgendadas?.filter(c => c.status === 'pending').length || 0;
+  }, [campanhasAgendadas]);
 
   // Enviar SMS usando a API real
   const handleEnviarSMS = async () => {
@@ -850,23 +956,34 @@ export default function Campanhas() {
                     </p>
                   )}
                 </div>
-                <Button 
-                  onClick={handleEnviarSMS}
-                  disabled={isEnviando || totalDestinatarios === 0 || !mensagem.trim() || custoTotal > saldo}
-                  className="w-full sm:w-auto bg-primary hover:bg-primary/90"
-                >
-                  {isEnviando ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Enviando...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-4 w-4 mr-2" />
-                      Disparar SMS
-                    </>
-                  )}
-                </Button>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <Button 
+                    onClick={handleEnviarSMS}
+                    disabled={isEnviando || totalDestinatarios === 0 || !mensagem.trim() || custoTotal > saldo}
+                    className="flex-1 sm:flex-initial bg-primary hover:bg-primary/90"
+                  >
+                    {isEnviando ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Enviando...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4 mr-2" />
+                        Disparar SMS
+                      </>
+                    )}
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setShowAgendarModal(true)}
+                    disabled={totalDestinatarios === 0 || !mensagem.trim() || custoTotal > saldo}
+                    className="flex-1 sm:flex-initial border-primary/30 text-primary hover:bg-primary/5"
+                  >
+                    <CalendarClock className="h-4 w-4 mr-2" />
+                    Agendar campanha
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -916,7 +1033,193 @@ export default function Campanhas() {
             </div>
           </div>
         </div>
+        {/* Campanhas Agendadas */}
+        {campanhasAgendadas && campanhasAgendadas.length > 0 && (
+          <div className="bg-card rounded-xl border border-border/50 p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-[12px] bg-orange-50 flex items-center justify-center">
+                  <CalendarClock className="h-5 w-5 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground">Campanhas Agendadas</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {campanhasPendentes} pendente{campanhasPendentes !== 1 ? 's' : ''}
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAgendadas(!showAgendadas)}
+                className="text-muted-foreground"
+              >
+                {showAgendadas ? 'Ocultar' : 'Ver todas'}
+              </Button>
+            </div>
+
+            {showAgendadas && (
+              <div className="space-y-3">
+                {campanhasAgendadas.map((campanha) => {
+                  const isPending = campanha.status === 'pending';
+                  const isSent = campanha.status === 'sent';
+                  const isCancelled = campanha.status === 'cancelled';
+                  const isFailed = campanha.status === 'failed';
+                  
+                  return (
+                    <div
+                      key={campanha.id}
+                      className={cn(
+                        "rounded-lg border p-4 transition-colors",
+                        isPending && "border-orange-200 bg-orange-50/50",
+                        isSent && "border-green-200 bg-green-50/50",
+                        isCancelled && "border-gray-200 bg-gray-50/50",
+                        isFailed && "border-red-200 bg-red-50/50"
+                      )}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-medium text-sm truncate">{campanha.campaignName}</span>
+                            <span className={cn(
+                              "text-[10px] font-medium px-2 py-0.5 rounded-full",
+                              isPending && "bg-orange-100 text-orange-700",
+                              isSent && "bg-green-100 text-green-700",
+                              isCancelled && "bg-gray-100 text-gray-500",
+                              isFailed && "bg-red-100 text-red-700"
+                            )}>
+                              {isPending ? 'Pendente' : isSent ? 'Enviada' : isCancelled ? 'Cancelada' : 'Falhou'}
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground truncate mb-1">{campanha.message}</p>
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <CalendarClock className="h-3 w-3" />
+                              {new Date(campanha.scheduledAt).toLocaleString('pt-BR')}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Users className="h-3 w-3" />
+                              {campanha.recipientCount} destinatário{campanha.recipientCount !== 1 ? 's' : ''}
+                            </span>
+                            {isSent && (
+                              <span className="flex items-center gap-1">
+                                <CheckCircle className="h-3 w-3 text-green-600" />
+                                {campanha.successCount} enviados
+                                {(campanha.failCount ?? 0) > 0 && (
+                                  <span className="text-red-500">/ {campanha.failCount} falhas</span>
+                                )}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {isPending && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              if (confirm('Tem certeza que deseja cancelar esta campanha?')) {
+                                cancelarAgendadaMutation.mutate({ id: campanha.id });
+                              }
+                            }}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 px-2"
+                          >
+                            <XCircle className="h-4 w-4 mr-1" />
+                            Cancelar
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Modal de Agendamento */}
+      <Dialog open={showAgendarModal} onOpenChange={setShowAgendarModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CalendarClock className="h-5 w-5 text-primary" />
+              Agendar Campanha
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+              <p className="text-sm font-medium">Resumo</p>
+              <p className="text-xs text-muted-foreground">
+                Mensagem: <span className="text-foreground">{mensagem.trim().slice(0, 60)}{mensagem.trim().length > 60 ? '...' : ''}</span>
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Destinatários: <span className="text-foreground font-medium">{totalDestinatarios}</span>
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Custo estimado: <span className="text-foreground font-medium">R$ {custoTotal.toFixed(2)}</span>
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Data</label>
+                <Input
+                  type="date"
+                  value={agendamentoData}
+                  onChange={(e) => setAgendamentoData(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Hora</label>
+                <Input
+                  type="time"
+                  value={agendamentoHora}
+                  onChange={(e) => setAgendamentoHora(e.target.value)}
+                  className="text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="p-3 bg-blue-50 rounded-lg">
+              <div className="flex items-start gap-2">
+                <Info className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-blue-700">
+                  O saldo será verificado no momento do agendamento. O envio será processado automaticamente no horário definido. Você pode cancelar a campanha antes do envio.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setShowAgendarModal(false)}
+                disabled={isAgendando}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleAgendarCampanha}
+                disabled={isAgendando || !agendamentoData || !agendamentoHora}
+                className="bg-primary hover:bg-primary/90"
+              >
+                {isAgendando ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Agendando...
+                  </>
+                ) : (
+                  <>
+                    <CalendarClock className="h-4 w-4 mr-2" />
+                    Confirmar agendamento
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }

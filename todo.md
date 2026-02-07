@@ -5520,3 +5520,12 @@
 ## Restrição de Emojis no SMS
 - [x] Remover emojis de todos os templates de SMS
 - [x] Bloquear inserção de emojis no campo de mensagem SMS
+
+## Agendamento de Campanhas SMS
+- [x] Criar tabela scheduledCampaigns no schema (data/hora, mensagem, destinatários, status, establishmentId)
+- [x] Criar db helpers para CRUD de campanhas agendadas
+- [x] Criar procedures tRPC para agendar, listar e cancelar campanhas
+- [x] Implementar job periódico no servidor para disparar campanhas no horário agendado
+- [x] Botão "Agendar campanha" ao lado do "Disparar SMS" na UI
+- [x] Modal de agendamento com seletor de data/hora
+- [x] Listagem de campanhas agendadas com status (pendente, enviada, cancelada)
