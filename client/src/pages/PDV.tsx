@@ -690,7 +690,7 @@ export default function PDV() {
       methods.push({
         id: "cash",
         name: "Dinheiro",
-        description: "Pagamento em espécie",
+        description: "Em espécie",
         icon: <Banknote className="h-5 w-5" />
       });
     }
