@@ -65,7 +65,7 @@ type UserOrder = {
   total: string;
   status: "sent" | "accepted" | "delivering" | "delivered" | "cancelled";
   deliveryType: "pickup" | "delivery" | "dine_in";
-  paymentMethod: "cash" | "card" | "pix";
+  paymentMethod: "cash" | "card" | "pix" | "card_online";
   address?: { street: string; number: string; neighborhood: string; complement: string; reference: string };
   customerName: string;
   customerPhone: string;
@@ -142,7 +142,7 @@ export default function PublicMenu() {
   const [checkoutStep, setCheckoutStep] = useState(0); // 0 = fechado, 1-5 = modais
   const [orderObservation, setOrderObservation] = useState("");
   const [deliveryType, setDeliveryType] = useState<"pickup" | "delivery" | "dine_in">("pickup");
-  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "pix">("pix");
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "pix" | "card_online">("pix");
   const [changeAmount, setChangeAmount] = useState("");
   const [changeAmountError, setChangeAmountError] = useState<string | null>(null);
   const [deliveryAddress, setDeliveryAddress] = useState({
@@ -487,6 +487,27 @@ export default function PublicMenu() {
       });
       
       // Exibir erro no modal em vez de alert
+      setOrderError(errorMessage);
+    }
+  });
+
+  // Mutation para criar checkout online (Stripe Connect)
+  const createOrderCheckoutMutation = trpc.stripeConnect.createOrderCheckout.useMutation({
+    onSuccess: (result) => {
+      // Abrir checkout do Stripe em nova aba
+      window.open(result.url, '_blank');
+      setIsSendingOrder(false);
+      // Mostrar mensagem informativa
+      setOrderSent(true);
+      setOrderStatus('sent');
+    },
+    onError: (error: any) => {
+      console.error('Erro ao criar checkout online:', error);
+      setIsSendingOrder(false);
+      let errorMessage = 'Erro ao processar pagamento online. Tente novamente.';
+      if (error?.message) {
+        errorMessage = error.message;
+      }
       setOrderError(errorMessage);
     }
   });
@@ -3423,7 +3444,41 @@ export default function PublicMenu() {
                       <QrCode className="h-5 w-5 text-gray-600" />
                       <span className="font-medium text-gray-800">Pix</span>
                     </label>
+                    {/* Cartão Online - apenas para delivery com pagamento online ativo */}
+                    {deliveryType === "delivery" && establishment.onlinePaymentEnabled && (
+                      <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                        paymentMethod === "card_online" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
+                      }`}>
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="card_online"
+                          checked={paymentMethod === "card_online"}
+                          onChange={() => setPaymentMethod("card_online")}
+                          className="w-4 h-4 text-blue-500 focus:ring-blue-500"
+                        />
+                        <svg className="h-5 w-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                          <line x1="1" y1="10" x2="23" y2="10"/>
+                        </svg>
+                        <div className="flex-1">
+                          <span className="font-medium text-gray-800">Pagar Online</span>
+                          <span className="block text-xs text-blue-600">Pagamento seguro via Stripe</span>
+                        </div>
+                        <svg className="h-5 w-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                      </label>
+                    )}
                   </div>
+
+                  {/* Info Cartão Online */}
+                  {paymentMethod === "card_online" && (
+                    <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                      <p className="text-sm text-blue-700 font-medium mb-1">Pagamento online seguro</p>
+                      <p className="text-xs text-blue-600">Você será redirecionado para uma página segura do Stripe para concluir o pagamento com cartão. Após o pagamento, seu pedido será enviado automaticamente.</p>
+                    </div>
+                  )}
 
                   {/* Chave Pix */}
                   {paymentMethod === "pix" && establishment.pixKey && (
@@ -3558,7 +3613,7 @@ export default function PublicMenu() {
                   </div>
                   <div className="bg-gray-50 rounded-xl p-4">
                     <p className="text-sm text-gray-800 font-medium">
-                      {paymentMethod === "cash" ? "Dinheiro" : paymentMethod === "card" ? "Cartão" : "Pix"}
+                      {paymentMethod === "cash" ? "Dinheiro" : paymentMethod === "card" ? "Cartão" : paymentMethod === "card_online" ? "Cartão Online" : "Pix"}
                     </p>
                     {paymentMethod === "cash" && changeAmount && (
                       <p className="text-sm text-gray-500 mt-1">Troco para: R$ {changeAmount}</p>
@@ -3864,33 +3919,55 @@ export default function PublicMenu() {
                       ? `${deliveryAddress.street}, ${deliveryAddress.number}${deliveryAddress.complement ? ` - ${deliveryAddress.complement}` : ''}, ${deliveryAddress.neighborhood}${deliveryAddress.reference ? ` (Ref: ${deliveryAddress.reference})` : ''}`
                       : null;
                     
-                    // Enviar pedido via API
-                    createOrderMutation.mutate({
-                      establishmentId: establishment.id,
-                      customerName: customerInfo.name,
-                      customerPhone: customerInfo.phone,
-                      customerAddress: fullAddress || undefined,
-                      deliveryType,
-                      paymentMethod,
-                      subtotal: subtotal.toFixed(2),
-                      deliveryFee: deliveryFeeValue.toFixed(2),
-                      discount: discount.toFixed(2),
-                      total: total.toFixed(2),
-                      notes: orderObservation || undefined,
-                      changeAmount: paymentMethod === 'cash' && changeAmount ? changeAmount.replace(/\./g, '').replace(',', '.') : undefined,
-                      couponCode: appliedCoupon?.code || undefined,
-                      couponId: appliedCoupon?.id || undefined,
-                      loyaltyCardId: appliedCoupon?.loyaltyCardId || undefined,
-                      items: cart.map(item => ({
-                        productId: item.productId,
-                        productName: item.name,
-                        quantity: item.quantity,
-                        unitPrice: item.price,
-                        totalPrice: ((parseFloat(item.price) + item.complements.reduce((s, c) => s + parseFloat(c.price) * (c.quantity || 1), 0)) * item.quantity).toFixed(2),
-                        complements: item.complements.map(c => ({ name: c.name, price: parseFloat(c.price), quantity: c.quantity || 1 })),
-                        notes: item.observation || undefined,
-                      })),
-                    });
+                    // Dados comuns do pedido
+                    const orderItems = cart.map(item => ({
+                      productId: item.productId,
+                      productName: item.name,
+                      quantity: item.quantity,
+                      unitPrice: item.price,
+                      totalPrice: ((parseFloat(item.price) + item.complements.reduce((s, c) => s + parseFloat(c.price) * (c.quantity || 1), 0)) * item.quantity).toFixed(2),
+                      complements: item.complements.map(c => ({ name: c.name, price: parseFloat(c.price), quantity: c.quantity || 1 })),
+                      notes: item.observation || undefined,
+                    }));
+                    
+                    if (paymentMethod === 'card_online') {
+                      // Pagamento online - redirecionar para Stripe Checkout
+                      createOrderCheckoutMutation.mutate({
+                        establishmentId: establishment.id,
+                        customerName: customerInfo.name,
+                        customerPhone: customerInfo.phone,
+                        customerAddress: fullAddress || undefined,
+                        subtotal: subtotal.toFixed(2),
+                        deliveryFee: deliveryFeeValue.toFixed(2),
+                        discount: discount.toFixed(2),
+                        total: total.toFixed(2),
+                        notes: orderObservation || undefined,
+                        couponCode: appliedCoupon?.code || undefined,
+                        couponId: appliedCoupon?.id || undefined,
+                        loyaltyCardId: appliedCoupon?.loyaltyCardId || undefined,
+                        items: orderItems,
+                      });
+                    } else {
+                      // Pedido normal (dinheiro, cartão na entrega, pix)
+                      createOrderMutation.mutate({
+                        establishmentId: establishment.id,
+                        customerName: customerInfo.name,
+                        customerPhone: customerInfo.phone,
+                        customerAddress: fullAddress || undefined,
+                        deliveryType,
+                        paymentMethod,
+                        subtotal: subtotal.toFixed(2),
+                        deliveryFee: deliveryFeeValue.toFixed(2),
+                        discount: discount.toFixed(2),
+                        total: total.toFixed(2),
+                        notes: orderObservation || undefined,
+                        changeAmount: paymentMethod === 'cash' && changeAmount ? changeAmount.replace(/\./g, '').replace(',', '.') : undefined,
+                        couponCode: appliedCoupon?.code || undefined,
+                        couponId: appliedCoupon?.id || undefined,
+                        loyaltyCardId: appliedCoupon?.loyaltyCardId || undefined,
+                        items: orderItems,
+                      });
+                    }
                     }, 3000); // Delay de 3 segundos
                   }}
                   disabled={isSendingOrder || !isOpen || !!changeAmountError}
@@ -3900,8 +3977,10 @@ export default function PublicMenu() {
                       : changeAmountError
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         : isSendingOrder 
-                          ? 'bg-green-400 cursor-not-allowed' 
-                          : 'bg-green-500 hover:bg-green-600'
+                          ? (paymentMethod === 'card_online' ? 'bg-blue-400 cursor-not-allowed' : 'bg-green-400 cursor-not-allowed')
+                          : paymentMethod === 'card_online'
+                            ? 'bg-blue-500 hover:bg-blue-600'
+                            : 'bg-green-500 hover:bg-green-600'
                   } ${isOpen && !changeAmountError ? 'text-white' : ''}`}
                 >
                   {!isOpen ? (
@@ -3915,7 +3994,12 @@ export default function PublicMenu() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Enviando...
+                      {paymentMethod === 'card_online' ? 'Processando...' : 'Enviando...'}
+                    </>
+                  ) : paymentMethod === 'card_online' ? (
+                    <>
+                      <CreditCard className="h-5 w-5" />
+                      Pagar online
                     </>
                   ) : (
                     'Enviar pedido'

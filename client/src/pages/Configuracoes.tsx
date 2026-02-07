@@ -79,6 +79,7 @@ import { PrintTestTab } from "@/components/PrintTestTab";
 import { IntegrationsTab } from "@/components/IntegrationsTab";
 import { SettingsSidebar, SettingsSection } from "@/components/SettingsSidebar";
 import { AccountSecuritySection } from "@/components/AccountSecuritySection";
+import { OnlinePaymentTab } from "@/components/OnlinePaymentTab";
 
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
@@ -2128,6 +2129,13 @@ export default function Configuracoes() {
           {activeSection === "integracoes" && (
             <div className="space-y-5">
               <IntegrationsTab />
+            </div>
+          )}
+
+          {/* Pagamento Online Section */}
+          {activeSection === "pagamento-online" && (
+            <div className="space-y-5">
+              <OnlinePaymentTab />
             </div>
           )}
 

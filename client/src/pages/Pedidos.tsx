@@ -163,6 +163,7 @@ const paymentMethodLabels: Record<string, { label: string; icon: typeof CreditCa
   card: { label: "Cartão", icon: CreditCard },
   pix: { label: "Pix", icon: CreditCard },
   boleto: { label: "Boleto", icon: CreditCard },
+  card_online: { label: "Cartão Online", icon: CreditCard },
 };
 
 export default function Pedidos() {

@@ -8,6 +8,7 @@ import {
   ChevronDown,
   Menu,
   ShieldCheck,
+  CreditCard,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -16,6 +17,7 @@ export type SettingsSection =
   | "atendimento" 
   | "whatsapp" 
   | "impressora" 
+  | "pagamento-online"
   | "integracoes"
   | "conta-seguranca";
 
@@ -29,6 +31,7 @@ const menuItems: { id: SettingsSection; label: string; icon: React.ElementType; 
   { id: "atendimento", label: "Atendimento", icon: Clock },
   { id: "whatsapp", label: "WhatsApp", icon: MessageCircle },
   { id: "impressora", label: "Impressora e Teste", icon: Printer },
+  { id: "pagamento-online", label: "Pagamento Online", icon: CreditCard },
   { id: "integracoes", label: "Integrações", icon: Puzzle, disabled: true },
   { id: "conta-seguranca", label: "Conta e Segurança", icon: ShieldCheck },
 ];

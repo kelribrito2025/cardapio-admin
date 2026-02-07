@@ -5595,3 +5595,16 @@
 ## Bug: Valor de débito SMS incorreto no toast
 - [x] Verificar se o valor debitado por SMS é R$ 0,10 ou R$ 0,097
 - [x] Corrigir cálculo e/ou exibição do toast para mostrar valor correto (R$ 0,097)
+
+## Stripe Connect - Pagamento Online no Menu Público
+- [x] Adicionar campo stripeAccountId no schema de establishments
+- [x] Adicionar campo onlinePaymentEnabled no schema de establishments
+- [x] Criar endpoint para criar connected account (Stripe Connect V2)
+- [x] Criar endpoint para gerar account link (onboarding)
+- [x] Criar endpoint para verificar status da connected account
+- [x] Criar endpoint para checkout session com destination charge (1,5% taxa)
+- [x] Expandir webhook para processar pagamentos de pedidos online
+- [x] Adicionar UI de ativação de pagamento online nas Configurações do restaurante
+- [x] Adicionar opção de pagamento com cartão no menu público (apenas Entrega)
+- [x] Criar pedido automaticamente após pagamento confirmado via webhook
+- [x] Testes unitários para Stripe Connect

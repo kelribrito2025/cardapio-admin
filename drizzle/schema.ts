@@ -76,6 +76,10 @@ export const establishments = mysqlTable("establishments", {
   cnpj: varchar("cnpj", { length: 20 }),
   responsibleName: varchar("responsibleName", { length: 255 }),
   responsiblePhone: varchar("responsiblePhone", { length: 30 }),
+  // Stripe Connect - Pagamento Online
+  stripeAccountId: varchar("stripeAccountId", { length: 255 }), // ID da connected account no Stripe
+  onlinePaymentEnabled: boolean("onlinePaymentEnabled").default(false).notNull(), // Se pagamento online está ativo
+  stripeOnboardingComplete: boolean("stripeOnboardingComplete").default(false).notNull(), // Se onboarding foi concluído
   // Segurança
   twoFactorEnabled: boolean("twoFactorEnabled").default(false).notNull(),
   twoFactorEmail: varchar("twoFactorEmail", { length: 320 }),
@@ -171,7 +175,7 @@ export const orders = mysqlTable("orders", {
   customerAddress: text("customerAddress"),
   status: mysqlEnum("status", ["pending_confirmation", "new", "preparing", "ready", "completed", "cancelled"]).default("pending_confirmation").notNull(),
   deliveryType: mysqlEnum("deliveryType", ["delivery", "pickup", "dine_in"]).default("delivery").notNull(),
-  paymentMethod: mysqlEnum("paymentMethod", ["cash", "card", "pix", "boleto"]).default("cash").notNull(),
+  paymentMethod: mysqlEnum("paymentMethod", ["cash", "card", "pix", "boleto", "card_online"]).default("cash").notNull(),
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
   deliveryFee: decimal("deliveryFee", { precision: 10, scale: 2 }).default("0").notNull(),
   discount: decimal("discount", { precision: 10, scale: 2 }).default("0").notNull(),

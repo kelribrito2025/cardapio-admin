@@ -1178,7 +1178,7 @@ export const appRouter = router({
         customerPhone: z.string().min(1, "Telefone é obrigatório"),
         customerAddress: z.string().optional(),
         deliveryType: z.enum(["delivery", "pickup", "dine_in"]),
-        paymentMethod: z.enum(["cash", "card", "pix", "boleto"]),
+        paymentMethod: z.enum(["cash", "card", "pix", "boleto", "card_online"]),
         subtotal: z.string(),
         deliveryFee: z.string().optional(),
         discount: z.string().optional(),
@@ -3666,6 +3666,256 @@ export const appRouter = router({
           await db.updateTab(tab.id, { status: "requesting_bill" });
         }
         return { success: true };
+      }),
+  }),
+
+  // ============ STRIPE CONNECT - PAGAMENTO ONLINE ============
+  stripeConnect: router({
+    // Criar connected account para o restaurante
+    createAccount: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        // Verificar se já tem uma conta Stripe Connect
+        if (establishment.stripeAccountId) {
+          throw new TRPCError({ code: 'CONFLICT', message: 'Estabelecimento já possui uma conta Stripe Connect' });
+        }
+        
+        const { createConnectedAccount } = await import("./stripeConnect");
+        const { accountId } = await createConnectedAccount({
+          displayName: establishment.name,
+          contactEmail: establishment.email || ctx.user.email || '',
+        });
+        
+        // Salvar o accountId no estabelecimento
+        await db.updateEstablishment(establishment.id, {
+          stripeAccountId: accountId,
+        });
+        
+        return { accountId };
+      }),
+    
+    // Gerar link de onboarding
+    createOnboardingLink: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        if (!establishment.stripeAccountId) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Crie uma conta Stripe Connect primeiro' });
+        }
+        
+        const { createAccountLink } = await import("./stripeConnect");
+        const origin = ctx.req.headers.origin || ctx.req.headers.referer?.replace(/\/$/, '') || '';
+        
+        const { url } = await createAccountLink({
+          accountId: establishment.stripeAccountId,
+          returnUrl: `${origin}/configuracoes?stripe=return&tab=pagamento-online`,
+          refreshUrl: `${origin}/configuracoes?stripe=refresh&tab=pagamento-online`,
+        });
+        
+        return { url };
+      }),
+    
+    // Verificar status da conta
+    getAccountStatus: protectedProcedure
+      .query(async ({ ctx }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        if (!establishment.stripeAccountId) {
+          return {
+            hasAccount: false,
+            chargesEnabled: false,
+            payoutsEnabled: false,
+            detailsSubmitted: false,
+            onboardingComplete: false,
+            onlinePaymentEnabled: establishment.onlinePaymentEnabled,
+          };
+        }
+        
+        try {
+          const { getAccountStatus } = await import("./stripeConnect");
+          const status = await getAccountStatus(establishment.stripeAccountId);
+          
+          // Atualizar status de onboarding no banco se mudou
+          const isComplete = status.chargesEnabled && status.detailsSubmitted;
+          if (isComplete !== establishment.stripeOnboardingComplete) {
+            await db.updateEstablishment(establishment.id, {
+              stripeOnboardingComplete: isComplete,
+            });
+          }
+          
+          return {
+            hasAccount: true,
+            ...status,
+            onboardingComplete: isComplete,
+            onlinePaymentEnabled: establishment.onlinePaymentEnabled,
+          };
+        } catch (error) {
+          console.error('[Stripe Connect] Erro ao buscar status:', error);
+          return {
+            hasAccount: true,
+            chargesEnabled: false,
+            payoutsEnabled: false,
+            detailsSubmitted: false,
+            onboardingComplete: false,
+            onlinePaymentEnabled: establishment.onlinePaymentEnabled,
+          };
+        }
+      }),
+    
+    // Ativar/desativar pagamento online
+    toggleOnlinePayment: protectedProcedure
+      .input(z.object({ enabled: z.boolean() }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        // Só pode ativar se o onboarding está completo
+        if (input.enabled) {
+          if (!establishment.stripeAccountId || !establishment.stripeOnboardingComplete) {
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Complete o cadastro no Stripe antes de ativar o pagamento online.',
+            });
+          }
+        }
+        
+        await db.updateEstablishment(establishment.id, {
+          onlinePaymentEnabled: input.enabled,
+        });
+        
+        return { success: true, enabled: input.enabled };
+      }),
+    
+    // Abrir dashboard do Stripe Express
+    getDashboardLink: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment?.stripeAccountId) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Conta Stripe Connect não encontrada' });
+        }
+        
+        const { createDashboardLink } = await import("./stripeConnect");
+        const { url } = await createDashboardLink(establishment.stripeAccountId);
+        return { url };
+      }),
+    
+    // Criar checkout session para pedido online (endpoint público)
+    createOrderCheckout: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        customerName: z.string().min(1),
+        customerPhone: z.string().min(1),
+        customerAddress: z.string().optional(),
+        deliveryFee: z.string().default("0"),
+        discount: z.string().default("0"),
+        subtotal: z.string(),
+        total: z.string(),
+        notes: z.string().optional(),
+        changeAmount: z.string().optional(),
+        couponCode: z.string().optional(),
+        couponId: z.number().optional(),
+        loyaltyCardId: z.number().optional(),
+        items: z.array(z.object({
+          productId: z.number(),
+          productName: z.string(),
+          quantity: z.number(),
+          unitPrice: z.string(),
+          totalPrice: z.string(),
+          complements: z.array(z.object({
+            name: z.string(),
+            price: z.number(),
+            quantity: z.number().default(1),
+          })).optional(),
+          notes: z.string().optional(),
+        })),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentById(input.establishmentId);
+        if (!establishment) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        }
+        
+        if (!establishment.onlinePaymentEnabled || !establishment.stripeAccountId) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Pagamento online não está disponível para este estabelecimento' });
+        }
+        
+        if (!establishment.isOpen) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'O estabelecimento está fechado' });
+        }
+        
+        const { createOrderCheckoutSession } = await import("./stripeConnect");
+        const origin = ctx.req.headers.origin || ctx.req.headers.referer?.replace(/\/$/, '') || '';
+        
+        // Preparar items para o checkout
+        const orderItems = input.items.map(item => {
+          const complementsTotal = (item.complements || []).reduce(
+            (sum, c) => sum + c.price * (c.quantity || 1), 0
+          );
+          const unitPriceInCents = Math.round((parseFloat(item.unitPrice) + complementsTotal) * 100);
+          
+          const complementsDesc = (item.complements || []).length > 0
+            ? ` (${(item.complements || []).map(c => c.name).join(', ')})`
+            : '';
+          
+          return {
+            name: item.productName,
+            quantity: item.quantity,
+            priceInCents: unitPriceInCents,
+            description: complementsDesc || undefined,
+          };
+        });
+        
+        const deliveryFeeInCents = Math.round(parseFloat(input.deliveryFee || '0') * 100);
+        
+        // Salvar dados do pedido para usar no webhook
+        const orderData = JSON.stringify({
+          customerName: input.customerName,
+          customerPhone: input.customerPhone,
+          customerAddress: input.customerAddress || '',
+          deliveryType: 'delivery',
+          paymentMethod: 'card_online',
+          subtotal: input.subtotal,
+          deliveryFee: input.deliveryFee || '0',
+          discount: input.discount || '0',
+          total: input.total,
+          notes: input.notes || '',
+          changeAmount: input.changeAmount || '',
+          couponCode: input.couponCode || '',
+          couponId: input.couponId || null,
+          loyaltyCardId: input.loyaltyCardId || null,
+          items: input.items,
+        });
+        
+        const menuSlug = establishment.menuSlug || '';
+        
+        const result = await createOrderCheckoutSession({
+          connectedAccountId: establishment.stripeAccountId,
+          orderItems,
+          deliveryFeeInCents,
+          customerEmail: undefined,
+          customerName: input.customerName,
+          establishmentId: establishment.id,
+          establishmentName: establishment.name,
+          orderData,
+          successUrl: `${origin}/menu/${menuSlug}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${origin}/menu/${menuSlug}?payment=cancelled`,
+        });
+        
+        return result;
       }),
   }),
 });

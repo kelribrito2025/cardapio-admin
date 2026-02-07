@@ -1303,6 +1303,93 @@ async function startServer() {
             console.error("[Stripe Webhook] Erro ao creditar saldo:", creditError);
           }
         }
+        
+        // Processar pagamento de pedido online via Stripe Connect
+        if (session.metadata?.type === "online_order") {
+          const estId = parseInt(session.metadata.establishment_id || "0");
+          console.log(`[Stripe Webhook] Pedido online pago: estabelecimento ${estId}`);
+          
+          try {
+            const orderDataStr = session.metadata.order_data;
+            if (orderDataStr && estId > 0) {
+              const orderData = JSON.parse(orderDataStr);
+              const { createPublicOrder, getEstablishmentById, getPrinterSettings, addToPrintQueue } = await import("../db");
+              
+              // Criar o pedido no sistema
+              const result = await createPublicOrder(
+                {
+                  establishmentId: estId,
+                  customerName: orderData.customerName,
+                  customerPhone: orderData.customerPhone,
+                  customerAddress: orderData.customerAddress || null,
+                  deliveryType: orderData.deliveryType || "delivery",
+                  paymentMethod: "card_online",
+                  subtotal: orderData.subtotal,
+                  deliveryFee: orderData.deliveryFee || "0",
+                  discount: orderData.discount || "0",
+                  total: orderData.total,
+                  notes: orderData.notes || null,
+                  changeAmount: null,
+                  couponCode: orderData.couponCode || null,
+                  orderNumber: "",
+                },
+                (orderData.items || []).map((item: any) => ({
+                  orderId: 0,
+                  productId: item.productId,
+                  productName: item.productName,
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                  totalPrice: item.totalPrice,
+                  complements: (item.complements || []).map((c: any) => ({ ...c, quantity: c.quantity || 1 })),
+                  notes: item.notes || null,
+                }))
+              );
+              
+              console.log(`[Stripe Webhook] Pedido online criado: #${result?.orderNumber} para estabelecimento ${estId}`);
+              
+              // Enviar SSE para notificar novo pedido
+              if (result) {
+                sendEvent(estId, "newOrder", {
+                  orderId: result.orderId,
+                  orderNumber: result.orderNumber,
+                  paymentMethod: "card_online",
+                });
+                
+                // Impressão automática
+                try {
+                  const printerSettingsData = await getPrinterSettings(estId);
+                  if (printerSettingsData?.autoPrintEnabled && result.orderId) {
+                    await addToPrintQueue({
+                      establishmentId: estId,
+                      orderId: result.orderId,
+                      copies: 1,
+                    });
+                  }
+                } catch (printError) {
+                  console.error("[Stripe Webhook] Erro na impressão:", printError);
+                }
+                
+                // Consumir cupom se usado
+                if (orderData.couponId) {
+                  try {
+                    const { incrementCouponUsage } = await import("../db");
+                    await incrementCouponUsage(orderData.couponId);
+                  } catch (e) { console.error("[Stripe Webhook] Erro ao incrementar cupom:", e); }
+                }
+                
+                // Consumir fidelidade se usado
+                if (orderData.loyaltyCardId) {
+                  try {
+                    const { consumeLoyaltyCardCoupon } = await import("../db");
+                    await consumeLoyaltyCardCoupon(orderData.loyaltyCardId);
+                  } catch (e) { console.error("[Stripe Webhook] Erro ao consumir fidelidade:", e); }
+                }
+              }
+            }
+          } catch (orderError) {
+            console.error("[Stripe Webhook] Erro ao criar pedido online:", orderError);
+          }
+        }
       }
       
       res.status(200).json({ verified: true, received: true });
