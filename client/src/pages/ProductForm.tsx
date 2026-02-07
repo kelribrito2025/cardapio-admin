@@ -1150,7 +1150,7 @@ export default function ProductForm() {
                                   onChange={(e) =>
                                     updateComplementGroup(groupIndex, { name: capitalizeFirst(e.target.value) })
                                   }
-                                  placeholder="Nome do grupo (ex: Adicionais)"
+                                  placeholder="Nome do grupo, ou pergunta (ex: Adicionais ou Deseja colher?)"
                                   className="h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20 flex-1"
                                 />
                               </div>

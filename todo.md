@@ -5588,3 +5588,6 @@
 - [x] Adicionar campo "Nome do cliente" (obrigatório) na sidebar de pagamento para retirada
 - [x] Adicionar campo "Telefone" (opcional) com máscara (00) 00000-0000
 - [x] Validar que nome é obrigatório antes de finalizar pedido de retirada
+
+## Placeholder Grupo Complementos
+- [x] Alterar placeholder do nome do grupo para "Nome do grupo, ou pergunta (ex: Adicionais ou Deseja colher?)"
