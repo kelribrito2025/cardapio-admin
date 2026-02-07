@@ -104,9 +104,10 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className, 
           <button
             onClick={iconAction.onClick}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-2 rounded-lg shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-sm",
+              "flex items-center gap-1.5 rounded-lg shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-sm",
               colors.iconBg
             )}
+            style={{ padding: "10px" }}
           >
             <Icon className={cn("h-5 w-5", colors.iconColor)} />
             <span className={cn("text-xs font-semibold", colors.iconColor)}>{iconAction.label}</span>
