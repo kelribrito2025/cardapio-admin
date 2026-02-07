@@ -5501,3 +5501,6 @@
 - [x] Filtro: clientes que já usaram cupom (checkbox)
 - [x] Filtros combináveis entre si com atualização automática da lista
 - [x] Exibir quantidade de clientes filtrados
+
+## Reposicionar Botão Filtros
+- [x] Mover botão Filtros para a linha do título Destinatários (final do card header)
