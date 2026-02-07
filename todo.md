@@ -5567,3 +5567,6 @@
 ## UI Card Saldo - Recarregar
 - [x] Remover botão "Recarregar" separado do card de saldo
 - [x] Transformar ícone de carteira em botão clicável com texto "Recarregar"
+
+## Remover Pacote 50 SMS
+- [x] Remover pacote de 50 créditos SMS do modal de recarga

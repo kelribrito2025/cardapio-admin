@@ -19,14 +19,6 @@ function getStripe(): Stripe | null {
 // Pacotes de recarga SMS disponíveis
 export const SMS_PACKAGES = [
   {
-    id: "sms_50",
-    name: "50 SMS",
-    smsCount: 50,
-    priceInCents: 485, // R$ 4,85 (50 x R$ 0,097)
-    priceFormatted: "R$ 4,85",
-    description: "Pacote com 50 créditos SMS",
-  },
-  {
     id: "sms_100",
     name: "100 SMS",
     smsCount: 100,
