@@ -5613,3 +5613,4 @@
 - [x] Alterar taxa da plataforma de 1,5% para 4,6%
 - [x] Alterar taxa da plataforma de 4,6% para 4,3%
 - [x] Alterar taxa da plataforma de 4,3% para 3,99% + R$ 1,00 fixo por transação
+- [x] Alterar taxa fixa da plataforma de R$ 1,00 para R$ 0,89 por transação

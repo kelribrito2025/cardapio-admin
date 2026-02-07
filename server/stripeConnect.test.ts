@@ -135,36 +135,36 @@ describe("Stripe Connect Module", () => {
   });
 
   describe("calculatePlatformFee", () => {
-    it("should calculate fee as 3.99% + R$ 1.00 fixed", async () => {
+    it("should calculate fee as 3.99% + R$ 0.89 fixed", async () => {
       const { calculatePlatformFee } = await import("./stripeConnect");
 
       // R$ 100.00 = 10000 cents
-      // 10000 * 0.0399 = 399 + 100 = 499 cents = R$ 4.99
-      expect(calculatePlatformFee(10000)).toBe(499);
+      // 10000 * 0.0399 = 399 + 89 = 488 cents = R$ 4.88
+      expect(calculatePlatformFee(10000)).toBe(488);
     });
 
     it("should calculate fee correctly for R$ 50.00", async () => {
       const { calculatePlatformFee } = await import("./stripeConnect");
 
       // R$ 50.00 = 5000 cents
-      // 5000 * 0.0399 = 199.5 + 100 = 299.5 → rounded to 300 cents = R$ 3.00
-      expect(calculatePlatformFee(5000)).toBe(300);
+      // 5000 * 0.0399 = 199.5 + 89 = 288.5 → rounded to 289 cents = R$ 2.89
+      expect(calculatePlatformFee(5000)).toBe(289);
     });
 
     it("should calculate fee correctly for R$ 20.00", async () => {
       const { calculatePlatformFee } = await import("./stripeConnect");
 
       // R$ 20.00 = 2000 cents
-      // 2000 * 0.0399 = 79.8 + 100 = 179.8 → rounded to 180 cents = R$ 1.80
-      expect(calculatePlatformFee(2000)).toBe(180);
+      // 2000 * 0.0399 = 79.8 + 89 = 168.8 → rounded to 169 cents = R$ 1.69
+      expect(calculatePlatformFee(2000)).toBe(169);
     });
 
     it("should calculate fee correctly for R$ 200.00", async () => {
       const { calculatePlatformFee } = await import("./stripeConnect");
 
       // R$ 200.00 = 20000 cents
-      // 20000 * 0.0399 = 798 + 100 = 898 cents = R$ 8.98
-      expect(calculatePlatformFee(20000)).toBe(898);
+      // 20000 * 0.0399 = 798 + 89 = 887 cents = R$ 8.87
+      expect(calculatePlatformFee(20000)).toBe(887);
     });
   });
 
@@ -215,9 +215,9 @@ describe("Stripe Connect Module", () => {
       // Verify destination charge
       expect(callArgs.payment_intent_data.transfer_data.destination).toBe("acct_test_123");
 
-      // Verify platform fee (3.99% + R$ 1.00)
+      // Verify platform fee (3.99% + R$ 0.89)
       // Total: (3500*2 + 800 + 500) = 8300 cents
-      // Fee: 8300 * 0.0399 + 100 = 331.17 + 100 = 431.17 → rounded to 431
+      // Fee: 8300 * 0.0399 + 89 = 331.17 + 89 = 420.17 → rounded to 420
       const expectedTotal = 3500 * 2 + 800 + 500;
       const expectedFee = calculatePlatformFee(expectedTotal);
       expect(callArgs.payment_intent_data.application_fee_amount).toBe(expectedFee);
@@ -253,7 +253,7 @@ describe("Stripe Connect Module", () => {
       expect(callArgs.line_items).toHaveLength(1);
     });
 
-    it("should apply 3.99% + R$ 1.00 fee on R$ 100.00 order", async () => {
+    it("should apply 3.99% + R$ 0.89 fee on R$ 100.00 order", async () => {
       mockCheckoutSessionsCreate.mockResolvedValue({
         id: "cs_test_fee",
         url: "https://checkout.stripe.com/pay/cs_test_fee",
@@ -261,7 +261,7 @@ describe("Stripe Connect Module", () => {
 
       const { createOrderCheckoutSession, PLATFORM_FEE_PERCENT, PLATFORM_FEE_FIXED_CENTS } = await import("./stripeConnect");
       expect(PLATFORM_FEE_PERCENT).toBe(3.99);
-      expect(PLATFORM_FEE_FIXED_CENTS).toBe(100);
+      expect(PLATFORM_FEE_FIXED_CENTS).toBe(89);
 
       await createOrderCheckoutSession({
         connectedAccountId: "acct_test_123",
@@ -277,8 +277,8 @@ describe("Stripe Connect Module", () => {
       });
 
       const callArgs = mockCheckoutSessionsCreate.mock.calls[0][0];
-      // 10000 * 0.0399 = 399 + 100 = 499 cents = R$ 4.99
-      expect(callArgs.payment_intent_data.application_fee_amount).toBe(499);
+      // 10000 * 0.0399 = 399 + 89 = 488 cents = R$ 4.88
+      expect(callArgs.payment_intent_data.application_fee_amount).toBe(488);
     });
   });
 

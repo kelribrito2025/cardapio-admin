@@ -2,20 +2,20 @@
  * Stripe Connect Integration - Pagamento Online para Restaurantes
  * 
  * Permite que restaurantes recebam pagamentos via cartão no menu público.
- * Usa Stripe Connect com destination charges e taxa de 3,99% + R$ 1,00 da plataforma.
+ * Usa Stripe Connect com destination charges e taxa de 3,99% + R$ 0,89 da plataforma.
  */
 
 import Stripe from "stripe";
 import { ENV } from "./_core/env";
 
-// Taxa da plataforma: 3,99% + R$ 1,00 fixo por transação
-// A Stripe cobra ~3,99% + R$ 0,39 → nosso lucro é ~R$ 0,61 por transação
+// Taxa da plataforma: 3,99% + R$ 0,89 fixo por transação
+// A Stripe cobra ~3,99% + R$ 0,39 → nosso lucro é ~R$ 0,50 por transação
 export const PLATFORM_FEE_PERCENT = 3.99;
-export const PLATFORM_FEE_FIXED_CENTS = 100; // R$ 1,00 em centavos
+export const PLATFORM_FEE_FIXED_CENTS = 89; // R$ 0,89 em centavos
 
 /**
  * Calcula a taxa da plataforma (application_fee_amount)
- * Fórmula: totalAmount * 3,99% + R$ 1,00
+ * Fórmula: totalAmount * 3,99% + R$ 0,89
  */
 export function calculatePlatformFee(totalAmountInCents: number): number {
   const percentFee = totalAmountInCents * (PLATFORM_FEE_PERCENT / 100);
@@ -113,7 +113,7 @@ export async function getAccountStatus(accountId: string): Promise<{
 
 /**
  * Cria uma Checkout Session com Destination Charge
- * O pagamento vai para a conta do restaurante, com taxa de 3,99% + R$ 1,00 para a plataforma
+ * O pagamento vai para a conta do restaurante, com taxa de 3,99% + R$ 0,89 para a plataforma
  */
 export async function createOrderCheckoutSession(params: {
   connectedAccountId: string;
