@@ -5529,3 +5529,6 @@
 - [x] Botão "Agendar campanha" ao lado do "Disparar SMS" na UI
 - [x] Modal de agendamento com seletor de data/hora
 - [x] Listagem de campanhas agendadas com status (pendente, enviada, cancelada)
+
+## Filtro de Caracteres GSM 7-bit no SMS
+- [x] Restringir campo de mensagem SMS para aceitar apenas caracteres GSM 7-bit (letras sem acento, números, espaço e especiais: !@"#$%&'()*+,-./:;<=>?_)

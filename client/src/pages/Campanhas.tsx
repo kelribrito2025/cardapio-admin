@@ -581,7 +581,7 @@ export default function Campanhas() {
                                   variant="outline"
                                   className="gap-1.5 h-7 text-xs shrink-0 ml-2"
                                   onClick={() => {
-                                    setMensagem(template.text.replace(/\n/g, ' '));
+                                    setMensagem(template.text.replace(/\n/g, ' ').replace(/[^a-zA-Z0-9 !@"#$%&'()*+,\-./:;<=>?_]/g, ''));
                                     setShowTemplates(false);
                                     toast.success("Modelo aplicado!", { description: template.title });
                                   }}
@@ -604,14 +604,13 @@ export default function Campanhas() {
                 <Textarea
                   value={mensagem}
                   onChange={(e) => {
-                    // Remove emojis do texto
-                    const emojiRegex = new RegExp('[\\u{1F600}-\\u{1F64F}\\u{1F300}-\\u{1F5FF}\\u{1F680}-\\u{1F6FF}\\u{1F1E0}-\\u{1F1FF}\\u{2600}-\\u{26FF}\\u{2700}-\\u{27BF}\\u{FE00}-\\u{FE0F}\\u{1F900}-\\u{1F9FF}\\u{1FA00}-\\u{1FA6F}\\u{1FA70}-\\u{1FAFF}\\u{200D}\\u{20E3}\\u{E0020}-\\u{E007F}]', 'gu');
-                    const cleaned = e.target.value.replace(emojiRegex, '');
+                    // Permitir apenas caracteres GSM 7-bit: letras sem acento, números, espaço e especiais permitidos
+                    const cleaned = e.target.value.replace(/[^a-zA-Z0-9 !@"#$%&'()*+,\-./:;<=>?_\n]/g, '');
                     if (cleaned.length <= SMS_CHAR_LIMIT) {
                       setMensagem(cleaned);
                     }
                   }}
-                  placeholder="Você ganhou R$15 de desconto! Use o cupom #15OFF em pedidos acima de R$ 100. Aproveite!"
+                  placeholder="Voce ganhou R$15 de desconto! Use o cupom #15OFF em pedidos acima de R$ 100. Aproveite!"
                   className="min-h-[44px] resize-none flex-1"
                   rows={1}
                   style={{ height: 'auto', minHeight: '44px' }}
