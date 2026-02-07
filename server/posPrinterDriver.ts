@@ -208,11 +208,16 @@ function generateReceiptText(
     'debit': 'Cartao Debito',
     'card': 'Cartao',
     'pix': 'PIX',
-    'boleto': 'Boleto'
+    'boleto': 'Boleto',
+    'card_online': 'Pgto confirmado - Cartao online'
   };
   
   lines.push('');
-  lines.push(`PAGAMENTO: ${paymentMethodText[order.paymentMethod] || order.paymentMethod}`);
+  if (order.paymentMethod === 'card_online') {
+    lines.push('Pgto confirmado - Cartao online');
+  } else {
+    lines.push(`PAGAMENTO: ${paymentMethodText[order.paymentMethod] || order.paymentMethod}`);
+  }
   
   if (order.paymentMethod === 'cash' && order.changeFor) {
     lines.push(`Troco para: ${formatCurrency(order.changeFor)}`);

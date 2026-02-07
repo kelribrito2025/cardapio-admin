@@ -272,7 +272,11 @@ export function generateEscPosReceipt(order: OrderData): string {
   if (!isTableOrder) {
     receipt += COMMANDS.FONT_DOUBLE_HEIGHT;
     receipt += COMMANDS.BOLD_ON;
-    receipt += `PAGAMENTO: ${removeAccents(order.paymentMethod.toUpperCase())}\n`;
+    if (order.paymentMethod === 'card_online') {
+      receipt += 'Pgto confirmado - Cartao online\n';
+    } else {
+      receipt += `PAGAMENTO: ${removeAccents(order.paymentMethod.toUpperCase())}\n`;
+    }
     receipt += COMMANDS.BOLD_OFF;
     receipt += COMMANDS.FONT_NORMAL;
     receipt += '\n';

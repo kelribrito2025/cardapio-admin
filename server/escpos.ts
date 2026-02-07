@@ -435,7 +435,8 @@ export class EscPosGenerator {
       'debit': 'Cartao Debito',
       'card': 'Cartao',
       'pix': 'PIX',
-      'boleto': 'Boleto'
+      'boleto': 'Boleto',
+      'card_online': 'Pgto confirmado - Cartao online'
     };
 
     // Inicializa impressora
@@ -617,11 +618,18 @@ export class EscPosGenerator {
     this.divider('=');
 
     // Forma de pagamento
-    this.align('left')
-      .bold()
-      .line('FORMA DE PAGAMENTO')
-      .bold(false)
-      .line(paymentMethodText[order.paymentMethod || ''] || order.paymentMethod || 'Nao informado');
+    if (order.paymentMethod === 'card_online') {
+      this.align('left')
+        .bold()
+        .line('Pgto confirmado - Cartao online')
+        .bold(false);
+    } else {
+      this.align('left')
+        .bold()
+        .line('FORMA DE PAGAMENTO')
+        .bold(false)
+        .line(paymentMethodText[order.paymentMethod || ''] || order.paymentMethod || 'Nao informado');
+    }
 
     // Troco (se pagamento em dinheiro)
     if (order.paymentMethod === 'cash') {
@@ -740,7 +748,8 @@ export function generatePlainTextReceipt(
     'debit': 'Cartao Debito',
     'card': 'Cartao',
     'pix': 'PIX',
-    'boleto': 'Boleto'
+    'boleto': 'Boleto',
+    'card_online': 'Pgto confirmado - Cartao online'
   };
 
   let receipt = '';
@@ -833,8 +842,12 @@ export function generatePlainTextReceipt(
 
   // Pagamento (não exibir para pedidos de mesa)
   if (!isTableOrder) {
-    receipt += 'FORMA DE PAGAMENTO\n';
-    receipt += (paymentMethodText[order.paymentMethod || ''] || order.paymentMethod || 'Nao informado') + '\n';
+    if (order.paymentMethod === 'card_online') {
+      receipt += 'Pgto confirmado - Cartao online\n';
+    } else {
+      receipt += 'FORMA DE PAGAMENTO\n';
+      receipt += (paymentMethodText[order.paymentMethod || ''] || order.paymentMethod || 'Nao informado') + '\n';
+    }
 
     if (order.paymentMethod === 'cash') {
       if (order.changeFor && order.changeFor > order.total) {

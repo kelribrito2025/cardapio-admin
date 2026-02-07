@@ -61,7 +61,8 @@ function generateReceiptHTML(
     'debit': 'Cartao Debito',
     'card': 'Cartao',
     'pix': 'PIX',
-    'boleto': 'Boleto'
+    'boleto': 'Boleto',
+    'card_online': 'Pagamento confirmado \u2013 Cart\u00e3o online'
   };
   
   // Configurar largura do papel
@@ -514,17 +515,24 @@ function generateReceiptHTML(
         <div class="section-content"><strong>Retirada:</strong> Cliente irá retirar no estabelecimento</div>
       </div>`;
     }
-    
-    // Seção de pagamento
-    sections += `
-    <div class="section-box">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/payment-icon.png" class="section-icon" /> Pagamento</span>
-        <span style="font-weight: ${headerFontWeight};">${paymentMethodText[order.paymentMethod] || order.paymentMethod}</span>
-      </div>
-    </div>`;
-    
-    // Seção de troco
+     // Se\u00e7\u00e3o de pagamento
+    const isCardOnline = order.paymentMethod === 'card_online';
+    if (isCardOnline) {
+      sections += `
+      <div class="section-box">
+        <div style="text-align: center;">
+          <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center; gap: 4px;"><img src="/payment-icon.png" class="section-icon" /> ${paymentMethodText['card_online']}</span>
+        </div>
+      </div>`;
+    } else {
+      sections += `
+      <div class="section-box">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;"><img src="/payment-icon.png" class="section-icon" /> Pagamento</span>
+          <span style="font-weight: ${headerFontWeight};">${paymentMethodText[order.paymentMethod] || order.paymentMethod}</span>
+        </div>
+      </div>`;
+    }    // Seção de troco
     if (order.paymentMethod === 'cash') {
       sections += `
       <div style="margin: 8px 0; text-align: center;">

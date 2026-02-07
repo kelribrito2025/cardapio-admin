@@ -5629,3 +5629,5 @@
 - [x] Manter comportamento atual do botão Cartão quando Pagamento Online desativado
 - [x] Card "Pagar online" com ícone de segurança Stripe como já existe
 - [x] Remover container "Pagamento online seguro" ao selecionar Pagar online
+- [x] Alterar exibição de card_online nos recibos para "Pagamento confirmado – Cartão online" (impressão normal e múltiplas impressoras Android)
+- [x] Alterar exibição de card_online nos recibos para "Pagamento confirmado – Cartão online" (impressão normal e múltiplas impressoras Android)

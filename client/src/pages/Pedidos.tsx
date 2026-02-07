@@ -617,8 +617,11 @@ export default function Pedidos() {
               
               <div class="info-card">
                 <div class="info-card-row">
-                  <span class="info-card-label">💰 Pagamento</span>
-                  <span class="info-card-value">${(paymentMethodLabels[orderData.paymentMethod]?.label || orderData.paymentMethod).toUpperCase()}</span>
+                  ${orderData.paymentMethod === 'card_online' 
+                    ? `<span class="info-card-label">💰 Pagamento confirmado \u2013 Cart\u00e3o online</span>`
+                    : `<span class="info-card-label">💰 Pagamento</span>
+                       <span class="info-card-value">${(paymentMethodLabels[orderData.paymentMethod]?.label || orderData.paymentMethod).toUpperCase()}</span>`
+                  }
                 </div>
               </div>
               
