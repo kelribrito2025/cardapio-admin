@@ -5608,3 +5608,6 @@
 - [x] Adicionar opção de pagamento com cartão no menu público (apenas Entrega)
 - [x] Criar pedido automaticamente após pagamento confirmado via webhook
 - [x] Testes unitários para Stripe Connect
+
+## Taxa da plataforma Stripe Connect
+- [x] Alterar taxa da plataforma de 1,5% para 4,6%
