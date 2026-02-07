@@ -5538,3 +5538,6 @@
 
 ## Remoção Badge Breve - Campanhas
 - [x] Remover badge "Breve" e estado disabled do item Campanhas no menu lateral
+
+## Renomear Botão Campanhas
+- [x] Alterar texto do botão "Disparar SMS" para "Enviar campanha"

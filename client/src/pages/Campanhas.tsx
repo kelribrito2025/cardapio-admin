@@ -969,7 +969,7 @@ export default function Campanhas() {
                     ) : (
                       <>
                         <Send className="h-4 w-4 mr-2" />
-                        Disparar SMS
+                        Enviar campanha
                       </>
                     )}
                   </Button>
