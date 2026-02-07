@@ -31,7 +31,8 @@ import {
   Wallet,
   DollarSign,
   Star,
-  Undo2
+  Undo2,
+  User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -222,6 +223,8 @@ export default function PDV() {
     return "cash";
   });
   const [receivedAmount, setReceivedAmount] = useState("");
+  const [pickupClientName, setPickupClientName] = useState("");
+  const [pickupClientPhone, setPickupClientPhone] = useState("");
   
   // Estado para forma de pagamento favorita (salva no localStorage)
   const [favoritePaymentMethod, setFavoritePaymentMethod] = useState<PaymentMethodType>(() => {
@@ -443,6 +446,9 @@ export default function PDV() {
     });
     setSelectedNeighborhoodFee(null);
     setChangeAmount("");
+    // Limpar dados de retirada
+    setPickupClientName("");
+    setPickupClientPhone("");
     // Limpar cupom
     setShowCouponField(false);
     setCouponCode("");
@@ -553,8 +559,8 @@ export default function PDV() {
     createOrderMutation.mutate({
       establishmentId,
       orderNumber,
-      customerName: deliveryAddress.name || "Cliente PDV",
-      customerPhone: deliveryAddress.phone || "",
+      customerName: orderType === "retirada" ? (pickupClientName || "Cliente PDV") : (deliveryAddress.name || "Cliente PDV"),
+      customerPhone: orderType === "retirada" ? (pickupClientPhone.replace(/\D/g, "") || "") : (deliveryAddress.phone || ""),
       customerAddress,
       deliveryType: deliveryTypeMap[orderType],
       paymentMethod: paymentMethod || "cash",
@@ -2226,6 +2232,56 @@ export default function PDV() {
 
           {/* Conteúdo - Formas de Pagamento */}
           <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-white">
+            {/* Dados do Cliente (Retirada) */}
+            {orderType === "retirada" && (
+              <div>
+                <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                  <User className="h-4 w-4 text-red-500" />
+                  Dados do Cliente
+                </h3>
+                <div className="space-y-3 p-4 bg-gray-50 rounded-xl">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Nome <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Nome do cliente"
+                      value={pickupClientName}
+                      onChange={(e) => setPickupClientName(e.target.value)}
+                      className="w-full bg-white border-gray-200 rounded-lg"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Telefone</label>
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="(00) 00000-0000"
+                      value={pickupClientPhone}
+                      onChange={(e) => {
+                        let value = e.target.value.replace(/\D/g, "").slice(0, 11);
+                        if (value.length > 0) {
+                          value = "(" + value;
+                        }
+                        if (value.length > 3) {
+                          value = value.slice(0, 3) + ") " + value.slice(3);
+                        }
+                        if (value.length > 6) {
+                          value = value.slice(0, 6) + " " + value.slice(6);
+                        }
+                        if (value.length > 12) {
+                          value = value.slice(0, 12) + "-" + value.slice(12);
+                        }
+                        setPickupClientPhone(value);
+                      }}
+                      className="w-full bg-white border-gray-200 rounded-lg"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Título da seção */}
             <div>
               <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
@@ -2403,10 +2459,10 @@ export default function PDV() {
                 setSelectedPaymentInSidebar(favoritePaymentMethod || "cash");
                 setReceivedAmount("");
               }}
-              disabled={!selectedPaymentInSidebar && availablePaymentMethods.length > 0}
+              disabled={(!selectedPaymentInSidebar && availablePaymentMethods.length > 0) || (orderType === "retirada" && !pickupClientName.trim())}
               className="w-full py-3 bg-red-500 hover:bg-red-600 text-white"
             >
-              Continuar
+              {orderType === "retirada" && !pickupClientName.trim() ? "Preencha o nome do cliente" : "Continuar"}
             </Button>
           </div>
         </SheetContent>

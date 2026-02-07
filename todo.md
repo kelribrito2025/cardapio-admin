@@ -5583,3 +5583,8 @@
 
 ## Formatação Moeda no Campo Personalizado
 - [x] Implementar formatação de moeda brasileira no input (digitar 100 = 1,00, digitar 1000 = 10,00)
+
+## Dados do Cliente na Retirada (PDV)
+- [x] Adicionar campo "Nome do cliente" (obrigatório) na sidebar de pagamento para retirada
+- [x] Adicionar campo "Telefone" (opcional) com máscara (00) 00000-0000
+- [x] Validar que nome é obrigatório antes de finalizar pedido de retirada
