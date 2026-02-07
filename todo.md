@@ -5535,3 +5535,6 @@
 
 ## Atualização Custo SMS
 - [x] Alterar custo por SMS de R$ 0,10 para R$ 0,097
+
+## Remoção Badge Breve - Campanhas
+- [x] Remover badge "Breve" e estado disabled do item Campanhas no menu lateral
