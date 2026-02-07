@@ -980,7 +980,7 @@ export default function Campanhas() {
                     className="flex-1 sm:flex-initial border-primary/30 text-primary hover:bg-primary/5"
                   >
                     <CalendarClock className="h-4 w-4 mr-2" />
-                    Agendar campanha
+                    Agendar
                   </Button>
                 </div>
               </div>

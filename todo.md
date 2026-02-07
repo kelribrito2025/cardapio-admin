@@ -5541,3 +5541,6 @@
 
 ## Renomear Botão Campanhas
 - [x] Alterar texto do botão "Disparar SMS" para "Enviar campanha"
+
+## Renomear Botão Agendar
+- [x] Alterar texto do botão "Agendar campanha" para "Agendar"
