@@ -24,8 +24,12 @@ import {
   Trash2,
   X,
   ChevronLeft,
+  Filter,
+  CalendarDays,
+  ShoppingBag,
+  TicketCheck,
 } from "lucide-react";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -109,9 +113,55 @@ export default function Campanhas() {
   const [numerosManual, setNumerosManual] = useState<string[]>([]);
   const [isEnviando, setIsEnviando] = useState(false);
   const [selecionarTodos, setSelecionarTodos] = useState(false);
+  
+  // Estados dos filtros rápidos
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterInactiveDays, setFilterInactiveDays] = useState<string>("");
+  const [filterMinOrders, setFilterMinOrders] = useState<string>("");
+  const [filterUsedCoupon, setFilterUsedCoupon] = useState(false);
+  
+  // Verificar se algum filtro está ativo
+  const hasActiveFilters = useMemo(() => {
+    return (filterInactiveDays !== "" && Number(filterInactiveDays) > 0) ||
+           (filterMinOrders !== "" && Number(filterMinOrders) > 0) ||
+           filterUsedCoupon;
+  }, [filterInactiveDays, filterMinOrders, filterUsedCoupon]);
+  
+  // Construir input de filtros para a query (estabilizado com useMemo)
+  const filterInput = useMemo(() => {
+    if (!hasActiveFilters) return undefined;
+    return {
+      inactiveDays: filterInactiveDays !== "" ? Number(filterInactiveDays) : undefined,
+      minOrders: filterMinOrders !== "" ? Number(filterMinOrders) : undefined,
+      usedCoupon: filterUsedCoupon || undefined,
+    };
+  }, [hasActiveFilters, filterInactiveDays, filterMinOrders, filterUsedCoupon]);
 
-  // Buscar clientes reais do banco de dados
-  const { data: clientesBase, isLoading: isLoadingClientes } = trpc.campanhas.getClientes.useQuery();
+  // Buscar clientes sem filtro (padrão)
+  const { data: clientesSemFiltro, isLoading: isLoadingClientesSemFiltro } = trpc.campanhas.getClientes.useQuery();
+  
+  // Buscar clientes filtrados (só quando há filtros ativos)
+  const { data: clientesFiltrados, isLoading: isLoadingClientesFiltrados } = trpc.campanhas.getClientesFiltrados.useQuery(
+    filterInput,
+    { enabled: hasActiveFilters }
+  );
+  
+  // Usar clientes filtrados quando há filtros, senão usar a lista completa
+  const clientesBase = hasActiveFilters ? clientesFiltrados : clientesSemFiltro;
+  const isLoadingClientes = hasActiveFilters ? isLoadingClientesFiltrados : isLoadingClientesSemFiltro;
+  
+  // Limpar seleções quando os filtros mudam
+  useEffect(() => {
+    setClientesSelecionados([]);
+    setSelecionarTodos(false);
+  }, [filterInactiveDays, filterMinOrders, filterUsedCoupon]);
+  
+  // Função para limpar todos os filtros
+  const clearFilters = () => {
+    setFilterInactiveDays("");
+    setFilterMinOrders("");
+    setFilterUsedCoupon(false);
+  };
   
   // Buscar saldo SMS real do banco de dados
   const { data: saldoData, isLoading: isLoadingSaldo, refetch: refetchSaldo } = trpc.campanhas.getSaldo.useQuery();
@@ -410,7 +460,127 @@ export default function Campanhas() {
                 </TabsList>
 
                 {/* Aba: Base de Clientes */}
-                <TabsContent value="base" className="mt-0">
+                <TabsContent value="base" className="mt-0 space-y-3">
+                  {/* Botão de Filtros Rápidos */}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant={showFilters ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setShowFilters(!showFilters)}
+                      className="gap-1.5"
+                    >
+                      <Filter className="h-3.5 w-3.5" />
+                      Filtros
+                      {hasActiveFilters && (
+                        <span className="bg-white text-primary rounded-full h-4 w-4 flex items-center justify-center text-[10px] font-bold ml-0.5">
+                          {[filterInactiveDays !== "" && Number(filterInactiveDays) > 0, filterMinOrders !== "" && Number(filterMinOrders) > 0, filterUsedCoupon].filter(Boolean).length}
+                        </span>
+                      )}
+                    </Button>
+                    {hasActiveFilters && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearFilters}
+                        className="text-xs text-muted-foreground hover:text-foreground gap-1"
+                      >
+                        <X className="h-3 w-3" />
+                        Limpar filtros
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Painel de Filtros */}
+                  {showFilters && (
+                    <div className="border rounded-lg p-4 bg-muted/30 space-y-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {/* Filtro: Inativos há X dias */}
+                        <div className="space-y-1.5">
+                          <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                            <CalendarDays className="h-3.5 w-3.5" />
+                            Inativos há (dias)
+                          </label>
+                          <Input
+                            type="number"
+                            min="0"
+                            placeholder="Ex: 30"
+                            value={filterInactiveDays}
+                            onChange={(e) => setFilterInactiveDays(e.target.value)}
+                            className="h-8 text-sm"
+                          />
+                          <p className="text-[10px] text-muted-foreground">
+                            Clientes sem pedidos há X dias
+                          </p>
+                        </div>
+
+                        {/* Filtro: Mínimo de pedidos */}
+                        <div className="space-y-1.5">
+                          <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                            <ShoppingBag className="h-3.5 w-3.5" />
+                            Mín. pedidos concluídos
+                          </label>
+                          <Input
+                            type="number"
+                            min="0"
+                            placeholder="Ex: 5"
+                            value={filterMinOrders}
+                            onChange={(e) => setFilterMinOrders(e.target.value)}
+                            className="h-8 text-sm"
+                          />
+                          <p className="text-[10px] text-muted-foreground">
+                            Clientes com N ou mais pedidos
+                          </p>
+                        </div>
+
+                        {/* Filtro: Usou cupom */}
+                        <div className="space-y-1.5">
+                          <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                            <TicketCheck className="h-3.5 w-3.5" />
+                            Já usou cupom
+                          </label>
+                          <label className="flex items-center gap-2 h-8 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={filterUsedCoupon}
+                              onChange={(e) => setFilterUsedCoupon(e.target.checked)}
+                              className="rounded border-gray-300"
+                            />
+                            <span className="text-sm">
+                              {filterUsedCoupon ? "Sim" : "Todos"}
+                            </span>
+                          </label>
+                          <p className="text-[10px] text-muted-foreground">
+                            Clientes que usaram cupom em pedidos
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Resumo dos filtros ativos */}
+                      {hasActiveFilters && (
+                        <div className="flex items-center gap-2 pt-2 border-t">
+                          <span className="text-xs text-muted-foreground">Filtros ativos:</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {filterInactiveDays !== "" && Number(filterInactiveDays) > 0 && (
+                              <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-[10px] font-medium">
+                                Inativos há {filterInactiveDays}+ dias
+                              </span>
+                            )}
+                            {filterMinOrders !== "" && Number(filterMinOrders) > 0 && (
+                              <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-medium">
+                                {filterMinOrders}+ pedidos
+                              </span>
+                            )}
+                            {filterUsedCoupon && (
+                              <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-[10px] font-medium">
+                                Usou cupom
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <div className="border rounded-lg overflow-hidden">
                     {/* Header da lista */}
                     <div className="bg-muted/50 px-4 py-2 border-b flex items-center justify-between">
@@ -425,7 +595,9 @@ export default function Campanhas() {
                         <span className="text-sm font-medium">Selecionar todos</span>
                       </label>
                       <span className="text-xs text-muted-foreground">
-                        {isLoadingClientes ? "Carregando..." : `${clientesBase?.length || 0} clientes`}
+                        {isLoadingClientes ? "Carregando..." : hasActiveFilters 
+                          ? `${clientesBase?.length || 0} clientes filtrados`
+                          : `${clientesBase?.length || 0} clientes`}
                       </span>
                     </div>
                     

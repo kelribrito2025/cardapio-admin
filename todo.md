@@ -5494,3 +5494,10 @@
 
 ## Página de Campanhas
 - [x] Trocar placeholder do campo de telefone para número genérico (11) 9 1234-5678
+
+## Filtros Rápidos de Clientes - Campanhas SMS
+- [x] Filtro: clientes que não compram há X dias (campo numérico, baseado no último pedido)
+- [x] Filtro: clientes com mais de N pedidos concluídos (campo numérico)
+- [x] Filtro: clientes que já usaram cupom (checkbox)
+- [x] Filtros combináveis entre si com atualização automática da lista
+- [x] Exibir quantidade de clientes filtrados

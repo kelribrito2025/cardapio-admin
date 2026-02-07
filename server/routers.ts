@@ -2821,6 +2821,23 @@ export const appRouter = router({
         return clientes;
       }),
     
+    // Buscar clientes filtrados por critérios
+    getClientesFiltrados: protectedProcedure
+      .input(z.object({
+        inactiveDays: z.number().min(0).optional(),
+        minOrders: z.number().min(0).optional(),
+        usedCoupon: z.boolean().optional(),
+      }).optional())
+      .query(async ({ ctx, input }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        const clientes = await db.getFilteredCustomers(establishment.id, input || undefined);
+        return clientes;
+      }),
+
     // Buscar saldo SMS do estabelecimento
     getSaldo: protectedProcedure.query(async ({ ctx }) => {
       if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });

@@ -4726,6 +4726,77 @@ export async function getUniqueCustomers(establishmentId: number): Promise<{
 }
 
 
+/**
+ * Busca clientes filtrados por critérios: inatividade, quantidade de pedidos e uso de cupom.
+ * Todos os filtros são opcionais e combináveis.
+ */
+export async function getFilteredCustomers(establishmentId: number, filters?: {
+  inactiveDays?: number;    // Clientes que não compram há X dias
+  minOrders?: number;       // Clientes com mais de N pedidos
+  usedCoupon?: boolean;     // Clientes que já usaram cupom
+}): Promise<{
+  id: number;
+  name: string | null;
+  phone: string;
+  lastOrderAt: Date;
+  orderCount: number;
+  usedCoupon: boolean;
+}[]> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Buscar clientes únicos agrupados por telefone com dados de cupom
+  const results = await db.select({
+    customerPhone: orders.customerPhone,
+    customerName: sql<string>`MAX(${orders.customerName})`.as('customerName'),
+    lastOrderAt: sql<Date>`MAX(${orders.createdAt})`.as('lastOrderAt'),
+    orderCount: sql<number>`COUNT(*)`.as('orderCount'),
+    usedCoupon: sql<number>`SUM(CASE WHEN ${orders.couponCode} IS NOT NULL AND ${orders.couponCode} != '' THEN 1 ELSE 0 END)`.as('usedCoupon'),
+  })
+    .from(orders)
+    .where(
+      and(
+        eq(orders.establishmentId, establishmentId),
+        isNotNull(orders.customerPhone),
+        sql`${orders.customerPhone} != ''`,
+        // Apenas pedidos concluídos para contagem precisa
+        eq(orders.status, 'completed')
+      )
+    )
+    .groupBy(orders.customerPhone)
+    .orderBy(desc(sql`MAX(${orders.createdAt})`));
+  
+  // Aplicar filtros em memória (mais flexível para filtros combinados)
+  let filtered = results
+    .filter(r => r.customerPhone && r.customerPhone.replace(/\D/g, '').length >= 10);
+  
+  // Filtro: clientes inativos há X dias
+  if (filters?.inactiveDays && filters.inactiveDays > 0) {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - filters.inactiveDays);
+    filtered = filtered.filter(r => new Date(r.lastOrderAt) <= cutoffDate);
+  }
+  
+  // Filtro: clientes com mais de N pedidos
+  if (filters?.minOrders && filters.minOrders > 0) {
+    filtered = filtered.filter(r => r.orderCount >= filters.minOrders!);
+  }
+  
+  // Filtro: clientes que já usaram cupom
+  if (filters?.usedCoupon) {
+    filtered = filtered.filter(r => Number(r.usedCoupon) > 0);
+  }
+  
+  return filtered.map((r, index) => ({
+    id: index + 1,
+    name: r.customerName || null,
+    phone: r.customerPhone!,
+    lastOrderAt: r.lastOrderAt,
+    orderCount: r.orderCount,
+    usedCoupon: Number(r.usedCoupon) > 0,
+  }));
+}
+
 // ============ SMS BALANCE FUNCTIONS ============
 
 // Buscar saldo SMS do estabelecimento
