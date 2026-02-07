@@ -708,7 +708,7 @@ export default function PDV() {
       methods.push({
         id: "pix",
         name: "Pix",
-        description: "Pagamento instantâneo",
+        description: "Instantâneo",
         icon: <QrCode className="h-5 w-5" />
       });
     }
@@ -2119,7 +2119,7 @@ export default function PDV() {
                             <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Favorito</span>
                           )}
                         </div>
-                        <p className="text-xs text-gray-500">Pagamento instantâneo</p>
+                        <p className="text-xs text-gray-500">Instantâneo</p>
                       </div>
                       <button
                         onClick={(e) => {
