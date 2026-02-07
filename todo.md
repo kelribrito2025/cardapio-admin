@@ -5570,3 +5570,7 @@
 
 ## Remover Pacote 50 SMS
 - [x] Remover pacote de 50 créditos SMS do modal de recarga
+
+## Correção Modal Recarga SMS
+- [x] Corrigir caracteres Unicode escapados (créditos, confirmação, Cartão, etc.)
+- [x] Corrigir cor do texto de segurança de azul para emerald (verde)

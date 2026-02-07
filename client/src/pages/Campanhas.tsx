@@ -274,7 +274,7 @@ export default function Campanhas() {
     const params = new URLSearchParams(window.location.search);
     const payment = params.get("payment");
     if (payment === "success") {
-      toast.success("Pagamento realizado com sucesso! Seu saldo ser\u00e1 atualizado em instantes.");
+      toast.success("Pagamento realizado com sucesso! Seu saldo será atualizado em instantes.");
       setTimeout(() => refetchSaldo(), 2000);
       // Limpar query params
       window.history.replaceState({}, "", window.location.pathname);
@@ -1296,7 +1296,7 @@ export default function Campanhas() {
               </div>
             </div>
 
-            <p className="text-sm text-muted-foreground">Escolha um pacote de cr\u00e9ditos SMS:</p>
+            <p className="text-sm text-muted-foreground">Escolha um pacote de créditos SMS:</p>
 
             <div className="grid grid-cols-1 gap-2">
               {packages?.map((pkg) => (
@@ -1364,11 +1364,11 @@ export default function Campanhas() {
               );
             })()}
 
-            <div className="p-3 bg-blue-50 rounded-lg">
+            <div className="p-3 bg-emerald-50 rounded-lg">
               <div className="flex items-start gap-2">
-                <BadgeCheck className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-blue-700">
-                  Pagamento seguro via Stripe. Ap\u00f3s a confirma\u00e7\u00e3o, o saldo \u00e9 creditado automaticamente.
+                <BadgeCheck className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-emerald-700">
+                  Pagamento seguro via Stripe. Após a confirmação, o saldo é creditado automaticamente.
                 </p>
               </div>
             </div>
@@ -1401,7 +1401,7 @@ export default function Campanhas() {
                 ) : (
                   <>
                     <CreditCard className="h-4 w-4" />
-                    Pagar com Cart\u00e3o
+                    Pagar com Cartão
                   </>
                 )}
               </Button>
