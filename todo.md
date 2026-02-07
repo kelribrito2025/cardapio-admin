@@ -5532,3 +5532,6 @@
 
 ## Filtro de Caracteres GSM 7-bit no SMS
 - [x] Restringir campo de mensagem SMS para aceitar apenas caracteres GSM 7-bit (letras sem acento, números, espaço e especiais: !@"#$%&'()*+,-./:;<=>?_)
+
+## Atualização Custo SMS
+- [x] Alterar custo por SMS de R$ 0,10 para R$ 0,097

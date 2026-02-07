@@ -583,7 +583,7 @@ export const smsBalance = mysqlTable("sms_balance", {
   id: int("id").autoincrement().primaryKey(),
   establishmentId: int("establishmentId").notNull().unique(),
   balance: decimal("balance", { precision: 10, scale: 2 }).default("0").notNull(), // Saldo em reais
-  costPerSms: decimal("costPerSms", { precision: 10, scale: 4 }).default("0.0800").notNull(), // Custo por SMS (padrão R$ 0,08)
+  costPerSms: decimal("costPerSms", { precision: 10, scale: 4 }).default("0.0970").notNull(), // Custo por SMS (padrão R$ 0,097)
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -711,7 +711,7 @@ export const scheduledCampaigns = mysqlTable("scheduled_campaigns", {
   sentAt: timestamp("sentAt"), // Quando foi efetivamente disparada
   successCount: int("successCount").default(0).notNull(), // SMS enviados com sucesso
   failCount: int("failCount").default(0).notNull(), // SMS que falharam
-  costPerSms: decimal("costPerSms", { precision: 10, scale: 2 }).default("0.10").notNull(),
+  costPerSms: decimal("costPerSms", { precision: 10, scale: 4 }).default("0.097").notNull(),
   totalCost: decimal("totalCost", { precision: 10, scale: 2 }).default("0").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

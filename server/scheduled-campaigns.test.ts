@@ -109,29 +109,29 @@ describe("Scheduled Campaigns", () => {
   describe("Campaign cost calculation", () => {
     it("should calculate correct cost for campaign", () => {
       const recipientCount = 50;
-      const costPerSms = 0.10;
+      const costPerSms = 0.097;
       const totalCost = recipientCount * costPerSms;
 
-      expect(totalCost).toBe(5.0);
+      expect(totalCost).toBeCloseTo(4.85, 2);
     });
 
     it("should validate sufficient balance before scheduling", () => {
       const saldo = 10.0;
-      const costPerSms = 0.10;
+      const costPerSms = 0.097;
       const recipientCount = 150;
       const totalCost = recipientCount * costPerSms;
 
-      expect(totalCost).toBe(15.0);
+      expect(totalCost).toBeCloseTo(14.55, 2);
       expect(totalCost > saldo).toBe(true);
     });
 
     it("should allow scheduling when balance is sufficient", () => {
       const saldo = 20.0;
-      const costPerSms = 0.10;
+      const costPerSms = 0.097;
       const recipientCount = 100;
       const totalCost = recipientCount * costPerSms;
 
-      expect(totalCost).toBe(10.0);
+      expect(totalCost).toBeCloseTo(9.70, 2);
       expect(totalCost <= saldo).toBe(true);
     });
   });

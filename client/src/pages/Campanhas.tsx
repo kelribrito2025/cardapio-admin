@@ -55,7 +55,7 @@ import { trpc } from "@/lib/trpc";
 const SMS_CHAR_LIMIT = 152;
 
 // Custo padrão por SMS (usado quando não há dados do servidor)
-const DEFAULT_COST_PER_SMS = 0.10;
+const DEFAULT_COST_PER_SMS = 0.097;
 
 // Templates de SMS sugeridos
 const SMS_TEMPLATES = [
@@ -506,7 +506,7 @@ export default function Campanhas() {
           />
           <StatCard
             title="Custo por SMS"
-            value={`R$ ${custoPorSms.toFixed(2)}`}
+            value={`R$ ${custoPorSms.toFixed(3)}`}
             icon={DollarSign}
             variant="blue"
           />
