@@ -5513,3 +5513,6 @@
 ## Ajuste Modal Modelos Sugeridos
 - [x] Remover contagem de caracteres do modal de modelos sugeridos
 - [x] Mover botão "Usar template" para a linha do título (ao final)
+
+## Correção Template SMS
+- [x] Substituir quebras de linha por espaços ao inserir template no campo de mensagem SMS

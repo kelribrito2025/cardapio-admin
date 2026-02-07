@@ -475,7 +475,7 @@ export default function Campanhas() {
                                   variant="outline"
                                   className="gap-1.5 h-7 text-xs shrink-0 ml-2"
                                   onClick={() => {
-                                    setMensagem(template.text);
+                                    setMensagem(template.text.replace(/\n/g, ' '));
                                     setShowTemplates(false);
                                     toast.success("Modelo aplicado!", { description: template.title });
                                   }}
