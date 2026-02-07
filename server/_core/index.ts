@@ -8,7 +8,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
-import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, sendAllOrdersHeartbeat } from "./sse";
+import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, sendAllOrdersHeartbeat, sendEvent } from "./sse";
 import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrderById, getOrderItems, getOrderItemsWithPrinter, getEstablishmentById, getPrinterSettings, getActivePrinters, getTabById, getTabItems, getTableById } from "../db";
 import { sdk } from "./sdk";
 import { startScheduledCampaignJob } from "../scheduledCampaignJob";
@@ -1246,6 +1246,66 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+  
+  // Stripe webhook MUST be registered BEFORE express.json() for signature verification
+  app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async (req, res) => {
+    try {
+      const { constructWebhookEvent, extractCheckoutMetadata } = await import("../stripe");
+      const { addSmsCredit, getOrCreateSmsBalance } = await import("../db");
+      
+      const signature = req.headers["stripe-signature"] as string;
+      if (!signature) {
+        console.error("[Stripe Webhook] Sem header stripe-signature");
+        return res.status(400).json({ error: "Missing signature" });
+      }
+      
+      const event = constructWebhookEvent(req.body, signature);
+      if (!event) {
+        return res.status(400).json({ error: "Invalid signature" });
+      }
+      
+      // Detectar eventos de teste
+      if (event.id.startsWith("evt_test_")) {
+        console.log("[Stripe Webhook] Test event detected, returning verification response");
+        return res.json({ verified: true });
+      }
+      
+      console.log(`[Stripe Webhook] Evento recebido: ${event.type} (${event.id})`);
+      
+      if (event.type === "checkout.session.completed") {
+        const session = event.data.object as any;
+        const metadata = extractCheckoutMetadata(session);
+        
+        if (metadata.type === "sms_recharge" && metadata.establishmentId > 0) {
+          const amountInReais = metadata.amountTotal / 100;
+          
+          console.log(`[Stripe Webhook] Recarga SMS: estabelecimento ${metadata.establishmentId}, valor R$ ${amountInReais.toFixed(2)}, ${metadata.smsCount} SMS`);
+          
+          // Creditar saldo SMS
+          await addSmsCredit(
+            metadata.establishmentId,
+            amountInReais,
+            `Recarga via cart\u00e3o - ${metadata.smsCount} SMS (Stripe: ${metadata.paymentIntentId})`
+          );
+          
+          // Enviar SSE para atualizar saldo em tempo real
+          const updatedBalance = await getOrCreateSmsBalance(metadata.establishmentId);
+          sendEvent(metadata.establishmentId, "balanceUpdated", {
+            balance: parseFloat(updatedBalance.balance as string),
+            smsCount: metadata.smsCount,
+          });
+          
+          console.log(`[Stripe Webhook] Saldo creditado com sucesso para estabelecimento ${metadata.establishmentId}`);
+        }
+      }
+      
+      res.json({ received: true });
+    } catch (error) {
+      console.error("[Stripe Webhook] Erro:", error);
+      res.status(500).json({ error: "Internal error" });
+    }
+  });
+  
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));

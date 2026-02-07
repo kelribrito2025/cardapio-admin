@@ -602,6 +602,7 @@ export const smsTransactions = mysqlTable("sms_transactions", {
   balanceAfter: decimal("balanceAfter", { precision: 10, scale: 2 }).notNull(), // Saldo depois
   description: varchar("description", { length: 255 }), // Descrição da transação
   campaignName: varchar("campaignName", { length: 255 }), // Nome da campanha (para débitos)
+  stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 255 }), // ID do pagamento Stripe (para recargas via cartão)
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

@@ -3029,9 +3029,46 @@ export const appRouter = router({
         
         return { success: true };
       }),
+
+    // Listar pacotes de recarga SMS
+    getPackages: protectedProcedure
+      .query(async () => {
+        const { SMS_PACKAGES } = await import("./stripe");
+        return SMS_PACKAGES;
+      }),
+
+    // Criar sessão de checkout Stripe para recarga
+    createCheckout: protectedProcedure
+      .input(z.object({
+        packageId: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento n\u00e3o encontrado' });
+        
+        const { createSmsCheckoutSession } = await import("./stripe");
+        const origin = ctx.req.headers.origin || ctx.req.headers.referer?.replace(/\/$/, '') || '';
+        
+        const result = await createSmsCheckoutSession({
+          packageId: input.packageId,
+          userId: ctx.user.id,
+          userEmail: ctx.user.email || '',
+          userName: ctx.user.name || '',
+          establishmentId: establishment.id,
+          origin,
+        });
+        
+        if (!result) {
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Stripe n\u00e3o configurado. Configure as chaves em Configura\u00e7\u00f5es > Pagamento.' });
+        }
+        
+        return result;
+      }),
   }),
 
-  // ============ TABLE SPACES (ESPAÇOS) ============
+  // ============ TABLE SPACES (ESPA\u00c7OS) ============
   tableSpaces: router({
     // Listar espaços do estabelecimento
     list: protectedProcedure.query(async ({ ctx }) => {

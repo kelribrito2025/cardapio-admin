@@ -40,6 +40,9 @@ import {
   CalendarClock,
   XCircle,
   CheckCircle,
+  CreditCard,
+  Sparkles,
+  BadgeCheck,
 } from "lucide-react";
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -50,6 +53,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { trpc } from "@/lib/trpc";
+import { useOrdersSSE } from "@/hooks/useOrdersSSE";
 
 // Limite de caracteres do SMS
 const SMS_CHAR_LIMIT = 152;
@@ -170,6 +174,8 @@ export default function Campanhas() {
   const [agendamentoHora, setAgendamentoHora] = useState("");
   const [isAgendando, setIsAgendando] = useState(false);
   const [showAgendadas, setShowAgendadas] = useState(false);
+  const [showRecargaModal, setShowRecargaModal] = useState(false);
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   
   // Estados dos filtros rápidos
   const [showFilters, setShowFilters] = useState(false);
@@ -220,14 +226,63 @@ export default function Campanhas() {
     setFilterUsedCoupon(false);
   };
   
+  // Buscar establishment para SSE
+  const { data: establishment } = trpc.establishment.get.useQuery();
+  const [establishmentId, setEstablishmentId] = useState<number | null>(null);
+  
+  useEffect(() => {
+    if (establishment) setEstablishmentId(establishment.id);
+  }, [establishment]);
+
   // Buscar saldo SMS real do banco de dados
   const { data: saldoData, isLoading: isLoadingSaldo, refetch: refetchSaldo } = trpc.campanhas.getSaldo.useQuery();
+
+  // SSE para atualizar saldo em tempo real após recarga via Stripe
+  useOrdersSSE({
+    establishmentId: establishmentId ?? undefined,
+    onBalanceUpdated: useCallback((data: { balance: number; smsCount: number }) => {
+      toast.success(`Recarga confirmada! +${data.smsCount} SMS creditados.`);
+      refetchSaldo();
+    }, [refetchSaldo]),
+    enabled: !!establishmentId && establishmentId > 0,
+  });
   
   // Dados de saldo (real ou padrão)
   const saldo = saldoData?.saldo ?? 0;
   const custoPorSms = saldoData?.custoPorSms ?? DEFAULT_COST_PER_SMS;
   const smsPossiveis = saldoData?.smsDisponiveis ?? 0;
   const ultimoDisparo = saldoData?.ultimoDisparo ? new Date(saldoData.ultimoDisparo) : null;
+
+  // Pacotes de recarga SMS
+  const { data: packages } = trpc.campanhas.getPackages.useQuery();
+
+  // Mutation para criar checkout Stripe
+  const checkoutMutation = trpc.campanhas.createCheckout.useMutation({
+    onSuccess: (data) => {
+      toast.success("Redirecionando para o pagamento...");
+      setShowRecargaModal(false);
+      setSelectedPackage(null);
+      window.open(data.url, "_blank");
+    },
+    onError: (error) => {
+      toast.error(`Erro ao iniciar pagamento: ${error.message}`);
+    },
+  });
+
+  // Detectar retorno do Stripe (sucesso/cancelamento)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const payment = params.get("payment");
+    if (payment === "success") {
+      toast.success("Pagamento realizado com sucesso! Seu saldo ser\u00e1 atualizado em instantes.");
+      setTimeout(() => refetchSaldo(), 2000);
+      // Limpar query params
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (payment === "cancelled") {
+      toast.info("Pagamento cancelado.");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
 
   // Calcular total de destinatários
   const totalDestinatarios = useMemo(() => {
@@ -498,12 +553,22 @@ export default function Campanhas() {
 
         {/* Cards Informativos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <StatCard
-            title="Saldo Disponível"
-            value={isLoadingSaldo ? "..." : `R$ ${saldo.toFixed(2)}`}
-            icon={Wallet}
-            variant="emerald"
-          />
+          <div className="relative">
+            <StatCard
+              title="Saldo Disponível"
+              value={isLoadingSaldo ? "..." : `R$ ${saldo.toFixed(2)}`}
+              icon={Wallet}
+              variant="emerald"
+            />
+            <Button
+              size="sm"
+              onClick={() => setShowRecargaModal(true)}
+              className="absolute bottom-3 right-3 gap-1.5 h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              <CreditCard className="h-3.5 w-3.5" />
+              Recarregar
+            </Button>
+          </div>
           <StatCard
             title="Custo por SMS"
             value={`R$ ${custoPorSms.toFixed(3)}`}
@@ -1212,6 +1277,137 @@ export default function Campanhas() {
                   <>
                     <CalendarClock className="h-4 w-4 mr-2" />
                     Confirmar agendamento
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Recarga de Saldo */}
+      <Dialog open={showRecargaModal} onOpenChange={setShowRecargaModal}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-emerald-600" />
+              Recarregar Saldo SMS
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="bg-emerald-50 rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-emerald-700">Saldo atual</span>
+                <span className="text-lg font-bold text-emerald-700">R$ {saldo.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <p className="text-sm text-muted-foreground">Escolha um pacote de cr\u00e9ditos SMS:</p>
+
+            <div className="grid grid-cols-1 gap-2">
+              {packages?.map((pkg) => (
+                <button
+                  key={pkg.id}
+                  onClick={() => setSelectedPackage(pkg.id)}
+                  className={cn(
+                    "flex items-center justify-between p-3 rounded-lg border-2 transition-all text-left",
+                    selectedPackage === pkg.id
+                      ? "border-emerald-500 bg-emerald-50"
+                      : "border-border hover:border-emerald-300 hover:bg-muted/30",
+                    (pkg as any).popular && "ring-1 ring-emerald-200"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "h-10 w-10 rounded-lg flex items-center justify-center text-sm font-bold",
+                      selectedPackage === pkg.id
+                        ? "bg-emerald-600 text-white"
+                        : "bg-muted text-muted-foreground"
+                    )}>
+                      <MessageSquare className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-sm">{pkg.name}</span>
+                        {(pkg as any).popular && (
+                          <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
+                            <Sparkles className="h-2.5 w-2.5" />
+                            Popular
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-xs text-muted-foreground">{pkg.description}</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-bold text-base">{pkg.priceFormatted}</span>
+                    <p className="text-[10px] text-muted-foreground">R$ {(pkg.priceInCents / 100 / pkg.smsCount).toFixed(3)}/sms</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {selectedPackage && (() => {
+              const pkg = packages?.find(p => p.id === selectedPackage);
+              if (!pkg) return null;
+              const novoSaldo = saldo + (pkg.priceInCents / 100);
+              const novosSms = Math.floor(novoSaldo / custoPorSms);
+              return (
+                <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Saldo atual</span>
+                    <span>R$ {saldo.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">+ Recarga</span>
+                    <span className="text-emerald-600 font-medium">+ R$ {(pkg.priceInCents / 100).toFixed(2)}</span>
+                  </div>
+                  <div className="border-t border-border pt-1 flex justify-between text-sm font-semibold">
+                    <span>Novo saldo</span>
+                    <span className="text-emerald-600">R$ {novoSaldo.toFixed(2)} ({novosSms} SMS)</span>
+                  </div>
+                </div>
+              );
+            })()}
+
+            <div className="p-3 bg-blue-50 rounded-lg">
+              <div className="flex items-start gap-2">
+                <BadgeCheck className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-blue-700">
+                  Pagamento seguro via Stripe. Ap\u00f3s a confirma\u00e7\u00e3o, o saldo \u00e9 creditado automaticamente.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowRecargaModal(false);
+                  setSelectedPackage(null);
+                }}
+                disabled={checkoutMutation.isPending}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={() => {
+                  if (selectedPackage) {
+                    checkoutMutation.mutate({ packageId: selectedPackage });
+                  }
+                }}
+                disabled={!selectedPackage || checkoutMutation.isPending}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
+              >
+                {checkoutMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Processando...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="h-4 w-4" />
+                    Pagar com Cart\u00e3o
                   </>
                 )}
               </Button>

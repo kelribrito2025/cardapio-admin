@@ -15,4 +15,7 @@ export const ENV = {
   // iFood Integration
   ifoodClientId: process.env.IFOOD_CLIENT_ID ?? "",
   ifoodClientSecret: process.env.IFOOD_CLIENT_SECRET ?? "",
+  // Stripe
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
 };

@@ -5548,3 +5548,13 @@
 ## Atualização Automática do Saldo SMS
 - [x] Atualizar saldo automaticamente na UI após envio imediato de campanha (sem precisar recarregar a página)
 - [x] Melhorar feedback visual: toast mostra custo debitado no envio imediato e informa que saldo será debitado no envio para agendamentos
+
+## Recarga de Saldo SMS via Stripe
+- [x] Adicionar feature Stripe ao projeto (webdev_add_feature)
+- [x] Configurar credenciais Stripe (API keys)
+- [x] Criar procedures tRPC para criar sessão de checkout Stripe
+- [x] Criar webhook para processar pagamento confirmado e creditar saldo
+- [x] Criar modal de recarga na página de Campanhas com opções de valor
+- [x] Criar página de callback sucesso/cancelamento
+- [x] Atualizar saldo em tempo real via SSE após pagamento confirmado
+- [x] Escrever testes

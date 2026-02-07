@@ -93,6 +93,9 @@ function notifyAll(event: "newOrder" | "orderUpdate" | "connected" | "disconnect
       case "orderUpdate":
         cb.onOrderUpdate?.(data as SSEOrderUpdate);
         break;
+      case "balanceUpdated" as any:
+        (cb as any).onBalanceUpdated?.(data);
+        break;
       case "connected":
         cb.onConnected?.();
         cb.setStatus("connected");
@@ -364,6 +367,19 @@ function becomeLeader(establishmentId: number) {
   eventSource.addEventListener("heartbeat", () => {
     // Silencioso, apenas mantém conexão viva
   });
+
+  // Evento de atualização de saldo SMS (após recarga via Stripe/PIX)
+  eventSource.addEventListener("balanceUpdated", (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      console.log("[SSE-Balance] Saldo atualizado:", data);
+      notifyAll("balanceUpdated" as any, data);
+      // Broadcast para outras abas
+      bc?.postMessage({ type: "balanceUpdated", data });
+    } catch (e) {
+      console.error("[SSE-Error] Erro ao parsear evento balanceUpdated:", e);
+    }
+  });
 }
 
 function cleanup() {
@@ -411,6 +427,7 @@ interface UseOrdersSSEOptions {
   establishmentId?: number;
   onNewOrder?: (order: SSEOrder) => void;
   onOrderUpdate?: (update: SSEOrderUpdate) => void;
+  onBalanceUpdated?: (data: { balance: number; smsCount: number }) => void;
   onConnected?: () => void;
   onDisconnected?: () => void;
   onError?: (error: Event) => void;
@@ -422,6 +439,7 @@ export function useOrdersSSE(options: UseOrdersSSEOptions = {}) {
     establishmentId,
     onNewOrder,
     onOrderUpdate,
+    onBalanceUpdated,
     onConnected,
     onDisconnected,
     onError,
@@ -434,6 +452,7 @@ export function useOrdersSSE(options: UseOrdersSSEOptions = {}) {
   const callbacksRef = useRef({
     onNewOrder,
     onOrderUpdate,
+    onBalanceUpdated,
     onConnected,
     onDisconnected,
     onError,
@@ -443,11 +462,12 @@ export function useOrdersSSE(options: UseOrdersSSEOptions = {}) {
     callbacksRef.current = {
       onNewOrder,
       onOrderUpdate,
+      onBalanceUpdated,
       onConnected,
       onDisconnected,
       onError,
     };
-  }, [onNewOrder, onOrderUpdate, onConnected, onDisconnected, onError]);
+  }, [onNewOrder, onOrderUpdate, onBalanceUpdated, onConnected, onDisconnected, onError]);
 
   // Registrar listener e inicializar sistema
   useEffect(() => {
@@ -459,6 +479,7 @@ export function useOrdersSSE(options: UseOrdersSSEOptions = {}) {
     const listener = {
       onNewOrder: (order: SSEOrder) => callbacksRef.current.onNewOrder?.(order),
       onOrderUpdate: (update: SSEOrderUpdate) => callbacksRef.current.onOrderUpdate?.(update),
+      onBalanceUpdated: (data: any) => callbacksRef.current.onBalanceUpdated?.(data),
       onConnected: () => callbacksRef.current.onConnected?.(),
       onDisconnected: () => callbacksRef.current.onDisconnected?.(),
       onError: (error: Event) => callbacksRef.current.onError?.(error),
