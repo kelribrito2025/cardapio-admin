@@ -134,6 +134,40 @@ describe("Stripe Connect Module", () => {
     });
   });
 
+  describe("calculatePlatformFee", () => {
+    it("should calculate fee as 3.99% + R$ 1.00 fixed", async () => {
+      const { calculatePlatformFee } = await import("./stripeConnect");
+
+      // R$ 100.00 = 10000 cents
+      // 10000 * 0.0399 = 399 + 100 = 499 cents = R$ 4.99
+      expect(calculatePlatformFee(10000)).toBe(499);
+    });
+
+    it("should calculate fee correctly for R$ 50.00", async () => {
+      const { calculatePlatformFee } = await import("./stripeConnect");
+
+      // R$ 50.00 = 5000 cents
+      // 5000 * 0.0399 = 199.5 + 100 = 299.5 → rounded to 300 cents = R$ 3.00
+      expect(calculatePlatformFee(5000)).toBe(300);
+    });
+
+    it("should calculate fee correctly for R$ 20.00", async () => {
+      const { calculatePlatformFee } = await import("./stripeConnect");
+
+      // R$ 20.00 = 2000 cents
+      // 2000 * 0.0399 = 79.8 + 100 = 179.8 → rounded to 180 cents = R$ 1.80
+      expect(calculatePlatformFee(2000)).toBe(180);
+    });
+
+    it("should calculate fee correctly for R$ 200.00", async () => {
+      const { calculatePlatformFee } = await import("./stripeConnect");
+
+      // R$ 200.00 = 20000 cents
+      // 20000 * 0.0399 = 798 + 100 = 898 cents = R$ 8.98
+      expect(calculatePlatformFee(20000)).toBe(898);
+    });
+  });
+
   describe("createOrderCheckoutSession", () => {
     it("should create a checkout session with correct destination charge", async () => {
       mockCheckoutSessionsCreate.mockResolvedValue({
@@ -141,7 +175,7 @@ describe("Stripe Connect Module", () => {
         url: "https://checkout.stripe.com/pay/cs_test_session_123",
       });
 
-      const { createOrderCheckoutSession, PLATFORM_FEE_PERCENT } = await import("./stripeConnect");
+      const { createOrderCheckoutSession, calculatePlatformFee } = await import("./stripeConnect");
 
       const result = await createOrderCheckoutSession({
         connectedAccountId: "acct_test_123",
@@ -181,11 +215,11 @@ describe("Stripe Connect Module", () => {
       // Verify destination charge
       expect(callArgs.payment_intent_data.transfer_data.destination).toBe("acct_test_123");
 
-      // Verify platform fee (4.3% of total)
+      // Verify platform fee (3.99% + R$ 1.00)
       // Total: (3500*2 + 800 + 500) = 8300 cents
-      // Fee: 8300 * 0.043 = 356.9 → rounded to 357
+      // Fee: 8300 * 0.0399 + 100 = 331.17 + 100 = 431.17 → rounded to 431
       const expectedTotal = 3500 * 2 + 800 + 500;
-      const expectedFee = Math.round(expectedTotal * (PLATFORM_FEE_PERCENT / 100));
+      const expectedFee = calculatePlatformFee(expectedTotal);
       expect(callArgs.payment_intent_data.application_fee_amount).toBe(expectedFee);
 
       // Verify metadata
@@ -219,14 +253,15 @@ describe("Stripe Connect Module", () => {
       expect(callArgs.line_items).toHaveLength(1);
     });
 
-    it("should calculate platform fee correctly at 4.3%", async () => {
+    it("should apply 3.99% + R$ 1.00 fee on R$ 100.00 order", async () => {
       mockCheckoutSessionsCreate.mockResolvedValue({
         id: "cs_test_fee",
         url: "https://checkout.stripe.com/pay/cs_test_fee",
       });
 
-      const { createOrderCheckoutSession, PLATFORM_FEE_PERCENT } = await import("./stripeConnect");
-      expect(PLATFORM_FEE_PERCENT).toBe(4.3);
+      const { createOrderCheckoutSession, PLATFORM_FEE_PERCENT, PLATFORM_FEE_FIXED_CENTS } = await import("./stripeConnect");
+      expect(PLATFORM_FEE_PERCENT).toBe(3.99);
+      expect(PLATFORM_FEE_FIXED_CENTS).toBe(100);
 
       await createOrderCheckoutSession({
         connectedAccountId: "acct_test_123",
@@ -242,8 +277,8 @@ describe("Stripe Connect Module", () => {
       });
 
       const callArgs = mockCheckoutSessionsCreate.mock.calls[0][0];
-      // 10000 * 0.043 = 430 cents = R$ 4.30
-      expect(callArgs.payment_intent_data.application_fee_amount).toBe(430);
+      // 10000 * 0.0399 = 399 + 100 = 499 cents = R$ 4.99
+      expect(callArgs.payment_intent_data.application_fee_amount).toBe(499);
     });
   });
 
