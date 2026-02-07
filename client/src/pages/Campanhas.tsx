@@ -4,6 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { 
   MessageSquare,
   Wallet,
@@ -28,6 +35,8 @@ import {
   CalendarDays,
   ShoppingBag,
   TicketCheck,
+  BookOpen,
+  Copy,
 } from "lucide-react";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { toast } from "sonner";
@@ -44,6 +53,45 @@ const SMS_CHAR_LIMIT = 152;
 
 // Custo padrão por SMS (usado quando não há dados do servidor)
 const DEFAULT_COST_PER_SMS = 0.10;
+
+// Templates de SMS sugeridos
+const SMS_TEMPLATES = [
+  {
+    emoji: "⭐",
+    title: "Cliente VIP",
+    text: "Você é cliente VIP! \u2b50\nPreparamos um desconto especial só pra você.\nUse o cupom VIP15 no seu próximo pedido.",
+  },
+  {
+    emoji: "👀",
+    title: "Oferta Ativa",
+    text: "Só passando pra avisar \ud83d\udc40\nTem uma oferta ativa por tempo limitado no nosso cardápio.\nCorre aproveitar!",
+  },
+  {
+    emoji: "🍔",
+    title: "Sentimos sua falta",
+    text: "Sentimos sua falta! \ud83c\udf54\nVolte a pedir hoje e ganhe R$10 OFF no seu próximo pedido.\nCupom: VOLTA10\nVálido por 48h. Aproveite!",
+  },
+  {
+    emoji: "😊",
+    title: "Reativação",
+    text: "Oi! Já faz um tempo que você não pede com a gente \ud83d\ude0a\nQue tal matar a saudade hoje?\nTem novidade no cardápio esperando por você",
+  },
+  {
+    emoji: "😌",
+    title: "Delivery",
+    text: "Dia perfeito pra pedir em casa \ud83d\ude0c\nDelivery rápido e quentinho esperando por você.\nFaça seu pedido agora!",
+  },
+  {
+    emoji: "🍕",
+    title: "Novidade no Cardápio",
+    text: "Novidade no cardápio! \ud83c\udf55\nAcabamos de lançar um item novo.\nVem experimentar hoje e conta pra gente o que achou!",
+  },
+  {
+    emoji: "🍻",
+    title: "Happy Hour",
+    text: "Happy Hour liberado! \ud83c\udf7b\nPedidos com desconto até às 19h.\nAproveite enquanto é tempo!",
+  },
+];
 
 // Função para formatar número de telefone no padrão brasileiro
 const formatPhoneNumber = (value: string): string => {
@@ -113,6 +161,7 @@ export default function Campanhas() {
   const [numerosManual, setNumerosManual] = useState<string[]>([]);
   const [isEnviando, setIsEnviando] = useState(false);
   const [selecionarTodos, setSelecionarTodos] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
   
   // Estados dos filtros rápidos
   const [showFilters, setShowFilters] = useState(false);
@@ -395,6 +444,55 @@ export default function Campanhas() {
                   </div>
                   <p className="text-xs text-muted-foreground">Máximo de {SMS_CHAR_LIMIT} caracteres</p>
                 </div>
+                <Dialog open={showTemplates} onOpenChange={setShowTemplates}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-1.5">
+                      <BookOpen className="h-3.5 w-3.5" />
+                      Modelos Sugeridos
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-2">
+                        <BookOpen className="h-5 w-5" />
+                        Modelos Sugeridos
+                      </DialogTitle>
+                      <p className="text-sm text-muted-foreground">Escolha um modelo para usar como base da sua mensagem</p>
+                    </DialogHeader>
+                    <div className="space-y-3 mt-2">
+                      {SMS_TEMPLATES.map((template, index) => (
+                        <div
+                          key={index}
+                          className="border rounded-lg p-4 hover:border-primary/50 hover:bg-muted/30 transition-all group"
+                        >
+                          <div className="flex items-start gap-3">
+                            <span className="text-2xl">{template.emoji}</span>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-sm font-semibold text-foreground mb-1">{template.title}</h4>
+                              <p className="text-xs text-muted-foreground whitespace-pre-line leading-relaxed">{template.text}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between mt-3 pt-3 border-t">
+                            <span className="text-[10px] text-muted-foreground">{template.text.length} caracteres</span>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1.5 h-7 text-xs"
+                              onClick={() => {
+                                setMensagem(template.text);
+                                setShowTemplates(false);
+                                toast.success("Modelo aplicado!", { description: template.title });
+                              }}
+                            >
+                              <Copy className="h-3 w-3" />
+                              Usar template
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
 
               <div className="relative flex items-start gap-2">

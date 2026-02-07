@@ -5504,3 +5504,8 @@
 
 ## Reposicionar Botão Filtros
 - [x] Mover botão Filtros para a linha do título Destinatários (final do card header)
+
+## Modelos Sugeridos de SMS
+- [x] Botão "Modelos Sugeridos" no card de Mensagem SMS
+- [x] Modal com 7 templates pré-definidos de SMS
+- [x] Botão "Usar template" em cada card que insere o texto no campo de mensagem
