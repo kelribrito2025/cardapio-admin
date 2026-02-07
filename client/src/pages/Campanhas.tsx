@@ -468,25 +468,24 @@ export default function Campanhas() {
                           <div className="flex items-start gap-3">
                             <span className="text-2xl">{template.emoji}</span>
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-sm font-semibold text-foreground mb-1">{template.title}</h4>
+                              <div className="flex items-center justify-between mb-1">
+                                <h4 className="text-sm font-semibold text-foreground">{template.title}</h4>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="gap-1.5 h-7 text-xs shrink-0 ml-2"
+                                  onClick={() => {
+                                    setMensagem(template.text);
+                                    setShowTemplates(false);
+                                    toast.success("Modelo aplicado!", { description: template.title });
+                                  }}
+                                >
+                                  <Copy className="h-3 w-3" />
+                                  Usar
+                                </Button>
+                              </div>
                               <p className="text-xs text-muted-foreground whitespace-pre-line leading-relaxed">{template.text}</p>
                             </div>
-                          </div>
-                          <div className="flex items-center justify-between mt-3 pt-3 border-t">
-                            <span className="text-[10px] text-muted-foreground">{template.text.length} caracteres</span>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="gap-1.5 h-7 text-xs"
-                              onClick={() => {
-                                setMensagem(template.text);
-                                setShowTemplates(false);
-                                toast.success("Modelo aplicado!", { description: template.title });
-                              }}
-                            >
-                              <Copy className="h-3 w-3" />
-                              Usar template
-                            </Button>
                           </div>
                         </div>
                       ))}

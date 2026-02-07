@@ -5509,3 +5509,7 @@
 - [x] Botão "Modelos Sugeridos" no card de Mensagem SMS
 - [x] Modal com 7 templates pré-definidos de SMS
 - [x] Botão "Usar template" em cada card que insere o texto no campo de mensagem
+
+## Ajuste Modal Modelos Sugeridos
+- [x] Remover contagem de caracteres do modal de modelos sugeridos
+- [x] Mover botão "Usar template" para a linha do título (ao final)
