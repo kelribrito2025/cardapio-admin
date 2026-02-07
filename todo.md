@@ -5558,3 +5558,8 @@
 - [x] Criar página de callback sucesso/cancelamento
 - [x] Atualizar saldo em tempo real via SSE após pagamento confirmado
 - [x] Escrever testes
+
+## Correção Webhook Stripe
+- [x] Corrigir endpoint /api/stripe/webhook que retorna timeout
+- [x] Garantir express.raw() ANTES de express.json()
+- [x] Retornar HTTP 200 com { verified: true } para todos os cenários
