@@ -181,9 +181,9 @@ describe("Stripe Connect Module", () => {
       // Verify destination charge
       expect(callArgs.payment_intent_data.transfer_data.destination).toBe("acct_test_123");
 
-      // Verify platform fee (4.6% of total)
+      // Verify platform fee (4.3% of total)
       // Total: (3500*2 + 800 + 500) = 8300 cents
-      // Fee: 8300 * 0.046 = 381.8 → rounded to 382
+      // Fee: 8300 * 0.043 = 356.9 → rounded to 357
       const expectedTotal = 3500 * 2 + 800 + 500;
       const expectedFee = Math.round(expectedTotal * (PLATFORM_FEE_PERCENT / 100));
       expect(callArgs.payment_intent_data.application_fee_amount).toBe(expectedFee);
@@ -219,14 +219,14 @@ describe("Stripe Connect Module", () => {
       expect(callArgs.line_items).toHaveLength(1);
     });
 
-    it("should calculate platform fee correctly at 4.6%", async () => {
+    it("should calculate platform fee correctly at 4.3%", async () => {
       mockCheckoutSessionsCreate.mockResolvedValue({
         id: "cs_test_fee",
         url: "https://checkout.stripe.com/pay/cs_test_fee",
       });
 
       const { createOrderCheckoutSession, PLATFORM_FEE_PERCENT } = await import("./stripeConnect");
-      expect(PLATFORM_FEE_PERCENT).toBe(4.6);
+      expect(PLATFORM_FEE_PERCENT).toBe(4.3);
 
       await createOrderCheckoutSession({
         connectedAccountId: "acct_test_123",
@@ -242,8 +242,8 @@ describe("Stripe Connect Module", () => {
       });
 
       const callArgs = mockCheckoutSessionsCreate.mock.calls[0][0];
-      // 10000 * 0.046 = 460 cents = R$ 4.60
-      expect(callArgs.payment_intent_data.application_fee_amount).toBe(460);
+      // 10000 * 0.043 = 430 cents = R$ 4.30
+      expect(callArgs.payment_intent_data.application_fee_amount).toBe(430);
     });
   });
 

@@ -5611,3 +5611,4 @@
 
 ## Taxa da plataforma Stripe Connect
 - [x] Alterar taxa da plataforma de 1,5% para 4,6%
+- [x] Alterar taxa da plataforma de 4,6% para 4,3%
