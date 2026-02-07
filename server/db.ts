@@ -4845,17 +4845,17 @@ export async function addSmsCredit(
   
   // Atualizar saldo
   await db.update(smsBalance)
-    .set({ balance: balanceAfter.toFixed(2) })
+    .set({ balance: balanceAfter.toFixed(4) })
     .where(eq(smsBalance.establishmentId, establishmentId));
   
   // Registrar transação
   await db.insert(smsTransactions).values({
     establishmentId,
     type: "credit",
-    amount: amount.toFixed(2),
+    amount: amount.toFixed(4),
     smsCount: 0,
-    balanceBefore: balanceBefore.toFixed(2),
-    balanceAfter: balanceAfter.toFixed(2),
+    balanceBefore: balanceBefore.toFixed(4),
+    balanceAfter: balanceAfter.toFixed(4),
     description: description || "Recarga de créditos SMS",
   });
   
@@ -4901,24 +4901,24 @@ export async function debitSmsBalance(
   
   // Atualizar saldo
   await db.update(smsBalance)
-    .set({ balance: balanceAfter.toFixed(2) })
+    .set({ balance: balanceAfter.toFixed(4) })
     .where(eq(smsBalance.establishmentId, establishmentId));
   
   // Registrar transação
   await db.insert(smsTransactions).values({
     establishmentId,
     type: "debit",
-    amount: totalCost.toFixed(2),
+    amount: totalCost.toFixed(4),
     smsCount,
-    balanceBefore: balanceBefore.toFixed(2),
-    balanceAfter: balanceAfter.toFixed(2),
+    balanceBefore: balanceBefore.toFixed(4),
+    balanceAfter: balanceAfter.toFixed(4),
     description: `Envio de ${smsCount} SMS`,
     campaignName,
   });
   
   return {
     success: true,
-    message: `Débito de R$ ${totalCost.toFixed(2)} realizado com sucesso.`,
+    message: `Débito de R$ ${totalCost.toFixed(3)} realizado com sucesso.`,
     debitedCount: smsCount,
   };
 }
@@ -5545,8 +5545,8 @@ export async function createScheduledCampaign(data: {
     recipientCount: data.recipientCount,
     scheduledAt: data.scheduledAt,
     status: "pending",
-    costPerSms: data.costPerSms.toFixed(2),
-    totalCost: data.totalCost.toFixed(2),
+    costPerSms: data.costPerSms.toFixed(4),
+    totalCost: data.totalCost.toFixed(4),
   });
 
   return result[0].insertId;

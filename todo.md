@@ -5591,3 +5591,7 @@
 
 ## Placeholder Grupo Complementos
 - [x] Alterar placeholder do nome do grupo para "Nome do grupo, ou pergunta (ex: Adicionais ou Deseja colher?)"
+
+## Bug: Valor de débito SMS incorreto no toast
+- [x] Verificar se o valor debitado por SMS é R$ 0,10 ou R$ 0,097
+- [x] Corrigir cálculo e/ou exibição do toast para mostrar valor correto (R$ 0,097)

@@ -582,7 +582,7 @@ export type InsertMenuViewsHourly = typeof menuViewsHourly.$inferInsert;
 export const smsBalance = mysqlTable("sms_balance", {
   id: int("id").autoincrement().primaryKey(),
   establishmentId: int("establishmentId").notNull().unique(),
-  balance: decimal("balance", { precision: 10, scale: 2 }).default("0").notNull(), // Saldo em reais
+  balance: decimal("balance", { precision: 10, scale: 4 }).default("0").notNull(), // Saldo em reais (4 casas para suportar R$ 0,097/SMS)
   costPerSms: decimal("costPerSms", { precision: 10, scale: 4 }).default("0.0970").notNull(), // Custo por SMS (padrão R$ 0,097)
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -596,10 +596,10 @@ export const smsTransactions = mysqlTable("sms_transactions", {
   id: int("id").autoincrement().primaryKey(),
   establishmentId: int("establishmentId").notNull(),
   type: mysqlEnum("type", ["credit", "debit"]).notNull(), // credit = recarga, debit = envio
-  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(), // Valor da transação
+  amount: decimal("amount", { precision: 10, scale: 4 }).notNull(), // Valor da transação (4 casas para precisão)
   smsCount: int("smsCount").default(0).notNull(), // Quantidade de SMS (para débitos)
-  balanceBefore: decimal("balanceBefore", { precision: 10, scale: 2 }).notNull(), // Saldo antes
-  balanceAfter: decimal("balanceAfter", { precision: 10, scale: 2 }).notNull(), // Saldo depois
+  balanceBefore: decimal("balanceBefore", { precision: 10, scale: 4 }).notNull(), // Saldo antes
+  balanceAfter: decimal("balanceAfter", { precision: 10, scale: 4 }).notNull(), // Saldo depois
   description: varchar("description", { length: 255 }), // Descrição da transação
   campaignName: varchar("campaignName", { length: 255 }), // Nome da campanha (para débitos)
   stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 255 }), // ID do pagamento Stripe (para recargas via cartão)
@@ -713,7 +713,7 @@ export const scheduledCampaigns = mysqlTable("scheduled_campaigns", {
   successCount: int("successCount").default(0).notNull(), // SMS enviados com sucesso
   failCount: int("failCount").default(0).notNull(), // SMS que falharam
   costPerSms: decimal("costPerSms", { precision: 10, scale: 4 }).default("0.097").notNull(),
-  totalCost: decimal("totalCost", { precision: 10, scale: 2 }).default("0").notNull(),
+  totalCost: decimal("totalCost", { precision: 10, scale: 4 }).default("0").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

@@ -405,7 +405,7 @@ export default function Campanhas() {
     onSuccess: (data) => {
       const custoDebitado = data.enviados * custoPorSms;
       if (data.enviados > 0) {
-        toast.success(`Campanha enviada! ${data.enviados} SMS enviado(s). Saldo debitado: R$ ${custoDebitado.toFixed(2)}`);
+        toast.success(`Campanha enviada! ${data.enviados} SMS enviado(s). Saldo debitado: R$ ${custoDebitado.toFixed(3).replace('.', ',')}`);
       }
       if (data.falhas > 0) {
         toast.error(`Falha ao enviar para ${data.falhas} destinatário(s). Créditos estornados.`);
