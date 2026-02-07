@@ -5631,3 +5631,7 @@
 - [x] Remover container "Pagamento online seguro" ao selecionar Pagar online
 - [x] Alterar exibição de card_online nos recibos para "Pagamento confirmado – Cartão online" (impressão normal e múltiplas impressoras Android)
 - [x] Alterar exibição de card_online nos recibos para "Pagamento confirmado – Cartão online" (impressão normal e múltiplas impressoras Android)
+- [x] Reestruturar fluxo: não enviar pedido até pagamento online ser confirmado
+- [x] Modal "Aguardando pagamento" com polling de status
+- [x] Opção de tentar pagar novamente ou mudar forma de pagamento no estado aguardando
+- [x] Pedido só é criado após confirmação do webhook de pagamento

@@ -3917,6 +3917,22 @@ export const appRouter = router({
         
         return result;
       }),
+
+    // Verificar status do pagamento de checkout session (endpoint público)
+    checkPaymentStatus: publicProcedure
+      .input(z.object({
+        sessionId: z.string().min(1),
+      }))
+      .query(async ({ input }) => {
+        try {
+          const { getCheckoutSessionStatus } = await import("./stripeConnect");
+          const result = await getCheckoutSessionStatus(input.sessionId);
+          return result;
+        } catch (error) {
+          console.error('[checkPaymentStatus] Erro:', error);
+          return { status: 'open' as const, paymentStatus: 'unpaid' };
+        }
+      }),
   }),
 });
 

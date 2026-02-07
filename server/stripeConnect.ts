@@ -205,6 +205,22 @@ export async function createOrderCheckoutSession(params: {
 }
 
 /**
+ * Verifica o status de uma Checkout Session
+ * Usado para polling do frontend enquanto aguarda pagamento
+ */
+export async function getCheckoutSessionStatus(sessionId: string): Promise<{
+  status: 'open' | 'complete' | 'expired';
+  paymentStatus: string;
+}> {
+  const stripe = getStripe();
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  return {
+    status: session.status as 'open' | 'complete' | 'expired',
+    paymentStatus: session.payment_status,
+  };
+}
+
+/**
  * Cria um login link para o Express Dashboard do restaurante
  * Permite que o restaurante veja seus pagamentos e configure dados bancários
  */

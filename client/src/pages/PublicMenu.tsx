@@ -160,6 +160,9 @@ export default function PublicMenu() {
   const [isSendingOrder, setIsSendingOrder] = useState(false);
   const [orderSent, setOrderSent] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
+  const [onlinePaymentSessionId, setOnlinePaymentSessionId] = useState<string | null>(null);
+  const [onlinePaymentStatus, setOnlinePaymentStatus] = useState<'idle' | 'waiting' | 'confirmed' | 'expired'>('idle');
+  const [onlinePaymentUrl, setOnlinePaymentUrl] = useState<string | null>(null);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
   const [showMobileBag, setShowMobileBag] = useState(false);
   const [bagAutoOpenEnabled, setBagAutoOpenEnabled] = useState(true); // Controla se a sacola deve abrir automaticamente
@@ -276,6 +279,30 @@ export default function PublicMenu() {
     }
   }, [data?.establishment?.id]);
   
+  // Polling do status de pagamento online
+  useEffect(() => {
+    if (onlinePaymentStatus !== 'waiting' || !onlinePaymentSessionId) return;
+    
+    const pollInterval = setInterval(async () => {
+      try {
+        const result = await trpcUtils.stripeConnect.checkPaymentStatus.fetch({ sessionId: onlinePaymentSessionId });
+        if (result.status === 'complete' && result.paymentStatus === 'paid') {
+          setOnlinePaymentStatus('confirmed');
+          setOrderSent(true);
+          setOrderStatus('sent');
+          clearInterval(pollInterval);
+        } else if (result.status === 'expired') {
+          setOnlinePaymentStatus('expired');
+          clearInterval(pollInterval);
+        }
+      } catch (error) {
+        console.error('Erro ao verificar status do pagamento:', error);
+      }
+    }, 4000); // Verificar a cada 4 segundos
+    
+    return () => clearInterval(pollInterval);
+  }, [onlinePaymentStatus, onlinePaymentSessionId]);
+
   // Query para buscar taxas por bairro
   const { data: neighborhoodFeesData } = trpc.publicMenu.getNeighborhoodFees.useQuery(
     { establishmentId: data?.establishment?.id || 0 },
@@ -498,9 +525,10 @@ export default function PublicMenu() {
       // Abrir checkout do Stripe em nova aba
       window.open(result.url, '_blank');
       setIsSendingOrder(false);
-      // Mostrar mensagem informativa
-      setOrderSent(true);
-      setOrderStatus('sent');
+      // Salvar session ID e URL para polling e retry
+      setOnlinePaymentSessionId(result.sessionId);
+      setOnlinePaymentUrl(result.url);
+      setOnlinePaymentStatus('waiting');
     },
     onError: (error: any) => {
       console.error('Erro ao criar checkout online:', error);
@@ -3837,7 +3865,7 @@ export default function PublicMenu() {
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
-              <div className={`overflow-y-auto overscroll-contain p-6 ${!orderSent ? 'flex-1' : ''}`}>
+              <div className={`overflow-y-auto overscroll-contain p-6 ${!orderSent && onlinePaymentStatus === 'idle' ? 'flex-1' : ''}`}>
                 {orderError ? (
                   <div className="text-center py-8">
                     <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -3849,6 +3877,83 @@ export default function PublicMenu() {
                     <p className="text-gray-600">
                       {orderError}
                     </p>
+                  </div>
+                ) : onlinePaymentStatus === 'waiting' ? (
+                  /* Estado: Aguardando pagamento online */
+                  <div className="text-center py-8">
+                    <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <svg className="animate-spin h-10 w-10 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                      Aguardando pagamento
+                    </h3>
+                    <p className="text-gray-500 text-sm mb-6">
+                      Complete o pagamento na página do Stripe. Assim que for confirmado, seu pedido será enviado automaticamente.
+                    </p>
+                    <div className="flex flex-col gap-3">
+                      <button
+                        onClick={() => {
+                          if (onlinePaymentUrl) {
+                            window.open(onlinePaymentUrl, '_blank');
+                          }
+                        }}
+                        className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+                      >
+                        <CreditCard className="h-5 w-5" />
+                        Ir para pagamento
+                      </button>
+                      <button
+                        onClick={() => {
+                          setOnlinePaymentStatus('idle');
+                          setOnlinePaymentSessionId(null);
+                          setOnlinePaymentUrl(null);
+                          setCheckoutStep(3); // Voltar para escolher forma de pagamento
+                        }}
+                        className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
+                      >
+                        Escolher outra forma de pagamento
+                      </button>
+                    </div>
+                  </div>
+                ) : onlinePaymentStatus === 'expired' ? (
+                  /* Estado: Pagamento expirado */
+                  <div className="text-center py-8">
+                    <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Clock className="h-10 w-10 text-amber-500" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-amber-600 mb-2">
+                      Pagamento expirado
+                    </h3>
+                    <p className="text-gray-500 text-sm mb-6">
+                      O tempo para pagamento expirou. Você pode tentar novamente ou escolher outra forma de pagamento.
+                    </p>
+                    <div className="flex flex-col gap-3">
+                      <button
+                        onClick={() => {
+                          setOnlinePaymentStatus('idle');
+                          setOnlinePaymentSessionId(null);
+                          setOnlinePaymentUrl(null);
+                        }}
+                        className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+                      >
+                        <CreditCard className="h-5 w-5" />
+                        Tentar novamente
+                      </button>
+                      <button
+                        onClick={() => {
+                          setOnlinePaymentStatus('idle');
+                          setOnlinePaymentSessionId(null);
+                          setOnlinePaymentUrl(null);
+                          setCheckoutStep(3); // Voltar para escolher forma de pagamento
+                        }}
+                        className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
+                      >
+                        Escolher outra forma de pagamento
+                      </button>
+                    </div>
                   </div>
                 ) : !orderSent ? (
                   <div className="text-center py-8">
@@ -3868,7 +3973,7 @@ export default function PublicMenu() {
                       <CheckCircle className="h-12 w-12 text-green-500" />
                     </div>
                     <h3 className="text-2xl font-bold text-green-600 mb-2">
-                      Pedido enviado com sucesso!
+                      {onlinePaymentStatus === 'confirmed' ? 'Pagamento confirmado!' : 'Pedido enviado com sucesso!'}
                     </h3>
                     {currentOrderNumber && (
                       <p className="text-xl font-semibold text-gray-800 mb-4">
@@ -3876,7 +3981,9 @@ export default function PublicMenu() {
                       </p>
                     )}
                     <p className="text-gray-600">
-                      Seu pedido foi recebido e está sendo processado.
+                      {onlinePaymentStatus === 'confirmed' 
+                        ? 'Seu pedido foi enviado ao restaurante e está sendo processado.'
+                        : 'Seu pedido foi recebido e está sendo processado.'}
                     </p>
                   </div>
                 )}
@@ -3889,6 +3996,10 @@ export default function PublicMenu() {
                   onClick={() => {
                     setCheckoutStep(0);
                     setShowTrackingModal(true);
+                    // Reset payment states
+                    setOnlinePaymentStatus('idle');
+                    setOnlinePaymentSessionId(null);
+                    setOnlinePaymentUrl(null);
                   }}
                   className="w-full py-3.5 bg-primary text-white font-semibold rounded-xl transition-colors hover:bg-primary/90 flex items-center justify-center gap-2"
                 >
@@ -3896,6 +4007,8 @@ export default function PublicMenu() {
                   Acompanhar pedido
                 </button>
               </div>
+              ) : onlinePaymentStatus === 'waiting' || onlinePaymentStatus === 'expired' ? (
+                null /* Botões já estão no body */
               ) : (
               <div className="flex-shrink-0 border-t px-6 py-4">
                 <button
