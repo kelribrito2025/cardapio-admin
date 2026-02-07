@@ -3507,13 +3507,7 @@ export default function PublicMenu() {
                     </label>
                   </div>
 
-                  {/* Info Cartão Online */}
-                  {paymentMethod === "card_online" && (
-                    <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                      <p className="text-sm text-blue-700 font-medium mb-1">Pagamento online seguro</p>
-                      <p className="text-xs text-blue-600">Você será redirecionado para uma página segura do Stripe para concluir o pagamento com cartão. Após o pagamento, seu pedido será enviado automaticamente.</p>
-                    </div>
-                  )}
+
 
                   {/* Chave Pix */}
                   {paymentMethod === "pix" && establishment.pixKey && (

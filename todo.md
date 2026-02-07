@@ -5628,3 +5628,4 @@
 - [x] Dropdown no botão Cartão do menu público com "Trazer maquininha" e "Pagar online" quando Pagamento Online ativado
 - [x] Manter comportamento atual do botão Cartão quando Pagamento Online desativado
 - [x] Card "Pagar online" com ícone de segurança Stripe como já existe
+- [x] Remover container "Pagamento online seguro" ao selecionar Pagar online
