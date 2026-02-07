@@ -554,7 +554,7 @@ export default function Campanhas() {
         {/* Cards Informativos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <StatCard
-            title="Saldo Disponível"
+            title="Meu Saldo"
             value={isLoadingSaldo ? "..." : `R$ ${saldo.toFixed(2)}`}
             icon={Wallet}
             variant="emerald"
