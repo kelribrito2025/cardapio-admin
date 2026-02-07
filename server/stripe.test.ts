@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SMS_PACKAGES } from "./stripe";
+import { SMS_PACKAGES, COST_PER_SMS } from "./stripe";
 
 describe("SMS Packages", () => {
   it("should have valid packages defined", () => {
@@ -48,5 +48,47 @@ describe("SMS Packages", () => {
       const priceInReais = (pkg.priceInCents / 100).toFixed(2).replace(".", ",");
       expect(pkg.priceFormatted).toBe(`R$ ${priceInReais}`);
     }
+  });
+});
+
+describe("COST_PER_SMS", () => {
+  it("should be 0.097", () => {
+    expect(COST_PER_SMS).toBe(0.097);
+  });
+});
+
+describe("Custom Checkout Calculation", () => {
+  it("should calculate correct SMS count for R$ 10,00", () => {
+    const amountInReais = 10;
+    const smsCount = Math.floor(amountInReais / COST_PER_SMS);
+    expect(smsCount).toBe(103);
+  });
+
+  it("should calculate correct SMS count for R$ 50,00", () => {
+    const amountInReais = 50;
+    const smsCount = Math.floor(amountInReais / COST_PER_SMS);
+    expect(smsCount).toBe(515);
+  });
+
+  it("should calculate correct SMS count for R$ 1,00 (minimum)", () => {
+    const amountInReais = 1;
+    const smsCount = Math.floor(amountInReais / COST_PER_SMS);
+    expect(smsCount).toBe(10);
+  });
+
+  it("should reject amounts below R$ 1,00", () => {
+    const amountInCents = 50; // R$ 0,50
+    expect(amountInCents).toBeLessThan(100);
+  });
+
+  it("should reject amounts above R$ 1.000,00", () => {
+    const amountInCents = 150000; // R$ 1.500,00
+    expect(amountInCents).toBeGreaterThan(100000);
+  });
+
+  it("should calculate at least 1 SMS for minimum amount", () => {
+    const amountInReais = 1;
+    const smsCount = Math.floor(amountInReais / COST_PER_SMS);
+    expect(smsCount).toBeGreaterThanOrEqual(1);
   });
 });

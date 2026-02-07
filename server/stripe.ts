@@ -16,6 +16,9 @@ function getStripe(): Stripe | null {
   return new Stripe(ENV.stripeSecretKey);
 }
 
+// Custo por SMS em reais
+export const COST_PER_SMS = 0.097;
+
 // Pacotes de recarga SMS disponíveis
 export const SMS_PACKAGES = [
   {
@@ -54,7 +57,63 @@ export const SMS_PACKAGES = [
 ];
 
 /**
- * Cria uma sessão de checkout Stripe para recarga de SMS
+ * Cria uma sessão de checkout Stripe para recarga de SMS com valor personalizado
+ */
+export async function createCustomSmsCheckoutSession(params: {
+  amountInCents: number;
+  smsCount: number;
+  userId: number;
+  userEmail: string;
+  userName: string;
+  establishmentId: number;
+  origin: string;
+}): Promise<{ url: string; sessionId: string } | null> {
+  const stripe = getStripe();
+  if (!stripe) return null;
+
+  if (params.amountInCents < 100) throw new Error("Valor mínimo de recarga: R$ 1,00");
+  if (params.amountInCents > 100000) throw new Error("Valor máximo de recarga: R$ 1.000,00");
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    mode: "payment",
+    client_reference_id: params.userId.toString(),
+    customer_email: params.userEmail,
+    allow_promotion_codes: true,
+    line_items: [
+      {
+        price_data: {
+          currency: "brl",
+          product_data: {
+            name: `${params.smsCount} SMS`,
+            description: `Recarga personalizada de ${params.smsCount} créditos SMS`,
+          },
+          unit_amount: params.amountInCents,
+        },
+        quantity: 1,
+      },
+    ],
+    metadata: {
+      user_id: params.userId.toString(),
+      establishment_id: params.establishmentId.toString(),
+      customer_email: params.userEmail,
+      customer_name: params.userName,
+      package_id: "custom",
+      sms_count: params.smsCount.toString(),
+      type: "sms_recharge",
+    },
+    success_url: `${params.origin}/campanhas?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${params.origin}/campanhas?payment=cancelled`,
+  });
+
+  return {
+    url: session.url!,
+    sessionId: session.id,
+  };
+}
+
+/**
+ * Cria uma sessão de checkout Stripe para recarga de SMS (pacote pré-definido)
  */
 export async function createSmsCheckoutSession(params: {
   packageId: string;

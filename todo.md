@@ -5574,3 +5574,9 @@
 ## Correção Modal Recarga SMS
 - [x] Corrigir caracteres Unicode escapados (créditos, confirmação, Cartão, etc.)
 - [x] Corrigir cor do texto de segurança de azul para emerald (verde)
+
+## Recarga Personalizada SMS
+- [x] Criar procedure backend para checkout com valor personalizado
+- [x] Adicionar opção de valor personalizado no modal de recarga (input de valor em R$)
+- [x] Calcular quantidade de SMS automaticamente com base no valor inserido
+- [x] Validar valor mínimo (R$ 1,00) e máximo (R$ 1.000,00)

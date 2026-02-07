@@ -3066,6 +3066,44 @@ export const appRouter = router({
         
         return result;
       }),
+
+    // Criar sessão de checkout Stripe com valor personalizado
+    createCustomCheckout: protectedProcedure
+      .input(z.object({
+        amountInCents: z.number().min(100, "Valor mínimo: R$ 1,00").max(100000, "Valor máximo: R$ 1.000,00"),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        const { createCustomSmsCheckoutSession, COST_PER_SMS } = await import("./stripe");
+        const origin = ctx.req.headers.origin || ctx.req.headers.referer?.replace(/\/$/, '') || '';
+        
+        const amountInReais = input.amountInCents / 100;
+        const smsCount = Math.floor(amountInReais / COST_PER_SMS);
+        
+        if (smsCount < 1) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Valor insuficiente para pelo menos 1 SMS' });
+        }
+        
+        const result = await createCustomSmsCheckoutSession({
+          amountInCents: input.amountInCents,
+          smsCount,
+          userId: ctx.user.id,
+          userEmail: ctx.user.email || '',
+          userName: ctx.user.name || '',
+          establishmentId: establishment.id,
+          origin,
+        });
+        
+        if (!result) {
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Stripe não configurado. Configure as chaves em Configurações > Pagamento.' });
+        }
+        
+        return { ...result, smsCount };
+      }),
   }),
 
   // ============ TABLE SPACES (ESPA\u00c7OS) ============

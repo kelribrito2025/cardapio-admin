@@ -43,6 +43,7 @@ import {
   CreditCard,
   Sparkles,
   BadgeCheck,
+  Pencil,
 } from "lucide-react";
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -176,6 +177,8 @@ export default function Campanhas() {
   const [showAgendadas, setShowAgendadas] = useState(false);
   const [showRecargaModal, setShowRecargaModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
+  const [customAmount, setCustomAmount] = useState("");
+  const [isCustomMode, setIsCustomMode] = useState(false);
   
   // Estados dos filtros rápidos
   const [showFilters, setShowFilters] = useState(false);
@@ -256,18 +259,41 @@ export default function Campanhas() {
   // Pacotes de recarga SMS
   const { data: packages } = trpc.campanhas.getPackages.useQuery();
 
-  // Mutation para criar checkout Stripe
+  // Mutation para criar checkout Stripe (pacote)
   const checkoutMutation = trpc.campanhas.createCheckout.useMutation({
     onSuccess: (data) => {
       toast.success("Redirecionando para o pagamento...");
       setShowRecargaModal(false);
       setSelectedPackage(null);
+      setCustomAmount("");
+      setIsCustomMode(false);
       window.open(data.url, "_blank");
     },
     onError: (error) => {
       toast.error(`Erro ao iniciar pagamento: ${error.message}`);
     },
   });
+
+  // Mutation para criar checkout Stripe (valor personalizado)
+  const customCheckoutMutation = trpc.campanhas.createCustomCheckout.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Redirecionando para o pagamento de ${data.smsCount} SMS...`);
+      setShowRecargaModal(false);
+      setSelectedPackage(null);
+      setCustomAmount("");
+      setIsCustomMode(false);
+      window.open(data.url, "_blank");
+    },
+    onError: (error) => {
+      toast.error(`Erro ao iniciar pagamento: ${error.message}`);
+    },
+  });
+
+  // Cálculos do valor personalizado
+  const customAmountValue = parseFloat(customAmount.replace(",", ".")) || 0;
+  const customAmountCents = Math.round(customAmountValue * 100);
+  const customSmsCount = Math.floor(customAmountValue / custoPorSms);
+  const isCustomValid = customAmountCents >= 100 && customAmountCents <= 100000 && customSmsCount >= 1;
 
   // Detectar retorno do Stripe (sucesso/cancelamento)
   useEffect(() => {
@@ -1280,7 +1306,14 @@ export default function Campanhas() {
       </Dialog>
 
       {/* Modal de Recarga de Saldo */}
-      <Dialog open={showRecargaModal} onOpenChange={setShowRecargaModal}>
+      <Dialog open={showRecargaModal} onOpenChange={(open) => {
+        setShowRecargaModal(open);
+        if (!open) {
+          setSelectedPackage(null);
+          setCustomAmount("");
+          setIsCustomMode(false);
+        }
+      }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -1296,73 +1329,167 @@ export default function Campanhas() {
               </div>
             </div>
 
-            <p className="text-sm text-muted-foreground">Escolha um pacote de créditos SMS:</p>
-
-            <div className="grid grid-cols-1 gap-2">
-              {packages?.map((pkg) => (
-                <button
-                  key={pkg.id}
-                  onClick={() => setSelectedPackage(pkg.id)}
-                  className={cn(
-                    "flex items-center justify-between p-3 rounded-lg border-2 transition-all text-left",
-                    selectedPackage === pkg.id
-                      ? "border-emerald-500 bg-emerald-50"
-                      : "border-border hover:border-emerald-300 hover:bg-muted/30",
-                    (pkg as any).popular && "ring-1 ring-emerald-200"
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "h-10 w-10 rounded-lg flex items-center justify-center text-sm font-bold",
-                      selectedPackage === pkg.id
-                        ? "bg-emerald-600 text-white"
-                        : "bg-muted text-muted-foreground"
-                    )}>
-                      <MessageSquare className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm">{pkg.name}</span>
-                        {(pkg as any).popular && (
-                          <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
-                            <Sparkles className="h-2.5 w-2.5" />
-                            Popular
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-xs text-muted-foreground">{pkg.description}</span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <span className="font-bold text-base">{pkg.priceFormatted}</span>
-                    <p className="text-[10px] text-muted-foreground">R$ {(pkg.priceInCents / 100 / pkg.smsCount).toFixed(3)}/sms</p>
-                  </div>
-                </button>
-              ))}
+            {/* Tabs: Pacotes / Personalizado */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => { setIsCustomMode(false); setCustomAmount(""); }}
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all border",
+                  !isCustomMode
+                    ? "bg-emerald-600 text-white border-emerald-600"
+                    : "bg-background text-muted-foreground border-border hover:border-emerald-300"
+                )}
+              >
+                Pacotes
+              </button>
+              <button
+                onClick={() => { setIsCustomMode(true); setSelectedPackage(null); }}
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all border flex items-center justify-center gap-1.5",
+                  isCustomMode
+                    ? "bg-emerald-600 text-white border-emerald-600"
+                    : "bg-background text-muted-foreground border-border hover:border-emerald-300"
+                )}
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                Valor personalizado
+              </button>
             </div>
 
-            {selectedPackage && (() => {
-              const pkg = packages?.find(p => p.id === selectedPackage);
-              if (!pkg) return null;
-              const novoSaldo = saldo + (pkg.priceInCents / 100);
-              const novosSms = Math.floor(novoSaldo / custoPorSms);
-              return (
-                <div className="bg-muted/50 rounded-lg p-3 space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Saldo atual</span>
-                    <span>R$ {saldo.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">+ Recarga</span>
-                    <span className="text-emerald-600 font-medium">+ R$ {(pkg.priceInCents / 100).toFixed(2)}</span>
-                  </div>
-                  <div className="border-t border-border pt-1 flex justify-between text-sm font-semibold">
-                    <span>Novo saldo</span>
-                    <span className="text-emerald-600">R$ {novoSaldo.toFixed(2)} ({novosSms} SMS)</span>
-                  </div>
+            {!isCustomMode ? (
+              <>
+                <p className="text-sm text-muted-foreground">Escolha um pacote de créditos SMS:</p>
+
+                <div className="grid grid-cols-1 gap-2">
+                  {packages?.map((pkg) => (
+                    <button
+                      key={pkg.id}
+                      onClick={() => setSelectedPackage(pkg.id)}
+                      className={cn(
+                        "flex items-center justify-between p-3 rounded-lg border-2 transition-all text-left",
+                        selectedPackage === pkg.id
+                          ? "border-emerald-500 bg-emerald-50"
+                          : "border-border hover:border-emerald-300 hover:bg-muted/30",
+                        (pkg as any).popular && "ring-1 ring-emerald-200"
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          "h-10 w-10 rounded-lg flex items-center justify-center text-sm font-bold",
+                          selectedPackage === pkg.id
+                            ? "bg-emerald-600 text-white"
+                            : "bg-muted text-muted-foreground"
+                        )}>
+                          <MessageSquare className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-sm">{pkg.name}</span>
+                            {(pkg as any).popular && (
+                              <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
+                                <Sparkles className="h-2.5 w-2.5" />
+                                Popular
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs text-muted-foreground">{pkg.description}</span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-bold text-base">{pkg.priceFormatted}</span>
+                        <p className="text-[10px] text-muted-foreground">R$ {(pkg.priceInCents / 100 / pkg.smsCount).toFixed(3)}/sms</p>
+                      </div>
+                    </button>
+                  ))}
                 </div>
-              );
-            })()}
+
+                {selectedPackage && (() => {
+                  const pkg = packages?.find(p => p.id === selectedPackage);
+                  if (!pkg) return null;
+                  const novoSaldo = saldo + (pkg.priceInCents / 100);
+                  const novosSms = Math.floor(novoSaldo / custoPorSms);
+                  return (
+                    <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Saldo atual</span>
+                        <span>R$ {saldo.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">+ Recarga</span>
+                        <span className="text-emerald-600 font-medium">+ R$ {(pkg.priceInCents / 100).toFixed(2)}</span>
+                      </div>
+                      <div className="border-t border-border pt-1 flex justify-between text-sm font-semibold">
+                        <span>Novo saldo</span>
+                        <span className="text-emerald-600">R$ {novoSaldo.toFixed(2)} ({novosSms} SMS)</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground">Insira o valor que deseja recarregar:</p>
+
+                <div className="space-y-3">
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">R$</span>
+                    <Input
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="0,00"
+                      value={customAmount}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9,.]/g, "");
+                        setCustomAmount(val);
+                      }}
+                      className="pl-10 text-lg font-semibold h-12"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>Mínimo: R$ 1,00</span>
+                    <span>Máximo: R$ 1.000,00</span>
+                  </div>
+
+                  {customAmountValue > 0 && (
+                    <div className={cn(
+                      "rounded-lg p-3 space-y-1",
+                      isCustomValid ? "bg-muted/50" : "bg-red-50"
+                    )}>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Valor da recarga</span>
+                        <span className="font-medium">R$ {customAmountValue.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">SMS que receberá</span>
+                        <span className={cn(
+                          "font-semibold",
+                          isCustomValid ? "text-emerald-600" : "text-red-500"
+                        )}>
+                          {customSmsCount} SMS
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Custo por SMS</span>
+                        <span>R$ {custoPorSms.toFixed(3)}</span>
+                      </div>
+                      <div className="border-t border-border pt-1 flex justify-between text-sm font-semibold">
+                        <span>Novo saldo</span>
+                        <span className="text-emerald-600">
+                          R$ {(saldo + customAmountValue).toFixed(2)} ({Math.floor((saldo + customAmountValue) / custoPorSms)} SMS)
+                        </span>
+                      </div>
+                      {!isCustomValid && customAmountCents > 0 && customAmountCents < 100 && (
+                        <p className="text-xs text-red-500 mt-1">Valor mínimo de recarga: R$ 1,00</p>
+                      )}
+                      {customAmountCents > 100000 && (
+                        <p className="text-xs text-red-500 mt-1">Valor máximo de recarga: R$ 1.000,00</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
 
             <div className="p-3 bg-emerald-50 rounded-lg">
               <div className="flex items-start gap-2">
@@ -1379,21 +1506,27 @@ export default function Campanhas() {
                 onClick={() => {
                   setShowRecargaModal(false);
                   setSelectedPackage(null);
+                  setCustomAmount("");
+                  setIsCustomMode(false);
                 }}
-                disabled={checkoutMutation.isPending}
+                disabled={checkoutMutation.isPending || customCheckoutMutation.isPending}
               >
                 Cancelar
               </Button>
               <Button
                 onClick={() => {
-                  if (selectedPackage) {
+                  if (isCustomMode && isCustomValid) {
+                    customCheckoutMutation.mutate({ amountInCents: customAmountCents });
+                  } else if (!isCustomMode && selectedPackage) {
                     checkoutMutation.mutate({ packageId: selectedPackage });
                   }
                 }}
-                disabled={!selectedPackage || checkoutMutation.isPending}
+                disabled={
+                  (isCustomMode ? !isCustomValid || customCheckoutMutation.isPending : !selectedPackage || checkoutMutation.isPending)
+                }
                 className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
               >
-                {checkoutMutation.isPending ? (
+                {(checkoutMutation.isPending || customCheckoutMutation.isPending) ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Processando...
