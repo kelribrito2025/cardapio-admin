@@ -5618,3 +5618,6 @@
 - [x] Adicionar reforço de taxa próximo ao toggle de ativar/desativar
 - [x] Incluir mini exemplo de cálculo (R$ 100 → R$ 4,88)
 - [x] Atualizar card 'Como funciona' com taxa correta
+- [x] Renomear botão "Abrir Dashboard Stripe" para "Gestão de Pagamentos"
+- [x] Remover texto extra e exemplos do card de taxas
+- [x] Remover card "Como funciona"

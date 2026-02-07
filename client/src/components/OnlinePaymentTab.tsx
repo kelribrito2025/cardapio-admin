@@ -15,7 +15,6 @@ import {
   Shield,
   Info,
   Receipt,
-  Calculator,
 } from "lucide-react";
 import { useSearchParams } from "wouter";
 
@@ -150,26 +149,6 @@ export function OnlinePaymentTab() {
                 <CheckCircle2 className="h-3.5 w-3.5 text-amber-600 shrink-0" />
                 Não se aplica a pagamentos em dinheiro, Pix ou cartão presencial
               </p>
-              <p className="text-xs text-amber-800 flex items-center gap-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5 text-amber-600 shrink-0" />
-                Inclui percentual (3,99%) + valor fixo (R$ 0,89) por transação
-              </p>
-            </div>
-
-            {/* Mini exemplo de cálculo */}
-            <div className="mt-1 rounded-lg bg-white/70 border border-amber-200 px-3.5 py-2.5">
-              <div className="flex items-center gap-2 text-xs text-amber-800">
-                <Calculator className="h-3.5 w-3.5 text-amber-600 shrink-0" />
-                <span className="font-medium">Exemplo:</span>
-                <span>
-                  Pedido de <strong>R$ 100,00</strong> → taxa de <strong>R$ 4,88</strong>
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-amber-700 mt-1 ml-5.5 pl-[22px]">
-                <span>
-                  Pedido de <strong>R$ 50,00</strong> → taxa de <strong>R$ 2,89</strong>
-                </span>
-              </div>
             </div>
           </div>
         </div>
@@ -278,7 +257,7 @@ export function OnlinePaymentTab() {
               ) : (
                 <LayoutDashboard className="h-4 w-4 mr-2" />
               )}
-              Abrir Dashboard Stripe
+              Gestão de Pagamentos
             </Button>
           )}
         </div>
@@ -317,35 +296,7 @@ export function OnlinePaymentTab() {
         </div>
       )}
 
-      {/* Info Card - Como funciona */}
-      <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 space-y-3">
-        <h4 className="font-medium text-sm text-blue-900 flex items-center gap-2">
-          <Info className="h-4 w-4" />
-          Como funciona
-        </h4>
-        <ul className="text-xs text-blue-800 space-y-1.5">
-          <li className="flex items-start gap-2">
-            <span className="font-bold text-blue-600 mt-0.5">1.</span>
-            <span>Configure sua conta Stripe Connect (dados bancários e verificação)</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="font-bold text-blue-600 mt-0.5">2.</span>
-            <span>Ative a opção "Aceitar pagamento online"</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="font-bold text-blue-600 mt-0.5">3.</span>
-            <span>Clientes de entrega poderão pagar com cartão no menu público</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="font-bold text-blue-600 mt-0.5">4.</span>
-            <span>O pedido é criado automaticamente após a confirmação do pagamento</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="font-bold text-blue-600 mt-0.5">5.</span>
-            <span>O valor é transferido para sua conta bancária (taxa: 3,99% + R$ 0,89 por transação)</span>
-          </li>
-        </ul>
-      </div>
+
     </div>
   );
 }
