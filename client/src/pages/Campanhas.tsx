@@ -553,22 +553,16 @@ export default function Campanhas() {
 
         {/* Cards Informativos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <div className="relative">
-            <StatCard
-              title="Saldo Disponível"
-              value={isLoadingSaldo ? "..." : `R$ ${saldo.toFixed(2)}`}
-              icon={Wallet}
-              variant="emerald"
-            />
-            <Button
-              size="sm"
-              onClick={() => setShowRecargaModal(true)}
-              className="absolute bottom-3 right-3 gap-1.5 h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
-            >
-              <CreditCard className="h-3.5 w-3.5" />
-              Recarregar
-            </Button>
-          </div>
+          <StatCard
+            title="Saldo Disponível"
+            value={isLoadingSaldo ? "..." : `R$ ${saldo.toFixed(2)}`}
+            icon={Wallet}
+            variant="emerald"
+            iconAction={{
+              label: "Recarregar",
+              onClick: () => setShowRecargaModal(true),
+            }}
+          />
           <StatCard
             title="Custo por SMS"
             value={`R$ ${custoPorSms.toFixed(3)}`}

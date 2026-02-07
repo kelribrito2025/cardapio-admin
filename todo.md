@@ -5563,3 +5563,7 @@
 - [x] Corrigir endpoint /api/stripe/webhook que retorna timeout
 - [x] Garantir express.raw() ANTES de express.json()
 - [x] Retornar HTTP 200 com { verified: true } para todos os cenários
+
+## UI Card Saldo - Recarregar
+- [x] Remover botão "Recarregar" separado do card de saldo
+- [x] Transformar ícone de carteira em botão clicável com texto "Recarregar"

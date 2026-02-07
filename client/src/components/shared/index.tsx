@@ -13,6 +13,10 @@ interface StatCardProps {
   loading?: boolean;
   className?: string;
   variant?: "blue" | "amber" | "emerald" | "gray" | "primary";
+  iconAction?: {
+    label: string;
+    onClick: () => void;
+  };
 }
 
 const statCardVariants = {
@@ -48,7 +52,7 @@ const statCardVariants = {
   },
 };
 
-export function StatCard({ title, value, icon: Icon, trend, loading, className, variant = "primary" }: StatCardProps) {
+export function StatCard({ title, value, icon: Icon, trend, loading, className, variant = "primary", iconAction }: StatCardProps) {
   const colors = statCardVariants[variant];
   
   if (loading) {
@@ -96,9 +100,22 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className, 
             </div>
           )}
         </div>
-        <div className={cn("p-2.5 rounded-lg shrink-0", colors.iconBg)}>
-          <Icon className={cn("h-5 w-5", colors.iconColor)} />
-        </div>
+        {iconAction ? (
+          <button
+            onClick={iconAction.onClick}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-2 rounded-lg shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-sm",
+              colors.iconBg
+            )}
+          >
+            <Icon className={cn("h-5 w-5", colors.iconColor)} />
+            <span className={cn("text-xs font-semibold", colors.iconColor)}>{iconAction.label}</span>
+          </button>
+        ) : (
+          <div className={cn("p-2.5 rounded-lg shrink-0", colors.iconBg)}>
+            <Icon className={cn("h-5 w-5", colors.iconColor)} />
+          </div>
+        )}
       </div>
     </div>
   );
