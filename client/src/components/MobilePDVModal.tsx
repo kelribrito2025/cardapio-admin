@@ -1,0 +1,1127 @@
+import { trpc } from "@/lib/trpc";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { cn, formatCurrency } from "@/lib/utils";
+import {
+  X,
+  Search,
+  Plus,
+  Minus,
+  Trash2,
+  Clock,
+  Receipt,
+  ShoppingBag,
+  UtensilsCrossed,
+  Check,
+  ClipboardList,
+  Undo2,
+  Eye,
+  Printer,
+  ChevronDown,
+  ChevronUp,
+  Pencil,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+
+// Constante para persistência dos carrinhos
+const CARTS_PER_TABLE_KEY = 'pdv-carts-per-table';
+
+// Tipos
+type CartItem = {
+  productId: number;
+  name: string;
+  price: string;
+  quantity: number;
+  observation: string;
+  image: string | null;
+  complements: Array<{ id: number; name: string; price: string; quantity: number }>;
+};
+
+type Product = {
+  id: number;
+  name: string;
+  description: string | null;
+  price: string;
+  images: string[] | null;
+  status: 'active' | 'paused' | 'archived';
+  hasStock: boolean;
+  categoryId: number | null;
+};
+
+interface MobilePDVModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  tableNumber: number;
+  tableId?: number;
+  tabId?: number;
+  occupiedAt?: Date | string | null;
+  displayNumber?: string | null;
+  onOrderCreated?: () => void;
+  tabItemsCount?: number;
+  tableTotal?: number;
+}
+
+export function MobilePDVModal({
+  isOpen,
+  onClose,
+  tableNumber,
+  tableId,
+  tabId,
+  occupiedAt,
+  displayNumber,
+  onOrderCreated,
+  tabItemsCount = 0,
+  tableTotal = 0,
+}: MobilePDVModalProps) {
+  const tableDisplayName = displayNumber || tableNumber.toString();
+  const { data: establishment } = trpc.establishment.get.useQuery();
+  const [establishmentId, setEstablishmentId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (establishment) setEstablishmentId(establishment.id);
+  }, [establishment]);
+
+  // Buscar categorias e produtos
+  const { data: categories } = trpc.category.list.useQuery(
+    { establishmentId: establishmentId! },
+    { enabled: !!establishmentId }
+  );
+  const { data: products } = trpc.product.list.useQuery(
+    { establishmentId: establishmentId! },
+    { enabled: !!establishmentId }
+  );
+
+  // Query para buscar configurações de impressão
+  const { data: printerSettings } = trpc.printer.getSettings.useQuery(
+    { establishmentId: establishmentId ?? 0 },
+    { enabled: !!establishmentId && establishmentId > 0 }
+  );
+
+  const utils = trpc.useUtils();
+
+  // --- Carrinho por mesa ---
+  const [cartsPerTable, setCartsPerTable] = useState<Record<number, CartItem[]>>(() => {
+    try {
+      const saved = localStorage.getItem(CARTS_PER_TABLE_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {};
+  });
+
+  const cart = useMemo(() => {
+    if (!tableId) return [];
+    return cartsPerTable[tableId] || [];
+  }, [cartsPerTable, tableId]);
+
+  const setCart = (updater: CartItem[] | ((prev: CartItem[]) => CartItem[])) => {
+    if (!tableId) return;
+    setCartsPerTable(prev => {
+      const currentCart = prev[tableId] || [];
+      const newCart = typeof updater === 'function' ? updater(currentCart) : updater;
+      const updated = { ...prev, [tableId]: newCart };
+      try {
+        localStorage.setItem(CARTS_PER_TABLE_KEY, JSON.stringify(updated));
+        queueMicrotask(() => {
+          window.dispatchEvent(new CustomEvent('cartsPerTableUpdated', { detail: updated }));
+        });
+      } catch {}
+      return updated;
+    });
+  };
+
+  // --- Estados ---
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [productQuantity, setProductQuantity] = useState(1);
+  const [productObservation, setProductObservation] = useState("");
+  const [selectedComplements, setSelectedComplements] = useState<Map<number, Map<number, number>>>(new Map());
+  const [selectedComplementImage, setSelectedComplementImage] = useState<string | null>(null);
+  const [isEditingMode, setIsEditingMode] = useState(false);
+  const [editingCartItem, setEditingCartItem] = useState<{ index: number; item: CartItem } | null>(null);
+  const [expandedCartItem, setExpandedCartItem] = useState<number | null>(null);
+  const [showCloseTableModal, setShowCloseTableModal] = useState(false);
+  const [activeView, setActiveView] = useState<'items' | 'search'>('items');
+
+  // Limpar/Desfazer
+  const [clearedCart, setClearedCart] = useState<CartItem[] | null>(null);
+  const [undoCountdown, setUndoCountdown] = useState(0);
+  const undoTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Comanda items
+  const [expandedTabItemId, setExpandedTabItemId] = useState<number | null>(null);
+  const [deleteConfirmItemId, setDeleteConfirmItemId] = useState<number | null>(null);
+  const [deleteConfirmItemName, setDeleteConfirmItemName] = useState("");
+
+  // Aba selecionada
+  const [selectedTab, setSelectedTab] = useState<'consumo' | 'comanda'>('consumo');
+
+  // Query para buscar itens da comanda
+  const { data: tabData, refetch: refetchTabItems } = trpc.tabs.getByTable.useQuery(
+    { tableId: tableId! },
+    {
+      enabled: !!tableId && selectedTab === 'comanda',
+      refetchInterval: selectedTab === 'comanda' ? 5000 : false
+    }
+  );
+
+  // Buscar complementos do produto selecionado
+  const { data: productComplements } = trpc.publicMenu.getProductComplements.useQuery(
+    { productId: selectedProduct?.id || 0 },
+    { enabled: !!selectedProduct?.id }
+  );
+
+  // Listas processadas
+  const productsList = products?.products || [];
+
+  // Filtrar produtos pela busca
+  const filteredProducts = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    return productsList.filter((p) => {
+      if (p.status !== 'active') return false;
+      return p.name.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+  }, [productsList, searchQuery]);
+
+  // --- Mutations ---
+  const addTabItemsMutation = trpc.tabs.addItems.useMutation({
+    onSuccess: () => {
+      toast.success("Itens adicionados à comanda!");
+      clearCartSilent();
+      onOrderCreated?.();
+    },
+    onError: (error) => toast.error(error.message || "Erro ao adicionar itens"),
+  });
+
+  const openTableMutation = trpc.tables.open.useMutation({
+    onSuccess: (data) => {
+      addTabItemsMutation.mutate({
+        tabId: data.tabId,
+        items: cart.map(item => ({
+          productId: item.productId,
+          productName: item.name,
+          quantity: item.quantity,
+          unitPrice: item.price,
+          totalPrice: ((parseFloat(item.price) + item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0)) * item.quantity).toFixed(2),
+          complements: item.complements.map(c => ({ name: c.name, price: parseFloat(c.price), quantity: c.quantity })),
+          notes: item.observation || undefined
+        }))
+      });
+    },
+    onError: (error) => toast.error(error.message || "Erro ao abrir mesa"),
+  });
+
+  const closeTableMutation = trpc.tables.close.useMutation({
+    onSuccess: () => {
+      toast.success(`Mesa ${tableDisplayName} fechada com sucesso!`);
+      clearCartSilent();
+      onOrderCreated?.();
+      onClose();
+    },
+    onError: (error) => toast.error(error.message || "Erro ao fechar mesa"),
+  });
+
+  const updateTabItemMutation = trpc.tabs.updateItem.useMutation({
+    onSuccess: () => refetchTabItems(),
+    onError: (error) => toast.error(error.message || "Erro ao atualizar item"),
+  });
+
+  const cancelTabItemMutation = trpc.tabs.cancelItem.useMutation({
+    onSuccess: () => {
+      toast.success("Item removido da comanda!");
+      setDeleteConfirmItemId(null);
+      setDeleteConfirmItemName("");
+      setExpandedTabItemId(null);
+      refetchTabItems();
+    },
+    onError: (error) => toast.error(error.message || "Erro ao remover item"),
+  });
+
+  // --- Funções do carrinho ---
+  const areComplementsEqual = (a: CartItem['complements'], b: CartItem['complements']): boolean => {
+    if (a.length !== b.length) return false;
+    const sortedA = [...a].sort((x, y) => x.id - y.id);
+    const sortedB = [...b].sort((x, y) => x.id - y.id);
+    return sortedA.every((itemA, index) => {
+      const itemB = sortedB[index];
+      return itemA.id === itemB.id && itemA.quantity === itemB.quantity;
+    });
+  };
+
+  const addToCart = (product: Product, quantity: number, observation: string, complements: CartItem['complements']) => {
+    setCart(prev => {
+      const existingIndex = prev.findIndex(item =>
+        item.productId === product.id &&
+        item.observation === observation &&
+        areComplementsEqual(item.complements, complements)
+      );
+      if (existingIndex !== -1) {
+        return prev.map((item, index) =>
+          index === existingIndex ? { ...item, quantity: item.quantity + quantity } : item
+        );
+      }
+      return [...prev, {
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        quantity,
+        observation,
+        image: product.images?.[0] || null,
+        complements
+      }];
+    });
+  };
+
+  const updateCartItem = (index: number, updates: Partial<CartItem>) => {
+    setCart(prev => prev.map((item, i) => i === index ? { ...item, ...updates } : item));
+  };
+
+  const removeFromCart = (index: number) => {
+    setCart(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const clearCartSilent = () => {
+    setCart([]);
+    setExpandedCartItem(null);
+    setClearedCart(null);
+    setUndoCountdown(0);
+    if (undoTimerRef.current) { clearTimeout(undoTimerRef.current); undoTimerRef.current = null; }
+    if (countdownIntervalRef.current) { clearInterval(countdownIntervalRef.current); countdownIntervalRef.current = null; }
+  };
+
+  const clearCart = () => {
+    if (cart.length > 0) {
+      setClearedCart([...cart]);
+      setUndoCountdown(10);
+      if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = setInterval(() => {
+        setUndoCountdown(prev => {
+          if (prev <= 1) {
+            if (countdownIntervalRef.current) { clearInterval(countdownIntervalRef.current); countdownIntervalRef.current = null; }
+            setClearedCart(null);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    setCart([]);
+    setExpandedCartItem(null);
+  };
+
+  const undoClearCart = () => {
+    if (clearedCart) {
+      if (undoTimerRef.current) { clearTimeout(undoTimerRef.current); undoTimerRef.current = null; }
+      if (countdownIntervalRef.current) { clearInterval(countdownIntervalRef.current); countdownIntervalRef.current = null; }
+      setCart(clearedCart);
+      setClearedCart(null);
+      setUndoCountdown(0);
+      toast.success("Itens restaurados!");
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+    };
+  }, []);
+
+  // --- Cálculos ---
+  const calculateTotal = () => {
+    return cart.reduce((total, item) => {
+      const itemPrice = parseFloat(item.price);
+      const complementsPrice = item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0);
+      return total + (itemPrice + complementsPrice) * item.quantity;
+    }, 0);
+  };
+
+  const calculateTabTotal = () => {
+    if (!tabData?.items) return 0;
+    return tabData.items
+      .filter((item: any) => item.status !== 'cancelled')
+      .reduce((total: number, item: any) => {
+        const itemPrice = parseFloat(item.unitPrice || '0');
+        const complementsPrice = item.complements?.reduce((sum: number, c: any) => sum + parseFloat(c.price || '0') * (c.quantity || 1), 0) || 0;
+        return total + (itemPrice + complementsPrice) * item.quantity;
+      }, 0);
+  };
+
+  const getDisplayTotal = () => {
+    if (selectedTab === 'comanda') return calculateTabTotal();
+    return calculateTotal();
+  };
+
+  // --- Handlers ---
+  const handleProductClick = (product: Product) => {
+    if (!product.hasStock) { toast.error("Produto indisponível"); return; }
+    setSelectedProduct(product);
+    setProductQuantity(1);
+    setProductObservation("");
+    setSelectedComplements(new Map());
+    setSelectedComplementImage(null);
+    setIsEditingMode(false);
+    setEditingCartItem(null);
+  };
+
+  const handleAddToCart = () => {
+    if (!selectedProduct) return;
+    // Verificar complementos obrigatórios
+    if (productComplements) {
+      for (const group of productComplements) {
+        if (group.isRequired) {
+          const selectedInGroup = selectedComplements.get(group.id);
+          const totalSelected = selectedInGroup
+            ? Array.from(selectedInGroup.values()).reduce((a, b) => a + b, 0)
+            : 0;
+          if (totalSelected < group.minQuantity) {
+            toast.error(`Selecione pelo menos ${group.minQuantity} item(ns) em "${group.name}"`);
+            return;
+          }
+        }
+      }
+    }
+
+    const complements: CartItem['complements'] = [];
+    selectedComplements.forEach((itemMap, groupId) => {
+      itemMap.forEach((qty, itemId) => {
+        const group = productComplements?.find(g => g.id === groupId);
+        const item = group?.items.find(i => i.id === itemId);
+        if (item && qty > 0) {
+          complements.push({ id: item.id, name: item.name, price: item.price, quantity: qty });
+        }
+      });
+    });
+
+    if (isEditingMode && editingCartItem !== null) {
+      updateCartItem(editingCartItem.index, { quantity: productQuantity, observation: productObservation, complements });
+      toast.success("Item atualizado!");
+    } else {
+      addToCart(selectedProduct, productQuantity, productObservation, complements);
+      toast.success("Item adicionado!");
+    }
+
+    setSelectedProduct(null);
+    setSelectedComplementImage(null);
+    setIsEditingMode(false);
+    setEditingCartItem(null);
+    setSearchQuery("");
+    setActiveView('items');
+  };
+
+  const handleEditCartItem = (index: number, item: CartItem) => {
+    const product = productsList.find(p => p.id === item.productId);
+    if (!product) { toast.error("Produto não encontrado"); return; }
+    setSelectedProduct(product);
+    setProductQuantity(item.quantity);
+    setProductObservation(item.observation);
+    setSelectedComplements(new Map());
+    setSelectedComplementImage(null);
+    setIsEditingMode(true);
+    setEditingCartItem({ index, item });
+  };
+
+  // Restaurar complementos ao editar
+  useEffect(() => {
+    if (isEditingMode && editingCartItem && productComplements && productComplements.length > 0) {
+      const complementsMap = new Map<number, Map<number, number>>();
+      editingCartItem.item.complements.forEach(savedComp => {
+        productComplements.forEach(group => {
+          const foundItem = group.items.find(item => item.id === savedComp.id);
+          if (foundItem) {
+            const currentGroupMap = complementsMap.get(group.id) || new Map<number, number>();
+            currentGroupMap.set(savedComp.id, savedComp.quantity);
+            complementsMap.set(group.id, currentGroupMap);
+          }
+        });
+      });
+      setSelectedComplements(complementsMap);
+    }
+  }, [isEditingMode, editingCartItem, productComplements]);
+
+  // Imprimir recibo
+  const handlePrintTabReceipt = async () => {
+    if (!tabId) return;
+    const printMethod = printerSettings?.defaultPrintMethod || 'normal';
+    if (printMethod === 'android') {
+      try {
+        const response = await fetch(`${window.location.origin}/api/print/multiprinter-tab/${tabId}`);
+        const data = await response.json();
+        if (data.success && data.deepLink) window.location.href = data.deepLink;
+      } catch (error) { console.error("Erro ao imprimir:", error); }
+    } else {
+      try {
+        const receiptUrl = `${window.location.origin}/api/print/tab-receipt/${tabId}`;
+        const iframe = document.createElement('iframe');
+        iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:none;';
+        iframe.src = receiptUrl;
+        document.body.appendChild(iframe);
+        iframe.onload = () => {
+          setTimeout(() => { iframe.contentWindow?.print(); setTimeout(() => document.body.removeChild(iframe), 1000); }, 500);
+        };
+      } catch (error) { console.error("Erro ao imprimir recibo:", error); }
+    }
+  };
+
+  const handleConfirmCloseTable = async () => {
+    if (!tableId || !tabId) return;
+    await handlePrintTabReceipt();
+    closeTableMutation.mutate({ tableId, paymentMethod: 'cash', paidAmount: calculateTabTotal(), changeAmount: 0 });
+    setShowCloseTableModal(false);
+  };
+
+  const handleFinishOrder = () => {
+    if (selectedTab === 'comanda' && tabId && tabData?.items && tabData.items.filter((item: any) => item.status !== 'cancelled').length > 0) {
+      setShowCloseTableModal(true);
+      return;
+    }
+    if (cart.length === 0) { toast.error("Adicione itens ao pedido"); return; }
+    if (tabId) {
+      addTabItemsMutation.mutate({
+        tabId,
+        items: cart.map(item => ({
+          productId: item.productId,
+          productName: item.name,
+          quantity: item.quantity,
+          unitPrice: item.price,
+          totalPrice: ((parseFloat(item.price) + item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0)) * item.quantity).toFixed(2),
+          complements: item.complements.map(c => ({ name: c.name, price: parseFloat(c.price), quantity: c.quantity })),
+          notes: item.observation || undefined
+        }))
+      });
+      return;
+    }
+    if (tableId) {
+      openTableMutation.mutate({ tableId, guests: 1 });
+      return;
+    }
+  };
+
+  // Reset ao fechar
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchQuery("");
+      setSelectedProduct(null);
+      setActiveView('items');
+      setSearchFocused(false);
+    }
+  }, [isOpen]);
+
+  // Resetar clearedCart quando trocar de mesa
+  useEffect(() => {
+    setClearedCart(null);
+    setUndoCountdown(0);
+  }, [tableId, tableNumber]);
+
+  // Formatação de duração
+  const formatDuration = (startTime: Date | string | null | undefined) => {
+    if (!startTime) return "—";
+    const start = typeof startTime === "string" ? new Date(startTime) : startTime;
+    const diff = Date.now() - start.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    if (hours > 0) return minutes === 0 ? `${hours}h` : `${hours}h${minutes}`;
+    return `${minutes}Min`;
+  };
+
+  // Contagem de itens da comanda
+  const tabItemsActive = tabData?.items?.filter((item: any) => item.status !== 'cancelled') || [];
+  const totalItemsCount = cart.length + tabItemsActive.length;
+
+  if (!isOpen) return null;
+
+  return (
+    <>
+      {/* Overlay */}
+      <div className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm md:hidden" onClick={onClose} />
+
+      {/* Modal Bottom Sheet */}
+      <div className="fixed inset-x-0 bottom-0 z-[71] md:hidden animate-in slide-in-from-bottom duration-300">
+        <div className="bg-white rounded-t-2xl shadow-2xl flex flex-col" style={{ maxHeight: '90vh', height: '90vh' }}>
+
+          {/* Drag indicator */}
+          <div className="flex justify-center pt-2 pb-1">
+            <div className="w-10 h-1 bg-gray-300 rounded-full" />
+          </div>
+
+          {/* Header */}
+          <div className="px-4 pb-3 border-b border-gray-100">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-bold text-gray-900">Mesa {tableDisplayName}</h2>
+              <button onClick={onClose} className="p-1.5 rounded-full hover:bg-gray-100 transition-colors">
+                <X className="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Resumo da mesa - linha única */}
+            <div className="flex items-center gap-4 text-sm text-gray-600">
+              <div className="flex items-center gap-1">
+                <Receipt className="h-3.5 w-3.5" />
+                <span>{totalItemsCount} {totalItemsCount === 1 ? 'item' : 'itens'}</span>
+              </div>
+              {occupiedAt && (
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5" />
+                  <span>{formatDuration(occupiedAt)}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-1 font-semibold text-gray-900">
+                <span>{formatCurrency(getDisplayTotal())}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Tabs: Consumo / Comanda */}
+          {tabId && (
+            <div className="flex border-b border-gray-100">
+              <button
+                onClick={() => setSelectedTab('consumo')}
+                className={cn(
+                  "flex-1 py-2.5 text-sm font-medium transition-colors",
+                  selectedTab === 'consumo'
+                    ? "text-red-600 border-b-2 border-red-500"
+                    : "text-gray-500"
+                )}
+              >
+                Consumo {cart.length > 0 && <span className="ml-1 bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full text-xs">{cart.length}</span>}
+              </button>
+              <button
+                onClick={() => setSelectedTab('comanda')}
+                className={cn(
+                  "flex-1 py-2.5 text-sm font-medium transition-colors",
+                  selectedTab === 'comanda'
+                    ? "text-red-600 border-b-2 border-red-500"
+                    : "text-gray-500"
+                )}
+              >
+                Comanda {tabItemsActive.length > 0 && <span className="ml-1 bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full text-xs">{tabItemsActive.length}</span>}
+              </button>
+            </div>
+          )}
+
+          {/* Conteúdo principal - scrollável */}
+          <div className="flex-1 overflow-y-auto overscroll-contain">
+            {selectedTab === 'consumo' ? (
+              <>
+                {/* Campo de busca de produtos */}
+                <div className="p-3 border-b border-gray-100 sticky top-0 bg-white z-10">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Buscar produto para adicionar..."
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        if (e.target.value.trim()) setActiveView('search');
+                        else setActiveView('items');
+                      }}
+                      onFocus={() => setSearchFocused(true)}
+                      className="pl-9 h-10 rounded-xl border-gray-200 text-sm"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => { setSearchQuery(""); setActiveView('items'); }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-gray-100"
+                      >
+                        <X className="h-3.5 w-3.5 text-gray-400" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {activeView === 'search' && searchQuery.trim() ? (
+                  /* Resultados da busca */
+                  <div className="p-3">
+                    {filteredProducts.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        <Search className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                        <p className="text-sm">Nenhum produto encontrado</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {filteredProducts.map((product) => (
+                          <button
+                            key={product.id}
+                            onClick={() => handleProductClick(product)}
+                            className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:bg-gray-50 transition-colors text-left"
+                          >
+                            {product.images?.[0] ? (
+                              <img src={product.images[0]} alt={product.name} className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
+                            ) : (
+                              <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                                <UtensilsCrossed className="h-5 w-5 text-gray-400" />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm text-gray-900 truncate">{product.name}</p>
+                              {product.description && (
+                                <p className="text-xs text-gray-500 truncate">{product.description}</p>
+                              )}
+                              <p className="text-sm font-semibold text-red-500 mt-0.5">{formatCurrency(parseFloat(product.price))}</p>
+                            </div>
+                            <div className="p-2 bg-red-50 rounded-full flex-shrink-0">
+                              <Plus className="h-4 w-4 text-red-500" />
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* Lista de itens no carrinho */
+                  <div className="p-3">
+                    {cart.length === 0 ? (
+                      <div className="text-center py-10 text-gray-500">
+                        <ShoppingBag className="h-10 w-10 mx-auto mb-3 text-gray-300" />
+                        <p className="font-medium text-sm">Nenhum item no pedido</p>
+                        <p className="text-xs mt-1">Use a busca acima para adicionar produtos</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {cart.map((item, index) => {
+                          const itemTotal = (parseFloat(item.price) + item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0)) * item.quantity;
+                          const isExpanded = expandedCartItem === index;
+                          return (
+                            <div key={index} className="border border-gray-100 rounded-xl overflow-hidden">
+                              <button
+                                onClick={() => setExpandedCartItem(isExpanded ? null : index)}
+                                className="w-full flex items-center gap-3 p-3 text-left"
+                              >
+                                {item.image ? (
+                                  <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+                                ) : (
+                                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                                    <UtensilsCrossed className="h-4 w-4 text-gray-400" />
+                                  </div>
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium text-sm text-gray-900 truncate">{item.quantity}x {item.name}</p>
+                                  {item.complements.length > 0 && (
+                                    <p className="text-xs text-gray-500 truncate">
+                                      {item.complements.map(c => c.name).join(', ')}
+                                    </p>
+                                  )}
+                                  {item.observation && (
+                                    <p className="text-xs text-gray-400 italic truncate">Obs: {item.observation}</p>
+                                  )}
+                                </div>
+                                <div className="text-right flex-shrink-0">
+                                  <p className="font-semibold text-sm">{formatCurrency(itemTotal)}</p>
+                                  {isExpanded ? <ChevronUp className="h-3.5 w-3.5 text-gray-400 ml-auto mt-0.5" /> : <ChevronDown className="h-3.5 w-3.5 text-gray-400 ml-auto mt-0.5" />}
+                                </div>
+                              </button>
+                              {isExpanded && (
+                                <div className="px-3 py-2 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-white border border-gray-200 hover:bg-gray-100 transition-colors disabled:opacity-50"
+                                      disabled={item.quantity <= 1}
+                                      onClick={() => updateCartItem(index, { quantity: item.quantity - 1 })}
+                                    >
+                                      <Minus className="h-3.5 w-3.5" />
+                                    </button>
+                                    <span className="w-6 text-center text-sm font-semibold">{item.quantity}</span>
+                                    <button
+                                      className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-white border border-gray-200 hover:bg-gray-100 transition-colors"
+                                      onClick={() => updateCartItem(index, { quantity: item.quantity + 1 })}
+                                    >
+                                      <Plus className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      onClick={() => handleEditCartItem(index, item)}
+                                      className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                                    >
+                                      <Pencil className="h-3.5 w-3.5" />
+                                    </button>
+                                    <button
+                                      onClick={() => removeFromCart(index)}
+                                      className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            ) : (
+              /* Aba Comanda - itens já enviados */
+              <div className="p-3">
+                {tabItemsActive.length === 0 ? (
+                  <div className="text-center py-10 text-gray-500">
+                    <ClipboardList className="h-10 w-10 mx-auto mb-3 text-gray-300" />
+                    <p className="font-medium text-sm">Nenhum item na comanda</p>
+                    <p className="text-xs mt-1">Os itens aparecerão aqui após serem enviados</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {tabItemsActive.map((item: any) => {
+                      const itemTotal = parseFloat(item.totalPrice) || 0;
+                      let complements: any[] = [];
+                      try { complements = typeof item.complements === 'string' ? JSON.parse(item.complements) : (item.complements || []); } catch {}
+                      const isExpanded = expandedTabItemId === item.id;
+
+                      return (
+                        <div key={item.id} className="border border-gray-100 rounded-xl overflow-hidden">
+                          <button
+                            onClick={() => setExpandedTabItemId(isExpanded ? null : item.id)}
+                            className="w-full flex items-center gap-3 p-3 text-left"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm text-gray-900">{item.quantity}x {item.productName}</p>
+                              {complements.length > 0 && (
+                                <p className="text-xs text-gray-500 truncate">
+                                  {complements.map((c: any) => c.name || (c.items ? c.items.map((ci: any) => ci.name).join(', ') : '')).filter(Boolean).join(', ')}
+                                </p>
+                              )}
+                              {item.notes && <p className="text-xs text-gray-400 italic">Obs: {item.notes}</p>}
+                            </div>
+                            <div className="text-right flex-shrink-0">
+                              <p className="font-semibold text-sm">{formatCurrency(itemTotal)}</p>
+                              {isExpanded ? <ChevronUp className="h-3.5 w-3.5 text-gray-400 ml-auto mt-0.5" /> : <ChevronDown className="h-3.5 w-3.5 text-gray-400 ml-auto mt-0.5" />}
+                            </div>
+                          </button>
+                          {isExpanded && (
+                            <div className="px-3 py-2 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <button
+                                  className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-white border border-gray-200 hover:bg-gray-100 transition-colors disabled:opacity-50"
+                                  disabled={item.quantity <= 1 || updateTabItemMutation.isPending}
+                                  onClick={(e) => { e.stopPropagation(); updateTabItemMutation.mutate({ id: item.id, quantity: item.quantity - 1 }); }}
+                                >
+                                  <Minus className="h-3.5 w-3.5" />
+                                </button>
+                                <span className="w-6 text-center text-sm font-semibold">{item.quantity}</span>
+                                <button
+                                  className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-white border border-gray-200 hover:bg-gray-100 transition-colors disabled:opacity-50"
+                                  disabled={updateTabItemMutation.isPending}
+                                  onClick={(e) => { e.stopPropagation(); updateTabItemMutation.mutate({ id: item.id, quantity: item.quantity + 1 }); }}
+                                >
+                                  <Plus className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                              <button
+                                className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-red-50 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
+                                disabled={cancelTabItemMutation.isPending}
+                                onClick={(e) => { e.stopPropagation(); setDeleteConfirmItemId(item.id); setDeleteConfirmItemName(item.productName); }}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Footer fixo */}
+          <div className="border-t border-gray-200 bg-white p-3 space-y-2">
+            {/* Subtotal e Total */}
+            <div className="flex justify-between items-center px-1">
+              <span className="text-sm text-gray-600">Total</span>
+              <span className="text-lg font-bold text-red-600">{formatCurrency(getDisplayTotal())}</span>
+            </div>
+            {/* Botões */}
+            <div className="flex gap-2">
+              {selectedTab === 'consumo' && (
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={clearedCart ? undoClearCart : clearCart}
+                  disabled={cart.length === 0 && !clearedCart}
+                  size="sm"
+                >
+                  {clearedCart ? (
+                    <><Undo2 className="h-4 w-4 mr-1" /> Desfazer ({undoCountdown})</>
+                  ) : "Limpar"}
+                </Button>
+              )}
+              <Button
+                onClick={handleFinishOrder}
+                disabled={
+                  (selectedTab === 'comanda'
+                    ? (!tabData?.items || tabData.items.filter((item: any) => item.status !== 'cancelled').length === 0)
+                    : cart.length === 0
+                  ) || addTabItemsMutation.isPending || openTableMutation.isPending || closeTableMutation.isPending
+                }
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                size="sm"
+              >
+                {selectedTab !== 'comanda' && <ClipboardList className="h-4 w-4 mr-1" />}
+                {(addTabItemsMutation.isPending || openTableMutation.isPending || closeTableMutation.isPending)
+                  ? (closeTableMutation.isPending ? "Fechando..." : "Enviando...")
+                  : selectedTab === 'comanda'
+                    ? `Fechar Mesa ${tableDisplayName}`
+                    : "Enviar pedido"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal de Detalhes do Produto (bottom sheet) */}
+      {selectedProduct && (
+        <div className="fixed inset-0 z-[80] flex items-end md:hidden">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
+          />
+          <div className="relative bg-white rounded-t-2xl shadow-2xl w-full max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom duration-300" style={{ touchAction: 'pan-y' }}>
+            {/* Imagem do Produto */}
+            {(() => {
+              const displayImage = selectedComplementImage || selectedProduct.images?.[0];
+              if (displayImage) {
+                return (
+                  <div className="relative w-full h-[200px] flex-shrink-0">
+                    <img src={displayImage} alt={selectedProduct.name} className="w-full h-full object-cover" />
+                    <button
+                      onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
+                      className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
+                    >
+                      <X className="h-5 w-5 text-gray-700" />
+                    </button>
+                  </div>
+                );
+              }
+              return (
+                <div className="relative w-full h-[160px] flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                  <UtensilsCrossed className="h-14 w-14 text-white/80" />
+                  <button
+                    onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
+                    className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
+                  >
+                    <X className="h-5 w-5 text-gray-700" />
+                  </button>
+                </div>
+              );
+            })()}
+
+            {/* Conteúdo */}
+            <div className="flex-1 overflow-y-auto overscroll-contain">
+              <div className="p-4 space-y-3">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
+                  {Number(selectedProduct.price) > 0 && (
+                    <p className="text-lg font-semibold text-red-500 mt-1">{formatCurrency(parseFloat(selectedProduct.price))}</p>
+                  )}
+                </div>
+                {selectedProduct.description && (
+                  <p className="text-sm text-gray-600 leading-relaxed">{selectedProduct.description}</p>
+                )}
+
+                {/* Complementos */}
+                {productComplements && productComplements.length > 0 && (
+                  <div className="space-y-4">
+                    {productComplements.map((group) => {
+                      const selectedInGroup = selectedComplements.get(group.id) || new Map<number, number>();
+                      const isRadio = group.maxQuantity === 1;
+                      return (
+                        <div key={group.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                          <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-semibold text-gray-900">{group.name}</h4>
+                              {group.isRequired && (
+                                <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">Obrigatório</span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500 mt-0.5">
+                              {group.minQuantity > 0 ? `Mín: ${group.minQuantity}` : ''}
+                              {group.minQuantity > 0 && group.maxQuantity > 1 ? ' | ' : ''}
+                              {group.maxQuantity > 1 ? `Máx: ${group.maxQuantity}` : ''}
+                              {group.maxQuantity === 1 && group.minQuantity === 0 ? 'Escolha até 1' : ''}
+                            </p>
+                          </div>
+                          <div className="divide-y divide-gray-100">
+                            {group.items.map((item) => {
+                              const itemQuantity = selectedInGroup.get(item.id) || 0;
+                              const isSelected = itemQuantity > 0;
+                              const displayPrice = Number(item.price);
+                              const handleToggle = () => {
+                                setSelectedComplements((prev) => {
+                                  const newMap = new Map(prev);
+                                  const currentGroupMap = new Map(prev.get(group.id) || []);
+                                  if (isRadio) {
+                                    const newGroupMap = new Map<number, number>();
+                                    newGroupMap.set(item.id, 1);
+                                    newMap.set(group.id, newGroupMap);
+                                    if (item.imageUrl) setSelectedComplementImage(item.imageUrl);
+                                    else setSelectedComplementImage(null);
+                                  } else {
+                                    if (isSelected) {
+                                      currentGroupMap.delete(item.id);
+                                      if (item.imageUrl && selectedComplementImage === item.imageUrl) setSelectedComplementImage(null);
+                                    } else {
+                                      const totalInGroup = Array.from(currentGroupMap.values()).reduce((a, b) => a + b, 0);
+                                      if (group.maxQuantity === 0 || totalInGroup < group.maxQuantity) {
+                                        currentGroupMap.set(item.id, 1);
+                                        if (item.imageUrl) setSelectedComplementImage(item.imageUrl);
+                                      }
+                                    }
+                                    newMap.set(group.id, currentGroupMap);
+                                  }
+                                  return newMap;
+                                });
+                              };
+                              return (
+                                <div key={item.id} className={`flex items-center justify-between px-4 py-3 transition-colors ${isSelected ? 'bg-red-50' : 'hover:bg-gray-50'}`}>
+                                  <label className="flex items-center gap-3 cursor-pointer flex-1">
+                                    <input type={isRadio ? 'radio' : 'checkbox'} name={`mobile-group-${group.id}`} checked={isSelected} onChange={handleToggle} className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500" />
+                                    <span className="text-sm text-gray-900">{item.name}</span>
+                                  </label>
+                                  {displayPrice > 0 && (
+                                    <span className="text-sm text-gray-600 min-w-[70px] text-right">+ {formatCurrency(displayPrice)}</span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Observação */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Observações</label>
+                  <textarea
+                    value={productObservation}
+                    onChange={(e) => setProductObservation(e.target.value)}
+                    placeholder="Ex: Sem cebola, bem passado..."
+                    rows={2}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer - Quantidade e Adicionar */}
+            <div className="border-t p-4 bg-white flex items-center gap-4">
+              <div className="flex items-center gap-3 bg-gray-100 rounded-full px-2 py-1">
+                <button onClick={() => setProductQuantity(Math.max(1, productQuantity - 1))} className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors">
+                  <Minus className="h-4 w-4" />
+                </button>
+                <span className="w-8 text-center font-semibold">{productQuantity}</span>
+                <button onClick={() => setProductQuantity(productQuantity + 1)} className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors">
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+              <Button onClick={handleAddToCart} className="flex-1 bg-red-500 hover:bg-red-600 text-white rounded-full py-3">
+                + {isEditingMode ? "Atualizar" : "Adicionar"} {formatCurrency(
+                  (parseFloat(selectedProduct.price) +
+                    Array.from(selectedComplements.values()).reduce((total, groupMap) => {
+                      return total + Array.from(groupMap.entries()).reduce((sum, [itemId, qty]) => {
+                        const group = productComplements?.find(g => g.items.some(i => i.id === itemId));
+                        const item = group?.items.find(i => i.id === itemId);
+                        return sum + (item ? parseFloat(item.price) * qty : 0);
+                      }, 0);
+                    }, 0)
+                  ) * productQuantity
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Conferência ao Fechar Mesa */}
+      {showCloseTableModal && (
+        <div className="fixed inset-0 z-[90] flex items-end md:hidden">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowCloseTableModal(false)} />
+          <div className="relative bg-white rounded-t-2xl shadow-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom duration-300">
+            <div className="bg-gradient-to-r from-red-500 to-red-600 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg"><Eye className="h-5 w-5 text-white" /></div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Conferência do Pedido</h2>
+                    <p className="text-sm text-white/80">Mesa {tableDisplayName}</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowCloseTableModal(false)} className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors">
+                  <X className="h-5 w-5 text-white" />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {tabItemsActive.map((item: any, index: number) => {
+                const itemTotal = parseFloat(item.totalPrice) || 0;
+                let complements: any[] = [];
+                try { complements = typeof item.complements === 'string' ? JSON.parse(item.complements) : (item.complements || []); } catch {}
+                return (
+                  <div key={index} className="p-3 border border-gray-200 rounded-lg">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{item.quantity}x {item.productName}</p>
+                        {complements.length > 0 && (
+                          <div className="mt-1 space-y-0.5">
+                            {complements.map((comp: any, cIndex: number) => {
+                              if (comp.items && Array.isArray(comp.items)) {
+                                return comp.items.map((ci: any, ciIndex: number) => (
+                                  <p key={`${cIndex}-${ciIndex}`} className="text-xs text-gray-500 pl-2">+ {ci.quantity > 1 ? `${ci.quantity}x ` : ''}{ci.name}{ci.price > 0 && <span className="ml-1 text-gray-400">({formatCurrency(ci.price * (ci.quantity || 1))})</span>}</p>
+                                ));
+                              } else if (comp.name) {
+                                return <p key={cIndex} className="text-xs text-gray-500 pl-2">+ {comp.quantity > 1 ? `${comp.quantity}x ` : ''}{comp.name}{comp.price > 0 && <span className="ml-1 text-gray-400">({formatCurrency(comp.price * (comp.quantity || 1))})</span>}</p>;
+                              }
+                              return null;
+                            })}
+                          </div>
+                        )}
+                        {item.notes && <p className="text-xs text-gray-500 mt-1 italic">Obs: {item.notes}</p>}
+                      </div>
+                      <p className="font-semibold text-sm">{formatCurrency(itemTotal)}</p>
+                    </div>
+                  </div>
+                );
+              })}
+              <div className="flex justify-between font-bold text-lg pt-3 border-t border-gray-200">
+                <span>TOTAL:</span>
+                <span className="text-red-600">{formatCurrency(calculateTabTotal())}</span>
+              </div>
+            </div>
+            <div className="p-4 border-t border-gray-200 space-y-2">
+              <Button onClick={handleConfirmCloseTable} disabled={closeTableMutation.isPending} className="w-full py-3 bg-green-600 hover:bg-green-700 text-white">
+                {closeTableMutation.isPending ? (<><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />Fechando...</>) : (<><Check className="h-5 w-5 mr-2" />Confirmar e Fechar Mesa</>)}
+              </Button>
+              <Button onClick={() => setShowCloseTableModal(false)} variant="outline" className="w-full py-3" disabled={closeTableMutation.isPending}>Voltar e Revisar</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmação de exclusão */}
+      <AlertDialog open={deleteConfirmItemId !== null} onOpenChange={(open) => { if (!open) { setDeleteConfirmItemId(null); setDeleteConfirmItemName(""); } }}>
+        <AlertDialogContent className="z-[100]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir item da comanda</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir <strong>{deleteConfirmItemName}</strong> da comanda? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={cancelTabItemMutation.isPending}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction className="bg-red-600 hover:bg-red-700" disabled={cancelTabItemMutation.isPending} onClick={() => { if (deleteConfirmItemId) cancelTabItemMutation.mutate({ id: deleteConfirmItemId }); }}>
+              {cancelTabItemMutation.isPending ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}

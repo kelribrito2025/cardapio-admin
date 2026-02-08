@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
 import { PageHeader } from "@/components/shared";
 import { PDVSlidebar } from "@/components/PDVSlidebar";
+import { MobilePDVModal } from "@/components/MobilePDVModal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -191,6 +192,16 @@ export default function MesasComandas() {
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showPDVSlidebar, setShowPDVSlidebar] = useState(false);
+  const [showMobilePDV, setShowMobilePDV] = useState(false);
+
+  // Detectar mobile (< 768px)
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // Estado para carrinhos por mesa (sincronizado com PDVSlidebar)
   const [cartsPerTable, setCartsPerTable] = useState<Record<number, CartItem[]>>(() => {
@@ -341,22 +352,31 @@ export default function MesasComandas() {
         return;
       }
       
-      // F2 para abrir a slidebar (se houver mesa selecionada)
+      // F2 para abrir a slidebar/modal (se houver mesa selecionada)
       if (e.key === 'F2' && selectedTable) {
         e.preventDefault();
-        setShowPDVSlidebar(true);
+        if (isMobile) {
+          setShowMobilePDV(true);
+        } else {
+          setShowPDVSlidebar(true);
+        }
       }
       
-      // ESC para fechar a slidebar
-      if (e.key === 'Escape' && showPDVSlidebar) {
-        e.preventDefault();
-        setShowPDVSlidebar(false);
+      // ESC para fechar a slidebar/modal
+      if (e.key === 'Escape') {
+        if (showPDVSlidebar) {
+          e.preventDefault();
+          setShowPDVSlidebar(false);
+        } else if (showMobilePDV) {
+          e.preventDefault();
+          setShowMobilePDV(false);
+        }
       }
     };
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedTable, showPDVSlidebar]);
+  }, [selectedTable, showPDVSlidebar, showMobilePDV, isMobile]);
   
   // Mutations para mesas
   const createBatchMutation = trpc.tables.createBatch.useMutation({
@@ -582,7 +602,11 @@ export default function MesasComandas() {
       status: table.status === "requesting_bill" ? "occupied" : table.status as TableStatus
     };
     setSelectedTable(normalizedTable);
-    setShowPDVSlidebar(true);
+    if (isMobile) {
+      setShowMobilePDV(true);
+    } else {
+      setShowPDVSlidebar(true);
+    }
   };
 
   const handlePDVSlidebarClose = () => {
@@ -1376,7 +1400,11 @@ export default function MesasComandas() {
                       className="w-full bg-primary hover:bg-primary/90 text-white"
                       onClick={() => {
                         setShowSidebar(false);
-                        setShowPDVSlidebar(true);
+                        if (isMobile) {
+                          setShowMobilePDV(true);
+                        } else {
+                          setShowPDVSlidebar(true);
+                        }
                       }}
                     >
                       <Plus className="h-4 w-4 mr-2" />
@@ -1709,7 +1737,23 @@ export default function MesasComandas() {
         </DialogContent>
       </Dialog>
 
-      {/* PDV Slidebar */}
+      {/* Mobile PDV Modal - apenas no mobile */}
+      {isMobile && (
+        <MobilePDVModal
+          isOpen={showMobilePDV}
+          onClose={() => setShowMobilePDV(false)}
+          tableNumber={selectedTable?.number || 0}
+          tableId={selectedTable?.id}
+          tabId={selectedTable?.tab?.id}
+          occupiedAt={selectedTable?.occupiedAt}
+          displayNumber={selectedTable?.displayNumber}
+          onOrderCreated={handleOrderCreated}
+          tabItemsCount={selectedTable?.items?.length || 0}
+          tableTotal={selectedTable?.id ? getTableTotal(selectedTable.id) : 0}
+        />
+      )}
+
+      {/* PDV Slidebar - apenas no desktop */}
       <PDVSlidebar
         isOpen={showPDVSlidebar}
         onClose={handlePDVSlidebarClose}

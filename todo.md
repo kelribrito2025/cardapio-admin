@@ -5663,3 +5663,10 @@
 - [ ] Substituir ícone do card Suporte via WhatsApp na página /ajuda pelo ícone WhatsApp fornecido (manter círculo verde) — CANCELADO pelo usuário, revertido ao ícone original
 - [x] Reduzir tamanho dos botões de controle (+/-/lixeira) nos itens da comanda de 32px para 25px
 - [x] Ocultar cards de Ticket Médio e Faturamento na versão mobile da página de Mesas (exibir apenas no desktop)
+- [x] [Mobile Mesas] Criar componente MobilePDVModal (bottom sheet 90vh) com cabeçalho Mesa X, resumo (itens, tempo, valor total)
+- [x] [Mobile Mesas] Implementar busca de produtos com pré-visualização no modal mobile
+- [x] [Mobile Mesas] Implementar modal bottom sheet de detalhes do item com complementos (mesmo estilo menu público)
+- [x] [Mobile Mesas] Implementar lista de itens da mesa com controles de quantidade e remoção
+- [x] [Mobile Mesas] Integrar: no mobile abrir MobilePDVModal ao clicar no card da mesa, no desktop manter PDVSlidebar
+- [x] [Mobile Mesas] Remover no mobile: lista de categorias horizontal, atalho rápido de mesas, layout grade desktop
+- [x] [Mobile Mesas] Implementar ações: enviar pedido, limpar, fechar mesa no modal mobile
