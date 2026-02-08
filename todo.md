@@ -5743,3 +5743,4 @@
 - [x] [Dashboard] Backend: calcular dados do período anterior para comparação
 - [x] [Dashboard] Backend: retornar variação percentual (ordersChange, revenueChange, avgTicketChange)
 - [x] [Dashboard] Frontend: exibir indicador de variação % em cada card com seta e cor (verde/vermelho)
+- [x] [Dashboard] StatCard: indicador % ao lado do valor (não abaixo), apenas seta + %, tooltip com info completa

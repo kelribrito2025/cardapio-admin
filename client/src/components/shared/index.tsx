@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 
 // ============ STAT CARD ============
 interface StatCardProps {
@@ -53,6 +54,58 @@ const statCardVariants = {
   },
 };
 
+function TrendBadge({ trend }: { trend: { value: number; isPositive: boolean; label?: string } }) {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showTooltip) return;
+    const handler = (e: MouseEvent | TouchEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setShowTooltip(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    document.addEventListener("touchstart", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("touchstart", handler);
+    };
+  }, [showTooltip]);
+
+  const tooltipText = trend.label
+    ? `${trend.isPositive ? "+" : "-"}${Math.abs(trend.value)}% ${trend.label}`
+    : `${trend.isPositive ? "+" : "-"}${Math.abs(trend.value)}% vs período anterior`;
+
+  return (
+    <div
+      ref={ref}
+      className="relative inline-flex"
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+      onClick={() => setShowTooltip((v) => !v)}
+    >
+      <span
+        className={cn(
+          "inline-flex items-center gap-0.5 text-xs font-semibold cursor-default select-none",
+          trend.isPositive ? "text-emerald-600" : "text-red-500"
+        )}
+      >
+        <span className="text-[11px]">{trend.isPositive ? "↑" : "↓"}</span>
+        <span>{Math.abs(trend.value)}%</span>
+      </span>
+      {showTooltip && (
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 whitespace-nowrap">
+          <div className="bg-gray-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-lg">
+            {tooltipText}
+            <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function StatCard({ title, value, icon: Icon, trend, loading, className, variant = "primary", iconAction }: StatCardProps) {
   const colors = statCardVariants[variant];
   
@@ -85,21 +138,11 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className, 
           <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
             {title}
           </p>
-          <div className="flex items-center gap-1.5 mt-1">
+          <div className="flex items-center gap-2 mt-1">
             <span className={cn("w-2 h-2 rounded-full", colors.dotColor)} />
             <span className="text-2xl font-bold tracking-tight">{value}</span>
+            {trend && <TrendBadge trend={trend} />}
           </div>
-          {trend && (
-            <div className={cn(
-              "inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded-full text-xs font-semibold",
-              trend.isPositive 
-                ? "bg-emerald-50 text-emerald-600" 
-                : "bg-red-50 text-red-600"
-            )}>
-              <span>{trend.isPositive ? "↑" : "↓"}</span>
-              <span>{Math.abs(trend.value)}% {trend.label || 'vs ontem'}</span>
-            </div>
-          )}
         </div>
         {iconAction ? (
           <button
