@@ -9,6 +9,7 @@ import { TRPCError } from "@trpc/server";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { ENV } from "./_core/env";
+import { getSessionCookieOptions } from "./_core/cookies";
 import * as adminDb from "./adminDb";
 
 const ADMIN_COOKIE_NAME = "admin_session";
@@ -76,19 +77,18 @@ export const adminRouter = router({
 
         const token = createAdminToken(admin.id, admin.email!);
 
+        const cookieOptions = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(ADMIN_COOKIE_NAME, token, {
-          httpOnly: true,
-          secure: ENV.isProduction,
-          sameSite: "lax",
+          ...cookieOptions,
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-          path: "/",
         });
 
         return { success: true, name: admin.name };
       }),
 
     logout: publicProcedure.mutation(({ ctx }) => {
-      ctx.res.clearCookie(ADMIN_COOKIE_NAME, { path: "/" });
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.clearCookie(ADMIN_COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true };
     }),
 

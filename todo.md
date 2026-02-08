@@ -5730,3 +5730,4 @@
 - [x] [Admin] Frontend: página Trials (visão rápida + ações)
 - [x] [Admin] Rotas no App.tsx e guard de autenticação admin
 - [x] [Admin] Testes vitest para routers admin
+- [x] [Bug] Admin login não redireciona para dashboard - fica na página de login após logar
