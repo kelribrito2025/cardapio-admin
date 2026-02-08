@@ -5641,3 +5641,13 @@
 - [x] Webhook busca dados do pedido no banco por session_id (em vez de metadata)
 - [x] Frontend polling retorna número do pedido após confirmação
 - [x] Bug: Botão "Escolher outra forma de pagamento" volta para Confirmar Endereço em vez de Tipo de Entrega (fluxo 2)
+
+## Reestruturação do Fluxo de Checkout (5 → 4 steps)
+- [x] Remover step 1 (Resumo do Pedido) do fluxo de checkout
+- [x] Mover conteúdo do resumo (itens, observação) para o step de Confirmar Endereço (agora step 2 - Resumo do Pedido)
+- [x] Atualizar indicador de progresso de 5 para 4 steps
+- [x] Atualizar labels dos steps: 1-Entrega, 2-Resumo, 3-Dados, 4-Enviar
+- [x] Atualizar títulos dos modais para novo fluxo
+- [x] Remapear todas as referências de setCheckoutStep para novos números
+- [x] Ajustar botão Voltar no header do modal
+- [x] Testar fluxo completo de checkout com 4 steps

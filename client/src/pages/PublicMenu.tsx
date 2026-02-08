@@ -139,7 +139,7 @@ export default function PublicMenu() {
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   
   // Estados para o fluxo de finalização de pedido
-  const [checkoutStep, setCheckoutStep] = useState(0); // 0 = fechado, 1-5 = modais
+  const [checkoutStep, setCheckoutStep] = useState(0); // 0 = fechado, 1-4 = modais
   const [orderObservation, setOrderObservation] = useState("");
   const [deliveryType, setDeliveryType] = useState<"pickup" | "delivery" | "dine_in">("pickup");
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "pix" | "card_online">("pix");
@@ -3011,11 +3011,10 @@ export default function PublicMenu() {
                     <ShoppingBag className="h-5 w-5 text-red-500" />
                   </div>
                   <h2 className="text-lg font-bold text-gray-900">
-                    {checkoutStep === 1 && 'Resumo do Pedido'}
-                    {checkoutStep === 2 && 'Tipo de Entrega'}
-                    {checkoutStep === 3 && 'Confirmar Endereço'}
-                    {checkoutStep === 4 && 'Seus Dados'}
-                    {checkoutStep === 5 && 'Confirmação'}
+                    {checkoutStep === 1 && 'Entrega e Pagamento'}
+                    {checkoutStep === 2 && 'Resumo do Pedido'}
+                    {checkoutStep === 3 && 'Seus Dados'}
+                    {checkoutStep === 4 && 'Confirmação'}
                   </h2>
                 </div>
                 <button 
@@ -3030,7 +3029,7 @@ export default function PublicMenu() {
             {/* Indicador de Progresso */}
             <div className="flex-shrink-0 bg-white px-6 py-3 border-b border-gray-100">
               <div className="flex items-center justify-between mb-2">
-                {[1, 2, 3, 4, 5].map((step) => (
+                {[1, 2, 3, 4].map((step) => (
                   <div key={step} className="flex items-center">
                     <button
                       onClick={() => step < checkoutStep && setCheckoutStep(step)}
@@ -3047,8 +3046,8 @@ export default function PublicMenu() {
                         step
                       )}
                     </button>
-                    {step < 5 && (
-                      <div className={`w-8 sm:w-12 h-1 mx-1 rounded transition-all ${
+                    {step < 4 && (
+                      <div className={`w-12 sm:w-16 h-1 mx-1 rounded transition-all ${
                         checkoutStep > step ? 'bg-red-500' : 'bg-gray-200'
                       }`} />
                     )}
@@ -3056,110 +3055,15 @@ export default function PublicMenu() {
                 ))}
               </div>
               <div className="flex justify-between text-[10px] sm:text-xs text-gray-500">
-                <span className={checkoutStep >= 1 ? 'text-red-500 font-medium' : ''}>Resumo</span>
-                <span className={checkoutStep >= 2 ? 'text-red-500 font-medium' : ''}>Entrega</span>
-                <span className={checkoutStep >= 3 ? 'text-red-500 font-medium' : ''}>Confirmar</span>
-                <span className={checkoutStep >= 4 ? 'text-red-500 font-medium' : ''}>Dados</span>
-                <span className={checkoutStep >= 5 ? 'text-red-500 font-medium' : ''}>Enviar</span>
+                <span className={checkoutStep >= 1 ? 'text-red-500 font-medium' : ''}>Entrega</span>
+                <span className={checkoutStep >= 2 ? 'text-red-500 font-medium' : ''}>Resumo</span>
+                <span className={checkoutStep >= 3 ? 'text-red-500 font-medium' : ''}>Dados</span>
+                <span className={checkoutStep >= 4 ? 'text-red-500 font-medium' : ''}>Enviar</span>
               </div>
             </div>
 
-            {/* Modal 1 - Resumo dos Itens */}
+            {/* Modal 1 - Entrega e Pagamento */}
             {checkoutStep === 1 && (
-              <div className="flex flex-col flex-1 overflow-hidden">
-
-              {/* Body */}
-              <div className="flex-1 overflow-y-auto overscroll-contain p-6 space-y-4">
-                {/* Lista de Itens */}
-                <div className="space-y-3">
-                  <h3 className="font-semibold text-gray-800 text-sm">Itens do pedido</h3>
-                  {cart.map((item, index) => (
-                    <div key={index} className="p-3 bg-gray-50 rounded-xl">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start">
-                          <p className="font-medium text-gray-900 text-sm">{item.quantity}x {item.name}</p>
-                          {Number(item.price) * item.quantity > 0 && (
-                            <p className="font-semibold text-red-500 text-sm">{formatPrice(Number(item.price) * item.quantity)}</p>
-                          )}
-                        </div>
-                        {item.complements.length > 0 && (
-                          <div className="mt-1">
-                            {item.complements.map((c) => (
-                              <div key={c.id} className="flex justify-between items-center text-xs">
-                                <span className="text-gray-500">+ {(c.quantity || 1) > 1 ? `${c.quantity}x ` : ''}{c.name}</span>
-                                <span className="text-red-500 font-medium">{formatPrice(parseFloat(c.price) * (c.quantity || 1))}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {item.observation && (
-                          <p className="text-xs text-gray-400 mt-1">Obs: {item.observation}</p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Resumo */}
-                <div className="border-t border-dashed border-gray-200 pt-4 space-y-2">
-                  {(() => {
-                    const subtotal = cart.reduce((sum, item) => {
-                      const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price) * (c.quantity || 1), 0);
-                      return sum + (Number(item.price) + complementsTotal) * item.quantity;
-                    }, 0);
-                    const discount = appliedCoupon?.discount || 0;
-                    const total = Math.max(0, subtotal - discount);
-                    return (
-                      <>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Subtotal</span>
-                          <span className="text-gray-600">{formatPrice(subtotal)}</span>
-                        </div>
-                        {appliedCoupon && (
-                          <div className="flex justify-between text-sm">
-                            <span className="text-green-600 flex items-center gap-1">
-                              <Ticket className="h-3.5 w-3.5" />
-                              Cupom {appliedCoupon.code}
-                            </span>
-                            <span className="text-green-600">-{formatPrice(discount)}</span>
-                          </div>
-                        )}
-                        <div className="flex justify-between font-bold text-base pt-2 border-t border-gray-100">
-                          <span className="text-gray-900">Total</span>
-                          <span className="text-gray-900">{formatPrice(total)}</span>
-                        </div>
-                      </>
-                    );
-                  })()}
-                </div>
-
-                {/* Observação do Pedido */}
-                <div className="pt-2">
-                  <label className="block text-sm font-semibold text-gray-800 mb-2">Observação do pedido</label>
-                  <textarea
-                    value={orderObservation}
-                    onChange={(e) => setOrderObservation(e.target.value)}
-                    placeholder="Ex: Sem cebola, bem passado..."
-                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
-                    rows={2}
-                  />
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="flex-shrink-0 border-t px-6 py-4">
-                <button
-                  onClick={() => setCheckoutStep(2)}
-                  className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
-                >
-                  Próximo
-                </button>
-              </div>
-            </div>
-          )}
-
-            {/* Modal 2 - Entrega e Pagamento */}
-            {checkoutStep === 2 && (
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
@@ -3586,7 +3490,7 @@ export default function PublicMenu() {
                           alert('Por favor, preencha todos os campos obrigatórios do endereço (Rua, Número e Bairro).');
                           return;
                         }
-                        setCheckoutStep(3);
+                        setCheckoutStep(2);
                       }}
                       className={`w-full py-3.5 font-semibold rounded-xl transition-colors ${
                         isAddressValid
@@ -3602,8 +3506,8 @@ export default function PublicMenu() {
             </div>
           )}
 
-            {/* Modal 3 - Resumo Final */}
-            {checkoutStep === 3 && (
+            {/* Modal 2 - Resumo do Pedido */}
+            {checkoutStep === 2 && (
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
@@ -3685,20 +3589,22 @@ export default function PublicMenu() {
                   </div>
                 </div>
 
-                {/* Observações */}
-                {orderObservation && (
-                  <div>
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
-                        <FileText className="h-5 w-5 text-purple-500" />
-                      </div>
-                      <h3 className="font-bold text-gray-900">Observações</h3>
+                {/* Observação do Pedido */}
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
+                      <FileText className="h-5 w-5 text-purple-500" />
                     </div>
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <p className="text-sm text-gray-600">{orderObservation}</p>
-                    </div>
+                    <h3 className="font-bold text-gray-900">Observação do pedido</h3>
                   </div>
-                )}
+                  <textarea
+                    value={orderObservation}
+                    onChange={(e) => setOrderObservation(e.target.value)}
+                    placeholder="Ex: Sem cebola, bem passado..."
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
+                    rows={2}
+                  />
+                </div>
 
                 {/* Total */}
                 <div className="border-t border-dashed border-gray-200 pt-4 space-y-2">
@@ -3786,17 +3692,17 @@ export default function PublicMenu() {
               {/* Footer */}
               <div className="flex-shrink-0 border-t px-6 py-4">
                 <button
-                  onClick={() => setCheckoutStep(4)}
+                  onClick={() => setCheckoutStep(3)}
                   className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
                 >
-                  Finalizar
+                  Próximo
                 </button>
               </div>
             </div>
           )}
 
-            {/* Modal 4 - Identificação do Cliente */}
-            {checkoutStep === 4 && (
+            {/* Modal 3 - Identificação do Cliente */}
+            {checkoutStep === 3 && (
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
@@ -3852,7 +3758,7 @@ export default function PublicMenu() {
                 <button
                   onClick={() => {
                     setOrderError(null); // Limpar erro anterior ao avançar
-                    setCheckoutStep(5);
+                    setCheckoutStep(4);
                   }}
                   disabled={!customerInfo.name || !customerInfo.phone}
                   className={`w-full py-3.5 font-semibold rounded-xl transition-colors ${
@@ -3867,8 +3773,8 @@ export default function PublicMenu() {
             </div>
           )}
 
-            {/* Modal 5 - Confirmação Final */}
-            {checkoutStep === 5 && (
+            {/* Modal 4 - Confirmação Final */}
+            {checkoutStep === 4 && (
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
@@ -3917,7 +3823,7 @@ export default function PublicMenu() {
                           setOnlinePaymentStatus('idle');
                           setOnlinePaymentSessionId(null);
 setOnlinePaymentUrl(null);
-                           setCheckoutStep(2); // Voltar para Tipo de Entrega (formas de pagamento)
+                           setCheckoutStep(1); // Voltar para Entrega e Pagamento
                          }}
                          className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
                        >
@@ -3954,7 +3860,7 @@ setOnlinePaymentUrl(null);
                           setOnlinePaymentStatus('idle');
                           setOnlinePaymentSessionId(null);
 setOnlinePaymentUrl(null);
-                           setCheckoutStep(2); // Voltar para Tipo de Entrega (formas de pagamento)
+                           setCheckoutStep(1); // Voltar para Entrega e Pagamento
                          }}
                          className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
                        >
@@ -5872,7 +5778,7 @@ setOnlinePaymentUrl(null);
                           setReopenBagAfterNeighborhood(false);
                           setTimeout(() => {
                             if (checkoutStep === 0) {
-                              setCheckoutStep(2);
+                              setCheckoutStep(1);
                             } else {
                               setShowMobileBag(true);
                             }
@@ -5915,7 +5821,7 @@ setOnlinePaymentUrl(null);
                           setReopenBagAfterNeighborhood(false);
                           setTimeout(() => {
                             if (checkoutStep === 0) {
-                              setCheckoutStep(2);
+                              setCheckoutStep(1);
                             } else {
                               setShowMobileBag(true);
                             }
@@ -6004,9 +5910,9 @@ setOnlinePaymentUrl(null);
                       if (reopenBagAfterNeighborhood) {
                         setReopenBagAfterNeighborhood(false);
                         setTimeout(() => {
-                          // Se estava no checkout (step 2), voltar para lá
+                          // Se estava no checkout (step 1), voltar para lá
                           if (checkoutStep === 0) {
-                            setCheckoutStep(2);
+                            setCheckoutStep(1);
                           } else {
                             setShowMobileBag(true);
                           }
