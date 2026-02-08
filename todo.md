@@ -5696,3 +5696,4 @@
 - [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Informações
 - [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Como Chegar
 - [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Avaliações
+- [x] [Menu Público] Itens do carrinho no modal Sua Sacola devem ter borda vermelha na lateral esquerda igual aos itens do menu público

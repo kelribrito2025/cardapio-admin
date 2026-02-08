@@ -4344,7 +4344,7 @@ setOnlinePaymentUrl(null);
               ) : (
                 <div className="space-y-3">
                   {cart.map((item, index) => (
-                    <div key={index} className="flex items-start justify-between p-3 bg-gray-50 rounded-xl">
+                    <div key={index} className="flex items-start justify-between p-3 bg-gray-50 rounded-xl border-l-4 border-red-500">
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <span className="font-medium text-gray-900">{item.quantity}x {item.name}</span>
