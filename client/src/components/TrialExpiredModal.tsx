@@ -49,7 +49,7 @@ export function TrialExpiredModal() {
           <ul className="space-y-2 text-sm text-gray-700">
             <li className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
-              Cardápio público (menu online)
+              Cardápio público (Menu online)
             </li>
             <li className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
@@ -68,7 +68,7 @@ export function TrialExpiredModal() {
           className="w-full py-3.5 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25"
         >
           <Rocket className="h-5 w-5" />
-          Ver planos e fazer upgrade
+          Ver planos
         </button>
 
         <p className="text-xs text-gray-400 mt-4">
