@@ -890,13 +890,13 @@ export default function MesasComandas() {
 
         {/* Filtros de Espaços e Controles */}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          {/* Filtros de Espaços */}
-          <div className="flex flex-wrap gap-2">
+          {/* Filtros de Espaços - scroll horizontal no mobile */}
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mb-1 max-w-full" style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {/* Botão "Todas" */}
             <button
               onClick={() => setSelectedSpaceId("all")}
               className={cn(
-                "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
+                "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 flex-shrink-0 whitespace-nowrap",
                 selectedSpaceId === "all"
                   ? "bg-red-500 text-white"
                   : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
@@ -920,7 +920,7 @@ export default function MesasComandas() {
                 key={space.id}
                 onClick={() => setSelectedSpaceId(space.id)}
                 className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
+                  "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 flex-shrink-0 whitespace-nowrap",
                   selectedSpaceId === space.id
                     ? "bg-red-500 text-white"
                     : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
