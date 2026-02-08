@@ -5658,3 +5658,4 @@
 - [x] Remover delay de 3 segundos no envio do pedido no step Confirmação
 - [x] Mostrar card "Aceitar pagamento online" sempre visível abaixo do Stripe Connect, com toggle desativado/não clicável quando Stripe não configurado
 - [x] Mostrar número do pedido no título do modal de Acompanhar Pedido (ex: Acompanhar Pedido #P32)
+- [x] Remover cards de Consumo e Cliente do modelo do recibo ao fechar mesa

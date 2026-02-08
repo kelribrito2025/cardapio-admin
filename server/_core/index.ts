@@ -1186,18 +1186,6 @@ function generateTabReceiptHTML(
     </div>
   </div>
   
-  <hr class="divider">
-  
-  <div class="section-box">
-    <div class="section-content"><strong>Consumo:</strong> Cliente irá consumir no local</div>
-  </div>
-  
-  <div class="section-box">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;">⭐ Cliente</span>
-      <span style="font-weight: ${headerFontWeight};">Mesa ${table?.number || tab.tableId}</span>
-    </div>
-  </div>
   
   ${settings?.showQrCode && settings?.qrCodeUrl ? `
   <div class="qrcode-box">
