@@ -5653,3 +5653,4 @@
 - [x] Testar fluxo completo de checkout com 4 steps
 - [x] Bug: Botão "Alterar" forma de entrega fecha o modal quando taxa é grátis (free) - impede trocar para retirada/consumo no local
 - [x] Bug: Quando taxa é byNeighborhood e nenhum bairro selecionado, "Selecionar bairro" deve aparecer dentro do campo Bairro (não como botão separado)
+- [x] Bug: Campo telefone no step Seus Dados permite avançar com apenas 2 dígitos - deve formatar como (XX) X XXXX-XXXX e só avançar quando completo

@@ -3823,9 +3823,12 @@ export default function PublicMenu() {
                         setCustomerInfo({...customerInfo, phone: digits});
                       }
                     }}
-                    placeholder="(34) 9 9999-9999"
+                    placeholder="(62) 9 8765-4321"
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                   />
+                  {customerInfo.phone.replace(/\D/g, "").length > 0 && customerInfo.phone.replace(/\D/g, "").length < 11 && (
+                    <p className="text-xs text-red-500 mt-1">Preencha o telefone completo com DDD</p>
+                  )}
                 </div>
               </div>
 
@@ -3836,9 +3839,9 @@ export default function PublicMenu() {
                     setOrderError(null); // Limpar erro anterior ao avançar
                     setCheckoutStep(4);
                   }}
-                  disabled={!customerInfo.name || !customerInfo.phone}
+                  disabled={!customerInfo.name || customerInfo.phone.replace(/\D/g, "").length < 11}
                   className={`w-full py-3.5 font-semibold rounded-xl transition-colors ${
-                    customerInfo.name && customerInfo.phone
+                    customerInfo.name && customerInfo.phone.replace(/\D/g, "").length >= 11
                       ? "bg-red-500 hover:bg-red-600 text-white"
                       : "bg-gray-300 text-gray-500 cursor-not-allowed"
                   }`}
