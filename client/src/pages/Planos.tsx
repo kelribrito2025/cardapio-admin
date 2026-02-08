@@ -33,9 +33,12 @@ import {
   FileText,
   ChevronLeft,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 interface PlanFeature {
   text: string;
@@ -162,6 +165,21 @@ export default function Planos() {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const { user } = useAuth();
   const itemsPerPage = 4;
+
+  // Mutation para criar checkout de plano
+  const checkoutMutation = trpc.plans.createCheckout.useMutation({
+    onSuccess: (result) => {
+      toast.info("Redirecionando para o checkout...");
+      window.open(result.url, '_blank');
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao iniciar checkout");
+    },
+  });
+
+  const handleCheckout = (planId: string) => {
+    checkoutMutation.mutate({ planId, isAnnual });
+  };
 
   // Mock current plan
   const currentPlan = {
@@ -367,9 +385,18 @@ export default function Planos() {
                       ? "bg-gray-100 hover:bg-gray-100 text-muted-foreground cursor-default"
                       : "bg-white hover:bg-gray-50 text-foreground border border-border"
                   )}
-                  disabled={plan.id === "free"}
+                  disabled={plan.id === "free" || checkoutMutation.isPending}
+                  onClick={() => {
+                    if (plan.id !== "free") {
+                      handleCheckout(plan.id);
+                    }
+                  }}
                 >
-                  {plan.buttonText}
+                  {checkoutMutation.isPending ? (
+                    <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Processando...</>
+                  ) : (
+                    plan.buttonText
+                  )}
                 </Button>
 
                 {/* Visit here link */}

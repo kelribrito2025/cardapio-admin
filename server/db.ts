@@ -235,6 +235,20 @@ export async function updateEstablishment(id: number, data: Partial<InsertEstabl
   await db.update(establishments).set(data).where(eq(establishments.id, id));
 }
 
+/**
+ * Ativa um plano pago para o estabelecimento, removendo o estado de trial.
+ * Chamado após confirmação de pagamento via Stripe.
+ */
+export async function activatePlan(establishmentId: number, planType: 'basic' | 'pro' | 'enterprise') {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(establishments).set({
+    planType,
+    trialStartDate: null, // Limpar data de trial
+  }).where(eq(establishments.id, establishmentId));
+}
+
 export async function toggleEstablishmentOpen(id: number, isOpen: boolean) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -300,6 +314,27 @@ export async function getPublicMenuData(slug: string) {
   const establishment = await getEstablishmentBySlug(slug);
   if (!establishment) return null;
   
+  // Verificar se o trial expirou - se sim, bloquear o menu público
+  if (establishment.planType === 'trial' && establishment.trialStartDate) {
+    const now = new Date();
+    const trialStart = new Date(establishment.trialStartDate);
+    const trialEnd = new Date(trialStart.getTime() + establishment.trialDays * 24 * 60 * 60 * 1000);
+    const daysRemaining = Math.max(0, Math.ceil((trialEnd.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)));
+    
+    if (daysRemaining === 0) {
+      // Trial expirado - retornar dados mínimos com flag de bloqueio
+      return {
+        establishment: {
+          ...establishment,
+          trialBlocked: true,
+        },
+        categories: [],
+        products: [],
+        trialBlocked: true,
+      };
+    }
+  }
+  
   // Get categories
   const menuCategories = await db.select().from(categories)
     .where(and(
@@ -320,6 +355,7 @@ export async function getPublicMenuData(slug: string) {
     establishment,
     categories: menuCategories,
     products: menuProducts,
+    trialBlocked: false,
   };
 }
 

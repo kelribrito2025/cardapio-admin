@@ -305,7 +305,7 @@ export const appRouter = router({
       
       const isTrial = establishment.planType === 'trial';
       if (!isTrial || !establishment.trialStartDate) {
-        return { isTrial: false, daysRemaining: 0, planType: establishment.planType };
+        return { isTrial: false, trialExpired: false, daysRemaining: 0, planType: establishment.planType };
       }
       
       const now = new Date();
@@ -322,6 +322,19 @@ export const appRouter = router({
         planType: establishment.planType,
       };
     }),
+
+    // Ativar plano após pagamento
+    activatePlan: protectedProcedure
+      .input(z.object({
+        planType: z.enum(['basic', 'pro', 'enterprise']),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        await db.activatePlan(establishment.id, input.planType);
+        return { success: true };
+      }),
 
     toggleOpen: protectedProcedure
       .input(z.object({
@@ -3990,6 +4003,41 @@ export const appRouter = router({
           console.error('[checkPaymentStatus] Erro:', error);
           return { status: 'open' as const, paymentStatus: 'unpaid' };
         }
+      }),
+  }),
+
+  // ============ PLANS (PLANOS) ============
+  plans: router({
+    // Criar sessão de checkout Stripe para upgrade de plano
+    createCheckout: protectedProcedure
+      .input(z.object({
+        planId: z.string(),
+        isAnnual: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        const { createPlanCheckoutSession } = await import("./stripe");
+        const origin = ctx.req.headers.origin || ctx.req.headers.referer?.replace(/\/$/, '') || '';
+        
+        const result = await createPlanCheckoutSession({
+          planId: input.planId,
+          userId: ctx.user.id,
+          userEmail: ctx.user.email || '',
+          userName: ctx.user.name || '',
+          establishmentId: establishment.id,
+          origin,
+          isAnnual: input.isAnnual,
+        });
+        
+        if (!result) {
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Stripe não configurado.' });
+        }
+        
+        return result;
       }),
   }),
 });

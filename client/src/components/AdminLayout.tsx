@@ -58,6 +58,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { toast } from "sonner";
+import { TrialExpiredModal } from "@/components/TrialExpiredModal";
 
 const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed";
 
@@ -991,6 +992,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           {children}
         </main>
       </div>
+
+      {/* Modal obrigatório de upgrade quando trial expira */}
+      {/* Não mostra na página de planos (exceção) */}
+      {trialInfo?.trialExpired && location !== "/planos" && (
+        <TrialExpiredModal />
+      )}
     </div>
   );
 }

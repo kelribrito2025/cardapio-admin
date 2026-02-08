@@ -71,6 +71,7 @@ describe("establishment.getTrialInfo", () => {
     
     expect(result).toEqual({
       isTrial: false,
+      trialExpired: false,
       daysRemaining: 0,
       planType: "basic",
     });
@@ -154,8 +155,49 @@ describe("establishment.getTrialInfo", () => {
     
     expect(result).toEqual({
       isTrial: false,
+      trialExpired: false,
       daysRemaining: 0,
       planType: "trial",
     });
+  });
+
+  it("returns trialExpired true when trial is exactly 15 days old", async () => {
+    const trialStart = new Date();
+    trialStart.setDate(trialStart.getDate() - 15);
+    trialStart.setHours(trialStart.getHours() - 1); // Ensure it's past the 15-day mark
+    
+    vi.mocked(db.getEstablishmentByUserId).mockResolvedValue({
+      id: 1,
+      planType: "trial",
+      trialStartDate: trialStart,
+      trialDays: 15,
+    } as any);
+    
+    const { ctx } = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+    const result = await caller.establishment.getTrialInfo();
+    
+    expect(result).not.toBeNull();
+    expect(result!.isTrial).toBe(true);
+    expect(result!.daysRemaining).toBe(0);
+    expect(result!.trialExpired).toBe(true);
+  });
+
+  it("returns trialExpired false for pro plan (paid)", async () => {
+    vi.mocked(db.getEstablishmentByUserId).mockResolvedValue({
+      id: 1,
+      planType: "pro",
+      trialStartDate: null,
+      trialDays: 15,
+    } as any);
+    
+    const { ctx } = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+    const result = await caller.establishment.getTrialInfo();
+    
+    expect(result).not.toBeNull();
+    expect(result!.isTrial).toBe(false);
+    expect(result!.trialExpired).toBe(false);
+    expect(result!.planType).toBe("pro");
   });
 });

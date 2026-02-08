@@ -159,6 +159,92 @@ export async function createSmsCheckoutSession(params: {
   };
 }
 
+// Planos disponíveis para upgrade
+export const PLAN_PACKAGES = [
+  {
+    id: "basic",
+    name: "Plano Básico",
+    priceInCents: 2900, // R$ 29,00/mês
+    description: "Transações ilimitadas, até 5 estabelecimentos, suporte por e-mail",
+  },
+  {
+    id: "pro",
+    name: "Plano Pro",
+    priceInCents: 5900, // R$ 59,00/mês
+    description: "Tudo do Básico + estabelecimentos ilimitados, análises avançadas, assistente de IA",
+    popular: true,
+  },
+  {
+    id: "enterprise",
+    name: "Plano Enterprise",
+    priceInCents: 9900, // R$ 99,00/mês
+    description: "Tudo do Pro + suporte prioritário, API dedicada, personalizações",
+  },
+];
+
+/**
+ * Cria uma sessão de checkout Stripe para upgrade de plano
+ */
+export async function createPlanCheckoutSession(params: {
+  planId: string;
+  userId: number;
+  userEmail: string;
+  userName: string;
+  establishmentId: number;
+  origin: string;
+  isAnnual?: boolean;
+}): Promise<{ url: string; sessionId: string } | null> {
+  const stripe = getStripe();
+  if (!stripe) return null;
+
+  const plan = PLAN_PACKAGES.find((p) => p.id === params.planId);
+  if (!plan) throw new Error("Plano não encontrado");
+
+  // Se anual, aplicar desconto (10 meses pelo preço de 12)
+  const priceInCents = params.isAnnual 
+    ? Math.round(plan.priceInCents * 10) // 10 meses (desconto de 2 meses)
+    : plan.priceInCents;
+  const periodLabel = params.isAnnual ? " (Anual)" : " (Mensal)";
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    mode: "payment",
+    client_reference_id: params.userId.toString(),
+    customer_email: params.userEmail,
+    allow_promotion_codes: true,
+    line_items: [
+      {
+        price_data: {
+          currency: "brl",
+          product_data: {
+            name: plan.name + periodLabel,
+            description: plan.description,
+          },
+          unit_amount: priceInCents,
+        },
+        quantity: 1,
+      },
+    ],
+    metadata: {
+      user_id: params.userId.toString(),
+      establishment_id: params.establishmentId.toString(),
+      customer_email: params.userEmail,
+      customer_name: params.userName,
+      plan_id: plan.id,
+      plan_type: plan.id,
+      is_annual: params.isAnnual ? "true" : "false",
+      type: "plan_upgrade",
+    },
+    success_url: `${params.origin}/planos?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${params.origin}/planos?payment=cancelled`,
+  });
+
+  return {
+    url: session.url!,
+    sessionId: session.id,
+  };
+}
+
 /**
  * Verifica a assinatura do webhook e retorna o evento
  */

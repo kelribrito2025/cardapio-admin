@@ -5708,3 +5708,9 @@
 - [x] [Trial] Badge no dashboard ao lado de "Ver menu" mostrando dias restantes do trial
 - [x] [Trial] Popover ao clicar no badge com texto e botão "Fazer upgrade agora"
 - [x] [Trial] Badge visível apenas para usuários em trial
+- [x] [Trial Expirado] Modal obrigatório de upgrade quando trial expira (sem fechar com ESC ou clique fora)
+- [x] [Trial Expirado] Guard de rotas: bloquear todas as páginas exceto /planos quando trial expirado
+- [x] [Trial Expirado] Fechar menu público automaticamente quando trial expira
+- [x] [Trial Expirado] Reabrir menu público automaticamente após pagamento
+- [x] [Trial Expirado] Liberar todas as ações e remover bloqueio após pagamento
+- [x] [Trial Expirado] Testes vitest para bloqueio de trial expirado

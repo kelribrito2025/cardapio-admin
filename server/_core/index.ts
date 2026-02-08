@@ -1300,6 +1300,27 @@ async function startServer() {
           }
         }
         
+        // Processar pagamento de upgrade de plano
+        if (session.metadata?.type === "plan_upgrade" && metadata.establishmentId > 0) {
+          const planType = session.metadata.plan_type as 'basic' | 'pro' | 'enterprise';
+          console.log(`[Stripe Webhook] Upgrade de plano: estabelecimento ${metadata.establishmentId}, plano: ${planType}`);
+          
+          try {
+            const { activatePlan } = await import("../db");
+            await activatePlan(metadata.establishmentId, planType);
+            
+            // Enviar SSE para notificar o frontend sobre a ativação do plano
+            sendEvent(metadata.establishmentId, "planActivated", {
+              planType,
+              message: `Plano ${planType} ativado com sucesso!`,
+            });
+            
+            console.log(`[Stripe Webhook] Plano ${planType} ativado com sucesso para estabelecimento ${metadata.establishmentId}`);
+          } catch (planError) {
+            console.error("[Stripe Webhook] Erro ao ativar plano:", planError);
+          }
+        }
+        
         // Processar pagamento de pedido online via Stripe Connect
         if (session.metadata?.type === "online_order") {
           const estId = parseInt(session.metadata.establishment_id || "0");

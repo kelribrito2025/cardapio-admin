@@ -1259,6 +1259,27 @@ export default function PublicMenu() {
     );
   }
 
+  // Verificar se o trial expirou - bloquear menu público
+  if (data.trialBlocked) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center p-8 max-w-md">
+          <div className="mx-auto w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mb-5">
+            <Store className="h-10 w-10 text-gray-400" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-800 mb-3">Cardápio Temporariamente Indisponível</h1>
+          <p className="text-gray-500 leading-relaxed">
+            {data.establishment?.name ? (
+              <>{data.establishment.name} está com o cardápio temporariamente indisponível. Por favor, tente novamente mais tarde.</>
+            ) : (
+              <>Este cardápio está temporariamente indisponível. Por favor, tente novamente mais tarde.</>
+            )}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const { establishment, categories: allCategories, products } = data;
   const filteredProducts = filterProducts(products);
 
