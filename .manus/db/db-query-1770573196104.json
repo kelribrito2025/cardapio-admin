@@ -1,0 +1,42 @@
+{
+  "query": "SHOW COLUMNS FROM establishments LIKE 'plan%'; SHOW COLUMNS FROM establishments LIKE 'trial%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SHOW COLUMNS FROM establishments LIKE 'plan%'; SHOW COLUMNS FROM establishments LIKE 'trial%';",
+  "rows": [
+    {
+      "Field": "planType",
+      "Type": "enum('trial','basic','pro','enterprise')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "trial",
+      "Extra": ""
+    },
+    {
+      "Field": "Field",
+      "Type": "Type",
+      "Null": "Null",
+      "Key": "Key",
+      "Default": "Default",
+      "Extra": "Extra"
+    },
+    {
+      "Field": "trialStartDate",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "trialDays",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "15",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nplanType\tenum('trial','basic','pro','enterprise')\tNO\t\ttrial\t\nField\tType\tNull\tKey\tDefault\tExtra\ntrialStartDate\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\t\ntrialDays\tint(11)\tNO\t\t15\t\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

@@ -83,6 +83,10 @@ export const establishments = mysqlTable("establishments", {
   // Segurança
   twoFactorEnabled: boolean("twoFactorEnabled").default(false).notNull(),
   twoFactorEmail: varchar("twoFactorEmail", { length: 320 }),
+  // Plano / Trial
+  planType: mysqlEnum("planType", ["trial", "basic", "pro", "enterprise"]).default("trial").notNull(),
+  trialStartDate: timestamp("trialStartDate").defaultNow(),
+  trialDays: int("trialDays").default(15).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

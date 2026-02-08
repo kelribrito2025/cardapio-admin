@@ -30,6 +30,8 @@ import {
   Monitor,
   HelpCircle,
   Utensils,
+  Clock,
+  Sparkles,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -50,6 +52,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { toast } from "sonner";
 
 const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed";
@@ -191,6 +198,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     undefined,
     { enabled: !!user }
   );
+
+  // Get trial info
+  const { data: trialInfo } = trpc.establishment.getTrialInfo.useQuery();
 
   // Get business hours to calculate if store is currently open
   const { data: businessHoursData } = trpc.establishment.getBusinessHours.useQuery(
@@ -753,6 +763,55 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   <ExternalLink className="h-3.5 w-3.5" />
                   <span>Ver menu</span>
                 </a>
+              )}
+
+              {/* Badge Trial */}
+              {trialInfo?.isTrial && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      className="flex items-center gap-2 px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-xs font-medium transition-colors border border-amber-200"
+                      style={{ borderRadius: '10px' }}
+                    >
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>⏳ Avaliação gratuita: {trialInfo.daysRemaining} {trialInfo.daysRemaining === 1 ? 'dia' : 'dias'}</span>
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-72 p-4" align="end">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 bg-amber-100 rounded-lg">
+                          <Sparkles className="h-4 w-4 text-amber-600" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-sm">Período de Avaliação</p>
+                          <p className="text-xs text-muted-foreground">{trialInfo.trialDays} dias gratuitos</p>
+                        </div>
+                      </div>
+                      <div className="bg-amber-50 rounded-lg p-3 border border-amber-100">
+                        <p className="text-sm text-amber-800">
+                          {trialInfo.trialExpired
+                            ? 'Seu período de avaliação expirou. Faça upgrade para continuar usando todas as funcionalidades.'
+                            : `Você ainda tem ${trialInfo.daysRemaining} ${trialInfo.daysRemaining === 1 ? 'dia' : 'dias'} restantes na sua avaliação gratuita.`
+                          }
+                        </p>
+                      </div>
+                      {/* Barra de progresso */}
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-amber-500 h-2 rounded-full transition-all"
+                          style={{ width: `${Math.max(0, ((trialInfo.trialDays! - trialInfo.daysRemaining) / trialInfo.trialDays!) * 100)}%` }}
+                        />
+                      </div>
+                      <Link href="/planos">
+                        <Button className="w-full bg-red-500 hover:bg-red-600 text-white" size="sm">
+                          <Crown className="h-4 w-4 mr-2" />
+                          Fazer upgrade agora
+                        </Button>
+                      </Link>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               )}
 
               {/* Botão de Som de Notificação */}

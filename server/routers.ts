@@ -298,6 +298,31 @@ export const appRouter = router({
         return { available: isAvailable };
       }),
     
+    // Informações do trial
+    getTrialInfo: protectedProcedure.query(async ({ ctx }) => {
+      const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+      if (!establishment) return null;
+      
+      const isTrial = establishment.planType === 'trial';
+      if (!isTrial || !establishment.trialStartDate) {
+        return { isTrial: false, daysRemaining: 0, planType: establishment.planType };
+      }
+      
+      const now = new Date();
+      const trialStart = new Date(establishment.trialStartDate);
+      const trialEnd = new Date(trialStart.getTime() + establishment.trialDays * 24 * 60 * 60 * 1000);
+      const daysRemaining = Math.max(0, Math.ceil((trialEnd.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)));
+      
+      return {
+        isTrial: true,
+        daysRemaining,
+        trialDays: establishment.trialDays,
+        trialStartDate: establishment.trialStartDate,
+        trialExpired: daysRemaining === 0,
+        planType: establishment.planType,
+      };
+    }),
+
     toggleOpen: protectedProcedure
       .input(z.object({
         id: z.number(),

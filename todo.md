@@ -5701,3 +5701,10 @@
 - [x] [Menu Público] Botão de pagar online no modal de confirmação deve ser na cor vermelha
 - [x] [SMS] Remover pacote de 1000 SMS do modal de recarregar saldo SMS
 - [x] [Menu Público] Sugestões de troco dinâmicas baseadas no valor do pedido (arredondar para cima ao múltiplo de 10)
+- [x] [Trial] Adicionar campo trialStartDate no schema do banco de dados
+- [x] [Trial] Migrar banco de dados com pnpm db:push
+- [x] [Trial] Implementar lógica de cálculo de dias restantes no backend
+- [x] [Trial] Expor dados de trial via tRPC (dias restantes, se está em trial)
+- [x] [Trial] Badge no dashboard ao lado de "Ver menu" mostrando dias restantes do trial
+- [x] [Trial] Popover ao clicar no badge com texto e botão "Fazer upgrade agora"
+- [x] [Trial] Badge visível apenas para usuários em trial

@@ -1,0 +1,31 @@
+{
+  "query": "SELECT id, name, planType, trialStartDate, trialDays FROM establishments LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, planType, trialStartDate, trialDays FROM establishments LIMIT 5;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "planType": "trial",
+      "trialStartDate": "2026-02-08 17:52:15",
+      "trialDays": "15"
+    },
+    {
+      "id": "60018",
+      "name": "Big Norte",
+      "planType": "trial",
+      "trialStartDate": "2026-02-08 17:52:15",
+      "trialDays": "15"
+    },
+    {
+      "id": "90001",
+      "name": "Palácio do Açai",
+      "planType": "trial",
+      "trialStartDate": "2026-02-08 17:52:15",
+      "trialDays": "15"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tplanType\ttrialStartDate\ttrialDays\n30001\tSushi Haruno\ttrial\t2026-02-08 17:52:15\t15\n60018\tBig Norte\ttrial\t2026-02-08 17:52:15\t15\n90001\tPalácio do Açai\ttrial\t2026-02-08 17:52:15\t15\n",
+  "stderr": "",
+  "execution_time_ms": 71
+}
