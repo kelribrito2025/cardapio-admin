@@ -537,47 +537,47 @@ export function MobilePDVModal({
   return (
     <>
       {/* Overlay */}
-      <div className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm md:hidden" onClick={onClose} />
+      <div className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm md:hidden" onClick={onClose} />
 
       {/* Modal Bottom Sheet */}
-      <div className="fixed inset-x-0 bottom-0 z-[71] md:hidden animate-in slide-in-from-bottom duration-300">
-        <div className="bg-white rounded-t-2xl shadow-2xl flex flex-col" style={{ maxHeight: '90vh' }}>
-
-          {/* Drag indicator */}
-          <div className="flex justify-center pt-2 pb-1">
-            <div className="w-10 h-1 bg-gray-300 rounded-full" />
-          </div>
+      <div className="fixed inset-x-0 bottom-0 z-[71] md:hidden flex items-end animate-in slide-in-from-bottom duration-300">
+        <div className="bg-gray-200 rounded-t-2xl shadow-2xl flex flex-col w-full overflow-hidden" style={{ maxHeight: '90vh' }}>
 
           {/* Header */}
-          <div className="px-4 pb-3 border-b border-gray-100">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-bold text-gray-900">Mesa {tableDisplayName}</h2>
-              <button onClick={onClose} className="p-1.5 rounded-full hover:bg-gray-100 transition-colors">
-                <X className="h-5 w-5 text-gray-500" />
-              </button>
+          <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{ height: '68px' }}>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-red-100 rounded-xl">
+                <UtensilsCrossed className="h-5 w-5 text-red-500" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">Mesa {tableDisplayName}</h2>
+              </div>
             </div>
+            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+              <X className="h-5 w-5 text-gray-400" />
+            </button>
+          </div>
 
-            {/* Resumo da mesa - linha única */}
-            <div className="flex items-center gap-4 text-sm text-gray-600">
+          {/* Resumo da mesa - linha única */}
+          <div className="bg-white px-6 py-3 flex items-center gap-4 text-sm text-gray-600 border-b border-gray-200">
+            <div className="flex items-center gap-1">
+              <Receipt className="h-3.5 w-3.5" />
+              <span>{totalItemsCount} {totalItemsCount === 1 ? 'item' : 'itens'}</span>
+            </div>
+            {occupiedAt && (
               <div className="flex items-center gap-1">
-                <Receipt className="h-3.5 w-3.5" />
-                <span>{totalItemsCount} {totalItemsCount === 1 ? 'item' : 'itens'}</span>
+                <Clock className="h-3.5 w-3.5" />
+                <span>{formatDuration(occupiedAt)}</span>
               </div>
-              {occupiedAt && (
-                <div className="flex items-center gap-1">
-                  <Clock className="h-3.5 w-3.5" />
-                  <span>{formatDuration(occupiedAt)}</span>
-                </div>
-              )}
-              <div className="flex items-center gap-1 font-semibold text-gray-900">
-                <span>{formatCurrency(getDisplayTotal())}</span>
-              </div>
+            )}
+            <div className="flex items-center gap-1 font-semibold text-gray-900">
+              <span>{formatCurrency(getDisplayTotal())}</span>
             </div>
           </div>
 
           {/* Tabs: Consumo / Comanda */}
           {tabId && (
-            <div className="flex border-b border-gray-100">
+            <div className="flex border-b border-gray-200 bg-white">
               <button
                 onClick={() => setSelectedTab('consumo')}
                 className={cn(
@@ -608,7 +608,7 @@ export function MobilePDVModal({
             {selectedTab === 'consumo' ? (
               <>
                 {/* Campo de busca de produtos */}
-                <div className="p-3 border-b border-gray-100 sticky top-0 bg-white z-10">
+                <div className="p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
@@ -635,7 +635,7 @@ export function MobilePDVModal({
 
                 {activeView === 'search' && searchQuery.trim() ? (
                   /* Resultados da busca */
-                  <div className="p-3">
+                  <div className="p-4">
                     {filteredProducts.length === 0 ? (
                       <div className="text-center py-8 text-gray-500">
                         <Search className="h-8 w-8 mx-auto mb-2 text-gray-300" />
@@ -647,7 +647,7 @@ export function MobilePDVModal({
                           <button
                             key={product.id}
                             onClick={() => handleProductClick(product)}
-                            className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:bg-gray-50 transition-colors text-left"
+                            className="w-full flex items-center gap-3 p-3 rounded-xl bg-white shadow-sm hover:shadow-md transition-all text-left"
                           >
                             {product.images?.[0] ? (
                               <img src={product.images[0]} alt={product.name} className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
@@ -673,7 +673,7 @@ export function MobilePDVModal({
                   </div>
                 ) : (
                   /* Lista de itens no carrinho */
-                  <div className="p-3">
+                  <div className="p-4">
                     {cart.length === 0 ? (
                       <div className="text-center py-10 text-gray-500">
                         <ShoppingBag className="h-10 w-10 mx-auto mb-3 text-gray-300" />
@@ -686,7 +686,7 @@ export function MobilePDVModal({
                           const itemTotal = (parseFloat(item.price) + item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0)) * item.quantity;
                           const isExpanded = expandedCartItem === index;
                           return (
-                            <div key={index} className="border border-gray-100 rounded-xl overflow-hidden">
+                            <div key={index} className="bg-white rounded-xl shadow-sm overflow-hidden">
                               <button
                                 onClick={() => setExpandedCartItem(isExpanded ? null : index)}
                                 className="w-full flex items-center gap-3 p-3 text-left"
@@ -758,7 +758,7 @@ export function MobilePDVModal({
               </>
             ) : (
               /* Aba Comanda - itens já enviados */
-              <div className="p-3">
+              <div className="p-4">
                 {tabItemsActive.length === 0 ? (
                   <div className="text-center py-10 text-gray-500">
                     <ClipboardList className="h-10 w-10 mx-auto mb-3 text-gray-300" />
@@ -774,7 +774,7 @@ export function MobilePDVModal({
                       const isExpanded = expandedTabItemId === item.id;
 
                       return (
-                        <div key={item.id} className="border border-gray-100 rounded-xl overflow-hidden">
+                        <div key={item.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
                           <button
                             onClick={() => setExpandedTabItemId(isExpanded ? null : item.id)}
                             className="w-full flex items-center gap-3 p-3 text-left"
@@ -831,7 +831,7 @@ export function MobilePDVModal({
           </div>
 
           {/* Footer fixo */}
-          <div className="border-t border-gray-200 bg-white p-3 space-y-2">
+          <div className="border-t border-gray-300 bg-white p-4 space-y-3">
             {/* Subtotal e Total */}
             <div className="flex justify-between items-center px-1">
               <span className="text-sm text-gray-600">Total</span>
