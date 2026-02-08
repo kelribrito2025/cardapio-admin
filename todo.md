@@ -5660,3 +5660,4 @@
 - [x] Mostrar número do pedido no título do modal de Acompanhar Pedido (ex: Acompanhar Pedido #P32)
 - [x] Remover cards de Consumo e Cliente do modelo do recibo ao fechar mesa
 - [x] Adicionar controles de edição nos itens da comanda: aumentar/diminuir quantidade, editar, excluir com confirmação (estilo dropdown expandível)
+- [x] Substituir ícone do card Suporte via WhatsApp na página /ajuda pelo ícone WhatsApp fornecido (manter círculo verde)
