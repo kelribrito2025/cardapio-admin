@@ -575,30 +575,13 @@ export function MobilePDVModal({
               <div className="p-2 bg-red-100 rounded-xl">
                 <UtensilsCrossed className="h-5 w-5 text-red-500" />
               </div>
-              <div>
-                <h2 className="text-lg font-bold text-gray-900">Mesa {tableDisplayName}</h2>
-              </div>
+              <h2 className="text-lg font-bold text-gray-900">
+                Mesa {tableDisplayName} <span className="text-gray-400 font-normal">|</span> <span className="text-red-600">{formatCurrency(getDisplayTotal())}</span>
+              </h2>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
               <X className="h-5 w-5 text-gray-400" />
             </button>
-          </div>
-
-          {/* Resumo da mesa - linha única */}
-          <div className="bg-white px-6 py-3 flex items-center gap-4 text-sm text-gray-600 border-b border-gray-200">
-            <div className="flex items-center gap-1">
-              <Receipt className="h-3.5 w-3.5" />
-              <span>{totalItemsCount} {totalItemsCount === 1 ? 'item' : 'itens'}</span>
-            </div>
-            {occupiedAt && (
-              <div className="flex items-center gap-1">
-                <Clock className="h-3.5 w-3.5" />
-                <span>{formatDuration(occupiedAt)}</span>
-              </div>
-            )}
-            <div className="flex items-center gap-1 font-semibold text-gray-900">
-              <span>{formatCurrency(getDisplayTotal())}</span>
-            </div>
           </div>
 
           {/* Tabs: Consumo / Comanda */}
