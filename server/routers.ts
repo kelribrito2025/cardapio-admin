@@ -12,10 +12,12 @@ import { sdk } from "./_core/sdk";
 import { TRPCError } from "@trpc/server";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
 import { ifoodRouter } from "./ifoodRouter";
+import { adminRouter } from "./adminRouter";
 
 export const appRouter = router({
   system: systemRouter,
   ifood: ifoodRouter,
+  admin: adminRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

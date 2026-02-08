@@ -29,6 +29,13 @@ import Ajuda from "./pages/Ajuda";
 import MesasComandas from "./pages/MesasComandas";
 import { GlobalPDVHandle } from "./components/GlobalPDVHandle";
 
+// Admin Pages (Super Admin)
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminRestaurantes from "./pages/admin/AdminRestaurantes";
+import AdminRestauranteDetalhe from "./pages/admin/AdminRestauranteDetalhe";
+import AdminPlanos from "./pages/admin/AdminPlanos";
+import AdminTrials from "./pages/admin/AdminTrials";
 
 // Auth Pages
 import Login from "./pages/Login";
@@ -87,7 +94,15 @@ function Router() {
       {/* PWA de Impressão Automática */}
       <Route path="/printer-app" component={PrinterApp} />
       
-      {/* Admin routes - com NewOrdersProvider */}
+      {/* Super Admin routes - sem NewOrdersProvider */}
+      <Route path="/admin/login" component={AdminLogin} />
+      <Route path="/admin" component={AdminDashboard} />
+      <Route path="/admin/restaurantes/:id" component={AdminRestauranteDetalhe} />
+      <Route path="/admin/restaurantes" component={AdminRestaurantes} />
+      <Route path="/admin/planos" component={AdminPlanos} />
+      <Route path="/admin/trials" component={AdminTrials} />
+      
+      {/* Restaurant admin routes - com NewOrdersProvider */}
       <Route>
         <AdminRoutes />
       </Route>

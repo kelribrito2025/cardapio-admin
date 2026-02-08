@@ -5715,3 +5715,18 @@
 - [x] [Trial Expirado] Liberar todas as ações e remover bloqueio após pagamento
 - [x] [Trial Expirado] Testes vitest para bloqueio de trial expirado
 - [x] [Trial Expirado] Redesign do modal com estilo degradê vermelho da marca (glassmorphism)
+- [x] [Admin] Schema: tabela admin_users com role, email, password hash
+- [x] [Admin] Seed: criar admin inicial (admin@admin.com)
+- [x] [Admin] Backend: autenticação admin (login/logout/me) com JWT separado
+- [x] [Admin] Backend: router admin dashboard (stats: novos cadastros, trials, pagos, expirados)
+- [x] [Admin] Backend: router admin restaurantes (listar, detalhes, alterar plano, bloquear, reabrir menu, resetar trial)
+- [x] [Admin] Backend: router admin planos (CRUD de planos)
+- [x] [Admin] Backend: router admin trials (listar ativos, vencendo, expirados, ações)
+- [x] [Admin] Frontend: página login admin (/admin/login)
+- [x] [Admin] Frontend: layout admin com sidebar (mesmo estilo dashboard restaurante)
+- [x] [Admin] Frontend: dashboard admin com 4 cards clicáveis
+- [x] [Admin] Frontend: página Restaurantes (listagem + detalhes + ações)
+- [x] [Admin] Frontend: página Planos (CRUD)
+- [x] [Admin] Frontend: página Trials (visão rápida + ações)
+- [x] [Admin] Rotas no App.tsx e guard de autenticação admin
+- [x] [Admin] Testes vitest para routers admin
