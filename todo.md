@@ -5693,3 +5693,6 @@
 - [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Confirmação
 - [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Aplicar Cupom
 - [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Acompanhar Pedido
+- [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Informações
+- [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Como Chegar
+- [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Avaliações

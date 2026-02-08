@@ -2450,20 +2450,25 @@ export default function PublicMenu() {
           
           {/* Modal Content - Bottom Sheet no mobile */}
           <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
-            {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-xl">
-                  <Info className="h-5 w-5 text-blue-600" />
+            {/* Header - estilo vermelho */}
+            <div className="sticky top-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl z-10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <Info className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Informações</h2>
+                    <p className="text-sm text-white/80">Sobre o estabelecimento</p>
+                  </div>
                 </div>
-                <h2 className="text-lg font-bold text-gray-900">Informações</h2>
+                <button 
+                  onClick={() => setShowInfoModal(false)}
+                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                >
+                  <X className="h-5 w-5 text-white" />
+                </button>
               </div>
-              <button 
-                onClick={() => setShowInfoModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="h-5 w-5 text-gray-500" />
-              </button>
             </div>
 
             {/* Body */}
@@ -5382,25 +5387,27 @@ setOnlinePaymentUrl(null);
           
           {/* Modal Content - Bottom Sheet no mobile */}
           <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-lg md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
-            {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-yellow-100 rounded-xl">
-                  <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+            {/* Header - estilo vermelho */}
+            <div className="sticky top-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl z-10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <Star className="h-5 w-5 text-white fill-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Avaliações</h2>
+                    <p className="text-sm text-white/80">
+                      {establishment.rating ? Number(establishment.rating).toFixed(1) : '0.0'} • {establishment.reviewCount || 0} avaliações
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-lg font-bold text-gray-900">Avaliações</h2>
-                  <p className="text-sm text-gray-500">
-                    {establishment.rating ? Number(establishment.rating).toFixed(1) : '0.0'} • {establishment.reviewCount || 0} avaliações
-                  </p>
-                </div>
+                <button 
+                  onClick={() => setShowReviewsModal(false)}
+                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                >
+                  <X className="h-5 w-5 text-white" />
+                </button>
               </div>
-              <button 
-                onClick={() => setShowReviewsModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="h-5 w-5 text-gray-500" />
-              </button>
             </div>
 
             {/* Body - Lista de Avaliações */}
@@ -5492,26 +5499,28 @@ setOnlinePaymentUrl(null);
           
           {/* Modal Content - Bottom Sheet Style */}
           <div className="relative bg-gray-200 w-full md:max-w-md md:mx-4 md:rounded-2xl rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
-            {/* Header */}
-            <div className="sticky top-0 bg-white flex items-center justify-between px-6 py-4 border-b border-gray-300 rounded-t-2xl" style={{height: '68px'}}>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 rounded-xl">
-                  <MapPin className="h-5 w-5 text-red-500" />
+            {/* Header - estilo vermelho */}
+            <div className="sticky top-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl z-10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <MapPin className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Como Chegar</h2>
+                    <p className="text-sm text-white/80 truncate max-w-[250px]">
+                      {establishment.street}
+                      {establishment.number && `, ${establishment.number}`}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-lg font-bold text-gray-900">Como chegar</h2>
-                  <p className="text-sm text-gray-500 truncate max-w-[250px]">
-                    {establishment.street}
-                    {establishment.number && `, ${establishment.number}`}
-                  </p>
-                </div>
+                <button 
+                  onClick={() => setShowNavigationModal(false)}
+                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                >
+                  <X className="h-5 w-5 text-white" />
+                </button>
               </div>
-              <button 
-                onClick={() => setShowNavigationModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="h-5 w-5 text-gray-500" />
-              </button>
             </div>
 
             {/* Endereço Completo */}
