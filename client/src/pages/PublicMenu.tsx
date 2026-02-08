@@ -2332,7 +2332,11 @@ export default function PublicMenu() {
                             return;
                           }
                           setOrderSent(false);
-                          setOrderError(null); // Limpar erro anterior
+                          setOrderError(null);
+                          setOnlinePaymentStatus('idle');
+                          setOnlinePaymentSessionId(null);
+                          setOnlinePaymentUrl(null);
+                          setCreatedOrderNumber(null);
                           setCheckoutStep(1);
                         }
                       }}
@@ -4491,7 +4495,11 @@ setOnlinePaymentUrl(null);
                             }
                             setShowMobileBag(false);
                             setOrderSent(false);
-                            setOrderError(null); // Limpar erro anterior
+                            setOrderError(null);
+                            setOnlinePaymentStatus('idle');
+                            setOnlinePaymentSessionId(null);
+                            setOnlinePaymentUrl(null);
+                            setCreatedOrderNumber(null);
                             setCheckoutStep(1);
                           }}
                           disabled={!isOpen}
@@ -4785,8 +4793,13 @@ setOnlinePaymentUrl(null);
                                       }
                                       
                                       setShowOrdersModal(false);
-                                      // Abrir modal de resumo (checkout step 1)
-                                      setOrderError(null); // Limpar erro anterior
+                                      // Resetar estados de pedido anterior
+                                      setOrderSent(false);
+                                      setOrderError(null);
+                                      setOnlinePaymentStatus('idle');
+                                      setOnlinePaymentSessionId(null);
+                                      setOnlinePaymentUrl(null);
+                                      setCreatedOrderNumber(null);
                                       setCheckoutStep(1);
                                     }}
                                     className="mt-3 w-full py-2 bg-green-500 text-white text-sm font-medium rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
