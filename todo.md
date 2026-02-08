@@ -5736,3 +5736,4 @@
 - [x] [Admin] Frontend: gráfico donut Distribuição por Status (Ativos vs Em Teste)
 - [x] [Admin] Frontend: cards Receita Anual Projetada, Ticket Médio, Churn Rate
 - [x] [Admin] Rota /admin/relatorios e link na sidebar
+- [x] [Bug] Página Relatórios admin sem sidebar (AdminPanelLayout)

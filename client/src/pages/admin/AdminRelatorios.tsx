@@ -3,6 +3,7 @@
  * KPIs, gráfico donut de distribuição por status, receita anual, ticket médio, churn rate
  */
 import { trpc } from "@/lib/trpc";
+import AdminPanelLayout from "@/components/AdminPanelLayout";
 import {
   Building2,
   DollarSign,
@@ -17,17 +18,21 @@ export default function AdminRelatorios() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-red-500" />
-      </div>
+      <AdminPanelLayout>
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-red-500" />
+        </div>
+      </AdminPanelLayout>
     );
   }
 
   if (!data) {
     return (
-      <div className="text-center text-gray-500 py-12">
-        Erro ao carregar relatórios.
-      </div>
+      <AdminPanelLayout>
+        <div className="text-center text-gray-500 py-12">
+          Erro ao carregar relatórios.
+        </div>
+      </AdminPanelLayout>
     );
   }
 
@@ -50,6 +55,7 @@ export default function AdminRelatorios() {
     }).format(value);
 
   return (
+    <AdminPanelLayout>
     <div className="space-y-6">
       {/* Header */}
       <div>
@@ -212,6 +218,7 @@ export default function AdminRelatorios() {
         />
       </div>
     </div>
+    </AdminPanelLayout>
   );
 }
 
