@@ -46,14 +46,6 @@ export const SMS_PACKAGES = [
     description: "Pacote com 500 créditos SMS",
     popular: true,
   },
-  {
-    id: "sms_1000",
-    name: "1000 SMS",
-    smsCount: 1000,
-    priceInCents: 9700, // R$ 97,00 (1000 x R$ 0,097)
-    priceFormatted: "R$ 97,00",
-    description: "Pacote com 1000 créditos SMS",
-  },
 ];
 
 /**
