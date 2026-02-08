@@ -1601,7 +1601,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             </div>
 
             {/* Lista de Itens */}
-            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+            <div className="flex-1 overflow-y-auto p-3 space-y-2" style={{backgroundColor: '#f9fafc'}}>
               {/* Aba Mesa - Carrinho (itens pendentes) */}
               {selectedTab === 'consumo' && (
                 <>

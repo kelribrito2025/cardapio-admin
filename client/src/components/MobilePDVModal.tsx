@@ -619,7 +619,7 @@ export function MobilePDVModal({
           )}
 
           {/* Conteúdo principal - scrollável */}
-          <div className="flex-1 overflow-y-auto overscroll-contain">
+          <div className="flex-1 overflow-y-auto overscroll-contain" style={{backgroundColor: '#f9fafc'}}>
             {selectedTab === 'consumo' ? (
               <>
                 {/* Campo de busca de produtos - estilo dropdown como menu público */}
