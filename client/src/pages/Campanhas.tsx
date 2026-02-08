@@ -1315,8 +1315,8 @@ export default function Campanhas() {
           setIsCustomMode(false);
         }
       }}>
-        <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
-          <div className="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 flex items-center justify-between">
+        <DialogContent className="sm:max-w-lg p-0 overflow-hidden" showCloseButton={false}>
+          <div className="flex-shrink-0 bg-gradient-to-r from-red-500 to-red-600 px-6 flex items-center justify-between rounded-t-lg" style={{paddingTop: '16px', paddingBottom: '16px', height: '79px'}}>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-white/20 rounded-lg">
                 <CreditCard className="h-5 w-5 text-white" />
@@ -1326,6 +1326,12 @@ export default function Campanhas() {
                 <p className="text-sm text-white/80">Escolha um pacote de créditos</p>
               </div>
             </div>
+            <button
+              onClick={() => setShowRecargaModal(false)}
+              className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+            >
+              <X className="h-5 w-5 text-white" />
+            </button>
           </div>
           <div className="space-y-4 p-6 pt-4">
             <div className="bg-emerald-50 rounded-lg p-3">
