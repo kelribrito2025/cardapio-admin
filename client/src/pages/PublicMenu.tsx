@@ -3022,7 +3022,17 @@ export default function PublicMenu() {
                   </h2>
                 </div>
                 <button 
-                  onClick={() => setCheckoutStep(0)}
+                  onClick={() => {
+                    setCheckoutStep(0);
+                    // Reset all order states when closing checkout
+                    setOrderSent(false);
+                    setOrderError(null);
+                    setOnlinePaymentStatus('idle');
+                    setOnlinePaymentSessionId(null);
+                    setOnlinePaymentUrl(null);
+                    setCreatedOrderNumber(null);
+                    setIsSendingOrder(false);
+                  }}
                   className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 >
                   <X className="h-5 w-5 text-gray-500" />
@@ -3840,7 +3850,14 @@ export default function PublicMenu() {
               <div className="flex-shrink-0 border-t px-6 py-4">
                 <button
                   onClick={() => {
-                    setOrderError(null); // Limpar erro anterior ao avançar
+                    // Reset all order states before entering confirmation step
+                    setOrderSent(false);
+                    setOrderError(null);
+                    setOnlinePaymentStatus('idle');
+                    setOnlinePaymentSessionId(null);
+                    setOnlinePaymentUrl(null);
+                    setCreatedOrderNumber(null);
+                    setIsSendingOrder(false);
                     setCheckoutStep(4);
                   }}
                   disabled={!customerInfo.name || customerInfo.phone.replace(/\D/g, "").length < 11}
@@ -3992,10 +4009,14 @@ setOnlinePaymentUrl(null);
                   onClick={() => {
                     setCheckoutStep(0);
                     setShowTrackingModal(true);
-                    // Reset payment states
+                    // Reset all order states
+                    setOrderSent(false);
+                    setOrderError(null);
                     setOnlinePaymentStatus('idle');
                     setOnlinePaymentSessionId(null);
                     setOnlinePaymentUrl(null);
+                    setCreatedOrderNumber(null);
+                    setIsSendingOrder(false);
                   }}
                   className="w-full py-3.5 bg-primary text-white font-semibold rounded-xl transition-colors hover:bg-primary/90 flex items-center justify-center gap-2"
                 >
