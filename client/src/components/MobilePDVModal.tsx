@@ -541,7 +541,7 @@ export function MobilePDVModal({
 
       {/* Modal Bottom Sheet */}
       <div className="fixed inset-x-0 bottom-0 z-[71] md:hidden animate-in slide-in-from-bottom duration-300">
-        <div className="bg-white rounded-t-2xl shadow-2xl flex flex-col" style={{ maxHeight: '90vh', height: '90vh' }}>
+        <div className="bg-white rounded-t-2xl shadow-2xl flex flex-col" style={{ maxHeight: '90vh' }}>
 
           {/* Drag indicator */}
           <div className="flex justify-center pt-2 pb-1">

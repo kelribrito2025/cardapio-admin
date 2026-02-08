@@ -5670,3 +5670,4 @@
 - [x] [Mobile Mesas] Integrar: no mobile abrir MobilePDVModal ao clicar no card da mesa, no desktop manter PDVSlidebar
 - [x] [Mobile Mesas] Remover no mobile: lista de categorias horizontal, atalho rápido de mesas, layout grade desktop
 - [x] [Mobile Mesas] Implementar ações: enviar pedido, limpar, fechar mesa no modal mobile
+- [x] [Mobile Mesas] Corrigir altura do MobilePDVModal para max-height 90vh (estava ocupando 100% da tela)
