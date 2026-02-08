@@ -5683,3 +5683,4 @@
 - [x] [Mobile Mesas] Na aba Consumo, itens do carrinho devem aparecer no mesmo estilo da aba Comanda (card com borda vermelha, badge quantidade, nome e preço) em vez de misturar com resultados de busca
 - [x] [Mobile Mesas] Busca no MobilePDVModal deve ignorar acentos (ex: digitar "agua" deve encontrar "Água")
 - [x] [Mobile Mesas] Botões de espaços devem ficar em linha horizontal com scroll lateral (arrastar) no mobile, sem quebra de linha
+- [x] [Menu Público] Cabeçalho do modal Meus Pedidos deve ficar igual ao da Conferência do Pedido (fundo vermelho gradiente, ícone, texto branco, botão X)

@@ -4558,20 +4558,25 @@ setOnlinePaymentUrl(null);
           
           {/* Modal - Bottom Sheet no mobile com altura máxima de 80% */}
           <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
-            {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 rounded-xl">
-                  <ClipboardList className="h-5 w-5 text-purple-500" />
+            {/* Header - estilo Conferência do Pedido */}
+            <div className="sticky top-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl z-10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <ClipboardList className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Meus Pedidos</h2>
+                    <p className="text-sm text-white/80">Acompanhe seus pedidos</p>
+                  </div>
                 </div>
-                <h2 className="text-lg font-bold text-gray-900">Meus Pedidos</h2>
+                <button 
+                  onClick={() => setShowOrdersModal(false)}
+                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                >
+                  <X className="h-5 w-5 text-white" />
+                </button>
               </div>
-              <button 
-                onClick={() => setShowOrdersModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="h-5 w-5 text-gray-500" />
-              </button>
             </div>
 
             {/* Body */}
