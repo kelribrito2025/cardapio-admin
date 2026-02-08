@@ -3625,7 +3625,7 @@ export default function PublicMenu() {
                   </div>
                   <div className="bg-gray-50 rounded-xl p-4 space-y-2">
                     {cart.map((item, index) => (
-                      <div key={index} className="text-sm">
+                      <div key={index} className="text-sm border-l-4 border-red-500 pl-3 py-1 rounded-r-lg">
                         <div className="flex justify-between items-start">
                           <span className="text-gray-800 font-medium">{item.quantity}x {item.name}</span>
                           {Number(item.price) * item.quantity > 0 && (
