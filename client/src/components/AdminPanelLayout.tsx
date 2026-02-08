@@ -12,6 +12,7 @@ import {
   Store,
   CreditCard,
   Clock,
+  BarChart3,
   LogOut,
   Shield,
   Menu,
@@ -25,6 +26,7 @@ const adminMenuItems = [
   { icon: Store, label: "Restaurantes", path: "/admin/restaurantes" },
   { icon: CreditCard, label: "Planos", path: "/admin/planos" },
   { icon: Clock, label: "Trials", path: "/admin/trials" },
+  { icon: BarChart3, label: "Relatórios", path: "/admin/relatorios" },
 ];
 
 interface AdminPanelLayoutProps {

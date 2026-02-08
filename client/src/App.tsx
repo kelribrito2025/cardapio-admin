@@ -36,6 +36,7 @@ import AdminRestaurantes from "./pages/admin/AdminRestaurantes";
 import AdminRestauranteDetalhe from "./pages/admin/AdminRestauranteDetalhe";
 import AdminPlanos from "./pages/admin/AdminPlanos";
 import AdminTrials from "./pages/admin/AdminTrials";
+import AdminRelatorios from "./pages/admin/AdminRelatorios";
 
 // Auth Pages
 import Login from "./pages/Login";
@@ -101,6 +102,7 @@ function Router() {
       <Route path="/admin/restaurantes" component={AdminRestaurantes} />
       <Route path="/admin/planos" component={AdminPlanos} />
       <Route path="/admin/trials" component={AdminTrials} />
+      <Route path="/admin/relatorios" component={AdminRelatorios} />
       
       {/* Restaurant admin routes - com NewOrdersProvider */}
       <Route>

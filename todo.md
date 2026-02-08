@@ -5731,3 +5731,8 @@
 - [x] [Admin] Rotas no App.tsx e guard de autenticação admin
 - [x] [Admin] Testes vitest para routers admin
 - [x] [Bug] Admin login não redireciona para dashboard - fica na página de login após logar
+- [x] [Admin] Backend: endpoint de relatórios (total restaurantes, receita mensal, taxa conversão, ativos, distribuição status, receita anual, ticket médio, churn rate)
+- [x] [Admin] Frontend: página Relatórios com 4 KPI cards no topo
+- [x] [Admin] Frontend: gráfico donut Distribuição por Status (Ativos vs Em Teste)
+- [x] [Admin] Frontend: cards Receita Anual Projetada, Ticket Médio, Churn Rate
+- [x] [Admin] Rota /admin/relatorios e link na sidebar

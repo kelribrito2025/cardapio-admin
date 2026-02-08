@@ -110,6 +110,13 @@ export const adminRouter = router({
       }),
   }),
 
+  // ============ REPORTS ============
+  reports: router({
+    data: adminProcedure.query(async () => {
+      return adminDb.getAdminReportsData();
+    }),
+  }),
+
   // ============ RESTAURANTS ============
   restaurants: router({
     list: adminProcedure

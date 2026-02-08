@@ -422,3 +422,124 @@ export async function seedAdminUser(email: string, passwordHash: string, name: s
   console.log("[Seed] Admin user created:", email);
   return created;
 }
+
+// ============ ADMIN REPORTS ============
+
+export async function getAdminReportsData() {
+  const db = await getDb();
+  if (!db) return null;
+
+  // Total de restaurantes
+  const [totalResult] = await db
+    .select({ count: count() })
+    .from(establishments);
+  const totalRestaurants = totalResult?.count ?? 0;
+
+  // Restaurantes com plano pago (basic, pro, enterprise)
+  const [paidResult] = await db
+    .select({ count: count() })
+    .from(establishments)
+    .where(
+      or(
+        eq(establishments.planType, "basic"),
+        eq(establishments.planType, "pro"),
+        eq(establishments.planType, "enterprise")
+      )
+    );
+  const paidRestaurants = paidResult?.count ?? 0;
+
+  // Restaurantes em trial ativo
+  const [activeTrialResult] = await db
+    .select({ count: count() })
+    .from(establishments)
+    .where(
+      and(
+        eq(establishments.planType, "trial"),
+        sql`DATE_ADD(${establishments.trialStartDate}, INTERVAL ${establishments.trialDays} DAY) > NOW()`
+      )
+    );
+  const activeTrials = activeTrialResult?.count ?? 0;
+
+  // Trials expirados
+  const [expiredTrialResult] = await db
+    .select({ count: count() })
+    .from(establishments)
+    .where(
+      and(
+        eq(establishments.planType, "trial"),
+        sql`DATE_ADD(${establishments.trialStartDate}, INTERVAL ${establishments.trialDays} DAY) <= NOW()`
+      )
+    );
+  const expiredTrials = expiredTrialResult?.count ?? 0;
+
+  // Receita mensal estimada (baseada nos planos ativos)
+  // basic = R$29, pro = R$59, enterprise = R$99
+  const planPrices: Record<string, number> = {
+    basic: 29,
+    pro: 59,
+    enterprise: 99,
+  };
+
+  const paidBreakdown = await db
+    .select({
+      planType: establishments.planType,
+      count: count(),
+    })
+    .from(establishments)
+    .where(
+      or(
+        eq(establishments.planType, "basic"),
+        eq(establishments.planType, "pro"),
+        eq(establishments.planType, "enterprise")
+      )
+    )
+    .groupBy(establishments.planType);
+
+  let monthlyRevenue = 0;
+  const planDistribution: Record<string, number> = {};
+  for (const row of paidBreakdown) {
+    const price = planPrices[row.planType] ?? 0;
+    monthlyRevenue += price * row.count;
+    planDistribution[row.planType] = row.count;
+  }
+
+  // Taxa de conversão: (pagos / (pagos + trials expirados)) * 100
+  const totalTrialCompleted = paidRestaurants + expiredTrials;
+  const conversionRate = totalTrialCompleted > 0
+    ? (paidRestaurants / totalTrialCompleted) * 100
+    : 0;
+
+  // Receita anual projetada
+  const annualRevenue = monthlyRevenue * 12;
+
+  // Ticket médio por restaurante ativo
+  const ticketMedio = paidRestaurants > 0
+    ? monthlyRevenue / paidRestaurants
+    : 0;
+
+  // Churn rate: expirados / total * 100
+  const churnRate = totalRestaurants > 0
+    ? (expiredTrials / totalRestaurants) * 100
+    : 0;
+
+  // Distribuição por status para gráfico donut
+  const statusDistribution = {
+    ativos: paidRestaurants,
+    emTeste: activeTrials,
+    expirados: expiredTrials,
+  };
+
+  return {
+    totalRestaurants,
+    monthlyRevenue,
+    conversionRate: Math.round(conversionRate * 10) / 10,
+    activeRestaurants: paidRestaurants,
+    annualRevenue,
+    ticketMedio: Math.round(ticketMedio * 100) / 100,
+    churnRate: Math.round(churnRate * 10) / 10,
+    statusDistribution,
+    planDistribution,
+    activeTrials,
+    expiredTrials,
+  };
+}
