@@ -5702,3 +5702,4 @@
 - [x] [SMS] Remover pacote de 1000 SMS do modal de recarregar saldo SMS
 - [x] [Campanhas SMS] Cabeçalho do modal Recarregar Saldo SMS deve ter o mesmo estilo vermelho gradiente dos modais do menu público
 - [x] [Campanhas SMS] Corrigir cabeçalho do modal Recarregar Saldo SMS para ficar exatamente igual ao da Sua Sacola (ícone maior, botão X com fundo arredondado, cantos arredondados)
+- [x] [Campanhas SMS] Remover borda branca do DialogContent do modal Recarregar Saldo SMS

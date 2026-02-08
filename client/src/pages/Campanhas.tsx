@@ -1315,7 +1315,7 @@ export default function Campanhas() {
           setIsCustomMode(false);
         }
       }}>
-        <DialogContent className="sm:max-w-lg p-0 overflow-hidden" showCloseButton={false}>
+        <DialogContent className="sm:max-w-lg p-0 overflow-hidden border-0" showCloseButton={false}>
           <div className="flex-shrink-0 bg-gradient-to-r from-red-500 to-red-600 px-6 flex items-center justify-between rounded-t-lg" style={{paddingTop: '16px', paddingBottom: '16px', height: '79px'}}>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-white/20 rounded-lg">
