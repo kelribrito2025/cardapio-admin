@@ -4048,9 +4048,7 @@ setOnlinePaymentUrl(null);
                     }
                     
                     setIsSendingOrder(true);
-                    
-                    // Delay de 3 segundos para mostrar loading
-                    setTimeout(() => {
+                    {
                     // Calcular totais
                     const subtotal = cart.reduce((sum, item) => {
                       const itemTotal = parseFloat(item.price) * item.quantity;
@@ -4127,7 +4125,7 @@ setOnlinePaymentUrl(null);
                         items: orderItems,
                       });
                     }
-                    }, 3000); // Delay de 3 segundos
+                    }
                   }}
                   disabled={isSendingOrder || !isOpen || !!changeAmountError}
                   className={`w-full py-3.5 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
