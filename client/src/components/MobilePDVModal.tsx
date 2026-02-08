@@ -643,7 +643,7 @@ export function MobilePDVModal({
                     )}
 
                     {/* Dropdown de resultados flutuante - estilo menu público */}
-                    {searchFocused && searchQuery.trim() && filteredProducts.length > 0 && (
+                    {searchQuery.trim() && filteredProducts.length > 0 && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-200 max-h-[60vh] overflow-y-auto z-[60] p-2 space-y-1">
                         {filteredProducts.slice(0, 15).map((product) => (
                           <div
@@ -676,7 +676,7 @@ export function MobilePDVModal({
                     )}
 
                     {/* Mensagem de nenhum resultado */}
-                    {searchFocused && searchQuery.trim() && filteredProducts.length === 0 && (
+                    {searchQuery.trim() && filteredProducts.length === 0 && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-[60]">
                         <p className="text-sm text-gray-500 text-center">Nenhum produto encontrado</p>
                       </div>
@@ -684,42 +684,8 @@ export function MobilePDVModal({
                   </div>
                 </div>
 
-                {activeView === 'search' && searchQuery.trim() && !searchFocused ? (
-                  /* Resultados da busca em tela cheia (quando não está focado no input) */
-                  <div className="p-4">
-                    {filteredProducts.length === 0 ? (
-                      <div className="text-center py-8 text-gray-500">
-                        <Search className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-                        <p className="text-sm">Nenhum produto encontrado</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        {filteredProducts.map((product) => (
-                          <div
-                            key={product.id}
-                            className="w-full flex items-center gap-3 p-3 rounded-xl bg-white shadow-sm hover:shadow-md transition-all text-left"
-                          >
-                            <div className="flex-1 min-w-0" onClick={() => handleProductClick(product)}>
-                              <p className="font-medium text-sm text-gray-900 truncate">{product.name}</p>
-                              {product.description && (
-                                <p className="text-xs text-gray-500 truncate">{product.description}</p>
-                              )}
-                              <p className="text-sm font-semibold text-red-500 mt-0.5">{formatCurrency(parseFloat(product.price))}</p>
-                            </div>
-                            <button
-                              onClick={(e) => handleQuickAdd(product, e)}
-                              className="p-2 bg-red-50 hover:bg-red-100 rounded-full flex-shrink-0 transition-colors"
-                            >
-                              <Plus className="h-4 w-4 text-red-500" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  /* Lista de itens no carrinho */
-                  <div className="p-4">
+                {/* Lista de itens no carrinho - sempre visível */}
+                <div className="p-4">
                     {cart.length === 0 ? (
                       <div className="text-center py-10 text-gray-500">
                         <ShoppingBag className="h-10 w-10 mx-auto mb-3 text-gray-300" />
@@ -796,7 +762,6 @@ export function MobilePDVModal({
                       </div>
                     )}
                   </div>
-                )}
               </>
             ) : (
               /* Aba Comanda - itens já enviados */

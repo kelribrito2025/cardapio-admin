@@ -5680,3 +5680,4 @@
 - [x] [Mobile Mesas] Alterar MobilePDVModal para tela cheia (100vh) ao invés de bottom sheet 90vh, manter botão de fechar
 - [x] [Mobile Mesas] Simplificar header do MobilePDVModal: remover resumo (itens, tempo, valor) e exibir apenas "Mesa X | R$ XX,XX" no título
 - [x] [Mobile Mesas] Remover fotos dos itens na lista do carrinho/comanda e usar estilo desktop: card com borda vermelha, badge quantidade (ex: 1x), nome e preço
+- [x] [Mobile Mesas] Na aba Consumo, itens do carrinho devem aparecer no mesmo estilo da aba Comanda (card com borda vermelha, badge quantidade, nome e preço) em vez de misturar com resultados de busca
