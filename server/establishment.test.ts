@@ -340,8 +340,8 @@ describe("Dashboard Router", () => {
   describe("dashboard.stats", () => {
     it("returns dashboard statistics", async () => {
       const mockStats = {
-        ordersToday: 10,
-        revenueToday: 500,
+        ordersCount: 10,
+        revenue: 500,
         avgTicket: 50,
         lowStockCount: 2,
       };
@@ -354,7 +354,7 @@ describe("Dashboard Router", () => {
       const result = await caller.dashboard.stats({ establishmentId: 1 });
 
       expect(result).toEqual(mockStats);
-      expect(db.getDashboardStats).toHaveBeenCalledWith(1);
+      expect(db.getDashboardStats).toHaveBeenCalledWith(1, 'today');
     });
   });
 

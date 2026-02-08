@@ -947,9 +947,9 @@ export const appRouter = router({
   // ============ DASHBOARD ============
   dashboard: router({
     stats: protectedProcedure
-      .input(z.object({ establishmentId: z.number() }))
+      .input(z.object({ establishmentId: z.number(), period: z.enum(['today', 'week', 'month']).optional() }))
       .query(async ({ input }) => {
-        return db.getDashboardStats(input.establishmentId);
+        return db.getDashboardStats(input.establishmentId, input.period ?? 'today');
       }),
     
     weeklyStats: protectedProcedure

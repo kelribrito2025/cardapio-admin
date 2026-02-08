@@ -5737,3 +5737,6 @@
 - [x] [Admin] Frontend: cards Receita Anual Projetada, Ticket Médio, Churn Rate
 - [x] [Admin] Rota /admin/relatorios e link na sidebar
 - [x] [Bug] Página Relatórios admin sem sidebar (AdminPanelLayout)
+- [x] [Dashboard] Backend: atualizar endpoints de métricas para aceitar parâmetro de período (today, week, month)
+- [x] [Dashboard] Frontend: adicionar filtro de período (Hoje, Esta semana, Este mês) no topo da Dashboard
+- [x] [Dashboard] Conectar filtro aos endpoints para atualizar todos os cards e métricas

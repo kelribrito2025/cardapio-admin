@@ -22,12 +22,20 @@ import {
 } from "recharts";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
+import { Calendar } from "lucide-react";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
+
+const periodOptions = [
+  { value: 'today' as const, label: 'Hoje' },
+  { value: 'week' as const, label: 'Esta semana' },
+  { value: 'month' as const, label: 'Este mês' },
+];
 
 export default function Dashboard() {
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
+  const [period, setPeriod] = useState<'today' | 'week' | 'month'>('today');
 
   useEffect(() => {
     if (establishment) {
@@ -35,9 +43,15 @@ export default function Dashboard() {
     }
   }, [establishment]);
 
+  // Memoize the period input to avoid infinite re-renders
+  const statsInput = useMemo(() => ({
+    establishmentId: establishmentId!,
+    period,
+  }), [establishmentId, period]);
+
   // All hooks MUST be called before any early return
   const { data: stats, isLoading: statsLoading } = trpc.dashboard.stats.useQuery(
-    { establishmentId: establishmentId! },
+    statsInput,
     { enabled: !!establishmentId }
   );
 
@@ -106,25 +120,40 @@ export default function Dashboard() {
 
   return (
     <AdminLayout>
-      <div className="mb-6">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <PageHeader 
           title="Dashboard" 
           description="Visão geral do seu estabelecimento"
         />
+        <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
+          {periodOptions.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setPeriod(opt.value)}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                period === opt.value
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
         <StatCard
-          title="Pedidos Hoje"
-          value={stats?.ordersToday ?? 0}
+          title={period === 'today' ? 'Pedidos Hoje' : period === 'week' ? 'Pedidos da Semana' : 'Pedidos do Mês'}
+          value={stats?.ordersCount ?? 0}
           icon={ShoppingBag}
           loading={statsLoading}
           variant="blue"
         />
         <StatCard
-          title="Faturamento Hoje"
-          value={formatCurrency(stats?.revenueToday ?? 0)}
+          title={period === 'today' ? 'Faturamento Hoje' : period === 'week' ? 'Faturamento da Semana' : 'Faturamento do Mês'}
+          value={formatCurrency(stats?.revenue ?? 0)}
           icon={DollarSign}
           loading={statsLoading}
           variant="emerald"

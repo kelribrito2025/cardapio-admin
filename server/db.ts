@@ -1238,18 +1238,31 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
 }
 
 // ============ DASHBOARD/STATS FUNCTIONS ============
-export async function getDashboardStats(establishmentId: number) {
+export async function getDashboardStats(establishmentId: number, period: 'today' | 'week' | 'month' = 'today') {
   const db = await getDb();
-  if (!db) return { ordersToday: 0, revenueToday: 0, avgTicket: 0, lowStockCount: 0 };
+  if (!db) return { ordersCount: 0, revenue: 0, avgTicket: 0, lowStockCount: 0 };
   
-  // Usar timezone do Brasil (América/São_Paulo) para calcular o início do dia
+  // Usar timezone do Brasil (América/São_Paulo) para calcular o início do período
   const now = new Date();
   const brazilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-  const today = new Date(brazilTime.getFullYear(), brazilTime.getMonth(), brazilTime.getDate());
-  // Converter de volta para UTC para comparar com o banco
-  const todayUTC = new Date(today.getTime() + (3 * 60 * 60 * 1000)); // GMT-3
   
-  // Orders today
+  let periodStart: Date;
+  
+  if (period === 'today') {
+    periodStart = new Date(brazilTime.getFullYear(), brazilTime.getMonth(), brazilTime.getDate());
+  } else if (period === 'week') {
+    const currentDay = brazilTime.getDay(); // 0=Dom, 1=Seg, ..., 6=Sáb
+    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+    periodStart = new Date(brazilTime.getFullYear(), brazilTime.getMonth(), brazilTime.getDate() - daysFromMonday);
+  } else {
+    // month
+    periodStart = new Date(brazilTime.getFullYear(), brazilTime.getMonth(), 1);
+  }
+  
+  // Converter de volta para UTC para comparar com o banco (GMT-3)
+  const periodStartUTC = new Date(periodStart.getTime() + (3 * 60 * 60 * 1000));
+  
+  // Orders no período
   const ordersResult = await db.select({ 
     count: sql<number>`count(*)`,
     total: sql<number>`COALESCE(SUM(total), 0)`
@@ -1257,13 +1270,13 @@ export async function getDashboardStats(establishmentId: number) {
     .from(orders)
     .where(and(
       eq(orders.establishmentId, establishmentId),
-      gte(orders.createdAt, todayUTC),
+      gte(orders.createdAt, periodStartUTC),
       eq(orders.status, "completed")
     ));
   
-  const ordersToday = ordersResult[0]?.count ?? 0;
-  const revenueToday = Number(ordersResult[0]?.total ?? 0);
-  const avgTicket = ordersToday > 0 ? revenueToday / ordersToday : 0;
+  const ordersCount = ordersResult[0]?.count ?? 0;
+  const revenue = Number(ordersResult[0]?.total ?? 0);
+  const avgTicket = ordersCount > 0 ? revenue / ordersCount : 0;
   
   // Low stock count
   const lowStockResult = await db.select({ count: sql<number>`count(*)` })
@@ -1275,7 +1288,7 @@ export async function getDashboardStats(establishmentId: number) {
   
   const lowStockCount = lowStockResult[0]?.count ?? 0;
   
-  return { ordersToday, revenueToday, avgTicket, lowStockCount };
+  return { ordersCount, revenue, avgTicket, lowStockCount };
 }
 
 export async function getWeeklyStats(establishmentId: number) {
