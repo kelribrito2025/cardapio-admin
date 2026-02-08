@@ -5662,3 +5662,4 @@
 - [x] Adicionar controles de edição nos itens da comanda: aumentar/diminuir quantidade, editar, excluir com confirmação (estilo dropdown expandível)
 - [ ] Substituir ícone do card Suporte via WhatsApp na página /ajuda pelo ícone WhatsApp fornecido (manter círculo verde) — CANCELADO pelo usuário, revertido ao ícone original
 - [x] Reduzir tamanho dos botões de controle (+/-/lixeira) nos itens da comanda de 32px para 25px
+- [x] Ocultar cards de Ticket Médio e Faturamento na versão mobile da página de Mesas (exibir apenas no desktop)
