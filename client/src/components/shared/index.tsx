@@ -9,6 +9,7 @@ interface StatCardProps {
   trend?: {
     value: number;
     isPositive: boolean;
+    label?: string;
   };
   loading?: boolean;
   className?: string;
@@ -96,7 +97,7 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className, 
                 : "bg-red-50 text-red-600"
             )}>
               <span>{trend.isPositive ? "↑" : "↓"}</span>
-              <span>{Math.abs(trend.value)}% vs ontem</span>
+              <span>{Math.abs(trend.value)}% {trend.label || 'vs ontem'}</span>
             </div>
           )}
         </div>

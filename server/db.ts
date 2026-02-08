@@ -1240,29 +1240,44 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
 // ============ DASHBOARD/STATS FUNCTIONS ============
 export async function getDashboardStats(establishmentId: number, period: 'today' | 'week' | 'month' = 'today') {
   const db = await getDb();
-  if (!db) return { ordersCount: 0, revenue: 0, avgTicket: 0, lowStockCount: 0 };
+  if (!db) return { ordersCount: 0, revenue: 0, avgTicket: 0, lowStockCount: 0, ordersChange: 0, revenueChange: 0, avgTicketChange: 0, lowStockChange: 0 };
   
   // Usar timezone do Brasil (América/São_Paulo) para calcular o início do período
   const now = new Date();
   const brazilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
   
   let periodStart: Date;
+  let prevPeriodStart: Date;
+  let prevPeriodEnd: Date;
   
   if (period === 'today') {
     periodStart = new Date(brazilTime.getFullYear(), brazilTime.getMonth(), brazilTime.getDate());
+    // Período anterior: ontem
+    prevPeriodStart = new Date(periodStart);
+    prevPeriodStart.setDate(prevPeriodStart.getDate() - 1);
+    prevPeriodEnd = new Date(periodStart);
   } else if (period === 'week') {
     const currentDay = brazilTime.getDay(); // 0=Dom, 1=Seg, ..., 6=Sáb
     const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
     periodStart = new Date(brazilTime.getFullYear(), brazilTime.getMonth(), brazilTime.getDate() - daysFromMonday);
+    // Período anterior: semana passada
+    prevPeriodStart = new Date(periodStart);
+    prevPeriodStart.setDate(prevPeriodStart.getDate() - 7);
+    prevPeriodEnd = new Date(periodStart);
   } else {
     // month
     periodStart = new Date(brazilTime.getFullYear(), brazilTime.getMonth(), 1);
+    // Período anterior: mês passado
+    prevPeriodStart = new Date(brazilTime.getFullYear(), brazilTime.getMonth() - 1, 1);
+    prevPeriodEnd = new Date(periodStart);
   }
   
   // Converter de volta para UTC para comparar com o banco (GMT-3)
   const periodStartUTC = new Date(periodStart.getTime() + (3 * 60 * 60 * 1000));
+  const prevPeriodStartUTC = new Date(prevPeriodStart.getTime() + (3 * 60 * 60 * 1000));
+  const prevPeriodEndUTC = new Date(prevPeriodEnd.getTime() + (3 * 60 * 60 * 1000));
   
-  // Orders no período
+  // Orders no período atual
   const ordersResult = await db.select({ 
     count: sql<number>`count(*)`,
     total: sql<number>`COALESCE(SUM(total), 0)`
@@ -1274,11 +1289,38 @@ export async function getDashboardStats(establishmentId: number, period: 'today'
       eq(orders.status, "completed")
     ));
   
+  // Orders no período anterior
+  const prevOrdersResult = await db.select({ 
+    count: sql<number>`count(*)`,
+    total: sql<number>`COALESCE(SUM(total), 0)`
+  })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      gte(orders.createdAt, prevPeriodStartUTC),
+      sql`${orders.createdAt} < ${prevPeriodEndUTC}`,
+      eq(orders.status, "completed")
+    ));
+  
   const ordersCount = ordersResult[0]?.count ?? 0;
   const revenue = Number(ordersResult[0]?.total ?? 0);
   const avgTicket = ordersCount > 0 ? revenue / ordersCount : 0;
   
-  // Low stock count
+  const prevOrdersCount = prevOrdersResult[0]?.count ?? 0;
+  const prevRevenue = Number(prevOrdersResult[0]?.total ?? 0);
+  const prevAvgTicket = prevOrdersCount > 0 ? prevRevenue / prevOrdersCount : 0;
+  
+  // Calcular variação percentual
+  const calcChange = (current: number, previous: number) => {
+    if (previous === 0) return current > 0 ? 100 : 0;
+    return Math.round(((current - previous) / previous) * 100);
+  };
+  
+  const ordersChange = calcChange(ordersCount, prevOrdersCount);
+  const revenueChange = calcChange(revenue, prevRevenue);
+  const avgTicketChange = calcChange(avgTicket, prevAvgTicket);
+  
+  // Low stock count (não muda por período, mas mantemos para consistência)
   const lowStockResult = await db.select({ count: sql<number>`count(*)` })
     .from(products)
     .where(and(
@@ -1287,8 +1329,9 @@ export async function getDashboardStats(establishmentId: number, period: 'today'
     ));
   
   const lowStockCount = lowStockResult[0]?.count ?? 0;
+  const lowStockChange = 0; // Sem comparação temporal para estoque
   
-  return { ordersCount, revenue, avgTicket, lowStockCount };
+  return { ordersCount, revenue, avgTicket, lowStockCount, ordersChange, revenueChange, avgTicketChange, lowStockChange };
 }
 
 export async function getWeeklyStats(establishmentId: number) {

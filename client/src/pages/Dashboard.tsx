@@ -150,6 +150,11 @@ export default function Dashboard() {
           icon={ShoppingBag}
           loading={statsLoading}
           variant="blue"
+          trend={stats && stats.ordersChange !== undefined ? {
+            value: stats.ordersChange,
+            isPositive: stats.ordersChange >= 0,
+            label: period === 'today' ? 'vs ontem' : period === 'week' ? 'vs semana anterior' : 'vs mês anterior'
+          } : undefined}
         />
         <StatCard
           title={period === 'today' ? 'Faturamento Hoje' : period === 'week' ? 'Faturamento da Semana' : 'Faturamento do Mês'}
@@ -157,6 +162,11 @@ export default function Dashboard() {
           icon={DollarSign}
           loading={statsLoading}
           variant="emerald"
+          trend={stats && stats.revenueChange !== undefined ? {
+            value: stats.revenueChange,
+            isPositive: stats.revenueChange >= 0,
+            label: period === 'today' ? 'vs ontem' : period === 'week' ? 'vs semana anterior' : 'vs mês anterior'
+          } : undefined}
         />
         <StatCard
           title="Ticket Médio"
@@ -164,6 +174,11 @@ export default function Dashboard() {
           icon={TrendingUp}
           loading={statsLoading}
           variant="blue"
+          trend={stats && stats.avgTicketChange !== undefined ? {
+            value: stats.avgTicketChange,
+            isPositive: stats.avgTicketChange >= 0,
+            label: period === 'today' ? 'vs ontem' : period === 'week' ? 'vs semana anterior' : 'vs mês anterior'
+          } : undefined}
         />
         <StatCard
           title="Itens em Falta"

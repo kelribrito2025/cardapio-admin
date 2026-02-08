@@ -5740,3 +5740,6 @@
 - [x] [Dashboard] Backend: atualizar endpoints de métricas para aceitar parâmetro de período (today, week, month)
 - [x] [Dashboard] Frontend: adicionar filtro de período (Hoje, Esta semana, Este mês) no topo da Dashboard
 - [x] [Dashboard] Conectar filtro aos endpoints para atualizar todos os cards e métricas
+- [x] [Dashboard] Backend: calcular dados do período anterior para comparação
+- [x] [Dashboard] Backend: retornar variação percentual (ordersChange, revenueChange, avgTicketChange)
+- [x] [Dashboard] Frontend: exibir indicador de variação % em cada card com seta e cor (verde/vermelho)
