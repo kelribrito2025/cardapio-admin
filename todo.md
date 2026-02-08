@@ -5698,3 +5698,4 @@
 - [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Avaliações
 - [x] [Menu Público] Itens do carrinho no modal Sua Sacola devem ter borda vermelha na lateral esquerda igual aos itens do menu público
 - [x] [Menu Público] Aplicar borda vermelha na lateral esquerda dos itens no Resumo do Pedido (step 2 do checkout)
+- [x] [Menu Público] Botão de pagar online no modal de confirmação deve ser na cor vermelha
