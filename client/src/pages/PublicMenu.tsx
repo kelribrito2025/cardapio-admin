@@ -4315,7 +4315,7 @@ setOnlinePaymentUrl(null);
           {/* Modal */}
           <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 overflow-hidden">
             {/* Header - estilo vermelho */}
-            <div className="flex-shrink-0 bg-gradient-to-r from-red-500 to-red-600 px-6 h-[68px] flex items-center justify-between rounded-t-2xl md:rounded-t-2xl">
+            <div className="flex-shrink-0 bg-gradient-to-r from-red-500 to-red-600 px-6 h-[68px] flex items-center justify-between rounded-t-2xl md:rounded-t-2xl" style={{paddingTop: '16px', paddingBottom: '16px', height: '79px'}}>
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-white/20 rounded-lg">
                   <ShoppingBag className="h-5 w-5 text-white" />
