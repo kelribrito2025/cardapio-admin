@@ -666,7 +666,7 @@ export function MobilePDVModal({
                               <span className="text-sm font-semibold text-red-600">{formatCurrency(parseFloat(product.price))}</span>
                               <button
                                 onMouseDown={(e) => { e.preventDefault(); handleQuickAdd(product, e as any); }}
-                                className="p-1.5 bg-red-50 hover:bg-red-100 rounded-full transition-colors"
+                                className="bg-red-50 hover:bg-red-100 rounded-full transition-colors flex items-center justify-center" style={{width: '30px', height: '30px', padding: '7px'}}
                               >
                                 <Plus className="h-3.5 w-3.5 text-red-500" />
                               </button>
