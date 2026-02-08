@@ -5652,3 +5652,4 @@
 - [x] Ajustar botão Voltar no header do modal
 - [x] Testar fluxo completo de checkout com 4 steps
 - [x] Bug: Botão "Alterar" forma de entrega fecha o modal quando taxa é grátis (free) - impede trocar para retirada/consumo no local
+- [x] Bug: Quando taxa é byNeighborhood e nenhum bairro selecionado, "Selecionar bairro" deve aparecer dentro do campo Bairro (não como botão separado)

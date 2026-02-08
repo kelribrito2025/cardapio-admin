@@ -3180,20 +3180,7 @@ export default function PublicMenu() {
                       </button>
                     )}
 
-                    {/* Botão para alterar bairro quando taxa é por bairro */}
-                    {deliveryType === 'delivery' && establishment.deliveryFeeType === 'byNeighborhood' && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setReopenBagAfterNeighborhood(true);
-                          setCheckoutStep(0);
-                          setShowNeighborhoodModal(true);
-                        }}
-                        className="w-full text-center text-red-500 text-sm font-medium hover:bg-red-50 rounded-lg py-2 transition-colors"
-                      >
-                        {selectedNeighborhood ? `Alterar bairro (${selectedNeighborhood.name})` : 'Selecionar bairro'}
-                      </button>
-                    )}
+
                   </div>
 
                   {/* Mensagem informativa para Consumir no local */}
@@ -3258,11 +3245,25 @@ export default function PublicMenu() {
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-gray-600 mb-1">Bairro <span className="text-red-500">*</span></label>
-                        {selectedNeighborhood && establishment.deliveryFeeType === 'byNeighborhood' ? (
-                          <div className="flex items-center gap-2">
-                            <div className="flex-1 px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700">
-                              {selectedNeighborhood.name}
+                        {establishment.deliveryFeeType === 'byNeighborhood' ? (
+                          selectedNeighborhood ? (
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700">
+                                {selectedNeighborhood.name}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setReopenBagAfterNeighborhood(true);
+                                  setCheckoutStep(0);
+                                  setShowNeighborhoodModal(true);
+                                }}
+                                className="px-3 py-2.5 text-red-500 text-sm font-medium hover:bg-red-50 rounded-lg transition-colors whitespace-nowrap"
+                              >
+                                Alterar bairro
+                              </button>
                             </div>
+                          ) : (
                             <button
                               type="button"
                               onClick={() => {
@@ -3270,11 +3271,11 @@ export default function PublicMenu() {
                                 setCheckoutStep(0);
                                 setShowNeighborhoodModal(true);
                               }}
-                              className="px-3 py-2.5 text-red-500 text-sm font-medium hover:bg-red-50 rounded-lg transition-colors whitespace-nowrap"
+                              className="w-full px-3 py-2.5 border border-red-300 bg-red-50 rounded-lg text-sm text-red-500 font-medium text-left hover:bg-red-100 transition-colors"
                             >
-                              Alterar bairro
+                              Selecionar bairro
                             </button>
-                          </div>
+                          )
                         ) : (
                           <input
                             type="text"
