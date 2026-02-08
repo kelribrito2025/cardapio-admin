@@ -73,9 +73,12 @@ function TrendBadge({ trend }: { trend: { value: number; isPositive: boolean; la
     };
   }, [showTooltip]);
 
-  const tooltipText = trend.label
-    ? `${trend.isPositive ? "+" : "-"}${Math.abs(trend.value)}% ${trend.label}`
-    : `${trend.isPositive ? "+" : "-"}${Math.abs(trend.value)}% vs período anterior`;
+  const isNeutral = trend.value === 0;
+  const tooltipText = isNeutral
+    ? `Sem variação ${trend.label || 'vs período anterior'}`
+    : trend.label
+      ? `${trend.isPositive ? "+" : "-"}${Math.abs(trend.value)}% ${trend.label}`
+      : `${trend.isPositive ? "+" : "-"}${Math.abs(trend.value)}% vs período anterior`;
 
   return (
     <div
@@ -88,11 +91,13 @@ function TrendBadge({ trend }: { trend: { value: number; isPositive: boolean; la
       <span
         className={cn(
           "inline-flex items-center gap-0.5 text-xs font-semibold cursor-default select-none",
-          trend.isPositive ? "text-emerald-600" : "text-red-500"
+          isNeutral
+            ? "text-gray-400"
+            : trend.isPositive ? "text-emerald-600" : "text-red-500"
         )}
       >
-        <span className="text-[11px]">{trend.isPositive ? "↑" : "↓"}</span>
-        <span>{Math.abs(trend.value)}%</span>
+        <span className="text-[11px]">{isNeutral ? "—" : trend.isPositive ? "↑" : "↓"}</span>
+        <span>{isNeutral ? "0%" : `${Math.abs(trend.value)}%`}</span>
       </span>
       {showTooltip && (
         <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 whitespace-nowrap">
