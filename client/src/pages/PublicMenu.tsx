@@ -2998,28 +2998,36 @@ export default function PublicMenu() {
           
           {/* Modal de Checkout Unificado - Bottom Sheet no mobile */}
           <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[90vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
-            {/* Header com Título */}
-            <div className="flex-shrink-0 bg-white border-b border-gray-300 px-6 py-4 rounded-t-2xl" style={{height: '68px'}}>
+            {/* Header com Título - estilo vermelho */}
+            <div className="flex-shrink-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl">
               {/* Título e Botão Fechar */}
               <div className="flex items-center justify-between h-full">
                 <div className="flex items-center gap-3">
                   {checkoutStep > 1 && (
                     <button
                       onClick={() => setCheckoutStep(checkoutStep - 1)}
-                      className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+                      className="p-1.5 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
                     >
-                      <ChevronLeft className="h-5 w-5 text-gray-500" />
+                      <ChevronLeft className="h-5 w-5 text-white" />
                     </button>
                   )}
-                  <div className="p-2 bg-red-100 rounded-xl">
-                    <ShoppingBag className="h-5 w-5 text-red-500" />
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <ShoppingBag className="h-5 w-5 text-white" />
                   </div>
-                  <h2 className="text-lg font-bold text-gray-900">
-                    {checkoutStep === 1 && 'Entrega e Pagamento'}
-                    {checkoutStep === 2 && 'Resumo do Pedido'}
-                    {checkoutStep === 3 && 'Seus Dados'}
-                    {checkoutStep === 4 && 'Confirmação'}
-                  </h2>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">
+                      {checkoutStep === 1 && 'Entrega e Pagamento'}
+                      {checkoutStep === 2 && 'Resumo do Pedido'}
+                      {checkoutStep === 3 && 'Seus Dados'}
+                      {checkoutStep === 4 && 'Confirmação'}
+                    </h2>
+                    <p className="text-sm text-white/80">
+                      {checkoutStep === 1 && 'Escolha como receber'}
+                      {checkoutStep === 2 && 'Confira seus itens'}
+                      {checkoutStep === 3 && 'Preencha suas informações'}
+                      {checkoutStep === 4 && 'Envie seu pedido'}
+                    </p>
+                  </div>
                 </div>
                 <button 
                   onClick={() => {
@@ -3033,9 +3041,9 @@ export default function PublicMenu() {
                     setCreatedOrderNumber(null);
                     setIsSendingOrder(false);
                   }}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
                 >
-                  <X className="h-5 w-5 text-gray-500" />
+                  <X className="h-5 w-5 text-white" />
                 </button>
               </div>
             </div>
@@ -4181,20 +4189,25 @@ setOnlinePaymentUrl(null);
           
           {/* Modal Content - Bottom Sheet no mobile */}
           <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
-            {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 rounded-xl">
-                  <Ticket className="h-5 w-5 text-red-500" />
+            {/* Header - estilo vermelho */}
+            <div className="sticky top-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl z-10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <Ticket className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Aplicar Cupom</h2>
+                    <p className="text-sm text-white/80">Insira seu código de desconto</p>
+                  </div>
                 </div>
-                <h2 className="text-lg font-bold text-gray-900">Aplicar cupom</h2>
+                <button 
+                  onClick={() => setShowCouponModal(false)}
+                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                >
+                  <X className="h-5 w-5 text-white" />
+                </button>
               </div>
-              <button 
-                onClick={() => setShowCouponModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="h-5 w-5 text-gray-500" />
-              </button>
             </div>
 
             {/* Body */}
@@ -4296,19 +4309,22 @@ setOnlinePaymentUrl(null);
           
           {/* Modal */}
           <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 overflow-hidden">
-            {/* Header */}
-            <div className="flex-shrink-0 bg-white border-b border-gray-300 px-6 h-[68px] flex items-center justify-between rounded-t-2xl md:rounded-t-2xl">
+            {/* Header - estilo vermelho */}
+            <div className="flex-shrink-0 bg-gradient-to-r from-red-500 to-red-600 px-6 h-[68px] flex items-center justify-between rounded-t-2xl md:rounded-t-2xl">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 rounded-xl">
-                  <ShoppingBag className="h-5 w-5 text-red-500" />
+                <div className="p-2 bg-white/20 rounded-lg">
+                  <ShoppingBag className="h-5 w-5 text-white" />
                 </div>
-                <h2 className="text-lg font-bold text-gray-900">Sua Sacola</h2>
+                <div>
+                  <h2 className="text-lg font-bold text-white">Sua Sacola</h2>
+                  <p className="text-sm text-white/80">{cart.length} {cart.length === 1 ? 'item' : 'itens'}</p>
+                </div>
               </div>
               <button 
                 onClick={() => setShowMobileBag(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
               >
-                <X className="h-5 w-5 text-gray-500" />
+                <X className="h-5 w-5 text-white" />
               </button>
             </div>
 
@@ -4854,20 +4870,25 @@ setOnlinePaymentUrl(null);
           
           {/* Modal Content - Bottom Sheet no mobile */}
           <div className="relative w-full md:w-[480px] md:max-w-md bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
-            {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-orange-100 rounded-xl">
-                  <Package className="h-5 w-5 text-orange-600" />
+            {/* Header - estilo vermelho */}
+            <div className="sticky top-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl z-10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <Package className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Acompanhar Pedido{currentOrderNumber ? ` #${currentOrderNumber}` : ''}</h2>
+                    <p className="text-sm text-white/80">Acompanhe o status em tempo real</p>
+                  </div>
                 </div>
-                <h2 className="text-lg font-bold text-gray-900">Acompanhar Pedido{currentOrderNumber ? ` #${currentOrderNumber}` : ''}</h2>
+                <button 
+                  onClick={() => setShowTrackingModal(false)}
+                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                >
+                  <X className="h-5 w-5 text-white" />
+                </button>
               </div>
-              <button 
-                onClick={() => setShowTrackingModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="h-5 w-5 text-gray-500" />
-              </button>
             </div>
 
             {/* Body - Timeline ou Cancelado */}
@@ -5840,20 +5861,25 @@ setOnlinePaymentUrl(null);
           
           {/* Modal - Bottom Sheet no mobile, aumentado 20% no desktop */}
           <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-[520px] md:mx-4 max-h-[85vh] overflow-hidden overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 flex flex-col" style={{ touchAction: 'pan-y' }}>
-            {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{height: '68px'}}>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 rounded-xl">
-                  <MapPin className="h-5 w-5 text-red-500" />
+            {/* Header - estilo vermelho */}
+            <div className="sticky top-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl z-10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <MapPin className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Selecione seu Bairro</h2>
+                    <p className="text-sm text-white/80">Área de entrega</p>
+                  </div>
                 </div>
-                <h2 className="text-lg font-bold text-gray-900">Selecione seu bairro</h2>
+                <button 
+                  onClick={() => setShowNeighborhoodModal(false)}
+                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                >
+                  <X className="h-5 w-5 text-white" />
+                </button>
               </div>
-              <button 
-                onClick={() => setShowNeighborhoodModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="h-5 w-5 text-gray-500" />
-              </button>
             </div>
 
             {/* Campo de Busca */}
@@ -6098,23 +6124,28 @@ setOnlinePaymentUrl(null);
               touchAction: 'pan-y' 
             }}
           >
-            {/* Header */}
-            <div className="sticky top-0 z-[50] bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl shadow-sm" style={{height: '68px'}}>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 rounded-xl">
-                  <Menu className="h-5 w-5 text-red-500" />
+            {/* Header - estilo vermelho */}
+            <div className="sticky top-0 z-[50] bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <Menu className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Categorias</h2>
+                    <p className="text-sm text-white/80">Navegue pelo cardápio</p>
+                  </div>
                 </div>
-                <h2 className="text-lg font-bold text-gray-900">Categorias</h2>
+                <button 
+                  onClick={() => {
+                    setShowCategoriesModal(false);
+                    setCategorySearch("");
+                  }}
+                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                >
+                  <X className="h-5 w-5 text-white" />
+                </button>
               </div>
-              <button 
-                onClick={() => {
-                  setShowCategoriesModal(false);
-                  setCategorySearch("");
-                }}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="h-5 w-5 text-gray-500" />
-              </button>
             </div>
 
             {/* Campo de Busca */}

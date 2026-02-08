@@ -5684,3 +5684,12 @@
 - [x] [Mobile Mesas] Busca no MobilePDVModal deve ignorar acentos (ex: digitar "agua" deve encontrar "Água")
 - [x] [Mobile Mesas] Botões de espaços devem ficar em linha horizontal com scroll lateral (arrastar) no mobile, sem quebra de linha
 - [x] [Menu Público] Cabeçalho do modal Meus Pedidos deve ficar igual ao da Conferência do Pedido (fundo vermelho gradiente, ícone, texto branco, botão X)
+- [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Sua Sacola
+- [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Selecione seu Bairro
+- [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Categorias
+- [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Entrega e Pagamento
+- [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Resumo do Pedido
+- [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Seus Dados
+- [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Confirmação
+- [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Aplicar Cupom
+- [x] [Menu Público] Aplicar cabeçalho vermelho gradiente no modal Acompanhar Pedido
