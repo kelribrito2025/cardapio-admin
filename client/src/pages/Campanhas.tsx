@@ -1315,14 +1315,19 @@ export default function Campanhas() {
           setIsCustomMode(false);
         }
       }}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-emerald-600" />
-              Recarregar Saldo SMS
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pt-2">
+        <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
+          <div className="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-lg">
+                <CreditCard className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white">Recarregar Saldo SMS</h2>
+                <p className="text-sm text-white/80">Escolha um pacote de créditos</p>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-4 p-6 pt-4">
             <div className="bg-emerald-50 rounded-lg p-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-emerald-700">Saldo atual</span>

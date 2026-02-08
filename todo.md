@@ -5700,3 +5700,4 @@
 - [x] [Menu Público] Aplicar borda vermelha na lateral esquerda dos itens no Resumo do Pedido (step 2 do checkout)
 - [x] [Menu Público] Botão de pagar online no modal de confirmação deve ser na cor vermelha
 - [x] [SMS] Remover pacote de 1000 SMS do modal de recarregar saldo SMS
+- [x] [Campanhas SMS] Cabeçalho do modal Recarregar Saldo SMS deve ter o mesmo estilo vermelho gradiente dos modais do menu público
