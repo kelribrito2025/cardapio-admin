@@ -5672,3 +5672,4 @@
 - [x] [Mobile Mesas] Implementar ações: enviar pedido, limpar, fechar mesa no modal mobile
 - [x] [Mobile Mesas] Corrigir altura do MobilePDVModal para max-height 90vh (estava ocupando 100% da tela)
 - [x] [Mobile Mesas] Ajustar estilo do MobilePDVModal para ficar igual aos bottom sheets do menu público (cantos, sombra, header com ícone)
+- [x] [Mobile Mesas] Copiar exatamente o modal de detalhes do item do menu público para o MobilePDVModal (mesmo footer com botões quantidade e Adicionar)

@@ -875,22 +875,38 @@ export function MobilePDVModal({
         </div>
       </div>
 
-      {/* Modal de Detalhes do Produto (bottom sheet) */}
+      {/* Modal de Detalhes do Produto (bottom sheet) - Cópia exata do menu público */}
       {selectedProduct && (
         <div className="fixed inset-0 z-[80] flex items-end md:hidden">
+          {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
           />
+          
+          {/* Modal Content - Bottom Sheet no mobile */}
           <div className="relative bg-white rounded-t-2xl shadow-2xl w-full max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom duration-300" style={{ touchAction: 'pan-y' }}>
-            {/* Imagem do Produto */}
+            {/* Imagem do Produto ou Complemento Selecionado */}
             {(() => {
               const displayImage = selectedComplementImage || selectedProduct.images?.[0];
+              const isComplementImage = !!selectedComplementImage;
+              
               if (displayImage) {
                 return (
-                  <div className="relative w-full h-[200px] flex-shrink-0">
-                    <img src={displayImage} alt={selectedProduct.name} className="w-full h-full object-cover" />
-                    <button
+                  <div className="relative w-full h-[215px] sm:h-60 flex-shrink-0">
+                    <img
+                      src={displayImage}
+                      alt={selectedProduct.name}
+                      className="w-full h-full object-cover transition-all duration-300"
+                    />
+                    {/* Indicador de quantidade de fotos */}
+                    {!isComplementImage && selectedProduct.images && selectedProduct.images.length > 1 && (
+                      <div className="absolute bottom-3 right-3 bg-black/60 text-white px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5">
+                        <Eye className="h-3.5 w-3.5" />
+                        <span>1/{selectedProduct.images.length}</span>
+                      </div>
+                    )}
+                    <button 
                       onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
                       className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
                     >
@@ -899,10 +915,12 @@ export function MobilePDVModal({
                   </div>
                 );
               }
+              
+              // Placeholder quando não há imagem
               return (
-                <div className="relative w-full h-[160px] flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
-                  <UtensilsCrossed className="h-14 w-14 text-white/80" />
-                  <button
+                <div className="relative w-full h-[180px] sm:h-48 flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                  <UtensilsCrossed className="h-16 w-16 text-white/80" />
+                  <button 
                     onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
                     className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
                   >
@@ -912,129 +930,275 @@ export function MobilePDVModal({
               );
             })()}
 
-            {/* Conteúdo */}
-            <div className="flex-1 overflow-y-auto overscroll-contain">
-              <div className="p-4 space-y-3">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
-                  {Number(selectedProduct.price) > 0 && (
-                    <p className="text-lg font-semibold text-red-500 mt-1">{formatCurrency(parseFloat(selectedProduct.price))}</p>
-                  )}
-                </div>
-                {selectedProduct.description && (
-                  <p className="text-sm text-gray-600 leading-relaxed">{selectedProduct.description}</p>
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 space-y-3 sm:space-y-4">
+              {/* Título e Preço */}
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
+                {Number(selectedProduct.price) > 0 && (
+                  <p className="text-lg font-semibold text-red-500 mt-1">
+                    {formatCurrency(parseFloat(selectedProduct.price))}
+                  </p>
                 )}
+              </div>
 
-                {/* Complementos */}
-                {productComplements && productComplements.length > 0 && (
-                  <div className="space-y-4">
-                    {productComplements.map((group) => {
-                      const selectedInGroup = selectedComplements.get(group.id) || new Map<number, number>();
-                      const isRadio = group.maxQuantity === 1;
-                      return (
-                        <div key={group.id} className="border border-gray-200 rounded-xl overflow-hidden">
-                          <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                            <div className="flex items-center justify-between">
-                              <h4 className="font-semibold text-gray-900">{group.name}</h4>
-                              {group.isRequired && (
-                                <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">Obrigatório</span>
-                              )}
-                            </div>
-                            <p className="text-xs text-gray-500 mt-0.5">
-                              {group.minQuantity > 0 ? `Mín: ${group.minQuantity}` : ''}
-                              {group.minQuantity > 0 && group.maxQuantity > 1 ? ' | ' : ''}
-                              {group.maxQuantity > 1 ? `Máx: ${group.maxQuantity}` : ''}
-                              {group.maxQuantity === 1 && group.minQuantity === 0 ? 'Escolha até 1' : ''}
-                            </p>
+              {/* Descrição */}
+              {selectedProduct.description && (
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  {selectedProduct.description}
+                </p>
+              )}
+
+              {/* Grupos de Complementos */}
+              {productComplements && productComplements.length > 0 && (
+                <div className="space-y-4">
+                  {productComplements.map((group) => {
+                    const selectedInGroup = selectedComplements.get(group.id) || new Map<number, number>();
+                    const isRadio = group.maxQuantity === 1;
+                    
+                    return (
+                      <div key={group.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                        {/* Header do Grupo */}
+                        <div className="bg-gray-50 px-4 py-3 border-b border-gray-200" style={{paddingTop: '8px', height: '58px'}}>
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-semibold text-gray-900">{group.name}</h4>
+                            {group.isRequired && (
+                              <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
+                                Obrigatório
+                              </span>
+                            )}
                           </div>
-                          <div className="divide-y divide-gray-100">
-                            {group.items.map((item) => {
-                              const itemQuantity = selectedInGroup.get(item.id) || 0;
-                              const isSelected = itemQuantity > 0;
-                              const displayPrice = Number(item.price);
-                              const handleToggle = () => {
-                                setSelectedComplements((prev) => {
-                                  const newMap = new Map(prev);
-                                  const currentGroupMap = new Map(prev.get(group.id) || []);
-                                  if (isRadio) {
-                                    const newGroupMap = new Map<number, number>();
-                                    newGroupMap.set(item.id, 1);
-                                    newMap.set(group.id, newGroupMap);
-                                    if (item.imageUrl) setSelectedComplementImage(item.imageUrl);
-                                    else setSelectedComplementImage(null);
-                                  } else {
-                                    if (isSelected) {
-                                      currentGroupMap.delete(item.id);
-                                      if (item.imageUrl && selectedComplementImage === item.imageUrl) setSelectedComplementImage(null);
-                                    } else {
-                                      const totalInGroup = Array.from(currentGroupMap.values()).reduce((a, b) => a + b, 0);
-                                      if (group.maxQuantity === 0 || totalInGroup < group.maxQuantity) {
-                                        currentGroupMap.set(item.id, 1);
-                                        if (item.imageUrl) setSelectedComplementImage(item.imageUrl);
-                                      }
-                                    }
-                                    newMap.set(group.id, currentGroupMap);
-                                  }
-                                  return newMap;
-                                });
-                              };
-                              return (
-                                <div key={item.id} className={`flex items-center justify-between px-4 py-3 transition-colors ${isSelected ? 'bg-red-50' : 'hover:bg-gray-50'}`}>
-                                  <label className="flex items-center gap-3 cursor-pointer flex-1">
-                                    <input type={isRadio ? 'radio' : 'checkbox'} name={`mobile-group-${group.id}`} checked={isSelected} onChange={handleToggle} className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500" />
-                                    <span className="text-sm text-gray-900">{item.name}</span>
-                                  </label>
-                                  {displayPrice > 0 && (
-                                    <span className="text-sm text-gray-600 min-w-[70px] text-right">+ {formatCurrency(displayPrice)}</span>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
+                          <p className="text-xs text-gray-500 mt-0.5">
+                            {group.minQuantity > 0 ? `Mín: ${group.minQuantity}` : ''}
+                            {group.minQuantity > 0 && group.maxQuantity > 1 ? ' | ' : ''}
+                            {group.maxQuantity > 1 ? `Máx: ${group.maxQuantity}` : ''}
+                            {group.maxQuantity === 1 && group.minQuantity === 0 ? 'Escolha até 1' : ''}
+                          </p>
                         </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {/* Observação */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Observações</label>
-                  <textarea
-                    value={productObservation}
-                    onChange={(e) => setProductObservation(e.target.value)}
-                    placeholder="Ex: Sem cebola, bem passado..."
-                    rows={2}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
-                  />
+                        
+                        {/* Itens do Grupo */}
+                        <div className="divide-y divide-gray-100">
+                          {group.items.map((item) => {
+                            const itemQuantity = selectedInGroup.get(item.id) || 0;
+                            const isSelected = itemQuantity > 0;
+                            const displayPrice = Number(item.price);
+                            
+                            const handleIncrement = (e: React.MouseEvent) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setSelectedComplements((prev) => {
+                                const newMap = new Map(prev);
+                                const currentGroupMap = new Map(prev.get(group.id) || []);
+                                const currentQty = currentGroupMap.get(item.id) || 0;
+                                const totalInGroup = Array.from(currentGroupMap.values()).reduce((a, b) => a + b, 0);
+                                if (group.maxQuantity === 0 || totalInGroup < group.maxQuantity) {
+                                  currentGroupMap.set(item.id, currentQty + 1);
+                                  newMap.set(group.id, currentGroupMap);
+                                  if (item.imageUrl) setSelectedComplementImage(item.imageUrl);
+                                }
+                                return newMap;
+                              });
+                            };
+                            
+                            const handleDecrement = (e: React.MouseEvent) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setSelectedComplements((prev) => {
+                                const newMap = new Map(prev);
+                                const currentGroupMap = new Map(prev.get(group.id) || []);
+                                const currentQty = currentGroupMap.get(item.id) || 0;
+                                if (currentQty > 1) {
+                                  currentGroupMap.set(item.id, currentQty - 1);
+                                } else {
+                                  currentGroupMap.delete(item.id);
+                                  if (item.imageUrl && selectedComplementImage === item.imageUrl) {
+                                    setSelectedComplementImage(null);
+                                  }
+                                }
+                                newMap.set(group.id, currentGroupMap);
+                                return newMap;
+                              });
+                            };
+                            
+                            const handleToggle = () => {
+                              setSelectedComplements((prev) => {
+                                const newMap = new Map(prev);
+                                const currentGroupMap = new Map(prev.get(group.id) || []);
+                                if (isRadio) {
+                                  const newGroupMap = new Map<number, number>();
+                                  newGroupMap.set(item.id, 1);
+                                  newMap.set(group.id, newGroupMap);
+                                  if (item.imageUrl) setSelectedComplementImage(item.imageUrl);
+                                  else setSelectedComplementImage(null);
+                                } else {
+                                  if (isSelected) {
+                                    currentGroupMap.delete(item.id);
+                                    if (item.imageUrl && selectedComplementImage === item.imageUrl) setSelectedComplementImage(null);
+                                  } else {
+                                    const totalInGroup = Array.from(currentGroupMap.values()).reduce((a, b) => a + b, 0);
+                                    if (group.maxQuantity === 0 || totalInGroup < group.maxQuantity) {
+                                      currentGroupMap.set(item.id, 1);
+                                      if (item.imageUrl) setSelectedComplementImage(item.imageUrl);
+                                    }
+                                  }
+                                  newMap.set(group.id, currentGroupMap);
+                                }
+                                return newMap;
+                              });
+                            };
+                            
+                            return (
+                              <div
+                                key={item.id}
+                                className={`flex items-center justify-between px-4 py-3 transition-colors ${
+                                  isSelected ? 'bg-red-50' : 'hover:bg-gray-50'
+                                }`}
+                              >
+                                <label className="flex items-center gap-3 cursor-pointer flex-1">
+                                  <input
+                                    type={isRadio ? 'radio' : 'checkbox'}
+                                    name={`mobile-group-${group.id}`}
+                                    checked={isSelected}
+                                    onChange={handleToggle}
+                                    className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500"
+                                  />
+                                  <span className="text-sm text-gray-900">{item.name}</span>
+                                </label>
+                                
+                                <div className="flex items-center gap-3">
+                                  {/* Controles de quantidade - aparecem quando selecionado */}
+                                  {isSelected && !isRadio && (
+                                    <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1">
+                                      <button
+                                        type="button"
+                                        onClick={handleDecrement}
+                                        className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
+                                      >
+                                        <Minus className="w-4 h-4" />
+                                      </button>
+                                      <span className="w-6 text-center text-sm font-medium text-gray-900">{itemQuantity}</span>
+                                      <button
+                                        type="button"
+                                        onClick={handleIncrement}
+                                        className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
+                                      >
+                                        <Plus className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Preço */}
+                                  {(() => {
+                                    if (displayPrice > 0) {
+                                      const totalItemPrice = displayPrice * (itemQuantity || 1);
+                                      return (
+                                        <span className="text-sm text-gray-600 min-w-[70px] text-right">
+                                          {isSelected && itemQuantity > 1 
+                                            ? `+ ${formatCurrency(totalItemPrice)}` 
+                                            : `+ ${formatCurrency(displayPrice)}`
+                                          }
+                                        </span>
+                                      );
+                                    }
+                                    return null;
+                                  })()}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
+              )}
+
+              {/* Campo de Observação */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Observações
+                </label>
+                <textarea
+                  value={productObservation}
+                  onChange={(e) => setProductObservation(e.target.value)}
+                  placeholder="Ex: Sem cebola, bem passado..."
+                  rows={2}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
+                />
               </div>
             </div>
 
-            {/* Footer - Quantidade e Adicionar */}
+            {/* Footer - Quantidade e Adicionar (mesmo estilo do menu público) */}
             <div className="border-t p-4 bg-white flex items-center gap-4">
+              {/* Controle de Quantidade */}
               <div className="flex items-center gap-3 bg-gray-100 rounded-full px-2 py-1">
-                <button onClick={() => setProductQuantity(Math.max(1, productQuantity - 1))} className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors">
+                <button
+                  onClick={() => setProductQuantity(Math.max(1, productQuantity - 1))}
+                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+                >
                   <Minus className="h-4 w-4" />
                 </button>
                 <span className="w-8 text-center font-semibold">{productQuantity}</span>
-                <button onClick={() => setProductQuantity(productQuantity + 1)} className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors">
+                <button
+                  onClick={() => setProductQuantity(productQuantity + 1)}
+                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+                >
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
-              <Button onClick={handleAddToCart} className="flex-1 bg-red-500 hover:bg-red-600 text-white rounded-full py-3">
-                + {isEditingMode ? "Atualizar" : "Adicionar"} {formatCurrency(
-                  (parseFloat(selectedProduct.price) +
-                    Array.from(selectedComplements.values()).reduce((total, groupMap) => {
-                      return total + Array.from(groupMap.entries()).reduce((sum, [itemId, qty]) => {
-                        const group = productComplements?.find(g => g.items.some(i => i.id === itemId));
-                        const item = group?.items.find(i => i.id === itemId);
-                        return sum + (item ? parseFloat(item.price) * qty : 0);
-                      }, 0);
-                    }, 0)
-                  ) * productQuantity
-                )}
-              </Button>
+
+              {/* Botão Adicionar */}
+              {(() => {
+                let complementsTotal = 0;
+                if (productComplements) {
+                  productComplements.forEach((group) => {
+                    const selectedInGroup = selectedComplements.get(group.id);
+                    if (selectedInGroup) {
+                      group.items.forEach((item) => {
+                        const qty = selectedInGroup.get(item.id);
+                        if (qty && qty > 0) {
+                          complementsTotal += Number(item.price) * qty;
+                        }
+                      });
+                    }
+                  });
+                }
+                
+                const unitPrice = Number(selectedProduct.price) + complementsTotal;
+                const totalPrice = unitPrice * productQuantity;
+                
+                // Verificar se grupos obrigatórios estão preenchidos
+                let requiredGroupsMet = true;
+                if (productComplements) {
+                  productComplements.forEach((group) => {
+                    if (group.isRequired || group.minQuantity > 0) {
+                      const selectedInGroup = selectedComplements.get(group.id);
+                      const selectedCount = selectedInGroup ? Array.from(selectedInGroup.values()).reduce((a, b) => a + b, 0) : 0;
+                      if (selectedCount < (group.minQuantity || 1)) {
+                        requiredGroupsMet = false;
+                      }
+                    }
+                  });
+                }
+                
+                const canAdd = requiredGroupsMet;
+                
+                return (
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={!canAdd}
+                    className={`flex-1 font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 ${
+                      canAdd 
+                        ? 'bg-red-500 hover:bg-red-600 text-white' 
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                  >
+                    <Plus className="h-5 w-5" />
+                    <span>{isEditingMode ? "Atualizar" : "Adicionar"}</span>
+                    <span>{formatCurrency(totalPrice)}</span>
+                  </button>
+                );
+              })()}
             </div>
           </div>
         </div>
