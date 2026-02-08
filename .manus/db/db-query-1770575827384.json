@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, planType, trialStartDate, trialDays, TIMESTAMPDIFF(MINUTE, trialStartDate, NOW()) AS minutes_elapsed, TIMESTAMPDIFF(MINUTE, trialStartDate, NOW()) / 60.0 AS hours_elapsed FROM establishments WHERE id = 30001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, planType, trialStartDate, trialDays, TIMESTAMPDIFF(MINUTE, trialStartDate, NOW()) AS minutes_elapsed, TIMESTAMPDIFF(MINUTE, trialStartDate, NOW()) / 60.0 AS hours_elapsed FROM establishments WHERE id = 30001;",
+  "rows": [
+    {
+      "id": "30001",
+      "planType": "trial",
+      "trialStartDate": "2026-01-24 19:42:03",
+      "trialDays": "15",
+      "minutes_elapsed": "21535",
+      "hours_elapsed": "358.9167"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tplanType\ttrialStartDate\ttrialDays\tminutes_elapsed\thours_elapsed\n30001\ttrial\t2026-01-24 19:42:03\t15\t21535\t358.9167\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

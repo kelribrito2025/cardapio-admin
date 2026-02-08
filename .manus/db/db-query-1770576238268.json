@@ -1,0 +1,22 @@
+{
+  "query": "SELECT id, planType, trialStartDate, trialDays, NOW() AS now_time, TIMESTAMPDIFF(MINUTE, trialStartDate, NOW()) AS minutes_elapsed, FLOOR(TIMESTAMPDIFF(MINUTE, trialStartDate, NOW()) / 1440) AS days_elapsed, GREATEST(0, trialDays - FLOOR(TIMESTAMPDIFF(SECOND, trialStartDate, NOW()) / 86400)) AS days_remaining, CASE WHEN TIMESTAMPDIFF(SECOND, trialStartDate, NOW()) >= (trialDays * 86400) THEN 'EXPIRADO' ELSE 'ATIVO' END AS trial_status, DATE_ADD(trialStartDate, INTERVAL trialDays DAY) AS expiration_date FROM establishments WHERE id = 30001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, planType, trialStartDate, trialDays, NOW() AS now_time, TIMESTAMPDIFF(MINUTE, trialStartDate, NOW()) AS minutes_elapsed, FLOOR(TIMESTAMPDIFF(MINUTE, trialStartDate, NOW()) / 1440) AS days_elapsed, GREATEST(0, trialDays - FLOOR(TIMESTAMPDIFF(SECOND, trialStartDate, NOW()) / 86400)) AS days_remaining, CASE WHEN TIMESTAMPDIFF(SECOND, trialStartDate, NOW()) >= (trialDays * 86400) THEN 'EXPIRADO' ELSE 'ATIVO' END AS trial_status, DATE_ADD(trialStartDate, INTERVAL trialDays DAY) AS expiration_date FROM establishments WHERE id = 30001;",
+  "rows": [
+    {
+      "id": "30001",
+      "planType": "trial",
+      "trialStartDate": "2026-01-24 19:42:03",
+      "trialDays": "15",
+      "now_time": "2026-02-08 18:43:58",
+      "minutes_elapsed": "21541",
+      "days_elapsed": "14",
+      "days_remaining": "1",
+      "trial_status": "ATIVO",
+      "expiration_date": "2026-02-08 19:42:03"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tplanType\ttrialStartDate\ttrialDays\tnow_time\tminutes_elapsed\tdays_elapsed\tdays_remaining\ttrial_status\texpiration_date\n30001\ttrial\t2026-01-24 19:42:03\t15\t2026-02-08 18:43:58\t21541\t14\t1\tATIVO\t2026-02-08 19:42:03\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

@@ -38,9 +38,7 @@ export function TrialExpiredModal() {
 
         {/* Description */}
         <p className="text-gray-600 text-sm leading-relaxed mb-6">
-          Seu trial gratuito de 15 dias chegou ao fim. Para continuar utilizando
-          todas as funcionalidades do sistema, incluindo o cardápio público,
-          escolha um plano que melhor se adapta ao seu negócio.
+          Seu trial gratuito de 15 dias chegou ao fim. Escolha um plano que melhor se adapta ao seu negócio.
         </p>
 
         {/* Highlights */}

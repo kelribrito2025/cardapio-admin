@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, planType, trialStartDate, trialDays FROM establishments WHERE id = 30001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, planType, trialStartDate, trialDays FROM establishments WHERE id = 30001;",
+  "rows": [
+    {
+      "id": "30001",
+      "planType": "trial",
+      "trialStartDate": "2026-02-08 18:36:05",
+      "trialDays": "15"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tplanType\ttrialStartDate\ttrialDays\n30001\ttrial\t2026-02-08 18:36:05\t15\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}
