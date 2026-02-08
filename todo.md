@@ -5745,3 +5745,4 @@
 - [x] [Dashboard] Frontend: exibir indicador de variação % em cada card com seta e cor (verde/vermelho)
 - [x] [Dashboard] StatCard: indicador % ao lado do valor (não abaixo), apenas seta + %, tooltip com info completa
 - [x] [Dashboard] Indicador neutro com traço (—) quando variação é 0%
+- [x] [Dashboard] Animação fade-in nos valores dos cards ao trocar filtro de período

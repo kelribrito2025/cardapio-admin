@@ -113,7 +113,18 @@ function TrendBadge({ trend }: { trend: { value: number; isPositive: boolean; la
 
 export function StatCard({ title, value, icon: Icon, trend, loading, className, variant = "primary", iconAction }: StatCardProps) {
   const colors = statCardVariants[variant];
-  
+  const [animate, setAnimate] = useState(false);
+  const prevValueRef = useRef(value);
+
+  useEffect(() => {
+    if (prevValueRef.current !== value) {
+      prevValueRef.current = value;
+      setAnimate(true);
+      const timer = setTimeout(() => setAnimate(false), 350);
+      return () => clearTimeout(timer);
+    }
+  }, [value]);
+
   if (loading) {
     return (
       <div className={cn(
@@ -143,7 +154,12 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className, 
           <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
             {title}
           </p>
-          <div className="flex items-center gap-2 mt-1">
+          <div
+            className={cn(
+              "flex items-center gap-2 mt-1 transition-all duration-300 ease-out",
+              animate ? "opacity-0 translate-y-1" : "opacity-100 translate-y-0"
+            )}
+          >
             <span className={cn("w-2 h-2 rounded-full", colors.dotColor)} />
             <span className="text-2xl font-bold tracking-tight">{value}</span>
             {trend && <TrendBadge trend={trend} />}
