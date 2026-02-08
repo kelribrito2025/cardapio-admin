@@ -177,12 +177,18 @@ export function MobilePDVModal({
   // Listas processadas
   const productsList = products?.products || [];
 
-  // Filtrar produtos pela busca
+  // Normalizar texto removendo acentos para busca
+  const normalizeText = (text: string) =>
+    text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+  // Filtrar produtos pela busca (ignora acentos)
   const filteredProducts = useMemo(() => {
     if (!searchQuery.trim()) return [];
+    const normalizedQuery = normalizeText(searchQuery);
     return productsList.filter((p) => {
       if (p.status !== 'active') return false;
-      return p.name.toLowerCase().includes(searchQuery.toLowerCase());
+      return normalizeText(p.name).includes(normalizedQuery) ||
+        (p.description && normalizeText(p.description).includes(normalizedQuery));
     });
   }, [productsList, searchQuery]);
 
