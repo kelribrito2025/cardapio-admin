@@ -938,12 +938,12 @@ export default function MesasComandas() {
               </button>
             ))}
 
-            {/* Botão para adicionar mesa/espaço */}
+            {/* Botão para adicionar mesa/espaço - oculto no mobile, visível no desktop */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   onClick={() => setShowCreateDialog(true)}
-                  className="px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-red-500 text-white hover:bg-red-600 w-[42px]"
+                  className="hidden md:flex px-3 py-2 rounded-lg text-sm font-medium transition-all items-center gap-1.5 bg-red-500 text-white hover:bg-red-600 w-[42px]"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
@@ -953,12 +953,12 @@ export default function MesasComandas() {
               </TooltipContent>
             </Tooltip>
 
-            {/* Botão para gerenciar espaços */}
+            {/* Botão para gerenciar espaços - oculto no mobile, visível no desktop */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   onClick={() => setShowManageSpacesDialog(true)}
-                  className="px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-white border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                  className="hidden md:flex px-3 py-2 rounded-lg text-sm font-medium transition-all items-center gap-1.5 bg-white border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700"
                 >
                   <Settings className="h-4 w-4" />
                 </button>
@@ -969,7 +969,7 @@ export default function MesasComandas() {
             </Tooltip>
           </div>
 
-          {/* Busca */}
+          {/* Busca + botões no mobile */}
           <div className="flex gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -980,6 +980,19 @@ export default function MesasComandas() {
                 className="pl-10"
               />
             </div>
+            {/* Botões ao lado da busca - visíveis apenas no mobile */}
+            <button
+              onClick={() => setShowCreateDialog(true)}
+              className="md:hidden px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-red-500 text-white hover:bg-red-600 flex-shrink-0"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setShowManageSpacesDialog(true)}
+              className="md:hidden px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-white border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700 flex-shrink-0"
+            >
+              <Settings className="h-4 w-4" />
+            </button>
           </div>
         </div>
 

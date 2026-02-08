@@ -5675,3 +5675,4 @@
 - [x] [Mobile Mesas] Copiar exatamente o modal de detalhes do item do menu público para o MobilePDVModal (mesmo footer com botões quantidade e Adicionar)
 - [x] [Mobile Mesas] Remover fotos dos itens na lista de resultados da busca (exibir foto apenas no modal de detalhes)
 - [x] [Mobile Mesas] Botão + na busca: adicionar item direto ao carrinho sem modal de detalhes. Só abrir modal se item tiver complementos.
+- [x] [Mobile Mesas] Mover botões de criar mesa (+) e gerenciar espaços (engrenagem) para ao lado do campo de busca no mobile
