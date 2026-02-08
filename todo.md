@@ -5651,3 +5651,4 @@
 - [x] Remapear todas as referências de setCheckoutStep para novos números
 - [x] Ajustar botão Voltar no header do modal
 - [x] Testar fluxo completo de checkout com 4 steps
+- [x] Bug: Botão "Alterar" forma de entrega fecha o modal quando taxa é grátis (free) - impede trocar para retirada/consumo no local

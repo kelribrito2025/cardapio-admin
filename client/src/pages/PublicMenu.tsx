@@ -3068,45 +3068,120 @@ export default function PublicMenu() {
 
               {/* Body */}
               <div className="flex-1 overflow-y-auto overscroll-contain p-6 space-y-6">
-                {/* Forma de Entrega - Mostra apenas a opção selecionada com botão Alterar */}
+                {/* Forma de Entrega */}
                 <div>
                   <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
                     <Truck className="h-4 w-4 text-red-500" />
                     Forma de entrega
                   </h3>
                   <div className="space-y-2">
-                    {/* Mostra apenas a opção selecionada */}
-                    <div className="flex items-center justify-between p-4 border border-red-500 bg-red-50 rounded-xl">
-                      <div className="flex items-center gap-3">
-                        {deliveryType === "pickup" && <Package className="h-5 w-5 text-red-500" />}
-                        {deliveryType === "delivery" && <Truck className="h-5 w-5 text-red-500" />}
-                        {deliveryType === "dine_in" && <UtensilsCrossed className="h-5 w-5 text-red-500" />}
-                        <div>
-                          <span className="font-medium text-gray-800">
-                            {deliveryType === "pickup" && "Retirar no local"}
-                            {deliveryType === "delivery" && "Taxa de entrega"}
-                            {deliveryType === "dine_in" && "Consumir no local"}
-                          </span>
-                          {(deliveryType === "pickup" || deliveryType === "dine_in" || establishment.deliveryFeeType === "free") ? (
+                    {/* Opção: Delivery */}
+                    {establishment.allowsDelivery && (
+                      <button
+                        type="button"
+                        onClick={() => setDeliveryType('delivery')}
+                        className={`w-full flex items-center justify-between p-4 border rounded-xl transition-colors ${
+                          deliveryType === 'delivery' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Truck className={`h-5 w-5 ${deliveryType === 'delivery' ? 'text-red-500' : 'text-gray-400'}`} />
+                          <div className="text-left">
+                            <span className="font-medium text-gray-800">Taxa de entrega</span>
+                            {establishment.deliveryFeeType === "free" ? (
+                              <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 font-bold rounded-full text-xs">
+                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                Grátis!
+                              </span>
+                            ) : establishment.deliveryFeeType === 'byNeighborhood' && !selectedNeighborhood ? (
+                              <span className="ml-2 text-sm text-gray-400 italic">A calcular</span>
+                            ) : (
+                              <span className="ml-2 text-sm text-red-600 font-semibold">
+                                {establishment.deliveryFeeType === "fixed" 
+                                  ? `R$ ${Number(establishment.deliveryFeeFixed || 0).toFixed(2).replace('.', ',')}` 
+                                  : selectedNeighborhood 
+                                    ? `R$ ${Number(selectedNeighborhood.fee).toFixed(2).replace('.', ',')}` 
+                                    : ""}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          deliveryType === 'delivery' ? 'border-red-500 bg-red-500' : 'border-gray-300'
+                        }`}>
+                          {deliveryType === 'delivery' && <Check className="h-3 w-3 text-white" />}
+                        </div>
+                      </button>
+                    )}
+
+                    {/* Opção: Retirar no local */}
+                    {establishment.allowsPickup && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDeliveryType('pickup');
+                          setSelectedNeighborhood(null);
+                        }}
+                        className={`w-full flex items-center justify-between p-4 border rounded-xl transition-colors ${
+                          deliveryType === 'pickup' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Package className={`h-5 w-5 ${deliveryType === 'pickup' ? 'text-red-500' : 'text-gray-400'}`} />
+                          <div className="text-left">
+                            <span className="font-medium text-gray-800">Retirar no local</span>
                             <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 font-bold rounded-full text-xs">
                               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                               </svg>
                               Grátis!
                             </span>
-                          ) : establishment.deliveryFeeType === 'byNeighborhood' && !selectedNeighborhood ? (
-                            <span className="ml-2 text-sm text-gray-400 italic">A calcular</span>
-                          ) : (
-                            <span className="ml-2 text-sm text-red-600 font-semibold">
-                              {establishment.deliveryFeeType === "fixed" 
-                                ? `R$ ${Number(establishment.deliveryFeeFixed || 0).toFixed(2).replace('.', ',')}` 
-                                : selectedNeighborhood 
-                                  ? `R$ ${Number(selectedNeighborhood.fee).toFixed(2).replace('.', ',')}` 
-                                  : ""}
-                            </span>
-                          )}
+                          </div>
                         </div>
-                      </div>
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          deliveryType === 'pickup' ? 'border-red-500 bg-red-500' : 'border-gray-300'
+                        }`}>
+                          {deliveryType === 'pickup' && <Check className="h-3 w-3 text-white" />}
+                        </div>
+                      </button>
+                    )}
+
+                    {/* Opção: Consumir no local */}
+                    {establishment.allowsDineIn && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDeliveryType('dine_in');
+                          setSelectedNeighborhood(null);
+                        }}
+                        className={`w-full flex items-center justify-between p-4 border rounded-xl transition-colors ${
+                          deliveryType === 'dine_in' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <UtensilsCrossed className={`h-5 w-5 ${deliveryType === 'dine_in' ? 'text-red-500' : 'text-gray-400'}`} />
+                          <div className="text-left">
+                            <span className="font-medium text-gray-800">Consumir no local</span>
+                            <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 font-bold rounded-full text-xs">
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                              Grátis!
+                            </span>
+                          </div>
+                        </div>
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          deliveryType === 'dine_in' ? 'border-red-500 bg-red-500' : 'border-gray-300'
+                        }`}>
+                          {deliveryType === 'dine_in' && <Check className="h-3 w-3 text-white" />}
+                        </div>
+                      </button>
+                    )}
+
+                    {/* Botão para alterar bairro quando taxa é por bairro */}
+                    {deliveryType === 'delivery' && establishment.deliveryFeeType === 'byNeighborhood' && (
                       <button
                         type="button"
                         onClick={() => {
@@ -3114,11 +3189,11 @@ export default function PublicMenu() {
                           setCheckoutStep(0);
                           setShowNeighborhoodModal(true);
                         }}
-                        className="px-3 py-1.5 text-red-500 text-sm font-medium hover:bg-red-100 rounded-lg transition-colors"
+                        className="w-full text-center text-red-500 text-sm font-medium hover:bg-red-50 rounded-lg py-2 transition-colors"
                       >
-                        Alterar
+                        {selectedNeighborhood ? `Alterar bairro (${selectedNeighborhood.name})` : 'Selecionar bairro'}
                       </button>
-                    </div>
+                    )}
                   </div>
 
                   {/* Mensagem informativa para Consumir no local */}
