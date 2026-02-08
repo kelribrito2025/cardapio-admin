@@ -732,20 +732,16 @@ export function MobilePDVModal({
                           const itemTotal = (parseFloat(item.price) + item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0)) * item.quantity;
                           const isExpanded = expandedCartItem === index;
                           return (
-                            <div key={index} className="bg-white rounded-xl shadow-sm overflow-hidden">
+                            <div key={index} className="bg-white rounded-xl shadow-sm overflow-hidden border-l-4 border-l-red-500">
                               <button
                                 onClick={() => setExpandedCartItem(isExpanded ? null : index)}
                                 className="w-full flex items-center gap-3 p-3 text-left"
                               >
-                                {item.image ? (
-                                  <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
-                                ) : (
-                                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                                    <UtensilsCrossed className="h-4 w-4 text-gray-400" />
-                                  </div>
-                                )}
+                                <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+                                  <span className="text-xs font-bold text-red-600">{item.quantity}x</span>
+                                </div>
                                 <div className="flex-1 min-w-0">
-                                  <p className="font-medium text-sm text-gray-900 truncate">{item.quantity}x {item.name}</p>
+                                  <p className="font-medium text-sm text-gray-900 truncate">{item.name}</p>
                                   {item.complements.length > 0 && (
                                     <p className="text-xs text-gray-500 truncate">
                                       {item.complements.map(c => c.name).join(', ')}
@@ -820,13 +816,16 @@ export function MobilePDVModal({
                       const isExpanded = expandedTabItemId === item.id;
 
                       return (
-                        <div key={item.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div key={item.id} className="bg-white rounded-xl shadow-sm overflow-hidden border-l-4 border-l-red-500">
                           <button
                             onClick={() => setExpandedTabItemId(isExpanded ? null : item.id)}
                             className="w-full flex items-center gap-3 p-3 text-left"
                           >
+                            <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+                              <span className="text-xs font-bold text-red-600">{item.quantity}x</span>
+                            </div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm text-gray-900">{item.quantity}x {item.productName}</p>
+                              <p className="font-medium text-sm text-gray-900">{item.productName}</p>
                               {complements.length > 0 && (
                                 <p className="text-xs text-gray-500 truncate">
                                   {complements.map((c: any) => c.name || (c.items ? c.items.map((ci: any) => ci.name).join(', ') : '')).filter(Boolean).join(', ')}
@@ -1275,10 +1274,13 @@ export function MobilePDVModal({
                 let complements: any[] = [];
                 try { complements = typeof item.complements === 'string' ? JSON.parse(item.complements) : (item.complements || []); } catch {}
                 return (
-                  <div key={index} className="p-3 border border-gray-200 rounded-lg">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{item.quantity}x {item.productName}</p>
+                  <div key={index} className="p-3 border border-gray-200 rounded-lg border-l-4 border-l-red-500">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+                        <span className="text-xs font-bold text-red-600">{item.quantity}x</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm">{item.productName}</p>
                         {complements.length > 0 && (
                           <div className="mt-1 space-y-0.5">
                             {complements.map((comp: any, cIndex: number) => {

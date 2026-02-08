@@ -5679,3 +5679,4 @@
 - [x] [Mobile Mesas] Melhorar busca no MobilePDVModal: usar dropdown/overlay flutuante igual menu público, ocultar footer quando buscando, maximizar espaço para resultados com teclado aberto
 - [x] [Mobile Mesas] Alterar MobilePDVModal para tela cheia (100vh) ao invés de bottom sheet 90vh, manter botão de fechar
 - [x] [Mobile Mesas] Simplificar header do MobilePDVModal: remover resumo (itens, tempo, valor) e exibir apenas "Mesa X | R$ XX,XX" no título
+- [x] [Mobile Mesas] Remover fotos dos itens na lista do carrinho/comanda e usar estilo desktop: card com borda vermelha, badge quantidade (ex: 1x), nome e preço
