@@ -1813,30 +1813,30 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                               <div className="px-3 py-2 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
                                 <div className="flex items-center gap-1">
                                   <button
-                                    className="w-8 h-8 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 transition-colors disabled:opacity-50"
+                                    className="w-[25px] h-[25px] flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 transition-colors disabled:opacity-50"
                                     disabled={item.quantity <= 1 || updateTabItemMutation.isPending}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       updateTabItemMutation.mutate({ id: item.id, quantity: item.quantity - 1 });
                                     }}
                                   >
-                                    <Minus className="h-4 w-4" />
+                                    <Minus className="h-3.5 w-3.5" />
                                   </button>
                                   <span className="w-8 text-center text-sm font-semibold">{item.quantity}</span>
                                   <button
-                                    className="w-8 h-8 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 transition-colors disabled:opacity-50"
+                                    className="w-[25px] h-[25px] flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 transition-colors disabled:opacity-50"
                                     disabled={updateTabItemMutation.isPending}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       updateTabItemMutation.mutate({ id: item.id, quantity: item.quantity + 1 });
                                     }}
                                   >
-                                    <Plus className="h-4 w-4" />
+                                    <Plus className="h-3.5 w-3.5" />
                                   </button>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <button
-                                    className="w-8 h-8 flex items-center justify-center rounded bg-red-100 hover:bg-red-200 text-red-600 transition-colors disabled:opacity-50"
+                                    className="w-[25px] h-[25px] flex items-center justify-center rounded bg-red-100 hover:bg-red-200 text-red-600 transition-colors disabled:opacity-50"
                                     disabled={cancelTabItemMutation.isPending}
                                     onClick={(e) => {
                                       e.stopPropagation();
@@ -1844,7 +1844,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                                       setDeleteConfirmItemName(item.productName);
                                     }}
                                   >
-                                    <Trash2 className="h-4 w-4" />
+                                    <Trash2 className="h-3.5 w-3.5" />
                                   </button>
                                 </div>
                               </div>

@@ -157,7 +157,7 @@ export default function Ajuda() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <ContactCard
-            icon={<img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/RLHSAoKbdoteFwub.png" alt="WhatsApp" className="h-6 w-6" />}
+            icon={<MessageCircle className="h-5 w-5 text-white" />}
             iconBg="bg-green-500"
             title="Suporte via WhatsApp"
             subtitle="Fale conosco instantaneamente"
