@@ -5656,3 +5656,4 @@
 - [x] Bug: Campo telefone no step Seus Dados permite avançar com apenas 2 dígitos - deve formatar como (XX) X XXXX-XXXX e só avançar quando completo
 - [x] Bug: Após enviar pedido, novo pedido mostra tela de confirmação do pedido anterior (orderSent não é resetado ao iniciar novo checkout)
 - [x] Remover delay de 3 segundos no envio do pedido no step Confirmação
+- [x] Mostrar card "Aceitar pagamento online" sempre visível abaixo do Stripe Connect, com toggle desativado/não clicável quando Stripe não configurado

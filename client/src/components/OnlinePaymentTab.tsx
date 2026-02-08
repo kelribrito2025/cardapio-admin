@@ -230,38 +230,44 @@ export function OnlinePaymentTab() {
         </div>
       </div>
 
-      {/* Toggle Online Payment + Reforço de taxa */}
-      {isOnboarded && chargesEnabled && (
-        <div className="rounded-xl border p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-green-100">
-                <Shield className="h-4 w-4 text-green-600" />
-              </div>
-              <div>
-                <p className="font-medium text-sm">Aceitar pagamento online</p>
-                <p className="text-xs text-muted-foreground">
-                  Clientes poderão pagar com cartão no menu público (apenas Entrega)
-                </p>
-              </div>
+      {/* Toggle Online Payment + Reforço de taxa - sempre visível */}
+      <div className={`rounded-xl border p-5 space-y-4 ${!(isOnboarded && chargesEnabled) ? 'opacity-60' : ''}`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-lg ${isOnboarded && chargesEnabled ? 'bg-green-100' : 'bg-slate-100'}`}>
+              <Shield className={`h-4 w-4 ${isOnboarded && chargesEnabled ? 'text-green-600' : 'text-slate-400'}`} />
             </div>
-            <Switch
-              checked={onlinePaymentEnabled || false}
-              onCheckedChange={(checked) =>
-                togglePaymentMutation.mutate({ enabled: checked })
-              }
-              disabled={togglePaymentMutation.isPending}
-            />
+            <div>
+              <p className="font-medium text-sm">Aceitar pagamento online</p>
+              <p className="text-xs text-muted-foreground">
+                Clientes poderão pagar com cartão no menu público (apenas Entrega)
+              </p>
+            </div>
           </div>
-          {/* Reforço de taxa junto ao toggle */}
-          <div className="flex items-center gap-2 pt-2 border-t">
-            <Info className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-            <p className="text-xs text-muted-foreground">
-              Taxa por transação: <span className="font-semibold text-foreground">3,99% + R$ 0,89</span> — cobrada apenas em pagamentos online confirmados.
+          <Switch
+            checked={isOnboarded && chargesEnabled ? (onlinePaymentEnabled || false) : false}
+            onCheckedChange={(checked) =>
+              togglePaymentMutation.mutate({ enabled: checked })
+            }
+            disabled={!(isOnboarded && chargesEnabled) || togglePaymentMutation.isPending}
+          />
+        </div>
+        {/* Reforço de taxa junto ao toggle */}
+        <div className="flex items-center gap-2 pt-2 border-t">
+          <Info className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+          <p className="text-xs text-muted-foreground">
+            Taxa por transação: <span className="font-semibold text-foreground">3,99% + R$ 0,89</span> — cobrada apenas em pagamentos online confirmados.
+          </p>
+        </div>
+        {!(isOnboarded && chargesEnabled) && (
+          <div className="flex items-center gap-2 pt-1">
+            <AlertCircle className="h-3.5 w-3.5 text-orange-500 shrink-0" />
+            <p className="text-xs text-orange-600">
+              Configure o Stripe Connect acima para ativar pagamentos online.
             </p>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
 
     </div>
