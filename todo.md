@@ -5677,3 +5677,4 @@
 - [x] [Mobile Mesas] Botão + na busca: adicionar item direto ao carrinho sem modal de detalhes. Só abrir modal se item tiver complementos.
 - [x] [Mobile Mesas] Mover botões de criar mesa (+) e gerenciar espaços (engrenagem) para ao lado do campo de busca no mobile
 - [x] [Mobile Mesas] Melhorar busca no MobilePDVModal: usar dropdown/overlay flutuante igual menu público, ocultar footer quando buscando, maximizar espaço para resultados com teclado aberto
+- [x] [Mobile Mesas] Alterar MobilePDVModal para tela cheia (100vh) ao invés de bottom sheet 90vh, manter botão de fechar

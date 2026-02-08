@@ -565,15 +565,12 @@ export function MobilePDVModal({
 
   return (
     <>
-      {/* Overlay */}
-      <div className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm md:hidden" onClick={onClose} />
-
-      {/* Modal Bottom Sheet */}
-      <div className="fixed inset-x-0 bottom-0 z-[71] md:hidden flex items-end animate-in slide-in-from-bottom duration-300">
-        <div className="bg-gray-200 rounded-t-2xl shadow-2xl flex flex-col w-full overflow-hidden" style={{ maxHeight: '90vh' }}>
+      {/* Modal Tela Cheia */}
+      <div className="fixed inset-0 z-[71] md:hidden animate-in slide-in-from-bottom duration-300">
+        <div className="bg-gray-200 flex flex-col w-full h-full overflow-hidden">
 
           {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between rounded-t-2xl" style={{ height: '68px' }}>
+          <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between" style={{ height: '68px' }}>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-red-100 rounded-xl">
                 <UtensilsCrossed className="h-5 w-5 text-red-500" />
