@@ -4855,7 +4855,7 @@ setOnlinePaymentUrl(null);
                 <div className="p-2 bg-orange-100 rounded-xl">
                   <Package className="h-5 w-5 text-orange-600" />
                 </div>
-                <h2 className="text-lg font-bold text-gray-900">Acompanhar Pedido</h2>
+                <h2 className="text-lg font-bold text-gray-900">Acompanhar Pedido{currentOrderNumber ? ` #${currentOrderNumber}` : ''}</h2>
               </div>
               <button 
                 onClick={() => setShowTrackingModal(false)}
