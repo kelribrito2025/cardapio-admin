@@ -356,6 +356,9 @@ export function MobilePDVModal({
     return calculateTotal();
   };
 
+  // Utilidades tRPC para chamadas imperativas
+  const trpcUtils = trpc.useUtils();
+
   // --- Handlers ---
   const handleProductClick = (product: Product) => {
     if (!product.hasStock) { toast.error("Produto indisponível"); return; }
@@ -366,6 +369,32 @@ export function MobilePDVModal({
     setSelectedComplementImage(null);
     setIsEditingMode(false);
     setEditingCartItem(null);
+  };
+
+  // Adicionar item rapidamente (botão +): se não tem complementos, adiciona direto
+  const handleQuickAdd = async (product: Product, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!product.hasStock) { toast.error("Produto indisponível"); return; }
+    
+    try {
+      // Verificar se o produto tem complementos
+      const complements = await trpcUtils.publicMenu.getProductComplements.fetch({ productId: product.id });
+      
+      // Filtrar por horário/dia (mesma lógica do backend já faz isso)
+      const hasComplements = complements && complements.length > 0;
+      
+      if (hasComplements) {
+        // Tem complementos: abrir modal de detalhes
+        handleProductClick(product);
+      } else {
+        // Sem complementos: adicionar direto ao carrinho
+        addToCart(product, 1, "", []);
+        toast.success(`${product.name} adicionado!`);
+      }
+    } catch {
+      // Em caso de erro, abrir modal de detalhes como fallback
+      handleProductClick(product);
+    }
   };
 
   const handleAddToCart = () => {
@@ -644,22 +673,24 @@ export function MobilePDVModal({
                     ) : (
                       <div className="space-y-2">
                         {filteredProducts.map((product) => (
-                          <button
+                          <div
                             key={product.id}
-                            onClick={() => handleProductClick(product)}
                             className="w-full flex items-center gap-3 p-3 rounded-xl bg-white shadow-sm hover:shadow-md transition-all text-left"
                           >
-                            <div className="flex-1 min-w-0">
+                            <div className="flex-1 min-w-0" onClick={() => handleProductClick(product)}>
                               <p className="font-medium text-sm text-gray-900 truncate">{product.name}</p>
                               {product.description && (
                                 <p className="text-xs text-gray-500 truncate">{product.description}</p>
                               )}
                               <p className="text-sm font-semibold text-red-500 mt-0.5">{formatCurrency(parseFloat(product.price))}</p>
                             </div>
-                            <div className="p-2 bg-red-50 rounded-full flex-shrink-0">
+                            <button
+                              onClick={(e) => handleQuickAdd(product, e)}
+                              className="p-2 bg-red-50 hover:bg-red-100 rounded-full flex-shrink-0 transition-colors"
+                            >
                               <Plus className="h-4 w-4 text-red-500" />
-                            </div>
-                          </button>
+                            </button>
+                          </div>
                         ))}
                       </div>
                     )}

@@ -5674,3 +5674,4 @@
 - [x] [Mobile Mesas] Ajustar estilo do MobilePDVModal para ficar igual aos bottom sheets do menu público (cantos, sombra, header com ícone)
 - [x] [Mobile Mesas] Copiar exatamente o modal de detalhes do item do menu público para o MobilePDVModal (mesmo footer com botões quantidade e Adicionar)
 - [x] [Mobile Mesas] Remover fotos dos itens na lista de resultados da busca (exibir foto apenas no modal de detalhes)
+- [x] [Mobile Mesas] Botão + na busca: adicionar item direto ao carrinho sem modal de detalhes. Só abrir modal se item tiver complementos.
