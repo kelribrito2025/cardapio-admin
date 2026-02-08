@@ -636,11 +636,12 @@ export function MobilePDVModal({
           <div className="flex-1 overflow-y-auto overscroll-contain">
             {selectedTab === 'consumo' ? (
               <>
-                {/* Campo de busca de produtos */}
+                {/* Campo de busca de produtos - estilo dropdown como menu público */}
                 <div className="p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
+                    <input
+                      type="text"
                       placeholder="Buscar produto para adicionar..."
                       value={searchQuery}
                       onChange={(e) => {
@@ -649,21 +650,62 @@ export function MobilePDVModal({
                         else setActiveView('items');
                       }}
                       onFocus={() => setSearchFocused(true)}
-                      className="pl-9 h-10 rounded-xl border-gray-200 text-sm"
+                      onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+                      className="w-full pl-9 pr-8 h-10 bg-gray-100 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white transition-colors placeholder:text-gray-400"
                     />
                     {searchQuery && (
                       <button
-                        onClick={() => { setSearchQuery(""); setActiveView('items'); }}
+                        onClick={() => { setSearchQuery(""); setActiveView('items'); setSearchFocused(false); }}
                         className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-gray-100"
                       >
                         <X className="h-3.5 w-3.5 text-gray-400" />
                       </button>
                     )}
+
+                    {/* Dropdown de resultados flutuante - estilo menu público */}
+                    {searchFocused && searchQuery.trim() && filteredProducts.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-200 max-h-[60vh] overflow-y-auto z-[60] p-2 space-y-1">
+                        {filteredProducts.slice(0, 15).map((product) => (
+                          <div
+                            key={product.id}
+                            className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left bg-white rounded-lg border border-gray-100 border-l-[3px] border-l-red-500"
+                          >
+                            <div className="flex-1 min-w-0" onClick={() => { handleProductClick(product); setSearchQuery(""); setSearchFocused(false); setActiveView('items'); }}>
+                              <p className="font-medium text-gray-900 text-sm truncate">{product.name}</p>
+                              {product.description && (
+                                <p className="text-xs text-gray-500 truncate mt-0.5">{product.description}</p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <span className="text-sm font-semibold text-red-600">{formatCurrency(parseFloat(product.price))}</span>
+                              <button
+                                onMouseDown={(e) => { e.preventDefault(); handleQuickAdd(product, e as any); }}
+                                className="p-1.5 bg-red-50 hover:bg-red-100 rounded-full transition-colors"
+                              >
+                                <Plus className="h-3.5 w-3.5 text-red-500" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        {filteredProducts.length > 15 && (
+                          <div className="px-4 py-2 text-center text-xs text-gray-500 bg-gray-50 rounded-lg">
+                            +{filteredProducts.length - 15} outros resultados
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Mensagem de nenhum resultado */}
+                    {searchFocused && searchQuery.trim() && filteredProducts.length === 0 && (
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-[60]">
+                        <p className="text-sm text-gray-500 text-center">Nenhum produto encontrado</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {activeView === 'search' && searchQuery.trim() ? (
-                  /* Resultados da busca */
+                {activeView === 'search' && searchQuery.trim() && !searchFocused ? (
+                  /* Resultados da busca em tela cheia (quando não está focado no input) */
                   <div className="p-4">
                     {filteredProducts.length === 0 ? (
                       <div className="text-center py-8 text-gray-500">
