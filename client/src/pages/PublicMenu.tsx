@@ -3420,9 +3420,29 @@ export default function PublicMenu() {
                           )}
                           <p className="mt-1 text-xs text-gray-500">Deixe em branco se não precisar de troco</p>
                           
-                          {/* Botões de atalho de valores */}
+                          {/* Botões de atalho de valores - dinâmicos baseados no total do pedido */}
                           <div className="mt-3 flex gap-2">
-                            {[20, 50, 100].map((value) => (
+                            {(() => {
+                              const subtotal = cart.reduce((sum, item) => {
+                                const itemTotal = parseFloat(item.price) * item.quantity;
+                                const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price) * (c.quantity || 1), 0) * item.quantity;
+                                return sum + itemTotal + complementsTotal;
+                              }, 0);
+                              const discount = appliedCoupon?.discount || 0;
+                              const deliveryFeeValue = deliveryType === 'pickup' || deliveryType === 'dine_in'
+                                ? 0
+                                : establishment?.deliveryFeeType === "free" 
+                                  ? 0
+                                  : establishment?.deliveryFeeType === "fixed" 
+                                    ? Number(establishment?.deliveryFeeFixed || 0)
+                                    : Number(selectedNeighborhood?.fee || 0);
+                              const cartTotal = Math.max(0, subtotal - discount + deliveryFeeValue);
+                              // Primeira sugestão: arredondar para cima ao próximo múltiplo de 10
+                              const base = Math.ceil(cartTotal / 10) * 10;
+                              // Se o total já é redondo, base === cartTotal, senão é o próximo múltiplo de 10
+                              const suggestions = [base, base + 10, base + 20].filter((v, i, arr) => arr.indexOf(v) === i);
+                              return suggestions;
+                            })().map((value) => (
                               <button
                                 key={value}
                                 type="button"

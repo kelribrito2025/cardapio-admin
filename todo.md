@@ -5700,3 +5700,4 @@
 - [x] [Menu Público] Aplicar borda vermelha na lateral esquerda dos itens no Resumo do Pedido (step 2 do checkout)
 - [x] [Menu Público] Botão de pagar online no modal de confirmação deve ser na cor vermelha
 - [x] [SMS] Remover pacote de 1000 SMS do modal de recarregar saldo SMS
+- [x] [Menu Público] Sugestões de troco dinâmicas baseadas no valor do pedido (arredondar para cima ao múltiplo de 10)
