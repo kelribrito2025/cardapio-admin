@@ -3627,8 +3627,25 @@ export const appRouter = router({
         notes: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
-        const { id, ...data } = input;
-        await db.updateTabItem(id, data);
+        const { id, quantity, ...rest } = input;
+        
+        // Se a quantidade mudou, recalcular o totalPrice
+        if (quantity !== undefined) {
+          // Buscar o item atual para calcular o novo totalPrice
+          const currentItem = await db.getTabItemById(id);
+          if (currentItem) {
+            const unitPrice = parseFloat(currentItem.unitPrice);
+            const complementsTotal = (currentItem.complements || []).reduce(
+              (sum: number, c: any) => sum + (parseFloat(c.price) || 0) * (c.quantity || 1), 0
+            );
+            const newTotalPrice = ((unitPrice + complementsTotal) * quantity).toFixed(2);
+            await db.updateTabItem(id, { ...rest, quantity, totalPrice: newTotalPrice });
+          } else {
+            await db.updateTabItem(id, { ...rest, quantity });
+          }
+        } else {
+          await db.updateTabItem(id, rest);
+        }
         return { success: true };
       }),
 

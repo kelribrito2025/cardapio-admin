@@ -32,6 +32,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Slider } from "@/components/ui/slider";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -337,6 +338,11 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
   // Estado para modal de conferência ao fechar mesa
   const [showCloseTableModal, setShowCloseTableModal] = useState(false);
+
+  // Estados para edição de itens da comanda
+  const [expandedTabItemId, setExpandedTabItemId] = useState<number | null>(null);
+  const [deleteConfirmItemId, setDeleteConfirmItemId] = useState<number | null>(null);
+  const [deleteConfirmItemName, setDeleteConfirmItemName] = useState<string>("");
 
   // Query para buscar itens da comanda (pedidos já enviados)
   const { data: tabData, isLoading: tabItemsLoading, refetch: refetchTabItems } = trpc.tabs.getByTable.useQuery(
@@ -810,6 +816,30 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
     const timestamp = now.getTime().toString().slice(-6);
     return `${timestamp}`;
   };
+
+  // Mutation para atualizar item da comanda (quantidade)
+  const updateTabItemMutation = trpc.tabs.updateItem.useMutation({
+    onSuccess: () => {
+      refetchTabItems();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao atualizar item");
+    }
+  });
+
+  // Mutation para cancelar/excluir item da comanda
+  const cancelTabItemMutation = trpc.tabs.cancelItem.useMutation({
+    onSuccess: () => {
+      toast.success("Item removido da comanda!");
+      setDeleteConfirmItemId(null);
+      setDeleteConfirmItemName("");
+      setExpandedTabItemId(null);
+      refetchTabItems();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao remover item");
+    }
+  });
 
   // Mutation para adicionar itens à comanda
   const addTabItemsMutation = trpc.tabs.addItems.useMutation({
@@ -1723,13 +1753,21 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                       .filter((item: any) => item.status !== 'cancelled')
                       .map((item: any, index: number) => {
                         const itemTotal = parseFloat(item.totalPrice);
+                        const isExpanded = expandedTabItemId === item.id;
+                        const unitPrice = parseFloat(item.unitPrice);
+                        const complementsTotal = (item.complements || []).reduce(
+                          (sum: number, c: any) => sum + (parseFloat(c.price) || 0) * (c.quantity || 1), 0
+                        );
                         
                         return (
                           <div
                             key={`tab-item-${item.id}-${index}`}
                             className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-red-500 overflow-hidden transition-all duration-200"
                           >
-                            <div className="flex items-center justify-between p-3">
+                            <div 
+                              className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                              onClick={() => setExpandedTabItemId(isExpanded ? null : item.id)}
+                            >
                               <div className="flex items-center gap-2 flex-1 min-w-0">
                                 <span className="text-xs font-medium text-red-600 bg-red-50 px-1.5 py-1 rounded">
                                   {item.quantity}x
@@ -1768,6 +1806,47 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                                 <p className="text-xs text-yellow-700 italic">
                                   <span className="font-medium">Obs:</span> {item.observation}
                                 </p>
+                              </div>
+                            )}
+                            {/* Controles de edição expandíveis */}
+                            {isExpanded && (
+                              <div className="px-3 py-2 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    className="w-8 h-8 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 transition-colors disabled:opacity-50"
+                                    disabled={item.quantity <= 1 || updateTabItemMutation.isPending}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      updateTabItemMutation.mutate({ id: item.id, quantity: item.quantity - 1 });
+                                    }}
+                                  >
+                                    <Minus className="h-4 w-4" />
+                                  </button>
+                                  <span className="w-8 text-center text-sm font-semibold">{item.quantity}</span>
+                                  <button
+                                    className="w-8 h-8 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 transition-colors disabled:opacity-50"
+                                    disabled={updateTabItemMutation.isPending}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      updateTabItemMutation.mutate({ id: item.id, quantity: item.quantity + 1 });
+                                    }}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </button>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    className="w-8 h-8 flex items-center justify-center rounded bg-red-100 hover:bg-red-200 text-red-600 transition-colors disabled:opacity-50"
+                                    disabled={cancelTabItemMutation.isPending}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setDeleteConfirmItemId(item.id);
+                                      setDeleteConfirmItemName(item.productName);
+                                    }}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
+                                </div>
                               </div>
                             )}
                           </div>
@@ -2520,6 +2599,32 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           </div>
         </div>
       )}
+
+      {/* Modal de confirmação de exclusão de item da comanda */}
+      <AlertDialog open={deleteConfirmItemId !== null} onOpenChange={(open) => { if (!open) { setDeleteConfirmItemId(null); setDeleteConfirmItemName(""); } }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir item da comanda</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir <strong>{deleteConfirmItemName}</strong> da comanda? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={cancelTabItemMutation.isPending}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700"
+              disabled={cancelTabItemMutation.isPending}
+              onClick={() => {
+                if (deleteConfirmItemId) {
+                  cancelTabItemMutation.mutate({ id: deleteConfirmItemId });
+                }
+              }}
+            >
+              {cancelTabItemMutation.isPending ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Modal de Configuração da Aba */}
       <Dialog open={showHandleConfig} onOpenChange={setShowHandleConfig}>

@@ -5270,6 +5270,20 @@ export async function recalculateTabTotals(tabId: number): Promise<void> {
 // ============ TAB ITEM FUNCTIONS ============
 
 /**
+ * Busca um item da comanda por ID
+ */
+export async function getTabItemById(id: number): Promise<TabItem | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(tabItems)
+    .where(eq(tabItems.id, id))
+    .limit(1);
+  
+  return result[0] || null;
+}
+
+/**
  * Busca todos os itens de uma comanda
  */
 export async function getTabItems(tabId: number): Promise<TabItem[]> {
