@@ -3916,16 +3916,16 @@ export default function PublicMenu() {
                         onClick={() => {
                           setOnlinePaymentStatus('idle');
                           setOnlinePaymentSessionId(null);
-                          setOnlinePaymentUrl(null);
-                          setCheckoutStep(3); // Voltar para escolher forma de pagamento
-                        }}
-                        className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
-                      >
-                        Escolher outra forma de pagamento
-                      </button>
-                    </div>
-                  </div>
-                ) : onlinePaymentStatus === 'expired' ? (
+setOnlinePaymentUrl(null);
+                           setCheckoutStep(2); // Voltar para Tipo de Entrega (formas de pagamento)
+                         }}
+                         className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
+                       >
+                         Escolher outra forma de pagamento
+                       </button>
+                     </div>
+                   </div>
+                 ) : onlinePaymentStatus === 'expired' ? (
                   /* Estado: Pagamento expirado */
                   <div className="text-center py-8">
                     <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -3953,16 +3953,16 @@ export default function PublicMenu() {
                         onClick={() => {
                           setOnlinePaymentStatus('idle');
                           setOnlinePaymentSessionId(null);
-                          setOnlinePaymentUrl(null);
-                          setCheckoutStep(3); // Voltar para escolher forma de pagamento
-                        }}
-                        className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
-                      >
-                        Escolher outra forma de pagamento
-                      </button>
-                    </div>
-                  </div>
-                ) : !orderSent ? (
+setOnlinePaymentUrl(null);
+                           setCheckoutStep(2); // Voltar para Tipo de Entrega (formas de pagamento)
+                         }}
+                         className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
+                       >
+                         Escolher outra forma de pagamento
+                       </button>
+                     </div>
+                   </div>
+                 ) : !orderSent ? (
                   <div className="text-center py-8">
                     <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                       <CheckCircle className="h-10 w-10 text-green-500" />

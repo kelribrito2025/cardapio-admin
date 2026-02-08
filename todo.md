@@ -5640,3 +5640,4 @@
 - [x] Salvar dados do pedido no banco ao criar checkout session (em vez de metadata)
 - [x] Webhook busca dados do pedido no banco por session_id (em vez de metadata)
 - [x] Frontend polling retorna número do pedido após confirmação
+- [x] Bug: Botão "Escolher outra forma de pagamento" volta para Confirmar Endereço em vez de Tipo de Entrega (fluxo 2)
