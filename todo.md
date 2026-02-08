@@ -5714,3 +5714,4 @@
 - [x] [Trial Expirado] Reabrir menu público automaticamente após pagamento
 - [x] [Trial Expirado] Liberar todas as ações e remover bloqueio após pagamento
 - [x] [Trial Expirado] Testes vitest para bloqueio de trial expirado
+- [x] [Trial Expirado] Redesign do modal com estilo degradê vermelho da marca (glassmorphism)
