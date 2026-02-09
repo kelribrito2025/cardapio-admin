@@ -3200,7 +3200,8 @@ export async function getEstablishmentOpenStatus(establishmentId: number): Promi
   // Lógica de status:
   // 1. Se manuallyClosed E não deve reabrir automaticamente → Fechado
   // 2. Se manuallyClosed E deve reabrir automaticamente → Aberto (se dentro do horário)
-  // 3. Se não manuallyClosed → Segue horário configurado (ignora toggle isOpen)
+  // 3. Se manuallyOpened → Aberto (abertura manual fora do horário)
+  // 4. Caso contrário → Segue horário configurado
   
   let isOpen = false;
   let manuallyClosed = establishment.manuallyClosed;
@@ -3212,9 +3213,11 @@ export async function getEstablishmentOpenStatus(establishmentId: number): Promi
   } else if (manuallyClosed) {
     // Permanece fechado manualmente
     isOpen = false;
+  } else if (establishment.manuallyOpened && !isWithinSchedule) {
+    // Aberto manualmente fora do horário comercial
+    isOpen = true;
   } else {
     // Segue horário configurado - se estiver dentro do horário, está aberto
-    // O toggle isOpen não é mais usado para controlar abertura/fechamento
     isOpen = isWithinSchedule || false;
   }
   

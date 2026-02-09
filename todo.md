@@ -5815,3 +5815,4 @@
 
 ## Bugs Layout Menu Público
 - [x] [Bug] Botão Adicionar e controles +/- ficam muito para baixo quando item tem muitos complementos no modal de detalhes
+- [x] [Bug] Backend rejeita pedido dizendo "fechado" mesmo quando menu público e admin mostram "aberto" (estabelecimento 871095)

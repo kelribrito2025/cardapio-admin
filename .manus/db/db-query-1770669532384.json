@@ -1,0 +1,74 @@
+{
+  "query": "SELECT id, name, isOpen, manuallyClosed, manuallyOpened, timezone FROM establishments ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, isOpen, manuallyClosed, manuallyOpened, timezone FROM establishments ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "150004",
+      "name": "Potin Açai",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "manuallyOpened": "0",
+      "timezone": "America/Fortaleza"
+    },
+    {
+      "id": "150003",
+      "name": "ddfdsfsdfsfs",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "manuallyOpened": "0",
+      "timezone": "America/Fortaleza"
+    },
+    {
+      "id": "150002",
+      "name": "fdsfsdf",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "manuallyOpened": "0",
+      "timezone": "America/Fortaleza"
+    },
+    {
+      "id": "150001",
+      "name": "fdsfdsaf",
+      "isOpen": "1",
+      "manuallyClosed": "0",
+      "manuallyOpened": "0",
+      "timezone": "America/Fortaleza"
+    },
+    {
+      "id": "120001",
+      "name": "fdsfdsfsfsf",
+      "isOpen": "0",
+      "manuallyClosed": "1",
+      "manuallyOpened": "0",
+      "timezone": "America/Fortaleza"
+    },
+    {
+      "id": "90001",
+      "name": "Palácio do Açai",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "manuallyOpened": "0",
+      "timezone": "America/Sao_Paulo"
+    },
+    {
+      "id": "60018",
+      "name": "Big Norte",
+      "isOpen": "1",
+      "manuallyClosed": "0",
+      "manuallyOpened": "0",
+      "timezone": "America/Sao_Paulo"
+    },
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "isOpen": "1",
+      "manuallyClosed": "0",
+      "manuallyOpened": "1",
+      "timezone": "America/Sao_Paulo"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tisOpen\tmanuallyClosed\tmanuallyOpened\ttimezone\n150004\tPotin Açai\t0\t0\t0\tAmerica/Fortaleza\n150003\tddfdsfsdfsfs\t0\t0\t0\tAmerica/Fortaleza\n150002\tfdsfsdf\t0\t0\t0\tAmerica/Fortaleza\n150001\tfdsfdsaf\t1\t0\t0\tAmerica/Fortaleza\n120001\tfdsfdsfsfsf\t0\t1\t0\tAmerica/Fortaleza\n90001\tPalácio do Açai\t0\t0\t0\tAmerica/Sao_Paulo\n60018\tBig Norte\t1\t0\t0\tAmerica/Sao_Paulo\n30001\tSushi Haruno\t1\t0\t1\tAmerica/Sao_Paulo\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

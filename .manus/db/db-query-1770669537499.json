@@ -1,0 +1,66 @@
+{
+  "query": "SELECT id, name, isOpen, manuallyClosed, manuallyOpened FROM establishments;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, isOpen, manuallyClosed, manuallyOpened FROM establishments;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "isOpen": "1",
+      "manuallyClosed": "0",
+      "manuallyOpened": "1"
+    },
+    {
+      "id": "60018",
+      "name": "Big Norte",
+      "isOpen": "1",
+      "manuallyClosed": "0",
+      "manuallyOpened": "0"
+    },
+    {
+      "id": "90001",
+      "name": "Palácio do Açai",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "manuallyOpened": "0"
+    },
+    {
+      "id": "120001",
+      "name": "fdsfdsfsfsf",
+      "isOpen": "0",
+      "manuallyClosed": "1",
+      "manuallyOpened": "0"
+    },
+    {
+      "id": "150001",
+      "name": "fdsfdsaf",
+      "isOpen": "1",
+      "manuallyClosed": "0",
+      "manuallyOpened": "0"
+    },
+    {
+      "id": "150002",
+      "name": "fdsfsdf",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "manuallyOpened": "0"
+    },
+    {
+      "id": "150003",
+      "name": "ddfdsfsdfsfs",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "manuallyOpened": "0"
+    },
+    {
+      "id": "150004",
+      "name": "Potin Açai",
+      "isOpen": "0",
+      "manuallyClosed": "0",
+      "manuallyOpened": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tisOpen\tmanuallyClosed\tmanuallyOpened\n30001\tSushi Haruno\t1\t0\t1\n60018\tBig Norte\t1\t0\t0\n90001\tPalácio do Açai\t0\t0\t0\n120001\tfdsfdsfsfsf\t0\t1\t0\n150001\tfdsfdsaf\t1\t0\t0\n150002\tfdsfsdf\t0\t0\t0\n150003\tddfdsfsdfsfs\t0\t0\t0\n150004\tPotin Açai\t0\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}
