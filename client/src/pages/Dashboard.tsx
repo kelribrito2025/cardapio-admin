@@ -201,7 +201,7 @@ export default function Dashboard() {
         <StatCard
           title="Taxa de Conversão"
           value={`${conversionRate?.rate?.toFixed(1) ?? '0.0'}%`}
-          subtitle={`${conversionRate?.orders ?? 0} pedidos / ${conversionRate?.views ?? 0} visualizações`}
+          tooltip={`${conversionRate?.orders ?? 0} pedidos / ${conversionRate?.views ?? 0} visualizações`}
           icon={Target}
           loading={conversionLoading}
           variant="emerald"

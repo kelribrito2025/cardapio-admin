@@ -5768,3 +5768,4 @@
 - [x] [Dashboard] Posicionar card ao lado do card Itens em Falta e reduzir largura deste em 25%
 - [x] [Backend] Criar endpoint para calcular taxa de conversão por período
 - [x] [Testes] Escrever testes para o endpoint de taxa de conversão
+- [x] [Dashboard] Mover subtexto do card Taxa de Conversão para tooltip no hover

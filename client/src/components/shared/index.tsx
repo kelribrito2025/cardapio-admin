@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react";
 interface StatCardProps {
   title: string;
   value: string | number;
-  subtitle?: string;
+  tooltip?: string;
   icon: LucideIcon;
   trend?: {
     value: number;
@@ -112,9 +112,10 @@ function TrendBadge({ trend }: { trend: { value: number; isPositive: boolean; la
   );
 }
 
-export function StatCard({ title, value, subtitle, icon: Icon, trend, loading, className, variant = "primary", iconAction }: StatCardProps) {
+export function StatCard({ title, value, tooltip, icon: Icon, trend, loading, className, variant = "primary", iconAction }: StatCardProps) {
   const colors = statCardVariants[variant];
   const [animate, setAnimate] = useState(false);
+  const [showCardTooltip, setShowCardTooltip] = useState(false);
   const prevValueRef = useRef(value);
 
   useEffect(() => {
@@ -145,11 +146,23 @@ export function StatCard({ title, value, subtitle, icon: Icon, trend, loading, c
   }
 
   return (
-    <div className={cn(
-      "bg-card rounded-xl overflow-hidden border border-border/50 border-t-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
-      colors.borderColor,
-      className
-    )}>
+    <div
+      className={cn(
+        "bg-card rounded-xl overflow-hidden border border-border/50 border-t-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 relative",
+        colors.borderColor,
+        className
+      )}
+      onMouseEnter={() => tooltip && setShowCardTooltip(true)}
+      onMouseLeave={() => setShowCardTooltip(false)}
+    >
+      {showCardTooltip && tooltip && (
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 whitespace-nowrap pointer-events-none">
+          <div className="bg-gray-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-lg">
+            {tooltip}
+            <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900" />
+          </div>
+        </div>
+      )}
       <div className="px-5 py-5 flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
@@ -165,9 +178,7 @@ export function StatCard({ title, value, subtitle, icon: Icon, trend, loading, c
             <span className="text-2xl font-bold tracking-tight">{value}</span>
             {trend && <TrendBadge trend={trend} />}
           </div>
-          {subtitle && (
-            <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{subtitle}</p>
-          )}
+
         </div>
         {iconAction ? (
           <button
