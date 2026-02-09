@@ -107,7 +107,7 @@ export function OnlinePaymentTab() {
         <div>
           <h3 className="text-lg font-semibold">Pagamento Online</h3>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Receba pagamentos com cartão, Apple Pay e Google Pay diretamente no menu público
+            Receba pagamentos com cartão e Apple Pay diretamente no menu público
           </p>
         </div>
         <Button
@@ -240,7 +240,7 @@ export function OnlinePaymentTab() {
             <div>
               <p className="font-medium text-sm">Aceitar pagamento online</p>
               <p className="text-xs text-muted-foreground">
-                Clientes poderão pagar com cartão, Apple Pay e Google Pay no menu público (apenas Entrega)
+                Clientes poderão pagar com cartão e Apple Pay no menu público (apenas Entrega)
               </p>
             </div>
           </div>
@@ -263,10 +263,7 @@ export function OnlinePaymentTab() {
               <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.72 12.63c-.03-2.89 2.36-4.27 2.47-4.34-1.34-1.96-3.43-2.23-4.18-2.26-1.78-.18-3.47 1.05-4.37 1.05-.9 0-2.29-1.02-3.76-.99-1.94.03-3.72 1.13-4.72 2.86-2.01 3.49-.51 8.66 1.45 11.5.96 1.39 2.1 2.95 3.6 2.89 1.45-.06 2-.94 3.75-.94s2.25.94 3.78.91c1.55-.03 2.53-1.41 3.49-2.81 1.1-1.61 1.55-3.17 1.58-3.25-.03-.01-3.03-1.16-3.06-4.62zM14.91 4.21c.8-.97 1.34-2.31 1.19-3.65-1.15.05-2.55.77-3.37 1.73-.74.86-1.38 2.22-1.21 3.54 1.28.1 2.59-.65 3.39-1.62z"/></svg>
               Apple Pay
             </div>
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border text-xs font-medium text-slate-700">
-              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24"><path d="M3.29 6.56c-.16.38-.28.8-.28 1.27 0 .47.12.89.28 1.27l.02.05 3.5-2.72-.01-.05c-.16-.38-.28-.8-.28-1.27 0-.47.12-.89.28-1.27l-.02-.05-3.5 2.72.01.05z" fill="#FBBC04"/><path d="M12 5.09c1.39 0 2.64.48 3.62 1.42l2.72-2.72C16.46 2.09 14.39 1.09 12 1.09c-3.58 0-6.67 2.05-8.18 5.04l3.5 2.72C8.22 6.62 9.93 5.09 12 5.09z" fill="#EA4335"/><path d="M12 18.91c-2.07 0-3.78-1.53-4.68-3.76l-3.5 2.72C5.33 20.86 8.42 22.91 12 22.91c2.3 0 4.49-.82 6.13-2.36l-3.33-2.58c-.87.58-1.98.94-3.17.94h.37z" fill="#34A853"/><path d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58l3.33 2.58c1.94-1.79 3.09-4.42 3.09-8.4z" fill="#4285F4"/></svg>
-              Google Pay
-            </div>
+
           </div>
         </div>
         {/* Reforço de taxa junto ao toggle */}
