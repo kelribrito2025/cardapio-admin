@@ -5812,3 +5812,4 @@
 - [x] Tratamento de erros (link inválido, site inacessível, parsing falhou)
 - [x] Não importar imagens (manter placeholder padrão)
 - [x] Testes unitários para a funcionalidade de importação
+- [x] Botão "Importar cardápio" visível somente para clientes novos (sem produtos cadastrados)

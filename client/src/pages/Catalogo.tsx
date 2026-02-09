@@ -622,14 +622,16 @@ export default function Catalogo() {
           icon={<UtensilsCrossed className="h-6 w-6 text-blue-600" />}
           actions={
 <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setImportModalOpen(true)}
-                className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5 border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
-              >
-                <Download className="h-4 w-4 mr-1.5 sm:mr-2" />
-                <span className="hidden sm:inline text-xs sm:text-sm">Importar</span>
-              </Button>
+              {!isLoading && products.length === 0 && (
+                <Button
+                  variant="outline"
+                  onClick={() => setImportModalOpen(true)}
+                  className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5 border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                >
+                  <Download className="h-4 w-4 mr-1.5 sm:mr-2" />
+                  <span className="hidden sm:inline text-xs sm:text-sm">Importar</span>
+                </Button>
+              )}
               <Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
                 <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
                 <span className="text-xs sm:text-sm">item</span>
