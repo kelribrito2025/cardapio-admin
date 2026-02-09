@@ -180,6 +180,7 @@ export const appRouter = router({
         deliveryFeeFixed: z.string().optional(),
         allowsDelivery: z.boolean().optional(),
         allowsPickup: z.boolean().optional(),
+        timezone: z.string().optional(), // IANA timezone detectado do navegador
       }))
       .mutation(async ({ ctx, input }) => {
         // Separar campos que vão para businessHours

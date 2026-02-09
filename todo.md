@@ -5756,3 +5756,9 @@
 - [x] [UI] Adicionar campo "Fuso horário do restaurante" no card Horários de funcionamento em Configurações
 - [x] [Backend] Procedure para atualizar timezone do estabelecimento
 - [x] [Testes] Escrever testes para o helper de timezone e procedures
+
+## Detecção Automática de Fuso Horário
+- [x] [Frontend] Detectar timezone do navegador via Intl.DateTimeFormat ao criar conta
+- [x] [Backend] Aceitar timezone como parâmetro na criação do estabelecimento
+- [x] [Backend] Mapear timezone IANA do navegador para o timezone mais próximo suportado
+- [x] [Testes] Escrever testes para o mapeamento de timezone

@@ -38,6 +38,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { detectBestTimezone } from "../../../shared/const";
 
 // Opções de objetivos
 const OBJECTIVES = [
@@ -318,6 +319,9 @@ export default function Onboarding() {
       minimumOrderValue: hasMinOrder && minOrderValue ? minOrderValue.replace(/[^\d,]/g, "").replace(",", ".") : "0",
       deliveryFeeType: mappedDeliveryFeeType,
       deliveryFeeFixed: deliveryFeeType === "fixed" && fixedDeliveryFee ? fixedDeliveryFee.replace(/[^\d,]/g, "").replace(",", ".") : "0",
+      
+      // Timezone detectado automaticamente do navegador
+      timezone: detectBestTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone),
     });
   };
 

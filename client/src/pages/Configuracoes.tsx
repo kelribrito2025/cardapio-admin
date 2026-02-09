@@ -81,6 +81,7 @@ import { IntegrationsTab } from "@/components/IntegrationsTab";
 import { SettingsSidebar, SettingsSection } from "@/components/SettingsSidebar";
 import { AccountSecuritySection } from "@/components/AccountSecuritySection";
 import { OnlinePaymentTab } from "@/components/OnlinePaymentTab";
+import { SUPPORTED_TIMEZONES } from "../../../shared/const";
 
 export default function Configuracoes() {
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
@@ -2017,39 +2018,19 @@ export default function Configuracoes() {
                   onChange={(e) => setTimezone(e.target.value)}
                   className="h-9 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 >
-                  <optgroup label="Brasil">
-                    <option value="America/Sao_Paulo">Brasília (GMT-3)</option>
-                    <option value="America/Manaus">Manaus (GMT-4)</option>
-                    <option value="America/Cuiaba">Cuiabá (GMT-4)</option>
-                    <option value="America/Belem">Belém (GMT-3)</option>
-                    <option value="America/Fortaleza">Fortaleza (GMT-3)</option>
-                    <option value="America/Recife">Recife (GMT-3)</option>
-                    <option value="America/Bahia">Salvador (GMT-3)</option>
-                    <option value="America/Campo_Grande">Campo Grande (GMT-4)</option>
-                    <option value="America/Porto_Velho">Porto Velho (GMT-4)</option>
-                    <option value="America/Boa_Vista">Boa Vista (GMT-4)</option>
-                    <option value="America/Rio_Branco">Rio Branco (GMT-5)</option>
-                    <option value="America/Noronha">Fernando de Noronha (GMT-2)</option>
-                  </optgroup>
-                  <optgroup label="Portugal">
-                    <option value="Europe/Lisbon">Lisboa (GMT+0)</option>
-                    <option value="Atlantic/Azores">Açores (GMT-1)</option>
-                    <option value="Atlantic/Madeira">Madeira (GMT+0)</option>
-                  </optgroup>
-                  <optgroup label="Outros">
-                    <option value="America/Argentina/Buenos_Aires">Buenos Aires (GMT-3)</option>
-                    <option value="America/Montevideo">Montevidéu (GMT-3)</option>
-                    <option value="America/Santiago">Santiago (GMT-4)</option>
-                    <option value="America/Bogota">Bogotá (GMT-5)</option>
-                    <option value="America/Lima">Lima (GMT-5)</option>
-                    <option value="America/New_York">Nova York (GMT-5)</option>
-                    <option value="America/Chicago">Chicago (GMT-6)</option>
-                    <option value="America/Los_Angeles">Los Angeles (GMT-8)</option>
-                    <option value="Europe/Madrid">Madrid (GMT+1)</option>
-                    <option value="Europe/Paris">Paris (GMT+1)</option>
-                    <option value="Europe/London">Londres (GMT+0)</option>
-                    <option value="Asia/Tokyo">Tóquio (GMT+9)</option>
-                  </optgroup>
+                  {Object.entries(
+                    SUPPORTED_TIMEZONES.reduce((acc, tz) => {
+                      if (!acc[tz.group]) acc[tz.group] = [];
+                      acc[tz.group].push(tz);
+                      return acc;
+                    }, {} as Record<string, typeof SUPPORTED_TIMEZONES[number][]>)
+                  ).map(([group, tzs]) => (
+                    <optgroup key={group} label={group}>
+                      {tzs.map(tz => (
+                        <option key={tz.value} value={tz.value}>{tz.label}</option>
+                      ))}
+                    </optgroup>
+                  ))}
                 </select>
               </div>
               
