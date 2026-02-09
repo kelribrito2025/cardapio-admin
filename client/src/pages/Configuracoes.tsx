@@ -672,17 +672,9 @@ export default function Configuracoes() {
       return;
     }
 
-    // Validar campos obrigatórios de endereço
-    const missingFields = [];
-    if (!street.trim()) missingFields.push("Rua");
-    if (!number.trim()) missingFields.push("Número");
-    if (!neighborhood.trim()) missingFields.push("Bairro");
-    if (!city.trim()) missingFields.push("Cidade");
-    if (!state.trim()) missingFields.push("Estado");
-    if (!zipCode.trim()) missingFields.push("CEP");
-
-    if (missingFields.length > 0) {
-      toast.error(`Preencha os campos obrigatórios: ${missingFields.join(", ")}`);
+    // Validar campos obrigatórios de endereço (apenas Rua é obrigatório)
+    if (!street.trim()) {
+      toast.error("Preencha o campo obrigatório: Rua");
       return;
     }
 
@@ -1268,59 +1260,43 @@ export default function Configuracoes() {
                   {/* Número, Bairro, Cidade e UF */}
                   <div className="grid grid-cols-12 gap-2">
                     <div className="col-span-3">
-                      <Label htmlFor="number" className="text-xs font-semibold">Nº <span className="text-red-500">*</span></Label>
+                      <Label htmlFor="number" className="text-xs font-semibold">Nº <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
                       <Input
                         id="number"
                         value={number}
                         onChange={(e) => setNumber(e.target.value)}
                         placeholder="123"
-                        required
-                        className={cn(
-                          "mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm",
-                          !number.trim() && "border-red-300 focus:border-red-500"
-                        )}
+                        className="mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm"
                       />
                     </div>
                     <div className="col-span-3">
-                      <Label htmlFor="neighborhood" className="text-xs font-semibold">Bairro <span className="text-red-500">*</span></Label>
+                      <Label htmlFor="neighborhood" className="text-xs font-semibold">Bairro <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
                       <Input
                         id="neighborhood"
                         value={neighborhood}
                         onChange={(e) => setNeighborhood(e.target.value)}
                         placeholder="Bairro"
-                        required
-                        className={cn(
-                          "mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm",
-                          !neighborhood.trim() && "border-red-300 focus:border-red-500"
-                        )}
+                        className="mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm"
                       />
                     </div>
                     <div className="col-span-4">
-                      <Label htmlFor="city" className="text-xs font-semibold">Cidade <span className="text-red-500">*</span></Label>
+                      <Label htmlFor="city" className="text-xs font-semibold">Cidade <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
                       <Input
                         id="city"
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
                         placeholder="Cidade"
-                        required
-                        className={cn(
-                          "mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm",
-                          !city.trim() && "border-red-300 focus:border-red-500"
-                        )}
+                        className="mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm"
                       />
                     </div>
                     <div className="col-span-2">
-                      <Label htmlFor="state" className="text-xs font-semibold">UF <span className="text-red-500">*</span></Label>
+                      <Label htmlFor="state" className="text-xs font-semibold">UF <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
                       <Input
                         id="state"
                         value={state}
                         onChange={(e) => setState(e.target.value)}
                         placeholder="UF"
-                        required
-                        className={cn(
-                          "mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm",
-                          !state.trim() && "border-red-300 focus:border-red-500"
-                        )}
+                        className="mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm"
                       />
                     </div>
                   </div>
@@ -1338,17 +1314,13 @@ export default function Configuracoes() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="zipCode" className="text-xs font-semibold">CEP <span className="text-red-500">*</span></Label>
+                      <Label htmlFor="zipCode" className="text-xs font-semibold">CEP <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
                       <Input
                         id="zipCode"
                         value={zipCode}
                         onChange={(e) => setZipCode(e.target.value)}
                         placeholder="00000-000"
-                        required
-                        className={cn(
-                          "mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm",
-                          !zipCode.trim() && "border-red-300 focus:border-red-500"
-                        )}
+                        className="mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm"
                       />
                     </div>
                   </div>
