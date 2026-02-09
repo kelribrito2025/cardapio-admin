@@ -5762,3 +5762,4 @@
 - [x] [Backend] Aceitar timezone como parâmetro na criação do estabelecimento
 - [x] [Backend] Mapear timezone IANA do navegador para o timezone mais próximo suportado
 - [x] [Testes] Escrever testes para o mapeamento de timezone
+- [x] [Mesas] Remover cards de Ticket Médio e Faturamento da página de Mesas

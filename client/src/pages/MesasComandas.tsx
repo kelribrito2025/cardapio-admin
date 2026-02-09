@@ -17,8 +17,7 @@ import {
   Search,
   Clock,
   Users,
-  DollarSign,
-  TrendingUp,
+
   Plus,
   Receipt,
   AlertCircle,
@@ -853,40 +852,6 @@ export default function MesasComandas() {
 
       <div className="space-y-5">
 
-        {/* Cards de Resumo - Apenas Ticket Médio e Faturamento (apenas desktop) */}
-        <div className="hidden md:grid md:grid-cols-2 gap-4 max-w-[585px]">
-          {/* Ticket Médio */}
-          <div className="bg-white rounded-xl border border-border/50 border-t-4 border-t-blue-500 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Ticket Médio</p>
-                <div className="flex items-center gap-1.5 mt-1">
-                  <span className="w-2 h-2 rounded-full bg-blue-500" />
-                  <span className="text-2xl font-bold text-gray-900">{formatCurrency(summary.avgTicket)}</span>
-                </div>
-              </div>
-              <div className="p-2.5 bg-blue-100 rounded-lg">
-                <TrendingUp className="h-5 w-5 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          {/* Faturamento */}
-          <div className="bg-white rounded-xl border border-border/50 border-t-4 border-t-emerald-500 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Faturamento</p>
-                <div className="flex items-center gap-1.5 mt-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <span className="text-2xl font-bold text-gray-900">{formatCurrency(summary.totalRevenue)}</span>
-                </div>
-              </div>
-              <div className="p-2.5 bg-emerald-100 rounded-lg">
-                <DollarSign className="h-5 w-5 text-emerald-600" />
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Filtros de Espaços e Controles */}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
