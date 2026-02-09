@@ -110,8 +110,8 @@ export function WeeklyRevenueCard({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
-            <DollarSign className="h-5 w-5 text-emerald-600" />
+          <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+            <DollarSign className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div className="min-w-0">
             <h3 className="text-base font-semibold text-foreground">{title}</h3>
@@ -131,7 +131,7 @@ export function WeeklyRevenueCard({
             >
               <span className={cn(
                 "w-2.5 h-2.5 rounded-full",
-                !showComparison ? "bg-emerald-500" : "bg-gray-300"
+                !showComparison ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-600"
               )} />
               {periodLabel}
             </button>
@@ -139,12 +139,12 @@ export function WeeklyRevenueCard({
               onClick={() => setShowComparison(true)}
               className={cn(
                 "flex items-center gap-1.5 transition-colors",
-                showComparison ? "text-gray-600 font-medium" : "text-muted-foreground hover:text-foreground"
+                showComparison ? "text-gray-600 dark:text-gray-300 font-medium" : "text-muted-foreground hover:text-foreground"
               )}
             >
               <span className={cn(
                 "w-2.5 h-2.5 rounded-full",
-                showComparison ? "bg-gray-400" : "bg-gray-300"
+                showComparison ? "bg-gray-400" : "bg-gray-300 dark:bg-gray-600"
               )} />
               {comparisonLabel}
             </button>
@@ -162,8 +162,8 @@ export function WeeklyRevenueCard({
             className={cn(
               "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium",
               percentChange >= 0
-                ? "bg-emerald-100 text-emerald-700"
-                : "bg-red-100 text-red-700"
+                ? "bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
+                : "bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-400"
             )}
           >
             {percentChange >= 0 ? (
@@ -209,7 +209,7 @@ export function WeeklyRevenueCard({
                     <div
                       className={cn(
                         "absolute bottom-0 w-full rounded-lg transition-all duration-300",
-                        showComparison ? "bg-emerald-200/50" : "bg-gray-200"
+                        showComparison ? "bg-emerald-200/50 dark:bg-emerald-500/20" : "bg-gray-200 dark:bg-gray-700"
                       )}
                       style={{ height: `${Math.max(comparisonHeight, 4)}%` }}
                     />
@@ -222,13 +222,13 @@ export function WeeklyRevenueCard({
                       mode === 'monthly'
                         ? isCurrentItem
                           ? "bg-emerald-500"
-                          : "bg-emerald-300"
+                          : "bg-emerald-300 dark:bg-emerald-600"
                         : showComparison
-                          ? "bg-gray-400"
+                          ? "bg-gray-400 dark:bg-gray-500"
                           : isFutureItem
-                            ? "bg-gray-200"
+                            ? "bg-gray-200 dark:bg-gray-700"
                             : "bg-emerald-500",
-                      isCurrentItem && mode === 'daily' && "ring-2 ring-emerald-300 ring-offset-2"
+                      isCurrentItem && mode === 'daily' && "ring-2 ring-emerald-300 dark:ring-emerald-600 ring-offset-2 ring-offset-card"
                     )}
                     style={{ height: `${Math.max(currentHeight, 4)}%` }}
                   />
@@ -238,7 +238,7 @@ export function WeeklyRevenueCard({
                 <span
                   className={cn(
                     "text-[10px] font-medium transition-colors",
-                    isCurrentItem ? "text-emerald-600" : "text-muted-foreground"
+                    isCurrentItem ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
                   )}
                 >
                   {label}

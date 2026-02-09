@@ -17,14 +17,14 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
 // Escala de cores azul (do mais claro ao mais escuro)
 const COLOR_SCALE = [
-  "bg-blue-50",      // 0 - sem visualizações
-  "bg-blue-100",     // 1 - muito baixo
-  "bg-blue-200",     // 2 - baixo
-  "bg-blue-300",     // 3 - médio-baixo
-  "bg-blue-400",     // 4 - médio
-  "bg-blue-500",     // 5 - médio-alto
-  "bg-blue-600",     // 6 - alto
-  "bg-blue-700",     // 7 - muito alto
+  "bg-blue-50 dark:bg-blue-950/40",      // 0 - sem visualizações
+  "bg-blue-100 dark:bg-blue-900/50",     // 1 - muito baixo
+  "bg-blue-200 dark:bg-blue-800/60",     // 2 - baixo
+  "bg-blue-300 dark:bg-blue-700/70",     // 3 - médio-baixo
+  "bg-blue-400 dark:bg-blue-600/80",     // 4 - médio
+  "bg-blue-500 dark:bg-blue-500",        // 5 - médio-alto
+  "bg-blue-600 dark:bg-blue-400",        // 6 - alto
+  "bg-blue-700 dark:bg-blue-300",        // 7 - muito alto
 ];
 
 // Função para obter a cor baseada no valor
@@ -158,8 +158,8 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
-              <Eye className="h-5 w-5 text-blue-600" />
+            <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+              <Eye className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="min-w-0">
               <h3 className="text-base font-semibold text-foreground">Visualizações do Cardápio</h3>
@@ -171,7 +171,7 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
           <Tooltip open={isTouch ? showInfoTooltip : undefined}>
             <TooltipTrigger asChild>
               <button 
-                className="h-6 w-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                className="h-6 w-6 rounded-full bg-muted hover:bg-accent flex items-center justify-center transition-colors"
                 onClick={handleInfoClick}
                 onTouchEnd={(e) => {
                   if (isTouch) {
@@ -180,7 +180,7 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
                   }
                 }}
               >
-                <Info className="h-4 w-4 text-gray-500" />
+                <Info className="h-4 w-4 text-muted-foreground" />
               </button>
             </TooltipTrigger>
             <TooltipContent 
@@ -207,7 +207,7 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
                 <span
                   className={cn(
                     "inline-flex items-center gap-0.5 text-xs font-medium cursor-default",
-                    viewsChange > 0 ? "text-emerald-600" : "text-red-500"
+                    viewsChange > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400"
                   )}
                 >
                   {viewsChange > 0 ? (
@@ -225,7 +225,7 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
           ) : (
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="inline-flex items-center gap-0.5 text-xs font-medium text-gray-400 cursor-default">
+                <span className="inline-flex items-center gap-0.5 text-xs font-medium text-muted-foreground cursor-default">
                   <Minus className="w-3 h-3" />
                   0%
                 </span>
@@ -276,7 +276,7 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
                       <TooltipTrigger asChild>
                         <div
                           className={cn(
-                            "flex-1 aspect-square rounded-[3px] mx-[1px] cursor-pointer transition-all hover:ring-2 hover:ring-blue-600 hover:ring-offset-1",
+                            "flex-1 aspect-square rounded-[3px] mx-[1px] cursor-pointer transition-all hover:ring-2 hover:ring-blue-600 hover:ring-offset-1 hover:ring-offset-card",
                             colorClass,
                             isActive && "ring-2 ring-blue-600 ring-offset-1"
                           )}

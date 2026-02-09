@@ -5822,3 +5822,12 @@
 - [x] [Bug] Ao salvar endereço com campos vazios, os valores antigos voltam a preencher os campos
 - [x] [Bug] Alterações de preço dos complementos na página /complementos não são salvas no banco de dados
 - [x] [Bug] Corrigir preços errados dos complementos no banco (200.00 → 2.00, 300.00 → 3.00, 400.00 → 4.00) no estabelecimento 150004
+
+## Dark Mode
+- [x] Configurar variáveis CSS do tema escuro no index.css (tokens de cor)
+- [x] Implementar toggle de tema (light/dark) alternável
+- [x] Ajustar cores hardcoded nos componentes da Dashboard (cards, gráficos, badges)
+- [x] Ajustar sidebar e topbar para dark mode
+- [x] Ajustar gráficos (gridlines, cores) para boa leitura em fundo escuro
+- [x] Garantir contraste adequado e estados (hover, ativo, desabilitado, loading/skeleton)
+- [x] Testar em todas as páginas principais

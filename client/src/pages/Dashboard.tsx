@@ -144,15 +144,15 @@ export default function Dashboard() {
           description="Visão geral do seu estabelecimento"
           icon={<LayoutDashboard className="h-6 w-6 text-blue-600" />}
         />
-        <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
+        <div className="flex items-center gap-1 bg-muted rounded-xl p-1">
           {periodOptions.map((opt) => (
             <button
               key={opt.value}
               onClick={() => setPeriod(opt.value)}
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                 period === opt.value
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               {opt.label}
@@ -305,7 +305,7 @@ export default function Dashboard() {
           {ordersLoading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                <div key={i} className="border-b border-border/50 pb-4 last:border-0 last:pb-0">
                   <div className="flex items-start justify-between mb-1.5">
                     <div className="flex-1 space-y-1.5">
                       <div className="skeleton h-3 w-16 rounded" />
@@ -326,7 +326,7 @@ export default function Dashboard() {
                 return (
                   <div
                     key={order.id}
-                    className="border-b border-gray-100 pb-4 last:border-0 last:pb-0"
+                    className="border-b border-border/50 pb-4 last:border-0 last:pb-0"
                   >
                     <div className="flex items-start justify-between mb-1.5">
                       <div className="flex-1">

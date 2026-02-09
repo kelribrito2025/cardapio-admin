@@ -32,6 +32,8 @@ import {
   Utensils,
   Clock,
   Sparkles,
+  Moon,
+  Sun,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -59,6 +61,7 @@ import {
 } from "@/components/ui/popover";
 import { toast } from "sonner";
 import { TrialExpiredModal } from "@/components/TrialExpiredModal";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed";
 
@@ -108,6 +111,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const { user, loading: authLoading, logout } = useAuth();
   const [location] = useLocation();
   const { newOrdersCount, unlockAudio, isAudioUnlocked } = useNewOrders();
+  const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -518,7 +522,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           "lg:translate-x-0"
         )}
         style={{
-          background: "#ffffff"
+          background: theme === 'dark' ? 'var(--sidebar)' : '#ffffff'
         }}
       >
         {/* Logo + Toggle button na mesma linha */}
@@ -532,7 +536,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <TooltipTrigger asChild>
                 <button
                   onClick={toggleSidebarCollapsed}
-                  className="p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500 hover:text-gray-700"
+                  className="p-2 hover:bg-accent rounded-xl transition-colors text-muted-foreground hover:text-foreground"
                 >
                   <PanelLeft className="h-5 w-5" />
                 </button>
@@ -556,7 +560,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   </div>
                 )}
                 <div className="flex flex-col">
-                  <span className="font-semibold text-base text-gray-800 whitespace-nowrap truncate max-w-[140px]">
+                  <span className="font-semibold text-base text-foreground whitespace-nowrap truncate max-w-[140px]">
                     {establishment?.name || "Cardápio"}
                   </span>
                   {/* Badge de status Aberto/Fechado */}
@@ -576,7 +580,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 {/* Toggle button - Desktop only */}
                 <button
                   onClick={toggleSidebarCollapsed}
-                  className="hidden lg:flex p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500 hover:text-gray-700"
+                  className="hidden lg:flex p-2 hover:bg-accent rounded-xl transition-colors text-muted-foreground hover:text-foreground"
                   title="Minimizar menu"
                 >
                   <PanelLeftClose className="h-5 w-5" />
@@ -584,7 +588,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 {/* Close button - Mobile only */}
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500 hover:text-gray-700"
+                  className="lg:hidden p-2 hover:bg-accent rounded-xl transition-colors text-muted-foreground hover:text-foreground"
                 >
                   <PanelLeftClose className="h-5 w-5" />
                 </button>
@@ -604,12 +608,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <div key={section.title} className={sectionIndex > 0 ? "mt-6" : ""} style={{marginBottom: '-5px'}}>
               {/* Título da seção */}
               {!sidebarCollapsed && (
-                <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-3 mb-3">
+                <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-3">
                   {section.title}
                 </h3>
               )}
               {sidebarCollapsed && sectionIndex > 0 && (
-                <div className="border-t border-gray-200 my-3 mx-2" />
+                <div className="border-t border-border my-3 mx-2" />
               )}
               
               {/* Itens da seção */}
@@ -656,7 +660,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                             </span>
                           )}
                           {isComingSoon && (
-                            <span className="text-[9px] font-semibold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">
+                            <span className="text-[9px] font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-full">
                               Breve
                             </span>
                           )}
@@ -669,10 +673,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     "flex items-center gap-2.5 py-2.5 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative",
                     sidebarCollapsed ? "px-0 justify-center rounded-lg" : "pl-3 pr-3",
                     isComingSoon 
-                      ? "text-gray-400 cursor-default"
+                      ? "text-muted-foreground cursor-default"
                       : isActive
-                        ? "bg-red-200/60 text-red-800 rounded-r-xl -ml-3 pl-6 border-r-4 border-red-500"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        ? "bg-primary/15 text-primary rounded-r-xl -ml-3 pl-6 border-r-4 border-primary"
+                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
                   );
 
                   // Se o item está desabilitado, renderizar como div sem navegação
@@ -749,7 +753,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Main content */}
       <div 
-        className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] h-screen overflow-hidden flex flex-col bg-gray-50", mainPadding)}
+        className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] h-screen overflow-hidden flex flex-col bg-background", mainPadding)}
       >
         {/* Topbar */}
         <header className="sticky top-0 z-30 h-[58px] bg-card/80 backdrop-blur-md border-b border-border/50">
@@ -844,7 +848,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div 
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full cursor-pointer transition-all hover:bg-gray-200" style={{backgroundColor: '#ffffff'}}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full cursor-pointer transition-all hover:bg-accent bg-card"
                   >
                     {/* Ícone de Som com 2 ondas de volume - cor dinâmica */}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke={isSoundEnabled ? "#10b981" : "#f87171"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 transition-colors">
@@ -900,6 +904,27 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   }
                 </TooltipContent>
               </Tooltip>
+
+              {/* Theme Toggle */}
+              {toggleTheme && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={toggleTheme}
+                      className="p-2 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+                    >
+                      {theme === 'dark' ? (
+                        <Sun className="h-4 w-4" />
+                      ) : (
+                        <Moon className="h-4 w-4" />
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    {theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
+                  </TooltipContent>
+                </Tooltip>
+              )}
 
               {/* User menu */}
               <DropdownMenu>
@@ -986,7 +1011,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     >
                       <HelpCircle className="h-4 w-4 mr-2.5" />
                       Ajuda e suporte
-                      <span className="ml-auto text-[9px] font-semibold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                      <span className="ml-auto text-[9px] font-semibold bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 px-1.5 py-0.5 rounded-full">
                         Breve
                       </span>
                     </DropdownMenuItem>
@@ -996,7 +1021,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     >
                       <Crown className="h-4 w-4 mr-2.5" />
                       Planos
-                      <span className="ml-auto text-[9px] font-semibold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">
+                      <span className="ml-auto text-[9px] font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-full">
                         Breve
                       </span>
                     </DropdownMenuItem>

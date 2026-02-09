@@ -25,26 +25,26 @@ interface StatCardProps {
 const statCardVariants = {
   blue: {
     borderColor: "border-t-blue-500",
-    iconBg: "bg-blue-100",
-    iconColor: "text-blue-600",
+    iconBg: "bg-blue-100 dark:bg-blue-500/15",
+    iconColor: "text-blue-600 dark:text-blue-400",
     dotColor: "bg-blue-500",
   },
   amber: {
     borderColor: "border-t-amber-500",
-    iconBg: "bg-amber-100",
-    iconColor: "text-amber-600",
+    iconBg: "bg-amber-100 dark:bg-amber-500/15",
+    iconColor: "text-amber-600 dark:text-amber-400",
     dotColor: "bg-amber-500",
   },
   emerald: {
     borderColor: "border-t-emerald-500",
-    iconBg: "bg-emerald-100",
-    iconColor: "text-emerald-600",
+    iconBg: "bg-emerald-100 dark:bg-emerald-500/15",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
     dotColor: "bg-emerald-500",
   },
   gray: {
-    borderColor: "border-t-gray-400",
-    iconBg: "bg-gray-100",
-    iconColor: "text-gray-500",
+    borderColor: "border-t-gray-400 dark:border-t-gray-500",
+    iconBg: "bg-gray-100 dark:bg-gray-500/15",
+    iconColor: "text-gray-500 dark:text-gray-400",
     dotColor: "bg-gray-400",
   },
   primary: {
@@ -93,8 +93,8 @@ function TrendBadge({ trend }: { trend: { value: number; isPositive: boolean; la
         className={cn(
           "inline-flex items-center gap-0.5 text-xs font-semibold cursor-default select-none",
           isNeutral
-            ? "text-gray-400"
-            : trend.isPositive ? "text-emerald-600" : "text-red-500"
+            ? "text-muted-foreground"
+            : trend.isPositive ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400"
         )}
       >
         <span className="text-[11px]">{isNeutral ? "—" : trend.isPositive ? "↑" : "↓"}</span>
@@ -221,11 +221,11 @@ interface StatusBadgeProps {
 }
 
 const badgeVariants: Record<BadgeVariant, string> = {
-  success: "bg-emerald-50 text-emerald-700 border-emerald-200/50",
-  warning: "bg-amber-50 text-amber-700 border-amber-200/50",
-  error: "bg-red-50 text-red-700 border-red-200/50",
-  info: "bg-blue-50 text-blue-700 border-blue-200/50",
-  default: "bg-gray-50 text-gray-700 border-gray-200/50",
+  success: "bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-500/30",
+  warning: "bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-200/50 dark:border-amber-500/30",
+  error: "bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-400 border-red-200/50 dark:border-red-500/30",
+  info: "bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-200/50 dark:border-blue-500/30",
+  default: "bg-gray-50 dark:bg-gray-500/15 text-gray-700 dark:text-gray-400 border-gray-200/50 dark:border-gray-500/30",
 };
 
 export function StatusBadge({ variant = "default", children, className }: StatusBadgeProps) {
