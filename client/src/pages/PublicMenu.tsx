@@ -2795,7 +2795,7 @@ export default function PublicMenu() {
                                   />
                                   <span className="text-sm text-gray-900">{item.name}</span>
                                   {(item as any).badgeText && (
-                                    <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold bg-red-500 text-white animate-pulse leading-none" style={{width: '65px', height: '17px', borderRadius: '8px'}}>
+                                    <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold bg-red-500 text-white animate-pulse leading-none" style={{width: '69px', height: '19px', borderRadius: '8px'}}>
                                       {(item as any).badgeText}
                                     </span>
                                   )}
