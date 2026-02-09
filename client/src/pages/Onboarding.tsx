@@ -242,7 +242,7 @@ export default function Onboarding() {
   // Validation for Step 1 - includes slug availability check, Instagram and WhatsApp
   const isSlugAvailable = menuSlug.length >= 3 && slugAvailabilityQuery.data?.available === true;
   const isInstagramValid = instagram.trim() !== "" && instagram.trim() !== "@";
-  const isWhatsAppValid = whatsapp.replace(/\D/g, "").length === 11; // Exactly 11 digits (DDD + 9-digit mobile number)
+  const isWhatsAppValid = whatsapp.replace(/\D/g, "").length >= 10; // At least 10 digits (DDD + number)
   const isStep1Valid = name.trim() !== "" && menuSlug.trim() !== "" && deliveryType !== "" && isSlugAvailable && isInstagramValid && isWhatsAppValid;
 
   // Validation for Step 2
@@ -612,15 +612,9 @@ export default function Onboarding() {
                         placeholder="(11) 99999-9999"
                         value={whatsapp}
                         onChange={(e) => setWhatsapp(formatWhatsApp(e.target.value))}
-                        maxLength={15}
-                        className={`h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg ${
-                          whatsapp && !isWhatsAppValid ? 'border-red-300 focus:border-red-400 focus:ring-red-200' : 'border-gray-200'
-                        }`}
+                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
                       />
                     </div>
-                    {whatsapp && !isWhatsAppValid && (
-                      <p className="text-[10px] lg:text-xs text-red-500">Número incompleto. Ex: (11) 99999-9999</p>
-                    )}
                   </div>
 
                   {/* Instagram */}
