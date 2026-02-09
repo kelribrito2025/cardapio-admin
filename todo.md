@@ -5791,3 +5791,6 @@
 - [x] Substituir 3 cards do modal WhatsApp por card visual de conversa WhatsApp
 - [x] Botão Conectar WhatsApp do modal deve abrir modal QR Code em vez de redirecionar
 - [x] Carrossel animado no balão do modal WhatsApp alternando entre modelos de notificação (recebido, preparo, entrega)
+- [x] Notificação "Finalizado" (entregue/retirado) deve vir ativada por padrão ao criar conta
+- [x] Notificação "Confirmação de Reserva" deve vir ativada por padrão ao criar conta
+- [x] Alterar template padrão do pedido finalizado para novo texto com emojis

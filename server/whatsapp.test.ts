@@ -53,10 +53,10 @@ describe('WhatsApp Integration', () => {
         'Burger House'
       );
       
-      expect(message).toContain('Ana');
       expect(message).toContain('#P101');
       expect(message).toContain('Burger House');
       expect(message).toContain('finalizado');
+      expect(message).toContain('Obrigado pela preferência');
     });
     
     it('should generate message with default template for cancelled', () => {

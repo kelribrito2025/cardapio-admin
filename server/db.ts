@@ -4095,11 +4095,7 @@ Seu pedido *{{orderNumber}}* foi recebido com sucesso!
   
   const defaultTemplateCompleted = `Seu pedido {{orderNumber}} foi finalizado!
 
-📌 Atualização de fidelidade
-
-*+1 carimbo* adicionado ao seu cartão.
-
-❤️ Obrigado pela preferência! 
+❤️ Obrigado pela preferência!
 
 *{{establishmentName}}*`;
   
@@ -4128,7 +4124,7 @@ Motivo: *{{cancellationReason}}*`;
     templateReady: data.templateReady || defaultTemplateReady,
     templateCompleted: data.templateCompleted || defaultTemplateCompleted,
     templateCancelled: data.templateCancelled || defaultTemplateCancelled,
-    notifyOnReservation: data.notifyOnReservation ?? false,
+    notifyOnReservation: data.notifyOnReservation ?? true,
     templateReservation: data.templateReservation || null,
   });
   
