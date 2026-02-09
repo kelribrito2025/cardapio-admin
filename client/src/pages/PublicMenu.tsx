@@ -1401,10 +1401,11 @@ export default function PublicMenu() {
   };
   
   // Valor calculado de se está aberto:
-  // Lógica simplificada:
+  // Lógica:
   // 1. Se manuallyClosed E não deve reabrir automaticamente → Fechado
   // 2. Se manuallyClosed E deve reabrir automaticamente → Aberto (se dentro do horário)
-  // 3. Se não manuallyClosed → Segue horário configurado (ignora toggle isOpen)
+  // 3. Se manuallyOpened → Aberto (abertura manual fora do horário)
+  // 4. Caso contrário → Segue horário configurado
   const withinHours = isWithinBusinessHours();
   const autoReopen = shouldAutoReopen();
   
@@ -1419,9 +1420,13 @@ export default function PublicMenu() {
     // Deve reabrir automaticamente
     isOpen = withinHours;
     isForcedClosed = false;
+  } else if ((establishment as any).manuallyOpened && !withinHours) {
+    // Aberto manualmente fora do horário comercial
+    isOpen = true;
+    isForcedClosed = false;
   } else {
-    // Segue horário configurado - se estiver dentro do horário, está aberto
-    // O toggle isOpen não é mais usado para controlar abertura/fechamento
+    // Segue horário configurado
+    // Se manuallyOpened mas dentro do horário, o horário comercial assume
     isOpen = withinHours;
     isForcedClosed = false;
   }

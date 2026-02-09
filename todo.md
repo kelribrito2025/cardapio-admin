@@ -5796,3 +5796,5 @@
 - [x] Alterar template padrão do pedido finalizado para novo texto com emojis
 - [x] Mostrar divisores deve vir desativado por padrão ao criar conta (configurações de layout impressora)
 - [x] Adicionar informação de Apple Pay na seção de Pagamento Online das Configurações
+- [x] [Bug] Abertura manual da loja no admin não reflete no menu público (continua mostrando Fechado)
+- [x] [Bug] Toggle de abrir/fechar loja sem cor visual (deve ser verde quando aberto, vermelho quando fechado)

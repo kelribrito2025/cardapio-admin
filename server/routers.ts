@@ -1274,7 +1274,17 @@ export const appRouter = router({
           });
         }
         
-        if (!establishment.isOpen) {
+        // Verificar se o estabelecimento está aberto (considerando abertura/fechamento manual e horários)
+        const isEstablishmentOpen = (() => {
+          // Se manuallyOpened, está aberto
+          if (establishment.manuallyOpened) return true;
+          // Se manuallyClosed, está fechado
+          if (establishment.manuallyClosed) return false;
+          // Caso contrário, usar o campo isOpen (que reflete o horário)
+          return establishment.isOpen;
+        })();
+        
+        if (!isEstablishmentOpen) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
             message: 'O estabelecimento está fechado no momento. Não é possível realizar pedidos.',
@@ -3920,7 +3930,14 @@ export const appRouter = router({
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'Pagamento online não está disponível para este estabelecimento' });
         }
         
-        if (!establishment.isOpen) {
+        // Verificar se o estabelecimento está aberto (considerando abertura/fechamento manual)
+        const isEstOpen = (() => {
+          if (establishment.manuallyOpened) return true;
+          if (establishment.manuallyClosed) return false;
+          return establishment.isOpen;
+        })();
+        
+        if (!isEstOpen) {
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'O estabelecimento está fechado' });
         }
         

@@ -3230,20 +3230,24 @@ export async function setManualClose(establishmentId: number, close: boolean): P
   if (!db) throw new Error("Database not available");
   
   if (close) {
-    // Fechar manualmente
+    // Fechar manualmente - limpar abertura manual também
     await db.update(establishments)
       .set({ 
         manuallyClosed: true, 
         manuallyClosedAt: new Date(),
+        manuallyOpened: false,
+        manuallyOpenedAt: null,
         isOpen: false 
       })
       .where(eq(establishments.id, establishmentId));
   } else {
-    // Abrir manualmente
+    // Abrir manualmente - marcar como manuallyOpened
     await db.update(establishments)
       .set({ 
         manuallyClosed: false, 
         manuallyClosedAt: null,
+        manuallyOpened: true,
+        manuallyOpenedAt: new Date(),
         isOpen: true 
       })
       .where(eq(establishments.id, establishmentId));
@@ -3260,7 +3264,9 @@ export async function clearManualClose(establishmentId: number): Promise<void> {
   await db.update(establishments)
     .set({ 
       manuallyClosed: false, 
-      manuallyClosedAt: null 
+      manuallyClosedAt: null,
+      manuallyOpened: false,
+      manuallyOpenedAt: null
     })
     .where(eq(establishments.id, establishmentId));
 }

@@ -65,6 +65,9 @@ export const establishments = mysqlTable("establishments", {
   // Controle de fechamento manual
   manuallyClosed: boolean("manuallyClosed").default(false).notNull(),
   manuallyClosedAt: timestamp("manuallyClosedAt"),
+  // Controle de abertura manual (fora do horário)
+  manuallyOpened: boolean("manuallyOpened").default(false).notNull(),
+  manuallyOpenedAt: timestamp("manuallyOpenedAt"),
   // Cartão Fidelidade
   loyaltyEnabled: boolean("loyaltyEnabled").default(false).notNull(),
   loyaltyStampsRequired: int("loyaltyStampsRequired").default(6),

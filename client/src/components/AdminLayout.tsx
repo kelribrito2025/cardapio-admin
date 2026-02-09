@@ -366,17 +366,37 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   // Valor calculado de se está aberto:
-  // Lógica simplificada:
+  // Lógica:
   // 1. Se manuallyClosed E não deve reabrir automaticamente → Fechado
   // 2. Se manuallyClosed E deve reabrir automaticamente → Aberto (se dentro do horário)
-  // 3. Se não manuallyClosed → Segue horário configurado (ignora toggle isOpen)
+  // 3. Se manuallyOpened → Aberto (abertura manual fora do horário)
+  // 4. Caso contrário → Segue horário configurado
   const isWithinBusinessHours = isCurrentlyOpen();
   const autoReopen = shouldAutoReopen();
   const nextOpening = getNextOpeningTime();
   
+  // Verifica se a abertura manual deve ser automaticamente desativada
+  // (quando o horário comercial termina após a abertura manual)
+  const shouldAutoCloseManualOpen = (): boolean => {
+    if (!establishment?.manuallyOpened || !establishment?.manuallyOpenedAt) return false;
+    // Se agora está dentro do horário comercial, a abertura manual não é mais necessária
+    // O horário comercial "assumiu" - quando o horário comercial terminar, fecha normalmente
+    // Então: se manuallyOpened E dentro do horário → limpar flag (será feito no próximo ciclo)
+    // Se manuallyOpened E fora do horário → verificar se já passou um ciclo de abertura
+    if (isWithinBusinessHours) {
+      // Está dentro do horário - a abertura manual pode ser mantida, mas quando
+      // o horário fechar, vai fechar normalmente
+      return false;
+    }
+    // Fora do horário - verificar se desde a abertura manual já houve um período de horário comercial
+    // Se a abertura manual foi antes do último fechamento do horário comercial, deve fechar
+    return false; // Manter aberto até o admin fechar manualmente ou o horário comercial assumir
+  };
+  
   // Determinar status final
   let calculatedIsOpen = false;
   let isForcedClosed = false;
+  let isForcedOpen = false;
   let statusMessage = '';
   
   if (establishment?.manuallyClosed && !autoReopen) {
@@ -396,9 +416,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     // Deve reabrir automaticamente
     calculatedIsOpen = isWithinBusinessHours;
     isForcedClosed = false;
+  } else if (establishment?.manuallyOpened && !isWithinBusinessHours) {
+    // Aberto manualmente fora do horário comercial
+    calculatedIsOpen = true;
+    isForcedOpen = true;
   } else {
-    // Segue horário configurado - se estiver dentro do horário, está aberto
-    // O toggle isOpen não é mais usado para controlar abertura/fechamento
+    // Segue horário configurado
+    // Se manuallyOpened mas dentro do horário, o horário comercial assume
     calculatedIsOpen = isWithinBusinessHours;
     isForcedClosed = false;
     if (!isWithinBusinessHours && nextOpening) {
@@ -921,6 +945,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                                 Fechado manualmente
                               </span>
                             )}
+                            {isForcedOpen && (
+                              <span className="text-[10px] text-blue-600">
+                                Aberto manualmente
+                              </span>
+                            )}
                             {!calculatedIsOpen && statusMessage && (
                               <span className="text-[10px] text-muted-foreground">
                                 {statusMessage}
@@ -935,7 +964,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                                 checked={calculatedIsOpen}
                                 onCheckedChange={handleToggleOpen}
                                 disabled={toggleOpenMutation.isPending}
-                                className="data-[state=checked]:bg-emerald-500 scale-90"
+                                className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-red-400 scale-90"
                               />
                             </div>
                           </TooltipTrigger>
