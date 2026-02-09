@@ -5771,3 +5771,4 @@
 - [x] [Dashboard] Mover subtexto do card Taxa de Conversão para tooltip no hover
 - [x] [Dashboard] Diminuir largura do card Itens em Falta em 25%
 - [x] [Dashboard] Adicionar ícone (i) ao lado do título Taxa de Conversão com tooltip no hover
+- [x] [Bug] Tooltip do card Taxa de Conversão cortado pelo overflow-hidden do card

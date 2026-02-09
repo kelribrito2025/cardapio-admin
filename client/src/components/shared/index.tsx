@@ -148,7 +148,7 @@ export function StatCard({ title, value, tooltip, icon: Icon, trend, loading, cl
   return (
     <div
       className={cn(
-        "bg-card rounded-xl overflow-hidden border border-border/50 border-t-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
+        "bg-card rounded-xl border border-border/50 border-t-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
         colors.borderColor,
         className
       )}
@@ -167,10 +167,10 @@ export function StatCard({ title, value, tooltip, icon: Icon, trend, loading, cl
               >
                 <Info className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help hover:text-muted-foreground transition-colors" />
                 {showInfoTooltip && (
-                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-50 whitespace-nowrap pointer-events-none">
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 z-50 whitespace-nowrap pointer-events-none">
                     <div className="bg-gray-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-lg">
+                      <div className="absolute left-1/2 -translate-x-1/2 bottom-full w-0 h-0 border-l-4 border-r-4 border-b-4 border-l-transparent border-r-transparent border-b-gray-900" />
                       {tooltip}
-                      <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900" />
                     </div>
                   </div>
                 )}
