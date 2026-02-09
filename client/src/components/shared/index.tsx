@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, Info } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 // ============ STAT CARD ============
@@ -115,7 +115,7 @@ function TrendBadge({ trend }: { trend: { value: number; isPositive: boolean; la
 export function StatCard({ title, value, tooltip, icon: Icon, trend, loading, className, variant = "primary", iconAction }: StatCardProps) {
   const colors = statCardVariants[variant];
   const [animate, setAnimate] = useState(false);
-  const [showCardTooltip, setShowCardTooltip] = useState(false);
+  const [showInfoTooltip, setShowInfoTooltip] = useState(false);
   const prevValueRef = useRef(value);
 
   useEffect(() => {
@@ -148,26 +148,35 @@ export function StatCard({ title, value, tooltip, icon: Icon, trend, loading, cl
   return (
     <div
       className={cn(
-        "bg-card rounded-xl overflow-hidden border border-border/50 border-t-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 relative",
+        "bg-card rounded-xl overflow-hidden border border-border/50 border-t-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
         colors.borderColor,
         className
       )}
-      onMouseEnter={() => tooltip && setShowCardTooltip(true)}
-      onMouseLeave={() => setShowCardTooltip(false)}
     >
-      {showCardTooltip && tooltip && (
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 whitespace-nowrap pointer-events-none">
-          <div className="bg-gray-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-lg">
-            {tooltip}
-            <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900" />
-          </div>
-        </div>
-      )}
       <div className="px-5 py-5 flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
-            {title}
-          </p>
+          <div className="flex items-center gap-1">
+            <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
+              {title}
+            </p>
+            {tooltip && (
+              <div
+                className="relative"
+                onMouseEnter={() => setShowInfoTooltip(true)}
+                onMouseLeave={() => setShowInfoTooltip(false)}
+              >
+                <Info className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help hover:text-muted-foreground transition-colors" />
+                {showInfoTooltip && (
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-50 whitespace-nowrap pointer-events-none">
+                    <div className="bg-gray-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-lg">
+                      {tooltip}
+                      <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900" />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           <div
             className={cn(
               "flex items-center gap-2 mt-1 transition-all duration-300 ease-out",
