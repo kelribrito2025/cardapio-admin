@@ -5787,3 +5787,4 @@
 - [x] Adicionar ícone azul no título da página Cupons
 - [x] Adicionar ícone azul no título da página Campanhas
 - [x] [Bug] Fechamento de mesa não reflete no card Faturamento Hoje e Ticket Médio da Dashboard
+- [x] Modal informativo WhatsApp na página de Pedidos (conectar WhatsApp para notificações automáticas)

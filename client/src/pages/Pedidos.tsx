@@ -66,6 +66,7 @@ import {
   Star,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
+import { useLocation } from "wouter";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
 import { formatDistanceToNow, format } from "date-fns";
@@ -182,6 +183,9 @@ export default function Pedidos() {
   const [isPollingQrCode, setIsPollingQrCode] = useState(false);
   // Estado para rastrear qual pedido está com loading de ação
   const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null);
+  // Estado para o modal informativo de WhatsApp
+  const [whatsappInfoModalOpen, setWhatsappInfoModalOpen] = useState(false);
+  const [, navigate] = useLocation();
 
   useEffect(() => {
     if (establishment) {
@@ -234,6 +238,19 @@ export default function Pedidos() {
       toast.success("WhatsApp conectado com sucesso!");
     }
   }, [whatsappStatus?.status, isPollingQrCode]);
+
+  // Modal informativo: exibir no primeiro acesso se WhatsApp não estiver conectado
+  useEffect(() => {
+    if (!isWhatsappFetched || isWhatsappLoading) return;
+    if (whatsappStatus?.status === 'connected') return;
+    
+    // Verificar se já foi dispensado nesta sessão
+    const dismissed = sessionStorage.getItem('whatsapp-info-modal-dismissed');
+    if (dismissed) return;
+    
+    // Mostrar modal
+    setWhatsappInfoModalOpen(true);
+  }, [isWhatsappFetched, isWhatsappLoading, whatsappStatus?.status]);
   
   // Query para buscar todos os pedidos
   const { data: allOrdersData, refetch: refetchAll, isLoading } = trpc.orders.list.useQuery(
@@ -1677,6 +1694,82 @@ export default function Pedidos() {
               onClick={() => setQrCodeModalOpen(false)}
             >
               Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Informativo - Conectar WhatsApp para notificações */}
+      <Dialog open={whatsappInfoModalOpen} onOpenChange={(open) => {
+        if (!open) {
+          sessionStorage.setItem('whatsapp-info-modal-dismissed', 'true');
+        }
+        setWhatsappInfoModalOpen(open);
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="p-2.5 bg-emerald-100 rounded-xl">
+                <MessageCircle className="h-6 w-6 text-emerald-600" />
+              </div>
+              <DialogTitle className="text-lg">Avise seus clientes pelo WhatsApp</DialogTitle>
+            </div>
+            <DialogDescription className="text-sm text-muted-foreground leading-relaxed pt-2">
+              Conecte o WhatsApp do seu estabelecimento e seus clientes passarão a receber <strong className="text-foreground">notificações automáticas</strong> sobre o status dos pedidos:
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-3 py-2">
+            <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-xl">
+              <div className="p-1.5 bg-blue-100 rounded-lg mt-0.5">
+                <ClipboardList className="h-4 w-4 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-blue-900">Pedido recebido</p>
+                <p className="text-xs text-blue-700/80">Cliente é notificado assim que o pedido é confirmado</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-xl">
+              <div className="p-1.5 bg-amber-100 rounded-lg mt-0.5">
+                <ChefHat className="h-4 w-4 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-amber-900">Em preparo</p>
+                <p className="text-xs text-amber-700/80">Cliente sabe que o pedido está sendo preparado</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 bg-emerald-50 rounded-xl">
+              <div className="p-1.5 bg-emerald-100 rounded-lg mt-0.5">
+                <Package className="h-4 w-4 text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-emerald-900">Saiu para entrega</p>
+                <p className="text-xs text-emerald-700/80">Cliente acompanha quando o pedido está a caminho</p>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 pt-2">
+            <Button
+              variant="outline"
+              className="rounded-xl sm:order-1"
+              onClick={() => {
+                sessionStorage.setItem('whatsapp-info-modal-dismissed', 'true');
+                setWhatsappInfoModalOpen(false);
+              }}
+            >
+              Agora não
+            </Button>
+            <Button
+              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white gap-2 sm:order-2"
+              onClick={() => {
+                sessionStorage.setItem('whatsapp-info-modal-dismissed', 'true');
+                setWhatsappInfoModalOpen(false);
+                navigate('/configuracoes?section=whatsapp');
+              }}
+            >
+              <MessageCircle className="h-4 w-4" />
+              Conectar WhatsApp
             </Button>
           </DialogFooter>
         </DialogContent>

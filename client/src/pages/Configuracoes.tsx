@@ -104,7 +104,16 @@ export default function Configuracoes() {
     { enabled: !!establishment?.id }
   );
   
-  const [activeSection, setActiveSection] = useState<SettingsSection>("estabelecimento");
+  const [activeSection, setActiveSection] = useState<SettingsSection>(() => {
+    // Suporte a deep linking via query param ?section=whatsapp
+    const params = new URLSearchParams(window.location.search);
+    const section = params.get('section');
+    const validSections: SettingsSection[] = ['estabelecimento', 'atendimento', 'whatsapp', 'impressora', 'pagamento-online', 'integracoes', 'conta-seguranca'];
+    if (section && validSections.includes(section as SettingsSection)) {
+      return section as SettingsSection;
+    }
+    return 'estabelecimento';
+  });
 
   // Establishment form state
   const [name, setName] = useState("");
