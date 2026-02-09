@@ -678,25 +678,39 @@ export default function Configuracoes() {
       return;
     }
 
-    const data = {
-      name: name.trim(),
-      logo: logo || undefined,
-      coverImage: coverImage || undefined,
-      street: street || undefined,
-      number: number || undefined,
-      complement: complement || undefined,
-      neighborhood: neighborhood || undefined,
-      city: city || undefined,
-      state: state || undefined,
-      zipCode: zipCode || undefined,
-      latitude: latitude || undefined,
-      longitude: longitude || undefined,
-    };
-
     if (establishment) {
-      updateMutation.mutate({ id: establishment.id, ...data });
+      // Para update, enviar null explicitamente para limpar campos vazios no banco
+      updateMutation.mutate({
+        id: establishment.id,
+        name: name.trim(),
+        logo: logo || null,
+        coverImage: coverImage || null,
+        street: street.trim() || null,
+        number: number.trim() || null,
+        complement: complement.trim() || null,
+        neighborhood: neighborhood.trim() || null,
+        city: city.trim() || null,
+        state: state.trim() || null,
+        zipCode: zipCode.trim() || null,
+        latitude: latitude || null,
+        longitude: longitude || null,
+      });
     } else {
-      createMutation.mutate(data);
+      // Para create, enviar undefined para campos vazios (serão ignorados)
+      createMutation.mutate({
+        name: name.trim(),
+        logo: logo || undefined,
+        coverImage: coverImage || undefined,
+        street: street.trim() || undefined,
+        number: number.trim() || undefined,
+        complement: complement.trim() || undefined,
+        neighborhood: neighborhood.trim() || undefined,
+        city: city.trim() || undefined,
+        state: state.trim() || undefined,
+        zipCode: zipCode.trim() || undefined,
+        latitude: latitude || undefined,
+        longitude: longitude || undefined,
+      });
     }
   };
 

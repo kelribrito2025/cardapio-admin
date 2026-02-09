@@ -5819,3 +5819,4 @@
 
 ## Endereço do Estabelecimento
 - [x] Remover obrigatoriedade dos campos Nº, Bairro, Cidade, UF e CEP (apenas Rua obrigatório)
+- [x] [Bug] Ao salvar endereço com campos vazios, os valores antigos voltam a preencher os campos
