@@ -5798,3 +5798,4 @@
 - [x] Adicionar informação de Apple Pay na seção de Pagamento Online das Configurações
 - [x] [Bug] Abertura manual da loja no admin não reflete no menu público (continua mostrando Fechado)
 - [x] [Bug] Toggle de abrir/fechar loja sem cor visual (deve ser verde quando aberto, vermelho quando fechado)
+- [x] [Bug] Validação do campo WhatsApp no Step 1 do onboarding permite continuar com número incompleto
