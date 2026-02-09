@@ -1712,10 +1712,10 @@ export default function Pedidos() {
               <div className="p-2.5 bg-emerald-100 rounded-xl">
                 <MessageCircle className="h-6 w-6 text-emerald-600" />
               </div>
-              <DialogTitle className="text-lg">Avise seus clientes pelo WhatsApp</DialogTitle>
+              <DialogTitle className="text-lg">Notificações de pedidos via WhatsApp</DialogTitle>
             </div>
             <DialogDescription className="text-sm text-muted-foreground leading-relaxed pt-2">
-              Conecte o WhatsApp do seu estabelecimento e seus clientes passarão a receber <strong className="text-foreground">notificações automáticas</strong> sobre o status dos pedidos:
+              Conecte o WhatsApp para notificar seus clientes sobre o status de cada pedido.
             </DialogDescription>
           </DialogHeader>
           
