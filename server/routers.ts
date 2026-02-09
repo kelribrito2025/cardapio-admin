@@ -853,6 +853,7 @@ export const appRouter = router({
           startTime: z.string(),
           endTime: z.string(),
         })).optional(),
+        badgeText: z.string().nullable().optional(),
       }))
       .mutation(async ({ input }) => {
         const { establishmentId, complementName, ...data } = input;

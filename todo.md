@@ -5799,3 +5799,10 @@
 - [x] [Bug] Abertura manual da loja no admin não reflete no menu público (continua mostrando Fechado)
 - [x] [Bug] Toggle de abrir/fechar loja sem cor visual (deve ser verde quando aberto, vermelho quando fechado)
 - [x] [Bug] Validação do campo WhatsApp no Step 1 do onboarding permite continuar com número incompleto
+
+## Badge Customizável nos Complementos
+- [x] Adicionar campo badgeText no schema de complements
+- [x] Atualizar backend (db.ts e routers.ts) para suportar badgeText
+- [x] Adicionar campo de texto no catálogo admin para definir badge do complemento
+- [x] Exibir badge vermelho pulsante no menu público ao lado do nome do complemento
+- [x] Testes unitários para badge de complementos

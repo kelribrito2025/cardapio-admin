@@ -167,6 +167,7 @@ export const complementItems = mysqlTable("complementItems", {
   availabilityType: mysqlEnum("availabilityType", ["always", "scheduled"]).default("always").notNull(), // always = sempre disponível, scheduled = dias/horários específicos
   availableDays: json("availableDays").$type<number[]>(), // 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb
   availableHours: json("availableHours").$type<{ day: number; startTime: string; endTime: string }[]>(), // Horários por dia
+  badgeText: varchar("badgeText", { length: 50 }), // Texto do badge customizável (ex: "Novo", "Novidade", "Promoção")
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

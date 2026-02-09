@@ -819,6 +819,7 @@ export async function getAllComplementItemsByEstablishment(establishmentId: numb
     availabilityType: "always" | "scheduled";
     availableDays: number[] | null;
     availableHours: { day: number; startTime: string; endTime: string }[] | null;
+    badgeText: string | null;
   }>();
   
   for (const item of allItems) {
@@ -841,6 +842,7 @@ export async function getAllComplementItemsByEstablishment(establishmentId: numb
         availabilityType: (item.availabilityType as "always" | "scheduled") || "always",
         availableDays: item.availableDays as number[] | null,
         availableHours: item.availableHours as { day: number; startTime: string; endTime: string }[] | null,
+        badgeText: item.badgeText ?? null,
       });
     }
   }
@@ -859,6 +861,7 @@ export async function updateComplementItemsByName(
     availabilityType?: "always" | "scheduled";
     availableDays?: number[];
     availableHours?: { day: number; startTime: string; endTime: string }[];
+    badgeText?: string | null;
   }
 ) {
   const db = await getDb();

@@ -190,6 +190,7 @@ export default function Complementos() {
             availabilityType: "always" | "scheduled";
             availableDays: number[] | null;
             availableHours: { day: number; startTime: string; endTime: string }[] | null;
+            badgeText: string | null;
           }) => (
             <ComplementRow
               key={complement.id}
@@ -198,6 +199,11 @@ export default function Complementos() {
               onTogglePriceMode={handleTogglePriceMode}
               onUpdatePrice={handleUpdatePrice}
               onUpdateAvailability={handleUpdateAvailability}
+              onUpdateBadge={(name, badgeText) => {
+                if (!establishmentId) return;
+                updateGlobalMutation.mutate({ establishmentId, complementName: name, badgeText });
+                toast.success(badgeText ? `Badge "${badgeText}" aplicado em todos os produtos` : "Badge removido de todos os produtos");
+              }}
               isUpdating={updateGlobalMutation.isPending}
               isExpanded={expandedComplementId === complement.id}
               onToggleExpand={(id) => setExpandedComplementId(expandedComplementId === id ? null : id)}
@@ -228,6 +234,7 @@ function ComplementRow({
   onTogglePriceMode,
   onUpdatePrice,
   onUpdateAvailability,
+  onUpdateBadge,
   isUpdating,
   isExpanded,
   onToggleExpand,
@@ -242,6 +249,7 @@ function ComplementRow({
     availabilityType: "always" | "scheduled";
     availableDays: number[] | null;
     availableHours: { day: number; startTime: string; endTime: string }[] | null;
+    badgeText: string | null;
   };
   onToggleActive: (name: string, isActive: boolean) => void;
   onTogglePriceMode: (name: string, priceMode: "normal" | "free") => void;
@@ -252,6 +260,7 @@ function ComplementRow({
     availableDays?: number[],
     availableHours?: { day: number; startTime: string; endTime: string }[]
   ) => void;
+  onUpdateBadge: (name: string, badgeText: string | null) => void;
   isUpdating: boolean;
   isExpanded: boolean;
   onToggleExpand: (id: number) => void;
@@ -259,6 +268,8 @@ function ComplementRow({
   // Usar isExpanded do pai ao invés de estado local
   const [isEditingPrice, setIsEditingPrice] = useState(false);
   const [editedPrice, setEditedPrice] = useState(complement.price);
+  const [isEditingBadge, setIsEditingBadge] = useState(false);
+  const [badgeText, setBadgeText] = useState(complement.badgeText || "");
   
   // Estado local para disponibilidade
   const [availabilityType, setAvailabilityType] = useState<"always" | "scheduled">(complement.availabilityType || "always");
@@ -455,6 +466,11 @@ function ComplementRow({
               <span className="text-sm text-muted-foreground">·</span>
               <span className="text-sm text-muted-foreground">Usado em {complement.usageCount} {complement.usageCount === 1 ? "produto" : "produtos"}</span>
               
+              {complement.badgeText && (
+                <Badge variant="secondary" className="bg-red-100 text-red-600 border-red-200 animate-pulse">
+                  {complement.badgeText}
+                </Badge>
+              )}
               {isFree && (
                 <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
                   <Gift className="h-3 w-3 mr-1" />
@@ -535,9 +551,62 @@ function ComplementRow({
           </CollapsibleTrigger>
         </div>
 
-        {/* Conteúdo expandido - Disponibilidade */}
+        {/* Conteúdo expandido - Badge + Disponibilidade */}
         <CollapsibleContent>
-          <div className="px-4 pb-4 pt-2 border-t border-border/50">
+          <div className="px-4 pb-4 pt-2 border-t border-border/50 space-y-4">
+            {/* Seção Badge */}
+            <div className="bg-muted/30 rounded-lg p-4 space-y-3">
+              <h5 className="font-medium text-sm flex items-center gap-2">
+                <span className="text-red-500 text-lg">&#9679;</span>
+                Badge / Destaque
+              </h5>
+              <p className="text-sm text-muted-foreground">
+                Adicione um texto de destaque que aparece ao lado do complemento no menu público (ex: "Novo", "Novidade", "Promoção").
+              </p>
+              <div className="flex items-center gap-2">
+                <Input
+                  placeholder="Ex: Novo, Novidade, Promoção..."
+                  value={badgeText}
+                  onChange={(e) => setBadgeText(e.target.value)}
+                  className="max-w-xs h-9"
+                  maxLength={50}
+                />
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    onUpdateBadge(complement.name, badgeText.trim() || null);
+                    if (!badgeText.trim()) setBadgeText("");
+                  }}
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? "Salvando..." : "Salvar badge"}
+                </Button>
+                {complement.badgeText && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-red-600 hover:text-red-700"
+                    onClick={() => {
+                      setBadgeText("");
+                      onUpdateBadge(complement.name, null);
+                    }}
+                    disabled={isUpdating}
+                  >
+                    Remover
+                  </Button>
+                )}
+              </div>
+              {badgeText.trim() && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>Pré-visualização:</span>
+                  <Badge variant="secondary" className="bg-red-100 text-red-600 border-red-200 animate-pulse">
+                    {badgeText.trim()}
+                  </Badge>
+                </div>
+              )}
+            </div>
+
+            {/* Seção Disponibilidade */}
             <div className="bg-muted/30 rounded-lg p-4 space-y-4">
               <h5 className="font-medium text-sm flex items-center gap-2">
                 <Clock className="h-4 w-4" />

@@ -519,6 +519,13 @@
       "when": 1770660753695,
       "tag": "0073_smart_the_santerians",
       "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "5",
+      "when": 1770667073947,
+      "tag": "0074_awesome_pandemic",
+      "breakpoints": true
     }
   ]
 }

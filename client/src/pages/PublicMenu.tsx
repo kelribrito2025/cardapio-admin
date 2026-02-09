@@ -2794,6 +2794,11 @@ export default function PublicMenu() {
                                     className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500"
                                   />
                                   <span className="text-sm text-gray-900">{item.name}</span>
+                                  {(item as any).badgeText && (
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-red-500 text-white animate-pulse leading-none">
+                                      {(item as any).badgeText}
+                                    </span>
+                                  )}
                                 </label>
                                 
                                 <div className="flex items-center gap-3">

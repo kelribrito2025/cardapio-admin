@@ -1,0 +1,62 @@
+{
+  "query": "SELECT c.name as categoria, COUNT(p.id) as produtos FROM categories c LEFT JOIN products p ON p.categoryId = c.id WHERE c.establishmentId = 150004 GROUP BY c.id, c.name ORDER BY c.sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT c.name as categoria, COUNT(p.id) as produtos FROM categories c LEFT JOIN products p ON p.categoryId = c.id WHERE c.establishmentId = 150004 GROUP BY c.id, c.name ORDER BY c.sortOrder;",
+  "rows": [
+    {
+      "categoria": "Categoria teste",
+      "produtos": "1"
+    },
+    {
+      "categoria": "Açaí",
+      "produtos": "5"
+    },
+    {
+      "categoria": "Açai Zero",
+      "produtos": "4"
+    },
+    {
+      "categoria": "Roleta de inverno",
+      "produtos": "1"
+    },
+    {
+      "categoria": "Milk-shake",
+      "produtos": "2"
+    },
+    {
+      "categoria": "Pote de Sorvete 1,5 litros",
+      "produtos": "1"
+    },
+    {
+      "categoria": "Pote de Sorvete 1,8 litros",
+      "produtos": "1"
+    },
+    {
+      "categoria": "Crepioca",
+      "produtos": "1"
+    },
+    {
+      "categoria": "Tapioca Salgada",
+      "produtos": "1"
+    },
+    {
+      "categoria": "Tapioca Doce",
+      "produtos": "1"
+    },
+    {
+      "categoria": "Salada de fruta",
+      "produtos": "1"
+    },
+    {
+      "categoria": "Pote de açaí 2 litros",
+      "produtos": "1"
+    },
+    {
+      "categoria": "Pote de açaí 2 litros (PURO)",
+      "produtos": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "categoria\tprodutos\nCategoria teste\t1\nAçaí\t5\nAçai Zero\t4\nRoleta de inverno\t1\nMilk-shake\t2\nPote de Sorvete 1,5 litros\t1\nPote de Sorvete 1,8 litros\t1\nCrepioca\t1\nTapioca Salgada\t1\nTapioca Doce\t1\nSalada de fruta\t1\nPote de açaí 2 litros\t1\nPote de açaí 2 litros (PURO)\t1\n",
+  "stderr": "",
+  "execution_time_ms": 63
+}
