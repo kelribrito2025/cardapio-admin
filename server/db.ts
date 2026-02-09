@@ -1484,6 +1484,166 @@ export async function getWeeklyRevenue(establishmentId: number) {
 }
 
 
+/**
+ * Busca dados de faturamento filtrados por período (today, week, month)
+ * Retorna dados do período atual e anterior para comparação
+ */
+export async function getRevenueByPeriod(establishmentId: number, period: 'today' | 'week' | 'month' = 'week') {
+  const db = await getDb();
+  if (!db) return { thisWeek: [], lastWeek: [], thisWeekTotal: 0, lastWeekTotal: 0, periodLabel: 'Esta semana', comparisonLabel: 'Semana passada' };
+  
+  const now = new Date();
+  const brasiliaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  
+  const formatDateForSQL = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
+  
+  if (period === 'today') {
+    // Hoje: faturamento por hora (0h-23h), comparação com ontem
+    const todayStart = new Date(brasiliaDate);
+    todayStart.setHours(0, 0, 0, 0);
+    const yesterdayStart = new Date(todayStart);
+    yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+    
+    const todayStartStr = formatDateForSQL(todayStart);
+    const yesterdayStartStr = formatDateForSQL(yesterdayStart);
+    const todayEndStr = formatDateForSQL(brasiliaDate);
+    
+    // Buscar dados de hoje por hora
+    const todayResult = await db.select({
+      hour: sql<number>`HOUR(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`,
+      revenue: sql<number>`COALESCE(SUM(total), 0)`
+    })
+      .from(orders)
+      .where(and(
+        eq(orders.establishmentId, establishmentId),
+        sql`CONVERT_TZ(createdAt, '+00:00', '-03:00') >= ${todayStartStr}`,
+        eq(orders.status, "completed")
+      ))
+      .groupBy(sql`HOUR(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`);
+    
+    // Buscar dados de ontem por hora
+    const yesterdayResult = await db.select({
+      hour: sql<number>`HOUR(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`,
+      revenue: sql<number>`COALESCE(SUM(total), 0)`
+    })
+      .from(orders)
+      .where(and(
+        eq(orders.establishmentId, establishmentId),
+        sql`CONVERT_TZ(createdAt, '+00:00', '-03:00') >= ${yesterdayStartStr}`,
+        sql`CONVERT_TZ(createdAt, '+00:00', '-03:00') < ${todayStartStr}`,
+        eq(orders.status, "completed")
+      ))
+      .groupBy(sql`HOUR(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`);
+    
+    // Mapear para arrays de 24 horas
+    const currentHour = brasiliaDate.getHours();
+    const todayData = Array(24).fill(0);
+    const yesterdayData = Array(24).fill(0);
+    
+    for (const row of todayResult) {
+      if (row.hour >= 0 && row.hour < 24) todayData[row.hour] = Number(row.revenue);
+    }
+    for (const row of yesterdayResult) {
+      if (row.hour >= 0 && row.hour < 24) yesterdayData[row.hour] = Number(row.revenue);
+    }
+    
+    const todayTotal = todayData.reduce((sum, val) => sum + val, 0);
+    const yesterdayTotal = yesterdayData.reduce((sum, val) => sum + val, 0);
+    
+    return {
+      thisWeek: todayData,
+      lastWeek: yesterdayData,
+      thisWeekTotal: todayTotal,
+      lastWeekTotal: yesterdayTotal,
+      periodLabel: 'Hoje',
+      comparisonLabel: 'Ontem',
+      mode: 'hourly' as const,
+      currentIndex: currentHour,
+    };
+  } else if (period === 'month') {
+    // Mês: faturamento dos últimos 6 meses (barras por mês)
+    const MONTH_NAMES_SHORT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    
+    // Gerar os últimos 6 meses (incluindo o atual)
+    const months: { start: Date; end: Date; label: string }[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const mStart = new Date(brasiliaDate.getFullYear(), brasiliaDate.getMonth() - i, 1);
+      const mEnd = new Date(brasiliaDate.getFullYear(), brasiliaDate.getMonth() - i + 1, 1);
+      mEnd.setMilliseconds(-1);
+      months.push({
+        start: mStart,
+        end: mEnd,
+        label: MONTH_NAMES_SHORT[mStart.getMonth()],
+      });
+    }
+    
+    // Período total: do início do 6º mês atrás até agora
+    const sixMonthsAgoStr = formatDateForSQL(months[0].start);
+    
+    // Buscar faturamento agrupado por ano-mês
+    const monthlyResult = await db.select({
+      yearMonth: sql<string>`DATE_FORMAT(CONVERT_TZ(createdAt, '+00:00', '-03:00'), '%Y-%m')`,
+      revenue: sql<number>`COALESCE(SUM(total), 0)`
+    })
+      .from(orders)
+      .where(and(
+        eq(orders.establishmentId, establishmentId),
+        sql`CONVERT_TZ(createdAt, '+00:00', '-03:00') >= ${sixMonthsAgoStr}`,
+        eq(orders.status, "completed")
+      ))
+      .groupBy(sql`DATE_FORMAT(CONVERT_TZ(createdAt, '+00:00', '-03:00'), '%Y-%m')`);
+    
+    // Mapear resultados para os 6 meses
+    const revenueByMonth: Record<string, number> = {};
+    for (const row of monthlyResult) {
+      revenueByMonth[row.yearMonth] = Number(row.revenue);
+    }
+    
+    const monthData = months.map(m => {
+      const key = `${m.start.getFullYear()}-${String(m.start.getMonth() + 1).padStart(2, '0')}`;
+      return revenueByMonth[key] || 0;
+    });
+    
+    const monthLabels = months.map(m => m.label);
+    
+    // Mês atual = último do array (index 5)
+    const currentMonthTotal = monthData[5];
+    // Mês anterior = penúltimo (index 4)
+    const previousMonthTotal = monthData[4];
+    // Total dos 6 meses
+    const totalSixMonths = monthData.reduce((sum, val) => sum + val, 0);
+    
+    return {
+      thisWeek: monthData,
+      lastWeek: monthData.map(() => 0), // sem comparação por barra individual
+      thisWeekTotal: currentMonthTotal,
+      lastWeekTotal: previousMonthTotal,
+      periodLabel: 'Este mês',
+      comparisonLabel: 'Mês anterior',
+      mode: 'monthly' as const,
+      currentIndex: 5, // último mês (atual)
+      monthLabels,
+    };
+  } else {
+    // Semana: manter comportamento original
+    return {
+      ...(await getWeeklyRevenue(establishmentId)),
+      periodLabel: 'Esta semana',
+      comparisonLabel: 'Semana passada',
+      mode: 'daily' as const,
+      currentIndex: undefined,
+    };
+  }
+}
+
 // ============ STOCK CATEGORY FUNCTIONS ============
 export async function getStockCategoriesByEstablishment(establishmentId: number) {
   const db = await getDb();
@@ -4741,8 +4901,114 @@ export async function incrementMenuViewHourly(
 }
 
 /**
- * Busca dados do mapa de calor (7 dias x 24 horas)
+ * Busca dados do mapa de calor com visualizações filtradas por período
  */
+export async function getMenuViewsHeatmapWithPeriod(establishmentId: number, period: 'today' | 'week' | 'month' = 'today'): Promise<{
+  data: { dayOfWeek: number; hour: number; count: number }[];
+  maxCount: number;
+  totalViews: number;
+  periodViews: number;
+  previousPeriodViews: number;
+  viewsChange: number;
+}> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Buscar dados do heatmap (sempre mostra todos os dados acumulados)
+  const results = await db.select({
+    dayOfWeek: menuViewsHourly.dayOfWeek,
+    hour: menuViewsHourly.hour,
+    count: menuViewsHourly.viewCount,
+  })
+    .from(menuViewsHourly)
+    .where(eq(menuViewsHourly.establishmentId, establishmentId));
+  
+  const data = results.map(r => ({
+    dayOfWeek: r.dayOfWeek,
+    hour: r.hour,
+    count: r.count,
+  }));
+  
+  const maxCount = data.length > 0 ? Math.max(...data.map(d => d.count)) : 0;
+  const totalViews = data.reduce((sum, d) => sum + d.count, 0);
+  
+  // Calcular visualizações do período selecionado usando menuViewsDaily
+  const now = new Date();
+  const brasiliaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  const todayStr = brasiliaDate.toISOString().split('T')[0];
+  
+  let periodStartStr: string;
+  let prevPeriodStartStr: string;
+  let prevPeriodEndStr: string;
+  
+  if (period === 'today') {
+    periodStartStr = todayStr;
+    const yesterday = new Date(brasiliaDate);
+    yesterday.setDate(yesterday.getDate() - 1);
+    prevPeriodStartStr = yesterday.toISOString().split('T')[0];
+    prevPeriodEndStr = prevPeriodStartStr;
+  } else if (period === 'week') {
+    const currentDay = brasiliaDate.getDay();
+    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+    const weekStart = new Date(brasiliaDate);
+    weekStart.setDate(brasiliaDate.getDate() - daysFromMonday);
+    periodStartStr = weekStart.toISOString().split('T')[0];
+    
+    const prevWeekStart = new Date(weekStart);
+    prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+    prevPeriodStartStr = prevWeekStart.toISOString().split('T')[0];
+    
+    const prevWeekEnd = new Date(weekStart);
+    prevWeekEnd.setDate(prevWeekEnd.getDate() - 1);
+    prevPeriodEndStr = prevWeekEnd.toISOString().split('T')[0];
+  } else {
+    // month
+    const monthStart = new Date(brasiliaDate.getFullYear(), brasiliaDate.getMonth(), 1);
+    periodStartStr = monthStart.toISOString().split('T')[0];
+    
+    const prevMonthStart = new Date(brasiliaDate.getFullYear(), brasiliaDate.getMonth() - 1, 1);
+    prevPeriodStartStr = prevMonthStart.toISOString().split('T')[0];
+    
+    const prevMonthEnd = new Date(monthStart);
+    prevMonthEnd.setDate(prevMonthEnd.getDate() - 1);
+    prevPeriodEndStr = prevMonthEnd.toISOString().split('T')[0];
+  }
+  
+  // Buscar visualizações do período atual
+  const currentPeriodResult = await db.select({
+    total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)`,
+  })
+    .from(menuViewsDaily)
+    .where(and(
+      eq(menuViewsDaily.establishmentId, establishmentId),
+      gte(menuViewsDaily.date, periodStartStr),
+      lte(menuViewsDaily.date, todayStr)
+    ));
+  
+  // Buscar visualizações do período anterior
+  const prevPeriodResult = await db.select({
+    total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)`,
+  })
+    .from(menuViewsDaily)
+    .where(and(
+      eq(menuViewsDaily.establishmentId, establishmentId),
+      gte(menuViewsDaily.date, prevPeriodStartStr),
+      lte(menuViewsDaily.date, prevPeriodEndStr)
+    ));
+  
+  const periodViews = Number(currentPeriodResult[0]?.total ?? 0);
+  const previousPeriodViews = Number(prevPeriodResult[0]?.total ?? 0);
+  
+  let viewsChange = 0;
+  if (previousPeriodViews > 0) {
+    viewsChange = Math.round(((periodViews - previousPeriodViews) / previousPeriodViews) * 100);
+  } else if (periodViews > 0) {
+    viewsChange = 100;
+  }
+  
+  return { data, maxCount, totalViews, periodViews, previousPeriodViews, viewsChange };
+}
+
 export async function getMenuViewsHeatmap(establishmentId: number): Promise<{
   data: { dayOfWeek: number; hour: number; count: number }[];
   maxCount: number;

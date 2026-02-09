@@ -1,4 +1,4 @@
-import { Eye, Info } from "lucide-react";
+import { Eye, Info, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useMemo, useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -57,8 +57,13 @@ function useIsTouchDevice() {
   return isTouch;
 }
 
-export function HeatmapCard() {
-  const { data: heatmapData, isLoading } = trpc.menuViews.getHeatmap.useQuery();
+interface HeatmapCardProps {
+  period?: 'today' | 'week' | 'month';
+}
+
+export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
+  const heatmapInput = useMemo(() => ({ period }), [period]);
+  const { data: heatmapData, isLoading } = trpc.menuViews.getHeatmap.useQuery(heatmapInput);
   const isTouch = useIsTouchDevice();
   
   // Estado para controlar tooltip ativo (apenas para mobile/touch)
@@ -71,7 +76,7 @@ export function HeatmapCard() {
     const grid: number[][] = Array.from({ length: 7 }, () => Array(24).fill(0));
     
     if (heatmapData?.data) {
-      heatmapData.data.forEach(item => {
+      heatmapData.data.forEach((item: { dayOfWeek: number; hour: number; count: number }) => {
         if (item.dayOfWeek >= 0 && item.dayOfWeek < 7 && item.hour >= 0 && item.hour < 24) {
           grid[item.dayOfWeek][item.hour] = item.count;
         }
@@ -82,7 +87,21 @@ export function HeatmapCard() {
   }, [heatmapData?.data]);
 
   const maxCount = heatmapData?.maxCount || 0;
-  const totalViews = heatmapData?.totalViews || 0;
+  const periodViews = heatmapData?.periodViews ?? 0;
+  const viewsChange = heatmapData?.viewsChange ?? 0;
+
+  // Period label for the views counter
+  const periodViewsLabel = useMemo(() => {
+    if (period === 'today') return 'Hoje';
+    if (period === 'week') return 'Esta semana';
+    return 'Este mês';
+  }, [period]);
+
+  const comparisonLabel = useMemo(() => {
+    if (period === 'today') return 'vs ontem';
+    if (period === 'week') return 'vs semana anterior';
+    return 'vs mês anterior';
+  }, [period]);
 
   // Fechar tooltips ao clicar fora (apenas para mobile)
   useEffect(() => {
@@ -176,6 +195,48 @@ export function HeatmapCard() {
           </Tooltip>
         </div>
 
+        {/* Period Views Counter with Trend */}
+        <div className="flex items-center gap-2 mb-3 px-1">
+          <span className="text-lg font-bold text-foreground">
+            {periodViews.toLocaleString('pt-BR')}
+          </span>
+          <span className="text-xs text-muted-foreground">{periodViewsLabel}</span>
+          {viewsChange !== 0 ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-0.5 text-xs font-medium cursor-default",
+                    viewsChange > 0 ? "text-emerald-600" : "text-red-500"
+                  )}
+                >
+                  {viewsChange > 0 ? (
+                    <TrendingUp className="w-3 h-3" />
+                  ) : (
+                    <TrendingDown className="w-3 h-3" />
+                  )}
+                  {viewsChange > 0 ? "+" : ""}{viewsChange}%
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="bg-gray-900 text-white border-0 px-3 py-2">
+                <p className="text-xs">{viewsChange > 0 ? "+" : ""}{viewsChange}% {comparisonLabel}</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="inline-flex items-center gap-0.5 text-xs font-medium text-gray-400 cursor-default">
+                  <Minus className="w-3 h-3" />
+                  0%
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="bg-gray-900 text-white border-0 px-3 py-2">
+                <p className="text-xs">Sem variação {comparisonLabel}</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+
         {/* Grid do Heatmap - mantendo estrutura original */}
         <div className="flex-1 overflow-x-auto">
           <div className="min-w-[500px]">
@@ -260,9 +321,9 @@ export function HeatmapCard() {
             <span className="text-[10px] text-muted-foreground">Mais</span>
           </div>
           
-          {/* Total de visualizações */}
+          {/* Total de visualizações (acumulado geral) */}
           <div className="text-xs text-muted-foreground">
-            Total: <span className="font-semibold text-foreground">{totalViews.toLocaleString('pt-BR')}</span>
+            Total acumulado: <span className="font-semibold text-foreground">{(heatmapData?.totalViews ?? 0).toLocaleString('pt-BR')}</span>
           </div>
         </div>
       </div>

@@ -5746,3 +5746,6 @@
 - [x] [Dashboard] StatCard: indicador % ao lado do valor (não abaixo), apenas seta + %, tooltip com info completa
 - [x] [Dashboard] Indicador neutro com traço (—) quando variação é 0%
 - [x] [Dashboard] Animação fade-in nos valores dos cards ao trocar filtro de período
+- [x] [Bug] Cards Acumulado da semana e Visualizações do Cardápio não respondem ao filtro de período
+- [x] [Dashboard] Card Acumulado: Hoje/Semana mostra dias (Seg-Dom), Mês mostra últimos 6 meses
+- [x] [Dashboard] Visualizações do Cardápio responde a todos os filtros de período

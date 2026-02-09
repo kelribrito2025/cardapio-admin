@@ -8,6 +8,11 @@ interface WeeklyRevenueCardProps {
   thisWeekTotal: number;
   lastWeekTotal: number;
   loading?: boolean;
+  periodLabel?: string;
+  comparisonLabel?: string;
+  mode?: 'daily' | 'monthly';
+  currentIndex?: number;
+  monthLabels?: string[];
 }
 
 const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
@@ -18,9 +23,20 @@ export function WeeklyRevenueCard({
   thisWeekTotal,
   lastWeekTotal,
   loading = false,
+  periodLabel = "Esta semana",
+  comparisonLabel = "Semana passada",
+  mode = "daily",
+  currentIndex,
+  monthLabels,
 }: WeeklyRevenueCardProps) {
-  const [showLastWeek, setShowLastWeek] = useState(false);
-  const [hoveredDay, setHoveredDay] = useState<number | null>(null);
+  const [showComparison, setShowComparison] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  // Determine labels based on mode
+  const labels = useMemo(() => {
+    if (mode === 'monthly' && monthLabels) return monthLabels;
+    return DAYS;
+  }, [mode, monthLabels]);
 
   // Calculate percentage change
   const percentChange = useMemo(() => {
@@ -30,9 +46,9 @@ export function WeeklyRevenueCard({
 
   // Get max value for scaling bars
   const maxValue = useMemo(() => {
-    const allValues = [...thisWeek, ...lastWeek];
+    const allValues = [...thisWeek, ...(mode === 'daily' ? lastWeek : [])];
     return Math.max(...allValues, 1);
-  }, [thisWeek, lastWeek]);
+  }, [thisWeek, lastWeek, mode]);
 
   // Format currency
   const formatCurrency = (value: number) => {
@@ -42,11 +58,29 @@ export function WeeklyRevenueCard({
     }).format(value);
   };
 
-  // Get current day of week (0 = Monday, 6 = Sunday)
-  const today = useMemo(() => {
-    const day = new Date().getDay();
-    return day === 0 ? 6 : day - 1;
-  }, []);
+  // Get current index
+  const todayIndex = useMemo(() => {
+    if (currentIndex !== undefined) return currentIndex;
+    if (mode === 'daily') {
+      const day = new Date().getDay();
+      return day === 0 ? 6 : day - 1;
+    }
+    return -1;
+  }, [mode, currentIndex]);
+
+  // Dynamic title based on mode
+  const title = useMemo(() => {
+    if (mode === 'monthly') return 'Acumulado do mês';
+    return 'Acumulado da semana';
+  }, [mode]);
+
+  const subtitle = useMemo(() => {
+    if (mode === 'monthly') return 'Faturamento dos últimos 6 meses';
+    return 'Faturamento por dia';
+  }, [mode]);
+
+  // For monthly mode, hide comparison toggle (no per-bar comparison)
+  const showToggle = mode === 'daily';
 
   if (loading) {
     return (
@@ -80,48 +114,50 @@ export function WeeklyRevenueCard({
             <DollarSign className="h-5 w-5 text-emerald-600" />
           </div>
           <div className="min-w-0">
-            <h3 className="text-base font-semibold text-foreground">Acumulado da semana</h3>
-            <p className="text-xs text-muted-foreground">Faturamento por dia</p>
+            <h3 className="text-base font-semibold text-foreground">{title}</h3>
+            <p className="text-xs text-muted-foreground">{subtitle}</p>
           </div>
         </div>
         
-        {/* Toggle */}
-        <div className="flex items-center gap-2 text-xs">
-          <button
-            onClick={() => setShowLastWeek(false)}
-            className={cn(
-              "flex items-center gap-1.5 transition-colors",
-              !showLastWeek ? "text-emerald-600 font-medium" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <span className={cn(
-              "w-2.5 h-2.5 rounded-full",
-              !showLastWeek ? "bg-emerald-500" : "bg-gray-300"
-            )} />
-            Esta semana
-          </button>
-          <button
-            onClick={() => setShowLastWeek(true)}
-            className={cn(
-              "flex items-center gap-1.5 transition-colors",
-              showLastWeek ? "text-gray-600 font-medium" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <span className={cn(
-              "w-2.5 h-2.5 rounded-full",
-              showLastWeek ? "bg-gray-400" : "bg-gray-300"
-            )} />
-            Semana passada
-          </button>
-        </div>
+        {/* Toggle - only for daily mode */}
+        {showToggle && (
+          <div className="flex items-center gap-2 text-xs">
+            <button
+              onClick={() => setShowComparison(false)}
+              className={cn(
+                "flex items-center gap-1.5 transition-colors",
+                !showComparison ? "text-emerald-600 font-medium" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <span className={cn(
+                "w-2.5 h-2.5 rounded-full",
+                !showComparison ? "bg-emerald-500" : "bg-gray-300"
+              )} />
+              {periodLabel}
+            </button>
+            <button
+              onClick={() => setShowComparison(true)}
+              className={cn(
+                "flex items-center gap-1.5 transition-colors",
+                showComparison ? "text-gray-600 font-medium" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <span className={cn(
+                "w-2.5 h-2.5 rounded-full",
+                showComparison ? "bg-gray-400" : "bg-gray-300"
+              )} />
+              {comparisonLabel}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Total and Delta */}
       <div className="flex items-center gap-2 mb-5">
         <span className="text-2xl font-bold text-foreground">
-          {formatCurrency(showLastWeek ? lastWeekTotal : thisWeekTotal)}
+          {formatCurrency(showComparison ? lastWeekTotal : thisWeekTotal)}
         </span>
-        {!showLastWeek && (
+        {!showComparison && (
           <span
             className={cn(
               "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium",
@@ -139,79 +175,98 @@ export function WeeklyRevenueCard({
             {percentChange.toFixed(0)}%
           </span>
         )}
+        {mode === 'monthly' && (
+          <span className="text-xs text-muted-foreground ml-1">vs mês anterior</span>
+        )}
       </div>
 
       {/* Bar Chart */}
       <div className="relative flex-1 flex flex-col justify-end">
         <div className="flex items-end justify-between gap-1.5 sm:gap-2 h-32">
-          {DAYS.map((day, index) => {
-            const thisWeekValue = thisWeek[index] || 0;
-            const lastWeekValue = lastWeek[index] || 0;
-            const currentValue = showLastWeek ? lastWeekValue : thisWeekValue;
-            const comparisonValue = showLastWeek ? thisWeekValue : lastWeekValue;
+          {labels.map((label, index) => {
+            const value = thisWeek[index] || 0;
+            const compValue = lastWeek[index] || 0;
+            const currentValue = showComparison ? compValue : value;
+            const comparisonValue = showComparison ? value : compValue;
             
             const currentHeight = maxValue > 0 ? (currentValue / maxValue) * 100 : 0;
             const comparisonHeight = maxValue > 0 ? (comparisonValue / maxValue) * 100 : 0;
             
-            const isToday = index === today && !showLastWeek;
-            const isFutureDay = index > today && !showLastWeek;
+            const isCurrentItem = index === todayIndex && !showComparison;
+            const isFutureItem = mode === 'daily' && index > todayIndex && todayIndex >= 0 && !showComparison;
 
             return (
               <div
-                key={day}
+                key={label}
                 className="flex-1 flex flex-col items-center gap-1.5 relative group"
-                onMouseEnter={() => setHoveredDay(index)}
-                onMouseLeave={() => setHoveredDay(null)}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
               >
                 {/* Bars container */}
                 <div className="relative w-full h-24 flex items-end justify-center">
-                  {/* Ghost bar (comparison) */}
-                  <div
-                    className={cn(
-                      "absolute bottom-0 w-full rounded-lg transition-all duration-300",
-                      showLastWeek ? "bg-emerald-200/50" : "bg-gray-200"
-                    )}
-                    style={{ height: `${Math.max(comparisonHeight, 4)}%` }}
-                  />
+                  {/* Ghost bar (comparison) - only for daily mode */}
+                  {mode === 'daily' && (
+                    <div
+                      className={cn(
+                        "absolute bottom-0 w-full rounded-lg transition-all duration-300",
+                        showComparison ? "bg-emerald-200/50" : "bg-gray-200"
+                      )}
+                      style={{ height: `${Math.max(comparisonHeight, 4)}%` }}
+                    />
+                  )}
                   
                   {/* Main bar */}
                   <div
                     className={cn(
                       "relative w-full rounded-lg transition-all duration-300 cursor-pointer",
-                      showLastWeek
-                        ? "bg-gray-400"
-                        : isFutureDay
-                          ? "bg-gray-200"
-                          : "bg-emerald-500",
-                      isToday && "ring-2 ring-emerald-300 ring-offset-2"
+                      mode === 'monthly'
+                        ? isCurrentItem
+                          ? "bg-emerald-500"
+                          : "bg-emerald-300"
+                        : showComparison
+                          ? "bg-gray-400"
+                          : isFutureItem
+                            ? "bg-gray-200"
+                            : "bg-emerald-500",
+                      isCurrentItem && mode === 'daily' && "ring-2 ring-emerald-300 ring-offset-2"
                     )}
                     style={{ height: `${Math.max(currentHeight, 4)}%` }}
                   />
                 </div>
 
-                {/* Day label */}
+                {/* Label */}
                 <span
                   className={cn(
                     "text-[10px] font-medium transition-colors",
-                    isToday ? "text-emerald-600" : "text-muted-foreground"
+                    isCurrentItem ? "text-emerald-600" : "text-muted-foreground"
                   )}
                 >
-                  {day}
+                  {label}
                 </span>
 
                 {/* Tooltip */}
-                {hoveredDay === index && (
-                  <div className="absolute -top-16 left-1/2 -translate-x-1/2 z-10 bg-gray-900 text-white px-2 py-1.5 rounded-md shadow-lg text-xs whitespace-nowrap">
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                      <span>{showLastWeek ? "Semana passada" : "Esta semana"}:</span>
-                      <span className="font-semibold">{formatCurrency(currentValue)}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-                      <span>{showLastWeek ? "Esta semana" : "Semana passada"}:</span>
-                      <span className="font-semibold">{formatCurrency(comparisonValue)}</span>
-                    </div>
+                {hoveredIndex === index && (
+                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-10 bg-gray-900 text-white px-2 py-1.5 rounded-md shadow-lg text-xs whitespace-nowrap">
+                    {mode === 'monthly' ? (
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        <span>{label}:</span>
+                        <span className="font-semibold">{formatCurrency(value)}</span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                          <span>{showComparison ? comparisonLabel : periodLabel}:</span>
+                          <span className="font-semibold">{formatCurrency(currentValue)}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+                          <span>{showComparison ? periodLabel : comparisonLabel}:</span>
+                          <span className="font-semibold">{formatCurrency(comparisonValue)}</span>
+                        </div>
+                      </>
+                    )}
                     {/* Arrow */}
                     <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-gray-900 rotate-45" />
                   </div>

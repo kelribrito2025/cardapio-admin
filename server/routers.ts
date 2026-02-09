@@ -609,16 +609,20 @@ export const appRouter = router({
     
     // Procedure protegida para buscar dados do mapa de calor
     getHeatmap: protectedProcedure
-      .query(async ({ ctx }) => {
+      .input(z.object({ period: z.enum(['today', 'week', 'month']).optional() }).optional())
+      .query(async ({ ctx, input }) => {
         const establishment = await db.getEstablishmentByUserId(ctx.user.id);
         if (!establishment) {
           return {
             data: [],
             maxCount: 0,
             totalViews: 0,
+            periodViews: 0,
+            previousPeriodViews: 0,
+            viewsChange: 0,
           };
         }
-        return db.getMenuViewsHeatmap(establishment.id);
+        return db.getMenuViewsHeatmapWithPeriod(establishment.id, input?.period ?? 'today');
       }),
   }),
 
@@ -974,9 +978,9 @@ export const appRouter = router({
       }),
     
     weeklyRevenue: protectedProcedure
-      .input(z.object({ establishmentId: z.number() }))
+      .input(z.object({ establishmentId: z.number(), period: z.enum(['today', 'week', 'month']).optional() }))
       .query(async ({ input }) => {
-        return db.getWeeklyRevenue(input.establishmentId);
+        return db.getRevenueByPeriod(input.establishmentId, input.period ?? 'week');
       }),
   }),
 

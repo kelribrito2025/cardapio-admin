@@ -70,8 +70,15 @@ export default function Dashboard() {
     { enabled: !!establishmentId }
   );
 
+  // Card Acumulado: quando filtro é "Hoje", mostra semana; quando "Este mês", mostra mês
+  const revenuePeriod = period === 'today' ? 'week' : period;
+  const revenueInput = useMemo(() => ({
+    establishmentId: establishmentId!,
+    period: revenuePeriod,
+  }), [establishmentId, revenuePeriod]);
+
   const { data: weeklyRevenue, isLoading: weeklyRevenueLoading } = trpc.dashboard.weeklyRevenue.useQuery(
-    { establishmentId: establishmentId! },
+    revenueInput,
     { enabled: !!establishmentId }
   );
 
@@ -198,10 +205,15 @@ export default function Dashboard() {
             thisWeekTotal={weeklyRevenue?.thisWeekTotal ?? 0}
             lastWeekTotal={weeklyRevenue?.lastWeekTotal ?? 0}
             loading={weeklyRevenueLoading}
+            periodLabel={weeklyRevenue?.periodLabel}
+            comparisonLabel={weeklyRevenue?.comparisonLabel}
+            mode={weeklyRevenue?.mode as 'daily' | 'monthly' | undefined}
+            currentIndex={weeklyRevenue?.currentIndex}
+            monthLabels={weeklyRevenue?.monthLabels}
           />
         </div>
         <div className="lg:col-span-2">
-          <HeatmapCard />
+          <HeatmapCard period={period} />
         </div>
       </div>
 
