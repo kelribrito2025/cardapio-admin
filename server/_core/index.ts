@@ -80,7 +80,7 @@ function generateReceiptHTML(
   const totalFontSize = `${(settings?.titleFontSize || (is58mm ? 13 : 14)) - 2}px`;
   const smallFontSize = `${settings?.obsFontSize || (is58mm ? 10 : 11)}px`;
   const smallFontWeight = settings?.obsFontWeight || 500;
-  const showDividers = settings?.showDividers ?? true;
+  const showDividers = settings?.showDividers ?? false;
   const boxPadding = `${(settings as any)?.boxPadding || 12}px`;
   const itemBorderStyle = (settings as any)?.itemBorderStyle || 'rounded';
   
@@ -646,7 +646,7 @@ function generateSectorReceiptHTML(
   const itemFontWeight = settings?.itemFontWeight || 700;
   const smallFontSize = `${settings?.obsFontSize || (is58mm ? 10 : 11)}px`;
   const smallFontWeight = settings?.obsFontWeight || 500;
-  const showDividers = settings?.showDividers ?? true;
+  const showDividers = settings?.showDividers ?? false;
   const boxPadding = `${(settings as any)?.boxPadding || 12}px`;
   const itemBorderStyle = (settings as any)?.itemBorderStyle || 'rounded';
   
@@ -846,7 +846,7 @@ function generateTabReceiptHTML(
   const itemFontWeight = settings?.itemFontWeight || 700;
   const smallFontSize = `${settings?.obsFontSize || (is58mm ? 10 : 11)}px`;
   const smallFontWeight = settings?.obsFontWeight || 500;
-  const showDividers = settings?.showDividers ?? true;
+  const showDividers = settings?.showDividers ?? false;
   const boxPadding = `${(settings as any)?.boxPadding || 12}px`;
   const itemBorderStyle = (settings as any)?.itemBorderStyle || 'rounded';
   
@@ -1796,7 +1796,7 @@ async function startServer() {
       const titleFontSize = settings?.titleFontSize || 16;
       const titleFontWeight = settings?.titleFontWeight || 700;
       const paperWidth = settings?.paperWidth || '80mm';
-      const showDividers = settings?.showDividers ?? true;
+      const showDividers = settings?.showDividers ?? false;
       
       const maxWidth = paperWidth === "58mm" ? "220px" : "300px";
       const establishmentName = establishment?.name || "Restaurante";

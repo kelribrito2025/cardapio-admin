@@ -127,7 +127,7 @@ export class EscPosGenerator {
   constructor(config: Partial<EscPosConfig> = {}) {
     this.config = {
       paperWidth: config.paperWidth || '80mm',
-      showDividers: config.showDividers ?? true,
+      showDividers: config.showDividers ?? false,
       encoding: config.encoding || 'cp850'
     };
     

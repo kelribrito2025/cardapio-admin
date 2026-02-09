@@ -2192,7 +2192,7 @@ export const appRouter = router({
           itemFontWeight: 700,
           obsFontSize: 11,
           obsFontWeight: 500,
-          showDividers: true,
+          showDividers: false,
           defaultPrintMethod: 'normal' as const,
           createdAt: new Date(),
           updatedAt: new Date(),

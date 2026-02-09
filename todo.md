@@ -5794,3 +5794,4 @@
 - [x] Notificação "Finalizado" (entregue/retirado) deve vir ativada por padrão ao criar conta
 - [x] Notificação "Confirmação de Reserva" deve vir ativada por padrão ao criar conta
 - [x] Alterar template padrão do pedido finalizado para novo texto com emojis
+- [x] Mostrar divisores deve vir desativado por padrão ao criar conta (configurações de layout impressora)
