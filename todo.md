@@ -5777,3 +5777,5 @@
 - [x] [Bug] Lembrar-me no login não salva email/senha no localStorage
 - [x] [Criar Conta] Alterar placeholders dos campos de senha de pontinhos para texto
 - [x] [Dashboard] Adicionar ícone da sidebar ao lado do título da página Dashboard
+
+- [x] Cor do ícone Dashboard deve ser azul (não vermelho)
