@@ -442,28 +442,16 @@ export function generateStatusMessage(
   let messageTemplate = template || defaultTemplates[status] || defaultTemplates.new;
   
   // Substituir variáveis de tipo de entrega para status "ready"
-  if (status === 'ready' && deliveryType) {
-    // Mensagem para retirada
-    const pickupMessage = 'Você já pode vir retirar. 😄';
-    // Mensagem para delivery
-    const deliveryMessage = '🛵 Nosso entregador já está a caminho.';
-    // Mensagem para consumo no local
-    const dineInMessage = 'Seu pedido está pronto! 🍽️';
+  if (status === 'ready') {
+    // {{deliveryMessage}} → exclusivamente para pedidos delivery
+    const deliveryMessage = '🛥 Nosso entregador já está a caminho.';
+    messageTemplate = messageTemplate.replace(/{{deliveryMessage}}/g, deliveryMessage);
     
-    // Determinar a mensagem correta baseada no tipo de entrega
-    const finalMessage = deliveryType === 'pickup' ? pickupMessage : deliveryType === 'dine_in' ? dineInMessage : deliveryMessage;
-    
-    // Substituir {{deliveryMessage}} se existir no template
-    if (messageTemplate.includes('{{deliveryMessage}}')) {
-      messageTemplate = messageTemplate.replace(
-        /{{deliveryMessage}}/g,
-        finalMessage
-      );
-    } else {
-      // Se não tiver a variável, substituir a frase genérica
-      messageTemplate = messageTemplate
-        .replace(/Você já pode retirar ou aguardar a entrega\./g, finalMessage);
-    }
+    // {{pickupMessage}} → para pedidos de retirada ou consumo no local
+    const pickupMsg = deliveryType === 'dine_in' 
+      ? 'Seu pedido está pronto! 🍽️' 
+      : 'Você já pode vir retirar. 😄';
+    messageTemplate = messageTemplate.replace(/{{pickupMessage}}/g, pickupMsg);
   }
   
   // Substituir variável de motivo de cancelamento

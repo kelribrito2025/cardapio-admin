@@ -4061,6 +4061,7 @@ export async function upsertWhatsappConfig(data: {
   templateNewOrder?: string | null;
   templatePreparing?: string | null;
   templateReady?: string | null;
+  templateReadyPickup?: string | null;
   templateCompleted?: string | null;
   templateCancelled?: string | null;
   notifyOnReservation?: boolean;
@@ -4089,6 +4090,7 @@ export async function upsertWhatsappConfig(data: {
         templateNewOrder: data.templateNewOrder !== undefined ? data.templateNewOrder : existing.templateNewOrder,
         templatePreparing: data.templatePreparing !== undefined ? data.templatePreparing : existing.templatePreparing,
         templateReady: data.templateReady !== undefined ? data.templateReady : existing.templateReady,
+        templateReadyPickup: data.templateReadyPickup !== undefined ? data.templateReadyPickup : existing.templateReadyPickup,
         templateCompleted: data.templateCompleted !== undefined ? data.templateCompleted : existing.templateCompleted,
         templateCancelled: data.templateCancelled !== undefined ? data.templateCancelled : existing.templateCancelled,
         notifyOnReservation: data.notifyOnReservation ?? existing.notifyOnReservation,
@@ -4112,6 +4114,10 @@ Seu pedido *{{orderNumber}}* foi recebido com sucesso!
   const defaultTemplateReady = `✅ Seu pedido *{{orderNumber}}* está pronto!
 
 {{deliveryMessage}}`;
+  
+  const defaultTemplateReadyPickup = `✅ Seu pedido *{{orderNumber}}* está pronto!
+
+{{pickupMessage}}`;
   
   const defaultTemplateCompleted = `Seu pedido {{orderNumber}} foi finalizado!
 
@@ -4142,6 +4148,7 @@ Motivo: *{{cancellationReason}}*`;
     templateNewOrder: data.templateNewOrder || defaultTemplateNewOrder,
     templatePreparing: data.templatePreparing || defaultTemplatePreparing,
     templateReady: data.templateReady || defaultTemplateReady,
+    templateReadyPickup: data.templateReadyPickup || defaultTemplateReadyPickup,
     templateCompleted: data.templateCompleted || defaultTemplateCompleted,
     templateCancelled: data.templateCancelled || defaultTemplateCancelled,
     notifyOnReservation: data.notifyOnReservation ?? true,

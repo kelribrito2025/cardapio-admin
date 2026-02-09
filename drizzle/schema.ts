@@ -489,7 +489,8 @@ export const whatsappConfig = mysqlTable("whatsappConfig", {
   // Templates de mensagem personalizados
   templateNewOrder: text("templateNewOrder"), // Template para novo pedido
   templatePreparing: text("templatePreparing"), // Template para preparando
-  templateReady: text("templateReady"), // Template para pronto
+  templateReady: text("templateReady"), // Template para pronto (delivery)
+  templateReadyPickup: text("templateReadyPickup"), // Template para pronto (retirada/consumo no local)
   templateCompleted: text("templateCompleted"), // Template para finalizado
   templateCancelled: text("templateCancelled"), // Template para cancelado
   // Reserva de mesa

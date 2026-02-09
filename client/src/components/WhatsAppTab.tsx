@@ -50,6 +50,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
     newOrder: `Olá *{{customerName}}!* 👋🏻 {{greeting}}! Tudo bem?\n\nSeu pedido *{{orderNumber}}* foi recebido com sucesso!\n\n🔔 Você será notificado por aqui em cada atualização.`,
     preparing: `👨‍🍳 *{{customerName}},* seu pedido *{{orderNumber}}* está sendo preparado!`,
     ready: `✅ Seu pedido *{{orderNumber}}* está pronto!\n\n{{deliveryMessage}}`,
+    readyPickup: `✅ Seu pedido *{{orderNumber}}* está pronto!\n\n{{pickupMessage}}`,
     completed: `Seu pedido {{orderNumber}} foi finalizado!\n\n📌 Atualização de fidelidade\n\n*+1 carimbo* adicionado ao seu cartão.\n\n❤️ Obrigado pela preferência!\n\n*{{establishmentName}}*`,
     cancelled: `Olá *{{customerName}}!*\n\n❌ Infelizmente seu pedido {{orderNumber}} foi cancelado.\n\nMotivo: *{{cancellationReason}}*`,
     reservation: `Olá *{{cliente}}*! \ud83d\udc4b\ud83c\udffb\n\nSua reserva na *Mesa {{mesa}}* foi confirmada!\n\n\ud83d\udcc5 Horário: *{{horario}}*\n\ud83d\udc65 Pessoas: *{{pessoas}}*\n\n⚠️ *Obs:* Em caso de atraso, a mesa poderá ser ocupada.\n\nAguardamos você! \ud83d\ude0a`,
@@ -59,6 +60,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
   const [templateNewOrder, setTemplateNewOrder] = useState(DEFAULT_TEMPLATES.newOrder);
   const [templatePreparing, setTemplatePreparing] = useState(DEFAULT_TEMPLATES.preparing);
   const [templateReady, setTemplateReady] = useState(DEFAULT_TEMPLATES.ready);
+  const [templateReadyPickup, setTemplateReadyPickup] = useState(DEFAULT_TEMPLATES.readyPickup);
   const [templateCompleted, setTemplateCompleted] = useState(DEFAULT_TEMPLATES.completed);
   const [templateCancelled, setTemplateCancelled] = useState(DEFAULT_TEMPLATES.cancelled);
   const [templateReservation, setTemplateReservation] = useState(DEFAULT_TEMPLATES.reservation);
@@ -136,6 +138,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
       setTemplateNewOrder(configQuery.data.templateNewOrder || DEFAULT_TEMPLATES.newOrder);
       setTemplatePreparing(configQuery.data.templatePreparing || DEFAULT_TEMPLATES.preparing);
       setTemplateReady(configQuery.data.templateReady || DEFAULT_TEMPLATES.ready);
+      setTemplateReadyPickup((configQuery.data as any).templateReadyPickup || DEFAULT_TEMPLATES.readyPickup);
       setTemplateCompleted(configQuery.data.templateCompleted || DEFAULT_TEMPLATES.completed);
       setTemplateCancelled(configQuery.data.templateCancelled || DEFAULT_TEMPLATES.cancelled);
       setTemplateReservation((configQuery.data as any).templateReservation || DEFAULT_TEMPLATES.reservation);
@@ -182,6 +185,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
       templateNewOrder: templateNewOrder || null,
       templatePreparing: templatePreparing || null,
       templateReady: templateReady || null,
+      templateReadyPickup: templateReadyPickup || null,
       templateCompleted: templateCompleted || null,
       templateCancelled: templateCancelled || null,
       templateReservation: templateReservation || null,
@@ -460,6 +464,8 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
           setTemplatePreparing={setTemplatePreparing}
           templateReady={templateReady}
           setTemplateReady={setTemplateReady}
+          templateReadyPickup={templateReadyPickup}
+          setTemplateReadyPickup={setTemplateReadyPickup}
           templateCompleted={templateCompleted}
           setTemplateCompleted={setTemplateCompleted}
           templateCancelled={templateCancelled}
@@ -640,6 +646,8 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
             setTemplatePreparing={setTemplatePreparing}
             templateReady={templateReady}
             setTemplateReady={setTemplateReady}
+            templateReadyPickup={templateReadyPickup}
+            setTemplateReadyPickup={setTemplateReadyPickup}
             templateCompleted={templateCompleted}
             setTemplateCompleted={setTemplateCompleted}
             templateCancelled={templateCancelled}

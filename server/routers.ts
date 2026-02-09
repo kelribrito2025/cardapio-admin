@@ -1614,7 +1614,11 @@ export const appRouter = router({
                     orderNumber: order.orderNumber,
                     establishmentName: establishment?.name || 'Restaurante',
                     template: input.status === 'preparing' ? config.templatePreparing :
-                              input.status === 'ready' ? config.templateReady :
+                              input.status === 'ready' ? (
+                                (order.deliveryType === 'pickup' || order.deliveryType === 'dine_in') 
+                                  ? (config.templateReadyPickup || config.templateReady) 
+                                  : config.templateReady
+                              ) :
                               input.status === 'completed' ? config.templateCompleted :
                               input.status === 'cancelled' ? config.templateCancelled : null,
                     deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
@@ -2839,6 +2843,7 @@ export const appRouter = router({
         templateNewOrder: z.string().nullable().optional(),
         templatePreparing: z.string().nullable().optional(),
         templateReady: z.string().nullable().optional(),
+        templateReadyPickup: z.string().nullable().optional(),
         templateCompleted: z.string().nullable().optional(),
         templateCancelled: z.string().nullable().optional(),
         templateReservation: z.string().nullable().optional(),
@@ -2854,6 +2859,7 @@ export const appRouter = router({
           templateNewOrder: input.templateNewOrder,
           templatePreparing: input.templatePreparing,
           templateReady: input.templateReady,
+          templateReadyPickup: input.templateReadyPickup,
           templateCompleted: input.templateCompleted,
           templateCancelled: input.templateCancelled,
           templateReservation: input.templateReservation,

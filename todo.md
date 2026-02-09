@@ -5839,3 +5839,9 @@
 
 ## Bugs - Templates de Mensagem
 - [x] [Bug] Mensagem de novo pedido (com saudação e itens) não é enviada ao cliente - apenas a mensagem de 'preparing' é recebida (logs detalhados adicionados para monitorar)
+
+## Variáveis de Template WhatsApp - Pronto
+- [x] Separar {{deliveryMessage}} para ser exclusivamente delivery (entregador a caminho)
+- [x] Criar nova variável {{pickupMessage}} para retirada e consumo no local
+- [x] Adicionar novo campo de template na seção "Pronto" para mensagem de retirada/consumo no local
+- [x] Atualizar lógica de substituição no uazapi.ts

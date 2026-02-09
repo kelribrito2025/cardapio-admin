@@ -28,6 +28,8 @@ interface TemplatesEditorProps {
   setTemplatePreparing: (value: string) => void;
   templateReady: string;
   setTemplateReady: (value: string) => void;
+  templateReadyPickup: string;
+  setTemplateReadyPickup: (value: string) => void;
   templateCompleted: string;
   setTemplateCompleted: (value: string) => void;
   templateCancelled: string;
@@ -40,6 +42,7 @@ interface TemplatesEditorProps {
     newOrder: string;
     preparing: string;
     ready: string;
+    readyPickup: string;
     completed: string;
     cancelled: string;
     reservation?: string;
@@ -48,7 +51,7 @@ interface TemplatesEditorProps {
   restaurantLogo?: string | null;
 }
 
-type TemplateType = 'newOrder' | 'preparing' | 'ready' | 'completed' | 'cancelled' | 'reservation';
+type TemplateType = 'newOrder' | 'preparing' | 'ready' | 'readyPickup' | 'completed' | 'cancelled' | 'reservation';
 
 const TEMPLATE_CONFIG: Record<TemplateType, { 
   label: string; 
@@ -72,11 +75,18 @@ const TEMPLATE_CONFIG: Record<TemplateType, {
     description: 'Enviada quando o pedido começa a ser preparado'
   },
   ready: { 
-    label: 'Pronto', 
+    label: 'Pronto (Delivery)', 
     icon: <CheckCircle className="h-4 w-4" />, 
     color: 'text-green-600',
     bgColor: 'bg-green-50 border-green-200',
-    description: 'Enviada quando o pedido está pronto'
+    description: 'Enviada quando o pedido delivery está pronto'
+  },
+  readyPickup: { 
+    label: 'Pronto (Retirada/Local)', 
+    icon: <CheckCircle className="h-4 w-4" />, 
+    color: 'text-emerald-600',
+    bgColor: 'bg-emerald-50 border-emerald-200',
+    description: 'Enviada quando o pedido para retirada ou consumo no local está pronto'
   },
   completed: { 
     label: 'Finalizado', 
@@ -106,7 +116,8 @@ const VARIABLES = [
   { name: '{{orderNumber}}', label: 'Nº do pedido', description: 'Número único do pedido' },
   { name: '{{establishmentName}}', label: 'Nome da loja', description: 'Nome do seu estabelecimento' },
   { name: '{{greeting}}', label: 'Saudação', description: 'Bom dia, Boa tarde ou Boa noite' },
-  { name: '{{deliveryMessage}}', label: 'Msg entrega', description: 'Mensagem sobre entrega' },
+  { name: '{{deliveryMessage}}', label: 'Msg delivery', description: 'Mensagem automática para pedidos delivery' },
+  { name: '{{pickupMessage}}', label: 'Msg retirada/local', description: 'Mensagem automática para retirada ou consumo no local' },
   { name: '{{cancellationReason}}', label: 'Motivo cancelamento', description: 'Razão do cancelamento' },
   { name: '{{itensPedido}}', label: 'Itens do pedido', description: 'Lista de itens do pedido' },
 ];
@@ -127,6 +138,7 @@ function formatWhatsAppText(text: string): React.ReactNode {
     .replace(/\{\{establishmentName\}\}/g, 'Restaurante Exemplo')
     .replace(/\{\{greeting\}\}/g, 'Boa tarde')
     .replace(/\{\{deliveryMessage\}\}/g, '\ud83d\udee5 Nosso entregador já está a caminho.')
+    .replace(/\{\{pickupMessage\}\}/g, 'Você já pode vir retirar. \ud83d\ude04')
     .replace(/\{\{cancellationReason\}\}/g, 'Item indisponível')
     .replace(/\{\{itensPedido\}\}/g, '\u2022 1x Pizza Margherita\n\u2022 1x Refrigerante')
     .replace(/\{\{mesa\}\}/g, '5')
@@ -167,6 +179,8 @@ export function TemplatesEditor({
   setTemplatePreparing,
   templateReady,
   setTemplateReady,
+  templateReadyPickup,
+  setTemplateReadyPickup,
   templateCompleted,
   setTemplateCompleted,
   templateCancelled,
@@ -186,6 +200,7 @@ export function TemplatesEditor({
     newOrder: { value: templateNewOrder, setter: setTemplateNewOrder, default: defaultTemplates.newOrder },
     preparing: { value: templatePreparing, setter: setTemplatePreparing, default: defaultTemplates.preparing },
     ready: { value: templateReady, setter: setTemplateReady, default: defaultTemplates.ready },
+    readyPickup: { value: templateReadyPickup, setter: setTemplateReadyPickup, default: defaultTemplates.readyPickup },
     completed: { value: templateCompleted, setter: setTemplateCompleted, default: defaultTemplates.completed },
     cancelled: { value: templateCancelled, setter: setTemplateCancelled, default: defaultTemplates.cancelled },
   };
