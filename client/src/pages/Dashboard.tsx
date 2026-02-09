@@ -142,7 +142,7 @@ export default function Dashboard() {
         <PageHeader 
           title="Dashboard" 
           description="Visão geral do seu estabelecimento"
-          icon={<LayoutDashboard className="h-6 w-6 text-primary" />}
+          icon={<LayoutDashboard className="h-6 w-6 text-red-600" />}
         />
         <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
           {periodOptions.map((opt) => (
