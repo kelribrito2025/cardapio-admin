@@ -199,6 +199,11 @@ export default function Complementos() {
               onTogglePriceMode={handleTogglePriceMode}
               onUpdatePrice={handleUpdatePrice}
               onUpdateAvailability={handleUpdateAvailability}
+              onUpdateName={(oldName, newName) => {
+                if (!establishmentId) return;
+                updateGlobalMutation.mutate({ establishmentId, complementName: oldName, newName });
+                toast.success(`Complemento renomeado para "${newName}" em todos os produtos`);
+              }}
               onUpdateBadge={(name, badgeText) => {
                 if (!establishmentId) return;
                 updateGlobalMutation.mutate({ establishmentId, complementName: name, badgeText });
@@ -234,6 +239,7 @@ function ComplementRow({
   onTogglePriceMode,
   onUpdatePrice,
   onUpdateAvailability,
+  onUpdateName,
   onUpdateBadge,
   isUpdating,
   isExpanded,
@@ -260,12 +266,15 @@ function ComplementRow({
     availableDays?: number[],
     availableHours?: { day: number; startTime: string; endTime: string }[]
   ) => void;
+  onUpdateName: (oldName: string, newName: string) => void;
   onUpdateBadge: (name: string, badgeText: string | null) => void;
   isUpdating: boolean;
   isExpanded: boolean;
   onToggleExpand: (id: number) => void;
 }) {
   // Usar isExpanded do pai ao invés de estado local
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState(complement.name);
   const [isEditingPrice, setIsEditingPrice] = useState(false);
   const [editedPrice, setEditedPrice] = useState(complement.price);
   const [isEditingBadge, setIsEditingBadge] = useState(false);
@@ -393,12 +402,50 @@ function ComplementRow({
           {/* Nome, preço e uso - tudo na mesma linha */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h4 className={cn(
-                "font-semibold text-base",
-                !isActive && "text-muted-foreground"
-              )}>
-                {complement.name}
-              </h4>
+              {isEditingName ? (
+                <div className="flex items-center gap-1">
+                  <Input
+                    type="text"
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
+                    className="h-7 text-sm px-2 w-48 font-semibold"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        if (editedName.trim() && editedName.trim() !== complement.name) {
+                          onUpdateName(complement.name, editedName.trim());
+                        }
+                        setIsEditingName(false);
+                      }
+                      if (e.key === "Escape") {
+                        setEditedName(complement.name);
+                        setIsEditingName(false);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (editedName.trim() && editedName.trim() !== complement.name) {
+                        onUpdateName(complement.name, editedName.trim());
+                      }
+                      setIsEditingName(false);
+                    }}
+                  />
+                </div>
+              ) : (
+                <h4 
+                  className={cn(
+                    "font-semibold text-base cursor-pointer hover:text-primary transition-colors group/name",
+                    !isActive && "text-muted-foreground"
+                  )}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditingName(true);
+                  }}
+                  title="Clique para editar o nome"
+                >
+                  {complement.name}
+                  <Pencil className="inline-block ml-1 h-3 w-3 opacity-0 group-hover/name:opacity-50 transition-opacity" />
+                </h4>
+              )}
               
               {/* Preço inline */}
               {isEditingPrice ? (

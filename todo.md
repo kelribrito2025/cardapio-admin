@@ -5806,3 +5806,9 @@
 - [x] Adicionar campo de texto no catálogo admin para definir badge do complemento
 - [x] Exibir badge vermelho pulsante no menu público ao lado do nome do complemento
 - [x] Testes unitários para badge de complementos
+
+## Edição de Nome de Complemento
+- [x] Criar função no backend para renomear complemento em todos os grupos/produtos
+- [x] Adicionar campo editável de nome na página /complementos
+- [x] Propagar renomeação para todos os produtos que usam o complemento
+- [x] Testes unitários para renomeação de complemento

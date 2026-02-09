@@ -855,6 +855,7 @@ export async function updateComplementItemsByName(
   establishmentId: number,
   complementName: string,
   data: { 
+    name?: string;
     isActive?: boolean; 
     priceMode?: "normal" | "free"; 
     price?: string;

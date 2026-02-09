@@ -82,4 +82,38 @@ describe("complement badge", () => {
       expect(e.code).not.toBe("BAD_REQUEST");
     }
   });
+
+  it("updateGlobal procedure accepts newName parameter for renaming", async () => {
+    const { ctx } = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+
+    try {
+      await caller.complement.updateGlobal({
+        establishmentId: 999999,
+        complementName: "Old Name",
+        newName: "New Name",
+      });
+    } catch (e: any) {
+      // Input validation should pass (ZodError would be BAD_REQUEST)
+      expect(e.code).not.toBe("BAD_REQUEST");
+    }
+  });
+
+  it("updateGlobal procedure accepts newName with other fields", async () => {
+    const { ctx } = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+
+    try {
+      await caller.complement.updateGlobal({
+        establishmentId: 999999,
+        complementName: "Old Name",
+        newName: "New Name",
+        badgeText: "Novo",
+        isActive: true,
+      });
+    } catch (e: any) {
+      // Input validation should pass
+      expect(e.code).not.toBe("BAD_REQUEST");
+    }
+  });
 });

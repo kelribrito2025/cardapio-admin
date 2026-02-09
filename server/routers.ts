@@ -843,6 +843,7 @@ export const appRouter = router({
       .input(z.object({
         establishmentId: z.number(),
         complementName: z.string(),
+        newName: z.string().optional(),
         isActive: z.boolean().optional(),
         priceMode: z.enum(["normal", "free"]).optional(),
         price: z.string().optional(),
@@ -856,8 +857,9 @@ export const appRouter = router({
         badgeText: z.string().nullable().optional(),
       }))
       .mutation(async ({ input }) => {
-        const { establishmentId, complementName, ...data } = input;
-        await db.updateComplementItemsByName(establishmentId, complementName, data);
+        const { establishmentId, complementName, newName, ...data } = input;
+        const updateData = { ...data, ...(newName ? { name: newName } : {}) };
+        await db.updateComplementItemsByName(establishmentId, complementName, updateData);
         return { success: true };
       }),
     
