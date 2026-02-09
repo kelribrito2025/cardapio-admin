@@ -9,7 +9,8 @@ import {
   TrendingUp, 
   AlertTriangle,
   Clock,
-  Package
+  Package,
+  Target
 } from "lucide-react";
 import { 
   AreaChart, 
@@ -67,6 +68,16 @@ export default function Dashboard() {
 
   const { data: lowStock } = trpc.dashboard.lowStock.useQuery(
     { establishmentId: establishmentId! },
+    { enabled: !!establishmentId }
+  );
+
+  const conversionInput = useMemo(() => ({
+    establishmentId: establishmentId!,
+    period,
+  }), [establishmentId, period]);
+
+  const { data: conversionRate, isLoading: conversionLoading } = trpc.dashboard.conversionRate.useQuery(
+    conversionInput,
     { enabled: !!establishmentId }
   );
 
@@ -150,7 +161,7 @@ export default function Dashboard() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-6">
         <StatCard
           title={period === 'today' ? 'Pedidos Hoje' : period === 'week' ? 'Pedidos da Semana' : 'Pedidos do Mês'}
           value={stats?.ordersCount ?? 0}
@@ -184,6 +195,19 @@ export default function Dashboard() {
           trend={stats && stats.avgTicketChange !== undefined ? {
             value: stats.avgTicketChange,
             isPositive: stats.avgTicketChange >= 0,
+            label: period === 'today' ? 'vs ontem' : period === 'week' ? 'vs semana anterior' : 'vs mês anterior'
+          } : undefined}
+        />
+        <StatCard
+          title="Taxa de Conversão"
+          value={`${conversionRate?.rate?.toFixed(1) ?? '0.0'}%`}
+          subtitle={`${conversionRate?.orders ?? 0} pedidos / ${conversionRate?.views ?? 0} visualizações`}
+          icon={Target}
+          loading={conversionLoading}
+          variant="emerald"
+          trend={conversionRate && conversionRate.change !== undefined ? {
+            value: conversionRate.change,
+            isPositive: conversionRate.change >= 0,
             label: period === 'today' ? 'vs ontem' : period === 'week' ? 'vs semana anterior' : 'vs mês anterior'
           } : undefined}
         />

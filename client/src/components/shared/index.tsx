@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react";
 interface StatCardProps {
   title: string;
   value: string | number;
+  subtitle?: string;
   icon: LucideIcon;
   trend?: {
     value: number;
@@ -111,7 +112,7 @@ function TrendBadge({ trend }: { trend: { value: number; isPositive: boolean; la
   );
 }
 
-export function StatCard({ title, value, icon: Icon, trend, loading, className, variant = "primary", iconAction }: StatCardProps) {
+export function StatCard({ title, value, subtitle, icon: Icon, trend, loading, className, variant = "primary", iconAction }: StatCardProps) {
   const colors = statCardVariants[variant];
   const [animate, setAnimate] = useState(false);
   const prevValueRef = useRef(value);
@@ -164,6 +165,9 @@ export function StatCard({ title, value, icon: Icon, trend, loading, className, 
             <span className="text-2xl font-bold tracking-tight">{value}</span>
             {trend && <TrendBadge trend={trend} />}
           </div>
+          {subtitle && (
+            <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{subtitle}</p>
+          )}
         </div>
         {iconAction ? (
           <button

@@ -981,6 +981,12 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.getRevenueByPeriod(input.establishmentId, input.period ?? 'week');
       }),
+    
+    conversionRate: protectedProcedure
+      .input(z.object({ establishmentId: z.number(), period: z.enum(['today', 'week', 'month']).optional() }))
+      .query(async ({ input }) => {
+        return db.getConversionRate(input.establishmentId, input.period ?? 'today');
+      }),
   }),
 
   // ============ STOCK ============

@@ -5763,3 +5763,8 @@
 - [x] [Backend] Mapear timezone IANA do navegador para o timezone mais próximo suportado
 - [x] [Testes] Escrever testes para o mapeamento de timezone
 - [x] [Mesas] Remover cards de Ticket Médio e Faturamento da página de Mesas
+- [x] [Dashboard] Adicionar card "Taxa de conversão" (pedidos/visualizações × 100) com filtro de período
+- [x] [Dashboard] Card deve exibir % principal, subtexto "X pedidos / Y visualizações", e variação vs período anterior
+- [x] [Dashboard] Posicionar card ao lado do card Itens em Falta e reduzir largura deste em 25%
+- [x] [Backend] Criar endpoint para calcular taxa de conversão por período
+- [x] [Testes] Escrever testes para o endpoint de taxa de conversão

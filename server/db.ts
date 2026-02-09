@@ -1369,6 +1369,130 @@ export async function getDashboardStats(establishmentId: number, period: 'today'
   return { ordersCount, revenue, avgTicket, lowStockCount, ordersChange, revenueChange, avgTicketChange, lowStockChange };
 }
 
+/**
+ * Calcula a taxa de conversão: (pedidos realizados / visualizações do cardápio) × 100
+ * Retorna dados do período atual e variação vs período anterior.
+ */
+export async function getConversionRate(establishmentId: number, period: 'today' | 'week' | 'month' = 'today') {
+  const db = await getDb();
+  if (!db) return { rate: 0, orders: 0, views: 0, change: 0 };
+  
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+  
+  let periodStart: Date;
+  let prevPeriodStart: Date;
+  let prevPeriodEnd: Date;
+  
+  if (period === 'today') {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
+    prevPeriodStart = new Date(periodStart);
+    prevPeriodStart.setDate(prevPeriodStart.getDate() - 1);
+    prevPeriodEnd = new Date(periodStart);
+  } else if (period === 'week') {
+    const currentDay = localNow.getDay();
+    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysFromMonday);
+    prevPeriodStart = new Date(periodStart);
+    prevPeriodStart.setDate(prevPeriodStart.getDate() - 7);
+    prevPeriodEnd = new Date(periodStart);
+  } else {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), 1);
+    prevPeriodStart = new Date(localNow.getFullYear(), localNow.getMonth() - 1, 1);
+    prevPeriodEnd = new Date(periodStart);
+  }
+  
+  const periodStartStr = fmtLocalDateTime(periodStart);
+  const prevPeriodStartStr = fmtLocalDateTime(prevPeriodStart);
+  const prevPeriodEndStr = fmtLocalDateTime(prevPeriodEnd);
+  
+  // Pedidos completados no período atual
+  const ordersResult = await db.select({ count: sql<number>`count(*)` })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${periodStartStr}`,
+      eq(orders.status, "completed")
+    ));
+  
+  // Pedidos completados no período anterior
+  const prevOrdersResult = await db.select({ count: sql<number>`count(*)` })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${prevPeriodStartStr}`,
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) < ${prevPeriodEndStr}`,
+      eq(orders.status, "completed")
+    ));
+  
+  // Visualizações no período atual - usar menuViewsDaily + menuSessions para hoje
+  const periodStartDate = fmtLocalDate(periodStart);
+  const todayStr = fmtLocalDate(localNow);
+  
+  let currentViews = 0;
+  
+  // Views de dias anteriores (menuViewsDaily)
+  const dailyViewsResult = await db.select({ total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)` })
+    .from(menuViewsDaily)
+    .where(and(
+      eq(menuViewsDaily.establishmentId, establishmentId),
+      sql`${menuViewsDaily.date} >= ${periodStartDate}`,
+      sql`${menuViewsDaily.date} < ${todayStr}`
+    ));
+  currentViews += Number(dailyViewsResult[0]?.total ?? 0);
+  
+  // Views de hoje (menuSessions em tempo real)
+  const todayStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
+  const todayStartStr = fmtLocalDateTime(todayStart);
+  const todaySessionsResult = await db.select({ count: sql<number>`count(*)` })
+    .from(menuSessions)
+    .where(and(
+      eq(menuSessions.establishmentId, establishmentId),
+      sql`CONVERT_TZ(${menuSessions.createdAt}, '+00:00', ${tz}) >= ${todayStartStr}`
+    ));
+  currentViews += Number(todaySessionsResult[0]?.count ?? 0);
+  
+  // Se o período é apenas hoje, usar só as sessões de hoje
+  if (period === 'today') {
+    currentViews = Number(todaySessionsResult[0]?.count ?? 0);
+  }
+  
+  // Visualizações no período anterior
+  const prevPeriodStartDate = fmtLocalDate(prevPeriodStart);
+  const prevPeriodEndDate = fmtLocalDate(prevPeriodEnd);
+  
+  const prevDailyViewsResult = await db.select({ total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)` })
+    .from(menuViewsDaily)
+    .where(and(
+      eq(menuViewsDaily.establishmentId, establishmentId),
+      sql`${menuViewsDaily.date} >= ${prevPeriodStartDate}`,
+      sql`${menuViewsDaily.date} < ${prevPeriodEndDate}`
+    ));
+  const prevViews = Number(prevDailyViewsResult[0]?.total ?? 0);
+  
+  const currentOrders = ordersResult[0]?.count ?? 0;
+  const prevOrders = prevOrdersResult[0]?.count ?? 0;
+  
+  // Calcular taxas
+  const currentRate = currentViews > 0 ? (currentOrders / currentViews) * 100 : 0;
+  const prevRate = prevViews > 0 ? (prevOrders / prevViews) * 100 : 0;
+  
+  // Calcular variação
+  let change = 0;
+  if (prevRate === 0) {
+    change = currentRate > 0 ? 100 : 0;
+  } else {
+    change = Math.round(((currentRate - prevRate) / prevRate) * 100);
+  }
+  
+  return {
+    rate: Math.round(currentRate * 10) / 10, // 1 casa decimal
+    orders: currentOrders,
+    views: currentViews,
+    change,
+  };
+}
+
 export async function getWeeklyStats(establishmentId: number) {
   const db = await getDb();
   if (!db) return [];
