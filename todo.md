@@ -5831,3 +5831,8 @@
 - [x] Ajustar gráficos (gridlines, cores) para boa leitura em fundo escuro
 - [x] Garantir contraste adequado e estados (hover, ativo, desabilitado, loading/skeleton)
 - [x] Testar em todas as páginas principais
+
+## Toggle de Tema no Menu de Perfil
+- [x] Remover botão de toggle de tema da topbar
+- [x] Adicionar seção "Tema" no menu dropdown do perfil (abaixo de Planos)
+- [x] Exibir "Modo Escuro" ou "Modo Claro" com ícone e indicador "Ativado"

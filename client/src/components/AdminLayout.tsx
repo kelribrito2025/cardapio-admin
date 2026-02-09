@@ -905,27 +905,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 </TooltipContent>
               </Tooltip>
 
-              {/* Theme Toggle */}
-              {toggleTheme && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      onClick={toggleTheme}
-                      className="p-2 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
-                    >
-                      {theme === 'dark' ? (
-                        <Sun className="h-4 w-4" />
-                      ) : (
-                        <Moon className="h-4 w-4" />
-                      )}
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom">
-                    {theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
-                  </TooltipContent>
-                </Tooltip>
-              )}
-
               {/* User menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -1024,6 +1003,25 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       <span className="ml-auto text-[9px] font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-full">
                         Breve
                       </span>
+                    </DropdownMenuItem>
+                  </div>
+                  <DropdownMenuSeparator className="bg-border/50" />
+                  {/* Tema */}
+                  <div className="px-3 pt-2 pb-1">
+                    <p className="text-xs font-medium text-muted-foreground">Tema</p>
+                  </div>
+                  <div className="p-1">
+                    <DropdownMenuItem
+                      onClick={toggleTheme}
+                      className="rounded-lg cursor-pointer"
+                    >
+                      {theme === 'dark' ? (
+                        <Moon className="h-4 w-4 mr-2.5 text-blue-500" />
+                      ) : (
+                        <Sun className="h-4 w-4 mr-2.5 text-amber-500" />
+                      )}
+                      {theme === 'dark' ? 'Modo Escuro' : 'Modo Claro'}
+                      <span className="ml-auto text-[10px] text-muted-foreground">Ativado</span>
                     </DropdownMenuItem>
                   </div>
                   <DropdownMenuSeparator className="bg-border/50" />
