@@ -5815,3 +5815,4 @@
 - [x] Botão "Importar cardápio" visível somente para clientes novos (sem produtos cadastrados)
 - [x] Botão "Importar cardápio" visível somente para usuários que acabaram de criar a conta (menos de 24h)
 - [x] Shimmer effect no modal de importação durante o processo de importação
+- [x] [Bug] Validação do campo WhatsApp no Step 1 do onboarding permite continuar com número incompleto
