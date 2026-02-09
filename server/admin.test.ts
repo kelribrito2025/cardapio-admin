@@ -7,7 +7,7 @@ describe("Admin Authentication", () => {
   const ADMIN_JWT_SECRET = "test_secret_admin";
 
   it("should hash and verify admin password correctly", async () => {
-    const password = "290819943@KeL29081994337590064";
+    const password = "290819943";
     const hash = await bcrypt.hash(password, 10);
     
     const isValid = await bcrypt.compare(password, hash);

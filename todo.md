@@ -5772,3 +5772,4 @@
 - [x] [Dashboard] Diminuir largura do card Itens em Falta em 25%
 - [x] [Dashboard] Adicionar ícone (i) ao lado do título Taxa de Conversão com tooltip no hover
 - [x] [Bug] Tooltip do card Taxa de Conversão cortado pelo overflow-hidden do card
+- [x] [Admin] Alterar senha do /admin/login para 290819943

@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import mysql from "mysql2/promise";
 
 const ADMIN_EMAIL = "admin@admin.com";
-const ADMIN_PASSWORD = "290819943@KeL29081994337590064";
+const ADMIN_PASSWORD = "290819943";
 const ADMIN_NAME = "Super Admin";
 
 async function seed() {
