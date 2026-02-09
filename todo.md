@@ -5813,3 +5813,4 @@
 - [x] Não importar imagens (manter placeholder padrão)
 - [x] Testes unitários para a funcionalidade de importação
 - [x] Botão "Importar cardápio" visível somente para clientes novos (sem produtos cadastrados)
+- [x] Botão "Importar cardápio" visível somente para usuários que acabaram de criar a conta (menos de 24h)

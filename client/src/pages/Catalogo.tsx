@@ -622,7 +622,7 @@ export default function Catalogo() {
           icon={<UtensilsCrossed className="h-6 w-6 text-blue-600" />}
           actions={
 <div className="flex items-center gap-2">
-              {!isLoading && products.length === 0 && (
+              {!isLoading && establishment?.createdAt && (Date.now() - new Date(establishment.createdAt).getTime() < 24 * 60 * 60 * 1000) && (
                 <Button
                   variant="outline"
                   onClick={() => setImportModalOpen(true)}
