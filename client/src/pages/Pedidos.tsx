@@ -1748,7 +1748,7 @@ export default function Pedidos() {
         }
         setWhatsappInfoModalOpen(open);
       }}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" style={{borderRadius: '16px'}}>
           <DialogHeader>
             <div className="flex items-center gap-3 mb-1">
               <div className="p-2.5 bg-emerald-100 rounded-xl">
