@@ -5948,6 +5948,8 @@ export async function openTable(
 
 /**
  * Fecha uma mesa (fecha comanda e libera mesa)
+ * Cria automaticamente um pedido (order) com status "completed" para que
+ * o faturamento da mesa apareça nos cards da Dashboard (Faturamento Hoje, Ticket Médio, etc.)
  */
 export async function closeTable(
   tableId: number,
@@ -5961,7 +5963,63 @@ export async function closeTable(
   // Buscar comanda ativa
   const tab = await getActiveTabByTable(tableId);
   if (tab) {
+    // Buscar itens da comanda antes de fechar
+    const items = await getTabItems(tab.id);
+    
+    // Fechar a comanda
     await closeTab(tab.id, paymentMethod, paidAmount, changeAmount);
+    
+    // Criar pedido (order) com status "completed" para refletir no dashboard
+    const total = parseFloat(tab.total);
+    if (total > 0) {
+      // Mapear paymentMethod para o enum do orders
+      const paymentMethodMap: Record<string, "cash" | "card" | "pix" | "boleto" | "card_online"> = {
+        'dinheiro': 'cash',
+        'cartao_credito': 'card',
+        'cartao_debito': 'card',
+        'pix': 'pix',
+        'cash': 'cash',
+        'card': 'card',
+      };
+      const mappedPayment = paymentMethodMap[paymentMethod] || 'cash';
+      
+      // Preparar itens do pedido a partir dos itens da comanda (excluir cancelados)
+      const orderItemsData: InsertOrderItem[] = items
+        .filter(item => item.status !== 'cancelled')
+        .map(item => ({
+          orderId: 0, // será preenchido pelo createOrderWithNumber
+          productId: item.productId,
+          productName: item.productName,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          totalPrice: item.totalPrice,
+          complements: item.complements as { name: string; price: number; quantity: number }[] | undefined,
+          notes: item.notes || undefined,
+        }));
+      
+      try {
+        await createOrderWithNumber(
+          {
+            establishmentId: tab.establishmentId,
+            orderNumber: '', // será gerado automaticamente
+            customerName: tab.customerName || `Mesa`,
+            status: 'completed',
+            deliveryType: 'dine_in',
+            paymentMethod: mappedPayment,
+            subtotal: tab.subtotal,
+            deliveryFee: '0',
+            discount: tab.discount,
+            total: tab.total,
+            changeAmount: changeAmount.toFixed(2),
+            source: 'pdv',
+            completedAt: new Date(),
+          },
+          orderItemsData
+        );
+      } catch (err) {
+        console.error('[closeTable] Erro ao criar pedido a partir da comanda:', err);
+      }
+    }
   }
   
   // Liberar mesa

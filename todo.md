@@ -5786,3 +5786,4 @@
 - [x] Adicionar ícone azul no título da página Complementos
 - [x] Adicionar ícone azul no título da página Cupons
 - [x] Adicionar ícone azul no título da página Campanhas
+- [x] [Bug] Fechamento de mesa não reflete no card Faturamento Hoje e Ticket Médio da Dashboard
