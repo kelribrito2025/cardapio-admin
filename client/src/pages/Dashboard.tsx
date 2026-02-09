@@ -160,8 +160,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-6">
+      {/* KPI Cards - grid com Itens em Falta 25% menor */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_0.75fr] gap-5 mb-6">
         <StatCard
           title={period === 'today' ? 'Pedidos Hoje' : period === 'week' ? 'Pedidos da Semana' : 'Pedidos do Mês'}
           value={stats?.ordersCount ?? 0}
