@@ -1,0 +1,73 @@
+{
+  "query": "SELECT * FROM menu_views_daily WHERE establishmentId = 60018 ORDER BY date DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM menu_views_daily WHERE establishmentId = 60018 ORDER BY date DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "150001",
+      "establishmentId": "60018",
+      "date": "2026-02-08",
+      "viewCount": "22",
+      "uniqueVisitors": "14",
+      "createdAt": "2026-02-08 00:35:17",
+      "updatedAt": "2026-02-08 23:39:54"
+    },
+    {
+      "id": "120001",
+      "establishmentId": "60018",
+      "date": "2026-02-07",
+      "viewCount": "35",
+      "uniqueVisitors": "21",
+      "createdAt": "2026-02-07 00:01:28",
+      "updatedAt": "2026-02-07 23:32:23"
+    },
+    {
+      "id": "90002",
+      "establishmentId": "60018",
+      "date": "2026-02-06",
+      "viewCount": "45",
+      "uniqueVisitors": "42",
+      "createdAt": "2026-02-06 00:15:56",
+      "updatedAt": "2026-02-06 23:56:04"
+    },
+    {
+      "id": "60001",
+      "establishmentId": "60018",
+      "date": "2026-02-05",
+      "viewCount": "23",
+      "uniqueVisitors": "19",
+      "createdAt": "2026-02-05 00:04:28",
+      "updatedAt": "2026-02-05 23:47:39"
+    },
+    {
+      "id": "30001",
+      "establishmentId": "60018",
+      "date": "2026-02-04",
+      "viewCount": "36",
+      "uniqueVisitors": "32",
+      "createdAt": "2026-02-04 00:11:11",
+      "updatedAt": "2026-02-04 23:49:56"
+    },
+    {
+      "id": "4",
+      "establishmentId": "60018",
+      "date": "2026-02-03",
+      "viewCount": "34",
+      "uniqueVisitors": "33",
+      "createdAt": "2026-02-03 00:10:13",
+      "updatedAt": "2026-02-03 23:58:31"
+    },
+    {
+      "id": "3",
+      "establishmentId": "60018",
+      "date": "2026-02-02",
+      "viewCount": "20",
+      "uniqueVisitors": "20",
+      "createdAt": "2026-02-02 17:19:08",
+      "updatedAt": "2026-02-02 23:54:37"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\tdate\tviewCount\tuniqueVisitors\tcreatedAt\tupdatedAt\n150001\t60018\t2026-02-08\t22\t14\t2026-02-08 00:35:17\t2026-02-08 23:39:54\n120001\t60018\t2026-02-07\t35\t21\t2026-02-07 00:01:28\t2026-02-07 23:32:23\n90002\t60018\t2026-02-06\t45\t42\t2026-02-06 00:15:56\t2026-02-06 23:56:04\n60001\t60018\t2026-02-05\t23\t19\t2026-02-05 00:04:28\t2026-02-05 23:47:39\n30001\t60018\t2026-02-04\t36\t32\t2026-02-04 00:11:11\t2026-02-04 23:49:56\n4\t60018\t2026-02-03\t34\t33\t2026-02-03 00:10:13\t2026-02-03 23:58:31\n3\t60018\t2026-02-02\t20\t20\t2026-02-02 17:19:08\t2026-02-02 23:54:37\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

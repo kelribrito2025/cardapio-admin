@@ -5749,3 +5749,4 @@
 - [x] [Bug] Cards Acumulado da semana e Visualizações do Cardápio não respondem ao filtro de período
 - [x] [Dashboard] Card Acumulado: Hoje/Semana mostra dias (Seg-Dom), Mês mostra últimos 6 meses
 - [x] [Dashboard] Visualizações do Cardápio responde a todos os filtros de período
+- [x] [Bug] Card Visualizações do Cardápio mostra 0 quando filtro Hoje está selecionado

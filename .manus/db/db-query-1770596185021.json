@@ -1,0 +1,45 @@
+{
+  "query": "SELECT date, viewCount, uniqueVisitors FROM menu_views_daily WHERE establishmentId = 60018 ORDER BY date DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT date, viewCount, uniqueVisitors FROM menu_views_daily WHERE establishmentId = 60018 ORDER BY date DESC;",
+  "rows": [
+    {
+      "date": "2026-02-08",
+      "viewCount": "22",
+      "uniqueVisitors": "14"
+    },
+    {
+      "date": "2026-02-07",
+      "viewCount": "35",
+      "uniqueVisitors": "21"
+    },
+    {
+      "date": "2026-02-06",
+      "viewCount": "45",
+      "uniqueVisitors": "42"
+    },
+    {
+      "date": "2026-02-05",
+      "viewCount": "23",
+      "uniqueVisitors": "19"
+    },
+    {
+      "date": "2026-02-04",
+      "viewCount": "36",
+      "uniqueVisitors": "32"
+    },
+    {
+      "date": "2026-02-03",
+      "viewCount": "34",
+      "uniqueVisitors": "33"
+    },
+    {
+      "date": "2026-02-02",
+      "viewCount": "20",
+      "uniqueVisitors": "20"
+    }
+  ],
+  "messages": [],
+  "stdout": "date\tviewCount\tuniqueVisitors\n2026-02-08\t22\t14\n2026-02-07\t35\t21\n2026-02-06\t45\t42\n2026-02-05\t23\t19\n2026-02-04\t36\t32\n2026-02-03\t34\t33\n2026-02-02\t20\t20\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

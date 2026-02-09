@@ -4932,72 +4932,163 @@ export async function getMenuViewsHeatmapWithPeriod(establishmentId: number, per
   const maxCount = data.length > 0 ? Math.max(...data.map(d => d.count)) : 0;
   const totalViews = data.reduce((sum, d) => sum + d.count, 0);
   
-  // Calcular visualizações do período selecionado usando menuViewsDaily
+  // Calcular visualizações do período selecionado
+  // Para 'today': usar menuSessions (tempo real) pois menuViewsDaily pode ter atraso na agregação
+  // Para 'week'/'month': usar menuViewsDaily (dados agregados) + complementar com sessões de hoje
   const now = new Date();
   const brasiliaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-  const todayStr = brasiliaDate.toISOString().split('T')[0];
+  // Helper: formatar data local como YYYY-MM-DD (evita toISOString que converte para UTC)
+  const fmtDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const todayStr = fmtDate(brasiliaDate);
   
-  let periodStartStr: string;
-  let prevPeriodStartStr: string;
-  let prevPeriodEndStr: string;
+  // Helper: contar sessões em tempo real para um intervalo de datas (Brasília)
+  const countSessionsInRange = async (startDateStr: string, endDateStr: string) => {
+    const result = await db.select({
+      total: sql<number>`COUNT(*)`
+    })
+      .from(menuSessions)
+      .where(and(
+        eq(menuSessions.establishmentId, establishmentId),
+        sql`CONVERT_TZ(${menuSessions.createdAt}, '+00:00', '-03:00') >= ${startDateStr + ' 00:00:00'}`,
+        sql`CONVERT_TZ(${menuSessions.createdAt}, '+00:00', '-03:00') <= ${endDateStr + ' 23:59:59'}`
+      ));
+    return Number(result[0]?.total ?? 0);
+  };
+  
+  let periodViews = 0;
+  let previousPeriodViews = 0;
   
   if (period === 'today') {
-    periodStartStr = todayStr;
+    // Hoje: contar sessões de hoje em tempo real
+    periodViews = await countSessionsInRange(todayStr, todayStr);
+    
+    // Ontem: tentar menuViewsDaily primeiro, fallback para sessões
     const yesterday = new Date(brasiliaDate);
     yesterday.setDate(yesterday.getDate() - 1);
-    prevPeriodStartStr = yesterday.toISOString().split('T')[0];
-    prevPeriodEndStr = prevPeriodStartStr;
+    const yesterdayStr = fmtDate(yesterday);
+    
+    const prevResult = await db.select({
+      total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)`,
+    })
+      .from(menuViewsDaily)
+      .where(and(
+        eq(menuViewsDaily.establishmentId, establishmentId),
+        eq(menuViewsDaily.date, yesterdayStr)
+      ));
+    previousPeriodViews = Number(prevResult[0]?.total ?? 0);
+    // Se não houver dados agregados de ontem, contar sessões
+    if (previousPeriodViews === 0) {
+      previousPeriodViews = await countSessionsInRange(yesterdayStr, yesterdayStr);
+    }
   } else if (period === 'week') {
     const currentDay = brasiliaDate.getDay();
     const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
     const weekStart = new Date(brasiliaDate);
     weekStart.setDate(brasiliaDate.getDate() - daysFromMonday);
-    periodStartStr = weekStart.toISOString().split('T')[0];
+    const periodStartStr = fmtDate(weekStart);
     
+    // Período atual: menuViewsDaily + sessões de hoje
+    const dailyResult = await db.select({
+      total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)`,
+    })
+      .from(menuViewsDaily)
+      .where(and(
+        eq(menuViewsDaily.establishmentId, establishmentId),
+        gte(menuViewsDaily.date, periodStartStr),
+        lte(menuViewsDaily.date, todayStr)
+      ));
+    const dailyViews = Number(dailyResult[0]?.total ?? 0);
+    
+    // Verificar se hoje já tem dados em menuViewsDaily
+    const todayDailyResult = await db.select({
+      total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)`,
+    })
+      .from(menuViewsDaily)
+      .where(and(
+        eq(menuViewsDaily.establishmentId, establishmentId),
+        eq(menuViewsDaily.date, todayStr)
+      ));
+    const todayDailyViews = Number(todayDailyResult[0]?.total ?? 0);
+    
+    // Se hoje não tem dados agregados, complementar com sessões em tempo real
+    if (todayDailyViews === 0) {
+      const todaySessions = await countSessionsInRange(todayStr, todayStr);
+      periodViews = dailyViews + todaySessions;
+    } else {
+      periodViews = dailyViews;
+    }
+    
+    // Período anterior
     const prevWeekStart = new Date(weekStart);
     prevWeekStart.setDate(prevWeekStart.getDate() - 7);
-    prevPeriodStartStr = prevWeekStart.toISOString().split('T')[0];
-    
+    const prevPeriodStartStr = fmtDate(prevWeekStart);
     const prevWeekEnd = new Date(weekStart);
     prevWeekEnd.setDate(prevWeekEnd.getDate() - 1);
-    prevPeriodEndStr = prevWeekEnd.toISOString().split('T')[0];
+    const prevPeriodEndStr = fmtDate(prevWeekEnd);
+    
+    const prevResult = await db.select({
+      total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)`,
+    })
+      .from(menuViewsDaily)
+      .where(and(
+        eq(menuViewsDaily.establishmentId, establishmentId),
+        gte(menuViewsDaily.date, prevPeriodStartStr),
+        lte(menuViewsDaily.date, prevPeriodEndStr)
+      ));
+    previousPeriodViews = Number(prevResult[0]?.total ?? 0);
   } else {
     // month
     const monthStart = new Date(brasiliaDate.getFullYear(), brasiliaDate.getMonth(), 1);
-    periodStartStr = monthStart.toISOString().split('T')[0];
+    const periodStartStr = fmtDate(monthStart);
     
+    // Período atual: menuViewsDaily + sessões de hoje
+    const dailyResult = await db.select({
+      total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)`,
+    })
+      .from(menuViewsDaily)
+      .where(and(
+        eq(menuViewsDaily.establishmentId, establishmentId),
+        gte(menuViewsDaily.date, periodStartStr),
+        lte(menuViewsDaily.date, todayStr)
+      ));
+    const dailyViews = Number(dailyResult[0]?.total ?? 0);
+    
+    // Verificar se hoje já tem dados em menuViewsDaily
+    const todayDailyResult = await db.select({
+      total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)`,
+    })
+      .from(menuViewsDaily)
+      .where(and(
+        eq(menuViewsDaily.establishmentId, establishmentId),
+        eq(menuViewsDaily.date, todayStr)
+      ));
+    const todayDailyViews = Number(todayDailyResult[0]?.total ?? 0);
+    
+    if (todayDailyViews === 0) {
+      const todaySessions = await countSessionsInRange(todayStr, todayStr);
+      periodViews = dailyViews + todaySessions;
+    } else {
+      periodViews = dailyViews;
+    }
+    
+    // Período anterior (mês anterior)
     const prevMonthStart = new Date(brasiliaDate.getFullYear(), brasiliaDate.getMonth() - 1, 1);
-    prevPeriodStartStr = prevMonthStart.toISOString().split('T')[0];
-    
+    const prevPeriodStartStr = fmtDate(prevMonthStart);
     const prevMonthEnd = new Date(monthStart);
     prevMonthEnd.setDate(prevMonthEnd.getDate() - 1);
-    prevPeriodEndStr = prevMonthEnd.toISOString().split('T')[0];
+    const prevPeriodEndStr = fmtDate(prevMonthEnd);
+    
+    const prevResult = await db.select({
+      total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)`,
+    })
+      .from(menuViewsDaily)
+      .where(and(
+        eq(menuViewsDaily.establishmentId, establishmentId),
+        gte(menuViewsDaily.date, prevPeriodStartStr),
+        lte(menuViewsDaily.date, prevPeriodEndStr)
+      ));
+    previousPeriodViews = Number(prevResult[0]?.total ?? 0);
   }
-  
-  // Buscar visualizações do período atual
-  const currentPeriodResult = await db.select({
-    total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)`,
-  })
-    .from(menuViewsDaily)
-    .where(and(
-      eq(menuViewsDaily.establishmentId, establishmentId),
-      gte(menuViewsDaily.date, periodStartStr),
-      lte(menuViewsDaily.date, todayStr)
-    ));
-  
-  // Buscar visualizações do período anterior
-  const prevPeriodResult = await db.select({
-    total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)`,
-  })
-    .from(menuViewsDaily)
-    .where(and(
-      eq(menuViewsDaily.establishmentId, establishmentId),
-      gte(menuViewsDaily.date, prevPeriodStartStr),
-      lte(menuViewsDaily.date, prevPeriodEndStr)
-    ));
-  
-  const periodViews = Number(currentPeriodResult[0]?.total ?? 0);
-  const previousPeriodViews = Number(prevPeriodResult[0]?.total ?? 0);
   
   let viewsChange = 0;
   if (previousPeriodViews > 0) {
