@@ -35,7 +35,8 @@ import {
   tables, InsertTable, Table,
   tabs, InsertTab, Tab,
   tabItems, InsertTabItem, TabItem,
-  scheduledCampaigns, InsertScheduledCampaign, ScheduledCampaign
+  scheduledCampaigns, InsertScheduledCampaign, ScheduledCampaign,
+  pdvCustomers, InsertPdvCustomer, PdvCustomer
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -6311,4 +6312,75 @@ export async function completePendingOnlineOrder(sessionId: string, orderId: num
     resultOrderId: orderId,
     resultOrderNumber: orderNumber,
   }).where(eq(pendingOnlineOrders.sessionId, sessionId));
+}
+
+
+// ============ PDV CUSTOMERS ============
+
+/**
+ * Busca cliente PDV por telefone e estabelecimento
+ */
+export async function getPdvCustomerByPhone(establishmentId: number, phone: string) {
+  const database = await getDb();
+  if (!database) return null;
+  const { eq, and } = await import("drizzle-orm");
+  const rows = await database.select().from(pdvCustomers)
+    .where(and(
+      eq(pdvCustomers.establishmentId, establishmentId),
+      eq(pdvCustomers.phone, phone)
+    ))
+    .limit(1);
+  return rows[0] || null;
+}
+
+/**
+ * Salva ou atualiza cliente PDV (upsert por telefone + estabelecimento)
+ */
+export async function upsertPdvCustomer(data: {
+  establishmentId: number;
+  phone: string;
+  name?: string | null;
+  street?: string | null;
+  number?: string | null;
+  complement?: string | null;
+  neighborhood?: string | null;
+  reference?: string | null;
+}) {
+  const database = await getDb();
+  if (!database) return null;
+  const { eq, and } = await import("drizzle-orm");
+  
+  // Verificar se já existe
+  const existing = await database.select().from(pdvCustomers)
+    .where(and(
+      eq(pdvCustomers.establishmentId, data.establishmentId),
+      eq(pdvCustomers.phone, data.phone)
+    ))
+    .limit(1);
+  
+  if (existing.length > 0) {
+    // Atualizar
+    await database.update(pdvCustomers).set({
+      name: data.name ?? existing[0].name,
+      street: data.street ?? existing[0].street,
+      number: data.number ?? existing[0].number,
+      complement: data.complement ?? existing[0].complement,
+      neighborhood: data.neighborhood ?? existing[0].neighborhood,
+      reference: data.reference ?? existing[0].reference,
+    }).where(eq(pdvCustomers.id, existing[0].id));
+    return { ...existing[0], ...data };
+  } else {
+    // Inserir
+    const result = await database.insert(pdvCustomers).values({
+      establishmentId: data.establishmentId,
+      phone: data.phone,
+      name: data.name,
+      street: data.street,
+      number: data.number,
+      complement: data.complement,
+      neighborhood: data.neighborhood,
+      reference: data.reference,
+    });
+    return { id: result[0].insertId, ...data };
+  }
 }

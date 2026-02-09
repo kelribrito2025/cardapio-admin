@@ -5845,3 +5845,12 @@
 - [x] Criar nova variável {{pickupMessage}} para retirada e consumo no local
 - [x] Adicionar novo campo de template na seção "Pronto" para mensagem de retirada/consumo no local
 - [x] Atualizar lógica de substituição no uazapi.ts
+
+## PDV - Salvar e Reaproveitar Dados de Clientes
+- [x] Criar tabela pdvCustomers no banco (telefone como chave, vinculado ao estabelecimento)
+- [x] Criar endpoint tRPC para buscar cliente por telefone
+- [x] Criar endpoint tRPC para salvar/atualizar cliente
+- [x] Integrar busca automática no campo telefone do PDV (entrega e retirada)
+- [x] Preencher automaticamente nome e endereço quando cliente encontrado
+- [x] Salvar/atualizar dados do cliente ao finalizar pedido no PDV
+- [x] Campos permanecem editáveis após preenchimento automático

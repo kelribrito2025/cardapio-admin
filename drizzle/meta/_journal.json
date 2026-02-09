@@ -533,6 +533,13 @@
       "when": 1770679250130,
       "tag": "0075_wooden_ulik",
       "breakpoints": true
+    },
+    {
+      "idx": 76,
+      "version": "5",
+      "when": 1770680133463,
+      "tag": "0076_neat_shinko_yamashiro",
+      "breakpoints": true
     }
   ]
 }

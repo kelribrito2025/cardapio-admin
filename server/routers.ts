@@ -4067,6 +4067,35 @@ export const appRouter = router({
         return result;
       }),
   }),
+
+  pdvCustomer: router({
+    // Buscar cliente PDV por telefone
+    findByPhone: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        phone: z.string().min(8), // Mínimo 8 dígitos
+      }))
+      .query(async ({ input }) => {
+        const customer = await db.getPdvCustomerByPhone(input.establishmentId, input.phone);
+        return customer;
+      }),
+
+    // Salvar/atualizar cliente PDV
+    upsert: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        phone: z.string().min(8),
+        name: z.string().optional(),
+        street: z.string().optional(),
+        number: z.string().optional(),
+        complement: z.string().optional(),
+        neighborhood: z.string().optional(),
+        reference: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return db.upsertPdvCustomer(input);
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

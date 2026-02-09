@@ -750,3 +750,22 @@ export const pendingOnlineOrders = mysqlTable("pending_online_orders", {
 });
 export type PendingOnlineOrder = typeof pendingOnlineOrders.$inferSelect;
 export type InsertPendingOnlineOrder = typeof pendingOnlineOrders.$inferInsert;
+
+
+// Clientes PDV - salvar dados de clientes para reaproveitamento no PDV
+export const pdvCustomers = mysqlTable("pdv_customers", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  phone: varchar("phone", { length: 30 }).notNull(), // Telefone como identificador principal (somente dígitos)
+  name: varchar("name", { length: 255 }),
+  street: varchar("street", { length: 255 }),
+  number: varchar("number", { length: 50 }),
+  complement: varchar("complement", { length: 255 }),
+  neighborhood: varchar("neighborhood", { length: 255 }),
+  reference: varchar("reference", { length: 255 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PdvCustomer = typeof pdvCustomers.$inferSelect;
+export type InsertPdvCustomer = typeof pdvCustomers.$inferInsert;

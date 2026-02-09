@@ -165,6 +165,29 @@ export default function PDV() {
         description: `Pedido ${data.orderNumber} criado e em preparação`,
       });
       
+      // Salvar/atualizar dados do cliente PDV
+      if (establishmentId) {
+        const phone = orderType === "retirada" 
+          ? pickupClientPhone.replace(/\D/g, "") 
+          : deliveryAddress.phone.replace(/\D/g, "");
+        const name = orderType === "retirada" ? pickupClientName : deliveryAddress.name;
+        
+        if (phone && phone.length >= 8) {
+          pdvCustomerUpsertMutation.mutate({
+            establishmentId,
+            phone,
+            name: name || undefined,
+            ...(orderType === "entrega" ? {
+              street: deliveryAddress.street || undefined,
+              number: deliveryAddress.number || undefined,
+              complement: deliveryAddress.complement || undefined,
+              neighborhood: deliveryAddress.neighborhood || undefined,
+              reference: deliveryAddress.reference || undefined,
+            } : {}),
+          });
+        }
+      }
+      
       // Imprimir pedido automaticamente usando o método favorito
       if (data.id) {
         handlePrintWithFavoriteMethod(data.id);
@@ -207,6 +230,10 @@ export default function PDV() {
     complement: "",
     reference: ""
   });
+
+  // PDV Customer - busca automática por telefone
+  const [pdvCustomerFound, setPdvCustomerFound] = useState(false);
+  const pdvCustomerUpsertMutation = trpc.pdvCustomer.upsert.useMutation();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("cash");
   const [changeAmount, setChangeAmount] = useState("");
   const [showDeliverySidebar, setShowDeliverySidebar] = useState(false);
@@ -275,6 +302,48 @@ export default function PDV() {
   useEffect(() => {
     console.log("[PDV] showDeliverySidebar changed to:", showDeliverySidebar);
   }, [showDeliverySidebar]);
+
+  // Busca automática de cliente PDV por telefone (Entrega)
+  const deliveryPhoneDigits = deliveryAddress.phone.replace(/\D/g, "");
+  const { data: deliveryCustomer } = trpc.pdvCustomer.findByPhone.useQuery(
+    { establishmentId: establishmentId!, phone: deliveryPhoneDigits },
+    { enabled: !!establishmentId && deliveryPhoneDigits.length >= 10 && deliveryPhoneDigits.length <= 11 }
+  );
+
+  // Busca automática de cliente PDV por telefone (Retirada)
+  const pickupPhoneDigits = pickupClientPhone.replace(/\D/g, "");
+  const { data: pickupCustomer } = trpc.pdvCustomer.findByPhone.useQuery(
+    { establishmentId: establishmentId!, phone: pickupPhoneDigits },
+    { enabled: !!establishmentId && pickupPhoneDigits.length >= 10 && pickupPhoneDigits.length <= 11 }
+  );
+
+  // Preencher dados do cliente automaticamente (Entrega)
+  useEffect(() => {
+    if (deliveryCustomer && deliveryPhoneDigits.length >= 10) {
+      setPdvCustomerFound(true);
+      setDeliveryAddress(prev => ({
+        ...prev,
+        name: prev.name || deliveryCustomer.name || "",
+        street: prev.street || deliveryCustomer.street || "",
+        number: prev.number || deliveryCustomer.number || "",
+        complement: prev.complement || deliveryCustomer.complement || "",
+        neighborhood: prev.neighborhood || deliveryCustomer.neighborhood || "",
+        reference: prev.reference || deliveryCustomer.reference || "",
+      }));
+      toast.success("Cliente encontrado!", { description: deliveryCustomer.name || "Dados preenchidos automaticamente", duration: 2000 });
+    }
+  }, [deliveryCustomer]);
+
+  // Preencher dados do cliente automaticamente (Retirada)
+  useEffect(() => {
+    if (pickupCustomer && pickupPhoneDigits.length >= 10) {
+      setPdvCustomerFound(true);
+      if (!pickupClientName && pickupCustomer.name) {
+        setPickupClientName(pickupCustomer.name);
+      }
+      toast.success("Cliente encontrado!", { description: pickupCustomer.name || "Dados preenchidos automaticamente", duration: 2000 });
+    }
+  }, [pickupCustomer]);
 
   // Estados para drag horizontal na barra de categorias
   const categoriesContainerRef = useRef<HTMLDivElement>(null);
@@ -449,6 +518,8 @@ export default function PDV() {
     // Limpar dados de retirada
     setPickupClientName("");
     setPickupClientPhone("");
+    // Limpar estado de cliente PDV encontrado
+    setPdvCustomerFound(false);
     // Limpar cupom
     setShowCouponField(false);
     setCouponCode("");
