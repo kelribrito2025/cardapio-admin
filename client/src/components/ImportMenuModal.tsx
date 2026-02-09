@@ -247,6 +247,20 @@ export function ImportMenuModal({ open, onOpenChange, establishmentId, onImportC
                 {message}
               </p>
 
+              {/* Shimmer skeleton - simula itens do cardápio sendo carregados */}
+              <div className="space-y-2 overflow-hidden rounded-xl border border-border/50 bg-card p-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="flex items-center gap-3 p-2 rounded-lg" style={{ animationDelay: `${i * 150}ms` }}>
+                    <div className="h-10 w-10 rounded-lg bg-muted/60 shimmer-item shrink-0" style={{ animationDelay: `${i * 150}ms` }} />
+                    <div className="flex-1 space-y-1.5">
+                      <div className="h-3.5 w-3/4 rounded-md bg-muted/60 shimmer-item" style={{ animationDelay: `${i * 150 + 50}ms` }} />
+                      <div className="h-2.5 w-1/2 rounded-md bg-muted/40 shimmer-item" style={{ animationDelay: `${i * 150 + 100}ms` }} />
+                    </div>
+                    <div className="h-3.5 w-14 rounded-md bg-muted/50 shimmer-item shrink-0" style={{ animationDelay: `${i * 150 + 75}ms` }} />
+                  </div>
+                ))}
+              </div>
+
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
                 <p className="text-xs text-amber-700 text-center font-medium">
                   Estamos importando seu cardápio. Isso pode levar alguns instantes.
@@ -254,6 +268,23 @@ export function ImportMenuModal({ open, onOpenChange, establishmentId, onImportC
                   <span className="font-semibold">Não feche esta janela.</span>
                 </p>
               </div>
+
+              <style>{`
+                @keyframes shimmer {
+                  0% { background-position: -200% 0; }
+                  100% { background-position: 200% 0; }
+                }
+                .shimmer-item {
+                  background: linear-gradient(
+                    90deg,
+                    hsl(var(--muted) / 0.4) 25%,
+                    hsl(var(--muted) / 0.7) 50%,
+                    hsl(var(--muted) / 0.4) 75%
+                  );
+                  background-size: 200% 100%;
+                  animation: shimmer 1.5s ease-in-out infinite;
+                }
+              `}</style>
             </div>
           )}
 
