@@ -754,6 +754,7 @@ export default function Pedidos() {
         <PageHeader
           title="Pedidos"
           description="Gerencie os pedidos do seu estabelecimento"
+          icon={<ClipboardList className="h-6 w-6 text-blue-600" />}
         />
         {/* Card de Status de Conexão WhatsApp */}
         <div className="hidden sm:flex items-center gap-3">

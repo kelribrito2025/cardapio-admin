@@ -759,6 +759,7 @@ export default function MesasComandas() {
           <PageHeader 
             title="Mapa de mesas" 
             description="Visualização e controle das mesas do salão"
+            icon={<Utensils className="h-6 w-6 text-blue-600" />}
           />
         </div>
 
@@ -847,6 +848,7 @@ export default function MesasComandas() {
         <PageHeader 
           title="Mapa de mesas" 
           description="Visualização e controle das mesas do salão"
+          icon={<Utensils className="h-6 w-6 text-blue-600" />}
         />
       </div>
 

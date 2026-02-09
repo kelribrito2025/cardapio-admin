@@ -614,6 +614,7 @@ export default function Catalogo() {
         <PageHeader
           title="Cardápio"
           description="Gerencie seus produtos e categorias"
+          icon={<UtensilsCrossed className="h-6 w-6 text-blue-600" />}
           actions={
 <Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
               <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />

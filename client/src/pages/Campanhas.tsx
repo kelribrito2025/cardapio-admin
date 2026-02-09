@@ -44,6 +44,7 @@ import {
   Sparkles,
   BadgeCheck,
   Pencil,
+  Megaphone,
 } from "lucide-react";
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -576,6 +577,7 @@ export default function Campanhas() {
         <PageHeader
           title="Campanhas SMS"
           description="Envie mensagens promocionais para seus clientes"
+          icon={<Megaphone className="h-6 w-6 text-blue-600" />}
         />
 
         {/* Cards Informativos */}

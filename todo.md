@@ -5779,3 +5779,10 @@
 - [x] [Dashboard] Adicionar ícone da sidebar ao lado do título da página Dashboard
 
 - [x] Cor do ícone Dashboard deve ser azul (não vermelho)
+- [x] Adicionar ícone azul no título da página Pedidos
+- [x] Adicionar ícone azul no título da página Mapa de Mesas
+- [x] Adicionar ícone azul no título da página Cardápio
+- [x] Adicionar ícone azul no título da página Categorias
+- [x] Adicionar ícone azul no título da página Complementos
+- [x] Adicionar ícone azul no título da página Cupons
+- [x] Adicionar ícone azul no título da página Campanhas

@@ -497,6 +497,7 @@ export default function Categorias() {
         <PageHeader
           title="Categorias"
           description="Organize as categorias do seu cardápio"
+          icon={<Tag className="h-6 w-6 text-blue-600" />}
         />
         <div className="space-y-3 mt-6">
           {[1, 2, 3, 4, 5].map((i) => (
@@ -519,6 +520,7 @@ export default function Categorias() {
       <PageHeader
         title="Categorias"
         description="Organize as categorias do seu cardápio"
+        icon={<Tag className="h-6 w-6 text-blue-600" />}
         actions={
           <TooltipProvider>
             <Tooltip>

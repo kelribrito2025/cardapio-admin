@@ -155,6 +155,7 @@ export default function Complementos() {
       <PageHeader
         title="Complementos"
         description="Alterações aqui refletem em todos os produtos."
+        icon={<Layers className="h-6 w-6 text-blue-600" />}
         actions={
           <div className="relative w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
