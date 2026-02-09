@@ -67,6 +67,7 @@ import {
   ShoppingBag,
   ChevronDown,
   FileText,
+  Globe,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -159,6 +160,9 @@ export default function Configuracoes() {
   const [deliveryFeeType, setDeliveryFeeType] = useState<"free" | "fixed" | "byNeighborhood">("free");
   const [deliveryFeeFixed, setDeliveryFeeFixed] = useState("0");
   const [neighborhoodFees, setNeighborhoodFees] = useState<{id?: number; neighborhood: string; fee: string}[]>([]);
+  
+  // Timezone state
+  const [timezone, setTimezone] = useState('America/Sao_Paulo');
   
   // Business hours state
   type BusinessHourDay = {
@@ -302,6 +306,7 @@ export default function Configuracoes() {
       // Delivery fee settings
       setDeliveryFeeType(establishment.deliveryFeeType || "free");
       setDeliveryFeeFixed(establishment.deliveryFeeFixed || "0");
+      setTimezone(establishment.timezone || 'America/Sao_Paulo');
     }
   }, [establishment]);
   
@@ -2000,6 +2005,54 @@ export default function Configuracoes() {
                 Configure os horários de funcionamento do seu estabelecimento. O menu público exibirá automaticamente se o restaurante está aberto ou fechado.
               </p>
               
+              {/* Fuso horário */}
+              <div className="flex items-center gap-3 p-4 rounded-xl border border-border/50 bg-muted/30">
+                <Globe className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                <div className="flex-1">
+                  <Label className="text-sm font-medium">Fuso horário do restaurante</Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">Todos os horários do sistema serão baseados neste fuso.</p>
+                </div>
+                <select
+                  value={timezone}
+                  onChange={(e) => setTimezone(e.target.value)}
+                  className="h-9 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                  <optgroup label="Brasil">
+                    <option value="America/Sao_Paulo">Brasília (GMT-3)</option>
+                    <option value="America/Manaus">Manaus (GMT-4)</option>
+                    <option value="America/Cuiaba">Cuiabá (GMT-4)</option>
+                    <option value="America/Belem">Belém (GMT-3)</option>
+                    <option value="America/Fortaleza">Fortaleza (GMT-3)</option>
+                    <option value="America/Recife">Recife (GMT-3)</option>
+                    <option value="America/Bahia">Salvador (GMT-3)</option>
+                    <option value="America/Campo_Grande">Campo Grande (GMT-4)</option>
+                    <option value="America/Porto_Velho">Porto Velho (GMT-4)</option>
+                    <option value="America/Boa_Vista">Boa Vista (GMT-4)</option>
+                    <option value="America/Rio_Branco">Rio Branco (GMT-5)</option>
+                    <option value="America/Noronha">Fernando de Noronha (GMT-2)</option>
+                  </optgroup>
+                  <optgroup label="Portugal">
+                    <option value="Europe/Lisbon">Lisboa (GMT+0)</option>
+                    <option value="Atlantic/Azores">Açores (GMT-1)</option>
+                    <option value="Atlantic/Madeira">Madeira (GMT+0)</option>
+                  </optgroup>
+                  <optgroup label="Outros">
+                    <option value="America/Argentina/Buenos_Aires">Buenos Aires (GMT-3)</option>
+                    <option value="America/Montevideo">Montevidéu (GMT-3)</option>
+                    <option value="America/Santiago">Santiago (GMT-4)</option>
+                    <option value="America/Bogota">Bogotá (GMT-5)</option>
+                    <option value="America/Lima">Lima (GMT-5)</option>
+                    <option value="America/New_York">Nova York (GMT-5)</option>
+                    <option value="America/Chicago">Chicago (GMT-6)</option>
+                    <option value="America/Los_Angeles">Los Angeles (GMT-8)</option>
+                    <option value="Europe/Madrid">Madrid (GMT+1)</option>
+                    <option value="Europe/Paris">Paris (GMT+1)</option>
+                    <option value="Europe/London">Londres (GMT+0)</option>
+                    <option value="Asia/Tokyo">Tóquio (GMT+9)</option>
+                  </optgroup>
+                </select>
+              </div>
+              
               <div className="space-y-3">
                 {[
                   { day: 0, name: "Domingo" },
@@ -2084,6 +2137,13 @@ export default function Configuracoes() {
               
               <Button
                 onClick={() => {
+                  // Salvar timezone junto com os horários
+                  if (establishment?.id) {
+                    updateMutation.mutate({
+                      id: establishment.id,
+                      timezone,
+                    });
+                  }
                   saveBusinessHoursMutation.mutate({
                     establishmentId: establishment?.id || 0,
                     hours: businessHours.map(h => ({

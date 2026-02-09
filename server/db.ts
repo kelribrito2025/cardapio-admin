@@ -53,6 +53,45 @@ export async function getDb() {
   return _db;
 }
 
+// ============ TIMEZONE HELPERS ============
+
+/**
+ * Busca o timezone IANA configurado para um estabelecimento.
+ * Retorna 'America/Sao_Paulo' como fallback se não encontrado.
+ */
+export async function getEstablishmentTimezone(establishmentId: number): Promise<string> {
+  const db = await getDb();
+  if (!db) return 'America/Sao_Paulo';
+  const result = await db.select({ timezone: establishments.timezone })
+    .from(establishments)
+    .where(eq(establishments.id, establishmentId))
+    .limit(1);
+  return result[0]?.timezone || 'America/Sao_Paulo';
+}
+
+/**
+ * Retorna a data/hora atual no timezone do estabelecimento como objeto Date local.
+ * ATENÇÃO: o Date retornado tem os valores corretos em getFullYear/getMonth/getDate/getHours
+ * mas internamente o JS pode tratá-lo como UTC. Use fmtLocalDate() para formatar.
+ */
+export function getLocalDate(timezone: string): Date {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: timezone }));
+}
+
+/**
+ * Formata uma Date local como 'YYYY-MM-DD' sem usar toISOString() (que converte para UTC).
+ */
+export function fmtLocalDate(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/**
+ * Formata uma Date local como 'YYYY-MM-DD HH:MM:SS' sem usar toISOString().
+ */
+export function fmtLocalDateTime(d: Date): string {
+  return `${fmtLocalDate(d)} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+}
+
 // ============ HELPER FUNCTIONS ============
 
 /**
@@ -1242,42 +1281,38 @@ export async function getDashboardStats(establishmentId: number, period: 'today'
   const db = await getDb();
   if (!db) return { ordersCount: 0, revenue: 0, avgTicket: 0, lowStockCount: 0, ordersChange: 0, revenueChange: 0, avgTicketChange: 0, lowStockChange: 0 };
   
-  // Usar timezone do Brasil (América/São_Paulo) para calcular o início do período
-  const now = new Date();
-  const brazilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  // Usar timezone configurado do estabelecimento
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
   
   let periodStart: Date;
   let prevPeriodStart: Date;
   let prevPeriodEnd: Date;
   
   if (period === 'today') {
-    periodStart = new Date(brazilTime.getFullYear(), brazilTime.getMonth(), brazilTime.getDate());
-    // Período anterior: ontem
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
     prevPeriodStart = new Date(periodStart);
     prevPeriodStart.setDate(prevPeriodStart.getDate() - 1);
     prevPeriodEnd = new Date(periodStart);
   } else if (period === 'week') {
-    const currentDay = brazilTime.getDay(); // 0=Dom, 1=Seg, ..., 6=Sáb
+    const currentDay = localNow.getDay();
     const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
-    periodStart = new Date(brazilTime.getFullYear(), brazilTime.getMonth(), brazilTime.getDate() - daysFromMonday);
-    // Período anterior: semana passada
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysFromMonday);
     prevPeriodStart = new Date(periodStart);
     prevPeriodStart.setDate(prevPeriodStart.getDate() - 7);
     prevPeriodEnd = new Date(periodStart);
   } else {
-    // month
-    periodStart = new Date(brazilTime.getFullYear(), brazilTime.getMonth(), 1);
-    // Período anterior: mês passado
-    prevPeriodStart = new Date(brazilTime.getFullYear(), brazilTime.getMonth() - 1, 1);
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), 1);
+    prevPeriodStart = new Date(localNow.getFullYear(), localNow.getMonth() - 1, 1);
     prevPeriodEnd = new Date(periodStart);
   }
   
-  // Converter de volta para UTC para comparar com o banco (GMT-3)
-  const periodStartUTC = new Date(periodStart.getTime() + (3 * 60 * 60 * 1000));
-  const prevPeriodStartUTC = new Date(prevPeriodStart.getTime() + (3 * 60 * 60 * 1000));
-  const prevPeriodEndUTC = new Date(prevPeriodEnd.getTime() + (3 * 60 * 60 * 1000));
+  // Usar CONVERT_TZ com o timezone IANA do estabelecimento nas queries SQL
+  const periodStartStr = fmtLocalDateTime(periodStart);
+  const prevPeriodStartStr = fmtLocalDateTime(prevPeriodStart);
+  const prevPeriodEndStr = fmtLocalDateTime(prevPeriodEnd);
   
-  // Orders no período atual
+  // Orders no período atual (usando CONVERT_TZ com timezone IANA)
   const ordersResult = await db.select({ 
     count: sql<number>`count(*)`,
     total: sql<number>`COALESCE(SUM(total), 0)`
@@ -1285,7 +1320,7 @@ export async function getDashboardStats(establishmentId: number, period: 'today'
     .from(orders)
     .where(and(
       eq(orders.establishmentId, establishmentId),
-      gte(orders.createdAt, periodStartUTC),
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${periodStartStr}`,
       eq(orders.status, "completed")
     ));
   
@@ -1297,8 +1332,8 @@ export async function getDashboardStats(establishmentId: number, period: 'today'
     .from(orders)
     .where(and(
       eq(orders.establishmentId, establishmentId),
-      gte(orders.createdAt, prevPeriodStartUTC),
-      sql`${orders.createdAt} < ${prevPeriodEndUTC}`,
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${prevPeriodStartStr}`,
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) < ${prevPeriodEndStr}`,
       eq(orders.status, "completed")
     ));
   
@@ -1338,28 +1373,26 @@ export async function getWeeklyStats(establishmentId: number) {
   const db = await getDb();
   if (!db) return [];
   
-  // Usar timezone do Brasil (América/São_Paulo)
-  const now = new Date();
-  const brazilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-  const todayBrazil = new Date(brazilTime.getFullYear(), brazilTime.getMonth(), brazilTime.getDate());
-  const sevenDaysAgoBrazil = new Date(todayBrazil);
-  sevenDaysAgoBrazil.setDate(sevenDaysAgoBrazil.getDate() - 7);
-  // Converter para UTC (GMT-3)
-  const sevenDaysAgo = new Date(sevenDaysAgoBrazil.getTime() + (3 * 60 * 60 * 1000));
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+  const todayLocal = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
+  const sevenDaysAgoLocal = new Date(todayLocal);
+  sevenDaysAgoLocal.setDate(sevenDaysAgoLocal.getDate() - 7);
+  const sevenDaysAgoStr = fmtLocalDateTime(sevenDaysAgoLocal);
   
   const result = await db.select({
-    date: sql<string>`DATE(createdAt)`,
+    date: sql<string>`DATE(CONVERT_TZ(createdAt, '+00:00', ${tz}))`,
     orders: sql<number>`count(*)`,
     revenue: sql<number>`COALESCE(SUM(total), 0)`
   })
     .from(orders)
     .where(and(
       eq(orders.establishmentId, establishmentId),
-      gte(orders.createdAt, sevenDaysAgo),
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${sevenDaysAgoStr}`,
       eq(orders.status, "completed")
     ))
-    .groupBy(sql`DATE(createdAt)`)
-    .orderBy(sql`DATE(createdAt)`);
+    .groupBy(sql`DATE(CONVERT_TZ(createdAt, '+00:00', ${tz}))`)
+    .orderBy(sql`DATE(CONVERT_TZ(createdAt, '+00:00', ${tz}))`);
   
   return result;
 }
@@ -1389,80 +1422,57 @@ export async function getWeeklyRevenue(establishmentId: number) {
   const db = await getDb();
   if (!db) return { thisWeek: [], lastWeek: [], thisWeekTotal: 0, lastWeekTotal: 0 };
   
-  // Usar timezone de Brasília para cálculos
-  // Converter data atual para horário de Brasília
-  const now = new Date();
-  const brasiliaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-  const currentDay = brasiliaDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+  const currentDay = localNow.getDay();
   
-  // Calculate start of current week (Monday) em Brasília
-  const thisWeekStart = new Date(brasiliaDate);
+  const thisWeekStart = new Date(localNow);
   const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
-  thisWeekStart.setDate(brasiliaDate.getDate() - daysFromMonday);
+  thisWeekStart.setDate(localNow.getDate() - daysFromMonday);
   thisWeekStart.setHours(0, 0, 0, 0);
   
-  // Calculate start of last week (Monday of previous week)
   const lastWeekStart = new Date(thisWeekStart);
   lastWeekStart.setDate(thisWeekStart.getDate() - 7);
   
-  // Calculate end of last week (Sunday of previous week at 23:59:59.999)
   const lastWeekEnd = new Date(thisWeekStart);
   lastWeekEnd.setMilliseconds(-1);
   
-  // Formatar datas para SQL no formato 'YYYY-MM-DD HH:MM:SS'
-  const formatDateForSQL = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  };
+  const thisWeekStartStr = fmtLocalDateTime(thisWeekStart);
+  const lastWeekStartStr = fmtLocalDateTime(lastWeekStart);
+  const lastWeekEndStr = fmtLocalDateTime(lastWeekEnd);
   
-  const thisWeekStartStr = formatDateForSQL(thisWeekStart);
-  const lastWeekStartStr = formatDateForSQL(lastWeekStart);
-  const lastWeekEndStr = formatDateForSQL(lastWeekEnd);
-  
-  // Query for this week's data - usando CONVERT_TZ para converter UTC para Brasília
   const thisWeekResult = await db.select({
-    dayOfWeek: sql<number>`DAYOFWEEK(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`,
+    dayOfWeek: sql<number>`DAYOFWEEK(CONVERT_TZ(createdAt, '+00:00', ${tz}))`,
     revenue: sql<number>`COALESCE(SUM(total), 0)`
   })
     .from(orders)
     .where(and(
       eq(orders.establishmentId, establishmentId),
-      sql`CONVERT_TZ(createdAt, '+00:00', '-03:00') >= ${thisWeekStartStr}`,
+      sql`CONVERT_TZ(createdAt, '+00:00', ${tz}) >= ${thisWeekStartStr}`,
       eq(orders.status, "completed")
     ))
-    .groupBy(sql`DAYOFWEEK(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`);
+    .groupBy(sql`DAYOFWEEK(CONVERT_TZ(createdAt, '+00:00', ${tz}))`);
   
-  // Query for last week's data
   const lastWeekResult = await db.select({
-    dayOfWeek: sql<number>`DAYOFWEEK(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`,
+    dayOfWeek: sql<number>`DAYOFWEEK(CONVERT_TZ(createdAt, '+00:00', ${tz}))`,
     revenue: sql<number>`COALESCE(SUM(total), 0)`
   })
     .from(orders)
     .where(and(
       eq(orders.establishmentId, establishmentId),
-      sql`CONVERT_TZ(createdAt, '+00:00', '-03:00') >= ${lastWeekStartStr}`,
-      sql`CONVERT_TZ(createdAt, '+00:00', '-03:00') <= ${lastWeekEndStr}`,
+      sql`CONVERT_TZ(createdAt, '+00:00', ${tz}) >= ${lastWeekStartStr}`,
+      sql`CONVERT_TZ(createdAt, '+00:00', ${tz}) <= ${lastWeekEndStr}`,
       eq(orders.status, "completed")
     ))
-    .groupBy(sql`DAYOFWEEK(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`);
+    .groupBy(sql`DAYOFWEEK(CONVERT_TZ(createdAt, '+00:00', ${tz}))`);
   
-  // Map MySQL DAYOFWEEK (1=Sunday, 2=Monday, ..., 7=Saturday) to our format (0=Mon, 1=Tue, ..., 6=Sun)
   const mapDayOfWeek = (mysqlDay: number) => {
-    // MySQL: 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri, 7=Sat
-    // Our format: 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun
     return mysqlDay === 1 ? 6 : mysqlDay - 2;
   };
   
-  // Initialize arrays with zeros for each day (Mon-Sun)
   const thisWeek = [0, 0, 0, 0, 0, 0, 0];
   const lastWeek = [0, 0, 0, 0, 0, 0, 0];
   
-  // Fill in the data
   for (const row of thisWeekResult) {
     const dayIndex = mapDayOfWeek(row.dayOfWeek);
     if (dayIndex >= 0 && dayIndex < 7) {
@@ -1492,59 +1502,44 @@ export async function getRevenueByPeriod(establishmentId: number, period: 'today
   const db = await getDb();
   if (!db) return { thisWeek: [], lastWeek: [], thisWeekTotal: 0, lastWeekTotal: 0, periodLabel: 'Esta semana', comparisonLabel: 'Semana passada' };
   
-  const now = new Date();
-  const brasiliaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-  
-  const formatDateForSQL = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  };
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
   
   if (period === 'today') {
-    // Hoje: faturamento por hora (0h-23h), comparação com ontem
-    const todayStart = new Date(brasiliaDate);
+    const todayStart = new Date(localNow);
     todayStart.setHours(0, 0, 0, 0);
     const yesterdayStart = new Date(todayStart);
     yesterdayStart.setDate(yesterdayStart.getDate() - 1);
     
-    const todayStartStr = formatDateForSQL(todayStart);
-    const yesterdayStartStr = formatDateForSQL(yesterdayStart);
-    const todayEndStr = formatDateForSQL(brasiliaDate);
+    const todayStartStr = fmtLocalDateTime(todayStart);
+    const yesterdayStartStr = fmtLocalDateTime(yesterdayStart);
     
-    // Buscar dados de hoje por hora
     const todayResult = await db.select({
-      hour: sql<number>`HOUR(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`,
+      hour: sql<number>`HOUR(CONVERT_TZ(createdAt, '+00:00', ${tz}))`,
       revenue: sql<number>`COALESCE(SUM(total), 0)`
     })
       .from(orders)
       .where(and(
         eq(orders.establishmentId, establishmentId),
-        sql`CONVERT_TZ(createdAt, '+00:00', '-03:00') >= ${todayStartStr}`,
+        sql`CONVERT_TZ(createdAt, '+00:00', ${tz}) >= ${todayStartStr}`,
         eq(orders.status, "completed")
       ))
-      .groupBy(sql`HOUR(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`);
+      .groupBy(sql`HOUR(CONVERT_TZ(createdAt, '+00:00', ${tz}))`);
     
-    // Buscar dados de ontem por hora
     const yesterdayResult = await db.select({
-      hour: sql<number>`HOUR(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`,
+      hour: sql<number>`HOUR(CONVERT_TZ(createdAt, '+00:00', ${tz}))`,
       revenue: sql<number>`COALESCE(SUM(total), 0)`
     })
       .from(orders)
       .where(and(
         eq(orders.establishmentId, establishmentId),
-        sql`CONVERT_TZ(createdAt, '+00:00', '-03:00') >= ${yesterdayStartStr}`,
-        sql`CONVERT_TZ(createdAt, '+00:00', '-03:00') < ${todayStartStr}`,
+        sql`CONVERT_TZ(createdAt, '+00:00', ${tz}) >= ${yesterdayStartStr}`,
+        sql`CONVERT_TZ(createdAt, '+00:00', ${tz}) < ${todayStartStr}`,
         eq(orders.status, "completed")
       ))
-      .groupBy(sql`HOUR(CONVERT_TZ(createdAt, '+00:00', '-03:00'))`);
+      .groupBy(sql`HOUR(CONVERT_TZ(createdAt, '+00:00', ${tz}))`);
     
-    // Mapear para arrays de 24 horas
-    const currentHour = brasiliaDate.getHours();
+    const currentHour = localNow.getHours();
     const todayData = Array(24).fill(0);
     const yesterdayData = Array(24).fill(0);
     
@@ -1569,14 +1564,12 @@ export async function getRevenueByPeriod(establishmentId: number, period: 'today
       currentIndex: currentHour,
     };
   } else if (period === 'month') {
-    // Mês: faturamento dos últimos 6 meses (barras por mês)
     const MONTH_NAMES_SHORT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     
-    // Gerar os últimos 6 meses (incluindo o atual)
     const months: { start: Date; end: Date; label: string }[] = [];
     for (let i = 5; i >= 0; i--) {
-      const mStart = new Date(brasiliaDate.getFullYear(), brasiliaDate.getMonth() - i, 1);
-      const mEnd = new Date(brasiliaDate.getFullYear(), brasiliaDate.getMonth() - i + 1, 1);
+      const mStart = new Date(localNow.getFullYear(), localNow.getMonth() - i, 1);
+      const mEnd = new Date(localNow.getFullYear(), localNow.getMonth() - i + 1, 1);
       mEnd.setMilliseconds(-1);
       months.push({
         start: mStart,
@@ -1585,23 +1578,20 @@ export async function getRevenueByPeriod(establishmentId: number, period: 'today
       });
     }
     
-    // Período total: do início do 6º mês atrás até agora
-    const sixMonthsAgoStr = formatDateForSQL(months[0].start);
+    const sixMonthsAgoStr = fmtLocalDateTime(months[0].start);
     
-    // Buscar faturamento agrupado por ano-mês
     const monthlyResult = await db.select({
-      yearMonth: sql<string>`DATE_FORMAT(CONVERT_TZ(createdAt, '+00:00', '-03:00'), '%Y-%m')`,
+      yearMonth: sql<string>`DATE_FORMAT(CONVERT_TZ(createdAt, '+00:00', ${tz}), '%Y-%m')`,
       revenue: sql<number>`COALESCE(SUM(total), 0)`
     })
       .from(orders)
       .where(and(
         eq(orders.establishmentId, establishmentId),
-        sql`CONVERT_TZ(createdAt, '+00:00', '-03:00') >= ${sixMonthsAgoStr}`,
+        sql`CONVERT_TZ(createdAt, '+00:00', ${tz}) >= ${sixMonthsAgoStr}`,
         eq(orders.status, "completed")
       ))
-      .groupBy(sql`DATE_FORMAT(CONVERT_TZ(createdAt, '+00:00', '-03:00'), '%Y-%m')`);
+      .groupBy(sql`DATE_FORMAT(CONVERT_TZ(createdAt, '+00:00', ${tz}), '%Y-%m')`);
     
-    // Mapear resultados para os 6 meses
     const revenueByMonth: Record<string, number> = {};
     for (const row of monthlyResult) {
       revenueByMonth[row.yearMonth] = Number(row.revenue);
@@ -3030,18 +3020,11 @@ export async function getEstablishmentOpenStatus(establishmentId: number): Promi
   // Buscar horários de funcionamento
   const hours = await getBusinessHoursByEstablishment(establishmentId);
   
-  // Usar timezone de Brasília (America/Sao_Paulo) para cálculos de horário
-  const currentDate = new Date();
-  const brasiliaFormatter = new Intl.DateTimeFormat('pt-BR', {
-    timeZone: 'America/Sao_Paulo',
-    weekday: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  });
-  const brasiliaDate = new Date(currentDate.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-  const currentDayOfWeek = brasiliaDate.getDay();
-  const currentTime = brasiliaDate.toTimeString().slice(0, 5);
+  // Usar timezone configurado do estabelecimento
+  const tz = establishment.timezone || 'America/Sao_Paulo';
+  const localDate = getLocalDate(tz);
+  const currentDayOfWeek = localDate.getDay();
+  const currentTime = localDate.toTimeString().slice(0, 5);
   
   // Verificar se está dentro do horário de funcionamento
   // Considera horários que atravessam a meia-noite (ex: 08:00 - 02:00)
@@ -3076,14 +3059,14 @@ export async function getEstablishmentOpenStatus(establishmentId: number): Promi
     }
   }
   
-  // Calcular próximo horário de abertura (usando horário de Brasília)
-  const nextOpening = getNextOpeningTime(hours, brasiliaDate);
+  // Calcular próximo horário de abertura (usando timezone do estabelecimento)
+  const nextOpening = getNextOpeningTime(hours, localDate);
   
-  // Verificar se deve reabrir automaticamente (usando horário de Brasília)
+  // Verificar se deve reabrir automaticamente
   const autoReopen = shouldAutoReopen(
     establishment.manuallyClosedAt ? new Date(establishment.manuallyClosedAt) : null,
     hours,
-    brasiliaDate
+    localDate
   );
   
   // Lógica de status:
@@ -4935,13 +4918,10 @@ export async function getMenuViewsHeatmapWithPeriod(establishmentId: number, per
   // Calcular visualizações do período selecionado
   // Para 'today': usar menuSessions (tempo real) pois menuViewsDaily pode ter atraso na agregação
   // Para 'week'/'month': usar menuViewsDaily (dados agregados) + complementar com sessões de hoje
-  const now = new Date();
-  const brasiliaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-  // Helper: formatar data local como YYYY-MM-DD (evita toISOString que converte para UTC)
-  const fmtDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  const todayStr = fmtDate(brasiliaDate);
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+  const todayStr = fmtLocalDate(localNow);
   
-  // Helper: contar sessões em tempo real para um intervalo de datas (Brasília)
   const countSessionsInRange = async (startDateStr: string, endDateStr: string) => {
     const result = await db.select({
       total: sql<number>`COUNT(*)`
@@ -4949,8 +4929,8 @@ export async function getMenuViewsHeatmapWithPeriod(establishmentId: number, per
       .from(menuSessions)
       .where(and(
         eq(menuSessions.establishmentId, establishmentId),
-        sql`CONVERT_TZ(${menuSessions.createdAt}, '+00:00', '-03:00') >= ${startDateStr + ' 00:00:00'}`,
-        sql`CONVERT_TZ(${menuSessions.createdAt}, '+00:00', '-03:00') <= ${endDateStr + ' 23:59:59'}`
+        sql`CONVERT_TZ(${menuSessions.createdAt}, '+00:00', ${tz}) >= ${startDateStr + ' 00:00:00'}`,
+        sql`CONVERT_TZ(${menuSessions.createdAt}, '+00:00', ${tz}) <= ${endDateStr + ' 23:59:59'}`
       ));
     return Number(result[0]?.total ?? 0);
   };
@@ -4962,10 +4942,9 @@ export async function getMenuViewsHeatmapWithPeriod(establishmentId: number, per
     // Hoje: contar sessões de hoje em tempo real
     periodViews = await countSessionsInRange(todayStr, todayStr);
     
-    // Ontem: tentar menuViewsDaily primeiro, fallback para sessões
-    const yesterday = new Date(brasiliaDate);
+    const yesterday = new Date(localNow);
     yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = fmtDate(yesterday);
+    const yesterdayStr = fmtLocalDate(yesterday);
     
     const prevResult = await db.select({
       total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)`,
@@ -4981,11 +4960,11 @@ export async function getMenuViewsHeatmapWithPeriod(establishmentId: number, per
       previousPeriodViews = await countSessionsInRange(yesterdayStr, yesterdayStr);
     }
   } else if (period === 'week') {
-    const currentDay = brasiliaDate.getDay();
+    const currentDay = localNow.getDay();
     const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
-    const weekStart = new Date(brasiliaDate);
-    weekStart.setDate(brasiliaDate.getDate() - daysFromMonday);
-    const periodStartStr = fmtDate(weekStart);
+    const weekStart = new Date(localNow);
+    weekStart.setDate(localNow.getDate() - daysFromMonday);
+    const periodStartStr = fmtLocalDate(weekStart);
     
     // Período atual: menuViewsDaily + sessões de hoje
     const dailyResult = await db.select({
@@ -5021,10 +5000,10 @@ export async function getMenuViewsHeatmapWithPeriod(establishmentId: number, per
     // Período anterior
     const prevWeekStart = new Date(weekStart);
     prevWeekStart.setDate(prevWeekStart.getDate() - 7);
-    const prevPeriodStartStr = fmtDate(prevWeekStart);
+    const prevPeriodStartStr = fmtLocalDate(prevWeekStart);
     const prevWeekEnd = new Date(weekStart);
     prevWeekEnd.setDate(prevWeekEnd.getDate() - 1);
-    const prevPeriodEndStr = fmtDate(prevWeekEnd);
+    const prevPeriodEndStr = fmtLocalDate(prevWeekEnd);
     
     const prevResult = await db.select({
       total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)`,
@@ -5038,8 +5017,8 @@ export async function getMenuViewsHeatmapWithPeriod(establishmentId: number, per
     previousPeriodViews = Number(prevResult[0]?.total ?? 0);
   } else {
     // month
-    const monthStart = new Date(brasiliaDate.getFullYear(), brasiliaDate.getMonth(), 1);
-    const periodStartStr = fmtDate(monthStart);
+    const monthStart = new Date(localNow.getFullYear(), localNow.getMonth(), 1);
+    const periodStartStr = fmtLocalDate(monthStart);
     
     // Período atual: menuViewsDaily + sessões de hoje
     const dailyResult = await db.select({
@@ -5071,12 +5050,11 @@ export async function getMenuViewsHeatmapWithPeriod(establishmentId: number, per
       periodViews = dailyViews;
     }
     
-    // Período anterior (mês anterior)
-    const prevMonthStart = new Date(brasiliaDate.getFullYear(), brasiliaDate.getMonth() - 1, 1);
-    const prevPeriodStartStr = fmtDate(prevMonthStart);
+    const prevMonthStart = new Date(localNow.getFullYear(), localNow.getMonth() - 1, 1);
+    const prevPeriodStartStr = fmtLocalDate(prevMonthStart);
     const prevMonthEnd = new Date(monthStart);
     prevMonthEnd.setDate(prevMonthEnd.getDate() - 1);
-    const prevPeriodEndStr = fmtDate(prevMonthEnd);
+    const prevPeriodEndStr = fmtLocalDate(prevMonthEnd);
     
     const prevResult = await db.select({
       total: sql<number>`COALESCE(SUM(${menuViewsDaily.viewCount}), 0)`,

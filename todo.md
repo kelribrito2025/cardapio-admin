@@ -5750,3 +5750,9 @@
 - [x] [Dashboard] Card Acumulado: Hoje/Semana mostra dias (Seg-Dom), Mês mostra últimos 6 meses
 - [x] [Dashboard] Visualizações do Cardápio responde a todos os filtros de período
 - [x] [Bug] Card Visualizações do Cardápio mostra 0 quando filtro Hoje está selecionado
+- [x] [Schema] Adicionar campo timezone (IANA) à tabela establishments com default America/Sao_Paulo
+- [x] [Backend] Criar helper centralizado de timezone que lê do estabelecimento
+- [x] [Backend] Refatorar todos os locais com timezone hardcoded (America/Sao_Paulo, -03:00) para usar timezone do restaurante
+- [x] [UI] Adicionar campo "Fuso horário do restaurante" no card Horários de funcionamento em Configurações
+- [x] [Backend] Procedure para atualizar timezone do estabelecimento
+- [x] [Testes] Escrever testes para o helper de timezone e procedures

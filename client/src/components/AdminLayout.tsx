@@ -217,11 +217,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       return false;
     }
     
-    // Usar timezone de Brasília para cálculos
+    // Usar timezone configurado do estabelecimento
+    const tz = establishment?.timezone || 'America/Sao_Paulo';
     const now = new Date();
-    const brasiliaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-    const currentDay = brasiliaDate.getDay(); // 0 = Domingo, 1 = Segunda, etc.
-    const currentTime = brasiliaDate.getHours() * 60 + brasiliaDate.getMinutes(); // Minutos desde meia-noite
+    const localDate = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+    const currentDay = localDate.getDay();
+    const currentTime = localDate.getHours() * 60 + localDate.getMinutes();
     
     // Buscar horário do dia atual
     const todayHours = businessHoursData.find((h: { dayOfWeek: number; isActive: boolean; openTime: string | null; closeTime: string | null }) => h.dayOfWeek === currentDay);
@@ -277,11 +278,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     if (!businessHoursData || businessHoursData.length === 0) return null;
     
     const dayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-    // Usar timezone de Brasília para cálculos
+    const tz2 = establishment?.timezone || 'America/Sao_Paulo';
     const now = new Date();
-    const brasiliaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-    const currentDay = brasiliaDate.getDay();
-    const currentTime = brasiliaDate.getHours() * 60 + brasiliaDate.getMinutes();
+    const localDate2 = new Date(now.toLocaleString('en-US', { timeZone: tz2 }));
+    const currentDay = localDate2.getDay();
+    const currentTime = localDate2.getHours() * 60 + localDate2.getMinutes();
     
     // Procurar nos próximos 7 dias
     for (let i = 0; i < 7; i++) {
@@ -330,11 +331,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     if (!establishment?.manuallyClosed || !establishment?.manuallyClosedAt) return false;
     if (!businessHoursData || businessHoursData.length === 0) return false;
     
-    // Usar timezone de Brasília para cálculos
+    const tz3 = establishment?.timezone || 'America/Sao_Paulo';
     const now = new Date();
-    const brasiliaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-    const currentDay = brasiliaDate.getDay();
-    const currentTime = brasiliaDate.getHours() * 60 + brasiliaDate.getMinutes();
+    const localDate3 = new Date(now.toLocaleString('en-US', { timeZone: tz3 }));
+    const currentDay = localDate3.getDay();
+    const currentTime = localDate3.getHours() * 60 + localDate3.getMinutes();
     const closedAt = new Date(establishment.manuallyClosedAt);
     
     // Encontrar o horário de hoje
@@ -348,7 +349,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     // Se o fechamento foi em um dia anterior e hoje tem horário de abertura que já passou
     const closedDate = new Date(closedAt);
     closedDate.setHours(0, 0, 0, 0);
-    const today = new Date(brasiliaDate);
+    const today = new Date(localDate3);
     today.setHours(0, 0, 0, 0);
     
     if (closedDate.getTime() < today.getTime() && currentTime >= openTimeMinutes) {
@@ -357,7 +358,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     
     // Se o fechamento foi antes do horário de abertura de hoje e agora já passou o horário
     const closedTimeMinutes = closedAt.getHours() * 60 + closedAt.getMinutes();
-    if (closedAt.toDateString() === brasiliaDate.toDateString() && closedTimeMinutes < openTimeMinutes && currentTime >= openTimeMinutes) {
+    if (closedAt.toDateString() === localDate3.toDateString() && closedTimeMinutes < openTimeMinutes && currentTime >= openTimeMinutes) {
       return true;
     }
     

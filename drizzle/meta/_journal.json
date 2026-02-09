@@ -498,6 +498,13 @@
       "when": 1770573126013,
       "tag": "0070_powerful_carnage",
       "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "5",
+      "when": 1770597006143,
+      "tag": "0071_marvelous_inhumans",
+      "breakpoints": true
     }
   ]
 }

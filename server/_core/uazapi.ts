@@ -389,13 +389,10 @@ export async function sendTextMessage(
 /**
  * Get greeting based on current time (Brazil timezone)
  */
-function getGreeting(): string {
-  // Usar horário de Brasília (UTC-3)
+function getGreeting(timezone: string = 'America/Sao_Paulo'): string {
   const now = new Date();
-  const brasiliaOffset = -3 * 60; // UTC-3 em minutos
-  const localOffset = now.getTimezoneOffset();
-  const brasiliaTime = new Date(now.getTime() + (localOffset + brasiliaOffset) * 60000);
-  const hour = brasiliaTime.getHours();
+  const localDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+  const hour = localDate.getHours();
   
   if (hour >= 5 && hour < 12) {
     return 'Bom dia';
@@ -425,7 +422,8 @@ export function generateStatusMessage(
     complements?: Array<{ name: string; price: number }> | string | null;
     notes?: string | null;
   }> | null,
-  orderTotal?: string | null
+  orderTotal?: string | null,
+  timezone?: string
 ): string {
   // Default templates
   const defaultTemplates: Record<string, string> = {
@@ -470,7 +468,7 @@ export function generateStatusMessage(
   }
   
   // Substituir variável de saudação baseada no horário
-  const greeting = getGreeting();
+  const greeting = getGreeting(timezone);
   messageTemplate = messageTemplate.replace(/{{greeting}}/g, greeting);
   
   // Gerar texto dos itens do pedido (sem preço individual, apenas total no final)
@@ -548,6 +546,7 @@ export async function sendOrderStatusNotification(
       notes?: string | null;
     }> | null;
     orderTotal?: string | null;
+    timezone?: string;
   }
 ): Promise<SendTextResponse> {
   const message = generateStatusMessage(
@@ -559,7 +558,8 @@ export async function sendOrderStatusNotification(
     data.deliveryType,
     data.cancellationReason,
     data.orderItems,
-    data.orderTotal
+    data.orderTotal,
+    data.timezone
   );
   
   return sendTextMessage(instanceToken, phone, message);
@@ -637,9 +637,9 @@ export async function sendOrderConfirmationRequest(
     }>;
     orderTotal: string;
     template?: string | null;
+    timezone?: string;
   }
 ): Promise<SendTextResponse> {
-  // Usar a função generateStatusMessage para processar o template
   const message = generateStatusMessage(
     'new',
     data.orderNumber,
@@ -656,7 +656,8 @@ export async function sendOrderConfirmationRequest(
       complements: item.complements,
       notes: item.notes,
     })),
-    data.orderTotal
+    data.orderTotal,
+    data.timezone
   );
 
   // Button for confirmation (only confirm button)

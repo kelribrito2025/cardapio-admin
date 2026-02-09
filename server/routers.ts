@@ -271,6 +271,7 @@ export const appRouter = router({
         minimumOrderValue: z.string().optional(),
         deliveryFeeType: z.enum(["free", "fixed", "byNeighborhood"]).optional(),
         deliveryFeeFixed: z.string().optional(),
+        timezone: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
@@ -557,14 +558,11 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         await db.registerMenuSession(input.sessionId, input.establishmentId);
         
-        // Incrementar contagem do mapa de calor
-        // Usar timezone de São Paulo (UTC-3) para registrar corretamente
-        const now = new Date();
-        const saoPauloOffset = -3 * 60; // UTC-3 em minutos
-        const utcOffset = now.getTimezoneOffset(); // Offset UTC do servidor em minutos
-        const saoPauloTime = new Date(now.getTime() + (utcOffset + saoPauloOffset) * 60 * 1000);
-        const dayOfWeek = saoPauloTime.getDay(); // 0 = Sunday, 6 = Saturday
-        const hour = saoPauloTime.getHours(); // 0-23
+        // Incrementar contagem do mapa de calor usando timezone do estabelecimento
+        const tz = await db.getEstablishmentTimezone(input.establishmentId);
+        const localTime = db.getLocalDate(tz);
+        const dayOfWeek = localTime.getDay();
+        const hour = localTime.getHours();
         await db.incrementMenuViewHourly(input.establishmentId, dayOfWeek, hour);
         
         return { success: true };
@@ -1152,11 +1150,12 @@ export const appRouter = router({
       .query(async ({ input }) => {
         const groups = await db.getComplementGroupsByProduct(input.productId);
         
-        // Obter data/hora atual em Brasília
-        const now = new Date();
-        const brasiliaTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-        const currentDay = brasiliaTime.getDay(); // 0=Dom, 1=Seg, ..., 6=Sáb
-        const currentTime = brasiliaTime.toTimeString().slice(0, 5); // "HH:MM"
+        // Obter timezone do estabelecimento via produto
+        const product = await db.getProductById(input.productId);
+        const tz = product ? await db.getEstablishmentTimezone(product.establishmentId) : 'America/Sao_Paulo';
+        const localTime = db.getLocalDate(tz);
+        const currentDay = localTime.getDay();
+        const currentTime = localTime.toTimeString().slice(0, 5);
         
         // Função para verificar se um complemento está disponível agora
         const isComplementAvailable = (item: {
@@ -1275,11 +1274,11 @@ export const appRouter = router({
           });
         }
         
-        // Validar disponibilidade dos complementos
-        const now = new Date();
-        const brasiliaTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-        const currentDay = brasiliaTime.getDay();
-        const currentTime = brasiliaTime.toTimeString().slice(0, 5);
+        // Validar disponibilidade dos complementos usando timezone do estabelecimento
+        const orderTz = establishment.timezone || 'America/Sao_Paulo';
+        const orderLocalTime = db.getLocalDate(orderTz);
+        const currentDay = orderLocalTime.getDay();
+        const currentTime = orderLocalTime.toTimeString().slice(0, 5);
         
         for (const item of items) {
           if (item.complements && item.complements.length > 0) {
@@ -3345,7 +3344,7 @@ export const appRouter = router({
                 message = message
                   .replace(/\{\{mesa\}\}/g, String(tableNumber))
                   .replace(/\{\{cliente\}\}/g, input.reservedName || 'Cliente')
-                  .replace(/\{\{horario\}\}/g, input.reservedFor ? new Date(input.reservedFor).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' }) : 'Não informado')
+                  .replace(/\{\{horario\}\}/g, input.reservedFor ? new Date(input.reservedFor).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: establishment?.timezone || 'America/Sao_Paulo' }) : 'Não informado')
                   .replace(/\{\{pessoas\}\}/g, input.reservedGuests ? String(input.reservedGuests) : 'Não informado');
                 
                 await sendTextMessage(whatsappConfig.instanceToken, input.reservedPhone, message);
