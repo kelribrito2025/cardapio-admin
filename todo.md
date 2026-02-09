@@ -5854,3 +5854,4 @@
 - [x] Preencher automaticamente nome e endereço quando cliente encontrado
 - [x] Salvar/atualizar dados do cliente ao finalizar pedido no PDV
 - [x] Campos permanecem editáveis após preenchimento automático
+- [x] [Bug] Máscara de telefone na retirada do PDV formata incorretamente (88) 9 99290-000 em vez de (88) 9 9929-0000 (corrigido também no campo de entrega)

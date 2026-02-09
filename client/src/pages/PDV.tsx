@@ -1900,12 +1900,18 @@ export default function PDV() {
                     placeholder="(00) 00000-0000"
                     value={deliveryAddress.phone}
                     onChange={(e) => {
-                      // Aplica máscara de telefone (00) 00000-0000
-                      let value = e.target.value.replace(/\D/g, ""); // Remove tudo que não é número
-                      if (value.length > 11) value = value.slice(0, 11); // Limita a 11 dígitos
-                      if (value.length > 0) {
-                        value = value.replace(/^(\d{2})(\d)/g, "($1) $2"); // Adiciona parênteses no DDD
-                        value = value.replace(/(\d{5})(\d)/, "$1-$2"); // Adiciona hífen
+                      const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
+                      let value = "";
+                      if (digits.length === 0) {
+                        value = "";
+                      } else if (digits.length <= 2) {
+                        value = `(${digits}`;
+                      } else if (digits.length <= 3) {
+                        value = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+                      } else if (digits.length <= 7) {
+                        value = `(${digits.slice(0, 2)}) ${digits.slice(2, 3)} ${digits.slice(3)}`;
+                      } else {
+                        value = `(${digits.slice(0, 2)}) ${digits.slice(2, 3)} ${digits.slice(3, 7)}-${digits.slice(7)}`;
                       }
                       setDeliveryAddress({...deliveryAddress, phone: value});
                     }}
@@ -2331,18 +2337,18 @@ export default function PDV() {
                       placeholder="(00) 00000-0000"
                       value={pickupClientPhone}
                       onChange={(e) => {
-                        let value = e.target.value.replace(/\D/g, "").slice(0, 11);
-                        if (value.length > 0) {
-                          value = "(" + value;
-                        }
-                        if (value.length > 3) {
-                          value = value.slice(0, 3) + ") " + value.slice(3);
-                        }
-                        if (value.length > 6) {
-                          value = value.slice(0, 6) + " " + value.slice(6);
-                        }
-                        if (value.length > 12) {
-                          value = value.slice(0, 12) + "-" + value.slice(12);
+                        const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
+                        let value = "";
+                        if (digits.length === 0) {
+                          value = "";
+                        } else if (digits.length <= 2) {
+                          value = `(${digits}`;
+                        } else if (digits.length <= 3) {
+                          value = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+                        } else if (digits.length <= 7) {
+                          value = `(${digits.slice(0, 2)}) ${digits.slice(2, 3)} ${digits.slice(3)}`;
+                        } else {
+                          value = `(${digits.slice(0, 2)}) ${digits.slice(2, 3)} ${digits.slice(3, 7)}-${digits.slice(7)}`;
                         }
                         setPickupClientPhone(value);
                       }}
