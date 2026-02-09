@@ -5812,3 +5812,6 @@
 - [x] Adicionar campo editável de nome na página /complementos
 - [x] Propagar renomeação para todos os produtos que usam o complemento
 - [x] Testes unitários para renomeação de complemento
+
+## Bugs Layout Menu Público
+- [x] [Bug] Botão Adicionar e controles +/- ficam muito para baixo quando item tem muitos complementos no modal de detalhes
