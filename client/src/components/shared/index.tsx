@@ -283,13 +283,14 @@ interface PageHeaderProps {
   description?: string;
   actions?: React.ReactNode;
   className?: string;
+  icon?: React.ReactNode;
 }
 
-export function PageHeader({ title, description, actions, className }: PageHeaderProps) {
+export function PageHeader({ title, description, actions, className, icon }: PageHeaderProps) {
   return (
     <div className={cn("flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3", className)}>
       <div>
-        <h1 className="text-2xl font-bold">{title}</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2">{icon}{title}</h1>
         {description && (
           <p className="text-base text-muted-foreground">{description}</p>
         )}

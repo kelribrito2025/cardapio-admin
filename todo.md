@@ -5775,3 +5775,5 @@
 - [x] [Admin] Alterar senha do /admin/login para 290819943
 - [x] [Login] Alterar placeholder do campo de senha de pontinhos para "Sua senha"
 - [x] [Bug] Lembrar-me no login não salva email/senha no localStorage
+- [x] [Criar Conta] Alterar placeholders dos campos de senha de pontinhos para texto
+- [x] [Dashboard] Adicionar ícone da sidebar ao lado do título da página Dashboard

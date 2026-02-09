@@ -24,7 +24,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { Calendar } from "lucide-react";
+import { Calendar, LayoutDashboard } from "lucide-react";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
 
 const periodOptions = [
@@ -142,6 +142,7 @@ export default function Dashboard() {
         <PageHeader 
           title="Dashboard" 
           description="Visão geral do seu estabelecimento"
+          icon={<LayoutDashboard className="h-6 w-6 text-primary" />}
         />
         <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
           {periodOptions.map((opt) => (
