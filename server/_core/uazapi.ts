@@ -364,6 +364,8 @@ export async function sendTextMessage(
       formattedPhone = '55' + formattedPhone;
     }
     
+    console.log('[UAZAPI] Enviando mensagem de texto para:', formattedPhone, '| tamanho:', text.length, 'chars');
+    
     const response = await makeInstanceRequest<{
       id?: string;
       message?: string;
@@ -373,12 +375,15 @@ export async function sendTextMessage(
       delay: 1000, // 1 second delay to show "typing..."
     });
     
+    console.log('[UAZAPI] ✅ Mensagem enviada com sucesso:', { phone: formattedPhone, messageId: response.id });
+    
     return {
       success: true,
       messageId: response.id,
       message: response.message,
     };
   } catch (error) {
+    console.error('[UAZAPI] ❌ Falha ao enviar mensagem:', { phone, error: error instanceof Error ? error.message : error });
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Failed to send message',

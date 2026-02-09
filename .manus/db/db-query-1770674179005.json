@@ -1,0 +1,35 @@
+{
+  "query": "SELECT id, name, createdAt FROM establishments ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, createdAt FROM establishments ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "150004",
+      "name": "Potin Açai",
+      "createdAt": "2026-02-09 18:56:46"
+    },
+    {
+      "id": "150003",
+      "name": "ddfdsfsdfsfs",
+      "createdAt": "2026-02-09 18:50:03"
+    },
+    {
+      "id": "150002",
+      "name": "fdsfsdf",
+      "createdAt": "2026-02-09 18:40:05"
+    },
+    {
+      "id": "150001",
+      "name": "fdsfdsaf",
+      "createdAt": "2026-02-09 17:16:56"
+    },
+    {
+      "id": "120001",
+      "name": "fdsfdsfsfsf",
+      "createdAt": "2026-02-09 02:37:08"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tcreatedAt\n150004\tPotin Açai\t2026-02-09 18:56:46\n150003\tddfdsfsdfsfs\t2026-02-09 18:50:03\n150002\tfdsfsdf\t2026-02-09 18:40:05\n150001\tfdsfdsaf\t2026-02-09 17:16:56\n120001\tfdsfdsfsfsf\t2026-02-09 02:37:08\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

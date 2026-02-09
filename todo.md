@@ -5836,3 +5836,6 @@
 - [x] Remover botão de toggle de tema da topbar
 - [x] Adicionar seção "Tema" no menu dropdown do perfil (abaixo de Planos)
 - [x] Exibir "Modo Escuro" ou "Modo Claro" com ícone e indicador "Ativado"
+
+## Bugs - Templates de Mensagem
+- [x] [Bug] Mensagem de novo pedido (com saudação e itens) não é enviada ao cliente - apenas a mensagem de 'preparing' é recebida (logs detalhados adicionados para monitorar)

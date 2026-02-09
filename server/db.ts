@@ -2301,8 +2301,10 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
           
           console.log('[DB:createPublicOrder] Enviando template NOVO PEDIDO (sem botões)');
           console.log('[DB:createPublicOrder] Template usado:', whatsappConfig.templateNewOrder?.substring(0, 100));
+          console.log('[DB:createPublicOrder] Telefone do cliente:', data.customerPhone);
+          console.log('[DB:createPublicOrder] Itens do pedido:', items.length);
           
-          await sendOrderStatusNotification(
+          const sendResult = await sendOrderStatusNotification(
             whatsappConfig.instanceToken,
             data.customerPhone,
             'new',
@@ -2322,7 +2324,12 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
               orderTotal: data.total,
             }
           );
-          console.log('[DB:createPublicOrder] Notificação WhatsApp enviada para novo pedido:', orderNumber);
+          
+          if (sendResult.success) {
+            console.log('[DB:createPublicOrder] ✅ Notificação WhatsApp NOVO PEDIDO enviada com sucesso:', orderNumber, 'messageId:', sendResult.messageId);
+          } else {
+            console.error('[DB:createPublicOrder] ❌ FALHA ao enviar notificação WhatsApp NOVO PEDIDO:', orderNumber, 'erro:', sendResult.message);
+          }
         }
       }
     } catch (whatsappError) {
