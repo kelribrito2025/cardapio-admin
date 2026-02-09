@@ -1719,32 +1719,35 @@ export default function Pedidos() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-3 py-2">
-            <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-xl">
-              <div className="p-1.5 bg-blue-100 rounded-lg mt-0.5">
-                <ClipboardList className="h-4 w-4 text-blue-600" />
+          {/* Card visual de conversa WhatsApp */}
+          <div className="py-2">
+            <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+              {/* Header do WhatsApp */}
+              <div className="bg-emerald-700 px-4 py-3 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold text-sm">
+                  {establishment?.name?.charAt(0)?.toUpperCase() || 'C'}
+                </div>
+                <div>
+                  <p className="text-white text-sm font-medium">{establishment?.name || 'Seu Estabelecimento'}</p>
+                  <p className="text-emerald-200 text-xs">online</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-blue-900">Pedido recebido</p>
-                <p className="text-xs text-blue-700/80">Cliente é notificado assim que o pedido é confirmado</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-xl">
-              <div className="p-1.5 bg-amber-100 rounded-lg mt-0.5">
-                <ChefHat className="h-4 w-4 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-amber-900">Em preparo</p>
-                <p className="text-xs text-amber-700/80">Cliente sabe que o pedido está sendo preparado</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 bg-emerald-50 rounded-xl">
-              <div className="p-1.5 bg-emerald-100 rounded-lg mt-0.5">
-                <Package className="h-4 w-4 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-emerald-900">Saiu para entrega</p>
-                <p className="text-xs text-emerald-700/80">Cliente acompanha quando o pedido está a caminho</p>
+              {/* Corpo da conversa */}
+              <div className="bg-[#e5ddd5] px-4 py-5 min-h-[140px]">
+                <div className="bg-white rounded-lg px-3 py-2.5 max-w-[85%] shadow-sm relative">
+                  <div className="absolute -left-1.5 top-0 w-3 h-3 bg-white" style={{ clipPath: 'polygon(100% 0, 0 0, 100% 100%)' }} />
+                  <p className="text-[13px] text-gray-800 leading-relaxed">
+                    Olá <strong>João Silva!</strong> Boa tarde, Tudo bem?
+                  </p>
+                  <p className="text-[13px] text-gray-800 leading-relaxed mt-2">
+                    Seu pedido <strong>#1234</strong> foi recebido com sucesso!
+                  </p>
+                  <div className="mt-2 text-[13px] text-gray-800">
+                    <p>• 1x Pizza Margherita</p>
+                    <p>• 1x Refrigerante</p>
+                  </div>
+                  <p className="text-[10px] text-gray-400 text-right mt-1">12:20</p>
+                </div>
               </div>
             </div>
           </div>
@@ -1765,7 +1768,10 @@ export default function Pedidos() {
               onClick={() => {
                 sessionStorage.setItem('whatsapp-info-modal-dismissed', 'true');
                 setWhatsappInfoModalOpen(false);
-                navigate('/configuracoes?section=whatsapp');
+                // Abrir modal de QR Code do WhatsApp
+                connectWhatsapp.mutate();
+                setQrCodeModalOpen(true);
+                setIsPollingQrCode(true);
               }}
             >
               <MessageCircle className="h-4 w-4" />

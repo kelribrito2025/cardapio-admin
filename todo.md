@@ -5788,3 +5788,5 @@
 - [x] Adicionar ícone azul no título da página Campanhas
 - [x] [Bug] Fechamento de mesa não reflete no card Faturamento Hoje e Ticket Médio da Dashboard
 - [x] Modal informativo WhatsApp na página de Pedidos (conectar WhatsApp para notificações automáticas)
+- [x] Substituir 3 cards do modal WhatsApp por card visual de conversa WhatsApp
+- [x] Botão Conectar WhatsApp do modal deve abrir modal QR Code em vez de redirecionar
