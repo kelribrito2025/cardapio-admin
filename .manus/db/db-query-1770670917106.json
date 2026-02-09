@@ -1,0 +1,250 @@
+{
+  "query": "SELECT ci.id, ci.name, ci.price, ci.groupId, ci.isActive, ci.priceMode FROM complementItems ci INNER JOIN complementGroups cg ON ci.groupId = cg.id INNER JOIN products p ON cg.productId = p.id WHERE p.establishmentId = 150004 ORDER BY ci.name LIMIT 30;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT ci.id, ci.name, ci.price, ci.groupId, ci.isActive, ci.priceMode FROM complementItems ci INNER JOIN complementGroups cg ON ci.groupId = cg.id INNER JOIN products p ON cg.productId = p.id WHERE p.establishmentId = 150004 ORDER BY ci.name LIMIT 30;",
+  "rows": [
+    {
+      "id": "120046",
+      "name": "Abacaxi",
+      "price": "300.00",
+      "groupId": "120005",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120347",
+      "name": "Abacaxi",
+      "price": "2.00",
+      "groupId": "120035",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120605",
+      "name": "Abacaxi",
+      "price": "200.00",
+      "groupId": "120066",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120195",
+      "name": "Abacaxi",
+      "price": "400.00",
+      "groupId": "120020",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120488",
+      "name": "Abacaxi",
+      "price": "0.00",
+      "groupId": "120052",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120146",
+      "name": "Abacaxi",
+      "price": "400.00",
+      "groupId": "120015",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120096",
+      "name": "Abacaxi",
+      "price": "300.00",
+      "groupId": "120010",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120245",
+      "name": "Abacaxi",
+      "price": "400.00",
+      "groupId": "120025",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120398",
+      "name": "Abacaxi",
+      "price": "2.00",
+      "groupId": "120040",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120449",
+      "name": "Abacaxi",
+      "price": "2.00",
+      "groupId": "120045",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120121",
+      "name": "Amendoim",
+      "price": "0.00",
+      "groupId": "120011",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120373",
+      "name": "Amendoim",
+      "price": "0.00",
+      "groupId": "120036",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120071",
+      "name": "Amendoim",
+      "price": "0.00",
+      "groupId": "120006",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120172",
+      "name": "Amendoim",
+      "price": "0.00",
+      "groupId": "120016",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120322",
+      "name": "Amendoim",
+      "price": "0.00",
+      "groupId": "120031",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120221",
+      "name": "Amendoim",
+      "price": "0.00",
+      "groupId": "120021",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120580",
+      "name": "Amendoim",
+      "price": "0.00",
+      "groupId": "120062",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120425",
+      "name": "Amendoim",
+      "price": "0.00",
+      "groupId": "120041",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120020",
+      "name": "Amendoim",
+      "price": "0.00",
+      "groupId": "120001",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120016",
+      "name": "Aveia",
+      "price": "0.00",
+      "groupId": "120001",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120369",
+      "name": "Aveia",
+      "price": "0.00",
+      "groupId": "120036",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120068",
+      "name": "Aveia",
+      "price": "0.00",
+      "groupId": "120006",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120422",
+      "name": "Aveia",
+      "price": "0.00",
+      "groupId": "120041",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120118",
+      "name": "Aveia",
+      "price": "0.00",
+      "groupId": "120011",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120318",
+      "name": "Aveia",
+      "price": "0.00",
+      "groupId": "120031",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120215",
+      "name": "Aveia",
+      "price": "0.00",
+      "groupId": "120021",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120576",
+      "name": "Aveia",
+      "price": "0.00",
+      "groupId": "120062",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120552",
+      "name": "Aveia",
+      "price": "200.00",
+      "groupId": "120060",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120166",
+      "name": "Aveia",
+      "price": "0.00",
+      "groupId": "120016",
+      "isActive": "1",
+      "priceMode": "normal"
+    },
+    {
+      "id": "120518",
+      "name": "Bacon",
+      "price": "2.00",
+      "groupId": "120056",
+      "isActive": "1",
+      "priceMode": "normal"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tprice\tgroupId\tisActive\tpriceMode\n120046\tAbacaxi\t300.00\t120005\t1\tnormal\n120347\tAbacaxi\t2.00\t120035\t1\tnormal\n120605\tAbacaxi\t200.00\t120066\t1\tnormal\n120195\tAbacaxi\t400.00\t120020\t1\tnormal\n120488\tAbacaxi\t0.00\t120052\t1\tnormal\n120146\tAbacaxi\t400.00\t120015\t1\tnormal\n120096\tAbacaxi\t300.00\t120010\t1\tnormal\n120245\tAbacaxi\t400.00\t120025\t1\tnormal\n120398\tAbacaxi\t2.00\t120040\t1\tnormal\n120449\tAbacaxi\t2.00\t120045\t1\tnormal\n120121\tAmendoim\t0.00\t120011\t1\tnormal\n120373\tAmendoim\t0.00\t120036\t1\tnormal\n120071\tAmendoim\t0.00\t120006\t1\tnormal\n120172\tAmendoim\t0.00\t120016\t1\tnormal\n120322\tAmendoim\t0.00\t120031\t1\tnormal\n120221\tAmendoim\t0.00\t120021\t1\tnormal\n120580\tAmendoim\t0.00\t120062\t1\tnormal\n120425\tAmendoim\t0.00\t120041\t1\tnormal\n120020\tAmendoim\t0.00\t120001\t1\tnormal\n120016\tAveia\t0.00\t120001\t1\tnormal\n120369\tAveia\t0.00\t120036\t1\tnormal\n120068\tAveia\t0.00\t120006\t1\tnormal\n120422\tAveia\t0.00\t120041\t1\tnormal\n120118\tAveia\t0.00\t120011\t1\tnormal\n120318\tAveia\t0.00\t120031\t1\tnormal\n120215\tAveia\t0.00\t120021\t1\tnormal\n120576\tAveia\t0.00\t120062\t1\tnormal\n120552\tAveia\t200.00\t120060\t1\tnormal\n120166\tAveia\t0.00\t120016\t1\tnormal\n120518\tBacon\t2.00\t120056\t1\tnormal\n",
+  "stderr": "",
+  "execution_time_ms": 103
+}

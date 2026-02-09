@@ -5820,3 +5820,5 @@
 ## Endereço do Estabelecimento
 - [x] Remover obrigatoriedade dos campos Nº, Bairro, Cidade, UF e CEP (apenas Rua obrigatório)
 - [x] [Bug] Ao salvar endereço com campos vazios, os valores antigos voltam a preencher os campos
+- [x] [Bug] Alterações de preço dos complementos na página /complementos não são salvas no banco de dados
+- [x] [Bug] Corrigir preços errados dos complementos no banco (200.00 → 2.00, 300.00 → 3.00, 400.00 → 4.00) no estabelecimento 150004

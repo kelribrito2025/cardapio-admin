@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE complementItems ci\nINNER JOIN complementGroups cg ON ci.groupId = cg.id\nINNER JOIN products p ON cg.productId = p.id\nSET ci.price = CAST(CAST(ci.price AS DECIMAL(10,2)) / 100 AS DECIMAL(10,2))\nWHERE p.establishmentId = 150004 AND CAST(ci.price AS DECIMAL) >= 100;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute UPDATE complementItems ci\nINNER JOIN complementGroups cg ON ci.groupId = cg.id\nINNER JOIN products p ON cg.productId = p.id\nSET ci.price = CAST(CAST(ci.price AS DECIMAL(10,2)) / 100 AS DECIMAL(10,2))\nWHERE p.establishmentId = 150004 AND CAST(ci.price AS DECIMAL) >= 100;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 73
+}

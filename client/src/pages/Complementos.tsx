@@ -296,7 +296,15 @@ function ComplementRow({
     setAvailabilityType(complement.availabilityType || "always");
     setSelectedDays(complement.availableDays || []);
     setHoursConfig(complement.availableHours || []);
-  }, [complement.availabilityType, complement.availableDays, complement.availableHours]);
+    // Sincronizar preço e nome com os dados atualizados do backend
+    if (!isEditingPrice) {
+      setEditedPrice(complement.price);
+    }
+    if (!isEditingName) {
+      setEditedName(complement.name);
+    }
+    setBadgeText(complement.badgeText || "");
+  }, [complement.availabilityType, complement.availableDays, complement.availableHours, complement.price, complement.name, complement.badgeText]);
 
   const handleSavePrice = () => {
     const numericPrice = parseFloat(editedPrice);
