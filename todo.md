@@ -5773,3 +5773,5 @@
 - [x] [Dashboard] Adicionar ícone (i) ao lado do título Taxa de Conversão com tooltip no hover
 - [x] [Bug] Tooltip do card Taxa de Conversão cortado pelo overflow-hidden do card
 - [x] [Admin] Alterar senha do /admin/login para 290819943
+- [x] [Login] Alterar placeholder do campo de senha de pontinhos para "Sua senha"
+- [x] [Bug] Lembrar-me no login não salva email/senha no localStorage

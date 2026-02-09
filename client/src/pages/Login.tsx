@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2, UtensilsCrossed } from "lucide-react";
 import { AuthLayout } from "@/components/AuthLayout";
@@ -9,6 +9,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
+const REMEMBER_KEY = "mindi_remember_email";
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,8 +18,23 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const utils = trpc.useUtils();
 
+  // Carregar email salvo do localStorage ao montar o componente
+  useEffect(() => {
+    const savedEmail = localStorage.getItem(REMEMBER_KEY);
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
   const loginMutation = trpc.auth.loginWithEmail.useMutation({
     onSuccess: async () => {
+      // Salvar ou remover email do localStorage baseado no checkbox
+      if (rememberMe) {
+        localStorage.setItem(REMEMBER_KEY, email);
+      } else {
+        localStorage.removeItem(REMEMBER_KEY);
+      }
       toast.success("Login realizado com sucesso!");
       // Invalidar o cache de autenticação para forçar nova verificação
       await utils.auth.me.invalidate();
@@ -97,7 +114,7 @@ export default function Login() {
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
+              placeholder="Sua senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="h-14 pl-12 pr-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
@@ -117,7 +134,14 @@ export default function Login() {
           <Checkbox
             id="remember"
             checked={rememberMe}
-            onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+            onCheckedChange={(checked) => {
+              const isChecked = checked as boolean;
+              setRememberMe(isChecked);
+              // Se desmarcar, remover email salvo imediatamente
+              if (!isChecked) {
+                localStorage.removeItem(REMEMBER_KEY);
+              }
+            }}
             className="border-gray-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
           />
           <Label htmlFor="remember" className="text-sm text-gray-600 cursor-pointer">
