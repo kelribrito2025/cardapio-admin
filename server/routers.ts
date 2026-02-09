@@ -720,6 +720,31 @@ export const appRouter = router({
         await db.reorderProducts(input);
         return { success: true };
       }),
+
+    // Import menu from external URL
+    importMenu: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        url: z.string().url(),
+      }))
+      .mutation(async ({ input }) => {
+        const { importMenu } = await import("./menuImport");
+        
+        // We run the import synchronously and return the result
+        // Progress is tracked via a separate SSE endpoint
+        const result = await importMenu(
+          input.establishmentId,
+          input.url,
+          () => {} // Progress is handled via SSE
+        );
+        
+        return {
+          success: true,
+          categoriesCreated: result.categoriesCreated,
+          productsCreated: result.productsCreated,
+          complementsCreated: result.complementsCreated,
+        };
+      }),
   }),
 
   // ============ COMPLEMENTS ============

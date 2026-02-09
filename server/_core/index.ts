@@ -2370,6 +2370,154 @@ async function startServer() {
     }
   });
 
+  // ============ MENU IMPORT SSE ============
+  // In-memory store for import progress per establishment
+  const importProgressMap = new Map<number, { progress: number; message: string; status: 'idle' | 'running' | 'done' | 'error'; result?: any; error?: string }>();
+  
+  // SSE endpoint for menu import progress
+  app.get("/api/menu-import/progress/:establishmentId", async (req, res) => {
+    try {
+      const token = req.cookies?.app_session_id || req.headers.authorization?.replace("Bearer ", "");
+      if (!token) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+      }
+      
+      let payload;
+      try {
+        payload = await sdk.verifySession(token);
+      } catch {
+        res.status(401).json({ error: "Invalid token" });
+        return;
+      }
+      
+      if (!payload?.openId) {
+        res.status(401).json({ error: "Invalid token" });
+        return;
+      }
+      
+      const establishmentId = parseInt(req.params.establishmentId);
+      
+      // SSE headers
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+      res.setHeader("X-Accel-Buffering", "no");
+      res.flushHeaders();
+      
+      res.write(`event: connected\ndata: ${JSON.stringify({ establishmentId })}\n\n`);
+      
+      // Poll progress every 500ms
+      const interval = setInterval(() => {
+        const state = importProgressMap.get(establishmentId);
+        if (state) {
+          res.write(`event: progress\ndata: ${JSON.stringify(state)}\n\n`);
+          if (state.status === 'done' || state.status === 'error') {
+            clearInterval(interval);
+            setTimeout(() => {
+              importProgressMap.delete(establishmentId);
+              res.end();
+            }, 1000);
+          }
+        }
+      }, 500);
+      
+      req.on("close", () => {
+        clearInterval(interval);
+      });
+    } catch (error) {
+      console.error("[Menu Import SSE] Error:", error);
+      res.status(500).json({ error: "Internal error" });
+    }
+  });
+  
+  // POST endpoint to start menu import
+  app.post("/api/menu-import/start", async (req, res) => {
+    try {
+      const token = req.cookies?.app_session_id || req.headers.authorization?.replace("Bearer ", "");
+      if (!token) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+      }
+      
+      let payload;
+      try {
+        payload = await sdk.verifySession(token);
+      } catch {
+        res.status(401).json({ error: "Invalid token" });
+        return;
+      }
+      
+      if (!payload?.openId) {
+        res.status(401).json({ error: "Invalid token" });
+        return;
+      }
+      
+      const user = await getUserByOpenId(payload.openId);
+      if (!user) {
+        res.status(401).json({ error: "User not found" });
+        return;
+      }
+      
+      const establishment = await getEstablishmentByUserId(user.id);
+      if (!establishment) {
+        res.status(404).json({ error: "Establishment not found" });
+        return;
+      }
+      
+      const { url } = req.body;
+      if (!url || typeof url !== 'string') {
+        res.status(400).json({ error: "URL is required" });
+        return;
+      }
+      
+      // Check if import is already running
+      const currentState = importProgressMap.get(establishment.id);
+      if (currentState?.status === 'running') {
+        res.status(409).json({ error: "Uma importação já está em andamento" });
+        return;
+      }
+      
+      // Initialize progress
+      importProgressMap.set(establishment.id, { progress: 0, message: 'Iniciando...', status: 'running' });
+      
+      // Return immediately, import runs in background
+      res.json({ success: true, message: "Import started" });
+      
+      // Run import asynchronously
+      (async () => {
+        try {
+          const { importMenu } = await import("../menuImport");
+          const result = await importMenu(
+            establishment.id,
+            url,
+            (progress: number, message: string) => {
+              importProgressMap.set(establishment.id, { progress, message, status: 'running' });
+            }
+          );
+          
+          importProgressMap.set(establishment.id, {
+            progress: 100,
+            message: 'Importação concluída!',
+            status: 'done',
+            result,
+          });
+        } catch (error: any) {
+          console.error("[Menu Import] Error:", error);
+          importProgressMap.set(establishment.id, {
+            progress: 0,
+            message: error.message || 'Erro durante a importação',
+            status: 'error',
+            error: error.message || 'Erro desconhecido',
+          });
+        }
+      })();
+    } catch (error) {
+      console.error("[Menu Import] Error:", error);
+      res.status(500).json({ error: "Internal error" });
+    }
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

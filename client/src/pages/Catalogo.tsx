@@ -1,4 +1,5 @@
 import { AdminLayout } from "@/components/AdminLayout";
+import { ImportMenuModal } from "@/components/ImportMenuModal";
 import { PageHeader, StatusBadge, EmptyState, SectionCard } from "@/components/shared";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -47,6 +48,7 @@ import {
   X,
   Pencil,
   MoreVertical,
+  Download,
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
@@ -280,6 +282,9 @@ export default function Catalogo() {
   // Inline editing state
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
   const [editingCategoryName, setEditingCategoryName] = useState("");
+  
+  // Import menu modal
+  const [importModalOpen, setImportModalOpen] = useState(false);
   
   // Drag between categories state
   const [activeProduct, setActiveProduct] = useState<any>(null);
@@ -616,10 +621,20 @@ export default function Catalogo() {
           description="Gerencie seus produtos e categorias"
           icon={<UtensilsCrossed className="h-6 w-6 text-blue-600" />}
           actions={
-<Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
-              <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
-              <span className="text-xs sm:text-sm">item</span>
-            </Button>
+<div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setImportModalOpen(true)}
+                className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5 border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+              >
+                <Download className="h-4 w-4 mr-1.5 sm:mr-2" />
+                <span className="hidden sm:inline text-xs sm:text-sm">Importar</span>
+              </Button>
+              <Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
+                <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
+                <span className="text-xs sm:text-sm">item</span>
+              </Button>
+            </div>
           }
         />
       </div>
@@ -935,6 +950,20 @@ export default function Catalogo() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Import Menu Modal */}
+      {establishmentId && (
+        <ImportMenuModal
+          open={importModalOpen}
+          onOpenChange={setImportModalOpen}
+          establishmentId={establishmentId}
+          onImportComplete={() => {
+            refetchProducts();
+            refetchCategories();
+            toast.success("Cardápio importado com sucesso!");
+          }}
+        />
+      )}
     </AdminLayout>
   );
 }
