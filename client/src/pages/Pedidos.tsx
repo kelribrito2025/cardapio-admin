@@ -185,7 +185,49 @@ export default function Pedidos() {
   const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null);
   // Estado para o modal informativo de WhatsApp
   const [whatsappInfoModalOpen, setWhatsappInfoModalOpen] = useState(false);
+  const [whatsappMsgIndex, setWhatsappMsgIndex] = useState(0);
+  const [whatsappMsgFading, setWhatsappMsgFading] = useState(false);
   const [, navigate] = useLocation();
+
+  // Carrossel de mensagens do modal WhatsApp
+  const whatsappMessages = [
+    {
+      text: <>Olá <strong>João Silva!</strong> Boa tarde, Tudo bem?</>,
+      text2: <>Seu pedido <strong>#1234</strong> foi recebido com sucesso!</>,
+      items: ['• 1x Pizza Margherita', '• 1x Refrigerante'],
+      time: '12:20',
+    },
+    {
+      text: <>Olá <strong>João Silva!</strong></>,
+      text2: <>Seu pedido <strong>#1234</strong> está sendo preparado! 👨‍🍳</>,
+      items: ['Tempo estimado: 25 min'],
+      time: '12:25',
+    },
+    {
+      text: <>Olá <strong>João Silva!</strong></>,
+      text2: <>Seu pedido <strong>#1234</strong> saiu para entrega! 🚨</>,
+      items: ['Entregador: Carlos', 'Previsão: 15 min'],
+      time: '12:45',
+    },
+    {
+      text: <>Olá <strong>João Silva!</strong></>,
+      text2: <>Seu pedido <strong>#1234</strong> foi entregue! ✅</>,
+      items: ['Obrigado pela preferência!'],
+      time: '13:00',
+    },
+  ];
+
+  useEffect(() => {
+    if (!whatsappInfoModalOpen) return;
+    const interval = setInterval(() => {
+      setWhatsappMsgFading(true);
+      setTimeout(() => {
+        setWhatsappMsgIndex((prev) => (prev + 1) % whatsappMessages.length);
+        setWhatsappMsgFading(false);
+      }, 400);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [whatsappInfoModalOpen, whatsappMessages.length]);
 
   useEffect(() => {
     if (establishment) {
@@ -1719,7 +1761,7 @@ export default function Pedidos() {
             </DialogDescription>
           </DialogHeader>
           
-          {/* Card visual de conversa WhatsApp */}
+          {/* Card visual de conversa WhatsApp com carrossel */}
           <div className="py-2">
             <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
               {/* Header do WhatsApp */}
@@ -1732,22 +1774,39 @@ export default function Pedidos() {
                   <p className="text-emerald-200 text-xs">online</p>
                 </div>
               </div>
-              {/* Corpo da conversa */}
-              <div className="bg-[#e5ddd5] px-4 py-5 min-h-[140px]">
-                <div className="bg-white rounded-lg px-3 py-2.5 max-w-[85%] shadow-sm relative">
+              {/* Corpo da conversa - carrossel animado */}
+              <div className="bg-[#e5ddd5] px-4 py-5 min-h-[160px] flex items-start">
+                <div
+                  className="bg-white rounded-lg px-3 py-2.5 max-w-[85%] shadow-sm relative"
+                  style={{
+                    transition: 'opacity 0.4s ease, transform 0.4s ease',
+                    opacity: whatsappMsgFading ? 0 : 1,
+                    transform: whatsappMsgFading ? 'translateY(8px)' : 'translateY(0)',
+                  }}
+                >
                   <div className="absolute -left-1.5 top-0 w-3 h-3 bg-white" style={{ clipPath: 'polygon(100% 0, 0 0, 100% 100%)' }} />
                   <p className="text-[13px] text-gray-800 leading-relaxed">
-                    Olá <strong>João Silva!</strong> Boa tarde, Tudo bem?
+                    {whatsappMessages[whatsappMsgIndex].text}
                   </p>
                   <p className="text-[13px] text-gray-800 leading-relaxed mt-2">
-                    Seu pedido <strong>#1234</strong> foi recebido com sucesso!
+                    {whatsappMessages[whatsappMsgIndex].text2}
                   </p>
                   <div className="mt-2 text-[13px] text-gray-800">
-                    <p>• 1x Pizza Margherita</p>
-                    <p>• 1x Refrigerante</p>
+                    {whatsappMessages[whatsappMsgIndex].items.map((item, i) => (
+                      <p key={i}>{item}</p>
+                    ))}
                   </div>
-                  <p className="text-[10px] text-gray-400 text-right mt-1">12:20</p>
+                  <p className="text-[10px] text-gray-400 text-right mt-1">{whatsappMessages[whatsappMsgIndex].time}</p>
                 </div>
+              </div>
+              {/* Indicadores de posição */}
+              <div className="bg-[#e5ddd5] px-4 pb-3 flex justify-center gap-1.5">
+                {whatsappMessages.map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === whatsappMsgIndex ? 'bg-emerald-600 w-4' : 'bg-gray-400/50'}`}
+                  />
+                ))}
               </div>
             </div>
           </div>
