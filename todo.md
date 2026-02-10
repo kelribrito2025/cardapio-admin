@@ -5950,3 +5950,8 @@
 - [x] Ao clicar no ícone do card Completos, limpar visualmente os pedidos da coluna
 - [x] Ao clicar no ícone do card Cancelados, limpar visualmente os pedidos da coluna
 - [x] Limpeza apenas visual (front-end), sem apagar dados do banco
+
+## Card de avaliação gratuita - versão mobile compacta
+- [x] No mobile: mostrar apenas ícone de relógio + quantidade de dias restantes
+- [x] Ao clicar no card no mobile: expandir e mostrar texto completo
+- [x] Desktop: manter comportamento atual
