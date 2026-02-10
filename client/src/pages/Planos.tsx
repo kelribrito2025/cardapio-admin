@@ -87,6 +87,8 @@ const plans: Plan[] = [
       { text: "Suporte pelo Whatsapp" },
       { text: "Dashboard completa" },
       { text: "Relatórios financeiros" },
+      { text: "Campanhas SMS" },
+      { text: "Cupons de desconto" },
     ],
     buttonText: "Começar Agora",
   },

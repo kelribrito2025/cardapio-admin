@@ -5919,3 +5919,4 @@
 - [x] Remover badge do menu Planos no dropdown do perfil
 - [x] Adicionar ícone no cabeçalho da página Ajuda e Suporte (igual às demais páginas)
 - [x] Adicionar ícone no cabeçalho da página Planos (igual às demais páginas)
+- [x] Adicionar features "Campanhas SMS" e "Cupons de desconto" ao plano Essencial
