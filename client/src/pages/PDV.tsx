@@ -983,9 +983,9 @@ export default function PDV() {
           </div>
 
           {/* Coluna Direita - Carrinho */}
-          <div className="w-96 border-l border-border/50 bg-gray-50 flex flex-col">
+          <div className="w-96 border-l border-border/50 bg-muted/30 flex flex-col">
             {/* Header do Carrinho */}
-            <div className="p-4 border-b border-border/50 bg-white">
+            <div className="p-4 border-b border-border/50 bg-card">
               {/* Tipo de Pedido */}
               <div className="flex gap-2">
                 <button
@@ -997,7 +997,7 @@ export default function PDV() {
                     "flex-1 flex flex-col items-center gap-1 py-2 px-1.5 rounded-lg text-xs font-medium transition-all",
                     orderType === "mesa"
                       ? "bg-red-500 text-white shadow-md"
-                      : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                      : "bg-card text-muted-foreground hover:bg-muted border border-border"
                   )}
                 >
                   <UtensilsCrossed className="h-4 w-4" />
@@ -1012,7 +1012,7 @@ export default function PDV() {
                     "flex-1 flex flex-col items-center gap-1 py-2 px-1.5 rounded-lg text-xs font-medium transition-all",
                     orderType === "retirada"
                       ? "bg-red-500 text-white shadow-md"
-                      : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                      : "bg-card text-muted-foreground hover:bg-muted border border-border"
                   )}
                 >
                   <ShoppingBag className="h-4 w-4" />
@@ -1029,7 +1029,7 @@ export default function PDV() {
                     "flex-1 flex flex-col items-center gap-1 py-2 px-1.5 rounded-lg text-xs font-medium transition-all",
                     orderType === "entrega"
                       ? "bg-red-500 text-white shadow-md"
-                      : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                      : "bg-card text-muted-foreground hover:bg-muted border border-border"
                   )}
                 >
                   <Truck className="h-4 w-4" />
@@ -1042,7 +1042,7 @@ export default function PDV() {
 
               {/* Indicador de forma de pagamento selecionada (Mesa ou Retirada) */}
               {(orderType === "mesa" || orderType === "retirada") && paymentMethod && (
-                <div className="mt-3 flex items-center justify-between p-3 bg-green-50 rounded-xl border border-green-200">
+                 <div className="mt-3 flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/30 rounded-xl border border-green-200 dark:border-green-800">
                   <div className="flex items-center gap-2">
                     <div className="p-1.5 bg-green-500 text-white rounded-lg">
                       {paymentMethod === "cash" && <Banknote className="h-4 w-4" />}
@@ -1083,7 +1083,7 @@ export default function PDV() {
                   return (
                     <div
                       key={`${item.productId}-${index}`}
-                      className="bg-white rounded-xl border border-gray-200 shadow-sm border-l-4 border-l-red-500 overflow-hidden transition-all duration-200"
+                      className="bg-card rounded-xl border border-border shadow-sm border-l-4 border-l-red-500 overflow-hidden transition-all duration-200"
                       onMouseEnter={() => setExpandedCartItem(index)}
                       onMouseLeave={() => setExpandedCartItem(null)}
                     >
@@ -1096,12 +1096,12 @@ export default function PDV() {
                           <span className="text-xs font-medium text-red-600 bg-red-50 px-1.5 py-0.5 rounded">
                             {item.quantity}x
                           </span>
-                          <h4 className="font-semibold text-sm text-gray-800 truncate">
+                          <h4 className="font-semibold text-sm text-foreground truncate">
                             {item.name}
                           </h4>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-gray-800 whitespace-nowrap">
+                          <span className="text-sm font-bold text-foreground whitespace-nowrap">
                             {formatCurrency(itemTotal)}
                           </span>
                           <ChevronDown className={cn(
@@ -1116,7 +1116,7 @@ export default function PDV() {
                         "overflow-hidden transition-all duration-200 ease-in-out",
                         isExpanded ? "max-h-48 opacity-100" : "max-h-0 opacity-0"
                       )}>
-                        <div className="px-3 pb-3 space-y-2 border-t border-gray-100">
+                        <div className="px-3 pb-3 space-y-2 border-t border-border/50">
                           {/* Complementos */}
                           {item.complements.length > 0 && (
                             <div className="text-xs text-muted-foreground space-y-0.5 pt-2">
@@ -1140,7 +1140,7 @@ export default function PDV() {
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={(e) => { e.stopPropagation(); updateCartItemQuantity(index, -1); }}
-                                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                                className="w-8 h-8 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
                               >
                                 <Minus className="h-4 w-4" />
                               </button>
@@ -1149,7 +1149,7 @@ export default function PDV() {
                               </span>
                               <button
                                 onClick={(e) => { e.stopPropagation(); updateCartItemQuantity(index, 1); }}
-                                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                                className="w-8 h-8 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
                               >
                                 <Plus className="h-4 w-4" />
                               </button>
@@ -1181,7 +1181,7 @@ export default function PDV() {
             </div>
 
             {/* Footer - Totais e Ações */}
-            <div className="border-t border-border/50 bg-white p-4 space-y-4 shrink-0">
+            <div className="border-t border-border/50 bg-card p-4 space-y-4 shrink-0">
               {/* Totais */}
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
@@ -1260,7 +1260,7 @@ export default function PDV() {
               {showCouponField && (
                 <div className="mt-3 flex gap-2">
                   {appliedCoupon ? (
-                    <div className="flex-1 flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-4 py-2">
+                     <div className="flex-1 flex items-center justify-between bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-xl px-4 py-2">
                       <div className="flex items-center gap-2">
                         <Ticket className="h-4 w-4 text-green-600" />
                         <span className="text-green-700 font-medium">{appliedCoupon.code}</span>
@@ -1360,7 +1360,7 @@ export default function PDV() {
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{ touchAction: 'pan-y' }}>
+          <div className="relative bg-card rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{ touchAction: 'pan-y' }}>
             {/* Imagem do Produto ou Complemento Selecionado */}
             {(() => {
               // Determinar qual imagem exibir: complemento selecionado ou produto
@@ -1376,9 +1376,9 @@ export default function PDV() {
                     />
                     <button 
                       onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
-                      className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
+                      className="absolute top-3 right-3 p-2 bg-card/90 hover:bg-card rounded-full shadow-lg transition-colors z-10"
                     >
-                      <X className="h-5 w-5 text-gray-700" />
+                      <X className="h-5 w-5 text-foreground" />
                     </button>
                   </div>
                 );
@@ -1390,9 +1390,9 @@ export default function PDV() {
                   <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80 animate-placeholder-pulse" />
                   <button 
                     onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
-                    className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
+                    className="absolute top-3 right-3 p-2 bg-card/90 hover:bg-card rounded-full shadow-lg transition-colors z-10"
                   >
-                    <X className="h-5 w-5 text-gray-700" />
+                    <X className="h-5 w-5 text-foreground" />
                   </button>
                 </div>
               );
@@ -1403,7 +1403,7 @@ export default function PDV() {
               <div className="p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
                 {/* Título e Preço */}
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
+                   <h3 className="text-xl font-bold text-foreground">{selectedProduct.name}</h3>
                   {Number(selectedProduct.price) > 0 && (
                     <p className="text-lg font-semibold text-red-500 mt-1">
                       {formatCurrency(parseFloat(selectedProduct.price))}
@@ -1413,7 +1413,7 @@ export default function PDV() {
 
                 {/* Descrição */}
                 {selectedProduct.description && (
-                  <p className="text-sm text-gray-600 leading-relaxed">
+                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {selectedProduct.description}
                   </p>
                 )}
@@ -1426,18 +1426,18 @@ export default function PDV() {
                       const isRadio = group.maxQuantity === 1;
                       
                       return (
-                        <div key={group.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                        <div key={group.id} className="border border-border rounded-xl overflow-hidden">
                           {/* Header do Grupo */}
-                          <div className="bg-gray-50 px-4 py-3 border-b border-gray-200" style={{paddingTop: '8px', height: '58px'}}>
+                          <div className="bg-muted/50 px-4 py-3 border-b border-border" style={{paddingTop: '8px', height: '58px'}}>
                             <div className="flex items-center justify-between">
-                              <h4 className="font-semibold text-gray-900">{group.name}</h4>
+                              <h4 className="font-semibold text-foreground">{group.name}</h4>
                               {group.isRequired && (
                                 <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
                                   Obrigatório
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-gray-500 mt-0.5">
+                             <p className="text-xs text-muted-foreground mt-0.5">
                               {group.minQuantity > 0 ? `Mín: ${group.minQuantity}` : ''}
                               {group.minQuantity > 0 && group.maxQuantity > 1 ? ' | ' : ''}
                               {group.maxQuantity > 1 ? `Máx: ${group.maxQuantity}` : ''}
@@ -1536,9 +1536,9 @@ export default function PDV() {
                               return (
                                 <div
                                   key={item.id}
-                                  className={`flex items-center justify-between px-4 py-3 transition-colors ${
-                                    isSelected ? 'bg-red-50' : 'hover:bg-gray-50'
-                                  }`}
+                                   className={`flex items-center justify-between px-4 py-3 transition-colors ${
+                                     isSelected ? 'bg-red-50 dark:bg-red-950/30' : 'hover:bg-muted/50'
+                                   }`}
                                 >
                                   <label className="flex items-center gap-3 cursor-pointer flex-1">
                                     <input
@@ -1546,15 +1546,15 @@ export default function PDV() {
                                       name={`group-${group.id}`}
                                       checked={isSelected}
                                       onChange={handleToggle}
-                                      className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500"
+                                      className="w-4 h-4 text-red-500 border-border focus:ring-red-500"
                                     />
-                                    <span className="text-sm text-gray-900">{item.name}</span>
+                                     <span className="text-sm text-foreground">{item.name}</span>
                                   </label>
                                   
                                   <div className="flex items-center gap-3">
                                     {/* Controles de quantidade - aparecem quando selecionado */}
                                     {isSelected && !isRadio && (
-                                      <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1">
+                                       <div className="flex items-center gap-2 bg-card border border-border rounded-lg px-1">
                                         <button
                                           type="button"
                                           onClick={handleDecrement}
@@ -1562,7 +1562,7 @@ export default function PDV() {
                                         >
                                           <Minus className="w-4 h-4" />
                                         </button>
-                                        <span className="w-6 text-center text-sm font-medium text-gray-900">{itemQuantity}</span>
+                                         <span className="w-6 text-center text-sm font-medium text-foreground">{itemQuantity}</span>
                                         <button
                                           type="button"
                                           onClick={handleIncrement}
@@ -1575,7 +1575,7 @@ export default function PDV() {
                                     
                                     {/* Preço */}
                                     {displayPrice > 0 && (
-                                      <span className="text-sm text-gray-600 min-w-[70px] text-right">
+                                       <span className="text-sm text-muted-foreground min-w-[70px] text-right">
                                         {isSelected && itemQuantity > 1 
                                           ? `+ ${formatCurrency(displayPrice * itemQuantity)}` 
                                           : `+ ${formatCurrency(displayPrice)}`
@@ -1595,7 +1595,7 @@ export default function PDV() {
 
                 {/* Campo de Observação */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                   <label className="block text-sm font-medium text-foreground mb-2">
                     Observações
                   </label>
                   <textarea
@@ -1603,26 +1603,26 @@ export default function PDV() {
                     onChange={(e) => setProductObservation(e.target.value)}
                     placeholder="Ex: Sem cebola, bem passado..."
                     rows={2}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
+                    className="w-full px-4 py-2 border border-border bg-background text-foreground rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
                   />
                 </div>
               </div>
             </div>
 
             {/* Footer - Quantidade e Adicionar */}
-            <div className="border-t p-4 bg-white flex items-center gap-4">
+            <div className="border-t border-border p-4 bg-card flex items-center gap-4">
               {/* Controle de Quantidade */}
-              <div className="flex items-center gap-3 bg-gray-100 rounded-full px-2 py-1">
+              <div className="flex items-center gap-3 bg-muted rounded-full px-2 py-1">
                 <button
                   onClick={() => setProductQuantity(Math.max(1, productQuantity - 1))}
-                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+                  className="w-8 h-8 rounded-full bg-card shadow-sm flex items-center justify-center hover:bg-muted transition-colors"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
                 <span className="w-8 text-center font-semibold">{productQuantity}</span>
                 <button
                   onClick={() => setProductQuantity(productQuantity + 1)}
-                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+                  className="w-8 h-8 rounded-full bg-card shadow-sm flex items-center justify-center hover:bg-muted transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
@@ -1702,7 +1702,7 @@ export default function PDV() {
                     className={`flex-1 font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 ${
                       requiredGroupsFilled 
                         ? 'bg-red-500 hover:bg-red-600 text-white' 
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-muted text-muted-foreground cursor-not-allowed'
                     }`}
                   >
                     {isEditingMode ? (
@@ -1733,7 +1733,7 @@ export default function PDV() {
           onClick={() => setShowCategoriesModal(false)}
         >
           <div 
-            className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden"
+            className="bg-card rounded-2xl shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -1832,7 +1832,7 @@ export default function PDV() {
           </div>
 
           {/* Conteúdo - Formulário de Entrega */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-white">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-card">
             {/* Se for entrega por bairro e ainda não selecionou bairro, mostra apenas seleção de bairro */}
             {establishment?.deliveryFeeType === "byNeighborhood" && !selectedNeighborhoodFee ? (
               // Tela de seleção de bairro ocupando toda a sidebar
@@ -1841,8 +1841,8 @@ export default function PDV() {
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
                     <MapPin className="h-8 w-8 text-red-500" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-800">Selecione o Bairro</h3>
-                  <p className="text-sm text-gray-500 mt-1">Escolha o bairro para calcular a taxa de entrega</p>
+                  <h3 className="text-lg font-bold text-foreground">Selecione o Bairro</h3>
+                  <p className="text-sm text-muted-foreground mt-1">Escolha o bairro para calcular a taxa de entrega</p>
                 </div>
                 
                 <div className="space-y-2">
@@ -1854,12 +1854,12 @@ export default function PDV() {
                           setSelectedNeighborhoodFee(fee);
                           setDeliveryAddress({...deliveryAddress, neighborhood: fee.neighborhood});
                         }}
-                        className="w-full flex items-center justify-between p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-red-300 hover:bg-red-50/50 transition-all"
+                        className="w-full flex items-center justify-between p-4 rounded-xl border-2 border-border bg-card hover:border-red-300 hover:bg-red-50/50 dark:hover:bg-red-950/20 transition-all"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                          <div className="w-6 h-6 rounded-full border-2 border-border flex items-center justify-center">
                           </div>
-                          <span className="font-medium text-gray-700 text-base">{fee.neighborhood}</span>
+                          <span className="font-medium text-foreground text-base">{fee.neighborhood}</span>
                         </div>
                         <span className="font-bold text-red-500 text-base">
                           R$ {parseFloat(fee.fee).toFixed(2).replace(".", ",")}
@@ -1868,7 +1868,7 @@ export default function PDV() {
                     ))
                   ) : (
                     <div className="text-center py-8">
-                      <p className="text-gray-500">Nenhum bairro cadastrado</p>
+                      <p className="text-muted-foreground">Nenhum bairro cadastrado</p>
                     </div>
                   )}
                 </div>
@@ -1878,23 +1878,23 @@ export default function PDV() {
               <>
             {/* Seção de Dados do Cliente */}
             <div>
-              <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
+              <h3 className="font-semibold text-foreground text-sm mb-3 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 Dados do Cliente
               </h3>
-              <div className="space-y-3 p-4 bg-gray-50 rounded-xl">
+              <div className="space-y-3 p-4 bg-muted/50 rounded-xl">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Nome <span className="text-red-500">*</span></label>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">Nome <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     placeholder="Nome do cliente"
                     value={deliveryAddress.name}
                     onChange={(e) => setDeliveryAddress({...deliveryAddress, name: e.target.value})}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                    className="w-full px-3 py-2.5 border border-border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Telefone</label>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">Telefone</label>
                   <input
                     type="text"
                     placeholder="(00) 00000-0000"
@@ -1915,7 +1915,7 @@ export default function PDV() {
                       }
                       setDeliveryAddress({...deliveryAddress, phone: value});
                     }}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                    className="w-full px-3 py-2.5 border border-border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                   />
                 </div>
               </div>
@@ -1923,7 +1923,7 @@ export default function PDV() {
 
             {/* Seção de Endereço */}
             <div>
-              <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
+              <h3 className="font-semibold text-foreground text-sm mb-3 flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-red-500" />
                 Endereço de Entrega
               </h3>
@@ -1938,7 +1938,7 @@ export default function PDV() {
                     <div className="flex items-center gap-3">
                       <Truck className="h-5 w-5 text-red-500" />
                       <div>
-                        <span className="font-medium text-gray-800">Entrega</span>
+                        <span className="font-medium text-foreground">Entrega</span>
                         <span className="ml-2 text-sm text-green-600 font-medium">
                           R$ {parseFloat(selectedNeighborhoodFee.fee).toFixed(2).replace(".", ",")}
                         </span>
@@ -1949,20 +1949,20 @@ export default function PDV() {
                 </div>
               )}
               
-              <div className="space-y-3 p-4 bg-gray-50 rounded-xl">
+              <div className="space-y-3 p-4 bg-muted/50 rounded-xl">
                 <div className="grid grid-cols-3 gap-3">
                   <div className="col-span-2">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Rua <span className="text-red-500">*</span></label>
+                    <label className="block text-xs font-medium text-muted-foreground mb-1">Rua <span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       placeholder="Nome da rua"
                       value={deliveryAddress.street}
                       onChange={(e) => setDeliveryAddress({...deliveryAddress, street: e.target.value})}
-                      className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                      className="w-full px-3 py-2.5 border border-border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Número <span className="text-red-500">*</span></label>
+                    <label className="block text-xs font-medium text-muted-foreground mb-1">Número <span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       inputMode="numeric"
@@ -1974,16 +1974,16 @@ export default function PDV() {
                         const value = e.target.value.replace(/\D/g, '').slice(0, 6);
                         setDeliveryAddress({...deliveryAddress, number: value});
                       }}
-                      className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                      className="w-full px-3 py-2.5 border border-border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                     />
                   </div>
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Bairro <span className="text-red-500">*</span></label>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">Bairro <span className="text-red-500">*</span></label>
                   {establishment?.deliveryFeeType === "byNeighborhood" && selectedNeighborhoodFee ? (
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700">
+                      <div className="flex-1 px-3 py-2.5 border border-border rounded-lg text-sm bg-muted/50 text-foreground">
                         {selectedNeighborhoodFee.neighborhood}
                       </div>
                       <button
@@ -2000,41 +2000,41 @@ export default function PDV() {
                       placeholder="Nome do bairro"
                       value={deliveryAddress.neighborhood}
                       onChange={(e) => setDeliveryAddress({...deliveryAddress, neighborhood: e.target.value})}
-                      className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                      className="w-full px-3 py-2.5 border border-border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                     />
                   )}
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Complemento</label>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">Complemento</label>
                   <input
                     type="text"
                     placeholder="Apto, bloco, etc."
                     value={deliveryAddress.complement}
                     onChange={(e) => setDeliveryAddress({...deliveryAddress, complement: e.target.value})}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                    className="w-full px-3 py-2.5 border border-border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Ponto de referência</label>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">Ponto de referência</label>
                   <input
                     type="text"
                     placeholder="Próximo a..."
                     value={deliveryAddress.reference}
                     onChange={(e) => setDeliveryAddress({...deliveryAddress, reference: e.target.value})}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                    className="w-full px-3 py-2.5 border border-border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                   />
                 </div>
               </div>
             </div>
 
             {/* Divisor */}
-            <div className="border-t border-gray-200" />
+            <div className="border-t border-border" />
 
             {/* Seção de Pagamento */}
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-gray-700">
+              <div className="flex items-center gap-2 text-foreground">
                 <CreditCard className="h-5 w-5 text-red-500" />
                 <h3 className="font-semibold">Forma de Pagamento</h3>
               </div>
@@ -2048,13 +2048,13 @@ export default function PDV() {
                       className={cn(
                         "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all",
                         paymentMethod === "cash"
-                          ? "border-red-500 bg-red-50"
-                          : "border-gray-200 hover:border-gray-300 bg-white"
+                          ? "border-red-500 bg-red-50 dark:bg-red-950/30"
+                          : "border-border hover:border-muted-foreground/30 bg-card"
                       )}
                     >
                       <div className={cn(
                         "p-2 rounded-lg",
-                        paymentMethod === "cash" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600"
+                        paymentMethod === "cash" ? "bg-red-500 text-white" : "bg-muted text-muted-foreground"
                       )}>
                         <Banknote className="h-5 w-5" />
                       </div>
@@ -2062,13 +2062,13 @@ export default function PDV() {
                         <div className="flex items-center gap-2">
                           <p className={cn(
                             "font-medium",
-                            paymentMethod === "cash" ? "text-red-700" : "text-gray-700"
+                            paymentMethod === "cash" ? "text-red-700 dark:text-red-400" : "text-foreground"
                           )}>Dinheiro</p>
                           {favoritePaymentMethod === "cash" && (
                             <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Favorito</span>
                           )}
                         </div>
-                        <p className="text-xs text-gray-500">Pagamento na entrega</p>
+                        <p className="text-xs text-muted-foreground">Pagamento na entrega</p>
                       </div>
                       <button
                         onClick={(e) => {
@@ -2092,10 +2092,10 @@ export default function PDV() {
 
                     {/* Campo de Troco - aparece quando dinheiro está selecionado */}
                     {paymentMethod === "cash" && (
-                      <div className="ml-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
-                        <label className="block text-sm font-medium text-gray-600 mb-2">Troco para quanto?</label>
+                      <div className="ml-4 p-3 bg-muted/50 rounded-xl border border-border">
+                        <label className="block text-sm font-medium text-muted-foreground mb-2">Troco para quanto?</label>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">R$</span>
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">R$</span>
                           <Input
                             type="text"
                             inputMode="decimal"
@@ -2115,10 +2115,10 @@ export default function PDV() {
                               });
                               setChangeAmount(formatted === '0,00' ? '' : formatted);
                             }}
-                            className="pl-10 border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                            className="pl-10 border-border focus:border-red-500 focus:ring-red-500/20"
                           />
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">Deixe em branco se não precisar de troco</p>
+                        <p className="text-xs text-muted-foreground mt-1">Deixe em branco se não precisar de troco</p>
                       </div>
                     )}
                   </>
@@ -2131,13 +2131,13 @@ export default function PDV() {
                     className={cn(
                       "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all",
                       paymentMethod === "card"
-                        ? "border-red-500 bg-red-50"
-                        : "border-gray-200 hover:border-gray-300 bg-white"
+                        ? "border-red-500 bg-red-50 dark:bg-red-950/30"
+                        : "border-border hover:border-muted-foreground/30 bg-card"
                     )}
                   >
                     <div className={cn(
                       "p-2 rounded-lg",
-                      paymentMethod === "card" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600"
+                      paymentMethod === "card" ? "bg-red-500 text-white" : "bg-muted text-muted-foreground"
                     )}>
                       <CreditCard className="h-5 w-5" />
                     </div>
@@ -2145,13 +2145,13 @@ export default function PDV() {
                       <div className="flex items-center gap-2">
                         <p className={cn(
                           "font-medium",
-                          paymentMethod === "card" ? "text-red-700" : "text-gray-700"
+                          paymentMethod === "card" ? "text-red-700 dark:text-red-400" : "text-foreground"
                         )}>Cartão</p>
                         {favoritePaymentMethod === "card" && (
                           <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Favorito</span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500">Débito ou Crédito na entrega</p>
+                      <p className="text-xs text-muted-foreground">Débito ou Crédito na entrega</p>
                     </div>
                     <button
                       onClick={(e) => {
@@ -2181,14 +2181,14 @@ export default function PDV() {
                       onClick={() => setPaymentMethod("pix")}
                       className={cn(
                         "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all",
-                        paymentMethod === "pix"
-                          ? "border-red-500 bg-red-50"
-                          : "border-gray-200 hover:border-gray-300 bg-white"
+                          paymentMethod === "pix"
+                          ? "border-red-500 bg-red-50 dark:bg-red-950/30"
+                          : "border-border hover:border-muted-foreground/30 bg-card"
                       )}
                     >
                       <div className={cn(
                         "p-2 rounded-lg",
-                        paymentMethod === "pix" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600"
+                        paymentMethod === "pix" ? "bg-red-500 text-white" : "bg-muted text-muted-foreground"
                       )}>
                         <QrCode className="h-5 w-5" />
                       </div>
@@ -2196,13 +2196,13 @@ export default function PDV() {
                         <div className="flex items-center gap-2">
                           <p className={cn(
                             "font-medium",
-                            paymentMethod === "pix" ? "text-red-700" : "text-gray-700"
+                            paymentMethod === "pix" ? "text-red-700 dark:text-red-400" : "text-foreground"
                           )}>Pix</p>
                           {favoritePaymentMethod === "pix" && (
                             <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Favorito</span>
                           )}
                         </div>
-                        <p className="text-xs text-gray-500">Instantâneo</p>
+                        <p className="text-xs text-muted-foreground">Instantâneo</p>
                       </div>
                       <button
                         onClick={(e) => {
@@ -2226,7 +2226,7 @@ export default function PDV() {
 
                     {/* Chave Pix - aparece quando pix está selecionado */}
                     {paymentMethod === "pix" && establishment?.pixKey && (
-                      <div className="ml-4 p-3 bg-green-50 rounded-xl border border-green-200">
+                      <div className="ml-4 p-3 bg-green-50 dark:bg-green-950/30 rounded-xl border border-green-200 dark:border-green-800">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-sm font-medium text-green-700">Chave Pix</span>
                           <button
@@ -2240,7 +2240,7 @@ export default function PDV() {
                             Copiar
                           </button>
                         </div>
-                        <p className="text-sm text-green-800 font-mono bg-white px-3 py-2 rounded-lg border border-green-200">
+                        <p className="text-sm text-green-800 dark:text-green-300 font-mono bg-card px-3 py-2 rounded-lg border border-green-200 dark:border-green-800">
                           {establishment.pixKey}
                         </p>
                         <p className="text-xs text-green-600 mt-2">Envie o comprovante ao entregador</p>
@@ -2255,7 +2255,7 @@ export default function PDV() {
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-border/50 bg-gray-50">
+          <div className="p-4 border-t border-border/50 bg-muted/30">
             <Button
               onClick={() => setShowDeliverySidebar(false)}
               className="w-full bg-red-500 hover:bg-red-600 text-white py-3"
@@ -2264,7 +2264,7 @@ export default function PDV() {
               <Check className="h-5 w-5 mr-2" />
               Confirmar Dados
             </Button>
-            <p className="text-xs text-center text-gray-500 mt-2">
+            <p className="text-xs text-center text-muted-foreground mt-2">
               Campos com * são obrigatórios
             </p>
           </div>
@@ -2308,17 +2308,17 @@ export default function PDV() {
           </div>
 
           {/* Conteúdo - Formas de Pagamento */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-white">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-card">
             {/* Dados do Cliente (Retirada) */}
             {orderType === "retirada" && (
               <div>
-                <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                <h3 className="font-semibold text-foreground text-sm mb-3 flex items-center gap-2">
                   <User className="h-4 w-4 text-red-500" />
                   Dados do Cliente
                 </h3>
-                <div className="space-y-3 p-4 bg-gray-50 rounded-xl">
+                <div className="space-y-3 p-4 bg-muted/50 rounded-xl">
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                    <label className="block text-xs font-medium text-muted-foreground mb-1">
                       Nome <span className="text-red-500">*</span>
                     </label>
                     <Input
@@ -2326,11 +2326,11 @@ export default function PDV() {
                       placeholder="Nome do cliente"
                       value={pickupClientName}
                       onChange={(e) => setPickupClientName(e.target.value)}
-                      className="w-full bg-white border-gray-200 rounded-lg"
+                      className="w-full bg-background border-border rounded-lg"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Telefone</label>
+                    <label className="block text-xs font-medium text-muted-foreground mb-1">Telefone</label>
                     <Input
                       type="text"
                       inputMode="numeric"
@@ -2352,7 +2352,7 @@ export default function PDV() {
                         }
                         setPickupClientPhone(value);
                       }}
-                      className="w-full bg-white border-gray-200 rounded-lg"
+                      className="w-full bg-background border-border rounded-lg"
                     />
                   </div>
                 </div>
@@ -2361,11 +2361,11 @@ export default function PDV() {
 
             {/* Título da seção */}
             <div>
-              <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
+              <h3 className="font-semibold text-foreground text-sm mb-3 flex items-center gap-2">
                 <CreditCard className="h-4 w-4 text-red-500" />
                 Formas de Pagamento
               </h3>
-              <p className="text-xs text-gray-500">Selecione como o cliente vai pagar</p>
+              <p className="text-xs text-muted-foreground">Selecione como o cliente vai pagar</p>
             </div>
 
             <div className="space-y-3">
@@ -2385,15 +2385,15 @@ export default function PDV() {
                       className={cn(
                         "w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all",
                         selectedPaymentInSidebar === method.id
-                          ? "border-red-500 bg-red-50"
-                          : "border-gray-200 bg-white hover:border-red-300 hover:bg-red-50/50"
+                          ? "border-red-500 bg-red-50 dark:bg-red-950/30"
+                          : "border-border bg-card hover:border-red-300 hover:bg-red-50/50 dark:hover:bg-red-950/20"
                       )}
                     >
                       <div className={cn(
                         "p-3 rounded-xl",
                         selectedPaymentInSidebar === method.id
                           ? "bg-red-500 text-white"
-                          : "bg-gray-100 text-gray-600"
+                          : "bg-muted text-muted-foreground"
                       )}>
                         {method.icon}
                       </div>
@@ -2401,13 +2401,13 @@ export default function PDV() {
                         <div className="flex items-center gap-2">
                           <p className={cn(
                             "font-semibold text-base",
-                            selectedPaymentInSidebar === method.id ? "text-red-700" : "text-gray-800"
+                            selectedPaymentInSidebar === method.id ? "text-red-700 dark:text-red-400" : "text-foreground"
                           )}>{method.name}</p>
                           {favoritePaymentMethod === method.id && (
                             <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Favorito</span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500">{method.description}</p>
+                        <p className="text-sm text-muted-foreground">{method.description}</p>
                       </div>
                       <button
                         onClick={(e) => {
@@ -2435,11 +2435,11 @@ export default function PDV() {
                     {method.id === "cash" && selectedPaymentInSidebar === "cash" && (
                       <div className="mt-4 ml-2 space-y-3">
                         {/* Pergunta sobre valor recebido */}
-                        <p className="text-sm text-gray-600">Qual valor recebido?</p>
+                        <p className="text-sm text-muted-foreground">Qual valor recebido?</p>
                         
                         {/* Campo Valor Recebido */}
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">R$</span>
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">R$</span>
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -2460,11 +2460,11 @@ export default function PDV() {
                               const formatted = (cents / 100).toFixed(2).replace(".", ",");
                               setReceivedAmount(formatted);
                             }}
-                            className="w-full pl-10 text-lg bg-gray-50 border-gray-200 rounded-xl"
+                            className="w-full pl-10 text-lg bg-muted/50 border-border rounded-xl"
                           />
                         </div>
                         
-                        <p className="text-xs text-gray-400">Deixe em branco se não precisar de troco</p>
+                        <p className="text-xs text-muted-foreground">Deixe em branco se não precisar de troco</p>
                         
                         {/* Troco a Devolver - mostra em destaque quando valor recebido for digitado */}
                         {receivedAmount && parseFloat(receivedAmount.replace(",", ".")) > 0 && (
@@ -2516,15 +2516,15 @@ export default function PDV() {
                 ))
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-gray-500">Nenhuma forma de pagamento configurada</p>
-                  <p className="text-sm text-gray-400 mt-1">Configure as formas de pagamento nas configurações</p>
+                  <p className="text-muted-foreground">Nenhuma forma de pagamento configurada</p>
+                  <p className="text-sm text-muted-foreground/70 mt-1">Configure as formas de pagamento nas configurações</p>
                 </div>
               )}
                         </div>
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-200 bg-white">
+          <div className="p-4 border-t border-border bg-card">
             <Button
               onClick={() => {
                 if (selectedPaymentInSidebar) {
@@ -2556,7 +2556,7 @@ export default function PDV() {
           />
           
           {/* Modal */}
-          <div className="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-md max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="relative bg-card rounded-2xl shadow-2xl w-[90%] max-w-md max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
             <div className="bg-gradient-to-r from-red-500 to-red-600 p-4">
               <div className="flex items-center justify-between">
@@ -2584,14 +2584,14 @@ export default function PDV() {
             {/* Conteúdo do Recibo */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {/* Nome do Estabelecimento */}
-              <div className="text-center pb-3 border-b border-dashed border-gray-300">
+              <div className="text-center pb-3 border-b border-dashed border-border">
                 <h3 className="font-bold text-lg">{establishment?.name || 'Estabelecimento'}</h3>
-                <p className="text-xs text-gray-500">SISTEMA DE PEDIDOS</p>
+                <p className="text-xs text-muted-foreground">SISTEMA DE PEDIDOS</p>
               </div>
 
               {/* Tipo do Pedido */}
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Tipo:</span>
+                <span className="text-sm text-muted-foreground">Tipo:</span>
                 <span className="px-3 py-1 bg-gray-900 text-white text-xs font-bold rounded">
                   {orderType === "mesa" ? "CONSUMO" : 
                    orderType === "retirada" ? "RETIRADA" : "ENTREGA"}
@@ -2600,33 +2600,33 @@ export default function PDV() {
 
               {/* Dados de Entrega (se for entrega) */}
               {orderType === "entrega" && deliveryAddress.street && (
-                <div className="p-3 bg-gray-50 rounded-lg space-y-1">
-                  <p className="text-xs font-semibold text-gray-700">Endereço de Entrega:</p>
+                <div className="p-3 bg-muted/50 rounded-lg space-y-1">
+                  <p className="text-xs font-semibold text-foreground">Endereço de Entrega:</p>
                   <p className="text-sm">
                     {deliveryAddress.street}, {deliveryAddress.number}
                     {deliveryAddress.complement && ` - ${deliveryAddress.complement}`}
                   </p>
                   <p className="text-sm">{deliveryAddress.neighborhood}</p>
                   {deliveryAddress.reference && (
-                    <p className="text-xs text-gray-500">Ref: {deliveryAddress.reference}</p>
+                    <p className="text-xs text-muted-foreground">Ref: {deliveryAddress.reference}</p>
                   )}
                   {deliveryAddress.name && (
-                    <p className="text-xs text-gray-600 mt-2">Cliente: {deliveryAddress.name}</p>
+                    <p className="text-xs text-muted-foreground mt-2">Cliente: {deliveryAddress.name}</p>
                   )}
                   {deliveryAddress.phone && (
-                    <p className="text-xs text-gray-600">Tel: {deliveryAddress.phone}</p>
+                    <p className="text-xs text-muted-foreground">Tel: {deliveryAddress.phone}</p>
                   )}
                 </div>
               )}
 
               {/* Lista de Itens */}
               {printerSettings?.showDividers !== false && (
-                <div className="border-t border-dashed border-gray-300" />
+                <div className="border-t border-dashed border-border" />
               )}
               
               <div className="space-y-2">
                 {cart.map((item, index) => (
-                  <div key={index} className="p-3 border border-gray-200 rounded-lg">
+                  <div key={index} className="p-3 border border-border rounded-lg">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <p className="font-medium text-sm">
@@ -2635,10 +2635,10 @@ export default function PDV() {
                         {item.complements && item.complements.length > 0 && (
                           <div className="mt-1 space-y-0.5">
                             {item.complements.map((comp, idx) => (
-                              <p key={idx} className="text-xs text-gray-500 pl-2">
+                              <p key={idx} className="text-xs text-muted-foreground pl-2">
                                 + {comp.quantity}x {comp.name}
                                 {parseFloat(comp.price) > 0 && (
-                                  <span className="ml-1 text-gray-400">
+                                  <span className="ml-1 text-muted-foreground/70">
                                     ({formatCurrency(parseFloat(comp.price) * comp.quantity)})
                                   </span>
                                 )}
@@ -2647,7 +2647,7 @@ export default function PDV() {
                           </div>
                         )}
                         {item.observation && (
-                          <p className="text-xs text-gray-500 mt-1 italic">Obs: {item.observation}</p>
+                          <p className="text-xs text-muted-foreground mt-1 italic">Obs: {item.observation}</p>
                         )}
                       </div>
                       <p className="font-semibold text-sm">
@@ -2663,7 +2663,7 @@ export default function PDV() {
               </div>
 
               {printerSettings?.showDividers !== false && (
-                <div className="border-t border-dashed border-gray-300" />
+                <div className="border-t border-dashed border-border" />
               )}
 
               {/* Totais */}
@@ -2687,7 +2687,7 @@ export default function PDV() {
                   </div>
                 )}
                 
-                <div className="flex justify-between font-bold text-lg pt-2 border-t border-gray-200">
+                <div className="flex justify-between font-bold text-lg pt-2 border-t border-border">
                   <span>TOTAL:</span>
                   <span className="text-red-600">
                     {formatCurrency(
@@ -2704,16 +2704,16 @@ export default function PDV() {
 
               {/* Forma de Pagamento */}
               {paymentMethod && (
-                <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="p-3 bg-muted/50 rounded-lg">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Pagamento:</span>
+                    <span className="text-sm text-muted-foreground">Pagamento:</span>
                     <span className="font-medium">
                       {paymentMethod === "cash" ? "Dinheiro" : 
                        paymentMethod === "card" ? "Cartão" : "PIX"}
                     </span>
                   </div>
                   {paymentMethod === "cash" && (changeAmount || receivedAmount) && (
-                    <div className="mt-2 pt-2 border-t border-gray-200">
+                    <div className="mt-2 pt-2 border-t border-border">
                       <div className="flex justify-between text-sm">
                         <span>Valor recebido:</span>
                         <span>R$ {changeAmount || receivedAmount}</span>
@@ -2741,7 +2741,7 @@ export default function PDV() {
             </div>
 
             {/* Botões */}
-            <div className="p-4 border-t border-gray-200 space-y-2">
+            <div className="p-4 border-t border-border space-y-2">
               <Button
                 onClick={() => {
                   setIsClosingOrder(true);
