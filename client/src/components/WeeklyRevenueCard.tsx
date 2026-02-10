@@ -246,7 +246,7 @@ export function WeeklyRevenueCard({
 
                 {/* Tooltip */}
                 {hoveredIndex === index && (
-                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-10 bg-foreground text-white px-2 py-1.5 rounded-md shadow-lg text-xs whitespace-nowrap">
+                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-10 bg-gray-900 dark:bg-gray-800 text-white px-2 py-1.5 rounded-md shadow-lg text-xs whitespace-nowrap">
                     {mode === 'monthly' ? (
                       <div className="flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -268,7 +268,7 @@ export function WeeklyRevenueCard({
                       </>
                     )}
                     {/* Arrow */}
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-foreground rotate-45" />
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-gray-900 dark:bg-gray-800 rotate-45" />
                   </div>
                 )}
               </div>

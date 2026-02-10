@@ -186,7 +186,7 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
             <TooltipContent 
               side="bottom" 
               align="end"
-              className="bg-foreground text-white border-0 px-4 py-3 max-w-[280px]"
+              className="bg-gray-900 dark:bg-gray-800 text-white border-0 px-4 py-3 max-w-[280px]"
             >
               <p className="text-sm leading-relaxed">
                 Este gráfico mostra quando os clientes mais acessam seu cardápio. Use esses horários para divulgar ofertas ou reforçar o atendimento.
@@ -218,7 +218,7 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
                   {viewsChange > 0 ? "+" : ""}{viewsChange}%
                 </span>
               </TooltipTrigger>
-              <TooltipContent side="top" className="bg-foreground text-white border-0 px-3 py-2">
+              <TooltipContent side="top" className="bg-gray-900 dark:bg-gray-800 text-white border-0 px-3 py-2">
                 <p className="text-xs">{viewsChange > 0 ? "+" : ""}{viewsChange}% {comparisonLabel}</p>
               </TooltipContent>
             </Tooltip>
@@ -230,7 +230,7 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
                   0%
                 </span>
               </TooltipTrigger>
-              <TooltipContent side="top" className="bg-foreground text-white border-0 px-3 py-2">
+              <TooltipContent side="top" className="bg-gray-900 dark:bg-gray-800 text-white border-0 px-3 py-2">
                 <p className="text-xs">Sem variação {comparisonLabel}</p>
               </TooltipContent>
             </Tooltip>
@@ -291,7 +291,7 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
                       </TooltipTrigger>
                       <TooltipContent 
                         side="top" 
-                        className="bg-foreground text-white border-0 px-3 py-2"
+                        className="bg-gray-900 dark:bg-gray-800 text-white border-0 px-3 py-2"
                       >
                         <div className="text-center">
                           <div className="font-semibold">{day} às {hour}h</div>
