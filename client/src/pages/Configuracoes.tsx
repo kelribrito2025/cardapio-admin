@@ -108,8 +108,10 @@ export default function Configuracoes() {
     // Suporte a deep linking via query param ?section=whatsapp
     const params = new URLSearchParams(window.location.search);
     const section = params.get('section');
-    const validSections: SettingsSection[] = ['estabelecimento', 'atendimento', 'whatsapp', 'impressora', 'pagamento-online', 'integracoes', 'conta-seguranca'];
+    const validSections: SettingsSection[] = ['estabelecimento', 'atendimento', 'whatsapp', 'whatsapp-notificacoes', 'whatsapp-templates', 'impressora', 'pagamento-online', 'integracoes', 'conta-seguranca'];
     if (section && validSections.includes(section as SettingsSection)) {
+      // Redirecionar 'whatsapp' para 'whatsapp-notificacoes' (submenu padrão)
+      if (section === 'whatsapp') return 'whatsapp-notificacoes';
       return section as SettingsSection;
     }
     return 'estabelecimento';
@@ -2141,10 +2143,17 @@ export default function Configuracoes() {
             </div>
           )}
 
-          {/* WhatsApp Section */}
-          {activeSection === "whatsapp" && (
+          {/* WhatsApp - Notificações */}
+          {activeSection === "whatsapp-notificacoes" && (
             <div className="space-y-5">
-              <WhatsAppTab hideConnectionCard />
+              <WhatsAppTab hideConnectionCard activeSubTab="notifications" showOnlyContent />
+            </div>
+          )}
+
+          {/* WhatsApp - Templates */}
+          {activeSection === "whatsapp-templates" && (
+            <div className="space-y-5">
+              <WhatsAppTab hideConnectionCard activeSubTab="templates" showOnlyContent />
             </div>
           )}
 

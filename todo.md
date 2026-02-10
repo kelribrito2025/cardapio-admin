@@ -5940,3 +5940,8 @@
 
 ## Limpeza diária de pedidos cancelados
 - [x] Aplicar mesma lógica de limpeza diária (00:00 timezone do restaurante) à coluna de Cancelados
+
+## WhatsApp com submenus nas Configurações
+- [x] Transformar WhatsApp em menu pai com submenus: Notificações e Templates
+- [x] Submenu Notificações: conteúdo atual de notificações automáticas
+- [x] Submenu Templates: nova aba para templates de mensagens
