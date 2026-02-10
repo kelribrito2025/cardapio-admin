@@ -1061,20 +1061,28 @@ export default function Pedidos() {
                 </div>
                 <div className="flex items-center gap-2">
                   {(column.id === "completed" || column.id === "cancelled") && columnOrders.length > 0 ? (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleManualClear(column.id);
-                      }}
-                      title="Limpar pedidos"
-                      className={cn(
-                        "p-2.5 rounded-lg shrink-0 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer",
-                        column.iconBg,
-                        "hover:opacity-80"
-                      )}
-                    >
-                      <Icon className={cn("h-5 w-5", column.iconColor)} />
-                    </button>
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleManualClear(column.id);
+                            }}
+                            className={cn(
+                              "p-2.5 rounded-lg shrink-0 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer",
+                              column.iconBg,
+                              "hover:opacity-80"
+                            )}
+                          >
+                            <Icon className={cn("h-5 w-5", column.iconColor)} />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="max-w-[200px] text-center">
+                          <p className="text-xs">Clique para limpar {column.id === "completed" ? "pedidos completos" : "pedidos cancelados"} da tela</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   ) : (
                     <div className={cn("p-2.5 rounded-lg shrink-0", column.iconBg)}>
                       <Icon className={cn("h-5 w-5", column.iconColor)} />
