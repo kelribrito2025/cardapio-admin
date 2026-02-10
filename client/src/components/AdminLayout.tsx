@@ -35,7 +35,7 @@ import {
   Moon,
   Sun,
 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -64,7 +64,7 @@ import { TrialExpiredModal } from "@/components/TrialExpiredModal";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useSearch } from "@/contexts/SearchContext";
 
-const SIDEBAR_MODE_KEY = "sidebar-mode";
+const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed";
 
 // Seções do menu lateral
 const menuSections = [
@@ -173,30 +173,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     };
   }, []);
   
-  // Sidebar mode: 'auto' (hover expande/minimiza) ou 'fixed' (sempre minimizada)
-  const [sidebarMode, setSidebarMode] = useState<'auto' | 'fixed'>(() => {
+  // Sidebar collapsed state with localStorage persistence
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(SIDEBAR_MODE_KEY);
-      return saved === 'fixed' ? 'fixed' : 'auto';
+      const saved = localStorage.getItem(SIDEBAR_COLLAPSED_KEY);
+      return saved === "true";
     }
-    return 'auto';
+    return false;
   });
 
-  // Estado de hover na sidebar (só ativo no modo auto)
-  const [sidebarHovered, setSidebarHovered] = useState(false);
-
-  // Ref para ignorar mouseLeave após clique de navegação (evita fechar sidebar ao navegar no modo auto)
-  const ignoreMouseLeaveRef = useRef(false);
-
-  // A sidebar está visualmente colapsada quando:
-  // - Modo fixo: sempre colapsada
-  // - Modo auto: colapsada quando NÃO está em hover
-  const isSidebarVisuallyCollapsed = sidebarMode === 'fixed' || (sidebarMode === 'auto' && !sidebarHovered);
-
-  // Persistir modo no localStorage
+  // Persist collapsed state to localStorage
   useEffect(() => {
-    localStorage.setItem(SIDEBAR_MODE_KEY, sidebarMode);
-  }, [sidebarMode]);
+    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(sidebarCollapsed));
+  }, [sidebarCollapsed]);
 
   // Minimizar menu automaticamente ao acessar a página PDV, Pedidos, Configurações ou Mesas
   // Limpar busca global ao mudar de página
@@ -471,15 +460,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     }
   };
 
-  const toggleSidebarMode = () => {
-    if (isSidebarVisuallyCollapsed) {
-      // Está minimizada → maximizar → modo auto
-      setSidebarMode('auto');
-    } else {
-      // Está expandida → minimizar → modo fixo
-      setSidebarMode('fixed');
-      setSidebarHovered(false);
-    }
+  const toggleSidebarCollapsed = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
   };
 
   // Redirect to login if not authenticated
@@ -507,14 +489,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const handleNavClick = (href: string) => {
     // Fechar sidebar mobile
     setSidebarOpen(false);
-    // No modo auto, manter sidebar expandida após clique
-    if (sidebarMode === 'auto') {
-      ignoreMouseLeaveRef.current = true;
-    }
   };
 
-  // Sidebar width based on visual collapsed state (inline for smooth CSS transition)
-  const sidebarWidthPx = isSidebarVisuallyCollapsed ? 63 : 269;
+  // Sidebar width based on collapsed state
+  const sidebarWidth = sidebarCollapsed ? "w-[63px]" : "w-[269px]";
+  const mainPadding = sidebarCollapsed ? "lg:pl-[63px]" : "lg:pl-[269px]";
 
   return (
     <div className="min-h-screen bg-background">
@@ -529,46 +508,33 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col overflow-hidden",
+          "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col",
+          sidebarWidth,
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
           "lg:translate-x-0"
         )}
         style={{
-          width: `${sidebarWidthPx}px`,
-          minWidth: `${sidebarWidthPx}px`,
           background: theme === 'dark' ? 'var(--sidebar)' : '#ffffff'
-        }}
-        onMouseEnter={() => {
-          if (sidebarMode === 'auto') setSidebarHovered(true);
-        }}
-        onMouseLeave={() => {
-          if (sidebarMode === 'auto') {
-            if (ignoreMouseLeaveRef.current) {
-              ignoreMouseLeaveRef.current = false;
-              return;
-            }
-            setSidebarHovered(false);
-          }
         }}
       >
         {/* Logo + Toggle button na mesma linha */}
         <div className={cn(
           "flex items-center h-[58px] border-b border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
-          isSidebarVisuallyCollapsed ? "justify-center px-2" : "justify-between px-4"
+          sidebarCollapsed ? "justify-center px-2" : "justify-between px-4"
         )}>
           {/* Quando colapsado, mostrar apenas o botão de expandir */}
-          {isSidebarVisuallyCollapsed ? (
+          {sidebarCollapsed ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  onClick={toggleSidebarMode}
+                  onClick={toggleSidebarCollapsed}
                   className="p-2 hover:bg-accent rounded-xl transition-colors text-muted-foreground hover:text-foreground"
                 >
                   <PanelLeft className="h-5 w-5" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right">
-                <p>{sidebarMode === 'fixed' ? 'Ativar modo automático' : 'Abrir barra lateral'}</p>
+                <p>Abrir barra lateral</p>
               </TooltipContent>
             </Tooltip>
           ) : (
@@ -605,9 +571,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <div className="flex items-center gap-1">
                 {/* Toggle button - Desktop only */}
                 <button
-                  onClick={toggleSidebarMode}
+                  onClick={toggleSidebarCollapsed}
                   className="hidden lg:flex p-2 hover:bg-accent rounded-xl transition-colors text-muted-foreground hover:text-foreground"
-                  title="Minimizar menu (modo fixo)"
+                  title="Minimizar menu"
                 >
                   <PanelLeftClose className="h-5 w-5" />
                 </button>
@@ -628,17 +594,17 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         {/* Navigation */}
         <nav className={cn(
           "flex-1 py-4 overflow-y-auto transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
-          isSidebarVisuallyCollapsed ? "px-1.5" : "px-3"
+          sidebarCollapsed ? "px-1.5" : "px-3"
         )}>
           {menuSections.map((section, sectionIndex) => (
             <div key={section.title} className={sectionIndex > 0 ? "mt-6" : ""} style={{marginBottom: '-5px'}}>
               {/* Título da seção */}
-              {!isSidebarVisuallyCollapsed && (
-                <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-3 whitespace-nowrap">
+              {!sidebarCollapsed && (
+                <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-3">
                   {section.title}
                 </h3>
               )}
-              {isSidebarVisuallyCollapsed && sectionIndex > 0 && (
+              {sidebarCollapsed && sectionIndex > 0 && (
                 <div className="border-t border-border my-3 mx-2" />
               )}
               
@@ -659,10 +625,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       <div className="relative">
                         <item.icon className={cn(
                           "h-4 w-4 flex-shrink-0", 
-                          isSidebarVisuallyCollapsed && "mx-auto",
+                          sidebarCollapsed && "mx-auto",
                           isComingSoon && "opacity-50"
                         )} />
-                        {showOrderBadge && isSidebarVisuallyCollapsed && (
+                        {showOrderBadge && sidebarCollapsed && (
                           <span className={cn(
                             "absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse",
                             isActive ? "bg-white text-primary" : "bg-red-500 text-white"
@@ -671,9 +637,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           </span>
                         )}
                       </div>
-                      {!isSidebarVisuallyCollapsed && (
+                      {!sidebarCollapsed && (
                         <span className={cn(
-                          "text-sm flex items-center gap-2 whitespace-nowrap",
+                          "text-sm flex items-center gap-2",
                           isComingSoon && "opacity-50"
                         )}>
                           {item.label}
@@ -697,7 +663,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
                   const navClassName = cn(
                     "flex items-center gap-2.5 py-2.5 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative",
-                    isSidebarVisuallyCollapsed ? "px-0 justify-center rounded-lg" : "pl-3 pr-3",
+                    sidebarCollapsed ? "px-0 justify-center rounded-lg" : "pl-3 pr-3",
                     isComingSoon 
                       ? "text-muted-foreground cursor-default"
                       : isActive
@@ -707,7 +673,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
                   // Se o item está desabilitado, renderizar como div sem navegação
                   if (item.disabled) {
-                    if (isSidebarVisuallyCollapsed) {
+                    if (sidebarCollapsed) {
                       return (
                         <Tooltip key={item.href} delayDuration={0}>
                           <TooltipTrigger asChild>
@@ -740,7 +706,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     );
                   }
 
-                  if (isSidebarVisuallyCollapsed && sidebarMode === 'fixed') {
+                  if (sidebarCollapsed) {
                     return (
                       <Tooltip key={item.href} delayDuration={0}>
                         <TooltipTrigger asChild>
@@ -759,14 +725,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     );
                   }
 
-                  // Modo auto colapsado: renderizar Link sem tooltip (sidebar expande no hover)
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
                       onClick={() => handleNavClick(item.href)}
-                      className={cn(navClassName, "whitespace-nowrap")}
-                      style={{borderRadius: '12px'}}
+                      className={navClassName} style={{borderRadius: '12px', paddingLeft: '37px', marginRight: '43px', marginLeft: '-27px'}}
                     >
                       {navContent}
                     </Link>
@@ -781,8 +745,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Main content */}
       <div 
-        className="transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] h-screen overflow-hidden flex flex-col bg-background"
-        style={{ paddingLeft: `${sidebarWidthPx}px` }}
+        className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] h-screen overflow-hidden flex flex-col bg-background", mainPadding)}
       >
         {/* Topbar */}
         <header className="sticky top-0 z-30 h-[58px] bg-card/80 backdrop-blur-md border-b border-border/50">
