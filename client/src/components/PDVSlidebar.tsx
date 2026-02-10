@@ -1162,7 +1162,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
       {/* Slidebar */}
       <div 
         className={cn(
-          "fixed top-0 right-0 h-full bg-white z-50 shadow-2xl flex flex-col",
+          "fixed top-0 right-0 h-full bg-background z-50 shadow-2xl flex flex-col",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
         style={{ 
@@ -1205,36 +1205,36 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     Todos
                     <span className={cn(
                       "absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-[10px] font-semibold",
-                      selectedCategory === null ? "bg-white text-red-500" : "bg-red-500 text-white"
-                    )}>
-                      {productsList.filter((p) => p.status === 'active').length || 0}
-                    </span>
-                  </button>
-                  {categoriesLoading ? (
-                    Array.from({ length: 4 }).map((_, i) => (
-                      <Skeleton key={i} className="h-8 w-24" />
-                    ))
-                  ) : (
-                    sortedCategories.map((category) => {
-                      const count = productsList.filter(
-                        (p) => p.status === 'active' && p.categoryId === category.id
-                      ).length || 0;
-                      const categoryNameWithoutEmoji = category.name.replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]+|[\u2600-\u27BF]/g, '').trim();
-                      return (
-                        <button
-                          key={category.id}
-                          onClick={() => setSelectedCategory(category.id)}
-                          className={cn(
-                            "relative px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0 mt-2",
-                            selectedCategory === category.id
-                              ? "bg-red-500 text-white shadow-sm"
-                              : "bg-card text-muted-foreground hover:bg-muted border border-border/50"
-                          )}
-                        >
-                          {categoryNameWithoutEmoji}
-                          <span className={cn(
-                            "absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-[10px] font-semibold",
-                            selectedCategory === category.id ? "bg-white text-red-500" : "bg-red-500 text-white"
+                      selectedCategory === null ? "bg-card text-red-500" : "bg-red-500 text-white"
+                  )}>
+                    {productsList.filter((p) => p.status === 'active').length || 0}
+                  </span>
+                </button>
+                {categoriesLoading ? (
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <Skeleton key={i} className="h-8 w-24" />
+                  ))
+                ) : (
+                  sortedCategories.map((category) => {
+                    const count = productsList.filter(
+                      (p) => p.status === 'active' && p.categoryId === category.id
+                    ).length || 0;
+                    const categoryNameWithoutEmoji = category.name.replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]+|[\u2600-\u27BF]/g, '').trim();
+                    return (
+                      <button
+                        key={category.id}
+                        onClick={() => setSelectedCategory(category.id)}
+                        className={cn(
+                          "relative px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0",
+                          selectedCategory === category.id
+                            ? "bg-red-500 text-white shadow-sm"
+                            : "bg-card text-muted-foreground hover:bg-muted border border-border/50"
+                        )}
+                      >
+                        {categoryNameWithoutEmoji}
+                        <span className={cn(
+                          "absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-[10px] font-semibold",
+                          selectedCategory === category.id ? "bg-card text-red-500" : "bg-red-500 text-white"
                           )}>
                             {count}
                           </span>
@@ -1253,7 +1253,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           ) : (
             /* Abas de Mesas no topo (padrão) */
             tables.length > 0 && (
-              <div className="relative bg-gray-100 px-3 py-2">
+              <div className="relative bg-muted/50 px-3 py-2">
                 <div 
                   ref={tablesContainerRef}
                   className={cn(
@@ -1318,7 +1318,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
         {barsSwapped ? (
           /* Abas de Mesas embaixo quando invertido */
           tables.length > 0 && (
-            <div className="relative bg-gray-100 px-3 py-2 border-b border-border/50">
+            <div className="relative bg-muted/50 px-3 py-2 border-b border-border/50">
               <div 
                 ref={!barsSwapped ? undefined : tablesContainerRef}
                 className={cn(
@@ -1407,7 +1407,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   Todos
                   <span className={cn(
                     "absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-[10px] font-semibold",
-                    selectedCategory === null ? "bg-white text-red-500" : "bg-red-500 text-white"
+                    selectedCategory === null ? "bg-card text-red-500" : "bg-red-500 text-white"
                   )}>
                     {productsList.filter((p) => p.status === 'active').length || 0}
                   </span>
@@ -1436,7 +1436,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                         {categoryNameWithoutEmoji}
                         <span className={cn(
                           "absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-[10px] font-semibold",
-                          selectedCategory === category.id ? "bg-white text-red-500" : "bg-red-500 text-white"
+                          selectedCategory === category.id ? "bg-card text-red-500" : "bg-red-500 text-white"
                         )}>
                           {count}
                         </span>
@@ -1559,9 +1559,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           </div>
 
           {/* Coluna Direita - Carrinho */}
-          <div className="w-[370px] bg-gray-50 flex flex-col">
+          <div className="w-[370px] bg-muted/30 flex flex-col">
             {/* Header do Carrinho */}
-            <div className="px-3 border-b border-border/50 bg-white" style={{paddingTop: '8px', paddingBottom: '8px'}}>
+            <div className="px-3 border-b border-border/50 bg-card" style={{paddingTop: '8px', paddingBottom: '8px'}}>
               {/* Abas: Mesa (Consumo) e Comanda - lado a lado */}
               <div className="flex gap-2">
                 {/* Mesa (número) - aba Consumo */}
@@ -1573,7 +1573,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                       ? isCurrentTableReserved
                         ? "bg-blue-500 text-white"
                         : "bg-red-500 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
                   )}
                 >
                   <UtensilsCrossed className="h-4 w-4" />
@@ -1587,10 +1587,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   className={cn(
                     "flex-1 flex items-center justify-center gap-2 p-2 rounded-lg transition-all",
                     !tabId
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
+                      ? "bg-muted text-muted-foreground/50 cursor-not-allowed opacity-50"
                       : selectedTab === 'comanda'
                         ? "bg-red-500 text-white"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80"
                   )}
                   title={!tabId ? "Mesa sem comanda aberta" : "Ver itens da comanda"}
                 >
@@ -1601,7 +1601,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             </div>
 
             {/* Lista de Itens */}
-            <div className="flex-1 overflow-y-auto p-3 space-y-2" style={{backgroundColor: '#f9fafc'}}>
+            <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-muted/20">
               {/* Aba Mesa - Carrinho (itens pendentes) */}
               {selectedTab === 'consumo' && (
                 <>
@@ -1621,7 +1621,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                       return (
                         <div
                           key={`${item.productId}-${index}`}
-                          className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-red-500 overflow-hidden transition-all duration-300"
+                          className="bg-card rounded-lg border border-border/50 shadow-sm border-l-4 border-l-red-500 overflow-hidden transition-all duration-300"
                           onMouseEnter={() => {
                             // Limpar timeout anterior se existir
                             if (hoverTimeoutRef.current) {
@@ -1649,29 +1649,29 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                               <span className="text-xs font-medium text-red-600 bg-red-50 px-1.5 py-1 rounded">
                                 {item.quantity}x
                               </span>
-                              <h4 className="font-semibold text-sm text-gray-800 truncate">
+                              <h4 className="font-semibold text-sm text-foreground truncate">
                                 {item.name}
                               </h4>
                             </div>
-                            <span className="text-sm font-bold text-gray-900 ml-2">
+                            <span className="text-sm font-bold text-foreground ml-2">
                               {formatCurrency(itemTotal)}
                             </span>
                           </div>
 
                           {/* Ações expandidas */}
                           {isExpanded && (
-                            <div className="border-t border-gray-100">
+                            <div className="border-t border-border/50">
                               {/* Complementos */}
                               {item.complements.length > 0 && (
-                                <div className="px-3 py-2 bg-gray-50">
-                                  <p className="text-xs text-gray-500 font-medium mb-1.5">Complementos:</p>
+                                <div className="px-3 py-2 bg-muted/50">
+                                  <p className="text-xs text-muted-foreground font-medium mb-1.5">Complementos:</p>
                                   <div className="space-y-1">
                                     {item.complements.map((comp, idx) => (
                                       <div key={idx} className="flex items-center justify-between text-xs">
-                                        <span className="text-gray-700">
+                                        <span className="text-foreground/80">
                                           {comp.quantity > 1 ? `${comp.quantity}x ` : ""}{comp.name}
                                         </span>
-                                        <span className="text-gray-600">
+                                        <span className="text-muted-foreground">
                                           {parseFloat(comp.price) > 0 ? `+${formatCurrency(parseFloat(comp.price) * comp.quantity)}` : "Grátis"}
                                         </span>
                                       </div>
@@ -1698,16 +1698,16 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                                         removeFromCart(index);
                                       }
                                     }}
-                                    className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
+                                    className="p-1.5 rounded bg-muted hover:bg-muted/80 transition-colors"
                                   >
-                                    <Minus className="h-3.5 w-3.5 text-gray-600" />
+                                    <Minus className="h-3.5 w-3.5 text-muted-foreground" />
                                   </button>
                                   <span className="text-sm font-medium w-7 text-center">{item.quantity}</span>
                                   <button
                                     onClick={() => updateCartItem(index, { quantity: item.quantity + 1 })}
-                                    className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
+                                    className="p-1.5 rounded bg-muted hover:bg-muted/80 transition-colors"
                                   >
-                                    <Plus className="h-3.5 w-3.5 text-gray-600" />
+                                    <Plus className="h-3.5 w-3.5 text-muted-foreground" />
                                   </button>
                                 </div>
                                 <div className="flex items-center gap-1.5">
@@ -1762,10 +1762,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                         return (
                           <div
                             key={`tab-item-${item.id}-${index}`}
-                            className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-red-500 overflow-hidden transition-all duration-200"
+                            className="bg-card rounded-lg border border-border/50 shadow-sm border-l-4 border-l-red-500 overflow-hidden transition-all duration-200"
                           >
                             <div 
-                              className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                              className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50 transition-colors"
                               onClick={() => setExpandedTabItemId(isExpanded ? null : item.id)}
                             >
                               <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -1773,26 +1773,26 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                                   {item.quantity}x
                                 </span>
                                 <div className="flex-1 min-w-0">
-                                  <h4 className="font-semibold text-sm text-gray-800 truncate">
+                                  <h4 className="font-semibold text-sm text-foreground truncate">
                                     {item.productName}
                                   </h4>
                                 </div>
                               </div>
-                              <span className="text-sm font-bold text-gray-900 ml-2">
+                              <span className="text-sm font-bold text-foreground ml-2">
                                 {formatCurrency(itemTotal)}
                               </span>
                             </div>
                             {/* Complementos da comanda */}
                             {item.complements && item.complements.length > 0 && (
-                              <div className="px-3 py-2 bg-gray-50 border-t border-gray-100">
-                                <p className="text-xs text-gray-500 font-medium mb-1">Complementos:</p>
+                              <div className="px-3 py-2 bg-muted/50 border-t border-border/50">
+                                <p className="text-xs text-muted-foreground font-medium mb-1">Complementos:</p>
                                 <div className="space-y-0.5">
                                   {item.complements.map((comp: any, idx: number) => (
                                     <div key={idx} className="flex items-center justify-between text-xs">
-                                      <span className="text-gray-700">
+                                      <span className="text-foreground/80">
                                         {comp.quantity > 1 ? `${comp.quantity}x ` : ""}{comp.name}
                                       </span>
-                                      <span className="text-gray-600">
+                                      <span className="text-muted-foreground">
                                         {parseFloat(comp.price) > 0 ? `+${formatCurrency(parseFloat(comp.price) * comp.quantity)}` : ""}
                                       </span>
                                     </div>
@@ -1802,7 +1802,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                             )}
                             {/* Observação da comanda */}
                             {item.observation && (
-                              <div className="px-3 py-1.5 bg-yellow-50 border-t border-gray-100">
+                              <div className="px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 border-t border-border/50">
                                 <p className="text-xs text-yellow-700 italic">
                                   <span className="font-medium">Obs:</span> {item.observation}
                                 </p>
@@ -1810,10 +1810,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                             )}
                             {/* Controles de edição expandíveis */}
                             {isExpanded && (
-                              <div className="px-3 py-2 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                              <div className="px-3 py-2 bg-muted/50 border-t border-border flex items-center justify-between">
                                 <div className="flex items-center gap-1">
                                   <button
-                                    className="w-[25px] h-[25px] flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 transition-colors disabled:opacity-50"
+                                    className="w-[25px] h-[25px] flex items-center justify-center rounded bg-muted hover:bg-muted/80 transition-colors disabled:opacity-50"
                                     disabled={item.quantity <= 1 || updateTabItemMutation.isPending}
                                     onClick={(e) => {
                                       e.stopPropagation();
@@ -1824,7 +1824,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                                   </button>
                                   <span className="w-8 text-center text-sm font-semibold">{item.quantity}</span>
                                   <button
-                                    className="w-[25px] h-[25px] flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 transition-colors disabled:opacity-50"
+                                    className="w-[25px] h-[25px] flex items-center justify-center rounded bg-muted hover:bg-muted/80 transition-colors disabled:opacity-50"
                                     disabled={updateTabItemMutation.isPending}
                                     onClick={(e) => {
                                       e.stopPropagation();
@@ -1858,16 +1858,16 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             </div>
 
             {/* Footer - Total e Botão */}
-            <div className="p-3 border-t border-border/50 bg-white space-y-2">
+            <div className="p-3 border-t border-border/50 bg-card space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Subtotal</span>
+                <span className="text-sm text-muted-foreground">Subtotal</span>
                 <span className="text-sm font-semibold">{formatCurrency(getDisplayTotal())}</span>
               </div>
 
               {/* Desconto do Cupom */}
               {appliedCoupon && (
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Desconto ({appliedCoupon.code})</span>
+                  <span className="text-muted-foreground">Desconto ({appliedCoupon.code})</span>
                   <span className="font-medium text-green-600">-{formatCurrency(appliedCoupon.discount)}</span>
                 </div>
               )}
@@ -1885,7 +1885,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   title="Adicionar cupom"
                   onClick={() => setShowCouponField(!showCouponField)}
                 >
-                  <Ticket className={cn("h-4 w-4", showCouponField ? "text-red-500" : "text-gray-500")} />
+                  <Ticket className={cn("h-4 w-4", showCouponField ? "text-red-500" : "text-muted-foreground")} />
                 </Button>
                 {/* Botão Imprimir - ao lado do cupom, apenas quando aba Comanda está selecionada */}
                 {selectedTab === 'comanda' && tabId && (
@@ -1893,10 +1893,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="outline"
-                        className="px-3 flex-shrink-0 border-gray-300 hover:bg-gray-100"
+                        className="px-3 flex-shrink-0 border-border hover:bg-muted"
                         title="Opções de impressão"
                       >
-                        <Printer className="h-4 w-4 text-gray-600" />
+                        <Printer className="h-4 w-4 text-muted-foreground" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="w-64">
@@ -2136,7 +2136,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
           />
           
-          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{ touchAction: 'pan-y' }}>
+          <div className="relative bg-card rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{ touchAction: 'pan-y' }}>
             {/* Imagem do Produto ou Complemento Selecionado */}
             {(() => {
               const displayImage = selectedComplementImage || selectedProduct.images?.[0];
@@ -2151,9 +2151,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     />
                     <button 
                       onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
-                      className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
+                      className="absolute top-3 right-3 p-2 bg-background/90 hover:bg-background rounded-full shadow-lg transition-colors z-10"
                     >
-                      <X className="h-5 w-5 text-gray-700" />
+                      <X className="h-5 w-5 text-foreground" />
                     </button>
                   </div>
                 );
@@ -2164,9 +2164,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80 animate-placeholder-pulse" />
                   <button 
                     onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
-                    className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
+                    className="absolute top-3 right-3 p-2 bg-background/90 hover:bg-background rounded-full shadow-lg transition-colors z-10"
                   >
-                    <X className="h-5 w-5 text-gray-700" />
+                    <X className="h-5 w-5 text-foreground" />
                   </button>
                 </div>
               );
@@ -2177,7 +2177,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               <div className="p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
                 {/* Título e Preço */}
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
+                  <h3 className="text-xl font-bold text-foreground">{selectedProduct.name}</h3>
                   {Number(selectedProduct.price) > 0 && (
                     <p className="text-lg font-semibold text-red-500 mt-1">
                       {formatCurrency(parseFloat(selectedProduct.price))}
@@ -2187,7 +2187,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
                 {/* Descrição */}
                 {selectedProduct.description && (
-                  <p className="text-sm text-gray-600 leading-relaxed">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {selectedProduct.description}
                   </p>
                 )}
@@ -2200,18 +2200,18 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                       const isRadio = group.maxQuantity === 1;
                       
                       return (
-                        <div key={group.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                        <div key={group.id} className="border border-border rounded-xl overflow-hidden">
                           {/* Header do Grupo */}
-                          <div className="bg-gray-50 px-4 py-3 border-b border-gray-200" style={{paddingTop: '8px', height: '58px'}}>
+                          <div className="bg-muted/50 px-4 py-3 border-b border-border" style={{paddingTop: '8px', height: '58px'}}>
                             <div className="flex items-center justify-between">
-                              <h4 className="font-semibold text-gray-900">{group.name}</h4>
+                              <h4 className="font-semibold text-foreground">{group.name}</h4>
                               {group.isRequired && (
                                 <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
                                   Obrigatório
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-gray-500 mt-0.5">
+                            <p className="text-xs text-muted-foreground mt-0.5">
                               {group.minQuantity > 0 ? `Mín: ${group.minQuantity}` : ''}
                               {group.minQuantity > 0 && group.maxQuantity > 1 ? ' | ' : ''}
                               {group.maxQuantity > 1 ? `Máx: ${group.maxQuantity}` : ''}
@@ -2220,7 +2220,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                           </div>
                           
                           {/* Itens do Grupo */}
-                          <div className="divide-y divide-gray-100">
+                          <div className="divide-y divide-border/50">
                             {group.items.map((item) => {
                               const itemQuantity = selectedInGroup.get(item.id) || 0;
                               const isSelected = itemQuantity > 0;
@@ -2269,7 +2269,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                                 <div
                                   key={item.id}
                                   className={`flex items-center justify-between px-4 py-3 transition-colors ${
-                                    isSelected ? 'bg-red-50' : 'hover:bg-gray-50'
+                                    isSelected ? 'bg-red-50 dark:bg-red-900/20' : 'hover:bg-muted/50'
                                   }`}
                                 >
                                   <label className="flex items-center gap-3 cursor-pointer flex-1">
@@ -2278,14 +2278,14 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                                       name={`group-${group.id}`}
                                       checked={isSelected}
                                       onChange={handleToggle}
-                                      className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500"
+                                      className="w-4 h-4 text-red-500 border-border focus:ring-red-500"
                                     />
-                                    <span className="text-sm text-gray-900">{item.name}</span>
+                                    <span className="text-sm text-foreground">{item.name}</span>
                                   </label>
                                   
                                   {/* Preço */}
                                   {displayPrice > 0 && (
-                                    <span className="text-sm text-gray-600 min-w-[70px] text-right">
+                                    <span className="text-sm text-muted-foreground min-w-[70px] text-right">
                                       + {formatCurrency(displayPrice)}
                                     </span>
                                   )}
@@ -2301,7 +2301,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
                 {/* Campo de Observação */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Observações
                   </label>
                   <textarea
@@ -2309,26 +2309,26 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     onChange={(e) => setProductObservation(e.target.value)}
                     placeholder="Ex: Sem cebola, bem passado..."
                     rows={2}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
+                    className="w-full px-4 py-2 border border-border rounded-xl text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
                   />
                 </div>
               </div>
             </div>
 
             {/* Footer - Quantidade e Adicionar */}
-            <div className="border-t p-4 bg-white flex items-center gap-4">
+            <div className="border-t p-4 bg-card flex items-center gap-4">
               {/* Controle de Quantidade */}
-              <div className="flex items-center gap-3 bg-gray-100 rounded-full px-2 py-1">
+              <div className="flex items-center gap-3 bg-muted rounded-full px-2 py-1">
                 <button
                   onClick={() => setProductQuantity(Math.max(1, productQuantity - 1))}
-                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+                  className="w-8 h-8 rounded-full bg-card shadow-sm flex items-center justify-center hover:bg-muted/50 transition-colors"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
                 <span className="w-8 text-center font-semibold">{productQuantity}</span>
                 <button
                   onClick={() => setProductQuantity(productQuantity + 1)}
-                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+                  className="w-8 h-8 rounded-full bg-card shadow-sm flex items-center justify-center hover:bg-muted/50 transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
@@ -2363,14 +2363,14 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             className="absolute inset-0 bg-black/50"
             onClick={() => setShowCategoriesModal(false)}
           />
-          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm mx-4 max-h-[70vh] overflow-hidden">
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="font-semibold text-gray-900">Categorias</h3>
+          <div className="relative bg-card rounded-xl shadow-2xl w-full max-w-sm mx-4 max-h-[70vh] overflow-hidden">
+            <div className="p-4 border-b border-border flex items-center justify-between">
+              <h3 className="font-semibold text-foreground">Categorias</h3>
               <button
                 onClick={() => setShowCategoriesModal(false)}
-                className="p-1 rounded hover:bg-gray-100"
+                className="p-1 rounded hover:bg-muted"
               >
-                <X className="h-5 w-5 text-gray-500" />
+                <X className="h-5 w-5 text-muted-foreground" />
               </button>
             </div>
             <div className="overflow-y-auto max-h-[50vh]">
@@ -2380,12 +2380,12 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   setShowCategoriesModal(false);
                 }}
                 className={cn(
-                  "w-full flex items-center justify-between p-3 border-b border-gray-100 transition-colors",
-                  selectedCategory === null ? "bg-red-50 text-red-600" : "hover:bg-gray-50"
+                  "w-full flex items-center justify-between p-3 border-b border-border/50 transition-colors",
+                  selectedCategory === null ? "bg-red-50 dark:bg-red-900/20 text-red-600" : "hover:bg-muted/50"
                 )}
               >
                 <span className="font-medium text-sm">Todos os produtos</span>
-                <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
+                <span className="text-xs bg-muted px-2 py-0.5 rounded-full">
                   {productsList.filter((p) => p.status === 'active').length}
                 </span>
               </button>
@@ -2401,12 +2401,12 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                       setShowCategoriesModal(false);
                     }}
                     className={cn(
-                      "w-full flex items-center justify-between p-3 border-b border-gray-100 transition-colors",
-                      selectedCategory === category.id ? "bg-red-50 text-red-600" : "hover:bg-gray-50"
+                      "w-full flex items-center justify-between p-3 border-b border-border/50 transition-colors",
+                      selectedCategory === category.id ? "bg-red-50 dark:bg-red-900/20 text-red-600" : "hover:bg-muted/50"
                     )}
                   >
                     <span className="font-medium text-sm">{category.name}</span>
-                    <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">{count}</span>
+                    <span className="text-xs bg-muted px-2 py-0.5 rounded-full">{count}</span>
                   </button>
                 );
               })}
@@ -2424,7 +2424,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           />
           
           {/* Modal */}
-          <div className="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-md max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="relative bg-card rounded-2xl shadow-2xl w-[90%] max-w-md max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
             <div className="bg-gradient-to-r from-red-500 to-red-600 p-4">
               <div className="flex items-center justify-between">
@@ -2449,31 +2449,31 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             {/* Conteúdo do Recibo */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {/* Nome do Estabelecimento */}
-              <div className="text-center pb-3 border-b border-dashed border-gray-300">
+              <div className="text-center pb-3 border-b border-dashed border-border">
                 <h3 className="font-bold text-lg">{establishment?.name || 'Estabelecimento'}</h3>
-                <p className="text-xs text-gray-500">SISTEMA DE PEDIDOS</p>
+                <p className="text-xs text-muted-foreground">SISTEMA DE PEDIDOS</p>
               </div>
 
               {/* Tipo do Pedido */}
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Tipo:</span>
-                <span className="px-3 py-1 bg-gray-900 text-white text-xs font-bold rounded">
+                <span className="text-sm text-muted-foreground">Tipo:</span>
+                <span className="px-3 py-1 bg-foreground text-background text-xs font-bold rounded">
                   CONSUMO
                 </span>
               </div>
 
               {/* Info da Mesa */}
-              <div className="p-3 bg-gray-50 rounded-lg space-y-1">
-                <p className="text-xs font-semibold text-gray-700">Mesa:</p>
+              <div className="p-3 bg-muted/50 rounded-lg space-y-1">
+                <p className="text-xs font-semibold text-foreground/80">Mesa:</p>
                 <p className="text-sm font-bold">Mesa {tableDisplayName}</p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Comanda C{String(tabData?.id || 0).padStart(3, '0')} • Aberta em {tabData?.openedAt ? new Date(tabData.openedAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
                 </p>
               </div>
 
               {/* Lista de Itens */}
               {printerSettings?.showDividers !== false && (
-                <div className="border-t border-dashed border-gray-300" />
+                <div className="border-t border-dashed border-border" />
               )}
               
               <div className="space-y-2">
@@ -2485,7 +2485,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   } catch (e) {}
                   
                   return (
-                    <div key={index} className="p-3 border border-gray-200 rounded-lg">
+                    <div key={index} className="p-3 border border-border rounded-lg">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <p className="font-medium text-sm">
@@ -2499,10 +2499,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                                     const qty = ci.quantity || 1;
                                     const qtyPrefix = qty > 1 ? `${qty}x ` : '';
                                     return (
-                                      <p key={`${cIndex}-${ciIndex}`} className="text-xs text-gray-500 pl-2">
+                                      <p key={`${cIndex}-${ciIndex}`} className="text-xs text-muted-foreground pl-2">
                                         + {qtyPrefix}{ci.name}
                                         {ci.price > 0 && (
-                                          <span className="ml-1 text-gray-400">
+                                          <span className="ml-1 text-muted-foreground/70">
                                             ({formatCurrency(ci.price * qty)})
                                           </span>
                                         )}
@@ -2513,10 +2513,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                                   const qty = comp.quantity || 1;
                                   const qtyPrefix = qty > 1 ? `${qty}x ` : '';
                                   return (
-                                    <p key={cIndex} className="text-xs text-gray-500 pl-2">
+                                    <p key={cIndex} className="text-xs text-muted-foreground pl-2">
                                       + {qtyPrefix}{comp.name}
                                       {comp.price > 0 && (
-                                        <span className="ml-1 text-gray-400">
+                                        <span className="ml-1 text-muted-foreground/70">
                                           ({formatCurrency(comp.price * qty)})
                                         </span>
                                       )}
@@ -2528,7 +2528,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                             </div>
                           )}
                           {item.notes && (
-                            <p className="text-xs text-gray-500 mt-1 italic">Obs: {item.notes}</p>
+                            <p className="text-xs text-muted-foreground mt-1 italic">Obs: {item.notes}</p>
                           )}
                         </div>
                         <p className="font-semibold text-sm">
@@ -2541,7 +2541,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               </div>
 
               {printerSettings?.showDividers !== false && (
-                <div className="border-t border-dashed border-gray-300" />
+                <div className="border-t border-dashed border-border" />
               )}
 
               {/* Totais */}
@@ -2551,7 +2551,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   <span>{formatCurrency(calculateTabTotal())}</span>
                 </div>
                 
-                <div className="flex justify-between font-bold text-lg pt-2 border-t border-gray-200">
+                <div className="flex justify-between font-bold text-lg pt-2 border-t border-border">
                   <span>TOTAL:</span>
                   <span className="text-red-600">
                     {formatCurrency(calculateTabTotal())}
@@ -2560,16 +2560,16 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               </div>
 
               {/* Forma de Pagamento */}
-              <div className="p-3 bg-gray-50 rounded-lg">
+              <div className="p-3 bg-muted/50 rounded-lg">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Pagamento:</span>
+                  <span className="text-sm text-muted-foreground">Pagamento:</span>
                   <span className="font-medium">Dinheiro</span>
                 </div>
               </div>
             </div>
 
             {/* Botões */}
-            <div className="p-4 border-t border-gray-200 space-y-2">
+            <div className="p-4 border-t border-border space-y-2">
               <Button
                 onClick={handleConfirmCloseTable}
                 disabled={closeTableMutation.isPending}

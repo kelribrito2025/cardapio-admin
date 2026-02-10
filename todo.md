@@ -5871,3 +5871,6 @@
 - [x] Corrigir tema escuro no painel central de produtos da página de Mesas (fundo branco no modo dark)
 - [x] Corrigir tema escuro na sacola/painel direito da página de Mesas
 - [x] Corrigir tema escuro nos cards de produtos, barra de categorias e campo de busca
+
+## Bug - Tema Escuro no PDV Embutido nas Mesas
+- [x] Corrigir tema escuro na sidebar do PDV embutido na página de Mesas (painel de produtos, categorias, busca e sacola)
