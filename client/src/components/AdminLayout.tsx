@@ -34,6 +34,8 @@ import {
   Sparkles,
   Moon,
   Sun,
+  Star,
+  BookOpen,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -80,7 +82,10 @@ const menuSections = [
     title: "GESTÃO",
     items: [
       { icon: ClipboardList, label: "Pedidos", href: "/pedidos", disabled: false },
-      { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo", disabled: false },
+      { icon: BookOpen, label: "Menu", href: "/menu-parent", disabled: false, isParent: true, children: [
+        { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo", disabled: false },
+        { icon: Star, label: "Avaliações", href: "/avaliacoes", disabled: false, badgeKey: "reviews" },
+      ]},
       { icon: Tag, label: "Categorias", href: "/categorias", disabled: false },
       { icon: Layers, label: "Complementos", href: "/complementos", disabled: false },
       { icon: Package, label: "Estoque", href: "/estoque", disabled: true, comingSoon: true },
@@ -115,6 +120,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { searchQuery, setSearchQuery } = useSearch();
+  
+  // Estado para submenus expandidos (Menu pai)
+  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>(() => {
+    // Auto-expandir se estamos numa rota filha
+    const initial: Record<string, boolean> = {};
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path === '/catalogo' || path.startsWith('/catalogo/') || path === '/avaliacoes') {
+        initial['/menu-parent'] = true;
+      }
+    }
+    return initial;
+  });
   
   // Estado local para controlar se o som está habilitado (sincronizado com localStorage)
   // IMPORTANTE: O padrão é FALSE (desativado) até o usuário clicar para ativar
@@ -203,6 +221,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   // Get trial info
   const { data: trialInfo } = trpc.establishment.getTrialInfo.useQuery();
+
+  // Get unread reviews count for badge
+  const { data: unreadReviewCount } = trpc.reviewsAdmin.unreadCount.useQuery(
+    { establishmentId: establishment?.id || 0 },
+    { enabled: !!establishment?.id, refetchOnWindowFocus: true }
+  );
+
+  // Auto-expandir menu pai quando navegar para rota filha
+  useEffect(() => {
+    if (location === '/catalogo' || location.startsWith('/catalogo/') || location === '/avaliacoes') {
+      setExpandedMenus(prev => ({ ...prev, '/menu-parent': true }));
+    }
+  }, [location]);
 
   // Get business hours to calculate if store is currently open
   const { data: businessHoursData } = trpc.establishment.getBusinessHours.useQuery(
@@ -610,14 +641,127 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               
               {/* Itens da seção */}
               <div className="space-y-1.5">
-                {section.items.map((item) => {
+                {section.items.map((item: any) => {
+                  // ===== PARENT MENU WITH CHILDREN =====
+                  if (item.isParent && item.children) {
+                    const isExpanded = expandedMenus[item.href] || false;
+                    const isChildActive = item.children.some((child: any) => 
+                      location === child.href || (child.href !== '/' && location.startsWith(child.href))
+                    );
+                    // Total badge count from children
+                    const totalBadge = (typeof unreadReviewCount === 'number' ? unreadReviewCount : 0);
+
+                    const parentClassName = cn(
+                      "flex items-center gap-2.5 py-2.5 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative cursor-pointer",
+                      sidebarCollapsed ? "px-0 justify-center rounded-lg" : "pl-3 pr-3",
+                      isChildActive
+                        ? "text-primary"
+                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                    );
+
+                    if (sidebarCollapsed) {
+                      // Quando colapsado, mostrar como tooltip com filhos
+                      return (
+                        <div key={item.href}>
+                          <Tooltip delayDuration={0}>
+                            <TooltipTrigger asChild>
+                              <div
+                                className={parentClassName}
+                                onClick={() => setExpandedMenus(prev => ({ ...prev, [item.href]: !prev[item.href] }))}
+                              >
+                                <div className="relative">
+                                  <item.icon className="h-4 w-4 flex-shrink-0 mx-auto" />
+                                  {totalBadge > 0 && (
+                                    <span className="absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse bg-amber-500 text-white">
+                                      {totalBadge > 9 ? "9+" : totalBadge}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="right" className="font-medium">
+                              <p>{item.label}</p>
+                              <div className="mt-1 space-y-1">
+                                {item.children.map((child: any) => (
+                                  <Link key={child.href} href={child.href} onClick={() => handleNavClick(child.href)} className="block text-xs hover:text-primary py-0.5">
+                                    {child.label}
+                                  </Link>
+                                ))}
+                              </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div key={item.href}>
+                        {/* Parent item */}
+                        <div
+                          className={cn(parentClassName, "select-none")}
+                          style={{borderRadius: '12px', paddingLeft: '37px', marginRight: '43px', marginLeft: '-27px'}}
+                          onClick={() => setExpandedMenus(prev => ({ ...prev, [item.href]: !prev[item.href] }))}
+                        >
+                          <item.icon className="h-4 w-4 flex-shrink-0" />
+                          <span className="text-sm flex items-center gap-2 flex-1">
+                            {item.label}
+                            {totalBadge > 0 && (
+                              <span className="text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center bg-amber-500 text-white">
+                                {totalBadge > 99 ? "99+" : totalBadge}
+                              </span>
+                            )}
+                          </span>
+                          <ChevronDown className={cn(
+                            "h-3.5 w-3.5 transition-transform duration-200",
+                            isExpanded ? "rotate-0" : "-rotate-90"
+                          )} />
+                        </div>
+                        {/* Children */}
+                        <div className={cn(
+                          "overflow-hidden transition-all duration-200",
+                          isExpanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+                        )}>
+                          <div className="ml-4 mt-0.5 space-y-0.5">
+                            {item.children.map((child: any) => {
+                              const childActive = location === child.href || (child.href !== '/' && location.startsWith(child.href));
+                              const childBadge = child.badgeKey === 'reviews' && typeof unreadReviewCount === 'number' && unreadReviewCount > 0 ? unreadReviewCount : 0;
+                              return (
+                                <Link
+                                  key={child.href}
+                                  href={child.href}
+                                  onClick={() => handleNavClick(child.href)}
+                                  className={cn(
+                                    "flex items-center gap-2.5 py-2 text-sm font-medium transition-all duration-200 relative",
+                                    "pl-3 pr-3",
+                                    childActive
+                                      ? "bg-primary/15 text-primary rounded-r-xl -ml-3 pl-6 border-r-4 border-primary"
+                                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                                  )}
+                                  style={{borderRadius: '12px', paddingLeft: '37px', marginRight: '43px', marginLeft: '-27px'}}
+                                >
+                                  <child.icon className="h-3.5 w-3.5 flex-shrink-0" />
+                                  <span className="text-sm flex items-center gap-2">
+                                    {child.label}
+                                    {childBadge > 0 && (
+                                      <span className="text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center bg-amber-500 text-white">
+                                        {childBadge > 99 ? "99+" : childBadge}
+                                      </span>
+                                    )}
+                                  </span>
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // ===== REGULAR MENU ITEM =====
                   const isActive = !item.disabled && (location === item.href || 
                     (item.href !== "/" && location.startsWith(item.href)));
                   
-                  // Verificar se é o item de Pedidos e se tem pedidos novos
                   const showOrderBadge = item.href === "/pedidos" && newOrdersCount > 0;
-                  
-                  // Verificar se é item "Em breve"
                   const isComingSoon = item.comingSoon === true;
                   
                   const navContent = (
@@ -671,7 +815,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                         : "text-muted-foreground hover:bg-accent hover:text-foreground"
                   );
 
-                  // Se o item está desabilitado, renderizar como div sem navegação
                   if (item.disabled) {
                     if (sidebarCollapsed) {
                       return (

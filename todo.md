@@ -5966,3 +5966,14 @@
 ## Bug: Pedido finalizado não aparece no card Completos após limpeza manual
 - [x] Ao finalizar pedido, resetar limpeza manual do card Completos para que o novo pedido apareça
 - [x] Mesma lógica para Cancelados: ao cancelar pedido, resetar limpeza manual do card Cancelados
+
+## Página de Avaliações do Restaurante
+- [x] Schema: adicionar campo de resposta (responseText, responseDate) na tabela de avaliações
+- [x] Backend: procedures tRPC para listar avaliações, métricas e responder
+- [x] Frontend: página de Avaliações com cards de métricas no topo
+- [x] Frontend: lista de avaliações com nota, nome, comentário, data, status
+- [x] Frontend: botão Responder com campo de texto inline/modal
+- [x] Frontend: resposta pública visível junto da avaliação
+- [x] Sidebar: reorganizar Cardápio como submenu de Menu (Menu > Cardápio, Avaliações)
+- [x] Badge: contador de avaliações pendentes no menu lateral
+- [x] Destaque visual para avaliações negativas (1-2 estrelas)

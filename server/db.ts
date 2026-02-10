@@ -6428,3 +6428,119 @@ export async function upsertPdvCustomer(data: {
     return { id: result[0].insertId, ...data };
   }
 }
+
+// ============ REVIEW ADMIN FUNCTIONS ============
+
+/**
+ * Busca métricas de avaliações para o painel admin do restaurante
+ */
+export async function getReviewMetrics(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return { avgRating: 0, avgRating30d: 0, totalReviews: 0, uniqueCustomers: 0, pendingResponse: 0 };
+
+  // Métricas gerais
+  const general = await db.select({
+    avgRating: sql<number>`COALESCE(AVG(rating), 0)`,
+    totalReviews: sql<number>`COUNT(*)`,
+    uniqueCustomers: sql<number>`COUNT(DISTINCT customerPhone)`,
+    pendingResponse: sql<number>`SUM(CASE WHEN responseText IS NULL THEN 1 ELSE 0 END)`,
+  }).from(reviews).where(eq(reviews.establishmentId, establishmentId));
+
+  // Média últimos 30 dias
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const recent = await db.select({
+    avgRating30d: sql<number>`COALESCE(AVG(rating), 0)`,
+  }).from(reviews).where(
+    and(
+      eq(reviews.establishmentId, establishmentId),
+      gte(reviews.createdAt, thirtyDaysAgo)
+    )
+  );
+
+  const parseNum = (v: unknown) => typeof v === 'string' ? parseFloat(v) : (typeof v === 'number' ? v : 0);
+
+  return {
+    avgRating: parseNum(general[0]?.avgRating),
+    avgRating30d: parseNum(recent[0]?.avgRating30d),
+    totalReviews: parseNum(general[0]?.totalReviews),
+    uniqueCustomers: parseNum(general[0]?.uniqueCustomers),
+    pendingResponse: parseNum(general[0]?.pendingResponse),
+  };
+}
+
+/**
+ * Busca avaliações com paginação e filtros
+ */
+export async function getReviewsAdmin(establishmentId: number, options?: { limit?: number; offset?: number; filter?: 'all' | 'pending' | 'responded' }) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const conditions = [eq(reviews.establishmentId, establishmentId)];
+  if (options?.filter === 'pending') {
+    conditions.push(sql`responseText IS NULL`);
+  } else if (options?.filter === 'responded') {
+    conditions.push(isNotNull(reviews.responseText));
+  }
+
+  return db.select().from(reviews)
+    .where(and(...conditions))
+    .orderBy(desc(reviews.createdAt))
+    .limit(options?.limit ?? 50)
+    .offset(options?.offset ?? 0);
+}
+
+/**
+ * Responder a uma avaliação
+ */
+export async function respondToReview(reviewId: number, establishmentId: number, responseText: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(reviews).set({
+    responseText,
+    responseDate: new Date(),
+  }).where(
+    and(
+      eq(reviews.id, reviewId),
+      eq(reviews.establishmentId, establishmentId)
+    )
+  );
+}
+
+/**
+ * Marcar avaliações como lidas
+ */
+export async function markReviewsAsRead(establishmentId: number, reviewIds: number[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  if (reviewIds.length === 0) return;
+
+  await db.update(reviews).set({ isRead: true }).where(
+    and(
+      eq(reviews.establishmentId, establishmentId),
+      inArray(reviews.id, reviewIds)
+    )
+  );
+}
+
+/**
+ * Contar avaliações não lidas (para badge no menu)
+ */
+export async function getUnreadReviewCount(establishmentId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+
+  const result = await db.select({
+    count: sql<number>`COUNT(*)`
+  }).from(reviews).where(
+    and(
+      eq(reviews.establishmentId, establishmentId),
+      eq(reviews.isRead, false)
+    )
+  );
+
+  const count = result[0]?.count;
+  return typeof count === 'string' ? parseInt(count) : (count ?? 0);
+}

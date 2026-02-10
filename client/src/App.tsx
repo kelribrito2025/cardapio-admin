@@ -28,6 +28,7 @@ import PDV from "./pages/PDV";
 import AccountSecurity from "./pages/AccountSecurity";
 import Ajuda from "./pages/Ajuda";
 import MesasComandas from "./pages/MesasComandas";
+import Avaliacoes from "./pages/Avaliacoes";
 import { GlobalPDVHandle } from "./components/GlobalPDVHandle";
 
 // Admin Pages (Super Admin)
@@ -71,6 +72,7 @@ function AdminRoutes() {
         <Route path="/campanhas" component={Campanhas} />
         <Route path="/pdv" component={PDV} />
         <Route path="/mesas" component={MesasComandas} />
+        <Route path="/avaliacoes" component={Avaliacoes} />
         <Route path="/conta-seguranca" component={AccountSecurity} />
         <Route path="/ajuda" component={Ajuda} />
         

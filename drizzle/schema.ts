@@ -318,6 +318,11 @@ export const reviews = mysqlTable("reviews", {
   customerPhone: varchar("customerPhone", { length: 30 }).notNull(), // Para identificar cliente único
   rating: int("rating").notNull(), // 1-5 estrelas
   comment: text("comment"),
+  // Resposta do restaurante
+  responseText: text("responseText"), // Texto da resposta pública
+  responseDate: timestamp("responseDate"), // Data da resposta
+  // Controle de visualização
+  isRead: boolean("isRead").default(false).notNull(), // Se foi visualizada pelo restaurante
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

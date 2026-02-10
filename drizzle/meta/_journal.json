@@ -547,6 +547,13 @@
       "when": 1770736355950,
       "tag": "0077_shiny_ironclad",
       "breakpoints": true
+    },
+    {
+      "idx": 78,
+      "version": "5",
+      "when": 1770742605053,
+      "tag": "0078_normal_shockwave",
+      "breakpoints": true
     }
   ]
 }
