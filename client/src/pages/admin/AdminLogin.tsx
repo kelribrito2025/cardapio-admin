@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
@@ -12,6 +13,15 @@ export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const { forceTheme } = useTheme();
+
+  // Forçar tema light no /admin/login - nunca herdar dark mode
+  useEffect(() => {
+    forceTheme("light");
+    return () => {
+      forceTheme(null);
+    };
+  }, [forceTheme]);
 
   const loginMutation = trpc.admin.auth.login.useMutation({
     onSuccess: () => {

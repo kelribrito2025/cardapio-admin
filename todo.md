@@ -5928,3 +5928,7 @@
 - [x] Toggle de som deve ficar vermelho quando desativado no dark mode
 - [x] Forçar tema light nas telas públicas (Login, Cadastro, Onboarding) - nunca herdar dark mode do admin
 - [x] Corrigir checkout de planos para usar mode: subscription com renovação automática mensal/anual
+
+## Bug: Herança indevida de tema no /admin
+- [x] Forçar tema LIGHT fixo em todas as rotas /admin (AdminPanelLayout + AdminLogin)
+- [x] Garantir que /admin nunca herda dark mode do restaurante, menu público ou localStorage

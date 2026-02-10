@@ -5,6 +5,7 @@
  * NÃO confundir com AdminLayout.tsx (layout do painel do restaurante).
  */
 import { useState, useEffect } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useLocation, Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import {
@@ -36,6 +37,15 @@ interface AdminPanelLayoutProps {
 export default function AdminPanelLayout({ children }: AdminPanelLayoutProps) {
   const [location, navigate] = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { forceTheme } = useTheme();
+
+  // Forçar tema light no /admin - nunca herdar dark mode de outras áreas
+  useEffect(() => {
+    forceTheme("light");
+    return () => {
+      forceTheme(null);
+    };
+  }, [forceTheme]);
 
   const adminMe = trpc.admin.auth.me.useQuery(undefined, {
     retry: false,
