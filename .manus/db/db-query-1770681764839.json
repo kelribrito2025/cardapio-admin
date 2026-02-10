@@ -1,0 +1,23 @@
+{
+  "query": "SELECT * FROM pdv_customers WHERE phone = '88999990001';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM pdv_customers WHERE phone = '88999990001';",
+  "rows": [
+    {
+      "id": "3",
+      "establishmentId": "999999",
+      "phone": "88999990001",
+      "name": "João Atualizado",
+      "street": "Rua Nova",
+      "number": "456",
+      "complement": "Apto 4",
+      "neighborhood": "Bairro Novo",
+      "reference": "Próximo à praça",
+      "createdAt": "2026-02-10 00:02:22",
+      "updatedAt": "2026-02-10 00:02:37"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\testablishmentId\tphone\tname\tstreet\tnumber\tcomplement\tneighborhood\treference\tcreatedAt\tupdatedAt\n3\t999999\t88999990001\tJoão Atualizado\tRua Nova\t456\tApto 4\tBairro Novo\tPróximo à praça\t2026-02-10 00:02:22\t2026-02-10 00:02:37\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

@@ -74,6 +74,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn, capitalizeFirst } from "@/lib/utils";
+import { useSearch } from "@/contexts/SearchContext";
 
 // Sortable Product Item Component
 function SortableProductItem({
@@ -258,8 +259,8 @@ export default function Catalogo() {
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
 
-  // Filters
-  const [search, setSearch] = useState("");
+  // Filters - use global search from topbar
+  const { searchQuery: search } = useSearch();
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [stockFilter, setStockFilter] = useState<string>("all");

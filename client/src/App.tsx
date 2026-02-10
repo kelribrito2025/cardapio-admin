@@ -5,6 +5,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { NewOrdersProvider } from "./contexts/NewOrdersContext";
+import { SearchProvider } from "./contexts/SearchContext";
 
 // Pages
 import Dashboard from "./pages/Dashboard";
@@ -47,6 +48,7 @@ import Onboarding from "./pages/Onboarding";
 // Componente wrapper para rotas do admin que precisam do NewOrdersProvider
 function AdminRoutes() {
   return (
+    <SearchProvider>
     <NewOrdersProvider>
       <GlobalPDVHandle />
       <Switch>
@@ -77,6 +79,7 @@ function AdminRoutes() {
         <Route component={NotFound} />
       </Switch>
     </NewOrdersProvider>
+    </SearchProvider>
   );
 }
 

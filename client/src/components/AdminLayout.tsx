@@ -62,6 +62,7 @@ import {
 import { toast } from "sonner";
 import { TrialExpiredModal } from "@/components/TrialExpiredModal";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useSearch } from "@/contexts/SearchContext";
 
 const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed";
 
@@ -113,7 +114,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const { newOrdersCount, unlockAudio, isAudioUnlocked } = useNewOrders();
   const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const { searchQuery, setSearchQuery } = useSearch();
   
   // Estado local para controlar se o som está habilitado (sincronizado com localStorage)
   // IMPORTANTE: O padrão é FALSE (desativado) até o usuário clicar para ativar

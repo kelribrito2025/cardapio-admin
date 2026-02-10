@@ -559,7 +559,8 @@ export async function getProductsByEstablishment(
   const conditions = [eq(products.establishmentId, establishmentId)];
   
   if (filters?.search) {
-    conditions.push(like(products.name, `%${filters.search}%`));
+    // Case-insensitive search using LOWER()
+    conditions.push(sql`LOWER(${products.name}) LIKE LOWER(${`%${filters.search}%`})`);
   }
   if (filters?.categoryId) {
     conditions.push(eq(products.categoryId, filters.categoryId));
