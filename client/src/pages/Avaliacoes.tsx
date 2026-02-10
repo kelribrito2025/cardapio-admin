@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Star, MessageSquare, Users, Clock, TrendingUp, Send, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Filter, Hash, Calendar, Phone, X, Pencil, CheckCircle2, ShieldCheck } from "lucide-react";
+import { Star, MessageSquare, Users, Clock, TrendingUp, Send, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Filter, Hash, Calendar, Phone, X, Pencil, CheckCircle2 } from "lucide-react";
 import { StatCard } from "@/components/shared";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -156,12 +156,7 @@ function ReviewDetailSheet({ review, open, onOpenChange, establishmentId, onResp
                       />
                     ))}
                   </div>
-                  <div className="ml-auto">
-                    <div className="flex items-center gap-1 text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
-                      <ShieldCheck size={12} />
-                      <span>Verificada</span>
-                    </div>
-                  </div>
+
                 </div>
               </div>
 
@@ -170,8 +165,10 @@ function ReviewDetailSheet({ review, open, onOpenChange, establishmentId, onResp
               {/* Comentário do cliente */}
               <div>
                 <div className="flex items-start gap-3">
-                  <div className="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
-                    <CheckCircle2 className="w-4 h-4 text-white" />
+                  <div className="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="text-red-600 font-bold text-sm">
+                      {(review.customerName || "C").charAt(0).toUpperCase()}
+                    </span>
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold text-foreground text-[15px]">
@@ -197,10 +194,12 @@ function ReviewDetailSheet({ review, open, onOpenChange, establishmentId, onResp
               <div>
                 <div className="flex items-start gap-3">
                   <div className={cn(
-                    "w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5",
-                    hasResponse ? "bg-emerald-500" : "bg-gray-300"
+                    "w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5",
+                    hasResponse ? "bg-red-100" : "bg-gray-100"
                   )}>
-                    <CheckCircle2 className={cn("w-4 h-4", hasResponse ? "text-white" : "text-gray-500")} />
+                    <span className={cn("font-bold text-sm", hasResponse ? "text-red-600" : "text-gray-400")}>
+                      R
+                    </span>
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold text-foreground text-[15px]">Sua resposta</p>

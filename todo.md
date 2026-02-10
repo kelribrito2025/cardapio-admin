@@ -6008,3 +6008,6 @@
 - [x] Paginação backend: adicionar limit/offset e contagem total na query de avaliações
 - [x] Paginação frontend: controles Primeira, Anterior, campo de página, Próxima, Última (15 por página)
 - [x] Redesenhar layout interno da sidebar de avaliação estilo iFood: nota destaque, estrelas, check verde cliente, seção resposta com estados sem/com resposta, layout limpo e responsivo
+- [x] Remover badge "Verificada" da nota na sidebar de avaliação
+- [x] Substituir ícone check verde do cliente por avatar vermelho com inicial do nome
+- [x] Substituir ícone check verde da resposta por avatar com inicial do restaurante
