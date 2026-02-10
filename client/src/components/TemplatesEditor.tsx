@@ -49,6 +49,15 @@ interface TemplatesEditorProps {
   };
   restaurantName?: string;
   restaurantLogo?: string | null;
+  // Flags de notificações ativadas - templates desativados não são exibidos
+  enabledNotifications?: {
+    notifyOnNewOrder?: boolean;
+    notifyOnPreparing?: boolean;
+    notifyOnReady?: boolean;
+    notifyOnCompleted?: boolean;
+    notifyOnCancelled?: boolean;
+    notifyOnReservation?: boolean;
+  };
 }
 
 type TemplateType = 'newOrder' | 'preparing' | 'ready' | 'readyPickup' | 'completed' | 'cancelled' | 'reservation';
@@ -192,9 +201,34 @@ export function TemplatesEditor({
   defaultTemplates,
   restaurantName,
   restaurantLogo,
+  enabledNotifications,
 }: TemplatesEditorProps) {
   const [activeTemplate, setActiveTemplate] = useState<TemplateType>('newOrder');
   const [copiedVar, setCopiedVar] = useState<string | null>(null);
+
+  // Função auxiliar para verificar se um template está visível
+  const isTemplateVisible = (type: TemplateType): boolean => {
+    if (enabledNotifications) {
+      const notifMap: Record<string, boolean | undefined> = {
+        newOrder: enabledNotifications.notifyOnNewOrder,
+        preparing: enabledNotifications.notifyOnPreparing,
+        ready: enabledNotifications.notifyOnReady,
+        readyPickup: enabledNotifications.notifyOnReady,
+        completed: enabledNotifications.notifyOnCompleted,
+        cancelled: enabledNotifications.notifyOnCancelled,
+        reservation: enabledNotifications.notifyOnReservation,
+      };
+      if (notifMap[type] === false) return false;
+    }
+    return true;
+  };
+
+  // Se o template ativo foi desativado, mudar para o primeiro template visível
+  const visibleTypes = (Object.keys(TEMPLATE_CONFIG) as TemplateType[]).filter(isTemplateVisible);
+  if (!visibleTypes.includes(activeTemplate) && visibleTypes.length > 0) {
+    // Usar setTimeout para evitar setState durante render
+    setTimeout(() => setActiveTemplate(visibleTypes[0]), 0);
+  }
 
   const baseTemplates: Partial<Record<TemplateType, { value: string; setter: (v: string) => void; default: string }>> = {
     newOrder: { value: templateNewOrder, setter: setTemplateNewOrder, default: defaultTemplates.newOrder },
@@ -249,7 +283,11 @@ export function TemplatesEditor({
 
       {/* Tabs de navegação entre templates */}
       <div className="flex gap-2 overflow-x-auto pb-2">
-        {(Object.keys(TEMPLATE_CONFIG) as TemplateType[]).filter((type) => type !== 'reservation' || templates.reservation).map((type) => {
+        {(Object.keys(TEMPLATE_CONFIG) as TemplateType[]).filter((type) => {
+          if (!isTemplateVisible(type)) return false;
+          if (type === 'reservation' && !templates.reservation) return false;
+          return true;
+        }).map((type) => {
           const cfg = TEMPLATE_CONFIG[type];
           const isActive = activeTemplate === type;
           return (

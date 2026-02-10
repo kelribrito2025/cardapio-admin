@@ -477,6 +477,14 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
           defaultTemplates={DEFAULT_TEMPLATES}
           restaurantName={establishment?.name}
           restaurantLogo={establishment?.logo}
+          enabledNotifications={{
+            notifyOnNewOrder,
+            notifyOnPreparing,
+            notifyOnReady,
+            notifyOnCompleted,
+            notifyOnCancelled,
+            notifyOnReservation,
+          }}
         />
       )}
       
@@ -659,6 +667,14 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
             defaultTemplates={DEFAULT_TEMPLATES}
             restaurantName={establishment?.name}
             restaurantLogo={establishment?.logo}
+            enabledNotifications={{
+              notifyOnNewOrder,
+              notifyOnPreparing,
+              notifyOnReady,
+              notifyOnCompleted,
+              notifyOnCancelled,
+              notifyOnReservation,
+            }}
           />
         </TabsContent>
 
