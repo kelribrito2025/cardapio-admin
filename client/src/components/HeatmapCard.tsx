@@ -163,7 +163,7 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
             </div>
             <div className="min-w-0">
               <h3 className="text-base font-semibold text-foreground">Acessos ao Cardápio</h3>
-              <p className="text-xs text-muted-foreground">Horários em que seu cardápio é mais acessado</p>
+              <p className="text-xs text-muted-foreground">Dias e horários com mais acessos ao seu cardápio</p>
             </div>
           </div>
           

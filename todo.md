@@ -6027,3 +6027,6 @@
 - [x] Exibir ownerDisplayName no topbar/perfil do AdminLayout (avatar + nome + dropdown)
 - [x] Fallback para user.name quando ownerDisplayName não está definido
 - [x] Testes unitários para validação e lógica de fallback
+
+## Subtítulo do Card Heatmap
+- [x] Alterar subtítulo do card de heatmap para "Dias e horários com mais acessos ao seu cardápio"
