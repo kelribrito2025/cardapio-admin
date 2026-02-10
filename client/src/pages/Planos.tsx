@@ -127,7 +127,7 @@ const billingHistory: Array<{
 type BillingStatus = "all" | "success" | "processing" | "failed";
 
 export default function Planos() {
-  const [isAnnual, setIsAnnual] = useState(true);
+  const [isAnnual, setIsAnnual] = useState(false);
   const [statusFilter, setStatusFilter] = useState<BillingStatus>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
