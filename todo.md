@@ -5945,3 +5945,8 @@
 - [x] Transformar WhatsApp em menu pai com submenus: Notificações e Templates
 - [x] Submenu Notificações: conteúdo atual de notificações automáticas
 - [x] Submenu Templates: nova aba para templates de mensagens
+
+## Limpeza manual de pedidos via ícone do card
+- [x] Ao clicar no ícone do card Completos, limpar visualmente os pedidos da coluna
+- [x] Ao clicar no ícone do card Cancelados, limpar visualmente os pedidos da coluna
+- [x] Limpeza apenas visual (front-end), sem apagar dados do banco

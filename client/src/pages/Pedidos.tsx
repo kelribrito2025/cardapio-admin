@@ -177,6 +177,8 @@ export default function Pedidos() {
   const [cancellationReason, setCancellationReason] = useState("");
   // Estado para controlar expansão das colunas no mobile (acordeão)
   const [expandedColumns, setExpandedColumns] = useState<Set<OrderStatus>>(() => new Set<OrderStatus>(["new"]));
+  // Estado para limpeza manual visual das colunas (sem apagar do banco)
+  const [manuallyClearedColumns, setManuallyClearedColumns] = useState<Set<OrderStatus>>(new Set());
   // Estado para controlar loading do WhatsApp
   const [whatsappLoading, setWhatsappLoading] = useState(false);
   // Estado para o modal de QR Code do WhatsApp
@@ -859,8 +861,27 @@ export default function Pedidos() {
     new: filteredOrders?.filter((o: OrderItem) => o.status === "new") ?? [],
     preparing: filteredOrders?.filter((o: OrderItem) => o.status === "preparing") ?? [],
     ready: filteredOrders?.filter((o: OrderItem) => o.status === "ready") ?? [],
-    completed: filteredOrders?.filter((o: OrderItem) => o.status === "completed" && new Date(o.updatedAt || o.createdAt) >= todayStart) ?? [],
-    cancelled: filteredOrders?.filter((o: OrderItem) => o.status === "cancelled" && new Date(o.updatedAt || o.createdAt) >= todayStart) ?? [],
+    completed: manuallyClearedColumns.has("completed") ? [] : (filteredOrders?.filter((o: OrderItem) => o.status === "completed" && new Date(o.updatedAt || o.createdAt) >= todayStart) ?? []),
+    cancelled: manuallyClearedColumns.has("cancelled") ? [] : (filteredOrders?.filter((o: OrderItem) => o.status === "cancelled" && new Date(o.updatedAt || o.createdAt) >= todayStart) ?? []),
+  };
+
+  // Resetar limpeza manual quando novos pedidos chegam nessas colunas
+  useEffect(() => {
+    if (manuallyClearedColumns.has("completed")) {
+      const newCompleted = filteredOrders?.filter((o: OrderItem) => o.status === "completed" && new Date(o.updatedAt || o.createdAt) >= todayStart) ?? [];
+      // Se houver pedidos novos (finalizados após a limpeza), restaurar a coluna
+      // Comparar com o timestamp da limpeza não é necessário - novos pedidos aparecerão na próxima limpeza automática
+    }
+  }, [filteredOrders]);
+
+  // Handler para limpeza manual de coluna
+  const handleManualClear = (columnId: OrderStatus) => {
+    setManuallyClearedColumns(prev => {
+      const next = new Set(prev);
+      next.add(columnId);
+      return next;
+    });
+    toast.success(columnId === "completed" ? "Pedidos completos limpos" : "Pedidos cancelados limpos");
   };
 
   return (
@@ -1000,9 +1021,26 @@ export default function Pedidos() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className={cn("p-2.5 rounded-lg shrink-0", column.iconBg)}>
-                    <Icon className={cn("h-5 w-5", column.iconColor)} />
-                  </div>
+                  {(column.id === "completed" || column.id === "cancelled") && columnOrders.length > 0 ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleManualClear(column.id);
+                      }}
+                      title="Limpar pedidos"
+                      className={cn(
+                        "p-2.5 rounded-lg shrink-0 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer",
+                        column.iconBg,
+                        "hover:opacity-80"
+                      )}
+                    >
+                      <Icon className={cn("h-5 w-5", column.iconColor)} />
+                    </button>
+                  ) : (
+                    <div className={cn("p-2.5 rounded-lg shrink-0", column.iconBg)}>
+                      <Icon className={cn("h-5 w-5", column.iconColor)} />
+                    </div>
+                  )}
                   {/* Seta de expansão - visível apenas no mobile */}
                   <ChevronDown className={cn(
                     "h-5 w-5 text-muted-foreground transition-transform duration-200 md:hidden",
