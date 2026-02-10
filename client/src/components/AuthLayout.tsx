@@ -1,11 +1,21 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { Utensils, Smartphone, BarChart3, Clock } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface AuthLayoutProps {
   children: ReactNode;
 }
 
 export function AuthLayout({ children }: AuthLayoutProps) {
+  const { forceTheme } = useTheme();
+
+  useEffect(() => {
+    forceTheme('light');
+    return () => {
+      forceTheme(null);
+    };
+  }, [forceTheme]);
+
   return (
     <div className="min-h-screen flex">
       {/* Left side - Background with promotional content */}

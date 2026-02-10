@@ -5926,3 +5926,4 @@
 - [x] Corrigir toggle do Programa de Fidelidade quase invisível no dark mode
 - [x] Corrigir badge de Avaliação gratuita: 15 dias com cores claras no dark mode
 - [x] Toggle de som deve ficar vermelho quando desativado no dark mode
+- [x] Forçar tema light nas telas públicas (Login, Cadastro, Onboarding) - nunca herdar dark mode do admin

@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
 import { Check, Crown, Zap, Star, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -81,8 +82,17 @@ const plans: Plan[] = [
 
 export default function OnboardingPlanos() {
   const [, setLocation] = useLocation();
+  const { forceTheme } = useTheme();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Forçar tema light no onboarding
+  useEffect(() => {
+    forceTheme('light');
+    return () => {
+      forceTheme(null);
+    };
+  }, [forceTheme]);
 
   const handleSelectPlan = async (planId: string) => {
     setSelectedPlan(planId);

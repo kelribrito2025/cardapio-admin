@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "wouter";
+import { useTheme } from "@/contexts/ThemeContext";
 import { 
   Store, 
   Phone, 
@@ -130,7 +131,16 @@ const PLANS = [
 
 export default function Onboarding() {
   const [, setLocation] = useLocation();
+  const { forceTheme } = useTheme();
   const [showSuccessBadge, setShowSuccessBadge] = useState(true);
+
+  // Forçar tema light no onboarding
+  useEffect(() => {
+    forceTheme('light');
+    return () => {
+      forceTheme(null);
+    };
+  }, [forceTheme]);
   const [currentStep, setCurrentStep] = useState(1);
   const utils = trpc.useUtils();
   
