@@ -5860,3 +5860,5 @@
 - [x] Card "Completos" na página /pedidos deve mostrar apenas pedidos do dia atual (limpeza automática à 00:00 respeitando timezone do restaurante)
 - [x] Busca global na topbar: filtrar conteúdo relevante em cada página (mesas, catálogo, categorias, complementos, pedidos, cupons, campanhas)
 - [x] Remover auto-minimização da sidebar ao clicar em PDV, Mapa de Mesas e Pedidos
+- [x] Sidebar: modo automático (hover expande e empurra conteúdo, minimiza ao sair) e modo fixo (sempre minimizada, hover não ativa). Minimizar = fixo, Maximizar = automático.
+- [x] [Bug] Sidebar fecha ao clicar em PDV, Mapa de Mesas, Pedidos - remover auto-minimização reintroduzida na implementação de hover
