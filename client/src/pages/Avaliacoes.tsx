@@ -3,6 +3,7 @@ import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Star, MessageSquare, Users, Clock, TrendingUp, Send, ChevronDown, Filter } from "lucide-react";
+import { StatCard } from "@/components/shared";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,31 +31,7 @@ function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
   );
 }
 
-function MetricCard({ icon: Icon, label, value, subValue, color }: {
-  icon: React.ElementType;
-  label: string;
-  value: string | number;
-  subValue?: string;
-  color: string;
-}) {
-  return (
-    <Card className="relative overflow-hidden">
-      <div className={`absolute top-0 left-0 right-0 h-1 ${color}`} />
-      <CardContent className="p-4 pt-5">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</p>
-            <p className="text-2xl font-bold mt-1">{value}</p>
-            {subValue && <p className="text-xs text-muted-foreground mt-0.5">{subValue}</p>}
-          </div>
-          <div className={`p-2 rounded-lg ${color.replace('bg-', 'bg-').replace('-500', '-100')} bg-opacity-20`}>
-            <Icon size={20} className={color.replace('bg-', 'text-')} />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+
 
 function ReviewCard({ review, establishmentId, onResponded }: {
   review: any;
@@ -214,7 +191,7 @@ export default function Avaliacoes() {
   const establishmentId = establishment?.id;
 
   // Métricas
-  const { data: metrics, refetch: refetchMetrics } = trpc.reviewsAdmin.metrics.useQuery(
+  const { data: metrics, refetch: refetchMetrics, isLoading: metricsLoading } = trpc.reviewsAdmin.metrics.useQuery(
     { establishmentId: establishmentId! },
     { enabled: !!establishmentId }
   );
@@ -287,41 +264,46 @@ export default function Avaliacoes() {
       </div>
 
       {/* Métricas */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-        <MetricCard
-          icon={Star}
-          label="Nota Média"
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+        <StatCard
+          title="Nota Média"
           value={metrics ? Number(metrics.avgRating).toFixed(1) : "—"}
-          subValue="Geral"
-          color="bg-amber-500"
+          icon={Star}
+          loading={metricsLoading}
+          variant="amber"
+          tooltip="Média geral de todas as avaliações"
         />
-        <MetricCard
-          icon={TrendingUp}
-          label="Média 30 dias"
+        <StatCard
+          title="Média 30 dias"
           value={metrics ? Number(metrics.avgRating30d).toFixed(1) : "—"}
-          subValue="Últimos 30 dias"
-          color="bg-blue-500"
+          icon={TrendingUp}
+          loading={metricsLoading}
+          variant="blue"
+          tooltip="Média dos últimos 30 dias"
         />
-        <MetricCard
-          icon={MessageSquare}
-          label="Total"
+        <StatCard
+          title="Total"
           value={metrics?.totalReviews ?? 0}
-          subValue="Avaliações"
-          color="bg-emerald-500"
+          icon={MessageSquare}
+          loading={metricsLoading}
+          variant="emerald"
+          tooltip="Total de avaliações recebidas"
         />
-        <MetricCard
-          icon={Users}
-          label="Clientes"
+        <StatCard
+          title="Clientes"
           value={metrics?.uniqueCustomers ?? 0}
-          subValue="Que avaliaram"
-          color="bg-purple-500"
+          icon={Users}
+          loading={metricsLoading}
+          variant="primary"
+          tooltip="Clientes únicos que avaliaram"
         />
-        <MetricCard
-          icon={Clock}
-          label="Pendentes"
+        <StatCard
+          title="Pendentes"
           value={metrics?.pendingResponse ?? 0}
-          subValue="Sem resposta"
-          color="bg-red-500"
+          icon={Clock}
+          loading={metricsLoading}
+          variant="amber"
+          tooltip="Avaliações aguardando resposta"
         />
       </div>
 

@@ -5990,3 +5990,6 @@
 ## Resposta do restaurante no modal de avaliações do menu público
 - [x] Exibir resposta do restaurante junto da avaliação no modal do menu público
 - [x] Visual da resposta: nome do restaurante, texto da resposta, data
+
+## Ajuste visual dos cards de Avaliações
+- [x] Ajustar cards de métricas da página Avaliações para seguir mesmo estilo do Dashboard (borda colorida topo, sem sombra)
