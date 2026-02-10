@@ -424,6 +424,47 @@ export default function Estoque() {
           </div>
         </div>
 
+        {/* Busca e Filtros */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div className="relative flex-1 w-full sm:max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar item por nome..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 h-9 text-sm rounded-lg"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Filter size={16} className="text-muted-foreground" />
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[130px] h-9 text-sm">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="ok">OK</SelectItem>
+                <SelectItem value="low">Baixo</SelectItem>
+                <SelectItem value="critical">Crítico</SelectItem>
+                <SelectItem value="out_of_stock">Sem estoque</SelectItem>
+              </SelectContent>
+            </Select>
+            {stockCategories && stockCategories.length > 0 && (
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-[140px] h-9 text-sm">
+                  <SelectValue placeholder="Categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas</SelectItem>
+                  {stockCategories.map((cat: any) => (
+                    <SelectItem key={cat.id} value={String(cat.id)}>{cat.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+        </div>
+
         {/* Stock Items Table */}
         <Card className="overflow-hidden rounded-xl shadow-none" style={{paddingTop: '0px', paddingBottom: '0px'}}>
           {isLoadingItems ? (
