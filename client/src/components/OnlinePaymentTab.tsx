@@ -122,26 +122,26 @@ export function OnlinePaymentTab() {
 
 
       {/* Status Card */}
-      <div className="rounded-xl border bg-gradient-to-br from-white to-slate-50 p-5 space-y-4">
+      <div className="rounded-xl border bg-gradient-to-br from-card to-muted/30 p-5 space-y-4">
         <div className="flex items-center gap-3">
-          <div className={`p-2.5 rounded-xl ${isOnboarded && chargesEnabled ? "bg-green-100" : "bg-orange-100"}`}>
-            <CreditCard className={`h-5 w-5 ${isOnboarded && chargesEnabled ? "text-green-600" : "text-orange-600"}`} />
+          <div className={`p-2.5 rounded-xl ${isOnboarded && chargesEnabled ? "bg-green-100 dark:bg-green-950/40" : "bg-orange-100 dark:bg-orange-950/40"}`}>
+            <CreditCard className={`h-5 w-5 ${isOnboarded && chargesEnabled ? "text-green-600 dark:text-green-400" : "text-orange-600 dark:text-orange-400"}`} />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <span className="font-medium">Stripe Connect</span>
               {!hasAccount && (
-                <Badge variant="outline" className="text-xs bg-slate-100">
+                <Badge variant="outline" className="text-xs bg-slate-100 dark:bg-muted">
                   Não configurado
                 </Badge>
               )}
               {hasAccount && !isOnboarded && (
-                <Badge variant="outline" className="text-xs bg-orange-100 text-orange-700 border-orange-200">
+                <Badge variant="outline" className="text-xs bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800">
                   Pendente
                 </Badge>
               )}
               {isOnboarded && chargesEnabled && (
-                <Badge variant="outline" className="text-xs bg-green-100 text-green-700 border-green-200">
+                <Badge variant="outline" className="text-xs bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800">
                   Ativo
                 </Badge>
               )}
@@ -163,7 +163,7 @@ export function OnlinePaymentTab() {
               ) : (
                 <AlertCircle className="h-4 w-4 text-orange-500" />
               )}
-              <span className={chargesEnabled ? "text-green-700" : "text-orange-700"}>
+              <span className={chargesEnabled ? "text-green-700 dark:text-green-400" : "text-orange-700 dark:text-orange-400"}>
                 {chargesEnabled ? "Cobranças ativas" : "Cobranças pendentes"}
               </span>
             </div>
@@ -173,7 +173,7 @@ export function OnlinePaymentTab() {
               ) : (
                 <AlertCircle className="h-4 w-4 text-orange-500" />
               )}
-              <span className={payoutsEnabled ? "text-green-700" : "text-orange-700"}>
+              <span className={payoutsEnabled ? "text-green-700 dark:text-green-400" : "text-orange-700 dark:text-orange-400"}>
                 {payoutsEnabled ? "Repasses ativos" : "Repasses pendentes"}
               </span>
             </div>
@@ -234,8 +234,8 @@ export function OnlinePaymentTab() {
       <div className={`rounded-xl border p-5 space-y-4 ${!(isOnboarded && chargesEnabled) ? 'opacity-60' : ''}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${isOnboarded && chargesEnabled ? 'bg-green-100' : 'bg-slate-100'}`}>
-              <Shield className={`h-4 w-4 ${isOnboarded && chargesEnabled ? 'text-green-600' : 'text-slate-400'}`} />
+            <div className={`p-2 rounded-lg ${isOnboarded && chargesEnabled ? 'bg-green-100 dark:bg-green-950/40' : 'bg-slate-100 dark:bg-muted'}`}>
+              <Shield className={`h-4 w-4 ${isOnboarded && chargesEnabled ? 'text-green-600 dark:text-green-400' : 'text-slate-400 dark:text-muted-foreground'}`} />
             </div>
             <div>
               <p className="font-medium text-sm">Aceitar pagamento online</p>
@@ -255,7 +255,7 @@ export function OnlinePaymentTab() {
         {/* Métodos aceitos */}
         <div className="flex items-center gap-3 pt-2 border-t">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 text-xs font-medium text-slate-700">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-muted text-xs font-medium text-slate-700 dark:text-foreground">
               <CreditCard className="h-3.5 w-3.5" />
               Cartão
             </div>
@@ -276,7 +276,7 @@ export function OnlinePaymentTab() {
         {!(isOnboarded && chargesEnabled) && (
           <div className="flex items-center gap-2 pt-1">
             <AlertCircle className="h-3.5 w-3.5 text-orange-500 shrink-0" />
-            <p className="text-xs text-orange-600">
+            <p className="text-xs text-orange-600 dark:text-orange-400">
               Configure o Stripe Connect acima para ativar pagamentos online.
             </p>
           </div>

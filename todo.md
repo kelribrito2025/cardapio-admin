@@ -5902,3 +5902,8 @@
 
 ## Bug - Tema Escuro nos Cupons (ícones e badges)
 - [x] Corrigir tema escuro nos ícones de status, badges e elementos restantes na página de Cupons
+
+## Bug - Tema Escuro nos Cards de Pagamento Online (Configurações)
+- [x] Corrigir tema escuro nos cards de Stripe Connect e Aceitar Pagamento Online na secção Pagamento Online das Configurações
+## Bug - Tema Escuro na Página de Campanhas
+- [x] Corrigir tema escuro no modal de Recarregar Saldo SMS e outros elementos com cores claras na página de Campanhas

@@ -629,8 +629,8 @@ export default function Campanhas() {
             {/* Editor de Mensagem */}
             <div className="bg-card rounded-xl border border-border/50 p-5">
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-[12px] bg-blue-100 flex items-center justify-center">
-                  <MessageSquare className="h-5 w-5 text-blue-600" />
+                <div className="h-10 w-10 rounded-[12px] bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center">
+                  <MessageSquare className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
@@ -732,8 +732,8 @@ export default function Campanhas() {
             {/* Seleção de Destinatários */}
             <div className="bg-card rounded-xl border border-border/50 p-5">
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-[12px] bg-purple-100 flex items-center justify-center">
-                  <Users className="h-5 w-5 text-purple-600" />
+                <div className="h-10 w-10 rounded-[12px] bg-purple-100 dark:bg-purple-950/40 flex items-center justify-center">
+                  <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-base font-semibold text-foreground">Destinatários</h3>
@@ -862,17 +862,17 @@ export default function Campanhas() {
                           <span className="text-xs text-muted-foreground">Filtros ativos:</span>
                           <div className="flex flex-wrap gap-1.5">
                             {filterInactiveDays !== "" && Number(filterInactiveDays) > 0 && (
-                              <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-[10px] font-medium">
+                              <span className="bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded-full text-[10px] font-medium">
                                 Inativos há {filterInactiveDays}+ dias
                               </span>
                             )}
                             {filterMinOrders !== "" && Number(filterMinOrders) > 0 && (
-                              <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-medium">
+                              <span className="bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-400 px-2 py-0.5 rounded-full text-[10px] font-medium">
                                 {filterMinOrders}+ pedidos
                               </span>
                             )}
                             {filterUsedCoupon && (
-                              <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-[10px] font-medium">
+                              <span className="bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 px-2 py-0.5 rounded-full text-[10px] font-medium">
                                 Usou cupom
                               </span>
                             )}
@@ -1119,10 +1119,10 @@ export default function Campanhas() {
               </div>
 
               {/* Informação adicional */}
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
                 <div className="flex items-start gap-2">
                   <Info className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                  <p className="text-xs text-blue-700">
+                  <p className="text-xs text-blue-700 dark:text-blue-400">
                     O cliente verá a mensagem exatamente como mostrado acima.
                   </p>
                 </div>
@@ -1135,8 +1135,8 @@ export default function Campanhas() {
           <div className="bg-card rounded-xl border border-border/50 p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-[12px] bg-orange-50 flex items-center justify-center">
-                  <CalendarClock className="h-5 w-5 text-orange-600" />
+                <div className="h-10 w-10 rounded-[12px] bg-orange-50 dark:bg-orange-950/40 flex items-center justify-center">
+                  <CalendarClock className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-foreground">Campanhas Agendadas</h3>
@@ -1168,10 +1168,10 @@ export default function Campanhas() {
                       key={campanha.id}
                       className={cn(
                         "rounded-lg border p-4 transition-colors",
-                        isPending && "border-orange-200 bg-orange-50/50",
-                        isSent && "border-green-200 bg-green-50/50",
+                        isPending && "border-orange-200 dark:border-orange-800 bg-orange-50/50 dark:bg-orange-950/20",
+                        isSent && "border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20",
                         isCancelled && "border-border bg-muted/50",
-                        isFailed && "border-red-200 bg-red-50/50"
+                        isFailed && "border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-950/20"
                       )}
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -1180,10 +1180,10 @@ export default function Campanhas() {
                             <span className="font-medium text-sm truncate">{campanha.campaignName}</span>
                             <span className={cn(
                               "text-[10px] font-medium px-2 py-0.5 rounded-full",
-                              isPending && "bg-orange-100 text-orange-700",
-                              isSent && "bg-green-100 text-green-700",
+                              isPending && "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400",
+                              isSent && "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-400",
                               isCancelled && "bg-muted text-muted-foreground",
-                              isFailed && "bg-red-100 text-red-700"
+                              isFailed && "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-400"
                             )}>
                               {isPending ? 'Pendente' : isSent ? 'Enviada' : isCancelled ? 'Cancelada' : 'Falhou'}
                             </span>
@@ -1218,7 +1218,7 @@ export default function Campanhas() {
                                 cancelarAgendadaMutation.mutate({ id: campanha.id });
                               }
                             }}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 px-2"
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30 h-8 px-2"
                           >
                             <XCircle className="h-4 w-4 mr-1" />
                             Cancelar
@@ -1279,10 +1279,10 @@ export default function Campanhas() {
               </div>
             </div>
 
-            <div className="p-3 bg-blue-50 rounded-lg">
+            <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
               <div className="flex items-start gap-2">
                 <Info className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-blue-700">
+                <p className="text-xs text-blue-700 dark:text-blue-400">
                   O saldo será debitado no momento do envio, não no agendamento. O envio será processado automaticamente no horário definido. Você pode cancelar a campanha antes do envio.
                 </p>
               </div>
@@ -1335,10 +1335,10 @@ export default function Campanhas() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-2">
-            <div className="bg-emerald-50 rounded-lg p-3">
+            <div className="bg-emerald-50 dark:bg-emerald-950/30 rounded-lg p-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-emerald-700">Saldo atual</span>
-                <span className="text-lg font-bold text-emerald-700">R$ {saldo.toFixed(2)}</span>
+                <span className="text-sm text-emerald-700 dark:text-emerald-400">Saldo atual</span>
+                <span className="text-lg font-bold text-emerald-700 dark:text-emerald-400">R$ {saldo.toFixed(2)}</span>
               </div>
             </div>
 
@@ -1381,7 +1381,7 @@ export default function Campanhas() {
                       className={cn(
                         "flex items-center justify-between p-3 rounded-lg border-2 transition-all text-left",
                         selectedPackage === pkg.id
-                          ? "border-emerald-500 bg-emerald-50"
+                          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30"
                           : "border-border hover:border-emerald-300 hover:bg-muted/30",
                         (pkg as any).popular && "ring-1 ring-emerald-200"
                       )}
@@ -1399,7 +1399,7 @@ export default function Campanhas() {
                           <div className="flex items-center gap-2">
                             <span className="font-semibold text-sm">{pkg.name}</span>
                             {(pkg as any).popular && (
-                              <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
+                              <span className="text-[10px] bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
                                 <Sparkles className="h-2.5 w-2.5" />
                                 Popular
                               </span>
@@ -1470,7 +1470,7 @@ export default function Campanhas() {
                   {customAmountValue > 0 && (
                     <div className={cn(
                       "rounded-lg p-3 space-y-1",
-                      isCustomValid ? "bg-muted/50" : "bg-red-50"
+                      isCustomValid ? "bg-muted/50" : "bg-red-50 dark:bg-red-950/30"
                     )}>
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Valor da recarga</span>
@@ -1507,10 +1507,10 @@ export default function Campanhas() {
               </>
             )}
 
-            <div className="p-3 bg-emerald-50 rounded-lg">
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg">
               <div className="flex items-start gap-2">
                 <BadgeCheck className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-emerald-700">
+                <p className="text-xs text-emerald-700 dark:text-emerald-400">
                   Pagamento seguro via Stripe. Após a confirmação, o saldo é creditado automaticamente.
                 </p>
               </div>
