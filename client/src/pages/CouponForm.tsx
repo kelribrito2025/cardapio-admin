@@ -234,10 +234,10 @@ export default function CouponForm() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
-            <h1 className="text-xl font-semibold text-gray-900">
+            <h1 className="text-xl font-semibold text-foreground">
               {isEditing ? "Editar Cupom" : "Criar Novo Cupom"}
             </h1>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <p className="text-sm text-muted-foreground mt-0.5">
               {isEditing ? "Atualize as informações do cupom" : "Configure um novo cupom de desconto"}
             </p>
           </div>
@@ -267,7 +267,7 @@ export default function CouponForm() {
                 />
                 <div className="flex justify-between">
                   {errors.code && <p className="text-xs text-red-500">{errors.code}</p>}
-                  <p className="text-xs text-gray-400 ml-auto">{code.length}/15</p>
+                  <p className="text-xs text-muted-foreground ml-auto">{code.length}/15</p>
                 </div>
               </div>
 
@@ -304,7 +304,7 @@ export default function CouponForm() {
                   </Label>
                   <div className="relative">
                     {type === "fixed" && (
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
                     )}
                     <Input
                       id="value"
@@ -318,7 +318,7 @@ export default function CouponForm() {
                       className={`${type === "fixed" ? "pl-10" : ""} ${errors.value ? "border-red-500" : ""}`}
                     />
                     {type === "percentage" && (
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">%</span>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">%</span>
                     )}
                   </div>
                   {errors.value && <p className="text-xs text-red-500">{errors.value}</p>}
@@ -328,7 +328,7 @@ export default function CouponForm() {
                   <div className="space-y-1.5">
                     <Label htmlFor="maxDiscount">Valor máximo do desconto (R$)</Label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
                       <Input
                         id="maxDiscount"
                         type="number"
@@ -350,7 +350,7 @@ export default function CouponForm() {
                 <div className="space-y-1.5">
                   <Label htmlFor="minOrderValue">Valor mínimo do pedido (R$)</Label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
                     <Input
                       id="minOrderValue"
                       type="number"
@@ -377,7 +377,7 @@ export default function CouponForm() {
                     className={errors.quantity ? "border-red-500" : ""}
                   />
                   {errors.quantity && <p className="text-xs text-red-500">{errors.quantity}</p>}
-                  <p className="text-xs text-gray-400">Deixe em branco para ilimitado</p>
+                  <p className="text-xs text-muted-foreground">Deixe em branco para ilimitado</p>
                 </div>
               </div>
             </CardContent>
@@ -398,7 +398,7 @@ export default function CouponForm() {
                 <Label>Período de validade</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor="startDate" className="text-xs text-gray-500">Data inicial</Label>
+                    <Label htmlFor="startDate" className="text-xs text-muted-foreground">Data inicial</Label>
                     <Input
                       id="startDate"
                       type="date"
@@ -407,7 +407,7 @@ export default function CouponForm() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="endDate" className="text-xs text-gray-500">Data final</Label>
+                    <Label htmlFor="endDate" className="text-xs text-muted-foreground">Data final</Label>
                     <Input
                       id="endDate"
                       type="date"
@@ -418,7 +418,7 @@ export default function CouponForm() {
                     {errors.endDate && <p className="text-xs text-red-500">{errors.endDate}</p>}
                   </div>
                 </div>
-                <p className="text-xs text-gray-400">Deixe em branco para sem limite de data</p>
+                <p className="text-xs text-muted-foreground">Deixe em branco para sem limite de data</p>
               </div>
 
               {/* Days of Week */}
@@ -438,7 +438,7 @@ export default function CouponForm() {
                     </Button>
                   ))}
                 </div>
-                <p className="text-xs text-gray-400">Deixe em branco para todos os dias</p>
+                <p className="text-xs text-muted-foreground">Deixe em branco para todos os dias</p>
               </div>
 
               {/* Valid Origins */}
@@ -458,18 +458,18 @@ export default function CouponForm() {
                     </Button>
                   ))}
                 </div>
-                <p className="text-xs text-gray-400">Deixe em branco para todas as origens</p>
+                <p className="text-xs text-muted-foreground">Deixe em branco para todas as origens</p>
               </div>
 
               {/* Time Range */}
               <div className="space-y-1.5">
                 <Label className="flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5 text-gray-400" />
+                  <Clock className="h-3.5 w-3.5 text-muted-foreground" />
                   Horário disponível
                 </Label>
                 <div className="grid grid-cols-2 gap-4 max-w-xs">
                   <div className="space-y-1.5">
-                    <Label htmlFor="startTime" className="text-xs text-gray-500">Início</Label>
+                    <Label htmlFor="startTime" className="text-xs text-muted-foreground">Início</Label>
                     <Input
                       id="startTime"
                       type="time"
@@ -479,7 +479,7 @@ export default function CouponForm() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="endTime" className="text-xs text-gray-500">Fim</Label>
+                    <Label htmlFor="endTime" className="text-xs text-muted-foreground">Fim</Label>
                     <Input
                       id="endTime"
                       type="time"
@@ -489,7 +489,7 @@ export default function CouponForm() {
                   </div>
                 </div>
                 {errors.startTime && <p className="text-xs text-red-500">{errors.startTime}</p>}
-                <p className="text-xs text-gray-400">Deixe em branco para qualquer horário</p>
+                <p className="text-xs text-muted-foreground">Deixe em branco para qualquer horário</p>
               </div>
             </CardContent>
           </Card>

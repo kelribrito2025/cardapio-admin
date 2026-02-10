@@ -219,7 +219,7 @@ export default function PrinterApp() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-muted">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
       </div>
     );
@@ -227,7 +227,7 @@ export default function PrinterApp() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-muted p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <Printer className="w-16 h-16 mx-auto text-red-500 mb-4" />
@@ -250,7 +250,7 @@ export default function PrinterApp() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 pb-24">
+    <div className="min-h-screen bg-muted p-4 pb-24">
       {/* Header */}
       <div className="max-w-md mx-auto mb-6">
         <div className="flex items-center justify-between">
@@ -260,7 +260,7 @@ export default function PrinterApp() {
             </div>
             <div>
               <h1 className="text-lg font-bold">Impressão Automática</h1>
-              <p className="text-sm text-gray-500">Cardápio Admin</p>
+              <p className="text-sm text-muted-foreground">Cardápio Admin</p>
             </div>
           </div>
           <Badge 
@@ -313,11 +313,11 @@ export default function PrinterApp() {
                   <div className="w-4 h-4 bg-green-500 rounded-full"></div>
                 </div>
               ) : (
-                <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
+                <div className="w-4 h-4 bg-muted-foreground/30 rounded-full"></div>
               )}
               <div>
                 <p className="font-medium">{isPolling ? 'Monitorando' : 'Parado'}</p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   {lastCheck ? `Última verificação: ${lastCheck.toLocaleTimeString()}` : 'Aguardando início'}
                 </p>
               </div>
@@ -428,7 +428,7 @@ export default function PrinterApp() {
         </CardHeader>
         <CardContent>
           {recentJobs.length === 0 ? (
-            <p className="text-center text-gray-500 py-4">
+            <p className="text-center text-muted-foreground py-4">
               Nenhuma impressão recente
             </p>
           ) : (
@@ -436,7 +436,7 @@ export default function PrinterApp() {
               {recentJobs.map((job) => (
                 <div 
                   key={job.id} 
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
                 >
                   <div className="flex items-center gap-3">
                     {printedJobs.has(job.id) ? (
@@ -446,7 +446,7 @@ export default function PrinterApp() {
                     )}
                     <div>
                       <p className="font-medium">Pedido #{job.orderId}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-muted-foreground">
                         {new Date(job.createdAt).toLocaleString()}
                       </p>
                     </div>
@@ -468,7 +468,7 @@ export default function PrinterApp() {
       </Card>
 
       {/* Instruções */}
-      <div className="max-w-md mx-auto mt-6 text-center text-sm text-gray-500">
+      <div className="max-w-md mx-auto mt-6 text-center text-sm text-muted-foreground">
         <p className="mb-2">
           📱 Para instalar como app: Menu do navegador → "Adicionar à tela inicial"
         </p>

@@ -297,7 +297,7 @@ export function TemplatesEditor({
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-all ${
                 isActive 
                   ? 'bg-red-500 text-white shadow-md' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  : 'bg-muted text-muted-foreground hover:bg-muted-foreground/20'
               }`} style={isActive ? {backgroundColor: '#db262f'} : {}}
             >
               {cfg.icon}
@@ -308,7 +308,7 @@ export function TemplatesEditor({
       </div>
 
       {/* Card de Variáveis - Novo Design Minimalista */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-5">
+      <div className="bg-card rounded-2xl border border-slate-200 p-5">
         <div className="flex items-center gap-2 mb-4">
           <Info className="h-4 w-4 text-blue-500" />
           <span className="text-sm font-semibold text-slate-700">Variáveis disponíveis</span>
@@ -341,7 +341,7 @@ export function TemplatesEditor({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Card do Editor - Novo Design Clean */}
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <div className="bg-card rounded-2xl border border-slate-200 overflow-hidden">
           {/* Header do Editor */}
           <div className="px-5 py-4 border-b border-slate-100 bg-slate-50">
             <div className="flex items-center justify-between">
@@ -441,7 +441,7 @@ export function TemplatesEditor({
             <div className="flex justify-start">
               <div className="max-w-[85%] relative">
                 {/* Bolha principal - cor branca para mensagem recebida */}
-                <div className="bg-white rounded-lg rounded-tl-sm p-3 shadow-sm relative">
+                <div className="bg-card rounded-lg rounded-tl-sm p-3 shadow-sm relative">
                   {/* Triângulo da bolha - lado esquerdo */}
                   <div 
                     className="absolute -left-2 top-0 w-0 h-0"
@@ -475,7 +475,7 @@ export function TemplatesEditor({
             <button className="p-2 hover:bg-slate-200 rounded-full transition-colors">
               <Paperclip className="h-6 w-6 text-slate-500" />
             </button>
-            <div className="flex-1 bg-white rounded-full px-4 py-2.5 text-sm text-slate-400">
+            <div className="flex-1 bg-card rounded-full px-4 py-2.5 text-sm text-slate-400">
               Digite uma mensagem
             </div>
             <button className="w-10 h-10 rounded-full bg-[#008069] flex items-center justify-center hover:bg-[#017561] transition-colors">

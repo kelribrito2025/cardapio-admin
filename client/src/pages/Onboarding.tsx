@@ -333,12 +333,12 @@ export default function Onboarding() {
         <div className={`w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-semibold transition-all ${
           currentStep >= 1 
             ? "bg-primary text-white" 
-            : "bg-gray-200 text-gray-500"
+            : "bg-muted-foreground/20 text-muted-foreground"
         }`}>
           {currentStep > 1 ? <Check className="h-3 w-3" /> : "1"}
         </div>
         <span className={`text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-medium hidden sm:block ${
-          currentStep >= 1 ? "text-gray-900" : "text-gray-500"
+          currentStep >= 1 ? "text-foreground" : "text-muted-foreground"
         }`}>
           Dados
         </span>
@@ -346,7 +346,7 @@ export default function Onboarding() {
 
       {/* Connector 1-2 */}
       <div className={`w-3 sm:w-4 lg:w-6 xl:w-8 2xl:w-10 h-0.5 transition-all ${
-        currentStep > 1 ? "bg-primary" : "bg-gray-200"
+        currentStep > 1 ? "bg-primary" : "bg-muted-foreground/20"
       }`} />
 
       {/* Step 2 */}
@@ -354,12 +354,12 @@ export default function Onboarding() {
         <div className={`w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-semibold transition-all ${
           currentStep >= 2 
             ? "bg-primary text-white" 
-            : "bg-gray-200 text-gray-500"
+            : "bg-muted-foreground/20 text-muted-foreground"
         }`}>
           {currentStep > 2 ? <Check className="h-3 w-3" /> : "2"}
         </div>
         <span className={`text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-medium hidden sm:block ${
-          currentStep >= 2 ? "text-gray-900" : "text-gray-500"
+          currentStep >= 2 ? "text-foreground" : "text-muted-foreground"
         }`}>
           Atendimento
         </span>
@@ -367,7 +367,7 @@ export default function Onboarding() {
 
       {/* Connector 2-3 */}
       <div className={`w-3 sm:w-4 lg:w-6 xl:w-8 2xl:w-10 h-0.5 transition-all ${
-        currentStep > 2 ? "bg-primary" : "bg-gray-200"
+        currentStep > 2 ? "bg-primary" : "bg-muted-foreground/20"
       }`} />
 
       {/* Step 3 */}
@@ -375,12 +375,12 @@ export default function Onboarding() {
         <div className={`w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-semibold transition-all ${
           currentStep >= 3 
             ? "bg-primary text-white" 
-            : "bg-gray-200 text-gray-500"
+            : "bg-muted-foreground/20 text-muted-foreground"
         }`}>
           {currentStep > 3 ? <Check className="h-3 w-3" /> : "3"}
         </div>
         <span className={`text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-medium hidden sm:block ${
-          currentStep >= 3 ? "text-gray-900" : "text-gray-500"
+          currentStep >= 3 ? "text-foreground" : "text-muted-foreground"
         }`}>
           Objetivos
         </span>
@@ -388,7 +388,7 @@ export default function Onboarding() {
 
       {/* Connector 3-4 */}
       <div className={`w-3 sm:w-4 lg:w-6 xl:w-8 2xl:w-10 h-0.5 transition-all ${
-        currentStep > 3 ? "bg-primary" : "bg-gray-200"
+        currentStep > 3 ? "bg-primary" : "bg-muted-foreground/20"
       }`} />
 
       {/* Step 4 */}
@@ -396,12 +396,12 @@ export default function Onboarding() {
         <div className={`w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-semibold transition-all ${
           currentStep >= 4 
             ? "bg-primary text-white" 
-            : "bg-gray-200 text-gray-500"
+            : "bg-muted-foreground/20 text-muted-foreground"
         }`}>
           4
         </div>
         <span className={`text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-medium hidden sm:block ${
-          currentStep >= 4 ? "text-gray-900" : "text-gray-500"
+          currentStep >= 4 ? "text-foreground" : "text-muted-foreground"
         }`}>
           Plano
         </span>
@@ -427,7 +427,7 @@ export default function Onboarding() {
         
         {/* Logo - Fixed at top */}
         <div className="absolute top-12 left-12 z-20 flex items-center gap-3">
-          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-card rounded-xl flex items-center justify-center">
             <Utensils className="w-6 h-6 text-red-600" />
           </div>
           <span className="text-white text-2xl font-bold">Mindi</span>
@@ -477,7 +477,7 @@ export default function Onboarding() {
       </div>
       
       {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 xl:w-[45%] bg-gray-50 h-full flex flex-col overflow-hidden">
+      <div className="w-full lg:w-1/2 xl:w-[45%] bg-muted/50 h-full flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-4 lg:p-6 xl:p-8 2xl:p-10 flex items-start xl:items-center justify-center">
           <div className="w-full max-w-md xl:max-w-lg 2xl:max-w-xl py-4 xl:py-6 2xl:py-8">
           {/* Success Badge - Only show on Step 1 */}
@@ -508,18 +508,18 @@ export default function Onboarding() {
             <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center shadow-md shadow-red-500/30">
               <UtensilsCrossed className="h-4 w-4 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">Mindi</span>
+            <span className="text-xl font-bold text-foreground">Mindi</span>
           </div>
 
           {/* Header */}
           <div className="mb-2 lg:mb-4 xl:mb-5 2xl:mb-6">
-            <h2 className="text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-bold text-gray-900 mb-0.5 lg:mb-1 xl:mb-2">
+            <h2 className="text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-bold text-foreground mb-0.5 lg:mb-1 xl:mb-2">
               {currentStep === 1 && "Cadastre seu Restaurante"}
               {currentStep === 2 && "Configurações de Atendimento"}
               {currentStep === 3 && "Seus Objetivos"}
               {currentStep === 4 && "Escolha seu Plano"}
             </h2>
-            <p className="text-xs lg:text-sm xl:text-base 2xl:text-lg text-gray-600">
+            <p className="text-xs lg:text-sm xl:text-base 2xl:text-lg text-muted-foreground">
               {currentStep === 1 && "Preencha os dados básicos do seu estabelecimento"}
               {currentStep === 2 && "Configure como seu restaurante vai atender"}
               {currentStep === 3 && "Conte-nos mais sobre seus objetivos"}
@@ -537,29 +537,29 @@ export default function Onboarding() {
               <div className="space-y-2 lg:space-y-4 xl:space-y-5 2xl:space-y-6">
                 {/* Nome */}
                 <div className="space-y-1">
-                  <Label htmlFor="name" className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-gray-900">
+                  <Label htmlFor="name" className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
                     Nome do estabelecimento <span className="text-red-500">*</span>
                   </Label>
                   <div className="relative">
-                    <Store className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Store className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="name"
                       type="text"
                       placeholder="Ex: Pizzaria do João"
                       value={name}
                       onChange={(e) => handleNameChange(e.target.value)}
-                      className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
+                      className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
                     />
                   </div>
                 </div>
 
                 {/* Link público */}
                 <div className="space-y-1">
-                  <Label htmlFor="menuSlug" className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-gray-900">
+                  <Label htmlFor="menuSlug" className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
                     Link público do cardápio
                   </Label>
                   <div className="flex items-center">
-                    <span className="text-xs lg:text-sm text-gray-500 bg-gray-100 px-3 h-10 lg:h-12 xl:h-13 2xl:h-14 flex items-center rounded-l-lg border border-r-0 border-gray-200">
+                    <span className="text-xs lg:text-sm text-muted-foreground bg-muted px-3 h-10 lg:h-12 xl:h-13 2xl:h-14 flex items-center rounded-l-lg border border-r-0 border-border">
                       mindi.com.br/
                     </span>
                     <div className="relative flex-1">
@@ -569,7 +569,7 @@ export default function Onboarding() {
                         placeholder="seu-restaurante"
                         value={menuSlug}
                         onChange={(e) => setMenuSlug(generateSlug(e.target.value))}
-                        className={`h-10 lg:h-12 xl:h-13 2xl:h-14 rounded-l-none rounded-r-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg pr-10 ${
+                        className={`h-10 lg:h-12 xl:h-13 2xl:h-14 rounded-l-none rounded-r-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg pr-10 ${
                           menuSlug.length >= 3 && slugAvailabilityQuery.data?.available === false ? 'border-red-300 focus:border-red-500' : ''
                         } ${
                           menuSlug.length >= 3 && slugAvailabilityQuery.data?.available === true ? 'border-green-300 focus:border-green-500' : ''
@@ -579,7 +579,7 @@ export default function Onboarding() {
                       {menuSlug.length >= 3 && (
                         <div className="absolute right-3 top-1/2 -translate-y-1/2">
                           {slugAvailabilityQuery.isLoading ? (
-                            <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                           ) : slugAvailabilityQuery.data?.available ? (
                             <CheckCircle2 className="h-5 w-5 text-green-500" />
                           ) : (
@@ -601,11 +601,11 @@ export default function Onboarding() {
                 <div className="grid grid-cols-2 gap-2 lg:gap-3">
                   {/* WhatsApp */}
                   <div className="space-y-1">
-                    <Label htmlFor="whatsapp" className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-gray-900">
+                    <Label htmlFor="whatsapp" className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
                       WhatsApp
                     </Label>
                     <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="whatsapp"
                         type="tel"
@@ -613,8 +613,8 @@ export default function Onboarding() {
                         value={whatsapp}
                         onChange={(e) => setWhatsapp(formatWhatsApp(e.target.value))}
                         maxLength={15}
-                        className={`h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg ${
-                          whatsapp && !isWhatsAppValid ? 'border-red-300 focus:border-red-400 focus:ring-red-200' : 'border-gray-200'
+                        className={`h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg ${
+                          whatsapp && !isWhatsAppValid ? 'border-red-300 focus:border-red-400 focus:ring-red-200' : 'border-border'
                         }`}
                       />
                     </div>
@@ -625,18 +625,18 @@ export default function Onboarding() {
 
                   {/* Instagram */}
                   <div className="space-y-1">
-                    <Label htmlFor="instagram" className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-gray-900">
+                    <Label htmlFor="instagram" className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
                       Instagram
                     </Label>
                     <div className="relative">
-                      <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="instagram"
                         type="text"
                         placeholder="@seu_restaurante"
                         value={instagram}
                         onChange={(e) => setInstagram(formatInstagram(e.target.value))}
-                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
+                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
                       />
                     </div>
                   </div>
@@ -644,7 +644,7 @@ export default function Onboarding() {
 
                 {/* Tipo de entrega */}
                 <div className="space-y-1">
-                  <Label className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-gray-900">
+                  <Label className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
                     Tipo de entrega
                   </Label>
                   <div className="grid grid-cols-3 gap-1.5 lg:gap-2">
@@ -659,10 +659,10 @@ export default function Onboarding() {
                           className={`p-2 lg:p-3 rounded-lg border-2 transition-all flex flex-col items-center gap-1 ${
                             isSelected 
                               ? "border-primary bg-primary/5 text-primary" 
-                              : "border-gray-200 hover:border-gray-300 text-gray-600"
+                              : "border-border hover:border-border text-muted-foreground"
                           }`}
                         >
-                          <Icon className={`h-4 w-4 lg:h-5 lg:w-5 ${isSelected ? "text-primary" : "text-gray-400"}`} />
+                          <Icon className={`h-4 w-4 lg:h-5 lg:w-5 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
                           <span className="text-xs lg:text-sm font-medium">{type.label}</span>
                         </button>
                       );
@@ -685,7 +685,7 @@ export default function Onboarding() {
                   {/* Link para voltar ao login */}
                   <a
                     href="/login"
-                    className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-gray-500 hover:text-gray-700 transition-colors mt-3 lg:mt-4"
+                    className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-muted-foreground hover:text-foreground transition-colors mt-3 lg:mt-4"
                   >
                     <ArrowLeft className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
                     Voltar
@@ -699,45 +699,45 @@ export default function Onboarding() {
               <div className="space-y-2 lg:space-y-3">
                 {/* Endereço */}
                 <div className="space-y-1">
-                  <Label htmlFor="address" className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-gray-900">
+                  <Label htmlFor="address" className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
                     Endereço do estabelecimento
                   </Label>
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="address"
                       type="text"
                       placeholder="Rua, número, bairro - Cidade/UF"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
-                      className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
+                      className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
                     />
                   </div>
                 </div>
 
                 {/* Horário de atendimento */}
                 <div className="space-y-1">
-                  <Label className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-gray-900">
+                  <Label className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
                     Horário de atendimento
                   </Label>
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1">
-                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         type="time"
                         value={openingTime}
                         onChange={(e) => setOpeningTime(e.target.value)}
-                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
+                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
                       />
                     </div>
-                    <span className="text-gray-500 font-medium text-xs lg:text-sm">às</span>
+                    <span className="text-muted-foreground font-medium text-xs lg:text-sm">às</span>
                     <div className="relative flex-1">
-                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         type="time"
                         value={closingTime}
                         onChange={(e) => setClosingTime(e.target.value)}
-                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
+                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
                       />
                     </div>
                   </div>
@@ -745,7 +745,7 @@ export default function Onboarding() {
 
                 {/* Formas de pagamento */}
                 <div className="space-y-1">
-                  <Label className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-gray-900">
+                  <Label className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
                     Formas de pagamento aceitas
                   </Label>
                   <div className="grid grid-cols-3 gap-1.5 lg:gap-2">
@@ -760,10 +760,10 @@ export default function Onboarding() {
                           className={`p-2 lg:p-3 rounded-lg border-2 transition-all flex flex-col items-center gap-1 ${
                             isSelected 
                               ? "border-primary bg-primary/5 text-primary" 
-                              : "border-gray-200 hover:border-gray-300 text-gray-600"
+                              : "border-border hover:border-border text-muted-foreground"
                           }`}
                         >
-                          <Icon className={`h-4 w-4 lg:h-5 lg:w-5 ${isSelected ? "text-primary" : "text-gray-400"}`} />
+                          <Icon className={`h-4 w-4 lg:h-5 lg:w-5 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
                           <span className="text-xs lg:text-sm font-medium">{method.label}</span>
                         </button>
                       );
@@ -773,38 +773,38 @@ export default function Onboarding() {
 
                 {/* Tempo de entrega */}
                 <div className="space-y-1">
-                  <Label className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-gray-900">
+                  <Label className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
                     Tempo de entrega
                   </Label>
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1">
-                      <Timer className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Timer className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         type="number"
                         placeholder="20"
                         value={minDeliveryTime}
                         onChange={(e) => setMinDeliveryTime(e.target.value)}
-                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
+                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
                       />
                     </div>
-                    <span className="text-gray-500 font-medium text-xs lg:text-sm">até</span>
+                    <span className="text-muted-foreground font-medium text-xs lg:text-sm">até</span>
                     <div className="relative flex-1">
                       <Input
                         type="number"
                         placeholder="50"
                         value={maxDeliveryTime}
                         onChange={(e) => setMaxDeliveryTime(e.target.value)}
-                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
+                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
                       />
                     </div>
-                    <span className="text-gray-500 font-medium text-xs">min</span>
+                    <span className="text-muted-foreground font-medium text-xs">min</span>
                   </div>
                 </div>
 
                 {/* Pedido mínimo */}
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <Label className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-gray-900">
+                    <Label className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
                       Pedido mínimo
                     </Label>
                     <Switch
@@ -814,13 +814,13 @@ export default function Onboarding() {
                   </div>
                   {hasMinOrder && (
                     <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         type="text"
                         placeholder="R$ 0,00"
                         value={minOrderValue}
                         onChange={(e) => setMinOrderValue(formatCurrency(e.target.value))}
-                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
+                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
                       />
                     </div>
                   )}
@@ -828,7 +828,7 @@ export default function Onboarding() {
 
                 {/* Taxa de entrega */}
                 <div className="space-y-1">
-                  <Label className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-gray-900">
+                  <Label className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
                     Taxa de entrega
                   </Label>
                   <div className="grid grid-cols-3 gap-1.5 lg:gap-2">
@@ -842,7 +842,7 @@ export default function Onboarding() {
                           className={`p-2 lg:p-3 rounded-lg border-2 transition-all text-center ${
                             isSelected 
                               ? "border-primary bg-primary/5 text-primary" 
-                              : "border-gray-200 hover:border-gray-300 text-gray-600"
+                              : "border-border hover:border-border text-muted-foreground"
                           }`}
                         >
                           <span className="text-xs lg:text-sm font-medium">{type.label}</span>
@@ -854,13 +854,13 @@ export default function Onboarding() {
                   {/* Campo de taxa fixa */}
                   {deliveryFeeType === "fixed" && (
                     <div className="relative mt-1">
-                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         type="text"
                         placeholder="R$ 0,00"
                         value={fixedDeliveryFee}
                         onChange={(e) => setFixedDeliveryFee(formatCurrency(e.target.value))}
-                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
+                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
                       />
                     </div>
                   )}
@@ -892,7 +892,7 @@ export default function Onboarding() {
                   <button
                     type="button"
                     onClick={handlePrevStep}
-                    className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-gray-500 hover:text-gray-700 transition-colors mt-3 lg:mt-4"
+                    className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-muted-foreground hover:text-foreground transition-colors mt-3 lg:mt-4"
                   >
                     <ArrowLeft className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
                     Voltar
@@ -906,7 +906,7 @@ export default function Onboarding() {
               <div className="space-y-2 lg:space-y-3">
                 {/* Objetivos */}
                 <div className="space-y-1">
-                  <div className="flex items-center gap-1.5 text-xs lg:text-sm font-semibold text-gray-900">
+                  <div className="flex items-center gap-1.5 text-xs lg:text-sm font-semibold text-foreground">
                     <Target className="h-4 w-4 text-primary" />
                     Quais são seus objetivos? <span className="text-red-500">*</span>
                   </div>
@@ -922,18 +922,18 @@ export default function Onboarding() {
                           className={`p-2 lg:p-3 rounded-lg border-2 transition-all text-left ${
                             isSelected 
                               ? "border-primary bg-primary/5" 
-                              : "border-gray-200 hover:border-gray-300"
+                              : "border-border hover:border-border"
                           }`}
                         >
                           <div className="flex items-center gap-2">
                             <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${
                               isSelected 
                                 ? "border-primary bg-primary" 
-                                : "border-gray-300"
+                                : "border-border"
                             }`}>
                               {isSelected && <Check className="h-2.5 w-2.5 text-white" />}
                             </div>
-                            <span className={`text-xs lg:text-sm font-medium ${isSelected ? "text-gray-900" : "text-gray-700"}`}>
+                            <span className={`text-xs lg:text-sm font-medium ${isSelected ? "text-foreground" : "text-foreground"}`}>
                               {objective.label}
                             </span>
                           </div>
@@ -948,7 +948,7 @@ export default function Onboarding() {
                       placeholder="Descreva brevemente seu objetivo"
                       value={otherObjective}
                       onChange={(e) => setOtherObjective(e.target.value)}
-                      className="rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-sm"
+                      className="rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm"
                       rows={2}
                     />
                   )}
@@ -956,7 +956,7 @@ export default function Onboarding() {
 
                 {/* Como conheceu */}
                 <div className="space-y-1">
-                  <div className="flex items-center gap-1.5 text-xs lg:text-sm font-semibold text-gray-900">
+                  <div className="flex items-center gap-1.5 text-xs lg:text-sm font-semibold text-foreground">
                     <Users className="h-4 w-4 text-primary" />
                     Como conheceu a plataforma? <span className="text-red-500">*</span>
                   </div>
@@ -972,18 +972,18 @@ export default function Onboarding() {
                           className={`p-2 lg:p-3 rounded-lg border-2 transition-all text-left ${
                             isSelected 
                               ? "border-primary bg-primary/5" 
-                              : "border-gray-200 hover:border-gray-300"
+                              : "border-border hover:border-border"
                           }`}
                         >
                           <div className="flex items-center gap-2">
                             <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 ${
                               isSelected 
                                 ? "border-primary" 
-                                : "border-gray-300"
+                                : "border-border"
                             }`}>
                               {isSelected && <div className="w-2 h-2 rounded-full bg-primary" />}
                             </div>
-                            <span className={`text-xs lg:text-sm font-medium ${isSelected ? "text-gray-900" : "text-gray-700"}`}>
+                            <span className={`text-xs lg:text-sm font-medium ${isSelected ? "text-foreground" : "text-foreground"}`}>
                               {option.label}
                             </span>
                           </div>
@@ -1010,7 +1010,7 @@ export default function Onboarding() {
                   <button
                     type="button"
                     onClick={handlePrevStep}
-                    className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-gray-500 hover:text-gray-700 transition-colors mt-3 lg:mt-4"
+                    className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-muted-foreground hover:text-foreground transition-colors mt-3 lg:mt-4"
                   >
                     <ArrowLeft className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
                     Voltar
@@ -1037,7 +1037,7 @@ export default function Onboarding() {
                             ? "border-primary bg-primary/5" 
                             : plan.highlight
                               ? "border-amber-300 bg-amber-50/50 hover:border-amber-400"
-                              : "border-gray-200 hover:border-gray-300"
+                              : "border-border hover:border-border"
                         }`}
                       >
                         {/* Badge */}
@@ -1056,7 +1056,7 @@ export default function Onboarding() {
                           <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${
                             isSelected 
                               ? "border-primary" 
-                              : "border-gray-300"
+                              : "border-border"
                           }`}>
                             {isSelected && <div className="w-2 h-2 rounded-full bg-primary" />}
                           </div>
@@ -1075,13 +1075,13 @@ export default function Onboarding() {
                           {/* Content */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-baseline gap-1.5 mb-0.5">
-                              <span className="font-semibold text-gray-900 text-xs lg:text-sm">{plan.name}</span>
-                              <span className="text-sm lg:text-base xl:text-lg font-bold text-gray-900">{plan.price}</span>
-                              <span className="text-[10px] lg:text-xs xl:text-sm 2xl:text-base text-gray-500">{plan.period}</span>
+                              <span className="font-semibold text-foreground text-xs lg:text-sm">{plan.name}</span>
+                              <span className="text-sm lg:text-base xl:text-lg font-bold text-foreground">{plan.price}</span>
+                              <span className="text-[10px] lg:text-xs xl:text-sm 2xl:text-base text-muted-foreground">{plan.period}</span>
                             </div>
                             <div className="flex flex-wrap gap-x-2 gap-y-0.5">
                               {plan.features.map((feature, idx) => (
-                                <span key={idx} className="text-[10px] lg:text-xs xl:text-sm 2xl:text-base text-gray-600 flex items-center gap-0.5">
+                                <span key={idx} className="text-[10px] lg:text-xs xl:text-sm 2xl:text-base text-muted-foreground flex items-center gap-0.5">
                                   <Check className="h-2.5 w-2.5 text-emerald-500" />
                                   {feature}
                                 </span>
@@ -1118,14 +1118,14 @@ export default function Onboarding() {
                   <button
                     type="button"
                     onClick={handlePrevStep}
-                    className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-gray-500 hover:text-gray-700 transition-colors mt-3 lg:mt-4"
+                    className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-muted-foreground hover:text-foreground transition-colors mt-3 lg:mt-4"
                   >
                     <ArrowLeft className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
                     Voltar
                   </button>
                 </div>
 
-                <p className="text-[10px] lg:text-xs xl:text-sm 2xl:text-base text-center text-gray-500">
+                <p className="text-[10px] lg:text-xs xl:text-sm 2xl:text-base text-center text-muted-foreground">
                   Você poderá alterar seu plano a qualquer momento
                 </p>
               </div>

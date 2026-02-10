@@ -104,19 +104,19 @@ export default function OnboardingPlanos() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-muted-foreground/20 flex items-center justify-center p-4">
       <div className="w-full max-w-5xl">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-lg mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-card rounded-2xl shadow-lg mb-4">
             <img src="/logo.svg" alt="Mindi" className="w-10 h-10" onError={(e) => {
               e.currentTarget.style.display = 'none';
             }} />
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
             Escolha seu plano
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-muted-foreground text-lg">
             Comece com o plano gratuito ou escolha um plano que atenda às suas necessidades
           </p>
         </div>
@@ -127,10 +127,10 @@ export default function OnboardingPlanos() {
             <div
               key={plan.id}
               className={cn(
-                "relative bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1",
+                "relative bg-card rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1",
                 plan.highlighted
                   ? "ring-2 ring-blue-500"
-                  : "border border-gray-200"
+                  : "border border-border"
               )}
             >
               {/* Badge */}
@@ -151,30 +151,30 @@ export default function OnboardingPlanos() {
                   "w-14 h-14 rounded-xl flex items-center justify-center mb-4",
                   plan.highlighted
                     ? "bg-blue-600 text-white"
-                    : "bg-gray-100 text-gray-600"
+                    : "bg-muted text-muted-foreground"
                 )}>
                   {plan.icon}
                 </div>
                 
-                <h3 className="text-2xl font-bold text-gray-800 mb-1">
+                <h3 className="text-2xl font-bold text-foreground mb-1">
                   {plan.name}
                 </h3>
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
                   {plan.description}
                 </p>
 
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-gray-800">
+                  <span className="text-4xl font-bold text-foreground">
                     {plan.price}
                   </span>
-                  <span className="text-gray-500 text-sm">
+                  <span className="text-muted-foreground text-sm">
                     {plan.period}
                   </span>
                 </div>
               </div>
 
               {/* Features */}
-              <div className="p-6 pt-4 border-t border-gray-100">
+              <div className="p-6 pt-4 border-t border-border/50">
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((feature, index) => (
                     <li
@@ -182,8 +182,8 @@ export default function OnboardingPlanos() {
                       className={cn(
                         "flex items-start gap-3 text-sm",
                         feature.included
-                          ? "text-gray-700"
-                          : "text-gray-400"
+                          ? "text-foreground"
+                          : "text-muted-foreground"
                       )}
                     >
                       <div className={cn(
@@ -192,7 +192,7 @@ export default function OnboardingPlanos() {
                           ? plan.highlighted
                             ? "bg-blue-100 text-blue-600"
                             : "bg-green-100 text-green-600"
-                          : "bg-gray-100 text-gray-400"
+                          : "bg-muted text-muted-foreground"
                       )}>
                         <Check className="h-3 w-3" />
                       </div>
@@ -213,8 +213,8 @@ export default function OnboardingPlanos() {
                     plan.highlighted
                       ? "bg-blue-600 hover:bg-blue-700 text-white"
                       : plan.id === "free"
-                      ? "bg-gray-800 hover:bg-gray-900 text-white"
-                      : "bg-gray-800 hover:bg-gray-900 text-white"
+                      ? "bg-muted-foreground/90 hover:bg-foreground text-white"
+                      : "bg-muted-foreground/90 hover:bg-foreground text-white"
                   )}
                 >
                   {isLoading && selectedPlan === plan.id ? (
@@ -233,7 +233,7 @@ export default function OnboardingPlanos() {
 
         {/* Footer info */}
         <div className="mt-8 text-center">
-          <p className="text-gray-500 text-sm">
+          <p className="text-muted-foreground text-sm">
             Todos os planos incluem 15 dias de teste grátis com acesso a todos os recursos.
             <br />
             Cancele a qualquer momento sem compromisso.

@@ -301,7 +301,7 @@ export default function Estoque() {
       case "low": return "bg-yellow-500";
       case "critical": return "bg-orange-500";
       case "out_of_stock": return "bg-red-500";
-      default: return "bg-gray-500";
+      default: return "bg-muted/500";
     }
   };
 
@@ -317,7 +317,7 @@ export default function Estoque() {
       case "exit": return { label: "Saída", color: "text-red-600", bg: "bg-red-100" };
       case "adjustment": return { label: "Ajuste", color: "text-blue-600", bg: "bg-blue-100" };
       case "loss": return { label: "Perda", color: "text-orange-600", bg: "bg-orange-100" };
-      default: return { label: type, color: "text-gray-600", bg: "bg-gray-100" };
+      default: return { label: type, color: "text-muted-foreground", bg: "bg-muted" };
     }
   };
 
@@ -500,11 +500,11 @@ export default function Estoque() {
                           <div className="p-1.5 bg-blue-50 rounded">
                             <Package className="h-3.5 w-3.5 text-blue-600" />
                           </div>
-                          <span className="font-medium text-gray-900">{item.name}</span>
+                          <span className="font-medium text-foreground">{item.name}</span>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="font-medium text-gray-900">{currentQty} {unitLabel}</span>
+                        <span className="font-medium text-foreground">{currentQty} {unitLabel}</span>
                       </TableCell>
                       <TableCell>
                         <Badge 
@@ -515,15 +515,15 @@ export default function Estoque() {
                           {config.label}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-sm text-gray-600">
+                      <TableCell className="text-sm text-muted-foreground">
                         R$ {costPerUnit.toFixed(2)}/{unitLabel}
                       </TableCell>
                       <TableCell>
-                        <span className="font-medium text-gray-900">
+                        <span className="font-medium text-foreground">
                           R$ {totalValue.toFixed(2)}
                         </span>
                       </TableCell>
-                      <TableCell className="text-sm text-gray-600">
+                      <TableCell className="text-sm text-muted-foreground">
                         {timeAgo}
                       </TableCell>
                       <TableCell onClick={(e) => e.stopPropagation()}>

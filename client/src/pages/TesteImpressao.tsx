@@ -858,7 +858,7 @@ export default function TesteImpressao() {
             </CardHeader>
             <CardContent>
               <div 
-                className="bg-white border rounded-lg overflow-auto"
+                className="bg-card border rounded-lg overflow-auto"
                 style={{ maxHeight: '700px' }}
               >
                 <div
@@ -1171,8 +1171,8 @@ export default function TesteImpressao() {
               
               {/* Preview do texto */}
               {customText && (
-                <div className="border rounded-lg p-4 bg-white">
-                  <div className="text-xs text-gray-500 mb-2">Preview:</div>
+                <div className="border rounded-lg p-4 bg-card">
+                  <div className="text-xs text-muted-foreground mb-2">Preview:</div>
                   <div 
                     style={{
                       fontFamily: 'Arial, sans-serif',

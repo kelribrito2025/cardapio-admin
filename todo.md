@@ -5874,3 +5874,14 @@
 
 ## Bug - Tema Escuro no PDV Embutido nas Mesas
 - [x] Corrigir tema escuro na sidebar do PDV embutido na página de Mesas (painel de produtos, categorias, busca e sacola)
+
+## Transição Suave ao Alternar Tema
+- [x] Aplicar transition-colors no <html> para mudança de tema mais fluida
+
+## Auditoria Tema Escuro - Páginas Restantes
+- [x] Corrigir cores hardcoded na página de Pedidos
+- [x] Corrigir cores hardcoded na página de Categorias
+- [x] Corrigir cores hardcoded na página de Cupons
+- [x] Corrigir cores hardcoded na página de Campanhas
+- [x] Corrigir cores hardcoded na página de Configurações
+- [x] Auditoria global em massa: 462+ substituições em 30+ ficheiros (páginas, componentes, admin)

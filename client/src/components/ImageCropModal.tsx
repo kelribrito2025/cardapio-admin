@@ -161,7 +161,7 @@ export function ImageCropModal({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="relative w-full h-[350px] bg-gray-900 rounded-lg overflow-hidden">
+        <div className="relative w-full h-[350px] bg-foreground rounded-lg overflow-hidden">
           <Cropper
             image={imageSrc}
             crop={crop}
@@ -179,7 +179,7 @@ export function ImageCropModal({
         {/* Controles de Zoom */}
         <div className="space-y-4 pt-2">
           <div className="flex items-center gap-4">
-            <ZoomOut className="h-4 w-4 text-gray-500" />
+            <ZoomOut className="h-4 w-4 text-muted-foreground" />
             <Slider
               value={[zoom]}
               min={1}
@@ -188,7 +188,7 @@ export function ImageCropModal({
               onValueChange={(value) => setZoom(value[0])}
               className="flex-1"
             />
-            <ZoomIn className="h-4 w-4 text-gray-500" />
+            <ZoomIn className="h-4 w-4 text-muted-foreground" />
             <Button
               variant="outline"
               size="sm"

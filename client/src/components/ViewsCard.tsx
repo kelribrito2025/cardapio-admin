@@ -23,8 +23,8 @@ const stateColors = {
     symbol: "▼",
   },
   neutral: {
-    text: "text-gray-500",
-    bg: "bg-gray-100",
+    text: "text-muted-foreground",
+    bg: "bg-muted",
     icon: Minus,
     line: "#D1D5DB",
     symbol: "—",

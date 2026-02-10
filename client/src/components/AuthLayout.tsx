@@ -24,7 +24,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         
         {/* Logo - Fixed at top */}
         <div className="absolute top-12 left-12 z-20 flex items-center gap-3">
-          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-card rounded-xl flex items-center justify-center">
             <Utensils className="w-6 h-6 text-red-600" />
           </div>
           <span className="text-white text-2xl font-bold">Mindi</span>
@@ -74,7 +74,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
       </div>
       
       {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 xl:w-2/5 bg-gray-50 flex items-center justify-center p-8">
+      <div className="w-full lg:w-1/2 xl:w-2/5 bg-muted/50 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           {children}
         </div>

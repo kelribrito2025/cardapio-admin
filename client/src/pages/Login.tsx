@@ -70,31 +70,31 @@ export default function Login() {
         <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
           <UtensilsCrossed className="h-5 w-5 text-white" />
         </div>
-        <span className="text-2xl font-bold text-gray-900">Mindi</span>
+        <span className="text-2xl font-bold text-foreground">Mindi</span>
       </div>
 
       {/* Header */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Acessar sua conta</h2>
-        <p className="text-gray-500">Entre com suas credenciais para acessar sua conta</p>
+        <h2 className="text-2xl font-bold text-foreground mb-2">Acessar sua conta</h2>
+        <p className="text-muted-foreground">Entre com suas credenciais para acessar sua conta</p>
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Email */}
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-semibold text-gray-900">
+          <Label htmlFor="email" className="text-sm font-semibold text-foreground">
             Email
           </Label>
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               id="email"
               type="email"
               placeholder="seu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+              className="h-14 pl-12 rounded-xl border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-base"
             />
           </div>
         </div>
@@ -102,7 +102,7 @@ export default function Login() {
         {/* Password */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-sm font-semibold text-gray-900">
+            <Label htmlFor="password" className="text-sm font-semibold text-foreground">
               Senha
             </Label>
             <Link href="/esqueci-senha" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
@@ -110,19 +110,19 @@ export default function Login() {
             </Link>
           </div>
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Sua senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="h-14 pl-12 pr-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+              className="h-14 pl-12 pr-12 rounded-xl border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-base"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground transition-colors"
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -142,9 +142,9 @@ export default function Login() {
                 localStorage.removeItem(REMEMBER_KEY);
               }
             }}
-            className="border-gray-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+            className="border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
           />
-          <Label htmlFor="remember" className="text-sm text-gray-600 cursor-pointer">
+          <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
             Lembrar-me
           </Label>
         </div>
@@ -171,7 +171,7 @@ export default function Login() {
 
       {/* Sign up link */}
       <div className="mt-6 text-center">
-        <p className="text-gray-500">
+        <p className="text-muted-foreground">
           Não tem uma conta?{" "}
           <Link href="/criar-conta" className="font-semibold text-primary hover:text-primary/80 transition-colors">
             Registre-se aqui
@@ -180,7 +180,7 @@ export default function Login() {
       </div>
 
       {/* Privacy policy */}
-      <p className="mt-4 text-center text-xs text-gray-400">
+      <p className="mt-4 text-center text-xs text-muted-foreground">
         Ao continuar, você concorda com nossa{" "}
         <a href="#" className="text-primary hover:underline">Política de Privacidade</a>
       </p>

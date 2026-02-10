@@ -56,7 +56,7 @@ const statusBadge = (status: string) => {
     expired: "Expirado",
   };
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${styles[status] || "bg-gray-100 text-gray-700"}`}>
+    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${styles[status] || "bg-muted text-foreground"}`}>
       {labels[status] || status}
     </span>
   );
@@ -104,8 +104,8 @@ export default function AdminTrials() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Trials</h1>
-            <p className="text-sm text-gray-500">Gerenciar períodos de avaliação</p>
+            <h1 className="text-2xl font-bold text-foreground">Trials</h1>
+            <p className="text-sm text-muted-foreground">Gerenciar períodos de avaliação</p>
           </div>
         </div>
 
@@ -118,7 +118,7 @@ export default function AdminTrials() {
               className={`px-4 py-2 text-sm font-medium rounded-xl transition-colors ${
                 filter === key
                   ? "bg-red-500 text-white"
-                  : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                  : "bg-card text-muted-foreground border border-border hover:bg-muted/50"
               }`}
             >
               {label}
@@ -134,7 +134,7 @@ export default function AdminTrials() {
         {/* Trials List */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : (
           <Card>
@@ -142,18 +142,18 @@ export default function AdminTrials() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-100 bg-gray-50/50">
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600">Restaurante</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 hidden md:table-cell">Email</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600">Status</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600">Tempo Restante</th>
-                      <th className="text-right px-4 py-3 font-semibold text-gray-600">Ações</th>
+                    <tr className="border-b border-border/50 bg-gray-50/50">
+                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Restaurante</th>
+                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground hidden md:table-cell">Email</th>
+                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Status</th>
+                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Tempo Restante</th>
+                      <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     {!trials || trials.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="text-center py-12 text-gray-400">
+                        <td colSpan={5} className="text-center py-12 text-muted-foreground">
                           <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
                           Nenhum trial encontrado
                         </td>
@@ -162,10 +162,10 @@ export default function AdminTrials() {
                       trials.map((t: any) => (
                         <tr key={t.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
                           <td className="px-4 py-3">
-                            <p className="font-medium text-gray-900">{t.name}</p>
+                            <p className="font-medium text-foreground">{t.name}</p>
                           </td>
                           <td className="px-4 py-3 hidden md:table-cell">
-                            <span className="text-gray-600 text-xs">{t.email || "—"}</span>
+                            <span className="text-muted-foreground text-xs">{t.email || "—"}</span>
                           </td>
                           <td className="px-4 py-3">
                             {statusBadge(t.status)}
@@ -174,7 +174,7 @@ export default function AdminTrials() {
                             {t.status === "expired" ? (
                               <span className="text-red-500 font-semibold">Expirado</span>
                             ) : t.daysRemaining > 1 ? (
-                              <span className={`font-medium ${t.daysRemaining <= 3 ? "text-amber-500" : "text-gray-700"}`}>
+                              <span className={`font-medium ${t.daysRemaining <= 3 ? "text-amber-500" : "text-foreground"}`}>
                                 {t.daysRemaining} dias
                               </span>
                             ) : (

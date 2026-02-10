@@ -289,7 +289,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
             {/* QR Code Display */}
             {(isConnecting || connectMutation.data?.qrcode || statusQuery.data?.qrcode) && !isConnected && (
               <div className="mt-6 flex flex-col items-center">
-                <div className="bg-white p-4 rounded-lg shadow-inner">
+                <div className="bg-card p-4 rounded-lg shadow-inner">
                   {(connectMutation.data?.qrcode || statusQuery.data?.qrcode) ? (
                     <img 
                       src={connectMutation.data?.qrcode || statusQuery.data?.qrcode} 
@@ -340,7 +340,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
                     />
                   </div>
                   {requireOrderConfirmation && (
-                    <div className="mt-3 p-3 bg-white rounded-md border border-amber-100">
+                    <div className="mt-3 p-3 bg-card rounded-md border border-amber-100">
                       <p className="text-xs text-amber-600 mb-2">
                         <strong>Como funciona:</strong>
                       </p>
@@ -530,7 +530,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
                     />
                   </div>
                   {requireOrderConfirmation && (
-                    <div className="mt-3 p-3 bg-white rounded-md border border-amber-100">
+                    <div className="mt-3 p-3 bg-card rounded-md border border-amber-100">
                       <p className="text-xs text-amber-600 mb-2">
                         <strong>Como funciona:</strong>
                       </p>

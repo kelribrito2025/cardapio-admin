@@ -29,7 +29,7 @@ export default function AdminRelatorios() {
   if (!data) {
     return (
       <AdminPanelLayout>
-        <div className="text-center text-gray-500 py-12">
+        <div className="text-center text-muted-foreground py-12">
           Erro ao carregar relatórios.
         </div>
       </AdminPanelLayout>
@@ -59,8 +59,8 @@ export default function AdminRelatorios() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Relatórios</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-foreground">Relatórios</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Visão geral da plataforma e métricas de negócio
         </p>
       </div>
@@ -100,8 +100,8 @@ export default function AdminRelatorios() {
       {/* Middle Row: Donut Chart + Details */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Donut Chart */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-gray-900 mb-6">
+        <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-foreground mb-6">
             Distribuição por Status
           </h2>
           <div className="h-72">
@@ -136,7 +136,7 @@ export default function AdminRelatorios() {
                   formatter={(value: string, entry: any) => {
                     const item = donutData.find((d) => d.name === value);
                     return (
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-muted-foreground">
                         {value}: <span className="font-semibold">{item?.value ?? 0}</span>
                       </span>
                     );
@@ -148,8 +148,8 @@ export default function AdminRelatorios() {
         </div>
 
         {/* Plan Distribution Details */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-gray-900 mb-6">
+        <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-foreground mb-6">
             Detalhes por Plano
           </h2>
           <div className="space-y-4">
@@ -190,10 +190,10 @@ export default function AdminRelatorios() {
             />
           </div>
 
-          <div className="mt-6 pt-4 border-t border-gray-100">
+          <div className="mt-6 pt-4 border-t border-border/50">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Total</span>
-              <span className="font-bold text-gray-900">{data.totalRestaurants} restaurantes</span>
+              <span className="text-muted-foreground">Total</span>
+              <span className="font-bold text-foreground">{data.totalRestaurants} restaurantes</span>
             </div>
           </div>
         </div>
@@ -264,18 +264,18 @@ function KPICard({
 
   return (
     <div
-      className={`bg-white rounded-2xl border border-gray-100 border-t-4 ${c.border} p-5 shadow-sm`}
+      className={`bg-card rounded-2xl border border-border/50 border-t-4 ${c.border} p-5 shadow-sm`}
     >
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           {title}
         </span>
         <div className={`w-9 h-9 rounded-xl ${c.bg} flex items-center justify-center`}>
           <Icon className={`h-5 w-5 ${c.icon}`} />
         </div>
       </div>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-      <p className="text-xs text-gray-400 mt-1">{subtitle}</p>
+      <p className="text-2xl font-bold text-foreground">{value}</p>
+      <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
     </div>
   );
 }
@@ -290,10 +290,10 @@ function MetricCard({
   subtitle: string;
 }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-      <p className="text-sm font-medium text-gray-500 mb-1">{title}</p>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-      <p className="text-xs text-gray-400 mt-2">{subtitle}</p>
+    <div className="bg-card rounded-2xl border border-border/50 p-5 shadow-sm">
+      <p className="text-sm font-medium text-muted-foreground mb-1">{title}</p>
+      <p className="text-2xl font-bold text-foreground">{value}</p>
+      <p className="text-xs text-muted-foreground mt-2">{subtitle}</p>
     </div>
   );
 }
@@ -321,14 +321,14 @@ function PlanRow({
             className="w-3 h-3 rounded-full flex-shrink-0"
             style={{ backgroundColor: color }}
           />
-          <span className="font-medium text-gray-700">{label}</span>
+          <span className="font-medium text-foreground">{label}</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-400">{price}</span>
-          <span className="font-semibold text-gray-900 w-6 text-right">{count}</span>
+          <span className="text-xs text-muted-foreground">{price}</span>
+          <span className="font-semibold text-foreground w-6 text-right">{count}</span>
         </div>
       </div>
-      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-500"
           style={{ width: `${percentage}%`, backgroundColor: color }}

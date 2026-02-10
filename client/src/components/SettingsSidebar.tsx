@@ -104,7 +104,7 @@ export function SettingsSidebar({ activeSection, onSectionChange }: SettingsSide
             "w-full flex items-center justify-between gap-3 p-3 rounded-xl transition-all duration-300",
             isExpanded 
               ? "bg-red-100 text-red-800" 
-              : "bg-white border border-border/50 text-foreground shadow-sm"
+              : "bg-card border border-border/50 text-foreground shadow-sm"
           )}
         >
           <div className="flex items-center gap-3">
@@ -133,7 +133,7 @@ export function SettingsSidebar({ activeSection, onSectionChange }: SettingsSide
           "overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
           isExpanded ? "max-h-[400px] opacity-100 mt-2" : "max-h-0 opacity-0"
         )}>
-          <nav className="bg-white rounded-xl border border-border/50 shadow-sm overflow-hidden">
+          <nav className="bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden">
             {menuItems.map((item, index) => {
               const Icon = item.icon;
               const isActive = activeSection === item.id;

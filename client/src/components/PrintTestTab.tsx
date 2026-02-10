@@ -786,7 +786,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
                   <div className="flex items-center gap-3">
                     <div className={cn(
                       "p-2 rounded-lg",
-                      printer.isActive ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"
+                      printer.isActive ? "bg-green-100 text-green-600" : "bg-muted text-muted-foreground"
                     )}>
                       <Printer className="h-5 w-5" />
                     </div>
@@ -982,7 +982,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
                     {qrCodeUploading && <Loader2 className="h-4 w-4 animate-spin" />}
                   </div>
                   {qrCodeUrl && (
-                    <img src={qrCodeUrl} alt="QR Code PIX" className="w-24 h-24 object-contain border rounded bg-white" />
+                    <img src={qrCodeUrl} alt="QR Code PIX" className="w-24 h-24 object-contain border rounded bg-card" />
                   )}
                 </div>
               )}

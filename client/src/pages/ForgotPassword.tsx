@@ -41,19 +41,19 @@ export default function ForgotPassword() {
           <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
             <CheckCircle className="h-8 w-8 text-emerald-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Email enviado!</h2>
-          <p className="text-gray-500 mb-6 leading-relaxed">
-            Enviamos um link de recuperação para <strong className="text-gray-700">{email}</strong>. 
+          <h2 className="text-2xl font-bold text-foreground mb-2">Email enviado!</h2>
+          <p className="text-muted-foreground mb-6 leading-relaxed">
+            Enviamos um link de recuperação para <strong className="text-foreground">{email}</strong>. 
             Verifique sua caixa de entrada e siga as instruções.
           </p>
-          <p className="text-sm text-gray-400 mb-6">
+          <p className="text-sm text-muted-foreground mb-6">
             Não recebeu o email? Verifique sua pasta de spam ou tente novamente.
           </p>
           <div className="space-y-3">
             <Button
               onClick={() => setEmailSent(false)}
               variant="outline"
-              className="w-full h-12 rounded-xl border-gray-200"
+              className="w-full h-12 rounded-xl border-border"
             >
               Tentar outro email
             </Button>
@@ -76,31 +76,31 @@ export default function ForgotPassword() {
         <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
           <UtensilsCrossed className="h-5 w-5 text-white" />
         </div>
-        <span className="text-2xl font-bold text-gray-900">Mindi</span>
+        <span className="text-2xl font-bold text-foreground">Mindi</span>
       </div>
 
       {/* Header */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Esqueceu a senha?</h2>
-        <p className="text-gray-500">Informe seu email para recuperar o acesso à sua conta</p>
+        <h2 className="text-2xl font-bold text-foreground mb-2">Esqueceu a senha?</h2>
+        <p className="text-muted-foreground">Informe seu email para recuperar o acesso à sua conta</p>
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Email */}
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-semibold text-gray-900">
+          <Label htmlFor="email" className="text-sm font-semibold text-foreground">
             Email
           </Label>
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               id="email"
               type="email"
               placeholder="seu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-14 pl-12 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary/20 text-base"
+              className="h-14 pl-12 rounded-xl border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-base"
             />
           </div>
         </div>
@@ -127,14 +127,14 @@ export default function ForgotPassword() {
 
       {/* Back to login */}
       <div className="mt-6 text-center">
-        <Link href="/login" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors">
+        <Link href="/login" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-4 w-4" />
           Voltar ao login
         </Link>
       </div>
 
       {/* Privacy policy */}
-      <p className="mt-4 text-center text-xs text-gray-400">
+      <p className="mt-4 text-center text-xs text-muted-foreground">
         Ao continuar, você concorda com nossa{" "}
         <a href="#" className="text-primary hover:underline">Política de Privacidade</a>
       </p>

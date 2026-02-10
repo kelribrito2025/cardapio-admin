@@ -50,7 +50,7 @@ type CouponStatus = "active" | "inactive" | "expired" | "exhausted";
 
 const statusConfig: Record<CouponStatus, { label: string; color: string; bgColor: string; borderColor: string; icon: React.ReactNode }> = {
   active: { label: "Ativo", color: "text-green-700", bgColor: "bg-green-50", borderColor: "border-green-200", icon: <CheckCircle className="h-3.5 w-3.5" /> },
-  inactive: { label: "Inativo", color: "text-gray-700", bgColor: "bg-gray-50", borderColor: "border-gray-200", icon: <XCircle className="h-3.5 w-3.5" /> },
+  inactive: { label: "Inativo", color: "text-muted-foreground", bgColor: "bg-muted/50", borderColor: "border-border", icon: <XCircle className="h-3.5 w-3.5" /> },
   expired: { label: "Expirado", color: "text-orange-700", bgColor: "bg-orange-50", borderColor: "border-orange-200", icon: <AlertCircle className="h-3.5 w-3.5" /> },
   exhausted: { label: "Esgotado", color: "text-red-700", bgColor: "bg-red-50", borderColor: "border-red-200", icon: <Ban className="h-3.5 w-3.5" /> },
 };
@@ -236,32 +236,32 @@ export default function Cupons() {
     <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
       <div>
         <span className="text-muted-foreground text-xs">Máx. Desconto</span>
-        <p className="text-gray-700 font-medium">{formatCurrency(coupon.maxDiscount)}</p>
+        <p className="text-foreground font-medium">{formatCurrency(coupon.maxDiscount)}</p>
       </div>
       <div>
         <span className="text-muted-foreground text-xs">Mín. Pedido</span>
-        <p className="text-gray-700 font-medium">{formatCurrency(coupon.minOrderValue)}</p>
+        <p className="text-foreground font-medium">{formatCurrency(coupon.minOrderValue)}</p>
       </div>
       <div>
         <span className="text-muted-foreground text-xs flex items-center gap-1">
           <Calendar className="h-3 w-3" /> Validade
         </span>
-        <p className="text-gray-700 font-medium">{formatDateRange(coupon.startDate, coupon.endDate)}</p>
+        <p className="text-foreground font-medium">{formatDateRange(coupon.startDate, coupon.endDate)}</p>
       </div>
       <div>
         <span className="text-muted-foreground text-xs">Uso</span>
-        <p className="text-gray-700 font-medium">
+        <p className="text-foreground font-medium">
           {coupon.usedCount}
           {coupon.quantity && `/${coupon.quantity}`}
         </p>
       </div>
       <div>
         <span className="text-muted-foreground text-xs">Dias</span>
-        <p className="text-gray-700 font-medium">{formatActiveDays(coupon.activeDays)}</p>
+        <p className="text-foreground font-medium">{formatActiveDays(coupon.activeDays)}</p>
       </div>
       <div>
         <span className="text-muted-foreground text-xs">Origem</span>
-        <p className="text-gray-700 font-medium">{formatValidOrigins(coupon.validOrigins)}</p>
+        <p className="text-foreground font-medium">{formatValidOrigins(coupon.validOrigins)}</p>
       </div>
     </div>
   );
@@ -295,7 +295,7 @@ export default function Cupons() {
               <div className="p-1.5 bg-red-50 rounded shrink-0">
                 <Ticket className="h-4 w-4 text-red-600" />
               </div>
-              <span className="font-mono font-bold text-base text-gray-900 truncate">{coupon.code}</span>
+              <span className="font-mono font-bold text-base text-foreground truncate">{coupon.code}</span>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <Badge 
@@ -378,7 +378,7 @@ export default function Cupons() {
               <div className="p-1.5 bg-red-50 rounded shrink-0">
                 <Ticket className="h-4 w-4 text-red-600" />
               </div>
-              <span className="font-mono font-bold text-base text-gray-900 truncate">{coupon.code}</span>
+              <span className="font-mono font-bold text-base text-foreground truncate">{coupon.code}</span>
             </div>
             <div onClick={(e) => e.stopPropagation()}>
               {renderActions(coupon)}
@@ -478,12 +478,12 @@ export default function Cupons() {
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Inativos</p>
                 <div className="flex items-center gap-1.5 mt-1">
-                  <span className="w-2 h-2 rounded-full bg-gray-400" />
-                  <span className="text-2xl font-bold tracking-tight text-gray-600">{inactiveCoupons}</span>
+                  <span className="w-2 h-2 rounded-full bg-muted-foreground/50" />
+                  <span className="text-2xl font-bold tracking-tight text-muted-foreground">{inactiveCoupons}</span>
                 </div>
               </div>
-              <div className="p-2.5 bg-gray-100 rounded-lg shrink-0">
-                <XCircle className="h-5 w-5 text-gray-600" />
+              <div className="p-2.5 bg-muted rounded-lg shrink-0">
+                <XCircle className="h-5 w-5 text-muted-foreground" />
               </div>
             </div>
           </div>
@@ -532,11 +532,11 @@ export default function Cupons() {
           <Card className="shadow-none" style={{paddingTop: '0px', paddingBottom: '0px'}}>
             <CardContent className="p-0">
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="p-3 bg-gray-100 rounded-full mb-3">
-                  <Ticket className="h-6 w-6 text-gray-400" />
+                <div className="p-3 bg-muted rounded-full mb-3">
+                  <Ticket className="h-6 w-6 text-muted-foreground" />
                 </div>
-                <h3 className="text-sm font-medium text-gray-900 mb-1">Nenhum cupom encontrado</h3>
-                <p className="text-sm text-gray-500 mb-4">
+                <h3 className="text-sm font-medium text-foreground mb-1">Nenhum cupom encontrado</h3>
+                <p className="text-sm text-muted-foreground mb-4">
                   {search ? "Tente buscar por outro código" : "Crie seu primeiro cupom de desconto"}
                 </p>
                 {!search && (

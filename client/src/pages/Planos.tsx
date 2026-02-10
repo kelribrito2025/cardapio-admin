@@ -277,7 +277,7 @@ export default function Planos() {
             className={cn(
               "px-4 py-2 text-sm font-medium rounded-full transition-all",
               !isAnnual
-                ? "bg-white text-foreground shadow-sm"
+                ? "bg-card text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -288,7 +288,7 @@ export default function Planos() {
             className={cn(
               "px-4 py-2 text-sm font-medium rounded-full transition-all",
               isAnnual
-                ? "bg-white text-foreground shadow-sm"
+                ? "bg-card text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -382,8 +382,8 @@ export default function Planos() {
                     plan.highlighted
                       ? "bg-blue-600 hover:bg-blue-700 text-white"
                       : plan.id === "free"
-                      ? "bg-gray-100 hover:bg-gray-100 text-muted-foreground cursor-default"
-                      : "bg-white hover:bg-gray-50 text-foreground border border-border"
+                      ? "bg-muted hover:bg-muted text-muted-foreground cursor-default"
+                      : "bg-card hover:bg-muted/50 text-foreground border border-border"
                   )}
                   disabled={plan.id === "free" || checkoutMutation.isPending}
                   onClick={() => {
@@ -487,7 +487,7 @@ export default function Planos() {
                 setCurrentPage(1);
               }}
             >
-              <SelectTrigger className="w-[180px] bg-white border-border">
+              <SelectTrigger className="w-[180px] bg-card border-border">
                 <span className="text-sm text-muted-foreground mr-1">Status:</span>
                 <SelectValue placeholder="Todo Histórico" />
               </SelectTrigger>

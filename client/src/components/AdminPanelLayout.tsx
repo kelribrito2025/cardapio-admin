@@ -57,7 +57,7 @@ export default function AdminPanelLayout({ children }: AdminPanelLayoutProps) {
 
   if (adminMe.isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted/50 flex items-center justify-center">
         <div className="animate-spin h-8 w-8 border-4 border-red-500 border-t-transparent rounded-full" />
       </div>
     );
@@ -73,7 +73,7 @@ export default function AdminPanelLayout({ children }: AdminPanelLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-muted/50 flex">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -84,22 +84,22 @@ export default function AdminPanelLayout({ children }: AdminPanelLayoutProps) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-100 flex flex-col transition-transform duration-200 ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-card border-r border-border/50 flex flex-col transition-transform duration-200 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
         {/* Sidebar Header */}
-        <div className="h-16 flex items-center gap-3 px-5 border-b border-gray-100">
+        <div className="h-16 flex items-center gap-3 px-5 border-b border-border/50">
           <div className="w-9 h-9 rounded-xl bg-red-500 flex items-center justify-center flex-shrink-0">
             <Shield className="h-5 w-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-sm font-bold text-gray-900 truncate">Super Admin</h2>
-            <p className="text-xs text-gray-400 truncate">{adminMe.data.email}</p>
+            <h2 className="text-sm font-bold text-foreground truncate">Super Admin</h2>
+            <p className="text-xs text-muted-foreground truncate">{adminMe.data.email}</p>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-gray-400 hover:text-gray-600"
+            className="lg:hidden text-muted-foreground hover:text-muted-foreground"
           >
             <X className="h-5 w-5" />
           </button>
@@ -116,10 +116,10 @@ export default function AdminPanelLayout({ children }: AdminPanelLayoutProps) {
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                     active
                       ? "bg-red-50 text-red-600"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                   }`}
                 >
-                  <item.icon className={`h-5 w-5 flex-shrink-0 ${active ? "text-red-500" : "text-gray-400"}`} />
+                  <item.icon className={`h-5 w-5 flex-shrink-0 ${active ? "text-red-500" : "text-muted-foreground"}`} />
                   {item.label}
                   {active && <ChevronRight className="h-4 w-4 ml-auto text-red-400" />}
                 </button>
@@ -129,10 +129,10 @@ export default function AdminPanelLayout({ children }: AdminPanelLayoutProps) {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-3 border-t border-gray-100">
+        <div className="p-3 border-t border-border/50">
           <button
             onClick={() => logoutMutation.mutate()}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-red-50 hover:text-red-600 transition-colors"
           >
             <LogOut className="h-5 w-5" />
             Sair
@@ -143,17 +143,17 @@ export default function AdminPanelLayout({ children }: AdminPanelLayoutProps) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Header */}
-        <header className="h-16 bg-white border-b border-gray-100 flex items-center px-4 lg:px-6 gap-4 sticky top-0 z-30">
+        <header className="h-16 bg-card border-b border-border/50 flex items-center px-4 lg:px-6 gap-4 sticky top-0 z-30">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden text-gray-500 hover:text-gray-700"
+            className="lg:hidden text-muted-foreground hover:text-foreground"
           >
             <Menu className="h-6 w-6" />
           </button>
 
           <div className="flex-1" />
 
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Shield className="h-4 w-4 text-red-500" />
             <span className="font-medium">Administrador</span>
           </div>

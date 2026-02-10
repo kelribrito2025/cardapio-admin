@@ -122,13 +122,13 @@ const kanbanColumns = [
     id: "completed" as OrderStatus,
     title: "Completos",
     color: "gray",
-    borderColor: "border-t-gray-400",
-    iconBg: "bg-gray-100",
-    iconColor: "text-gray-500",
-    dotColor: "bg-gray-400",
-    placeholderBorder: "border-gray-300",
-    placeholderBg: "bg-gray-50",
-    placeholderText: "text-gray-400",
+    borderColor: "border-t-muted-foreground/50",
+    iconBg: "bg-muted",
+    iconColor: "text-muted-foreground",
+    dotColor: "bg-muted-foreground/50",
+    placeholderBorder: "border-border",
+    placeholderBg: "bg-muted/50",
+    placeholderText: "text-muted-foreground",
     icon: CheckCircle2,
   },
   {
@@ -156,7 +156,7 @@ const statusConfig: Record<OrderStatus, {
   new: { label: "Novo", variant: "info", icon: Clock, color: "text-blue-600", bgColor: "bg-blue-50" },
   preparing: { label: "Preparando", variant: "warning", icon: ChefHat, color: "text-amber-600", bgColor: "bg-amber-50" },
   ready: { label: "Pronto", variant: "success", icon: Package, color: "text-emerald-600", bgColor: "bg-emerald-50" },
-  completed: { label: "Finalizado", variant: "default", icon: CheckCircle, color: "text-gray-600", bgColor: "bg-[#e3e3e3]" },
+  completed: { label: "Finalizado", variant: "default", icon: CheckCircle, color: "text-muted-foreground", bgColor: "bg-muted" },
   cancelled: { label: "Cancelado", variant: "error", icon: XCircle, color: "text-red-600", bgColor: "bg-red-50" },
 };
 
@@ -876,7 +876,7 @@ export default function Pedidos() {
           <div className={cn(
             "flex items-center gap-3 px-4 py-2 rounded-xl border text-sm font-medium shadow-sm whitespace-nowrap",
             !isWhatsappFetched || isWhatsappLoading
-              ? "bg-gray-50 border-gray-200 text-gray-600"
+              ? "bg-muted/50 border-border text-muted-foreground"
               : whatsappStatus?.status === 'connected'
                 ? "bg-emerald-50 border-emerald-200 text-emerald-700"
                 : "bg-red-50 border-red-200 text-red-700"
@@ -886,7 +886,7 @@ export default function Pedidos() {
               {!isWhatsappFetched || isWhatsappLoading ? (
                 /* Estado de carregamento */
                 <>
-                  <Loader2 className="h-4 w-4 text-gray-400 animate-spin" />
+                  <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
                   <span>Verificando...</span>
                 </>
               ) : whatsappStatus?.status === 'connected' ? (
@@ -907,7 +907,7 @@ export default function Pedidos() {
             {/* Botões de ação - só mostra após carregar */}
             {isWhatsappFetched && !isWhatsappLoading && (
               <>
-                <div className="w-px h-5 bg-gray-300" />
+                <div className="w-px h-5 bg-border" />
                 <div className="flex items-center gap-1">
                   {whatsappStatus?.status === 'connected' ? (
                 /* Quando conectado: Desconectar */
@@ -941,7 +941,7 @@ export default function Pedidos() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 px-2 hover:bg-white/50 gap-1.5"
+                        className="h-7 px-2 hover:bg-muted/50 gap-1.5"
                         onClick={() => {
                           setQrCodeModalOpen(true);
                           connectWhatsapp.mutate();
@@ -1021,7 +1021,7 @@ export default function Pedidos() {
                   // Loading skeleton
                   <div className="space-y-3">
                     {[1, 2].map((i) => (
-                      <div key={i} className="bg-white rounded-xl p-4 shadow-sm">
+                      <div key={i} className="bg-card rounded-xl p-4 shadow-sm">
                         <div className="skeleton h-4 w-20 rounded mb-2" />
                         <div className="skeleton h-3 w-full rounded mb-1" />
                         <div className="skeleton h-3 w-2/3 rounded" />
@@ -1043,7 +1043,7 @@ export default function Pedidos() {
                         {/* Header colorido com ícone - estilo original */}
                         <div className={cn("px-4 py-3 flex items-center justify-between rounded-t-xl", config.bgColor)}>
                           <div className="flex items-center gap-3">
-                            <div className={cn("p-2 rounded-full bg-white/90 shadow-sm", config.color)}>
+                            <div className={cn("p-2 rounded-full bg-card/90 shadow-sm", config.color)}>
                               <config.icon className="h-4 w-4" />
                             </div>
                             <span className={cn("font-bold text-base", config.color)}>
@@ -1252,8 +1252,8 @@ export default function Pedidos() {
                     ) : (
                       // Coluna Completos: ícone de check
                       <>
-                        <CheckCircle2 className="h-8 w-8 text-gray-300 mb-2" />
-                        <span className="text-sm text-gray-400">Nenhum pedido finalizado</span>
+                        <CheckCircle2 className="h-8 w-8 text-muted-foreground/40 mb-2" />
+                        <span className="text-sm text-muted-foreground">Nenhum pedido finalizado</span>
                       </>
                     )}
                   </div>
@@ -1706,14 +1706,14 @@ export default function Pedidos() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Motivo do cancelamento (obrigatório)
             </label>
             <textarea
               value={cancellationReason}
               onChange={(e) => setCancellationReason(e.target.value)}
               placeholder="Ex: Produto indisponível, cliente solicitou cancelamento..."
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
+              className="w-full px-4 py-3 border border-border rounded-xl text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
               rows={3}
             />
           </div>
@@ -1755,7 +1755,7 @@ export default function Pedidos() {
           
           <div className="flex flex-col items-center py-6">
             {/* QR Code */}
-            <div className="bg-gray-50 p-4 rounded-xl">
+            <div className="bg-muted/50 p-4 rounded-xl">
               {(connectWhatsapp.data?.qrcode || whatsappStatus?.qrcode) ? (
                 <img 
                   src={connectWhatsapp.data?.qrcode || whatsappStatus?.qrcode} 
@@ -1819,10 +1819,10 @@ export default function Pedidos() {
           
           {/* Card visual de conversa WhatsApp com carrossel */}
           <div className="py-2">
-            <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+            <div className="rounded-xl overflow-hidden border border-border shadow-sm">
               {/* Header do WhatsApp */}
               <div className="bg-emerald-700 px-4 py-3 flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold text-sm">
+                <div className="w-9 h-9 rounded-full bg-muted-foreground/50 flex items-center justify-center text-white font-bold text-sm">
                   {establishment?.name?.charAt(0)?.toUpperCase() || 'C'}
                 </div>
                 <div>
@@ -1833,26 +1833,26 @@ export default function Pedidos() {
               {/* Corpo da conversa - carrossel animado */}
               <div className="bg-[#e5ddd5] px-4 py-5 min-h-[160px] flex items-start">
                 <div
-                  className="bg-white rounded-lg px-3 py-2.5 max-w-[85%] shadow-sm relative"
+                  className="bg-card rounded-lg px-3 py-2.5 max-w-[85%] shadow-sm relative"
                   style={{
                     transition: 'opacity 0.4s ease, transform 0.4s ease',
                     opacity: whatsappMsgFading ? 0 : 1,
                     transform: whatsappMsgFading ? 'translateY(8px)' : 'translateY(0)',
                   }}
                 >
-                  <div className="absolute -left-1.5 top-0 w-3 h-3 bg-white" style={{ clipPath: 'polygon(100% 0, 0 0, 100% 100%)' }} />
-                  <p className="text-[13px] text-gray-800 leading-relaxed">
+                  <div className="absolute -left-1.5 top-0 w-3 h-3 bg-card" style={{ clipPath: 'polygon(100% 0, 0 0, 100% 100%)' }} />
+                  <p className="text-[13px] text-foreground leading-relaxed">
                     {whatsappMessages[whatsappMsgIndex].text}
                   </p>
-                  <p className="text-[13px] text-gray-800 leading-relaxed mt-2">
+                  <p className="text-[13px] text-foreground leading-relaxed mt-2">
                     {whatsappMessages[whatsappMsgIndex].text2}
                   </p>
-                  <div className="mt-2 text-[13px] text-gray-800">
+                  <div className="mt-2 text-[13px] text-foreground">
                     {whatsappMessages[whatsappMsgIndex].items.map((item, i) => (
                       <p key={i}>{item}</p>
                     ))}
                   </div>
-                  <p className="text-[10px] text-gray-400 text-right mt-1">{whatsappMessages[whatsappMsgIndex].time}</p>
+                  <p className="text-[10px] text-muted-foreground text-right mt-1">{whatsappMessages[whatsappMsgIndex].time}</p>
                 </div>
               </div>
               {/* Indicadores de posição */}
@@ -1860,7 +1860,7 @@ export default function Pedidos() {
                 {whatsappMessages.map((_, i) => (
                   <div
                     key={i}
-                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === whatsappMsgIndex ? 'bg-emerald-600 w-4' : 'bg-gray-400/50'}`}
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === whatsappMsgIndex ? 'bg-emerald-600 w-4' : 'bg-muted-foreground/50'}`}
                   />
                 ))}
               </div>

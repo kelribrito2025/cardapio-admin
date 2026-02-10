@@ -72,7 +72,7 @@ const planBadge = (planType: string, trialStatus: string) => {
     enterprise: "bg-indigo-100 text-indigo-700",
   };
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors[planType] || "bg-gray-100 text-gray-700"}`}>
+    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors[planType] || "bg-muted text-foreground"}`}>
       {planType.charAt(0).toUpperCase() + planType.slice(1)}
     </span>
   );
@@ -142,14 +142,14 @@ export default function AdminRestaurantes() {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Restaurantes</h1>
-          <p className="text-sm text-gray-500">Gerenciar todos os restaurantes da plataforma</p>
+          <h1 className="text-2xl font-bold text-foreground">Restaurantes</h1>
+          <p className="text-sm text-muted-foreground">Gerenciar todos os restaurantes da plataforma</p>
         </div>
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Buscar por nome ou email..."
               value={search}
@@ -172,7 +172,7 @@ export default function AdminRestaurantes() {
         {/* Table */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : (
           <Card>
@@ -180,19 +180,19 @@ export default function AdminRestaurantes() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-100 bg-gray-50/50">
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600">Restaurante</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 hidden md:table-cell">Email</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600">Plano</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 hidden lg:table-cell">Trial</th>
-                      <th className="text-center px-4 py-3 font-semibold text-gray-600">Menu</th>
-                      <th className="text-right px-4 py-3 font-semibold text-gray-600">Ações</th>
+                    <tr className="border-b border-border/50 bg-gray-50/50">
+                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Restaurante</th>
+                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground hidden md:table-cell">Email</th>
+                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Plano</th>
+                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground hidden lg:table-cell">Trial</th>
+                      <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Menu</th>
+                      <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     {data?.restaurants.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="text-center py-12 text-gray-400">
+                        <td colSpan={6} className="text-center py-12 text-muted-foreground">
                           <Store className="h-8 w-8 mx-auto mb-2 opacity-50" />
                           Nenhum restaurante encontrado
                         </td>
@@ -205,18 +205,18 @@ export default function AdminRestaurantes() {
                               {r.logo ? (
                                 <img src={r.logo} alt="" className="w-8 h-8 rounded-lg object-cover" />
                               ) : (
-                                <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
-                                  <Store className="h-4 w-4 text-gray-400" />
+                                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                                  <Store className="h-4 w-4 text-muted-foreground" />
                                 </div>
                               )}
                               <div>
-                                <p className="font-medium text-gray-900 truncate max-w-[200px]">{r.name}</p>
-                                <p className="text-xs text-gray-400">{r.city}{r.state ? `, ${r.state}` : ""}</p>
+                                <p className="font-medium text-foreground truncate max-w-[200px]">{r.name}</p>
+                                <p className="text-xs text-muted-foreground">{r.city}{r.state ? `, ${r.state}` : ""}</p>
                               </div>
                             </div>
                           </td>
                           <td className="px-4 py-3 hidden md:table-cell">
-                            <span className="text-gray-600 text-xs">{r.email || "—"}</span>
+                            <span className="text-muted-foreground text-xs">{r.email || "—"}</span>
                           </td>
                           <td className="px-4 py-3">
                             {planBadge(r.planType, r.trialStatus)}
@@ -229,11 +229,11 @@ export default function AdminRestaurantes() {
                                 ) : r.trialStatus === "expiring_soon" ? (
                                   <span className="text-xs text-amber-500 font-medium">{r.daysRemaining}d restantes</span>
                                 ) : (
-                                  <span className="text-xs text-gray-500">{r.daysRemaining}d restantes</span>
+                                  <span className="text-xs text-muted-foreground">{r.daysRemaining}d restantes</span>
                                 )}
                               </div>
                             ) : (
-                              <span className="text-xs text-gray-400">—</span>
+                              <span className="text-xs text-muted-foreground">—</span>
                             )}
                           </td>
                           <td className="px-4 py-3 text-center">
@@ -242,7 +242,7 @@ export default function AdminRestaurantes() {
                                 <Globe className="h-3.5 w-3.5" /> Ativo
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 text-xs text-gray-400">
+                              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                                 <GlobeLock className="h-3.5 w-3.5" /> Inativo
                               </span>
                             )}
@@ -298,8 +298,8 @@ export default function AdminRestaurantes() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-                  <span className="text-xs text-gray-500">
+                <div className="flex items-center justify-between px-4 py-3 border-t border-border/50">
+                  <span className="text-xs text-muted-foreground">
                     {data?.total ?? 0} restaurantes encontrados
                   </span>
                   <div className="flex items-center gap-2">
@@ -311,7 +311,7 @@ export default function AdminRestaurantes() {
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    <span className="text-xs text-gray-600">
+                    <span className="text-xs text-muted-foreground">
                       {page} / {totalPages}
                     </span>
                     <Button

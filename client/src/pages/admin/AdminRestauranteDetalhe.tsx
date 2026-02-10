@@ -108,7 +108,7 @@ export default function AdminRestauranteDetalhe() {
     return (
       <AdminPanelLayout>
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       </AdminPanelLayout>
     );
@@ -118,8 +118,8 @@ export default function AdminRestauranteDetalhe() {
     return (
       <AdminPanelLayout>
         <div className="text-center py-20">
-          <Store className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-          <p className="text-gray-500">Restaurante não encontrado</p>
+          <Store className="h-12 w-12 mx-auto mb-3 text-muted-foreground/60" />
+          <p className="text-muted-foreground">Restaurante não encontrado</p>
           <Button variant="outline" className="mt-4" onClick={() => navigate("/admin/restaurantes")}>
             <ArrowLeft className="h-4 w-4 mr-2" /> Voltar
           </Button>
@@ -139,7 +139,7 @@ export default function AdminRestauranteDetalhe() {
     active: "text-green-600",
     expiring_soon: "text-amber-600",
     expired: "text-red-600",
-    not_trial: "text-gray-500",
+    not_trial: "text-muted-foreground",
   };
 
   const statusLabels: Record<string, string> = {
@@ -162,13 +162,13 @@ export default function AdminRestauranteDetalhe() {
               {restaurant.logo ? (
                 <img src={restaurant.logo} alt="" className="w-12 h-12 rounded-xl object-cover" />
               ) : (
-                <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center">
-                  <Store className="h-6 w-6 text-gray-400" />
+                <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center">
+                  <Store className="h-6 w-6 text-muted-foreground" />
                 </div>
               )}
               <div>
-                <h1 className="text-xl font-bold text-gray-900">{restaurant.name}</h1>
-                <p className="text-sm text-gray-500">ID: {restaurant.id}</p>
+                <h1 className="text-xl font-bold text-foreground">{restaurant.name}</h1>
+                <p className="text-sm text-muted-foreground">ID: {restaurant.id}</p>
               </div>
             </div>
           </div>
@@ -178,39 +178,39 @@ export default function AdminRestauranteDetalhe() {
           {/* Info Card */}
           <Card>
             <CardContent className="p-5 space-y-4">
-              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                <Store className="h-4 w-4 text-gray-400" />
+              <h3 className="font-semibold text-foreground flex items-center gap-2">
+                <Store className="h-4 w-4 text-muted-foreground" />
                 Informações Gerais
               </h3>
               <div className="space-y-3 text-sm">
                 <div className="flex items-center gap-3 py-2 border-b border-gray-50">
-                  <Mail className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                  <span className="text-gray-500 w-28">Email</span>
-                  <span className="text-gray-900 font-medium">{restaurant.email || "—"}</span>
+                  <Mail className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground w-28">Email</span>
+                  <span className="text-foreground font-medium">{restaurant.email || "—"}</span>
                 </div>
                 <div className="flex items-center gap-3 py-2 border-b border-gray-50">
-                  <Phone className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                  <span className="text-gray-500 w-28">WhatsApp</span>
-                  <span className="text-gray-900 font-medium">{restaurant.whatsapp || "—"}</span>
+                  <Phone className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground w-28">WhatsApp</span>
+                  <span className="text-foreground font-medium">{restaurant.whatsapp || "—"}</span>
                 </div>
                 <div className="flex items-center gap-3 py-2 border-b border-gray-50">
-                  <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                  <span className="text-gray-500 w-28">Localização</span>
-                  <span className="text-gray-900 font-medium">
+                  <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground w-28">Localização</span>
+                  <span className="text-foreground font-medium">
                     {restaurant.city}{restaurant.state ? `, ${restaurant.state}` : ""}{!restaurant.city && "—"}
                   </span>
                 </div>
                 <div className="flex items-center gap-3 py-2 border-b border-gray-50">
-                  <Calendar className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                  <span className="text-gray-500 w-28">Cadastro</span>
-                  <span className="text-gray-900 font-medium">
+                  <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground w-28">Cadastro</span>
+                  <span className="text-foreground font-medium">
                     {restaurant.createdAt ? new Date(restaurant.createdAt).toLocaleDateString("pt-BR") : "—"}
                   </span>
                 </div>
                 <div className="flex items-center gap-3 py-2">
-                  <Globe className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                  <span className="text-gray-500 w-28">Menu público</span>
-                  <span className={`font-medium ${restaurant.isOpen ? "text-green-600" : "text-gray-400"}`}>
+                  <Globe className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground w-28">Menu público</span>
+                  <span className={`font-medium ${restaurant.isOpen ? "text-green-600" : "text-muted-foreground"}`}>
                     {restaurant.isOpen ? "Ativo" : "Inativo"}
                   </span>
                   {restaurant.menuSlug && (
@@ -229,22 +229,22 @@ export default function AdminRestauranteDetalhe() {
               {/* Owner Info */}
               {restaurant.owner && (
                 <>
-                  <h3 className="font-semibold text-gray-900 flex items-center gap-2 pt-2">
-                    <User className="h-4 w-4 text-gray-400" />
+                  <h3 className="font-semibold text-foreground flex items-center gap-2 pt-2">
+                    <User className="h-4 w-4 text-muted-foreground" />
                     Proprietário
                   </h3>
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center gap-3 py-2 border-b border-gray-50">
-                      <span className="text-gray-500 w-28 ml-7">Nome</span>
-                      <span className="text-gray-900 font-medium">{restaurant.owner.name || "—"}</span>
+                      <span className="text-muted-foreground w-28 ml-7">Nome</span>
+                      <span className="text-foreground font-medium">{restaurant.owner.name || "—"}</span>
                     </div>
                     <div className="flex items-center gap-3 py-2 border-b border-gray-50">
-                      <span className="text-gray-500 w-28 ml-7">Email</span>
-                      <span className="text-gray-900 font-medium">{restaurant.owner.email || "—"}</span>
+                      <span className="text-muted-foreground w-28 ml-7">Email</span>
+                      <span className="text-foreground font-medium">{restaurant.owner.email || "—"}</span>
                     </div>
                     <div className="flex items-center gap-3 py-2">
-                      <span className="text-gray-500 w-28 ml-7">Último acesso</span>
-                      <span className="text-gray-900 font-medium">
+                      <span className="text-muted-foreground w-28 ml-7">Último acesso</span>
+                      <span className="text-foreground font-medium">
                         {restaurant.owner.lastSignedIn
                           ? new Date(restaurant.owner.lastSignedIn).toLocaleString("pt-BR")
                           : "—"}
@@ -260,19 +260,19 @@ export default function AdminRestauranteDetalhe() {
           <div className="space-y-6">
             <Card>
               <CardContent className="p-5 space-y-4">
-                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                  <CreditCard className="h-4 w-4 text-gray-400" />
+                <h3 className="font-semibold text-foreground flex items-center gap-2">
+                  <CreditCard className="h-4 w-4 text-muted-foreground" />
                   Plano & Trial
                 </h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                    <span className="text-gray-500">Plano atual</span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${planColors[restaurant.planType] || "bg-gray-100 text-gray-700"}`}>
+                    <span className="text-muted-foreground">Plano atual</span>
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${planColors[restaurant.planType] || "bg-muted text-foreground"}`}>
                       {restaurant.planType.charAt(0).toUpperCase() + restaurant.planType.slice(1)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                    <span className="text-gray-500">Status</span>
+                    <span className="text-muted-foreground">Status</span>
                     <span className={`font-semibold ${statusColors[restaurant.trialStatus]}`}>
                       {statusLabels[restaurant.trialStatus]}
                     </span>
@@ -280,23 +280,23 @@ export default function AdminRestauranteDetalhe() {
                   {restaurant.planType === "trial" && (
                     <>
                       <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                        <span className="text-gray-500">Início do trial</span>
-                        <span className="text-gray-900 font-medium">
+                        <span className="text-muted-foreground">Início do trial</span>
+                        <span className="text-foreground font-medium">
                           {restaurant.trialStartDate
                             ? new Date(restaurant.trialStartDate).toLocaleDateString("pt-BR")
                             : "—"}
                         </span>
                       </div>
                       <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                        <span className="text-gray-500">Expiração</span>
-                        <span className="text-gray-900 font-medium">
+                        <span className="text-muted-foreground">Expiração</span>
+                        <span className="text-foreground font-medium">
                           {restaurant.expirationDate
                             ? new Date(restaurant.expirationDate).toLocaleDateString("pt-BR")
                             : "—"}
                         </span>
                       </div>
                       <div className="flex items-center justify-between py-2">
-                        <span className="text-gray-500">Dias restantes</span>
+                        <span className="text-muted-foreground">Dias restantes</span>
                         <span className={`font-bold text-lg ${
                           restaurant.daysRemaining === 0 ? "text-red-500" :
                           (restaurant.daysRemaining ?? 0) <= 3 ? "text-amber-500" : "text-green-500"
@@ -313,8 +313,8 @@ export default function AdminRestauranteDetalhe() {
             {/* Actions Card */}
             <Card>
               <CardContent className="p-5 space-y-3">
-                <h3 className="font-semibold text-gray-900 flex items-center gap-2 mb-2">
-                  <Zap className="h-4 w-4 text-gray-400" />
+                <h3 className="font-semibold text-foreground flex items-center gap-2 mb-2">
+                  <Zap className="h-4 w-4 text-muted-foreground" />
                   Ações Administrativas
                 </h3>
                 <Button

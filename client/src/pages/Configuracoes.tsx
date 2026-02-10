@@ -875,7 +875,7 @@ export default function Configuracoes() {
       {/* Layout com Barra Lateral Secundária */}
       <div data-settings-page className="flex flex-col md:flex-row h-[calc(100vh-58px)] overflow-hidden">
         {/* Barra Lateral Secundária - Desktop: Fixa / Mobile: Accordion no topo */}
-        <div className="md:w-64 shrink-0 bg-white md:border-r border-border/50 pt-3 pb-4 px-3 md:h-full md:overflow-y-auto animate-slide-in-from-left">
+        <div className="md:w-64 shrink-0 bg-card md:border-r border-border/50 pt-3 pb-4 px-3 md:h-full md:overflow-y-auto animate-slide-in-from-left">
           <SettingsSidebar 
             activeSection={activeSection} 
             onSectionChange={setActiveSection} 
@@ -900,7 +900,7 @@ export default function Configuracoes() {
             {/* Preview do Perfil Público - 60% */}
             <div className="lg:col-span-3 h-full">
               <SectionCard title="Preview do Perfil Público" className="h-full">
-            <div className="bg-white rounded-2xl overflow-hidden border border-border/30 shadow-sm">
+                <div className="bg-card rounded-2xl overflow-hidden border border-border/30 shadow-sm">
               {/* Cover Image */}
               <div className="relative h-48 bg-gradient-to-br from-red-100 to-red-50">
                 {coverImage ? (
@@ -985,10 +985,10 @@ export default function Configuracoes() {
                     {/* Edit Logo Button */}
                     <button
                       onClick={() => logoInputRef.current?.click()}
-                      className="absolute bottom-1 right-1 p-2 bg-white hover:bg-gray-100 rounded-full shadow-md transition-colors"
+                      className="absolute bottom-1 right-1 p-2 bg-card hover:bg-muted rounded-full shadow-md transition-colors"
                       title="Alterar logo"
                     >
-                      <Pencil className="h-3.5 w-3.5 text-gray-600" />
+                      <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
                     </button>
                     <input
                       ref={logoInputRef}
@@ -1067,7 +1067,7 @@ export default function Configuracoes() {
                             setTimeout(() => nameInputRef.current?.focus(), 0);
                           }}
                         >
-                          <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
+                          <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
                             {name || "Nome do Restaurante"}
                           </h3>
                           <Pencil className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors duration-200" />
@@ -1078,27 +1078,27 @@ export default function Configuracoes() {
                         <svg className="h-4 w-4 text-yellow-400 fill-yellow-400" viewBox="0 0 24 24">
                           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                         </svg>
-                        <span className="text-sm font-semibold text-gray-800">
+                        <span className="text-sm font-semibold text-foreground">
                           {establishment?.rating ? Number(establishment.rating).toFixed(1).replace('.', ',') : '0,0'}
                         </span>
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-muted-foreground">
                           ({establishment?.reviewCount || 0} avaliações)
                         </span>
                       </div>
                     </div>
 
                     {/* Address and More Info - PIXEL PERFECT igual ao menu público */}
-                    <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+                    <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                       {fullAddress && (
                         <>
                           <span className="flex items-center gap-1">
-                            <MapPin className="h-3.5 w-3.5 text-gray-500" />
+                            <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
                             {fullAddress}
                           </span>
-                          <span className="text-gray-400">•</span>
+                          <span className="text-muted-foreground">•</span>
                         </>
                       )}
-                      <button className="flex items-center gap-1 text-gray-600 hover:text-red-500 font-medium transition-colors">
+                      <button className="flex items-center gap-1 text-muted-foreground hover:text-red-500 font-medium transition-colors">
                         <Info className="h-3.5 w-3.5" />
                         Informações
                       </button>
@@ -1140,7 +1140,7 @@ export default function Configuracoes() {
                       {/* Tipo de Entrega Badge - CÓPIA FIEL do menu público */}
                       {deliveryTypes.length > 0 && (
                         <span 
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200" 
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-muted text-foreground text-xs font-medium rounded-full border border-border" 
                           style={{paddingRight: '9px', paddingLeft: '8px', paddingTop: '3px', paddingBottom: '3px', height: '21px', borderRadius: '8px'}}
                         >
                           {deliveryTypes.includes("Entrega") ? (
@@ -1159,10 +1159,10 @@ export default function Configuracoes() {
 
                     {/* Dropdown de Redes Sociais - igual ao perfil público */}
                     {(whatsapp || instagram) && (
-                    <div className="relative mt-3 pt-3 border-t border-gray-100" style={{paddingTop: '0px'}} ref={socialDropdownRef}>
+                    <div className="relative mt-3 pt-3 border-t border-border/50" style={{paddingTop: '0px'}} ref={socialDropdownRef}>
                       <button
                         onClick={() => setShowSocialDropdown(!showSocialDropdown)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
                       >
                         <span>Redes Sociais</span>
                         <svg className={`h-4 w-4 transition-transform ${showSocialDropdown ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1172,19 +1172,19 @@ export default function Configuracoes() {
                       
                       {/* Dropdown Menu - abre para cima */}
                       {showSocialDropdown && (
-                        <div className="absolute left-0 bottom-full mb-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 min-w-[160px]">
+                        <div className="absolute left-0 bottom-full mb-1 bg-card rounded-lg shadow-lg border border-border py-1 z-50 min-w-[160px]">
                           {whatsapp && (
                             <a 
                               href={`https://wa.me/55${whatsapp.replace(/\D/g, '')}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors"
+                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted transition-colors"
                               onClick={() => setShowSocialDropdown(false)}
                             >
                               <svg className="h-5 w-5 text-green-500" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                               </svg>
-                              <span className="text-sm text-gray-700">WhatsApp</span>
+                              <span className="text-sm text-foreground">WhatsApp</span>
                             </a>
                           )}
                           {instagram && (
@@ -1192,13 +1192,13 @@ export default function Configuracoes() {
                               href={`https://instagram.com/${instagram.replace('@', '')}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors"
+                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted transition-colors"
                               onClick={() => setShowSocialDropdown(false)}
                             >
                               <svg className="h-5 w-5 text-pink-500" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                               </svg>
-                              <span className="text-sm text-gray-700">Instagram</span>
+                              <span className="text-sm text-foreground">Instagram</span>
                             </a>
                           )}
                         </div>
@@ -1210,10 +1210,10 @@ export default function Configuracoes() {
                   {/* Botão Compartilhar - canto superior direito */}
                   <div className="flex items-center gap-1">
                     <button 
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                      className="p-2 hover:bg-muted rounded-full transition-colors"
                       title="Compartilhar"
                     >
-                      <svg className="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg className="h-5 w-5 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="18" cy="5" r="3"/>
                         <circle cx="6" cy="12" r="3"/>
                         <circle cx="18" cy="19" r="3"/>
@@ -1274,7 +1274,7 @@ export default function Configuracoes() {
                   {/* Número, Bairro, Cidade e UF */}
                   <div className="grid grid-cols-12 gap-2">
                     <div className="col-span-3">
-                      <Label htmlFor="number" className="text-xs font-semibold">Nº <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
+                      <Label htmlFor="number" className="text-xs font-semibold">Nº <span className="text-muted-foreground text-xs font-normal">(opcional)</span></Label>
                       <Input
                         id="number"
                         value={number}
@@ -1284,7 +1284,7 @@ export default function Configuracoes() {
                       />
                     </div>
                     <div className="col-span-3">
-                      <Label htmlFor="neighborhood" className="text-xs font-semibold">Bairro <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
+                      <Label htmlFor="neighborhood" className="text-xs font-semibold">Bairro <span className="text-muted-foreground text-xs font-normal">(opcional)</span></Label>
                       <Input
                         id="neighborhood"
                         value={neighborhood}
@@ -1294,7 +1294,7 @@ export default function Configuracoes() {
                       />
                     </div>
                     <div className="col-span-4">
-                      <Label htmlFor="city" className="text-xs font-semibold">Cidade <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
+                      <Label htmlFor="city" className="text-xs font-semibold">Cidade <span className="text-muted-foreground text-xs font-normal">(opcional)</span></Label>
                       <Input
                         id="city"
                         value={city}
@@ -1304,7 +1304,7 @@ export default function Configuracoes() {
                       />
                     </div>
                     <div className="col-span-2">
-                      <Label htmlFor="state" className="text-xs font-semibold">UF <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
+                      <Label htmlFor="state" className="text-xs font-semibold">UF <span className="text-muted-foreground text-xs font-normal">(opcional)</span></Label>
                       <Input
                         id="state"
                         value={state}
@@ -1318,7 +1318,7 @@ export default function Configuracoes() {
                   {/* Complemento e CEP */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label htmlFor="complement" className="text-xs font-semibold">Complemento <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
+                      <Label htmlFor="complement" className="text-xs font-semibold">Complemento <span className="text-muted-foreground text-xs font-normal">(opcional)</span></Label>
                       <Input
                         id="complement"
                         value={complement}
@@ -1328,7 +1328,7 @@ export default function Configuracoes() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="zipCode" className="text-xs font-semibold">CEP <span className="text-gray-400 text-xs font-normal">(opcional)</span></Label>
+                      <Label htmlFor="zipCode" className="text-xs font-semibold">CEP <span className="text-muted-foreground text-xs font-normal">(opcional)</span></Label>
                       <Input
                         id="zipCode"
                         value={zipCode}
@@ -1403,7 +1403,7 @@ export default function Configuracoes() {
                         setPublicNote(suggestion);
                         setShowSuggestions(false);
                       }}
-                      className="px-3 py-1.5 text-xs bg-white hover:bg-primary/10 hover:text-primary rounded-full transition-colors border border-gray-200 hover:border-primary/30 shadow-sm"
+                      className="px-3 py-1.5 text-xs bg-card hover:bg-primary/10 hover:text-primary rounded-full transition-colors border border-border hover:border-primary/30 shadow-sm"
                     >
                       {suggestion}
                     </button>
@@ -1446,7 +1446,7 @@ export default function Configuracoes() {
                         "relative p-2 rounded-xl transition-all duration-200 border-2",
                         noteStyle === style.id 
                           ? "border-primary ring-2 ring-primary/20" 
-                          : "border-gray-200 hover:border-gray-300"
+                          : "border-border hover:border-border/80"
                       )}
                     >
                       <div className={cn(
@@ -1703,7 +1703,7 @@ export default function Configuracoes() {
                           onChange={(e) => setSmsEnabled(e.target.checked)}
                           className="sr-only peer"
                         />
-                        <div className="w-10 h-5 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                        <div className="w-10 h-5 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
                       </label>
                     </div>
                     {smsEnabled && (
@@ -2062,7 +2062,7 @@ export default function Configuracoes() {
                           }}
                           className="sr-only peer"
                         />
-                        <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                       </label>
                       
                       {/* Day name */}

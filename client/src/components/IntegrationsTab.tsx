@@ -102,7 +102,7 @@ export function IntegrationsTab() {
               <div className={cn(
                 "w-3 h-3 rounded-full",
                 isConnected && config?.isActive ? "bg-green-500" : 
-                isConnected ? "bg-yellow-500" : "bg-gray-400"
+                isConnected ? "bg-yellow-500" : "bg-muted-foreground/50"
               )} />
               <div>
                 <p className="font-medium">

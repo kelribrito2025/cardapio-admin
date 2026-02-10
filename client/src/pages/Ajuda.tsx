@@ -26,7 +26,7 @@ function ContactCard({ icon, iconBg, title, subtitle, href }: ContactCardProps) 
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex flex-col items-center p-6 bg-white rounded-xl border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+      className="flex flex-col items-center p-6 bg-card rounded-xl border border-border/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
     >
       <div
         className={cn(
@@ -36,8 +36,8 @@ function ContactCard({ icon, iconBg, title, subtitle, href }: ContactCardProps) 
       >
         {icon}
       </div>
-      <h3 className="text-sm font-semibold text-gray-900 mb-0.5">{title}</h3>
-      <p className="text-xs text-gray-500 text-center">{subtitle}</p>
+      <h3 className="text-sm font-semibold text-foreground mb-0.5">{title}</h3>
+      <p className="text-xs text-muted-foreground text-center">{subtitle}</p>
     </a>
   );
 }
@@ -53,10 +53,10 @@ function VideoChapter({ time, title, onClick }: VideoChapterProps) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 w-full py-3 px-2 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
+      className="flex items-center gap-2 w-full py-3 px-2 text-left hover:bg-muted/50 border-b border-border/50 last:border-b-0 transition-colors"
     >
-      <span className="text-sm text-gray-900 font-medium">{time}</span>
-      <span className="text-sm text-gray-600">– {title}</span>
+      <span className="text-sm text-foreground font-medium">{time}</span>
+      <span className="text-sm text-muted-foreground">– {title}</span>
     </button>
   );
 }
@@ -71,16 +71,16 @@ interface FAQItemProps {
 
 function FAQItem({ question, answer, isOpen, onToggle }: FAQItemProps) {
   return (
-    <div className="bg-gray-50 rounded-lg mb-2 last:mb-0">
+    <div className="bg-muted/50 rounded-lg mb-2 last:mb-0">
       <button
         onClick={onToggle}
         className="flex items-center justify-between w-full py-4 px-5 text-left"
       >
-        <span className="text-sm font-medium text-gray-900 pr-4">{question}</span>
+        <span className="text-sm font-medium text-foreground pr-4">{question}</span>
         {isOpen ? (
-          <ChevronUp className="h-5 w-5 text-gray-400 flex-shrink-0" />
+          <ChevronUp className="h-5 w-5 text-muted-foreground flex-shrink-0" />
         ) : (
-          <ChevronDown className="h-5 w-5 text-gray-400 flex-shrink-0" />
+          <ChevronDown className="h-5 w-5 text-muted-foreground flex-shrink-0" />
         )}
       </button>
       <div
@@ -89,7 +89,7 @@ function FAQItem({ question, answer, isOpen, onToggle }: FAQItemProps) {
           isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         )}
       >
-        <p className="px-5 pb-4 text-sm text-gray-600 leading-relaxed">
+        <p className="px-5 pb-4 text-sm text-muted-foreground leading-relaxed">
           {answer}
         </p>
       </div>
@@ -151,8 +151,8 @@ export default function Ajuda() {
       </div>
 
       {/* Block 1 - Contact Channels */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
-        <h2 className="text-base font-semibold text-gray-900 mb-5">
+      <div className="bg-card rounded-xl border border-border/50 p-6 mb-6">
+        <h2 className="text-base font-semibold text-foreground mb-5">
           Como podemos ajudar você?
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -181,8 +181,8 @@ export default function Ajuda() {
       </div>
 
       {/* Block 2 - Video Tutorial */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
-        <h2 className="text-base font-semibold text-gray-900 mb-5">Tutorial</h2>
+      <div className="bg-card rounded-xl border border-border/50 p-6 mb-6">
+        <h2 className="text-base font-semibold text-foreground mb-5">Tutorial</h2>
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Video Player - 3 columns */}
           <div className="lg:col-span-3">
@@ -213,14 +213,14 @@ export default function Ajuda() {
                 </h3>
               </div>
             </div>
-            <p className="mt-3 text-sm font-medium text-gray-900">
+            <p className="mt-3 text-sm font-medium text-foreground">
               Tutorial do Cardápio Digital (2025) – Guia Completo
             </p>
           </div>
 
           {/* Video Chapters - 2 columns */}
           <div className="lg:col-span-2">
-            <h3 className="text-base font-semibold text-gray-900 mb-4">
+            <h3 className="text-base font-semibold text-foreground mb-4">
               Capítulos do Vídeo
             </h3>
             <div className="max-h-[320px] overflow-y-auto">
@@ -240,8 +240,8 @@ export default function Ajuda() {
       </div>
 
       {/* Block 3 - FAQ */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6">
-        <h2 className="text-base font-semibold text-gray-900 mb-4">
+      <div className="bg-card rounded-xl border border-border/50 p-6">
+        <h2 className="text-base font-semibold text-foreground mb-4">
           Perguntas Frequentes
         </h2>
         <div>

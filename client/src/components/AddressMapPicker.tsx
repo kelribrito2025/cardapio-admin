@@ -295,31 +295,31 @@ export function AddressMapPicker({
       />
       
       {/* Modal */}
-      <div className="relative bg-white w-full max-w-3xl mx-4 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+      <div className="relative bg-card w-full max-w-3xl mx-4 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-white">
+        <div className="flex items-center justify-between p-4 border-b bg-card">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
               <MapPin className="h-5 w-5 text-red-500" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Selecionar Localização</h2>
-              <p className="text-sm text-gray-500">Clique no mapa ou busque um endereço</p>
+              <h2 className="text-lg font-bold text-foreground">Selecionar Localização</h2>
+              <p className="text-sm text-muted-foreground">Clique no mapa ou busque um endereço</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 hover:bg-muted rounded-full transition-colors"
           >
-            <X className="h-5 w-5 text-gray-500" />
+            <X className="h-5 w-5 text-muted-foreground" />
           </button>
         </div>
 
         {/* Search Bar */}
-        <div className="p-4 border-b bg-gray-50">
+        <div className="p-4 border-b bg-muted/50">
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 ref={searchInputRef}
                 type="text"
@@ -343,7 +343,7 @@ export function AddressMapPicker({
         {/* Map Container */}
         <div className="relative flex-1 min-h-[300px]">
           {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
+            <div className="absolute inset-0 flex items-center justify-center bg-muted z-10">
               <Loader2 className="h-8 w-8 animate-spin text-red-500" />
             </div>
           )}
@@ -357,21 +357,21 @@ export function AddressMapPicker({
 
         {/* Selected Address Preview */}
         {selectedAddress && (
-          <div className="p-4 border-t bg-gray-50">
+          <div className="p-4 border-t bg-muted/50">
             <div className="flex items-start gap-3">
               <MapPin className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900">
+                <p className="font-medium text-foreground">
                   {selectedAddress.street}
                   {selectedAddress.number && `, ${selectedAddress.number}`}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   {selectedAddress.neighborhood && `${selectedAddress.neighborhood}, `}
                   {selectedAddress.city}
                   {selectedAddress.state && ` - ${selectedAddress.state}`}
                   {selectedAddress.zipCode && ` • CEP: ${selectedAddress.zipCode}`}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Coordenadas: {selectedAddress.latitude}, {selectedAddress.longitude}
                 </p>
               </div>
@@ -380,7 +380,7 @@ export function AddressMapPicker({
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-4 border-t bg-white">
+        <div className="flex items-center justify-end gap-3 p-4 border-t bg-card">
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>

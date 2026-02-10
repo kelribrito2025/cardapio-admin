@@ -31,6 +31,9 @@ export function ThemeProvider({
 
   useEffect(() => {
     const root = document.documentElement;
+    // Adicionar classe de transição temporária para animação suave
+    root.classList.add("theme-transition");
+    
     if (theme === "dark") {
       root.classList.add("dark");
     } else {
@@ -40,11 +43,18 @@ export function ThemeProvider({
     if (switchable) {
       localStorage.setItem("theme", theme);
     }
+    
+    // Remover classe de transição após a animação completar
+    const timeout = setTimeout(() => {
+      root.classList.remove("theme-transition");
+    }, 350);
+    
+    return () => clearTimeout(timeout);
   }, [theme, switchable]);
 
   const toggleTheme = switchable
     ? () => {
-        setTheme(prev => (prev === "light" ? "dark" : "light"));
+        setTheme((prev) => (prev === "light" ? "dark" : "light"));
       }
     : undefined;
 

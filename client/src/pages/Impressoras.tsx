@@ -208,7 +208,7 @@ export default function Impressoras() {
                   className="flex items-center justify-between p-4 border rounded-lg bg-card"
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`p-2 rounded-full ${printer.isActive ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
+                    <div className={`p-2 rounded-full ${printer.isActive ? 'bg-green-100 text-green-600' : 'bg-muted text-muted-foreground'}`}>
                       {printer.isActive ? <Wifi className="h-5 w-5" /> : <WifiOff className="h-5 w-5" />}
                     </div>
                     <div>

@@ -760,7 +760,7 @@ export default function Campanhas() {
                     <Filter className="h-3.5 w-3.5" />
                     Filtros
                     {hasActiveFilters && (
-                      <span className="bg-white text-primary rounded-full h-4 w-4 flex items-center justify-center text-[10px] font-bold ml-0.5">
+                      <span className="bg-card text-primary rounded-full h-4 w-4 flex items-center justify-center text-[10px] font-bold ml-0.5">
                         {[filterInactiveDays !== "" && Number(filterInactiveDays) > 0, filterMinOrders !== "" && Number(filterMinOrders) > 0, filterUsedCoupon].filter(Boolean).length}
                       </span>
                     )}
@@ -844,7 +844,7 @@ export default function Campanhas() {
                               type="checkbox"
                               checked={filterUsedCoupon}
                               onChange={(e) => setFilterUsedCoupon(e.target.checked)}
-                              className="rounded border-gray-300"
+                              className="rounded border-border"
                             />
                             <span className="text-sm">
                               {filterUsedCoupon ? "Sim" : "Todos"}
@@ -890,7 +890,7 @@ export default function Campanhas() {
                           type="checkbox"
                           checked={selecionarTodos}
                           onChange={toggleSelecionarTodos}
-                          className="rounded border-gray-300"
+                          className="rounded border-border"
                           disabled={isLoadingClientes || !clientesBase?.length}
                         />
                         <span className="text-sm font-medium">Selecionar todos</span>
@@ -923,7 +923,7 @@ export default function Campanhas() {
                               type="checkbox"
                               checked={clientesSelecionados.includes(cliente.id)}
                               onChange={() => toggleCliente(cliente.id)}
-                              className="rounded border-gray-300"
+                              className="rounded border-border"
                             />
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium truncate">{cliente.name || "Cliente"}</p>
@@ -1089,8 +1089,8 @@ export default function Campanhas() {
           <div className="lg:col-span-2">
             <div className="bg-card rounded-xl border border-border/50 p-5 sticky top-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-xl bg-gray-100 flex items-center justify-center">
-                  <MessageSquare className="h-5 w-5 text-gray-600" />
+                <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center">
+                  <MessageSquare className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-foreground">Preview</h3>
@@ -1099,21 +1099,21 @@ export default function Campanhas() {
               </div>
 
               {/* Preview estilo iOS Messages */}
-              <div className="bg-gray-100 rounded-xl overflow-hidden">
+              <div className="bg-muted rounded-xl overflow-hidden">
                 {/* Header estilo iOS */}
-                <div className="bg-gray-50 px-3 py-2.5 flex items-center gap-2 border-b border-gray-200">
+                <div className="bg-muted/50 px-3 py-2.5 flex items-center gap-2 border-b border-border">
                   <ChevronLeft className="h-5 w-5 text-blue-500" />
-                  <span className="font-semibold text-base text-gray-900">Mensagens</span>
+                  <span className="font-semibold text-base text-foreground">Mensagens</span>
                 </div>
 
                 {/* Área de mensagem */}
-                <div className="p-4 bg-gray-100">
+                <div className="p-4 bg-muted">
                   {/* Balão de mensagem */}
-                  <div className="bg-gray-200 rounded-2xl rounded-tl-sm p-3 max-w-[90%]">
-                    <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">
+                  <div className="bg-muted-foreground/20 rounded-2xl rounded-tl-sm p-3 max-w-[90%]">
+                    <p className="text-sm text-foreground whitespace-pre-wrap break-words">
                       {previewMensagem}
                     </p>
-                    <p className="text-[11px] text-gray-400 text-right mt-1">Agora</p>
+                    <p className="text-[11px] text-muted-foreground text-right mt-1">Agora</p>
                   </div>
                 </div>
               </div>
@@ -1170,7 +1170,7 @@ export default function Campanhas() {
                         "rounded-lg border p-4 transition-colors",
                         isPending && "border-orange-200 bg-orange-50/50",
                         isSent && "border-green-200 bg-green-50/50",
-                        isCancelled && "border-gray-200 bg-gray-50/50",
+                        isCancelled && "border-border bg-muted/50",
                         isFailed && "border-red-200 bg-red-50/50"
                       )}
                     >
@@ -1182,7 +1182,7 @@ export default function Campanhas() {
                               "text-[10px] font-medium px-2 py-0.5 rounded-full",
                               isPending && "bg-orange-100 text-orange-700",
                               isSent && "bg-green-100 text-green-700",
-                              isCancelled && "bg-gray-100 text-gray-500",
+                              isCancelled && "bg-muted text-muted-foreground",
                               isFailed && "bg-red-100 text-red-700"
                             )}>
                               {isPending ? 'Pendente' : isSent ? 'Enviada' : isCancelled ? 'Cancelada' : 'Falhou'}

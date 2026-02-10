@@ -1366,7 +1366,7 @@ export default function ProductForm() {
                                             : 'border-muted-foreground/30'
                                         }`}>
                                           {isSelected && (
-                                            <div className={`${isRadio ? 'w-2 h-2 rounded-full' : 'w-2.5 h-2.5'} bg-white`} 
+                                            <div className={`${isRadio ? 'w-2 h-2 rounded-full' : 'w-2.5 h-2.5'} bg-card`} 
                                               style={!isRadio ? { clipPath: 'polygon(20% 50%, 40% 70%, 80% 30%, 85% 35%, 40% 80%, 15% 55%)' } : {}}
                                             />
                                           )}

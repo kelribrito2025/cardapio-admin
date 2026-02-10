@@ -573,33 +573,33 @@ export function MobilePDVModal({
     <>
       {/* Modal Tela Cheia */}
       <div className="fixed inset-0 z-[71] md:hidden animate-in slide-in-from-bottom duration-300">
-        <div className="bg-gray-200 flex flex-col w-full h-full overflow-hidden">
+        <div className="bg-muted-foreground/20 flex flex-col w-full h-full overflow-hidden">
 
           {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between" style={{ height: '68px' }}>
+          <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex items-center justify-between" style={{ height: '68px' }}>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-red-100 rounded-xl">
                 <UtensilsCrossed className="h-5 w-5 text-red-500" />
               </div>
-              <h2 className="text-lg font-bold text-gray-900">
-                Mesa {tableDisplayName} <span className="text-gray-400 font-normal">|</span> <span className="text-red-600">{formatCurrency(getDisplayTotal())}</span>
+              <h2 className="text-lg font-bold text-foreground">
+                Mesa {tableDisplayName} <span className="text-muted-foreground font-normal">|</span> <span className="text-red-600">{formatCurrency(getDisplayTotal())}</span>
               </h2>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-              <X className="h-5 w-5 text-gray-400" />
+            <button onClick={onClose} className="p-2 hover:bg-muted rounded-full transition-colors">
+              <X className="h-5 w-5 text-muted-foreground" />
             </button>
           </div>
 
           {/* Tabs: Consumo / Comanda */}
           {tabId && (
-            <div className="flex border-b border-gray-200 bg-white">
+            <div className="flex border-b border-border bg-card">
               <button
                 onClick={() => setSelectedTab('consumo')}
                 className={cn(
                   "flex-1 py-2.5 text-sm font-medium transition-colors",
                   selectedTab === 'consumo'
                     ? "text-red-600 border-b-2 border-red-500"
-                    : "text-gray-500"
+                    : "text-muted-foreground"
                 )}
               >
                 Consumo {cart.length > 0 && <span className="ml-1 bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full text-xs">{cart.length}</span>}
@@ -610,10 +610,10 @@ export function MobilePDVModal({
                   "flex-1 py-2.5 text-sm font-medium transition-colors",
                   selectedTab === 'comanda'
                     ? "text-red-600 border-b-2 border-red-500"
-                    : "text-gray-500"
+                    : "text-muted-foreground"
                 )}
               >
-                Comanda {tabItemsActive.length > 0 && <span className="ml-1 bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full text-xs">{tabItemsActive.length}</span>}
+                Comanda {tabItemsActive.length > 0 && <span className="ml-1 bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full text-xs">{tabItemsActive.length}</span>}
               </button>
             </div>
           )}
@@ -623,9 +623,9 @@ export function MobilePDVModal({
             {selectedTab === 'consumo' ? (
               <>
                 {/* Campo de busca de produtos - estilo dropdown como menu público */}
-                <div className="p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+                <div className="p-4 border-b border-border sticky top-0 bg-card z-10">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <input
                       type="text"
                       placeholder="Buscar produto para adicionar..."
@@ -637,29 +637,29 @@ export function MobilePDVModal({
                       }}
                       onFocus={() => setSearchFocused(true)}
                       onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
-                      className="w-full pl-9 pr-8 h-10 bg-gray-100 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white transition-colors placeholder:text-gray-400"
+                      className="w-full pl-9 pr-8 h-10 bg-muted border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-card transition-colors placeholder:text-muted-foreground"
                     />
                     {searchQuery && (
                       <button
                         onClick={() => { setSearchQuery(""); setActiveView('items'); setSearchFocused(false); }}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-gray-100"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-muted"
                       >
-                        <X className="h-3.5 w-3.5 text-gray-400" />
+                        <X className="h-3.5 w-3.5 text-muted-foreground" />
                       </button>
                     )}
 
                     {/* Dropdown de resultados flutuante - estilo menu público */}
                     {searchQuery.trim() && filteredProducts.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-200 max-h-[60vh] overflow-y-auto z-[60] p-2 space-y-1">
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-card rounded-xl shadow-lg border border-border max-h-[60vh] overflow-y-auto z-[60] p-2 space-y-1">
                         {filteredProducts.slice(0, 15).map((product) => (
                           <div
                             key={product.id}
-                            className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left bg-white rounded-lg border border-gray-100 border-l-[3px] border-l-red-500"
+                            className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-muted/50 transition-colors text-left bg-card rounded-lg border border-border/50 border-l-[3px] border-l-red-500"
                           >
                             <div className="flex-1 min-w-0" onClick={() => { handleProductClick(product); setSearchQuery(""); setSearchFocused(false); setActiveView('items'); }}>
-                              <p className="font-medium text-gray-900 text-sm truncate">{product.name}</p>
+                              <p className="font-medium text-foreground text-sm truncate">{product.name}</p>
                               {product.description && (
-                                <p className="text-xs text-gray-500 truncate mt-0.5">{product.description}</p>
+                                <p className="text-xs text-muted-foreground truncate mt-0.5">{product.description}</p>
                               )}
                             </div>
                             <div className="flex items-center gap-2 flex-shrink-0">
@@ -674,7 +674,7 @@ export function MobilePDVModal({
                           </div>
                         ))}
                         {filteredProducts.length > 15 && (
-                          <div className="px-4 py-2 text-center text-xs text-gray-500 bg-gray-50 rounded-lg">
+                          <div className="px-4 py-2 text-center text-xs text-muted-foreground bg-muted/50 rounded-lg">
                             +{filteredProducts.length - 15} outros resultados
                           </div>
                         )}
@@ -683,8 +683,8 @@ export function MobilePDVModal({
 
                     {/* Mensagem de nenhum resultado */}
                     {searchQuery.trim() && filteredProducts.length === 0 && (
-                      <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-[60]">
-                        <p className="text-sm text-gray-500 text-center">Nenhum produto encontrado</p>
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-card rounded-lg shadow-lg border border-border p-4 z-[60]">
+                        <p className="text-sm text-muted-foreground text-center">Nenhum produto encontrado</p>
                       </div>
                     )}
                   </div>
@@ -693,8 +693,8 @@ export function MobilePDVModal({
                 {/* Lista de itens no carrinho - sempre visível */}
                 <div className="p-4">
                     {cart.length === 0 ? (
-                      <div className="text-center py-10 text-gray-500">
-                        <ShoppingBag className="h-10 w-10 mx-auto mb-3 text-gray-300" />
+                      <div className="text-center py-10 text-muted-foreground">
+                        <ShoppingBag className="h-10 w-10 mx-auto mb-3 text-muted-foreground/60" />
                         <p className="font-medium text-sm">Nenhum item no pedido</p>
                         <p className="text-xs mt-1">Use a busca acima para adicionar produtos</p>
                       </div>
@@ -704,7 +704,7 @@ export function MobilePDVModal({
                           const itemTotal = (parseFloat(item.price) + item.complements.reduce((sum, c) => sum + parseFloat(c.price) * c.quantity, 0)) * item.quantity;
                           const isExpanded = expandedCartItem === index;
                           return (
-                            <div key={index} className="bg-white rounded-xl shadow-sm overflow-hidden border-l-4 border-l-red-500">
+                            <div key={index} className="bg-card rounded-xl shadow-sm overflow-hidden border-l-4 border-l-red-500">
                               <button
                                 onClick={() => setExpandedCartItem(isExpanded ? null : index)}
                                 className="w-full flex items-center gap-3 p-3 text-left"
@@ -713,26 +713,26 @@ export function MobilePDVModal({
                                   <span className="text-xs font-bold text-red-600">{item.quantity}x</span>
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <p className="font-medium text-sm text-gray-900 truncate">{item.name}</p>
+                                  <p className="font-medium text-sm text-foreground truncate">{item.name}</p>
                                   {item.complements.length > 0 && (
-                                    <p className="text-xs text-gray-500 truncate">
+                                    <p className="text-xs text-muted-foreground truncate">
                                       {item.complements.map(c => c.name).join(', ')}
                                     </p>
                                   )}
                                   {item.observation && (
-                                    <p className="text-xs text-gray-400 italic truncate">Obs: {item.observation}</p>
+                                    <p className="text-xs text-muted-foreground italic truncate">Obs: {item.observation}</p>
                                   )}
                                 </div>
                                 <div className="text-right flex-shrink-0">
                                   <p className="font-semibold text-sm">{formatCurrency(itemTotal)}</p>
-                                  {isExpanded ? <ChevronUp className="h-3.5 w-3.5 text-gray-400 ml-auto mt-0.5" /> : <ChevronDown className="h-3.5 w-3.5 text-gray-400 ml-auto mt-0.5" />}
+                                  {isExpanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground ml-auto mt-0.5" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground ml-auto mt-0.5" />}
                                 </div>
                               </button>
                               {isExpanded && (
-                                <div className="px-3 py-2 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                                <div className="px-3 py-2 bg-muted/50 border-t border-border/50 flex items-center justify-between">
                                   <div className="flex items-center gap-2">
                                     <button
-                                      className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-white border border-gray-200 hover:bg-gray-100 transition-colors disabled:opacity-50"
+                                      className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-card border border-border hover:bg-muted transition-colors disabled:opacity-50"
                                       disabled={item.quantity <= 1}
                                       onClick={() => updateCartItem(index, { quantity: item.quantity - 1 })}
                                     >
@@ -740,7 +740,7 @@ export function MobilePDVModal({
                                     </button>
                                     <span className="w-6 text-center text-sm font-semibold">{item.quantity}</span>
                                     <button
-                                      className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-white border border-gray-200 hover:bg-gray-100 transition-colors"
+                                      className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-card border border-border hover:bg-muted transition-colors"
                                       onClick={() => updateCartItem(index, { quantity: item.quantity + 1 })}
                                     >
                                       <Plus className="h-3.5 w-3.5" />
@@ -773,8 +773,8 @@ export function MobilePDVModal({
               /* Aba Comanda - itens já enviados */
               <div className="p-4">
                 {tabItemsActive.length === 0 ? (
-                  <div className="text-center py-10 text-gray-500">
-                    <ClipboardList className="h-10 w-10 mx-auto mb-3 text-gray-300" />
+                  <div className="text-center py-10 text-muted-foreground">
+                    <ClipboardList className="h-10 w-10 mx-auto mb-3 text-muted-foreground/60" />
                     <p className="font-medium text-sm">Nenhum item na comanda</p>
                     <p className="text-xs mt-1">Os itens aparecerão aqui após serem enviados</p>
                   </div>
@@ -787,7 +787,7 @@ export function MobilePDVModal({
                       const isExpanded = expandedTabItemId === item.id;
 
                       return (
-                        <div key={item.id} className="bg-white rounded-xl shadow-sm overflow-hidden border-l-4 border-l-red-500">
+                        <div key={item.id} className="bg-card rounded-xl shadow-sm overflow-hidden border-l-4 border-l-red-500">
                           <button
                             onClick={() => setExpandedTabItemId(isExpanded ? null : item.id)}
                             className="w-full flex items-center gap-3 p-3 text-left"
@@ -796,24 +796,24 @@ export function MobilePDVModal({
                               <span className="text-xs font-bold text-red-600">{item.quantity}x</span>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm text-gray-900">{item.productName}</p>
+                              <p className="font-medium text-sm text-foreground">{item.productName}</p>
                               {complements.length > 0 && (
-                                <p className="text-xs text-gray-500 truncate">
+                                <p className="text-xs text-muted-foreground truncate">
                                   {complements.map((c: any) => c.name || (c.items ? c.items.map((ci: any) => ci.name).join(', ') : '')).filter(Boolean).join(', ')}
                                 </p>
                               )}
-                              {item.notes && <p className="text-xs text-gray-400 italic">Obs: {item.notes}</p>}
+                              {item.notes && <p className="text-xs text-muted-foreground italic">Obs: {item.notes}</p>}
                             </div>
                             <div className="text-right flex-shrink-0">
                               <p className="font-semibold text-sm">{formatCurrency(itemTotal)}</p>
-                              {isExpanded ? <ChevronUp className="h-3.5 w-3.5 text-gray-400 ml-auto mt-0.5" /> : <ChevronDown className="h-3.5 w-3.5 text-gray-400 ml-auto mt-0.5" />}
+                              {isExpanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground ml-auto mt-0.5" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground ml-auto mt-0.5" />}
                             </div>
                           </button>
                           {isExpanded && (
-                            <div className="px-3 py-2 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                            <div className="px-3 py-2 bg-muted/50 border-t border-border/50 flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <button
-                                  className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-white border border-gray-200 hover:bg-gray-100 transition-colors disabled:opacity-50"
+                                  className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-card border border-border hover:bg-muted transition-colors disabled:opacity-50"
                                   disabled={item.quantity <= 1 || updateTabItemMutation.isPending}
                                   onClick={(e) => { e.stopPropagation(); updateTabItemMutation.mutate({ id: item.id, quantity: item.quantity - 1 }); }}
                                 >
@@ -821,7 +821,7 @@ export function MobilePDVModal({
                                 </button>
                                 <span className="w-6 text-center text-sm font-semibold">{item.quantity}</span>
                                 <button
-                                  className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-white border border-gray-200 hover:bg-gray-100 transition-colors disabled:opacity-50"
+                                  className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-card border border-border hover:bg-muted transition-colors disabled:opacity-50"
                                   disabled={updateTabItemMutation.isPending}
                                   onClick={(e) => { e.stopPropagation(); updateTabItemMutation.mutate({ id: item.id, quantity: item.quantity + 1 }); }}
                                 >
@@ -847,10 +847,10 @@ export function MobilePDVModal({
           </div>
 
           {/* Footer fixo */}
-          <div className="border-t border-gray-300 bg-white p-4 space-y-3">
+          <div className="border-t border-border bg-card p-4 space-y-3">
             {/* Subtotal e Total */}
             <div className="flex justify-between items-center px-1">
-              <span className="text-sm text-gray-600">Total</span>
+              <span className="text-sm text-muted-foreground">Total</span>
               <span className="text-lg font-bold text-red-600">{formatCurrency(getDisplayTotal())}</span>
             </div>
             {/* Botões */}
@@ -901,7 +901,7 @@ export function MobilePDVModal({
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-white rounded-t-2xl shadow-2xl w-full max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom duration-300" style={{ touchAction: 'pan-y' }}>
+          <div className="relative bg-card rounded-t-2xl shadow-2xl w-full max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom duration-300" style={{ touchAction: 'pan-y' }}>
             {/* Imagem do Produto ou Complemento Selecionado */}
             {(() => {
               const displayImage = selectedComplementImage || selectedProduct.images?.[0];
@@ -924,9 +924,9 @@ export function MobilePDVModal({
                     )}
                     <button 
                       onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
-                      className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
+                      className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-card rounded-full shadow-lg transition-colors z-10"
                     >
-                      <X className="h-5 w-5 text-gray-700" />
+                      <X className="h-5 w-5 text-foreground" />
                     </button>
                   </div>
                 );
@@ -938,9 +938,9 @@ export function MobilePDVModal({
                   <UtensilsCrossed className="h-16 w-16 text-white/80" />
                   <button 
                     onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
-                    className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors z-10"
+                    className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-card rounded-full shadow-lg transition-colors z-10"
                   >
-                    <X className="h-5 w-5 text-gray-700" />
+                    <X className="h-5 w-5 text-foreground" />
                   </button>
                 </div>
               );
@@ -950,7 +950,7 @@ export function MobilePDVModal({
             <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 space-y-3 sm:space-y-4">
               {/* Título e Preço */}
               <div>
-                <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
+                <h3 className="text-xl font-bold text-foreground">{selectedProduct.name}</h3>
                 {Number(selectedProduct.price) > 0 && (
                   <p className="text-lg font-semibold text-red-500 mt-1">
                     {formatCurrency(parseFloat(selectedProduct.price))}
@@ -960,7 +960,7 @@ export function MobilePDVModal({
 
               {/* Descrição */}
               {selectedProduct.description && (
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {selectedProduct.description}
                 </p>
               )}
@@ -973,18 +973,18 @@ export function MobilePDVModal({
                     const isRadio = group.maxQuantity === 1;
                     
                     return (
-                      <div key={group.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                      <div key={group.id} className="border border-border rounded-xl overflow-hidden">
                         {/* Header do Grupo */}
-                        <div className="bg-gray-50 px-4 py-3 border-b border-gray-200" style={{paddingTop: '8px', height: '58px'}}>
+                        <div className="bg-muted/50 px-4 py-3 border-b border-border" style={{paddingTop: '8px', height: '58px'}}>
                           <div className="flex items-center justify-between">
-                            <h4 className="font-semibold text-gray-900">{group.name}</h4>
+                            <h4 className="font-semibold text-foreground">{group.name}</h4>
                             {group.isRequired && (
                               <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
                                 Obrigatório
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-gray-500 mt-0.5">
+                          <p className="text-xs text-muted-foreground mt-0.5">
                             {group.minQuantity > 0 ? `Mín: ${group.minQuantity}` : ''}
                             {group.minQuantity > 0 && group.maxQuantity > 1 ? ' | ' : ''}
                             {group.maxQuantity > 1 ? `Máx: ${group.maxQuantity}` : ''}
@@ -1067,7 +1067,7 @@ export function MobilePDVModal({
                               <div
                                 key={item.id}
                                 className={`flex items-center justify-between px-4 py-3 transition-colors ${
-                                  isSelected ? 'bg-red-50' : 'hover:bg-gray-50'
+                                  isSelected ? 'bg-red-50' : 'hover:bg-muted/50'
                                 }`}
                               >
                                 <label className="flex items-center gap-3 cursor-pointer flex-1">
@@ -1076,15 +1076,15 @@ export function MobilePDVModal({
                                     name={`mobile-group-${group.id}`}
                                     checked={isSelected}
                                     onChange={handleToggle}
-                                    className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500"
+                                    className="w-4 h-4 text-red-500 border-border focus:ring-red-500"
                                   />
-                                  <span className="text-sm text-gray-900">{item.name}</span>
+                                  <span className="text-sm text-foreground">{item.name}</span>
                                 </label>
                                 
                                 <div className="flex items-center gap-3">
                                   {/* Controles de quantidade - aparecem quando selecionado */}
                                   {isSelected && !isRadio && (
-                                    <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1">
+                                    <div className="flex items-center gap-2 bg-card border border-border rounded-lg px-1">
                                       <button
                                         type="button"
                                         onClick={handleDecrement}
@@ -1092,7 +1092,7 @@ export function MobilePDVModal({
                                       >
                                         <Minus className="w-4 h-4" />
                                       </button>
-                                      <span className="w-6 text-center text-sm font-medium text-gray-900">{itemQuantity}</span>
+                                      <span className="w-6 text-center text-sm font-medium text-foreground">{itemQuantity}</span>
                                       <button
                                         type="button"
                                         onClick={handleIncrement}
@@ -1108,7 +1108,7 @@ export function MobilePDVModal({
                                     if (displayPrice > 0) {
                                       const totalItemPrice = displayPrice * (itemQuantity || 1);
                                       return (
-                                        <span className="text-sm text-gray-600 min-w-[70px] text-right">
+                                        <span className="text-sm text-muted-foreground min-w-[70px] text-right">
                                           {isSelected && itemQuantity > 1 
                                             ? `+ ${formatCurrency(totalItemPrice)}` 
                                             : `+ ${formatCurrency(displayPrice)}`
@@ -1131,7 +1131,7 @@ export function MobilePDVModal({
 
               {/* Campo de Observação */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Observações
                 </label>
                 <textarea
@@ -1139,25 +1139,25 @@ export function MobilePDVModal({
                   onChange={(e) => setProductObservation(e.target.value)}
                   placeholder="Ex: Sem cebola, bem passado..."
                   rows={2}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
+                  className="w-full px-4 py-2 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
                 />
               </div>
             </div>
 
             {/* Footer - Quantidade e Adicionar (mesmo estilo do menu público) */}
-            <div className="border-t p-4 bg-white flex items-center gap-4">
+            <div className="border-t p-4 bg-card flex items-center gap-4">
               {/* Controle de Quantidade */}
-              <div className="flex items-center gap-3 bg-gray-100 rounded-full px-2 py-1">
+              <div className="flex items-center gap-3 bg-muted rounded-full px-2 py-1">
                 <button
                   onClick={() => setProductQuantity(Math.max(1, productQuantity - 1))}
-                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+                  className="w-8 h-8 rounded-full bg-card shadow-sm flex items-center justify-center hover:bg-muted/50 transition-colors"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
                 <span className="w-8 text-center font-semibold">{productQuantity}</span>
                 <button
                   onClick={() => setProductQuantity(productQuantity + 1)}
-                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+                  className="w-8 h-8 rounded-full bg-card shadow-sm flex items-center justify-center hover:bg-muted/50 transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
@@ -1206,7 +1206,7 @@ export function MobilePDVModal({
                     className={`flex-1 font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 ${
                       canAdd 
                         ? 'bg-red-500 hover:bg-red-600 text-white' 
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-muted-foreground/30 text-muted-foreground cursor-not-allowed'
                     }`}
                   >
                     <Plus className="h-5 w-5" />
@@ -1224,7 +1224,7 @@ export function MobilePDVModal({
       {showCloseTableModal && (
         <div className="fixed inset-0 z-[90] flex items-end md:hidden">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowCloseTableModal(false)} />
-          <div className="relative bg-white rounded-t-2xl shadow-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom duration-300">
+          <div className="relative bg-card rounded-t-2xl shadow-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom duration-300">
             <div className="bg-gradient-to-r from-red-500 to-red-600 p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -1245,7 +1245,7 @@ export function MobilePDVModal({
                 let complements: any[] = [];
                 try { complements = typeof item.complements === 'string' ? JSON.parse(item.complements) : (item.complements || []); } catch {}
                 return (
-                  <div key={index} className="p-3 border border-gray-200 rounded-lg border-l-4 border-l-red-500">
+                  <div key={index} className="p-3 border border-border rounded-lg border-l-4 border-l-red-500">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
                         <span className="text-xs font-bold text-red-600">{item.quantity}x</span>
@@ -1257,28 +1257,28 @@ export function MobilePDVModal({
                             {complements.map((comp: any, cIndex: number) => {
                               if (comp.items && Array.isArray(comp.items)) {
                                 return comp.items.map((ci: any, ciIndex: number) => (
-                                  <p key={`${cIndex}-${ciIndex}`} className="text-xs text-gray-500 pl-2">+ {ci.quantity > 1 ? `${ci.quantity}x ` : ''}{ci.name}{ci.price > 0 && <span className="ml-1 text-gray-400">({formatCurrency(ci.price * (ci.quantity || 1))})</span>}</p>
+                                  <p key={`${cIndex}-${ciIndex}`} className="text-xs text-muted-foreground pl-2">+ {ci.quantity > 1 ? `${ci.quantity}x ` : ''}{ci.name}{ci.price > 0 && <span className="ml-1 text-muted-foreground">({formatCurrency(ci.price * (ci.quantity || 1))})</span>}</p>
                                 ));
                               } else if (comp.name) {
-                                return <p key={cIndex} className="text-xs text-gray-500 pl-2">+ {comp.quantity > 1 ? `${comp.quantity}x ` : ''}{comp.name}{comp.price > 0 && <span className="ml-1 text-gray-400">({formatCurrency(comp.price * (comp.quantity || 1))})</span>}</p>;
+                                return <p key={cIndex} className="text-xs text-muted-foreground pl-2">+ {comp.quantity > 1 ? `${comp.quantity}x ` : ''}{comp.name}{comp.price > 0 && <span className="ml-1 text-muted-foreground">({formatCurrency(comp.price * (comp.quantity || 1))})</span>}</p>;
                               }
                               return null;
                             })}
                           </div>
                         )}
-                        {item.notes && <p className="text-xs text-gray-500 mt-1 italic">Obs: {item.notes}</p>}
+                        {item.notes && <p className="text-xs text-muted-foreground mt-1 italic">Obs: {item.notes}</p>}
                       </div>
                       <p className="font-semibold text-sm">{formatCurrency(itemTotal)}</p>
                     </div>
                   </div>
                 );
               })}
-              <div className="flex justify-between font-bold text-lg pt-3 border-t border-gray-200">
+              <div className="flex justify-between font-bold text-lg pt-3 border-t border-border">
                 <span>TOTAL:</span>
                 <span className="text-red-600">{formatCurrency(calculateTabTotal())}</span>
               </div>
             </div>
-            <div className="p-4 border-t border-gray-200 space-y-2">
+            <div className="p-4 border-t border-border space-y-2">
               <Button onClick={handleConfirmCloseTable} disabled={closeTableMutation.isPending} className="w-full py-3 bg-green-600 hover:bg-green-700 text-white">
                 {closeTableMutation.isPending ? (<><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />Fechando...</>) : (<><Check className="h-5 w-5 mr-2" />Confirmar e Fechar Mesa</>)}
               </Button>

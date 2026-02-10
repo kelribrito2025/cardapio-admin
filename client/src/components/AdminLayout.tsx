@@ -631,7 +631,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                         {showOrderBadge && sidebarCollapsed && (
                           <span className={cn(
                             "absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse",
-                            isActive ? "bg-white text-primary" : "bg-red-500 text-white"
+                            isActive ? "bg-card text-primary" : "bg-red-500 text-white"
                           )}>
                             {newOrdersCount > 9 ? "9+" : newOrdersCount}
                           </span>
@@ -646,7 +646,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           {showOrderBadge && (
                             <span className={cn(
                               "text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center animate-pulse",
-                              isActive ? "bg-white text-primary" : "bg-red-500 text-white"
+                              isActive ? "bg-card text-primary" : "bg-red-500 text-white"
                             )}>
                               {newOrdersCount > 99 ? "99+" : newOrdersCount}
                             </span>
@@ -819,7 +819,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                         </p>
                       </div>
                       {/* Barra de progresso */}
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-muted-foreground/20 rounded-full h-2">
                         <div
                           className="bg-amber-500 h-2 rounded-full transition-all"
                           style={{ width: `${Math.max(0, ((trialInfo.trialDays! - trialInfo.daysRemaining) / trialInfo.trialDays!) * 100)}%` }}
@@ -927,7 +927,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                         <div className="flex items-center gap-2">
                           <span className={cn(
                             "h-2 w-2 rounded-full",
-                            calculatedIsOpen ? "bg-emerald-500 animate-pulse" : "bg-gray-400"
+                            calculatedIsOpen ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground/50"
                           )} />
                           <div className="flex flex-col">
                             <span className={cn(

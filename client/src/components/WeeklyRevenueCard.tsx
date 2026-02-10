@@ -131,7 +131,7 @@ export function WeeklyRevenueCard({
             >
               <span className={cn(
                 "w-2.5 h-2.5 rounded-full",
-                !showComparison ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-600"
+                !showComparison ? "bg-emerald-500" : "bg-muted-foreground/30 dark:bg-muted-foreground/70"
               )} />
               {periodLabel}
             </button>
@@ -139,12 +139,12 @@ export function WeeklyRevenueCard({
               onClick={() => setShowComparison(true)}
               className={cn(
                 "flex items-center gap-1.5 transition-colors",
-                showComparison ? "text-gray-600 dark:text-gray-300 font-medium" : "text-muted-foreground hover:text-foreground"
+                showComparison ? "text-muted-foreground dark:text-muted-foreground/60 font-medium" : "text-muted-foreground hover:text-foreground"
               )}
             >
               <span className={cn(
                 "w-2.5 h-2.5 rounded-full",
-                showComparison ? "bg-gray-400" : "bg-gray-300 dark:bg-gray-600"
+                showComparison ? "bg-muted-foreground/50" : "bg-muted-foreground/30 dark:bg-muted-foreground/70"
               )} />
               {comparisonLabel}
             </button>
@@ -209,7 +209,7 @@ export function WeeklyRevenueCard({
                     <div
                       className={cn(
                         "absolute bottom-0 w-full rounded-lg transition-all duration-300",
-                        showComparison ? "bg-emerald-200/50 dark:bg-emerald-500/20" : "bg-gray-200 dark:bg-gray-700"
+                        showComparison ? "bg-emerald-200/50 dark:bg-emerald-500/20" : "bg-muted-foreground/20 dark:bg-muted-foreground/80"
                       )}
                       style={{ height: `${Math.max(comparisonHeight, 4)}%` }}
                     />
@@ -224,9 +224,9 @@ export function WeeklyRevenueCard({
                           ? "bg-emerald-500"
                           : "bg-emerald-300 dark:bg-emerald-600"
                         : showComparison
-                          ? "bg-gray-400 dark:bg-gray-500"
+                          ? "bg-muted-foreground/50 dark:bg-muted/500"
                           : isFutureItem
-                            ? "bg-gray-200 dark:bg-gray-700"
+                            ? "bg-muted-foreground/20 dark:bg-muted-foreground/80"
                             : "bg-emerald-500",
                       isCurrentItem && mode === 'daily' && "ring-2 ring-emerald-300 dark:ring-emerald-600 ring-offset-2 ring-offset-card"
                     )}
@@ -246,7 +246,7 @@ export function WeeklyRevenueCard({
 
                 {/* Tooltip */}
                 {hoveredIndex === index && (
-                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-10 bg-gray-900 text-white px-2 py-1.5 rounded-md shadow-lg text-xs whitespace-nowrap">
+                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-10 bg-foreground text-white px-2 py-1.5 rounded-md shadow-lg text-xs whitespace-nowrap">
                     {mode === 'monthly' ? (
                       <div className="flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -261,14 +261,14 @@ export function WeeklyRevenueCard({
                           <span className="font-semibold">{formatCurrency(currentValue)}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
                           <span>{showComparison ? periodLabel : comparisonLabel}:</span>
                           <span className="font-semibold">{formatCurrency(comparisonValue)}</span>
                         </div>
                       </>
                     )}
                     {/* Arrow */}
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-gray-900 rotate-45" />
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-foreground rotate-45" />
                   </div>
                 )}
               </div>

@@ -76,12 +76,12 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-sm text-gray-500">Visão geral da plataforma</p>
+            <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-sm text-muted-foreground">Visão geral da plataforma</p>
           </div>
 
           {/* Period Filter */}
-          <div className="flex bg-white rounded-xl border border-gray-200 p-1">
+          <div className="flex bg-card rounded-xl border border-border p-1">
             {(Object.keys(periodLabels) as Period[]).map((p) => (
               <button
                 key={p}
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
                 className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                   period === p
                     ? "bg-red-500 text-white"
-                    : "text-gray-500 hover:text-gray-700"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {periodLabels[p]}
@@ -101,7 +101,7 @@ export default function AdminDashboard() {
         {/* Stats Cards */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -113,7 +113,7 @@ export default function AdminDashboard() {
               >
                 <CardContent className="p-5">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                       {card.title}
                     </span>
                     <div className={`w-10 h-10 rounded-xl ${card.bgColor} flex items-center justify-center`}>
@@ -121,7 +121,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div className="flex items-end gap-2">
-                    <span className="text-3xl font-bold text-gray-900">
+                    <span className="text-3xl font-bold text-foreground">
                       {card.value}
                     </span>
                   </div>
@@ -137,25 +137,25 @@ export default function AdminDashboard() {
             <CardContent className="p-5">
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="h-5 w-5 text-green-500" />
-                <h3 className="font-semibold text-gray-900">Resumo Rápido</h3>
+                <h3 className="font-semibold text-foreground">Resumo Rápido</h3>
               </div>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between items-center py-2 border-b border-gray-50">
-                  <span className="text-gray-500">Total de restaurantes</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="text-muted-foreground">Total de restaurantes</span>
+                  <span className="font-semibold text-foreground">
                     {(stats?.newRegistrations ?? 0)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-50">
-                  <span className="text-gray-500">Taxa de conversão (trial → pago)</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="text-muted-foreground">Taxa de conversão (trial → pago)</span>
+                  <span className="font-semibold text-foreground">
                     {stats && (stats.paidPlans + stats.inTrial + stats.expiredTrials) > 0
                       ? `${Math.round((stats.paidPlans / (stats.paidPlans + stats.inTrial + stats.expiredTrials)) * 100)}%`
                       : "0%"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-gray-500">Trials aguardando upgrade</span>
+                  <span className="text-muted-foreground">Trials aguardando upgrade</span>
                   <span className="font-semibold text-red-500">
                     {stats?.expiredTrials ?? 0}
                   </span>
@@ -168,15 +168,15 @@ export default function AdminDashboard() {
             <CardContent className="p-5">
               <div className="flex items-center gap-2 mb-4">
                 <Clock className="h-5 w-5 text-amber-500" />
-                <h3 className="font-semibold text-gray-900">Ações Rápidas</h3>
+                <h3 className="font-semibold text-foreground">Ações Rápidas</h3>
               </div>
               <div className="space-y-2">
                 <button
                   onClick={() => navigate("/admin/restaurantes")}
-                  className="w-full text-left px-4 py-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors text-sm"
+                  className="w-full text-left px-4 py-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors text-sm"
                 >
-                  <span className="font-medium text-gray-900">Ver todos os restaurantes</span>
-                  <p className="text-xs text-gray-500 mt-0.5">Gerenciar planos, trials e status</p>
+                  <span className="font-medium text-foreground">Ver todos os restaurantes</span>
+                  <p className="text-xs text-muted-foreground mt-0.5">Gerenciar planos, trials e status</p>
                 </button>
                 <button
                   onClick={() => navigate("/admin/trials?filter=expiring_3days")}
