@@ -6039,3 +6039,4 @@
 
 ## Página de Estoque
 - [x] Remover coluna "Custo unitário" da tabela de itens de estoque
+- [x] Remover coluna "Valor total" da tabela de itens de estoque
