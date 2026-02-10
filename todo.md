@@ -6011,3 +6011,4 @@
 - [x] Remover badge "Verificada" da nota na sidebar de avaliação
 - [x] Substituir ícone check verde do cliente por avatar vermelho com inicial do nome
 - [x] Substituir ícone check verde da resposta por avatar com inicial do restaurante
+- [x] Corrigir erro acessibilidade: adicionar SheetTitle ao SheetContent da sidebar de avaliação

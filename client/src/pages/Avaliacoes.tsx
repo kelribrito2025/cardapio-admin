@@ -106,6 +106,7 @@ function ReviewDetailSheet({ review, open, onOpenChange, establishmentId, onResp
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent hideCloseButton className="w-full sm:max-w-[480px] !p-0 !gap-0 !h-dvh">
+        <SheetTitle className="sr-only">Detalhes da Avaliação</SheetTitle>
         <div className="flex flex-col h-full">
           {/* Header vermelho */}
           <div className="shrink-0 bg-gradient-to-r from-red-500 to-red-600 p-4">
