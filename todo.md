@@ -5861,3 +5861,8 @@
 - [x] Busca global na topbar: filtrar conteúdo relevante em cada página (mesas, catálogo, categorias, complementos, pedidos, cupons, campanhas)
 - [x] Remover auto-minimização da sidebar ao clicar em PDV, Mapa de Mesas e Pedidos
 - [x] [Bug] Corrigir tema escuro na sacola/painel direito da página PDV (fundo branco no modo dark)
+
+## Isolamento de Tema - Menu Público vs Admin
+- [x] Isolar tema do menu público do tema do admin (modo escuro do admin não deve afetar menu público)
+- [x] Menu público deve manter tema claro padrão sempre, independente do modo escuro do admin
+- [x] Não compartilhar variáveis/tokens de tema entre admin e menu público

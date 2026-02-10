@@ -262,6 +262,20 @@ export default function PublicMenu() {
   // Mutation para registrar sessão de visualização do cardápio
   const registerSessionMutation = trpc.menuViews.registerSession.useMutation();
   
+  // Forçar tema claro no menu público - isolar do tema do admin
+  useEffect(() => {
+    const root = document.documentElement;
+    const wasDark = root.classList.contains('dark');
+    // Sempre remover dark no menu público
+    root.classList.remove('dark');
+    return () => {
+      // Restaurar tema anterior ao sair do menu público
+      if (wasDark) {
+        root.classList.add('dark');
+      }
+    };
+  }, []);
+
   // Registrar sessão quando o cardápio é carregado
   useEffect(() => {
     if (data?.establishment?.id) {
