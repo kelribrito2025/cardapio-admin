@@ -879,8 +879,28 @@ export default function Pedidos() {
     new: filteredOrders?.filter((o: OrderItem) => o.status === "new") ?? [],
     preparing: filteredOrders?.filter((o: OrderItem) => o.status === "preparing") ?? [],
     ready: filteredOrders?.filter((o: OrderItem) => o.status === "ready") ?? [],
-    completed: manuallyClearedColumns.has("completed") ? [] : (filteredOrders?.filter((o: OrderItem) => o.status === "completed" && new Date(o.updatedAt || o.createdAt) >= todayStart) ?? []),
-    cancelled: manuallyClearedColumns.has("cancelled") ? [] : (filteredOrders?.filter((o: OrderItem) => o.status === "cancelled" && new Date(o.updatedAt || o.createdAt) >= todayStart) ?? []),
+    completed: filteredOrders?.filter((o: OrderItem) => {
+      if (o.status !== "completed") return false;
+      const orderTime = new Date(o.updatedAt || o.createdAt);
+      if (orderTime < todayStart) return false; // Limpeza automática diária
+      // Limpeza manual: esconder apenas pedidos anteriores ao timestamp de limpeza
+      if (clearTimestamps.completed) {
+        const clearedAt = new Date(clearTimestamps.completed);
+        if (orderTime <= clearedAt) return false;
+      }
+      return true;
+    }) ?? [],
+    cancelled: filteredOrders?.filter((o: OrderItem) => {
+      if (o.status !== "cancelled") return false;
+      const orderTime = new Date(o.updatedAt || o.createdAt);
+      if (orderTime < todayStart) return false; // Limpeza automática diária
+      // Limpeza manual: esconder apenas pedidos anteriores ao timestamp de limpeza
+      if (clearTimestamps.cancelled) {
+        const clearedAt = new Date(clearTimestamps.cancelled);
+        if (orderTime <= clearedAt) return false;
+      }
+      return true;
+    }) ?? [],
   };
 
   // Verificar se o dia mudou (reset automático à meia-noite do timezone do restaurante)
@@ -906,18 +926,43 @@ export default function Pedidos() {
     return () => clearInterval(interval);
   }, [todayStart, manuallyClearedColumns.size]);
 
+  // Estado para guardar o timestamp de quando cada coluna foi limpa manualmente
+  const [clearTimestamps, setClearTimestamps] = useState<Record<string, string>>(() => {
+    try {
+      const stored = localStorage.getItem('clearedColumns');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Verificar se é do mesmo dia
+        const clearedDate = new Date(parsed.timestamp || parsed.clearedAt?.completed || parsed.clearedAt?.cancelled || Date.now());
+        const now = new Date();
+        if (clearedDate.toDateString() !== now.toDateString()) {
+          localStorage.removeItem('clearedColumns');
+          return {};
+        }
+        return parsed.clearedAt || {};
+      }
+    } catch {}
+    return {};
+  });
+
   // Handler para limpeza manual de coluna (persiste no localStorage)
   const handleManualClear = (columnId: OrderStatus) => {
-    setManuallyClearedColumns(prev => {
-      const next = new Set(prev);
-      next.add(columnId);
+    const now = new Date().toISOString();
+    setClearTimestamps(prev => {
+      const next = { ...prev, [columnId]: now };
       // Persistir no localStorage
       try {
         localStorage.setItem('clearedColumns', JSON.stringify({
-          columns: Array.from(next),
-          timestamp: new Date().toISOString(),
+          clearedAt: next,
+          timestamp: now,
         }));
       } catch {}
+      return next;
+    });
+    // Manter compatibilidade com manuallyClearedColumns para o estado visual
+    setManuallyClearedColumns(prev => {
+      const next = new Set(prev);
+      next.add(columnId);
       return next;
     });
     toast.success(columnId === "completed" ? "Pedidos completos limpos" : "Pedidos cancelados limpos");

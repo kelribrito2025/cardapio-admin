@@ -5962,3 +5962,7 @@
 
 ## Animação pulse no badge de trial
 - [x] Adicionar animação pulse no badge quando restarem menos de 3 dias de trial
+
+## Bug: Pedido finalizado não aparece no card Completos após limpeza manual
+- [x] Ao finalizar pedido, resetar limpeza manual do card Completos para que o novo pedido apareça
+- [x] Mesma lógica para Cancelados: ao cancelar pedido, resetar limpeza manual do card Cancelados
