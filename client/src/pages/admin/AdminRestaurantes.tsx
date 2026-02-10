@@ -50,7 +50,7 @@ const planFilterLabels: Record<PlanFilter, string> = {
   trial: "Trial (todos)",
   active_trial: "Trial ativo",
   expired: "Trial expirado",
-  basic: "Básico",
+  basic: "Essencial",
   pro: "Pro",
   enterprise: "Enterprise",
   paid: "Pagos",
@@ -345,7 +345,7 @@ export default function AdminRestaurantes() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="trial">Trial (resetar)</SelectItem>
-              <SelectItem value="basic">Básico</SelectItem>
+              <SelectItem value="basic">Essencial</SelectItem>
               <SelectItem value="pro">Pro</SelectItem>
               <SelectItem value="enterprise">Enterprise</SelectItem>
             </SelectContent>

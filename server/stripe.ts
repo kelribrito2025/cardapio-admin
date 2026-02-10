@@ -163,15 +163,15 @@ export async function createSmsCheckoutSession(params: {
 export const PLAN_PACKAGES = [
   {
     id: "basic",
-    name: "Plano Básico",
-    priceInCents: 2900, // R$ 29,00/mês
+    name: "Plano Essencial",
+    priceInCents: 7990, // R$ 79,90/mês
     description: "Transações ilimitadas, até 5 estabelecimentos, suporte por e-mail",
   },
   {
     id: "pro",
     name: "Plano Pro",
     priceInCents: 5900, // R$ 59,00/mês
-    description: "Tudo do Básico + estabelecimentos ilimitados, análises avançadas, assistente de IA",
+    description: "Tudo do Essencial + estabelecimentos ilimitados, análises avançadas, assistente de IA",
     popular: true,
   },
   {

@@ -51,6 +51,7 @@ interface Plan {
     monthly: number;
     annual: number;
   };
+  priceLabel?: string;
   features: PlanFeature[];
   buttonText: string;
   highlighted?: boolean;
@@ -74,10 +75,10 @@ const plans: Plan[] = [
   },
   {
     id: "basic",
-    name: "Básico",
+    name: "Essencial",
     price: {
-      monthly: 29,
-      annual: 290,
+      monthly: 79.90,
+      annual: 799,
     },
     features: [
       { text: "Transações ilimitadas" },
@@ -92,12 +93,13 @@ const plans: Plan[] = [
     id: "pro",
     name: "Pro",
     price: {
-      monthly: 59,
-      annual: 120,
+      monthly: -1,
+      annual: -1,
     },
+    priceLabel: "R$ --,--",
     highlighted: true,
     features: [
-      { text: "Tudo do plano Básico" },
+      { text: "Tudo do plano Essencial" },
       { text: "Estabelecimentos ilimitados" },
       { text: "Análises avançadas" },
       { text: "Assistente de IA" },
@@ -107,54 +109,16 @@ const plans: Plan[] = [
   },
 ];
 
-// Mock data for billing history with more entries for pagination
-const billingHistory = [
-  {
-    id: "INV_00092323",
-    plan: "Business",
-    planType: "Anual",
-    purchaseDate: "2025-08-30",
-    amount: 120,
-    endDate: "2026-08-30",
-    status: "success" as const,
-  },
-  {
-    id: "INV_00092323",
-    plan: "Plano Pro",
-    planType: "Anual",
-    purchaseDate: "2025-08-26",
-    amount: 120,
-    endDate: "2025-09-25",
-    status: "processing" as const,
-  },
-  {
-    id: "INV_00092323",
-    plan: "Plano Pro",
-    planType: "Mensal",
-    purchaseDate: "2025-08-20",
-    amount: 72,
-    endDate: "2025-09-20",
-    status: "success" as const,
-  },
-  {
-    id: "INV_00092323",
-    plan: "Plano Pro",
-    planType: "Mensal",
-    purchaseDate: "2025-08-15",
-    amount: 72,
-    endDate: "2025-09-16",
-    status: "success" as const,
-  },
-  {
-    id: "INV_00092323",
-    plan: "Plano Pro",
-    planType: "Anual",
-    purchaseDate: "2024-08-12",
-    amount: 120,
-    endDate: "2025-08-22",
-    status: "success" as const,
-  },
-];
+// Histórico de pagamentos (vazio - será preenchido com dados reais do Stripe)
+const billingHistory: Array<{
+  id: string;
+  plan: string;
+  planType: string;
+  purchaseDate: string;
+  amount: number;
+  endDate: string;
+  status: "success" | "processing" | "failed";
+}> = [];
 
 type BillingStatus = "all" | "success" | "processing" | "failed";
 
@@ -341,11 +305,11 @@ export default function Planos() {
                 {/* Price */}
                 <div className="flex items-baseline gap-1 mb-6">
                   <span className="text-4xl font-bold text-foreground">
-                    {price === 0 ? "Grátis" : formatCurrency(price)}
+                    {price === 0 ? "Grátis" : plan.priceLabel ? plan.priceLabel : formatCurrency(price)}
                   </span>
-                  {price > 0 && (
+                  {(price > 0 || plan.priceLabel) && (
                     <span className="text-muted-foreground text-sm">
-                      {period}
+                      {plan.priceLabel ? "" : period}
                     </span>
                   )}
                 </div>
@@ -385,9 +349,9 @@ export default function Planos() {
                       ? "bg-muted hover:bg-muted text-muted-foreground cursor-default"
                       : "bg-card hover:bg-muted/50 text-foreground border border-border"
                   )}
-                  disabled={plan.id === "free" || checkoutMutation.isPending}
+                  disabled={plan.id === "free" || !!plan.priceLabel || checkoutMutation.isPending}
                   onClick={() => {
-                    if (plan.id !== "free") {
+                    if (plan.id !== "free" && !plan.priceLabel) {
                       handleCheckout(plan.id);
                     }
                   }}
@@ -395,7 +359,7 @@ export default function Planos() {
                   {checkoutMutation.isPending ? (
                     <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Processando...</>
                   ) : (
-                    plan.buttonText
+                    plan.priceLabel ? "Em breve" : plan.buttonText
                   )}
                 </Button>
 
@@ -525,105 +489,119 @@ export default function Planos() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedHistory.map((item, index) => (
-              <TableRow key={`${item.id}-${index}`} className="hover:bg-muted/20">
-                <TableCell>
-                  <Checkbox
-                    checked={selectedRows.includes(`row-${index}`)}
-                    onCheckedChange={() => toggleRowSelection(`row-${index}`)}
-                  />
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium text-foreground">{item.id}</span>
+            {paginatedHistory.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="h-32 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                    <FileText className="h-8 w-8 opacity-40" />
+                    <p className="text-sm">Nenhum pagamento registrado</p>
+                    <p className="text-xs">Seu histórico de pagamentos aparecerá aqui.</p>
                   </div>
-                </TableCell>
-                <TableCell>
-                  <div>
-                    <span className="font-medium text-foreground">{item.plan}</span>
-                    <span className="text-muted-foreground text-sm ml-1">({item.planType})</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {formatDate(item.purchaseDate)}
-                </TableCell>
-                <TableCell className="font-medium text-foreground">
-                  {formatCurrency(item.amount)}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {formatDate(item.endDate)}
-                </TableCell>
-                <TableCell>{getStatusBadge(item.status)}</TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Eye className="h-4 w-4 mr-2" />
-                        Ver Detalhes
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Download className="h-4 w-4 mr-2" />
-                        Baixar Fatura
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              paginatedHistory.map((item, index) => (
+                <TableRow key={`${item.id}-${index}`} className="hover:bg-muted/20">
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedRows.includes(`row-${index}`)}
+                      onCheckedChange={() => toggleRowSelection(`row-${index}`)}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium text-foreground">{item.id}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div>
+                      <span className="font-medium text-foreground">{item.plan}</span>
+                      <span className="text-muted-foreground text-sm ml-1">({item.planType})</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {formatDate(item.purchaseDate)}
+                  </TableCell>
+                  <TableCell className="font-medium text-foreground">
+                    {formatCurrency(item.amount)}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {formatDate(item.endDate)}
+                  </TableCell>
+                  <TableCell>{getStatusBadge(item.status)}</TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                          <Eye className="h-4 w-4 mr-2" />
+                          Ver Detalhes
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Download className="h-4 w-4 mr-2" />
+                          Baixar Fatura
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
 
-        {/* Pagination */}
-        <div className="p-4 border-t border-border/50 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Mostrando {(currentPage - 1) * itemsPerPage + 1}-
-            {Math.min(currentPage * itemsPerPage, filteredHistory.length)} de{" "}
-            {filteredHistory.length}
-          </p>
-          
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
+        {/* Pagination - só mostra se houver dados */}
+        {filteredHistory.length > 0 && (
+          <div className="p-4 border-t border-border/50 flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Mostrando {(currentPage - 1) * itemsPerPage + 1}-
+              {Math.min(currentPage * itemsPerPage, filteredHistory.length)} de{" "}
+              {filteredHistory.length}
+            </p>
             
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <div className="flex items-center gap-1">
               <Button
-                key={page}
-                variant={currentPage === page ? "default" : "outline"}
+                variant="outline"
                 size="icon"
-                className={cn(
-                  "h-8 w-8",
-                  currentPage === page && "bg-foreground text-background"
-                )}
-                onClick={() => setCurrentPage(page)}
+                className="h-8 w-8"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
               >
-                {page}
+                <ChevronLeft className="h-4 w-4" />
               </Button>
-            ))}
-            
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <Button
+                  key={page}
+                  variant={currentPage === page ? "default" : "outline"}
+                  size="icon"
+                  className={cn(
+                    "h-8 w-8",
+                    currentPage === page && "bg-foreground text-background"
+                  )}
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </Button>
+              ))}
+              
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </AdminLayout>
   );

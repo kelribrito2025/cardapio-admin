@@ -280,7 +280,7 @@ export default function AdminTrials() {
               <Select value={convertPlan} onValueChange={setConvertPlan}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="basic">Básico</SelectItem>
+                  <SelectItem value="basic">Essencial</SelectItem>
                   <SelectItem value="pro">Pro</SelectItem>
                   <SelectItem value="enterprise">Enterprise</SelectItem>
                 </SelectContent>

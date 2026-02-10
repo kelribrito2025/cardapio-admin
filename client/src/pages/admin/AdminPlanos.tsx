@@ -15,10 +15,10 @@ import { toast } from "sonner";
 const plans = [
   {
     id: "basic",
-    name: "Básico",
+    name: "Essencial",
     icon: CreditCard,
-    priceMonthly: "R$ 29,90",
-    priceAnnual: "R$ 19,90",
+    priceMonthly: "R$ 79,90",
+    priceAnnual: "R$ 66,58",
     color: "blue",
     bgColor: "bg-blue-50",
     borderColor: "border-t-blue-500",
@@ -43,7 +43,7 @@ const plans = [
     iconColor: "text-purple-500",
     popular: true,
     features: [
-      "Tudo do plano Básico",
+      "Tudo do plano Essencial",
       "Estabelecimentos ilimitados",
       "Análises avançadas",
       "Assistente de IA",

@@ -154,7 +154,7 @@ export default function AdminRelatorios() {
           </h2>
           <div className="space-y-4">
             <PlanRow
-              label="Básico"
+              label="Essencial"
               count={data.planDistribution?.basic ?? 0}
               price="R$ 29/mês"
               color="#3b82f6"
