@@ -67,7 +67,7 @@ function getStatusBadge(review: any) {
   );
 }
 
-// Sidebar de detalhes da avaliação
+// Sidebar de detalhes da avaliação - estilo iFood
 function ReviewDetailSheet({ review, open, onOpenChange, establishmentId, onResponded }: {
   review: any;
   open: boolean;
@@ -75,20 +75,17 @@ function ReviewDetailSheet({ review, open, onOpenChange, establishmentId, onResp
   establishmentId: number;
   onResponded: () => void;
 }) {
-  const [isReplying, setIsReplying] = useState(false);
-  const [responseText, setResponseText] = useState(review?.responseText || "");
+  const [responseText, setResponseText] = useState("");
 
   useEffect(() => {
     if (review) {
       setResponseText(review.responseText || "");
-      setIsReplying(false);
     }
   }, [review?.id]);
 
   const respondMutation = trpc.reviewsAdmin.respond.useMutation({
     onSuccess: () => {
       toast.success("Resposta enviada com sucesso!");
-      setIsReplying(false);
       onResponded();
     },
     onError: (err) => {
@@ -98,176 +95,99 @@ function ReviewDetailSheet({ review, open, onOpenChange, establishmentId, onResp
 
   if (!review) return null;
 
-  const isNegative = review.rating <= 2;
   const createdDate = new Date(review.createdAt);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-md overflow-y-auto">
         <SheetHeader className="mb-6">
-          <SheetTitle className="flex items-center gap-3">
-            <div className={cn(
-              "w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0",
-              isNegative ? "bg-red-400" : "bg-emerald-500"
-            )}>
-              {review.customerName?.charAt(0)?.toUpperCase() || "?"}
-            </div>
-            <div>
-              <span className="text-xl">{review.customerName}</span>
-              <div className="flex items-center gap-2 mt-0.5">
-                <StarRating rating={review.rating} size={16} />
-                <span className={cn(
-                  "text-sm font-medium",
-                  isNegative ? "text-red-600" : "text-emerald-600"
-                )}>
-                  {review.rating}.0
-                </span>
-              </div>
-            </div>
-          </SheetTitle>
+          <SheetTitle className="text-xl font-bold">Detalhes da avaliação</SheetTitle>
         </SheetHeader>
 
-        {/* Informações da avaliação */}
-        <div className="space-y-4 mb-6">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground flex items-center gap-1.5">
-              <Calendar className="h-4 w-4" />
-              Data
-            </span>
-            <span className="font-medium">
-              {createdDate.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}
-            </span>
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground flex items-center gap-1.5">
-              <Clock className="h-4 w-4" />
-              Hora
-            </span>
-            <span className="font-medium">
-              {createdDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
-            </span>
-          </div>
-          {review.orderNumber && (
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground flex items-center gap-1.5">
-                <Hash className="h-4 w-4" />
-                Pedido
-              </span>
-              <span className="font-medium">{review.orderNumber}</span>
-            </div>
-          )}
-          {review.customerPhone && (
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground flex items-center gap-1.5">
-                <Phone className="h-4 w-4" />
-                Telefone
-              </span>
-              <span className="font-medium">{review.customerPhone}</span>
-            </div>
-          )}
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground flex items-center gap-1.5">
-              <MessageSquare className="h-4 w-4" />
-              Status
-            </span>
-            {getStatusBadge(review)}
+        {/* Card cinza com pedido e data */}
+        <div className="bg-muted/60 rounded-lg px-4 py-3 mb-6">
+          <span className="text-red-600 font-semibold">Pedido {review.orderNumber || review.orderId || "—"}</span>
+          <span className="text-sm text-foreground ml-3">Feito em {createdDate.toLocaleDateString("pt-BR")}</span>
+        </div>
+
+        {/* Nota */}
+        <div className="mb-6">
+          <p className="text-sm text-muted-foreground mb-2">O que você achou do pedido?</p>
+          <div className="flex items-center gap-3">
+            <span className="text-3xl font-bold">{review.rating}.0</span>
+            <StarRating rating={review.rating} size={20} />
           </div>
         </div>
 
+        <div className="border-t border-border mb-6" />
+
         {/* Comentário do cliente */}
-        {review.comment && (
-          <div className="mb-6">
-            <h4 className="font-medium text-foreground mb-3 flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" />
-              Comentário do Cliente
-            </h4>
-            <div className="p-4 bg-muted/50 rounded-lg">
-              <p className="text-sm text-foreground leading-relaxed">{review.comment}</p>
+        <div className="mb-6">
+          <div className="flex items-start gap-3">
+            <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+              <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-foreground">{review.customerName || "Cliente"} disse</p>
+              <p className="text-xs text-muted-foreground">em {createdDate.toLocaleDateString("pt-BR")}</p>
             </div>
           </div>
-        )}
+          {review.comment && (
+            <p className="text-sm text-foreground leading-relaxed mt-3 ml-9">{review.comment}</p>
+          )}
+          {!review.comment && (
+            <p className="text-sm text-muted-foreground italic mt-3 ml-9">Nenhum comentário</p>
+          )}
+        </div>
 
-        {/* Resposta existente */}
-        {review.responseText && !isReplying && (
-          <div className="mb-6">
-            <h4 className="font-medium text-foreground mb-3 flex items-center gap-2">
-              <Send className="h-4 w-4" />
-              Sua Resposta
-            </h4>
-            <div className="p-4 bg-emerald-50/50 rounded-lg border-l-3 border-emerald-500">
-              <p className="text-sm text-foreground leading-relaxed">{review.responseText}</p>
+        {/* Sua resposta */}
+        <div className="mb-6">
+          <div className="flex items-start gap-3">
+            <div className={cn(
+              "w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5",
+              review.responseText ? "bg-emerald-500" : "bg-muted-foreground/30"
+            )}>
+              <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-foreground">Sua resposta</p>
               {review.responseDate && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  Respondido em {new Date(review.responseDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}
+                <p className="text-xs text-muted-foreground">
+                  até {new Date(review.responseDate).toLocaleDateString("pt-BR")}
                 </p>
               )}
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-3 h-8 text-xs gap-1.5"
-              onClick={() => { setIsReplying(true); setResponseText(review.responseText || ""); }}
-            >
-              Editar resposta
-            </Button>
           </div>
-        )}
 
-        {/* Formulário de resposta */}
-        <div className="space-y-3">
-          {!review.responseText && !isReplying && (
-            <Button
-              className="w-full bg-red-600 hover:bg-red-700 text-white gap-2"
-              onClick={() => setIsReplying(true)}
-            >
-              <MessageSquare size={16} />
-              Responder Avaliação
-            </Button>
-          )}
-
-          {isReplying && (
-            <div className="space-y-3">
-              <h4 className="font-medium text-foreground flex items-center gap-2">
-                <Send className="h-4 w-4" />
-                {review.responseText ? "Editar Resposta" : "Responder Avaliação"}
-              </h4>
-              <Textarea
-                placeholder="Escreva sua resposta pública..."
-                value={responseText}
-                onChange={(e) => setResponseText(e.target.value)}
-                rows={4}
-                className="text-sm resize-none"
-                maxLength={1000}
-              />
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground">{responseText.length}/1000</p>
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-9 text-xs"
-                    onClick={() => { setIsReplying(false); setResponseText(review.responseText || ""); }}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="h-9 text-xs gap-1.5 bg-red-600 hover:bg-red-700"
-                    onClick={() => respondMutation.mutate({
-                      reviewId: review.id,
-                      establishmentId,
-                      responseText: responseText.trim(),
-                    })}
-                    disabled={!responseText.trim() || respondMutation.isPending}
-                  >
-                    <Send size={14} />
-                    {respondMutation.isPending ? "Enviando..." : "Enviar resposta"}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
+          <div className="mt-3 ml-9">
+            <Textarea
+              placeholder="Escreva aqui uma resposta"
+              value={responseText}
+              onChange={(e) => setResponseText(e.target.value)}
+              rows={4}
+              className="text-sm"
+              maxLength={300}
+            />
+            <p className="text-xs text-muted-foreground text-right mt-1">{responseText.length}/300 caracteres</p>
+          </div>
         </div>
+
+        {/* Botão enviar */}
+        <Button
+          className="bg-red-600 hover:bg-red-700 text-white rounded-lg px-6"
+          onClick={() => respondMutation.mutate({
+            reviewId: review.id,
+            establishmentId,
+            responseText: responseText.trim(),
+          })}
+          disabled={!responseText.trim() || respondMutation.isPending}
+        >
+          {respondMutation.isPending ? "Enviando..." : "Enviar resposta"}
+        </Button>
       </SheetContent>
     </Sheet>
   );

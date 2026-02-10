@@ -6000,3 +6000,5 @@
 - [x] Implementar tabela em lista de avaliações (Pedido, Data, Nota, Comentário, Status) conforme design de referência
 - [x] Implementar sidebar direita (Sheet) com detalhes da avaliação ao clicar em "Mostrar detalhes"
 - [x] Backend: incluir orderNumber no resultado de reviews (join com orders)
+- [ ] Remover sombra dos cards da lista de pedidos para igualar estilo dos cards de gráficos da Dashboard
+- [x] Redesenhar sidebar de avaliação conforme modelo iFood: título "Detalhes da avaliação", card cinza com pedido+data, nota grande com estrelas, comentário do cliente com nome+data, área de resposta com textarea e botão vermelho
