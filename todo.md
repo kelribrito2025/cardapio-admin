@@ -6007,3 +6007,4 @@
 - [x] Sidebar avaliação: mostrar resposta em container de leitura quando já respondida, com botão "Editar resposta" para modo de edição
 - [x] Paginação backend: adicionar limit/offset e contagem total na query de avaliações
 - [x] Paginação frontend: controles Primeira, Anterior, campo de página, Próxima, Última (15 por página)
+- [x] Redesenhar layout interno da sidebar de avaliação estilo iFood: nota destaque, estrelas, check verde cliente, seção resposta com estados sem/com resposta, layout limpo e responsivo

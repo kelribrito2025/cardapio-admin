@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Star, MessageSquare, Users, Clock, TrendingUp, Send, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Filter, Hash, Calendar, Phone, X } from "lucide-react";
+import { Star, MessageSquare, Users, Clock, TrendingUp, Send, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Filter, Hash, Calendar, Phone, X, Pencil, CheckCircle2, ShieldCheck } from "lucide-react";
 import { StatCard } from "@/components/shared";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -68,7 +68,7 @@ function getStatusBadge(review: any) {
   );
 }
 
-// Sidebar de detalhes da avaliação - estilo Forma de Pagamento com header vermelho
+// Sidebar de detalhes da avaliação - estilo iFood profissional
 function ReviewDetailSheet({ review, open, onOpenChange, establishmentId, onResponded }: {
   review: any;
   open: boolean;
@@ -100,143 +100,188 @@ function ReviewDetailSheet({ review, open, onOpenChange, establishmentId, onResp
   if (!review) return null;
 
   const createdDate = new Date(review.createdAt);
+  const hasResponse = !!review.responseText;
+  const showTextarea = !hasResponse || isEditing;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent hideCloseButton className="w-full sm:max-w-[480px] !p-0 !gap-0 h-full">
+      <SheetContent hideCloseButton className="w-full sm:max-w-[480px] !p-0 !gap-0 !h-dvh">
         <div className="flex flex-col h-full">
-        {/* Header vermelho - estilo Forma de Pagamento */}
-        <div className="shrink-0 bg-gradient-to-r from-red-500 to-red-600 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/20 rounded-lg">
-                <Star className="h-5 w-5 text-white" />
+          {/* Header vermelho */}
+          <div className="shrink-0 bg-gradient-to-r from-red-500 to-red-600 p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/20 rounded-lg">
+                  <Star className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-white">Detalhes da Avaliação</h2>
+                  <p className="text-sm text-white/80">Veja e responda a avaliação do cliente</p>
+                </div>
               </div>
+              <button
+                onClick={() => onOpenChange(false)}
+                className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+              >
+                <X className="h-5 w-5 text-white" />
+              </button>
+            </div>
+          </div>
+
+          {/* Conteúdo scrollável */}
+          <div className="flex-1 overflow-y-auto">
+            {/* Card do pedido */}
+            <div className="bg-muted/40 px-5 py-3 border-b border-border/50">
+              <span className="text-red-600 font-semibold">Pedido {review.orderNumber || review.orderId || "—"}</span>
+              <span className="text-sm text-muted-foreground ml-3">Feito em {createdDate.toLocaleDateString("pt-BR")}</span>
+            </div>
+
+            <div className="p-5 space-y-6">
+              {/* Nota geral em destaque */}
               <div>
-                <h2 className="text-lg font-bold text-white">Detalhes da Avaliação</h2>
-                <p className="text-sm text-white/80">Veja e responda a avaliação do cliente</p>
-              </div>
-            </div>
-            <button
-              onClick={() => onOpenChange(false)}
-              className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
-            >
-              <X className="h-5 w-5 text-white" />
-            </button>
-          </div>
-        </div>
-
-        {/* Conteúdo */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-5">
-          {/* Card cinza com pedido e data */}
-          <div className="bg-muted/60 rounded-lg px-4 py-3">
-            <span className="text-red-600 font-semibold">Pedido {review.orderNumber || review.orderId || "—"}</span>
-            <span className="text-sm text-foreground ml-3">Feito em {createdDate.toLocaleDateString("pt-BR")}</span>
-          </div>
-
-          {/* Nota */}
-          <div>
-            <p className="text-sm text-muted-foreground mb-2">O que você achou do pedido?</p>
-            <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold">{review.rating}.0</span>
-              <StarRating rating={review.rating} size={20} />
-            </div>
-          </div>
-
-          <div className="border-t border-border" />
-
-          {/* Comentário do cliente */}
-          <div>
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
-                <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-foreground">{review.customerName || "Cliente"} disse</p>
-                <p className="text-xs text-muted-foreground">em {createdDate.toLocaleDateString("pt-BR")}</p>
-              </div>
-            </div>
-            {review.comment && (
-              <p className="text-sm text-foreground leading-relaxed mt-3 ml-9">{review.comment}</p>
-            )}
-            {!review.comment && (
-              <p className="text-sm text-muted-foreground italic mt-3 ml-9">Nenhum comentário</p>
-            )}
-          </div>
-
-          {/* Sua resposta */}
-          <div>
-            <div className="flex items-start gap-3">
-              <div className={cn(
-                "w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5",
-                review.responseText ? "bg-emerald-500" : "bg-muted-foreground/30"
-              )}>
-                <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-foreground">Sua resposta</p>
-                {review.responseDate && (
-                  <p className="text-xs text-muted-foreground">
-                    até {new Date(review.responseDate).toLocaleDateString("pt-BR")}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Modo leitura: mostra resposta em container */}
-            {review.responseText && !isEditing ? (
-              <div className="mt-3 ml-9">
-                <div className="bg-muted/50 rounded-lg p-3 border border-border/50">
-                  <p className="text-sm text-foreground leading-relaxed">{review.responseText}</p>
-                </div>
-                <div className="mt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs"
-                    onClick={() => setIsEditing(true)}
-                  >
-                    Editar resposta
-                  </Button>
+                <p className="text-sm text-muted-foreground mb-2">O que você achou do pedido?</p>
+                <div className="flex items-center gap-3">
+                  <span className="text-4xl font-bold tracking-tight">{Number(review.rating).toFixed(1)}</span>
+                  <div className="flex gap-0.5">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Star
+                        key={i}
+                        size={22}
+                        className={cn(
+                          "transition-colors",
+                          i <= review.rating
+                            ? "fill-amber-400 text-amber-400"
+                            : "fill-muted text-muted"
+                        )}
+                      />
+                    ))}
+                  </div>
+                  <div className="ml-auto">
+                    <div className="flex items-center gap-1 text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                      <ShieldCheck size={12} />
+                      <span>Verificada</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            ) : (
-              /* Modo edição: textarea para escrever/editar */
-              <div className="mt-3 ml-9">
-                <Textarea
-                  placeholder="Escreva aqui uma resposta"
-                  value={responseText}
-                  onChange={(e) => setResponseText(e.target.value)}
-                  rows={4}
-                  className="text-sm"
-                  maxLength={300}
-                />
-                <p className="text-xs text-muted-foreground text-right mt-1">{responseText.length}/300 caracteres</p>
-              </div>
-            )}
-          </div>
-        </div>
 
-        {/* Footer com botão - fixo no fundo (só mostra quando em modo edição ou sem resposta) */}
-        {(!review.responseText || isEditing) && (
-          <div className="shrink-0 p-4 border-t border-border">
-            <Button
-              className="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg py-3"
-              onClick={() => respondMutation.mutate({
-                reviewId: review.id,
-                establishmentId,
-                responseText: responseText.trim(),
-              })}
-              disabled={!responseText.trim() || respondMutation.isPending}
-            >
-              {respondMutation.isPending ? "Enviando..." : "Enviar resposta"}
-            </Button>
+              <div className="border-t border-border/60" />
+
+              {/* Comentário do cliente */}
+              <div>
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-foreground text-[15px]">
+                      {review.customerName || "Cliente"} disse
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      em {createdDate.toLocaleDateString("pt-BR")}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3 ml-10">
+                  {review.comment ? (
+                    <p className="text-sm text-foreground leading-relaxed">{review.comment}</p>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">Nenhum comentário</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="border-t border-border/60" />
+
+              {/* Seção Sua resposta */}
+              <div>
+                <div className="flex items-start gap-3">
+                  <div className={cn(
+                    "w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5",
+                    hasResponse ? "bg-emerald-500" : "bg-gray-300"
+                  )}>
+                    <CheckCircle2 className={cn("w-4 h-4", hasResponse ? "text-white" : "text-gray-500")} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-foreground text-[15px]">Sua resposta</p>
+                    {review.responseDate ? (
+                      <p className="text-xs text-muted-foreground">
+                        até {new Date(review.responseDate).toLocaleDateString("pt-BR")}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">Aguardando resposta</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-3 ml-10">
+                  {/* Estado: com resposta publicada (modo leitura) */}
+                  {hasResponse && !isEditing ? (
+                    <div className="space-y-3">
+                      <div className="bg-emerald-50/70 border border-emerald-200/60 rounded-lg p-4">
+                        <div className="flex items-center gap-1.5 mb-2">
+                          <CheckCircle2 size={13} className="text-emerald-600" />
+                          <span className="text-xs font-medium text-emerald-700">Resposta publicada</span>
+                        </div>
+                        <p className="text-sm text-foreground leading-relaxed">{review.responseText}</p>
+                        {review.responseDate && (
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Respondido em {new Date(review.responseDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}
+                          </p>
+                        )}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-1.5 text-xs"
+                        onClick={() => setIsEditing(true)}
+                      >
+                        <Pencil size={12} />
+                        Editar resposta
+                      </Button>
+                    </div>
+                  ) : (
+                    /* Estado: sem resposta ou editando */
+                    <div className="space-y-2">
+                      <Textarea
+                        placeholder="Escreva aqui uma resposta ao cliente"
+                        value={responseText}
+                        onChange={(e) => {
+                          if (e.target.value.length <= 300) {
+                            setResponseText(e.target.value);
+                          }
+                        }}
+                        rows={5}
+                        className="text-sm resize-none bg-muted/30 border-border/60 focus:bg-background transition-colors"
+                        maxLength={300}
+                      />
+                      <p className="text-xs text-muted-foreground text-right">
+                        {responseText.length}/300 caracteres
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        )}
+
+          {/* Footer fixo - só aparece quando em modo de escrita/edição */}
+          {showTextarea && (
+            <div className="shrink-0 p-4 border-t border-border bg-background">
+              <Button
+                className="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg py-3 gap-2"
+                onClick={() => respondMutation.mutate({
+                  reviewId: review.id,
+                  establishmentId,
+                  responseText: responseText.trim(),
+                })}
+                disabled={!responseText.trim() || respondMutation.isPending}
+              >
+                <Send size={16} />
+                {respondMutation.isPending ? "Enviando..." : (isEditing ? "Atualizar resposta" : "Enviar resposta")}
+              </Button>
+            </div>
+          )}
         </div>
       </SheetContent>
     </Sheet>
