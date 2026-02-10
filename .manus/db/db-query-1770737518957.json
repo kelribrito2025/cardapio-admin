@@ -1,0 +1,170 @@
+{
+  "query": "SELECT id, orderNumber, status, customerName, DATE_FORMAT(createdAt, '%Y-%m-%d %H:%i:%s') as created, DATE_FORMAT(updatedAt, '%Y-%m-%d %H:%i:%s') as updated FROM orders WHERE establishmentId = 60018 AND status = 'completed' ORDER BY updatedAt DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, status, customerName, DATE_FORMAT(createdAt, '%Y-%m-%d %H:%i:%s') as created, DATE_FORMAT(updatedAt, '%Y-%m-%d %H:%i:%s') as updated FROM orders WHERE establishmentId = 60018 AND status = 'completed' ORDER BY updatedAt DESC LIMIT 20;",
+  "rows": [
+    {
+      "id": "450005",
+      "orderNumber": "#P73",
+      "status": "completed",
+      "customerName": "midiograf ",
+      "created": "2026-02-09 21:46:55",
+      "updated": "2026-02-10 03:05:56"
+    },
+    {
+      "id": "450006",
+      "orderNumber": "#P74",
+      "status": "completed",
+      "customerName": "Alexandre Garbosi",
+      "created": "2026-02-09 21:53:15",
+      "updated": "2026-02-10 03:05:51"
+    },
+    {
+      "id": "450011",
+      "orderNumber": "#P75",
+      "status": "completed",
+      "customerName": "Andre",
+      "created": "2026-02-09 22:28:01",
+      "updated": "2026-02-10 03:05:47"
+    },
+    {
+      "id": "450013",
+      "orderNumber": "#P76",
+      "status": "completed",
+      "customerName": "nelsom ",
+      "created": "2026-02-09 22:32:49",
+      "updated": "2026-02-10 03:05:44"
+    },
+    {
+      "id": "450014",
+      "orderNumber": "#P77",
+      "status": "completed",
+      "customerName": "Izabel Cristina",
+      "created": "2026-02-09 22:35:04",
+      "updated": "2026-02-10 03:05:42"
+    },
+    {
+      "id": "450015",
+      "orderNumber": "#P78",
+      "status": "completed",
+      "customerName": "samanta ",
+      "created": "2026-02-09 22:37:16",
+      "updated": "2026-02-10 03:05:39"
+    },
+    {
+      "id": "450017",
+      "orderNumber": "#P79",
+      "status": "completed",
+      "customerName": "Marcos Vinícios",
+      "created": "2026-02-09 23:01:37",
+      "updated": "2026-02-10 03:05:36"
+    },
+    {
+      "id": "450020",
+      "orderNumber": "#P80",
+      "status": "completed",
+      "customerName": "Izabel Cristina",
+      "created": "2026-02-10 00:19:39",
+      "updated": "2026-02-10 03:05:34"
+    },
+    {
+      "id": "450021",
+      "orderNumber": "#P81",
+      "status": "completed",
+      "customerName": "Steffany",
+      "created": "2026-02-10 00:23:15",
+      "updated": "2026-02-10 03:05:32"
+    },
+    {
+      "id": "450022",
+      "orderNumber": "#P82",
+      "status": "completed",
+      "customerName": "Eduarda ",
+      "created": "2026-02-10 00:24:21",
+      "updated": "2026-02-10 03:05:28"
+    },
+    {
+      "id": "450023",
+      "orderNumber": "#P83",
+      "status": "completed",
+      "customerName": "luiz carlos ",
+      "created": "2026-02-10 00:40:07",
+      "updated": "2026-02-10 03:05:25"
+    },
+    {
+      "id": "450024",
+      "orderNumber": "#P84",
+      "status": "completed",
+      "customerName": "Karina ",
+      "created": "2026-02-10 01:24:37",
+      "updated": "2026-02-10 03:05:22"
+    },
+    {
+      "id": "450026",
+      "orderNumber": "#P86",
+      "status": "completed",
+      "customerName": "Denis",
+      "created": "2026-02-10 01:46:44",
+      "updated": "2026-02-10 03:05:18"
+    },
+    {
+      "id": "450027",
+      "orderNumber": "#P87",
+      "status": "completed",
+      "customerName": "midiograf ",
+      "created": "2026-02-10 01:54:49",
+      "updated": "2026-02-10 03:05:15"
+    },
+    {
+      "id": "450028",
+      "orderNumber": "#P88",
+      "status": "completed",
+      "customerName": "Gabriela Bianca",
+      "created": "2026-02-10 02:20:14",
+      "updated": "2026-02-10 03:05:13"
+    },
+    {
+      "id": "420003",
+      "orderNumber": "#P57",
+      "status": "completed",
+      "customerName": "camila ",
+      "created": "2026-02-07 21:45:12",
+      "updated": "2026-02-08 03:42:22"
+    },
+    {
+      "id": "420004",
+      "orderNumber": "#P58",
+      "status": "completed",
+      "customerName": "cida ",
+      "created": "2026-02-07 22:07:06",
+      "updated": "2026-02-08 03:42:18"
+    },
+    {
+      "id": "420006",
+      "orderNumber": "#P59",
+      "status": "completed",
+      "customerName": "gustavo ",
+      "created": "2026-02-07 22:17:55",
+      "updated": "2026-02-08 03:42:14"
+    },
+    {
+      "id": "420007",
+      "orderNumber": "#P60",
+      "status": "completed",
+      "customerName": "Ana Beatriz ",
+      "created": "2026-02-07 22:21:28",
+      "updated": "2026-02-08 03:42:09"
+    },
+    {
+      "id": "420010",
+      "orderNumber": "#P61",
+      "status": "completed",
+      "customerName": "Tayssa",
+      "created": "2026-02-07 22:46:28",
+      "updated": "2026-02-08 03:42:06"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tstatus\tcustomerName\tcreated\tupdated\n450005\t#P73\tcompleted\tmidiograf \t2026-02-09 21:46:55\t2026-02-10 03:05:56\n450006\t#P74\tcompleted\tAlexandre Garbosi\t2026-02-09 21:53:15\t2026-02-10 03:05:51\n450011\t#P75\tcompleted\tAndre\t2026-02-09 22:28:01\t2026-02-10 03:05:47\n450013\t#P76\tcompleted\tnelsom \t2026-02-09 22:32:49\t2026-02-10 03:05:44\n450014\t#P77\tcompleted\tIzabel Cristina\t2026-02-09 22:35:04\t2026-02-10 03:05:42\n450015\t#P78\tcompleted\tsamanta \t2026-02-09 22:37:16\t2026-02-10 03:05:39\n450017\t#P79\tcompleted\tMarcos Vinícios\t2026-02-09 23:01:37\t2026-02-10 03:05:36\n450020\t#P80\tcompleted\tIzabel Cristina\t2026-02-10 00:19:39\t2026-02-10 03:05:34\n450021\t#P81\tcompleted\tSteffany\t2026-02-10 00:23:15\t2026-02-10 03:05:32\n450022\t#P82\tcompleted\tEduarda \t2026-02-10 00:24:21\t2026-02-10 03:05:28\n450023\t#P83\tcompleted\tluiz carlos \t2026-02-10 00:40:07\t2026-02-10 03:05:25\n450024\t#P84\tcompleted\tKarina \t2026-02-10 01:24:37\t2026-02-10 03:05:22\n450026\t#P86\tcompleted\tDenis\t2026-02-10 01:46:44\t2026-02-10 03:05:18\n450027\t#P87\tcompleted\tmidiograf \t2026-02-10 01:54:49\t2026-02-10 03:05:15\n450028\t#P88\tcompleted\tGabriela Bianca\t2026-02-10 02:20:14\t2026-02-10 03:05:13\n420003\t#P57\tcompleted\tcamila \t2026-02-07 21:45:12\t2026-02-08 03:42:22\n420004\t#P58\tcompleted\tcida \t2026-02-07 22:07:06\t2026-02-08 03:42:18\n420006\t#P59\tcompleted\tgustavo \t2026-02-07 22:17:55\t2026-02-08 03:42:14\n420007\t#P60\tcompleted\tAna Beatriz \t2026-02-07 22:21:28\t2026-02-08 03:42:09\n420010\t#P61\tcompleted\tTayssa\t2026-02-07 22:46:28\t2026-02-08 03:42:06\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

@@ -5932,3 +5932,8 @@
 ## Bug: Herança indevida de tema no /admin
 - [x] Forçar tema LIGHT fixo em todas as rotas /admin (AdminPanelLayout + AdminLogin)
 - [x] Garantir que /admin nunca herda dark mode do restaurante, menu público ou localStorage
+
+## Limpeza automática de pedidos finalizados
+- [x] Verificar se a limpeza automática às 00:00 (timezone do restaurante) está ativa no código
+- [x] Confirmar que a lógica é exclusivamente visual (front-end), sem remover dados do banco
+- [x] Não foi necessário reimplementar - funcionalidade está ativa
