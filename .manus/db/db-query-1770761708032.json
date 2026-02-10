@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, rating, reviewCount, fakeReviewCount FROM establishments WHERE id = 30001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, rating, reviewCount, fakeReviewCount FROM establishments WHERE id = 30001;",
+  "rows": [
+    {
+      "id": "30001",
+      "rating": "5.0",
+      "reviewCount": "1",
+      "fakeReviewCount": "355"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\trating\treviewCount\tfakeReviewCount\n30001\t5.0\t1\t355\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}
