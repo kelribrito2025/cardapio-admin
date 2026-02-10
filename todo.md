@@ -5925,3 +5925,4 @@
 - [x] Corrigir card de Confirmação via Botões na secção WhatsApp das Configurações no dark mode
 - [x] Corrigir toggle do Programa de Fidelidade quase invisível no dark mode
 - [x] Corrigir badge de Avaliação gratuita: 15 dias com cores claras no dark mode
+- [x] Toggle de som deve ficar vermelho quando desativado no dark mode

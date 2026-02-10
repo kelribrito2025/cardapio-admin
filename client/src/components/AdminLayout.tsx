@@ -885,7 +885,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           toast.info("Som desativado");
                         }
                       }}
-                      className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-red-300 scale-90"
+                      className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-red-500 dark:data-[state=unchecked]:bg-red-600 scale-90"
                     />
                   </div>
                 </TooltipTrigger>
