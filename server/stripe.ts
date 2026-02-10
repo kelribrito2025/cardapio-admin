@@ -183,7 +183,7 @@ export const PLAN_PACKAGES = [
 ];
 
 /**
- * Cria uma sessão de checkout Stripe para upgrade de plano
+ * Cria uma sessão de checkout Stripe para assinatura de plano (subscription recorrente)
  */
 export async function createPlanCheckoutSession(params: {
   planId: string;
@@ -193,6 +193,7 @@ export async function createPlanCheckoutSession(params: {
   establishmentId: number;
   origin: string;
   isAnnual?: boolean;
+  stripeCustomerId?: string | null;
 }): Promise<{ url: string; sessionId: string } | null> {
   const stripe = getStripe();
   if (!stripe) return null;
@@ -200,17 +201,26 @@ export async function createPlanCheckoutSession(params: {
   const plan = PLAN_PACKAGES.find((p) => p.id === params.planId);
   if (!plan) throw new Error("Plano não encontrado");
 
-  // Se anual, aplicar desconto (10 meses pelo preço de 12)
-  const priceInCents = params.isAnnual 
-    ? Math.round(plan.priceInCents * 10) // 10 meses (desconto de 2 meses)
+  // Preço mensal ou anual (anual = 10 meses, desconto de 2 meses)
+  const unitAmount = params.isAnnual 
+    ? Math.round(plan.priceInCents * 10) // Anual: 10x o mensal
     : plan.priceInCents;
+  const interval: 'month' | 'year' = params.isAnnual ? 'year' : 'month';
   const periodLabel = params.isAnnual ? " (Anual)" : " (Mensal)";
+
+  // Configurar customer - reutilizar existente ou criar via customer_email
+  const customerConfig: any = {};
+  if (params.stripeCustomerId) {
+    customerConfig.customer = params.stripeCustomerId;
+  } else {
+    customerConfig.customer_email = params.userEmail;
+  }
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
-    mode: "payment",
+    mode: "subscription",
+    ...customerConfig,
     client_reference_id: params.userId.toString(),
-    customer_email: params.userEmail,
     allow_promotion_codes: true,
     line_items: [
       {
@@ -220,11 +230,23 @@ export async function createPlanCheckoutSession(params: {
             name: plan.name + periodLabel,
             description: plan.description,
           },
-          unit_amount: priceInCents,
+          unit_amount: unitAmount,
+          recurring: {
+            interval,
+          },
         },
         quantity: 1,
       },
     ],
+    subscription_data: {
+      metadata: {
+        user_id: params.userId.toString(),
+        establishment_id: params.establishmentId.toString(),
+        plan_id: plan.id,
+        plan_type: plan.id,
+        billing_period: params.isAnnual ? "annual" : "monthly",
+      },
+    },
     metadata: {
       user_id: params.userId.toString(),
       establishment_id: params.establishmentId.toString(),
@@ -233,6 +255,7 @@ export async function createPlanCheckoutSession(params: {
       plan_id: plan.id,
       plan_type: plan.id,
       is_annual: params.isAnnual ? "true" : "false",
+      billing_period: params.isAnnual ? "annual" : "monthly",
       type: "plan_upgrade",
     },
     success_url: `${params.origin}/planos?payment=success&session_id={CHECKOUT_SESSION_ID}`,
@@ -243,6 +266,39 @@ export async function createPlanCheckoutSession(params: {
     url: session.url!,
     sessionId: session.id,
   };
+}
+
+/**
+ * Cancela uma assinatura no Stripe (ao final do período atual)
+ */
+export async function cancelSubscription(subscriptionId: string): Promise<boolean> {
+  const stripe = getStripe();
+  if (!stripe) return false;
+
+  try {
+    await stripe.subscriptions.update(subscriptionId, {
+      cancel_at_period_end: true,
+    });
+    return true;
+  } catch (err) {
+    console.error("[Stripe] Erro ao cancelar subscription:", err);
+    return false;
+  }
+}
+
+/**
+ * Busca detalhes de uma subscription no Stripe
+ */
+export async function getSubscriptionDetails(subscriptionId: string) {
+  const stripe = getStripe();
+  if (!stripe) return null;
+
+  try {
+    return await stripe.subscriptions.retrieve(subscriptionId);
+  } catch (err) {
+    console.error("[Stripe] Erro ao buscar subscription:", err);
+    return null;
+  }
 }
 
 /**

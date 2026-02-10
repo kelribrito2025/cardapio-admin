@@ -279,14 +279,57 @@ export async function updateEstablishment(id: number, data: Partial<InsertEstabl
  * Ativa um plano pago para o estabelecimento, removendo o estado de trial.
  * Chamado após confirmação de pagamento via Stripe.
  */
-export async function activatePlan(establishmentId: number, planType: 'basic' | 'pro' | 'enterprise') {
+export async function activatePlan(
+  establishmentId: number, 
+  planType: 'basic' | 'pro' | 'enterprise',
+  options?: {
+    stripeCustomerId?: string;
+    stripeSubscriptionId?: string;
+    billingPeriod?: 'monthly' | 'annual';
+    planExpiresAt?: Date;
+  }
+) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
   await db.update(establishments).set({
     planType,
-    trialStartDate: null, // Limpar data de trial
+    trialStartDate: null,
+    planActivatedAt: new Date(),
+    ...(options?.stripeCustomerId && { stripeCustomerId: options.stripeCustomerId }),
+    ...(options?.stripeSubscriptionId && { stripeSubscriptionId: options.stripeSubscriptionId }),
+    ...(options?.billingPeriod && { billingPeriod: options.billingPeriod }),
+    ...(options?.planExpiresAt && { planExpiresAt: options.planExpiresAt }),
   }).where(eq(establishments.id, establishmentId));
+}
+
+export async function deactivatePlan(establishmentId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(establishments).set({
+    planType: 'free',
+    stripeSubscriptionId: null,
+    billingPeriod: null,
+    planExpiresAt: null,
+  }).where(eq(establishments.id, establishmentId));
+}
+
+export async function updateSubscriptionId(establishmentId: number, stripeSubscriptionId: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(establishments).set({
+    stripeSubscriptionId,
+  }).where(eq(establishments.id, establishmentId));
+}
+
+export async function getEstablishmentByStripeCustomerId(stripeCustomerId: string) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(establishments).where(eq(establishments.stripeCustomerId, stripeCustomerId)).limit(1);
+  return result[0] || null;
 }
 
 export async function toggleEstablishmentOpen(id: number, isOpen: boolean) {

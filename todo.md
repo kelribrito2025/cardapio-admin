@@ -5927,3 +5927,4 @@
 - [x] Corrigir badge de Avaliação gratuita: 15 dias com cores claras no dark mode
 - [x] Toggle de som deve ficar vermelho quando desativado no dark mode
 - [x] Forçar tema light nas telas públicas (Login, Cadastro, Onboarding) - nunca herdar dark mode do admin
+- [x] Corrigir checkout de planos para usar mode: subscription com renovação automática mensal/anual

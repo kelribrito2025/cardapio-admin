@@ -89,9 +89,15 @@ export const establishments = mysqlTable("establishments", {
   // Timezone (IANA)
   timezone: varchar("timezone", { length: 100 }).default("America/Sao_Paulo").notNull(),
   // Plano / Trial
-  planType: mysqlEnum("planType", ["trial", "basic", "pro", "enterprise"]).default("trial").notNull(),
+  planType: mysqlEnum("planType", ["trial", "free", "basic", "pro", "enterprise"]).default("trial").notNull(),
   trialStartDate: timestamp("trialStartDate").defaultNow(),
   trialDays: int("trialDays").default(15).notNull(),
+  // Stripe Subscription
+  stripeCustomerId: varchar("stripeCustomerId", { length: 255 }),
+  stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 255 }),
+  billingPeriod: mysqlEnum("billingPeriod", ["monthly", "annual"]),
+  planExpiresAt: timestamp("planExpiresAt"),
+  planActivatedAt: timestamp("planActivatedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

@@ -4058,6 +4058,7 @@ export const appRouter = router({
           establishmentId: establishment.id,
           origin,
           isAnnual: input.isAnnual,
+          stripeCustomerId: establishment.stripeCustomerId,
         });
         
         if (!result) {

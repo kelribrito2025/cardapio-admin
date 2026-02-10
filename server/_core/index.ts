@@ -1300,22 +1300,42 @@ async function startServer() {
           }
         }
         
-        // Processar pagamento de upgrade de plano
+        // Processar checkout de subscription (plano)
         if (session.metadata?.type === "plan_upgrade" && metadata.establishmentId > 0) {
           const planType = session.metadata.plan_type as 'basic' | 'pro' | 'enterprise';
-          console.log(`[Stripe Webhook] Upgrade de plano: estabelecimento ${metadata.establishmentId}, plano: ${planType}`);
+          const billingPeriod = session.metadata.billing_period as 'monthly' | 'annual' || 'monthly';
+          const stripeCustomerId = typeof session.customer === 'string' ? session.customer : session.customer?.id || '';
+          const stripeSubscriptionId = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id || '';
+          
+          console.log(`[Stripe Webhook] Subscription de plano: estabelecimento ${metadata.establishmentId}, plano: ${planType}, período: ${billingPeriod}, subscription: ${stripeSubscriptionId}`);
           
           try {
             const { activatePlan } = await import("../db");
-            await activatePlan(metadata.establishmentId, planType);
+            
+            // Calcular data de expiração baseada no período
+            const now = new Date();
+            const expiresAt = new Date(now);
+            if (billingPeriod === 'annual') {
+              expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+            } else {
+              expiresAt.setMonth(expiresAt.getMonth() + 1);
+            }
+            
+            await activatePlan(metadata.establishmentId, planType, {
+              stripeCustomerId,
+              stripeSubscriptionId,
+              billingPeriod,
+              planExpiresAt: expiresAt,
+            });
             
             // Enviar SSE para notificar o frontend sobre a ativação do plano
             sendEvent(metadata.establishmentId, "planActivated", {
               planType,
+              billingPeriod,
               message: `Plano ${planType} ativado com sucesso!`,
             });
             
-            console.log(`[Stripe Webhook] Plano ${planType} ativado com sucesso para estabelecimento ${metadata.establishmentId}`);
+            console.log(`[Stripe Webhook] Plano ${planType} (${billingPeriod}) ativado com sucesso para estabelecimento ${metadata.establishmentId}`);
           } catch (planError) {
             console.error("[Stripe Webhook] Erro ao ativar plano:", planError);
           }
@@ -1427,6 +1447,106 @@ async function startServer() {
             }
           } catch (orderError) {
             console.error("[Stripe Webhook] Erro ao criar pedido online:", orderError);
+          }
+        }
+      }
+      
+      // Processar renovação de subscription (invoice paga)
+      if (event.type === "invoice.paid") {
+        const invoice = event.data.object as any;
+        const subscriptionId = invoice.subscription;
+        const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id;
+        
+        // Só processar invoices de subscription (não one-time)
+        if (subscriptionId && customerId) {
+          console.log(`[Stripe Webhook] Invoice paga para subscription ${subscriptionId}`);
+          
+          try {
+            const { getEstablishmentByStripeCustomerId, activatePlan } = await import("../db");
+            const est = await getEstablishmentByStripeCustomerId(customerId);
+            
+            if (est) {
+              // Renovar a data de expiração
+              const expiresAt = new Date();
+              if (est.billingPeriod === 'annual') {
+                expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+              } else {
+                expiresAt.setMonth(expiresAt.getMonth() + 1);
+              }
+              
+              await activatePlan(est.id, est.planType as 'basic' | 'pro' | 'enterprise', {
+                planExpiresAt: expiresAt,
+              });
+              
+              console.log(`[Stripe Webhook] Subscription renovada para estabelecimento ${est.id}, expira em ${expiresAt.toISOString()}`);
+              
+              sendEvent(est.id, "planRenewed", {
+                planType: est.planType,
+                expiresAt: expiresAt.toISOString(),
+                message: "Assinatura renovada com sucesso!",
+              });
+            }
+          } catch (renewError) {
+            console.error("[Stripe Webhook] Erro ao renovar subscription:", renewError);
+          }
+        }
+      }
+      
+      // Processar cancelamento de subscription
+      if (event.type === "customer.subscription.deleted") {
+        const subscription = event.data.object as any;
+        const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer?.id;
+        
+        if (customerId) {
+          console.log(`[Stripe Webhook] Subscription cancelada para customer ${customerId}`);
+          
+          try {
+            const { getEstablishmentByStripeCustomerId, deactivatePlan } = await import("../db");
+            const est = await getEstablishmentByStripeCustomerId(customerId);
+            
+            if (est) {
+              await deactivatePlan(est.id);
+              
+              sendEvent(est.id, "planCancelled", {
+                message: "Sua assinatura foi cancelada. O plano foi revertido para gratuito.",
+              });
+              
+              console.log(`[Stripe Webhook] Plano desativado para estabelecimento ${est.id}`);
+            }
+          } catch (cancelError) {
+            console.error("[Stripe Webhook] Erro ao desativar plano:", cancelError);
+          }
+        }
+      }
+      
+      // Processar atualização de subscription (upgrade/downgrade)
+      if (event.type === "customer.subscription.updated") {
+        const subscription = event.data.object as any;
+        const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer?.id;
+        
+        if (customerId && subscription.metadata?.plan_type) {
+          console.log(`[Stripe Webhook] Subscription atualizada para customer ${customerId}`);
+          
+          try {
+            const { getEstablishmentByStripeCustomerId, activatePlan } = await import("../db");
+            const est = await getEstablishmentByStripeCustomerId(customerId);
+            
+            if (est) {
+              const planType = subscription.metadata.plan_type as 'basic' | 'pro' | 'enterprise';
+              const billingPeriod = subscription.metadata.billing_period as 'monthly' | 'annual' || est.billingPeriod || 'monthly';
+              
+              const expiresAt = new Date(subscription.current_period_end * 1000);
+              
+              await activatePlan(est.id, planType, {
+                stripeSubscriptionId: subscription.id,
+                billingPeriod,
+                planExpiresAt: expiresAt,
+              });
+              
+              console.log(`[Stripe Webhook] Plano atualizado para ${planType} (${billingPeriod}) no estabelecimento ${est.id}`);
+            }
+          } catch (updateError) {
+            console.error("[Stripe Webhook] Erro ao atualizar plano:", updateError);
           }
         }
       }

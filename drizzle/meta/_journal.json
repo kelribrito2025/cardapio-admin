@@ -540,6 +540,13 @@
       "when": 1770680133463,
       "tag": "0076_neat_shinko_yamashiro",
       "breakpoints": true
+    },
+    {
+      "idx": 77,
+      "version": "5",
+      "when": 1770736355950,
+      "tag": "0077_shiny_ironclad",
+      "breakpoints": true
     }
   ]
 }
