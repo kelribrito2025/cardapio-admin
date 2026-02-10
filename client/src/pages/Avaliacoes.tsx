@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Star, MessageSquare, Users, Clock, TrendingUp, Send, ChevronDown, Filter, Hash, Calendar, Phone } from "lucide-react";
+import { Star, MessageSquare, Users, Clock, TrendingUp, Send, ChevronDown, Filter, Hash, Calendar, Phone, X } from "lucide-react";
 import { StatCard } from "@/components/shared";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -67,7 +67,7 @@ function getStatusBadge(review: any) {
   );
 }
 
-// Sidebar de detalhes da avaliação - estilo iFood
+// Sidebar de detalhes da avaliação - estilo Forma de Pagamento com header vermelho
 function ReviewDetailSheet({ review, open, onOpenChange, establishmentId, onResponded }: {
   review: any;
   open: boolean;
@@ -99,95 +99,119 @@ function ReviewDetailSheet({ review, open, onOpenChange, establishmentId, onResp
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-        <SheetHeader className="mb-6">
-          <SheetTitle className="text-xl font-bold">Detalhes da avaliação</SheetTitle>
-        </SheetHeader>
-
-        {/* Card cinza com pedido e data */}
-        <div className="bg-muted/60 rounded-lg px-4 py-3 mb-6">
-          <span className="text-red-600 font-semibold">Pedido {review.orderNumber || review.orderId || "—"}</span>
-          <span className="text-sm text-foreground ml-3">Feito em {createdDate.toLocaleDateString("pt-BR")}</span>
-        </div>
-
-        {/* Nota */}
-        <div className="mb-6">
-          <p className="text-sm text-muted-foreground mb-2">O que você achou do pedido?</p>
-          <div className="flex items-center gap-3">
-            <span className="text-3xl font-bold">{review.rating}.0</span>
-            <StarRating rating={review.rating} size={20} />
+      <SheetContent hideCloseButton className="w-full sm:max-w-[480px] !p-0 !gap-0 h-full">
+        <div className="flex flex-col h-full">
+        {/* Header vermelho - estilo Forma de Pagamento */}
+        <div className="shrink-0 bg-gradient-to-r from-red-500 to-red-600 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-lg">
+                <Star className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white">Detalhes da Avaliação</h2>
+                <p className="text-sm text-white/80">Veja e responda a avaliação do cliente</p>
+              </div>
+            </div>
+            <button
+              onClick={() => onOpenChange(false)}
+              className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+            >
+              <X className="h-5 w-5 text-white" />
+            </button>
           </div>
         </div>
 
-        <div className="border-t border-border mb-6" />
+        {/* Conteúdo */}
+        <div className="flex-1 overflow-y-auto p-5 space-y-5">
+          {/* Card cinza com pedido e data */}
+          <div className="bg-muted/60 rounded-lg px-4 py-3">
+            <span className="text-red-600 font-semibold">Pedido {review.orderNumber || review.orderId || "—"}</span>
+            <span className="text-sm text-foreground ml-3">Feito em {createdDate.toLocaleDateString("pt-BR")}</span>
+          </div>
 
-        {/* Comentário do cliente */}
-        <div className="mb-6">
-          <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
-              <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <div className="flex-1">
-              <p className="font-semibold text-foreground">{review.customerName || "Cliente"} disse</p>
-              <p className="text-xs text-muted-foreground">em {createdDate.toLocaleDateString("pt-BR")}</p>
+          {/* Nota */}
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">O que você achou do pedido?</p>
+            <div className="flex items-center gap-3">
+              <span className="text-3xl font-bold">{review.rating}.0</span>
+              <StarRating rating={review.rating} size={20} />
             </div>
           </div>
-          {review.comment && (
-            <p className="text-sm text-foreground leading-relaxed mt-3 ml-9">{review.comment}</p>
-          )}
-          {!review.comment && (
-            <p className="text-sm text-muted-foreground italic mt-3 ml-9">Nenhum comentário</p>
-          )}
+
+          <div className="border-t border-border" />
+
+          {/* Comentário do cliente */}
+          <div>
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+                <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-foreground">{review.customerName || "Cliente"} disse</p>
+                <p className="text-xs text-muted-foreground">em {createdDate.toLocaleDateString("pt-BR")}</p>
+              </div>
+            </div>
+            {review.comment && (
+              <p className="text-sm text-foreground leading-relaxed mt-3 ml-9">{review.comment}</p>
+            )}
+            {!review.comment && (
+              <p className="text-sm text-muted-foreground italic mt-3 ml-9">Nenhum comentário</p>
+            )}
+          </div>
+
+          {/* Sua resposta */}
+          <div>
+            <div className="flex items-start gap-3">
+              <div className={cn(
+                "w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5",
+                review.responseText ? "bg-emerald-500" : "bg-muted-foreground/30"
+              )}>
+                <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-foreground">Sua resposta</p>
+                {review.responseDate && (
+                  <p className="text-xs text-muted-foreground">
+                    até {new Date(review.responseDate).toLocaleDateString("pt-BR")}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-3 ml-9">
+              <Textarea
+                placeholder="Escreva aqui uma resposta"
+                value={responseText}
+                onChange={(e) => setResponseText(e.target.value)}
+                rows={4}
+                className="text-sm"
+                maxLength={300}
+              />
+              <p className="text-xs text-muted-foreground text-right mt-1">{responseText.length}/300 caracteres</p>
+            </div>
+          </div>
         </div>
 
-        {/* Sua resposta */}
-        <div className="mb-6">
-          <div className="flex items-start gap-3">
-            <div className={cn(
-              "w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5",
-              review.responseText ? "bg-emerald-500" : "bg-muted-foreground/30"
-            )}>
-              <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <div className="flex-1">
-              <p className="font-semibold text-foreground">Sua resposta</p>
-              {review.responseDate && (
-                <p className="text-xs text-muted-foreground">
-                  até {new Date(review.responseDate).toLocaleDateString("pt-BR")}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-3 ml-9">
-            <Textarea
-              placeholder="Escreva aqui uma resposta"
-              value={responseText}
-              onChange={(e) => setResponseText(e.target.value)}
-              rows={4}
-              className="text-sm"
-              maxLength={300}
-            />
-            <p className="text-xs text-muted-foreground text-right mt-1">{responseText.length}/300 caracteres</p>
-          </div>
+        {/* Footer com botão - fixo no fundo */}
+        <div className="shrink-0 p-4 border-t border-border">
+          <Button
+            className="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg py-3"
+            onClick={() => respondMutation.mutate({
+              reviewId: review.id,
+              establishmentId,
+              responseText: responseText.trim(),
+            })}
+            disabled={!responseText.trim() || respondMutation.isPending}
+          >
+            {respondMutation.isPending ? "Enviando..." : "Enviar resposta"}
+          </Button>
         </div>
-
-        {/* Botão enviar */}
-        <Button
-          className="bg-red-600 hover:bg-red-700 text-white rounded-lg px-6"
-          onClick={() => respondMutation.mutate({
-            reviewId: review.id,
-            establishmentId,
-            responseText: responseText.trim(),
-          })}
-          disabled={!responseText.trim() || respondMutation.isPending}
-        >
-          {respondMutation.isPending ? "Enviando..." : "Enviar resposta"}
-        </Button>
+        </div>
       </SheetContent>
     </Sheet>
   );
