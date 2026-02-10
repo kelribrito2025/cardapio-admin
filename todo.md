@@ -6004,3 +6004,4 @@
 - [x] Redesenhar sidebar de avaliação conforme modelo iFood: título "Detalhes da avaliação", card cinza com pedido+data, nota grande com estrelas, comentário do cliente com nome+data, área de resposta com textarea e botão vermelho
 - [x] Redesenhar sidebar de avaliação com cabeçalho vermelho (estilo Forma de Pagamento) e 15% mais larga
 - [x] Remover sombra do card da lista de avaliações na página de Avaliações
+- [x] Sidebar avaliação: mostrar resposta em container de leitura quando já respondida, com botão "Editar resposta" para modo de edição

@@ -76,16 +76,19 @@ function ReviewDetailSheet({ review, open, onOpenChange, establishmentId, onResp
   onResponded: () => void;
 }) {
   const [responseText, setResponseText] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (review) {
       setResponseText(review.responseText || "");
+      setIsEditing(false);
     }
   }, [review?.id]);
 
   const respondMutation = trpc.reviewsAdmin.respond.useMutation({
     onSuccess: () => {
       toast.success("Resposta enviada com sucesso!");
+      setIsEditing(false);
       onResponded();
     },
     onError: (err) => {
@@ -183,34 +186,56 @@ function ReviewDetailSheet({ review, open, onOpenChange, establishmentId, onResp
               </div>
             </div>
 
-            <div className="mt-3 ml-9">
-              <Textarea
-                placeholder="Escreva aqui uma resposta"
-                value={responseText}
-                onChange={(e) => setResponseText(e.target.value)}
-                rows={4}
-                className="text-sm"
-                maxLength={300}
-              />
-              <p className="text-xs text-muted-foreground text-right mt-1">{responseText.length}/300 caracteres</p>
-            </div>
+            {/* Modo leitura: mostra resposta em container */}
+            {review.responseText && !isEditing ? (
+              <div className="mt-3 ml-9">
+                <div className="bg-muted/50 rounded-lg p-3 border border-border/50">
+                  <p className="text-sm text-foreground leading-relaxed">{review.responseText}</p>
+                </div>
+                <div className="mt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    Editar resposta
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              /* Modo edição: textarea para escrever/editar */
+              <div className="mt-3 ml-9">
+                <Textarea
+                  placeholder="Escreva aqui uma resposta"
+                  value={responseText}
+                  onChange={(e) => setResponseText(e.target.value)}
+                  rows={4}
+                  className="text-sm"
+                  maxLength={300}
+                />
+                <p className="text-xs text-muted-foreground text-right mt-1">{responseText.length}/300 caracteres</p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Footer com botão - fixo no fundo */}
-        <div className="shrink-0 p-4 border-t border-border">
-          <Button
-            className="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg py-3"
-            onClick={() => respondMutation.mutate({
-              reviewId: review.id,
-              establishmentId,
-              responseText: responseText.trim(),
-            })}
-            disabled={!responseText.trim() || respondMutation.isPending}
-          >
-            {respondMutation.isPending ? "Enviando..." : "Enviar resposta"}
-          </Button>
-        </div>
+        {/* Footer com botão - fixo no fundo (só mostra quando em modo edição ou sem resposta) */}
+        {(!review.responseText || isEditing) && (
+          <div className="shrink-0 p-4 border-t border-border">
+            <Button
+              className="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg py-3"
+              onClick={() => respondMutation.mutate({
+                reviewId: review.id,
+                establishmentId,
+                responseText: responseText.trim(),
+              })}
+              disabled={!responseText.trim() || respondMutation.isPending}
+            >
+              {respondMutation.isPending ? "Enviando..." : "Enviar resposta"}
+            </Button>
+          </div>
+        )}
         </div>
       </SheetContent>
     </Sheet>
