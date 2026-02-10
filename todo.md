@@ -5993,3 +5993,10 @@
 
 ## Ajuste visual dos cards de Avaliações
 - [x] Ajustar cards de métricas da página Avaliações para seguir mesmo estilo do Dashboard (borda colorida topo, sem sombra)
+
+## Redesign do card de avaliação na página Avaliações
+- [x] Redesenhar ReviewCard: pedido+data no topo, nota+estrelas, comentário do cliente com nome+data, área de resposta
+- [x] Remover seção "O que pode melhorar"
+- [x] Implementar tabela em lista de avaliações (Pedido, Data, Nota, Comentário, Status) conforme design de referência
+- [x] Implementar sidebar direita (Sheet) com detalhes da avaliação ao clicar em "Mostrar detalhes"
+- [x] Backend: incluir orderNumber no resultado de reviews (join com orders)

@@ -2,13 +2,23 @@ import { useState, useEffect, useMemo } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Star, MessageSquare, Users, Clock, TrendingUp, Send, ChevronDown, Filter } from "lucide-react";
+import { Star, MessageSquare, Users, Clock, TrendingUp, Send, ChevronDown, Filter, Hash, Calendar, Phone } from "lucide-react";
 import { StatCard } from "@/components/shared";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -31,15 +41,49 @@ function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
   );
 }
 
+function StarRatingCompact({ rating }: { rating: number }) {
+  return (
+    <span className="inline-flex items-center gap-1">
+      {rating}
+      <Star size={14} className="fill-amber-400 text-amber-400" />
+    </span>
+  );
+}
 
+function getStatusBadge(review: any) {
+  if (review.responseText) {
+    return (
+      <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs gap-1">
+        <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+        Respondida
+      </Badge>
+    );
+  }
+  return (
+    <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 text-xs gap-1">
+      <span className="w-2 h-2 rounded-full bg-red-500 inline-block" />
+      Não respondida
+    </Badge>
+  );
+}
 
-function ReviewCard({ review, establishmentId, onResponded }: {
+// Sidebar de detalhes da avaliação
+function ReviewDetailSheet({ review, open, onOpenChange, establishmentId, onResponded }: {
   review: any;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   establishmentId: number;
   onResponded: () => void;
 }) {
   const [isReplying, setIsReplying] = useState(false);
-  const [responseText, setResponseText] = useState(review.responseText || "");
+  const [responseText, setResponseText] = useState(review?.responseText || "");
+
+  useEffect(() => {
+    if (review) {
+      setResponseText(review.responseText || "");
+      setIsReplying(false);
+    }
+  }, [review?.id]);
 
   const respondMutation = trpc.reviewsAdmin.respond.useMutation({
     onSuccess: () => {
@@ -52,68 +96,116 @@ function ReviewCard({ review, establishmentId, onResponded }: {
     },
   });
 
+  if (!review) return null;
+
   const isNegative = review.rating <= 2;
-  const timeAgo = useMemo(() => {
-    const now = new Date();
-    const created = new Date(review.createdAt);
-    const diffMs = now.getTime() - created.getTime();
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    if (diffDays === 0) return "Hoje";
-    if (diffDays === 1) return "Ontem";
-    if (diffDays < 7) return `${diffDays} dias atrás`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} semana(s) atrás`;
-    return created.toLocaleDateString("pt-BR");
-  }, [review.createdAt]);
+  const createdDate = new Date(review.createdAt);
 
   return (
-    <Card className={`transition-all ${isNegative ? "border-red-200 bg-red-50/30" : ""} ${!review.isRead ? "border-l-4 border-l-blue-500" : ""}`}>
-      <CardContent className="p-4">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0 ${isNegative ? "bg-red-400" : "bg-emerald-500"}`}>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+        <SheetHeader className="mb-6">
+          <SheetTitle className="flex items-center gap-3">
+            <div className={cn(
+              "w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0",
+              isNegative ? "bg-red-400" : "bg-emerald-500"
+            )}>
               {review.customerName?.charAt(0)?.toUpperCase() || "?"}
             </div>
-            <div className="min-w-0">
-              <p className="font-semibold text-sm truncate">{review.customerName}</p>
+            <div>
+              <span className="text-xl">{review.customerName}</span>
               <div className="flex items-center gap-2 mt-0.5">
-                <StarRating rating={review.rating} size={14} />
-                <span className="text-xs text-muted-foreground">{timeAgo}</span>
+                <StarRating rating={review.rating} size={16} />
+                <span className={cn(
+                  "text-sm font-medium",
+                  isNegative ? "text-red-600" : "text-emerald-600"
+                )}>
+                  {review.rating}.0
+                </span>
               </div>
             </div>
+          </SheetTitle>
+        </SheetHeader>
+
+        {/* Informações da avaliação */}
+        <div className="space-y-4 mb-6">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground flex items-center gap-1.5">
+              <Calendar className="h-4 w-4" />
+              Data
+            </span>
+            <span className="font-medium">
+              {createdDate.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}
+            </span>
           </div>
-          <div className="shrink-0">
-            {review.responseText ? (
-              <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">
-                Respondida
-              </Badge>
-            ) : (
-              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
-                Pendente
-              </Badge>
-            )}
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground flex items-center gap-1.5">
+              <Clock className="h-4 w-4" />
+              Hora
+            </span>
+            <span className="font-medium">
+              {createdDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+            </span>
+          </div>
+          {review.orderNumber && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Hash className="h-4 w-4" />
+                Pedido
+              </span>
+              <span className="font-medium">{review.orderNumber}</span>
+            </div>
+          )}
+          {review.customerPhone && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Phone className="h-4 w-4" />
+                Telefone
+              </span>
+              <span className="font-medium">{review.customerPhone}</span>
+            </div>
+          )}
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground flex items-center gap-1.5">
+              <MessageSquare className="h-4 w-4" />
+              Status
+            </span>
+            {getStatusBadge(review)}
           </div>
         </div>
 
-        {/* Comment */}
+        {/* Comentário do cliente */}
         {review.comment && (
-          <p className="mt-3 text-sm text-foreground/80 leading-relaxed">{review.comment}</p>
+          <div className="mb-6">
+            <h4 className="font-medium text-foreground mb-3 flex items-center gap-2">
+              <MessageSquare className="h-4 w-4" />
+              Comentário do Cliente
+            </h4>
+            <div className="p-4 bg-muted/50 rounded-lg">
+              <p className="text-sm text-foreground leading-relaxed">{review.comment}</p>
+            </div>
+          </div>
         )}
 
-        {/* Existing response */}
+        {/* Resposta existente */}
         {review.responseText && !isReplying && (
-          <div className="mt-3 p-3 bg-muted/50 rounded-lg border-l-2 border-primary/30">
-            <p className="text-xs font-medium text-muted-foreground mb-1">Sua resposta</p>
-            <p className="text-sm">{review.responseText}</p>
-            {review.responseDate && (
-              <p className="text-xs text-muted-foreground mt-1">
-                {new Date(review.responseDate).toLocaleDateString("pt-BR")}
-              </p>
-            )}
+          <div className="mb-6">
+            <h4 className="font-medium text-foreground mb-3 flex items-center gap-2">
+              <Send className="h-4 w-4" />
+              Sua Resposta
+            </h4>
+            <div className="p-4 bg-emerald-50/50 rounded-lg border-l-3 border-emerald-500">
+              <p className="text-sm text-foreground leading-relaxed">{review.responseText}</p>
+              {review.responseDate && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  Respondido em {new Date(review.responseDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}
+                </p>
+              )}
+            </div>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              className="mt-2 h-7 text-xs"
+              className="mt-3 h-8 text-xs gap-1.5"
               onClick={() => { setIsReplying(true); setResponseText(review.responseText || ""); }}
             >
               Editar resposta
@@ -121,59 +213,63 @@ function ReviewCard({ review, establishmentId, onResponded }: {
           </div>
         )}
 
-        {/* Reply form */}
-        {!review.responseText && !isReplying && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-3 h-8 text-xs gap-1.5"
-            onClick={() => setIsReplying(true)}
-          >
-            <MessageSquare size={14} />
-            Responder
-          </Button>
-        )}
+        {/* Formulário de resposta */}
+        <div className="space-y-3">
+          {!review.responseText && !isReplying && (
+            <Button
+              className="w-full bg-red-600 hover:bg-red-700 text-white gap-2"
+              onClick={() => setIsReplying(true)}
+            >
+              <MessageSquare size={16} />
+              Responder Avaliação
+            </Button>
+          )}
 
-        {isReplying && (
-          <div className="mt-3 space-y-2">
-            <Textarea
-              placeholder="Escreva sua resposta pública..."
-              value={responseText}
-              onChange={(e) => setResponseText(e.target.value)}
-              rows={3}
-              className="text-sm resize-none"
-              maxLength={1000}
-            />
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">{responseText.length}/1000</p>
-              <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 text-xs"
-                  onClick={() => { setIsReplying(false); setResponseText(review.responseText || ""); }}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  size="sm"
-                  className="h-8 text-xs gap-1.5 bg-red-600 hover:bg-red-700"
-                  onClick={() => respondMutation.mutate({
-                    reviewId: review.id,
-                    establishmentId,
-                    responseText: responseText.trim(),
-                  })}
-                  disabled={!responseText.trim() || respondMutation.isPending}
-                >
-                  <Send size={14} />
-                  {respondMutation.isPending ? "Enviando..." : "Enviar resposta"}
-                </Button>
+          {isReplying && (
+            <div className="space-y-3">
+              <h4 className="font-medium text-foreground flex items-center gap-2">
+                <Send className="h-4 w-4" />
+                {review.responseText ? "Editar Resposta" : "Responder Avaliação"}
+              </h4>
+              <Textarea
+                placeholder="Escreva sua resposta pública..."
+                value={responseText}
+                onChange={(e) => setResponseText(e.target.value)}
+                rows={4}
+                className="text-sm resize-none"
+                maxLength={1000}
+              />
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">{responseText.length}/1000</p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 text-xs"
+                    onClick={() => { setIsReplying(false); setResponseText(review.responseText || ""); }}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="h-9 text-xs gap-1.5 bg-red-600 hover:bg-red-700"
+                    onClick={() => respondMutation.mutate({
+                      reviewId: review.id,
+                      establishmentId,
+                      responseText: responseText.trim(),
+                    })}
+                    disabled={!responseText.trim() || respondMutation.isPending}
+                  >
+                    <Send size={14} />
+                    {respondMutation.isPending ? "Enviando..." : "Enviar resposta"}
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 
@@ -181,6 +277,8 @@ export default function Avaliacoes() {
   const { user } = useAuth();
   const [filter, setFilter] = useState<"all" | "pending" | "responded">("all");
   const [page, setPage] = useState(0);
+  const [selectedReview, setSelectedReview] = useState<any>(null);
+  const [showSidebar, setShowSidebar] = useState(false);
   const LIMIT = 20;
 
   // Buscar estabelecimento
@@ -205,7 +303,6 @@ export default function Avaliacoes() {
   // Marcar como lidas
   const markAsReadMutation = trpc.reviewsAdmin.markAsRead.useMutation();
 
-  // Marcar avaliações não lidas como lidas ao visualizar
   useEffect(() => {
     if (reviewsList && establishmentId) {
       const unreadIds = reviewsList
@@ -216,6 +313,21 @@ export default function Avaliacoes() {
       }
     }
   }, [reviewsList, establishmentId]);
+
+  // Atualizar selectedReview quando a lista é refetched
+  useEffect(() => {
+    if (selectedReview && reviewsList) {
+      const updated = reviewsList.find((r: any) => r.id === selectedReview.id);
+      if (updated) {
+        setSelectedReview(updated);
+      }
+    }
+  }, [reviewsList]);
+
+  const handleSelectReview = (review: any) => {
+    setSelectedReview(review);
+    setShowSidebar(true);
+  };
 
   const handleResponded = () => {
     refetchReviews();
@@ -232,7 +344,6 @@ export default function Avaliacoes() {
     );
   }
 
-  // Bloquear acesso quando avaliações estão desativadas
   if (establishment.reviewsEnabled === false) {
     return (
       <AdminLayout>
@@ -307,7 +418,7 @@ export default function Avaliacoes() {
         />
       </div>
 
-      {/* Filtros */}
+      {/* Filtros + contagem */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Filter size={16} className="text-muted-foreground" />
@@ -323,38 +434,88 @@ export default function Avaliacoes() {
           </Select>
         </div>
         <p className="text-sm text-muted-foreground">
-          {reviewsList?.length ?? 0} avaliação(ões)
+          {reviewsList?.length ?? 0} avaliação(ões) encontrada(s)
         </p>
       </div>
 
-      {/* Lista de avaliações */}
+      {/* Tabela de avaliações */}
       {isLoading ? (
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-muted" />
-                  <div className="space-y-2 flex-1">
-                    <div className="h-4 bg-muted rounded w-1/4" />
-                    <div className="h-3 bg-muted rounded w-1/3" />
-                  </div>
+        <Card>
+          <CardContent className="p-0">
+            <div className="animate-pulse">
+              <div className="h-10 bg-muted/30 border-b" />
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-14 border-b flex items-center gap-4 px-4">
+                  <div className="h-4 bg-muted rounded w-16" />
+                  <div className="h-4 bg-muted rounded w-24" />
+                  <div className="h-4 bg-muted rounded w-12" />
+                  <div className="h-4 bg-muted rounded w-40" />
+                  <div className="h-4 bg-muted rounded w-24" />
+                  <div className="h-6 bg-muted rounded-full w-28" />
                 </div>
-                <div className="h-4 bg-muted rounded w-3/4 mt-3" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       ) : reviewsList && reviewsList.length > 0 ? (
-        <div className="space-y-3">
-          {reviewsList.map((review: any) => (
-            <ReviewCard
-              key={review.id}
-              review={review}
-              establishmentId={establishmentId!}
-              onResponded={handleResponded}
-            />
-          ))}
+        <>
+          <Card>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/30">
+                    <TableHead className="text-xs font-semibold text-muted-foreground">Pedido</TableHead>
+                    <TableHead className="text-xs font-semibold text-muted-foreground">Data da avaliação</TableHead>
+                    <TableHead className="text-xs font-semibold text-muted-foreground">Nota</TableHead>
+                    <TableHead className="text-xs font-semibold text-muted-foreground">Comentário</TableHead>
+                    <TableHead className="text-xs font-semibold text-muted-foreground">Avaliação</TableHead>
+                    <TableHead className="text-xs font-semibold text-muted-foreground">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {reviewsList.map((review: any) => {
+                    const createdDate = new Date(review.createdAt);
+                    return (
+                      <TableRow
+                        key={review.id}
+                        className={cn(
+                          "cursor-pointer transition-colors",
+                          selectedReview?.id === review.id && "bg-muted/50",
+                          !review.isRead && "font-medium"
+                        )}
+                      >
+                        <TableCell className="text-sm text-red-600 font-medium">
+                          {review.orderNumber || review.orderId || "—"}
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {createdDate.toLocaleDateString("pt-BR")}
+                        </TableCell>
+                        <TableCell>
+                          <StarRatingCompact rating={review.rating} />
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground max-w-[200px]">
+                          <span className="line-clamp-2">
+                            {review.comment || "—"}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <button
+                            className="text-sm text-red-600 hover:text-red-700 hover:underline font-medium cursor-pointer"
+                            onClick={() => handleSelectReview(review)}
+                          >
+                            Mostrar detalhes
+                          </button>
+                        </TableCell>
+                        <TableCell>
+                          {getStatusBadge(review)}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
 
           {/* Paginação */}
           {reviewsList.length === LIMIT && (
@@ -370,7 +531,7 @@ export default function Avaliacoes() {
               </Button>
             </div>
           )}
-        </div>
+        </>
       ) : (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
@@ -385,6 +546,15 @@ export default function Avaliacoes() {
         </Card>
       )}
     </div>
+
+    {/* Sidebar de detalhes da avaliação */}
+    <ReviewDetailSheet
+      review={selectedReview}
+      open={showSidebar}
+      onOpenChange={setShowSidebar}
+      establishmentId={establishmentId!}
+      onResponded={handleResponded}
+    />
     </AdminLayout>
   );
 }

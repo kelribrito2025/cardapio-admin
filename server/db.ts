@@ -6483,7 +6483,21 @@ export async function getReviewsAdmin(establishmentId: number, options?: { limit
     conditions.push(isNotNull(reviews.responseText));
   }
 
-  return db.select().from(reviews)
+  return db.select({
+    id: reviews.id,
+    establishmentId: reviews.establishmentId,
+    orderId: reviews.orderId,
+    customerName: reviews.customerName,
+    customerPhone: reviews.customerPhone,
+    rating: reviews.rating,
+    comment: reviews.comment,
+    responseText: reviews.responseText,
+    responseDate: reviews.responseDate,
+    isRead: reviews.isRead,
+    createdAt: reviews.createdAt,
+    orderNumber: orders.orderNumber,
+  }).from(reviews)
+    .leftJoin(orders, eq(reviews.orderId, orders.id))
     .where(and(...conditions))
     .orderBy(desc(reviews.createdAt))
     .limit(options?.limit ?? 50)
