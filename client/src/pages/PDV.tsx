@@ -962,7 +962,7 @@ export default function PDV() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-8 px-2 xl:px-3 text-xs border-red-200 text-red-600 hover:bg-red-50 shrink-0"
+                            className="h-8 px-2 xl:px-3 text-xs border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 shrink-0"
                             onClick={(e) => {
                               e.stopPropagation();
                               // Adicionar diretamente ao carrinho sem abrir modal
@@ -1093,7 +1093,7 @@ export default function PDV() {
                         onClick={() => setExpandedCartItem(isExpanded ? null : index)}
                       >
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <span className="text-xs font-medium text-red-600 bg-red-50 px-1.5 py-0.5 rounded">
+                          <span className="text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 px-1.5 py-0.5 rounded">
                             {item.quantity}x
                           </span>
                           <h4 className="font-semibold text-sm text-foreground truncate">
@@ -1158,7 +1158,7 @@ export default function PDV() {
                                   e.stopPropagation();
                                   handleEditCartItem(index, item);
                                 }}
-                                className="w-8 h-8 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center transition-colors ml-2"
+                                className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-950/30 hover:bg-blue-100 dark:hover:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center transition-colors ml-2"
                                 title="Editar item"
                               >
                                 <Pencil className="h-4 w-4" />
@@ -1166,7 +1166,7 @@ export default function PDV() {
                             </div>
                             <button
                               onClick={(e) => { e.stopPropagation(); removeCartItem(index); }}
-                              className="w-8 h-8 rounded-full bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-colors"
+                              className="w-8 h-8 rounded-full bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-950/50 text-red-500 flex items-center justify-center transition-colors"
                               title="Remover item"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -1225,7 +1225,7 @@ export default function PDV() {
                 {/* Botão de Cupom */}
                 <Button
                   variant="outline"
-                  className={cn("px-3", showCouponField && "border-red-500 bg-red-50")}
+                  className={cn("px-3", showCouponField && "border-red-500 bg-red-50 dark:bg-red-950/30")}
                   title="Adicionar cupom"
                   onClick={() => setShowCouponField(!showCouponField)}
                 >
@@ -1269,7 +1269,7 @@ export default function PDV() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 px-2 text-red-500 hover:text-red-600 hover:bg-red-50"
+                        className="h-7 px-2 text-red-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
                         onClick={() => {
                           setAppliedCoupon(null);
                           setCouponCode("");
@@ -1289,7 +1289,7 @@ export default function PDV() {
                       />
                       <Button
                         variant="outline"
-                        className="px-6 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                        className="px-6 rounded-xl border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-300"
                         onClick={async () => {
                           if (!couponCode.trim()) {
                             toast.error("Digite o código do cupom");
@@ -1558,7 +1558,7 @@ export default function PDV() {
                                         <button
                                           type="button"
                                           onClick={handleDecrement}
-                                          className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
+                                          className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded transition-colors"
                                         >
                                           <Minus className="w-4 h-4" />
                                         </button>
@@ -1566,7 +1566,7 @@ export default function PDV() {
                                         <button
                                           type="button"
                                           onClick={handleIncrement}
-                                          className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
+                                          className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded transition-colors"
                                         >
                                           <Plus className="w-4 h-4" />
                                         </button>
@@ -1757,7 +1757,7 @@ export default function PDV() {
                 }}
                 className={cn(
                   "w-full flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border/30",
-                  selectedCategory === null && "bg-red-50"
+                  selectedCategory === null && "bg-red-50 dark:bg-red-950/30"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -1785,7 +1785,7 @@ export default function PDV() {
                     }}
                     className={cn(
                       "w-full flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border/30",
-                      selectedCategory === category.id && "bg-red-50"
+                      selectedCategory === category.id && "bg-red-50 dark:bg-red-950/30"
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -1933,7 +1933,7 @@ export default function PDV() {
                 <div className="mb-3">
                   <button
                     onClick={() => setSelectedNeighborhoodFee(null)}
-                    className="w-full flex items-center justify-between p-4 border border-red-500 bg-red-50 rounded-xl"
+                    className="w-full flex items-center justify-between p-4 border-2 border-red-500 bg-red-50 dark:bg-red-950/30 rounded-xl"
                   >
                     <div className="flex items-center gap-3">
                       <Truck className="h-5 w-5 text-red-500" />
@@ -1989,7 +1989,7 @@ export default function PDV() {
                       <button
                         type="button"
                         onClick={() => setSelectedNeighborhoodFee(null)}
-                        className="px-3 py-2.5 text-red-500 text-sm font-medium hover:bg-red-50 rounded-lg transition-colors whitespace-nowrap"
+                        className="px-3 py-2.5 text-red-500 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors whitespace-nowrap"
                       >
                         Alterar bairro
                       </button>
@@ -2065,7 +2065,7 @@ export default function PDV() {
                             paymentMethod === "cash" ? "text-red-700 dark:text-red-400" : "text-foreground"
                           )}>Dinheiro</p>
                           {favoritePaymentMethod === "cash" && (
-                            <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Favorito</span>
+                            <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-1.5 py-0.5 rounded">Favorito</span>
                           )}
                         </div>
                         <p className="text-xs text-muted-foreground">Pagamento na entrega</p>
@@ -2148,7 +2148,7 @@ export default function PDV() {
                           paymentMethod === "card" ? "text-red-700 dark:text-red-400" : "text-foreground"
                         )}>Cartão</p>
                         {favoritePaymentMethod === "card" && (
-                          <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Favorito</span>
+                          <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-1.5 py-0.5 rounded">Favorito</span>
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground">Débito ou Crédito na entrega</p>
@@ -2199,7 +2199,7 @@ export default function PDV() {
                             paymentMethod === "pix" ? "text-red-700 dark:text-red-400" : "text-foreground"
                           )}>Pix</p>
                           {favoritePaymentMethod === "pix" && (
-                            <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Favorito</span>
+                            <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-1.5 py-0.5 rounded">Favorito</span>
                           )}
                         </div>
                         <p className="text-xs text-muted-foreground">Instantâneo</p>
@@ -2404,7 +2404,7 @@ export default function PDV() {
                             selectedPaymentInSidebar === method.id ? "text-red-700 dark:text-red-400" : "text-foreground"
                           )}>{method.name}</p>
                           {favoritePaymentMethod === method.id && (
-                            <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Favorito</span>
+                            <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-1.5 py-0.5 rounded">Favorito</span>
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground">{method.description}</p>

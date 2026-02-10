@@ -5891,3 +5891,7 @@
 
 ## Bug - Tema Escuro nos Templates WhatsApp
 - [x] Corrigir tema escuro na secção de WhatsApp Templates (Editor de Mensagens) - cards, variáveis, textarea e botões de status
+
+## Bug - Tema Escuro no Card de Entrega do PDV
+- [x] Corrigir tema escuro no card de endereço de entrega (fundo claro/bege no modo dark)
+- [x] Adicionar dark variants a todos os bg-red-50, bg-blue-50, bg-amber-50, hover:bg-red-50 no PDV
