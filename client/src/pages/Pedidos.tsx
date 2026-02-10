@@ -178,7 +178,25 @@ export default function Pedidos() {
   // Estado para controlar expansão das colunas no mobile (acordeão)
   const [expandedColumns, setExpandedColumns] = useState<Set<OrderStatus>>(() => new Set<OrderStatus>(["new"]));
   // Estado para limpeza manual visual das colunas (sem apagar do banco)
-  const [manuallyClearedColumns, setManuallyClearedColumns] = useState<Set<OrderStatus>>(new Set());
+  // Persistido no localStorage para sobreviver ao refresh, com reset automático à meia-noite
+  const [manuallyClearedColumns, setManuallyClearedColumns] = useState<Set<OrderStatus>>(() => {
+    try {
+      const stored = localStorage.getItem('clearedColumns');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Verificar se o timestamp de limpeza é do mesmo dia (timezone do restaurante)
+        const clearedDate = new Date(parsed.timestamp);
+        const now = new Date();
+        // Se o dia mudou, limpar o localStorage (reset à meia-noite)
+        if (clearedDate.toDateString() !== now.toDateString()) {
+          localStorage.removeItem('clearedColumns');
+          return new Set();
+        }
+        return new Set(parsed.columns as OrderStatus[]);
+      }
+    } catch {}
+    return new Set();
+  });
   // Estado para controlar loading do WhatsApp
   const [whatsappLoading, setWhatsappLoading] = useState(false);
   // Estado para o modal de QR Code do WhatsApp
@@ -865,20 +883,41 @@ export default function Pedidos() {
     cancelled: manuallyClearedColumns.has("cancelled") ? [] : (filteredOrders?.filter((o: OrderItem) => o.status === "cancelled" && new Date(o.updatedAt || o.createdAt) >= todayStart) ?? []),
   };
 
-  // Resetar limpeza manual quando novos pedidos chegam nessas colunas
+  // Verificar se o dia mudou (reset automático à meia-noite do timezone do restaurante)
   useEffect(() => {
-    if (manuallyClearedColumns.has("completed")) {
-      const newCompleted = filteredOrders?.filter((o: OrderItem) => o.status === "completed" && new Date(o.updatedAt || o.createdAt) >= todayStart) ?? [];
-      // Se houver pedidos novos (finalizados após a limpeza), restaurar a coluna
-      // Comparar com o timestamp da limpeza não é necessário - novos pedidos aparecerão na próxima limpeza automática
-    }
-  }, [filteredOrders]);
+    if (manuallyClearedColumns.size === 0) return;
+    const checkReset = () => {
+      try {
+        const stored = localStorage.getItem('clearedColumns');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          const clearedAt = new Date(parsed.timestamp);
+          // Comparar usando todayStart: se o timestamp da limpeza é anterior ao início do dia atual, resetar
+          if (clearedAt < todayStart) {
+            localStorage.removeItem('clearedColumns');
+            setManuallyClearedColumns(new Set());
+          }
+        }
+      } catch {}
+    };
+    checkReset();
+    // Verificar a cada minuto
+    const interval = setInterval(checkReset, 60000);
+    return () => clearInterval(interval);
+  }, [todayStart, manuallyClearedColumns.size]);
 
-  // Handler para limpeza manual de coluna
+  // Handler para limpeza manual de coluna (persiste no localStorage)
   const handleManualClear = (columnId: OrderStatus) => {
     setManuallyClearedColumns(prev => {
       const next = new Set(prev);
       next.add(columnId);
+      // Persistir no localStorage
+      try {
+        localStorage.setItem('clearedColumns', JSON.stringify({
+          columns: Array.from(next),
+          timestamp: new Date().toISOString(),
+        }));
+      } catch {}
       return next;
     });
     toast.success(columnId === "completed" ? "Pedidos completos limpos" : "Pedidos cancelados limpos");

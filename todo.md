@@ -5955,3 +5955,7 @@
 - [x] No mobile: mostrar apenas ícone de relógio + quantidade de dias restantes
 - [x] Ao clicar no card no mobile: expandir e mostrar texto completo
 - [x] Desktop: manter comportamento atual
+
+## Bug: Limpeza manual de pedidos não persiste após refresh
+- [x] Persistir limpeza manual no localStorage para sobreviver ao refresh da página
+- [x] Reset automático à meia-noite (timezone do restaurante)
