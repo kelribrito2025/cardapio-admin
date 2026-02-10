@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Star, MessageSquare, Users, Clock, TrendingUp, Send, ChevronDown, Filter, Hash, Calendar, Phone, X } from "lucide-react";
+import { Star, MessageSquare, Users, Clock, TrendingUp, Send, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Filter, Hash, Calendar, Phone, X } from "lucide-react";
 import { StatCard } from "@/components/shared";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
   return (
@@ -248,7 +249,8 @@ export default function Avaliacoes() {
   const [page, setPage] = useState(0);
   const [selectedReview, setSelectedReview] = useState<any>(null);
   const [showSidebar, setShowSidebar] = useState(false);
-  const LIMIT = 20;
+  const [pageInput, setPageInput] = useState("");
+  const LIMIT = 15;
 
   // Buscar estabelecimento
   const { data: establishment } = trpc.establishment.get.useQuery(undefined, {
@@ -263,11 +265,19 @@ export default function Avaliacoes() {
     { enabled: !!establishmentId }
   );
 
+  // Contagem total de avaliações
+  const { data: totalCount, refetch: refetchCount } = trpc.reviewsAdmin.count.useQuery(
+    { establishmentId: establishmentId!, filter },
+    { enabled: !!establishmentId }
+  );
+
   // Lista de avaliações
   const { data: reviewsList, refetch: refetchReviews, isLoading } = trpc.reviewsAdmin.list.useQuery(
     { establishmentId: establishmentId!, filter, limit: LIMIT, offset: page * LIMIT },
     { enabled: !!establishmentId }
   );
+
+  const totalPages = totalCount ? Math.ceil(totalCount / LIMIT) : 0;
 
   // Marcar como lidas
   const markAsReadMutation = trpc.reviewsAdmin.markAsRead.useMutation();
@@ -301,7 +311,14 @@ export default function Avaliacoes() {
   const handleResponded = () => {
     refetchReviews();
     refetchMetrics();
+    refetchCount();
   };
+
+  // Reset page quando muda o filtro
+  useEffect(() => {
+    setPage(0);
+    setPageInput("");
+  }, [filter]);
 
   if (!establishment) {
     return (
@@ -403,7 +420,7 @@ export default function Avaliacoes() {
           </Select>
         </div>
         <p className="text-sm text-muted-foreground">
-          {reviewsList?.length ?? 0} avaliação(ões) encontrada(s)
+          {totalCount ?? reviewsList?.length ?? 0} avaliação(ões) encontrada(s)
         </p>
       </div>
 
@@ -487,17 +504,77 @@ export default function Avaliacoes() {
           </Card>
 
           {/* Paginação */}
-          {reviewsList.length === LIMIT && (
-            <div className="flex justify-center pt-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5"
-                onClick={() => setPage((p) => p + 1)}
-              >
-                <ChevronDown size={14} />
-                Carregar mais
-              </Button>
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between bg-muted/30 rounded-lg px-4 py-2.5 mt-2">
+              <p className="text-sm text-muted-foreground">
+                Página {page + 1} de {totalPages} · Total: {totalCount} avaliações
+              </p>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 px-2.5 text-xs"
+                  onClick={() => setPage(0)}
+                  disabled={page === 0}
+                >
+                  Primeira
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 px-2.5 text-xs"
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  disabled={page === 0}
+                >
+                  Anterior
+                </Button>
+                <div className="flex items-center gap-1.5 mx-1">
+                  <span className="text-xs text-muted-foreground">Página</span>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={totalPages}
+                    value={pageInput || (page + 1)}
+                    onChange={(e) => setPageInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const val = parseInt(pageInput);
+                        if (val >= 1 && val <= totalPages) {
+                          setPage(val - 1);
+                        }
+                        setPageInput("");
+                      }
+                    }}
+                    onBlur={() => {
+                      const val = parseInt(pageInput);
+                      if (val >= 1 && val <= totalPages) {
+                        setPage(val - 1);
+                      }
+                      setPageInput("");
+                    }}
+                    className="h-8 w-14 text-center text-xs"
+                  />
+                  <span className="text-xs text-muted-foreground">de {totalPages}</span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 px-2.5 text-xs font-semibold"
+                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  disabled={page >= totalPages - 1}
+                >
+                  Próxima
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 px-2.5 text-xs"
+                  onClick={() => setPage(totalPages - 1)}
+                  disabled={page >= totalPages - 1}
+                >
+                  Última
+                </Button>
+              </div>
             </div>
           )}
         </>

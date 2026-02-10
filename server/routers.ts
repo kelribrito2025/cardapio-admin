@@ -4125,6 +4125,16 @@ export const appRouter = router({
         });
       }),
 
+    // Contar total de avaliações (para paginação)
+    count: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        filter: z.enum(['all', 'pending', 'responded']).optional(),
+      }))
+      .query(async ({ input }) => {
+        return db.getReviewsAdminCount(input.establishmentId, input.filter || 'all');
+      }),
+
     // Responder avaliação
     respond: protectedProcedure
       .input(z.object({

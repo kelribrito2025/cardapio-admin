@@ -6005,3 +6005,5 @@
 - [x] Redesenhar sidebar de avaliação com cabeçalho vermelho (estilo Forma de Pagamento) e 15% mais larga
 - [x] Remover sombra do card da lista de avaliações na página de Avaliações
 - [x] Sidebar avaliação: mostrar resposta em container de leitura quando já respondida, com botão "Editar resposta" para modo de edição
+- [x] Paginação backend: adicionar limit/offset e contagem total na query de avaliações
+- [x] Paginação frontend: controles Primeira, Anterior, campo de página, Próxima, Última (15 por página)

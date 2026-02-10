@@ -6505,6 +6505,27 @@ export async function getReviewsAdmin(establishmentId: number, options?: { limit
 }
 
 /**
+ * Conta total de avaliações com filtros
+ */
+export async function getReviewsAdminCount(establishmentId: number, filter?: 'all' | 'pending' | 'responded') {
+  const db = await getDb();
+  if (!db) return 0;
+
+  const conditions = [eq(reviews.establishmentId, establishmentId)];
+  if (filter === 'pending') {
+    conditions.push(sql`responseText IS NULL`);
+  } else if (filter === 'responded') {
+    conditions.push(isNotNull(reviews.responseText));
+  }
+
+  const result = await db.select({ count: sql<number>`count(*)` })
+    .from(reviews)
+    .where(and(...conditions));
+
+  return Number(result[0]?.count ?? 0);
+}
+
+/**
  * Responder a uma avaliação
  */
 export async function respondToReview(reviewId: number, establishmentId: number, responseText: string) {
