@@ -5986,3 +5986,7 @@
 - [x] Admin (desativado): ocultar menu Avaliações no sidebar e badge
 - [x] Admin (desativado): bloquear acesso à página /avaliacoes com mensagem
 - [x] Backend: impedir criação de avaliações quando desativado
+
+## Resposta do restaurante no modal de avaliações do menu público
+- [x] Exibir resposta do restaurante junto da avaliação no modal do menu público
+- [x] Visual da resposta: nome do restaurante, texto da resposta, data
