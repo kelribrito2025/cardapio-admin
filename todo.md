@@ -5857,3 +5857,4 @@
 - [x] [Bug] Máscara de telefone na retirada do PDV formata incorretamente (88) 9 99290-000 em vez de (88) 9 9929-0000 (corrigido também no campo de entrega)
 - [x] [Bug] Filtro de busca na página /catalogo (Cardápio) não filtra pelo nome dos produtos/itens
 - [x] Ocultar templates de notificações WhatsApp desativadas na aba de Templates (ex: se "Preparando" está desativado, não exibir o template de "Preparando")
+- [x] Card "Completos" na página /pedidos deve mostrar apenas pedidos do dia atual (limpeza automática à 00:00 respeitando timezone do restaurante)

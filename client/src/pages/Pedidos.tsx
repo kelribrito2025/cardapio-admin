@@ -798,12 +798,52 @@ export default function Pedidos() {
     });
   };
 
+  // Filtrar pedidos completos para mostrar apenas os do dia atual (timezone do restaurante)
+  const getTodayStartInTimezone = (tz: string): Date => {
+    // Obter a data/hora atual no timezone do restaurante
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: tz,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    const todayStr = formatter.format(now); // formato YYYY-MM-DD
+    // Criar data de início do dia no timezone do restaurante
+    const [year, month, day] = todayStr.split('-').map(Number);
+    // Converter 00:00 do timezone do restaurante para UTC usando Intl
+    const utcFormatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz,
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZoneName: 'shortOffset',
+    });
+    const parts = utcFormatter.formatToParts(now);
+    const tzOffset = parts.find(p => p.type === 'timeZoneName')?.value || '';
+    // Parse offset como GMT-3, GMT+5:30, etc.
+    const offsetMatch = tzOffset.match(/GMT([+-]?)(\d{1,2})(?::(\d{2}))?/);
+    let offsetMinutes = 0;
+    if (offsetMatch) {
+      const sign = offsetMatch[1] === '-' ? -1 : 1;
+      const hours = parseInt(offsetMatch[2] || '0');
+      const mins = parseInt(offsetMatch[3] || '0');
+      offsetMinutes = sign * (hours * 60 + mins);
+    }
+    // 00:00 no timezone do restaurante = 00:00 - offset em UTC
+    const todayStart = new Date(Date.UTC(year, month - 1, day, 0, 0, 0) - offsetMinutes * 60 * 1000);
+    return todayStart;
+  };
+
+  const restaurantTimezone = establishment?.timezone || 'America/Sao_Paulo';
+  const todayStart = getTodayStartInTimezone(restaurantTimezone);
+
   // Agrupar pedidos por status para o Kanban
   const ordersByStatus = {
     new: allOrders?.filter(o => o.status === "new") ?? [],
     preparing: allOrders?.filter(o => o.status === "preparing") ?? [],
     ready: allOrders?.filter(o => o.status === "ready") ?? [],
-    completed: allOrders?.filter(o => o.status === "completed") ?? [],
+    completed: allOrders?.filter(o => o.status === "completed" && new Date(o.updatedAt || o.createdAt) >= todayStart) ?? [],
     cancelled: allOrders?.filter(o => o.status === "cancelled") ?? [],
   };
 
