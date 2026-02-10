@@ -384,7 +384,7 @@ export default function Avaliacoes() {
 
       {/* Tabela de avaliações */}
       {isLoading ? (
-        <Card>
+        <Card className="shadow-none">
           <CardContent className="p-0">
             <div className="animate-pulse">
               <div className="h-10 bg-muted/30 border-b" />
@@ -403,7 +403,7 @@ export default function Avaliacoes() {
         </Card>
       ) : reviewsList && reviewsList.length > 0 ? (
         <>
-          <Card style={{paddingTop: '0px', paddingBottom: '0px'}}>
+          <Card className="shadow-none" style={{paddingTop: '0px', paddingBottom: '0px'}}>
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
@@ -477,7 +477,7 @@ export default function Avaliacoes() {
           )}
         </>
       ) : (
-        <Card>
+        <Card className="shadow-none">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Star size={48} className="text-muted-foreground/30 mb-3" />
             <p className="text-muted-foreground font-medium">Nenhuma avaliação encontrada</p>
