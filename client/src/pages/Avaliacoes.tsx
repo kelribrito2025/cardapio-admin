@@ -379,7 +379,7 @@ export default function Avaliacoes() {
         </Card>
       ) : reviewsList && reviewsList.length > 0 ? (
         <>
-          <Card style={{paddingTop: '0px', paddingBottom: '5px'}}>
+          <Card style={{paddingTop: '0px', paddingBottom: '0px'}}>
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
