@@ -30,7 +30,8 @@ import {
   Building2,
   Crown,
   Zap,
-  Gift
+  Gift,
+  User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -146,6 +147,7 @@ export default function Onboarding() {
   
   // Form state - Step 1 (Dados do estabelecimento)
   const [name, setName] = useState("");
+  const [ownerDisplayName, setOwnerDisplayName] = useState("");
   const [menuSlug, setMenuSlug] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [instagram, setInstagram] = useState("");
@@ -309,6 +311,7 @@ export default function Onboarding() {
     createEstablishmentMutation.mutate({
       // Step 1 - Dados do estabelecimento
       name: name.trim(),
+      ownerDisplayName: ownerDisplayName.trim() || undefined,
       menuSlug: menuSlug.trim() || undefined,
       whatsapp: whatsapp.replace(/\D/g, "") || undefined,
       instagram: instagram.trim() || undefined,
@@ -545,21 +548,43 @@ export default function Onboarding() {
             {/* Step 1: Dados do estabelecimento */}
             {currentStep === 1 && (
               <div className="space-y-2 lg:space-y-4 xl:space-y-5 2xl:space-y-6">
-                {/* Nome */}
-                <div className="space-y-1">
-                  <Label htmlFor="name" className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
-                    Nome do estabelecimento <span className="text-red-500">*</span>
-                  </Label>
-                  <div className="relative">
-                    <Store className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="Ex: Pizzaria do João"
-                      value={name}
-                      onChange={(e) => handleNameChange(e.target.value)}
-                      className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
-                    />
+                {/* Nome do estabelecimento + Nome do responsável */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="name" className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
+                      Nome do estabelecimento <span className="text-red-500">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Store className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="name"
+                        type="text"
+                        placeholder="Ex: Pizzaria do João"
+                        value={name}
+                        onChange={(e) => handleNameChange(e.target.value)}
+                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="ownerDisplayName" className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
+                      Nome do responsável
+                    </Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="ownerDisplayName"
+                        type="text"
+                        placeholder="Ex: João"
+                        value={ownerDisplayName}
+                        onChange={(e) => {
+                          if (e.target.value.length <= 11) setOwnerDisplayName(e.target.value);
+                        }}
+                        maxLength={11}
+                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
+                      />
+                    </div>
+                    <p className="text-[10px] lg:text-xs text-muted-foreground">{ownerDisplayName.length}/11 caracteres</p>
                   </div>
                 </div>
 

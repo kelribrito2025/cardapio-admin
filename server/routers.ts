@@ -181,6 +181,7 @@ export const appRouter = router({
         allowsDelivery: z.boolean().optional(),
         allowsPickup: z.boolean().optional(),
         timezone: z.string().optional(), // IANA timezone detectado do navegador
+        ownerDisplayName: z.string().max(11).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         // Separar campos que vão para businessHours
@@ -275,6 +276,7 @@ export const appRouter = router({
         timezone: z.string().optional(),
         reviewsEnabled: z.boolean().optional(),
         fakeReviewCount: z.number().optional(),
+        ownerDisplayName: z.string().max(11).nullable().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;

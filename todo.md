@@ -6015,3 +6015,15 @@
 - [x] Página de planos: alterar seleção padrão de anual para mensal
 - [x] Corrigir card "Seu Plano" na página de planos: remover dados hardcoded e mostrar plano real do utilizador
 - [x] Utilizadores sem assinatura devem ver "Plano Gratuito" no card "Seu Plano"
+- [ ] Adicionar campo ownerDisplayName (varchar 11) no schema de establishments
+- [ ] Adicionar campo "Nome do responsável" no onboarding passo 1 ao lado do nome do estabelecimento
+- [ ] Limite de 11 caracteres no campo Nome do responsável
+- [ ] Exibir ownerDisplayName no perfil do utilizador na topbar (dropdown e header)
+
+## Campo Nome do Responsável no Onboarding
+- [x] Adicionar campo "Nome do responsável" ao Step 1 do onboarding (ao lado de "Nome do estabelecimento")
+- [x] Limitar campo a 11 caracteres com contador visual
+- [x] Salvar ownerDisplayName na base de dados via backend (endpoint create)
+- [x] Exibir ownerDisplayName no topbar/perfil do AdminLayout (avatar + nome + dropdown)
+- [x] Fallback para user.name quando ownerDisplayName não está definido
+- [x] Testes unitários para validação e lógica de fallback

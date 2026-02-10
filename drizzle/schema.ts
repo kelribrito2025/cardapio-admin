@@ -99,6 +99,7 @@ export const establishments = mysqlTable("establishments", {
   planExpiresAt: timestamp("planExpiresAt"),
   planActivatedAt: timestamp("planActivatedAt"),
   // Avaliações
+  ownerDisplayName: varchar("ownerDisplayName", { length: 11 }),
   reviewsEnabled: boolean("reviewsEnabled").default(true).notNull(),
   fakeReviewCount: int("fakeReviewCount").default(355),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

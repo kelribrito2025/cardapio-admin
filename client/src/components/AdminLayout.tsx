@@ -1058,12 +1058,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   <Button variant="ghost" className="flex items-center gap-2 px-2 h-9 rounded-lg hover:bg-accent">
                     <Avatar className="h-7 w-7 ring-2 ring-border/50">
                       <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
-                        {user.name?.charAt(0).toUpperCase() || "U"}
+                        {(establishment?.ownerDisplayName || user.name)?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="hidden md:flex flex-col items-start">
                       <span className="text-xs font-semibold max-w-[100px] truncate">
-                        {user.name || "Usuário"}
+                        {establishment?.ownerDisplayName || user.name || "Usuário"}
                       </span>
                       <span className="text-[10px] text-muted-foreground">Admin</span>
                     </div>
@@ -1072,7 +1072,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-52 rounded-xl shadow-elevated border-border/50">
                   <div className="px-3 py-2 border-b border-border/50">
-                    <p className="text-sm font-semibold">{user.name || "Usuário"}</p>
+                    <p className="text-sm font-semibold">{establishment?.ownerDisplayName || user.name || "Usuário"}</p>
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
                   {/* Container Aberto/Fechado - Combina horários automáticos com fechamento manual */}
