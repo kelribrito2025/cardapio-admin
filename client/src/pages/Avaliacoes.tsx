@@ -454,7 +454,7 @@ export default function Avaliacoes() {
         <div className="flex items-center gap-2">
           <Filter size={16} className="text-muted-foreground" />
           <Select value={filter} onValueChange={(v) => { setFilter(v as any); setPage(0); }}>
-            <SelectTrigger className="w-[180px] h-9 text-sm">
+            <SelectTrigger className="w-[130px] h-9 text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
