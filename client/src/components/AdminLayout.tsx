@@ -977,14 +977,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   )}
                   <div className="p-1">
                     <DropdownMenuItem 
-                      className="rounded-lg cursor-default opacity-50" 
-                      onSelect={(e) => e.preventDefault()}
+                      className="rounded-lg cursor-pointer" 
+                      onSelect={() => { window.location.href = "/ajuda"; }}
                     >
                       <HelpCircle className="h-4 w-4 mr-2.5" />
                       Ajuda e suporte
-                      <span className="ml-auto text-[9px] font-semibold bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 px-1.5 py-0.5 rounded-full">
-                        Breve
-                      </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       className="rounded-lg cursor-default opacity-50" 

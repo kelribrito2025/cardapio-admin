@@ -5907,3 +5907,7 @@
 - [x] Corrigir tema escuro nos cards de Stripe Connect e Aceitar Pagamento Online na secção Pagamento Online das Configurações
 ## Bug - Tema Escuro na Página de Campanhas
 - [x] Corrigir tema escuro no modal de Recarregar Saldo SMS e outros elementos com cores claras na página de Campanhas
+
+## Ajustes de UI
+- [x] Remover badge "Breve" do menu Ajuda e Suporte na sidebar
+- [x] Ajustar botões Mensal/Anual na página de Planos para seguir o mesmo estilo dos filtros da Dashboard (Hoje/Esta semana/Este mês)

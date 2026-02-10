@@ -271,11 +271,11 @@ export default function Planos() {
 
       {/* Toggle Mensal/Anual */}
       <div className="flex justify-end mb-6">
-        <div className="flex items-center bg-muted/50 rounded-full p-1">
+        <div className="flex items-center gap-1 bg-muted rounded-xl p-1">
           <button
             onClick={() => setIsAnnual(false)}
             className={cn(
-              "px-4 py-2 text-sm font-medium rounded-full transition-all",
+              "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
               !isAnnual
                 ? "bg-card text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -286,7 +286,7 @@ export default function Planos() {
           <button
             onClick={() => setIsAnnual(true)}
             className={cn(
-              "px-4 py-2 text-sm font-medium rounded-full transition-all",
+              "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
               isAnnual
                 ? "bg-card text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
