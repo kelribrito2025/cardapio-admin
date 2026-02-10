@@ -6036,3 +6036,6 @@
 
 ## Legenda do Heatmap
 - [x] Atualizar "Total acumulado" para "Total de acessos" na legenda inferior do heatmap
+
+## Página de Estoque
+- [x] Remover coluna "Custo unitário" da tabela de itens de estoque

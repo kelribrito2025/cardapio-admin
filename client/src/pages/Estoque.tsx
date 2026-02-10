@@ -450,7 +450,6 @@ export default function Estoque() {
                   <TableHead className="font-medium">Item</TableHead>
                   <TableHead className="font-medium">Estoque atual</TableHead>
                   <TableHead className="font-medium">Status</TableHead>
-                  <TableHead className="font-medium">Custo unitário</TableHead>
                   <TableHead className="font-medium">Valor total</TableHead>
                   <TableHead className="font-medium">Última atualização</TableHead>
                   <TableHead className="font-medium w-[50px]"></TableHead>
@@ -514,9 +513,6 @@ export default function Estoque() {
                           {config.icon}
                           {config.label}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        R$ {costPerUnit.toFixed(2)}/{unitLabel}
                       </TableCell>
                       <TableCell>
                         <span className="font-medium text-foreground">
