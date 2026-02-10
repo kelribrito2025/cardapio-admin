@@ -5911,3 +5911,4 @@
 ## Ajustes de UI
 - [x] Remover badge "Breve" do menu Ajuda e Suporte na sidebar
 - [x] Ajustar botões Mensal/Anual na página de Planos para seguir o mesmo estilo dos filtros da Dashboard (Hoje/Esta semana/Este mês)
+- [x] Igualar a cor de fundo da sidebar principal do menu à cor da sidebar de Configurações

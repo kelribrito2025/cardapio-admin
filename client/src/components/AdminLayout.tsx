@@ -514,7 +514,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           "lg:translate-x-0"
         )}
         style={{
-          background: theme === 'dark' ? 'var(--sidebar)' : '#ffffff'
+          background: 'var(--card)'
         }}
       >
         {/* Logo + Toggle button na mesma linha */}
