@@ -1,4 +1,5 @@
 import { AdminLayout } from "@/components/AdminLayout";
+import { useSearch } from "@/contexts/SearchContext";
 import { PageHeader, SectionCard, StatCard } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -214,7 +215,16 @@ export default function Campanhas() {
   );
   
   // Usar clientes filtrados quando há filtros, senão usar a lista completa
-  const clientesBase = hasActiveFilters ? clientesFiltrados : clientesSemFiltro;
+  const { searchQuery: globalSearch } = useSearch();
+  const clientesBaseRaw = hasActiveFilters ? clientesFiltrados : clientesSemFiltro;
+  const clientesBase = useMemo(() => {
+    if (!clientesBaseRaw || !globalSearch.trim()) return clientesBaseRaw;
+    const term = globalSearch.toLowerCase().trim();
+    return clientesBaseRaw.filter((c: any) =>
+      (c.name && c.name.toLowerCase().includes(term)) ||
+      (c.phone && c.phone.includes(term))
+    );
+  }, [clientesBaseRaw, globalSearch]);
   const isLoadingClientes = hasActiveFilters ? isLoadingClientesFiltrados : isLoadingClientesSemFiltro;
   
   // Limpar seleções quando os filtros mudam

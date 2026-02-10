@@ -188,6 +188,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }, [sidebarCollapsed]);
 
   // Minimizar menu automaticamente ao acessar a página PDV, Pedidos, Configurações ou Mesas
+  // Limpar busca global ao mudar de página
+  useEffect(() => {
+    setSearchQuery("");
+  }, [location]);
+
   // Usa um pequeno delay para permitir que a transição seja visível
   useEffect(() => {
     if (location === "/pdv" || location === "/pedidos" || location === "/configuracoes" || location === "/mesas") {

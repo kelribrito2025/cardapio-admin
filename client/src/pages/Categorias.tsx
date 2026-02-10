@@ -1,4 +1,5 @@
 import { AdminLayout } from "@/components/AdminLayout";
+import { useSearch } from "@/contexts/SearchContext";
 import { PageHeader, EmptyState, SectionCard } from "@/components/shared";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -268,6 +269,7 @@ export default function Categorias() {
   
   // Local state for categories
   const [localCategories, setLocalCategories] = useState<any[]>([]);
+  const { searchQuery: globalSearch } = useSearch();
   
   // Edit state
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
@@ -541,7 +543,11 @@ export default function Categorias() {
         }
       />
 
-      {localCategories.length === 0 ? (
+      {(() => {
+        const filteredCategories = globalSearch
+          ? localCategories.filter(c => c.name?.toLowerCase().includes(globalSearch.toLowerCase()))
+          : localCategories;
+        return filteredCategories.length === 0 ? (
         <SectionCard className="mt-6">
           <EmptyState
             icon={Tag}
@@ -560,11 +566,11 @@ export default function Categorias() {
           onDragEnd={handleCategoryDragEnd}
         >
           <SortableContext
-            items={localCategories.map((c) => c.id)}
+            items={filteredCategories.map((c) => c.id)}
             strategy={verticalListSortingStrategy}
           >
             <div className="space-y-3 mt-6">
-              {localCategories.map((category) => (
+              {filteredCategories.map((category) => (
                 <SortableCategoryItem
                   key={category.id}
                   category={category}
@@ -585,7 +591,8 @@ export default function Categorias() {
             </div>
           </SortableContext>
         </DndContext>
-      )}
+      )
+      })()}
 
       {/* Create Category - Dialog no desktop, Bottom Sheet no mobile */}
       {isMobile ? (

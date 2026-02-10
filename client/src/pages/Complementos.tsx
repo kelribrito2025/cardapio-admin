@@ -1,4 +1,5 @@
 import { AdminLayout } from "@/components/AdminLayout";
+import { useSearch } from "@/contexts/SearchContext";
 import { PageHeader, EmptyState, SectionCard } from "@/components/shared";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -48,7 +49,7 @@ const DAYS_OF_WEEK = [
 export default function Complementos() {
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const { searchQuery: searchTerm } = useSearch();
   const [expandedComplementId, setExpandedComplementId] = useState<number | null>(null);
 
   // Set establishment ID when data is loaded
@@ -156,17 +157,7 @@ export default function Complementos() {
         title="Complementos"
         description="Alterações aqui refletem em todos os produtos."
         icon={<Layers className="h-6 w-6 text-blue-600" />}
-        actions={
-          <div className="relative w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar complemento..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 h-9"
-            />
-          </div>
-        }
+
       />
 
       {/* Lista de complementos */}

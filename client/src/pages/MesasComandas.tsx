@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
+import { useSearch } from "@/contexts/SearchContext";
 import { PageHeader } from "@/components/shared";
 import { PDVSlidebar } from "@/components/PDVSlidebar";
 import { MobilePDVModal } from "@/components/MobilePDVModal";
@@ -270,7 +271,7 @@ export default function MesasComandas() {
   };
   const [selectedSpaceId, setSelectedSpaceId] = useState<number | "all">("all");
   const [statusFilter, setStatusFilter] = useState<TableStatus | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const { searchQuery, setSearchQuery } = useSearch();
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showManageSpacesDialog, setShowManageSpacesDialog] = useState(false);
   const [newTableCount, setNewTableCount] = useState(10);
@@ -936,17 +937,8 @@ export default function MesasComandas() {
             </Tooltip>
           </div>
 
-          {/* Busca + botões no mobile */}
+          {/* Botões no mobile */}
           <div className="flex gap-2 w-full sm:w-auto">
-            <div className="relative flex-1 sm:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Buscar mesa..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
             {/* Botões ao lado da busca - visíveis apenas no mobile */}
             <button
               onClick={() => setShowCreateDialog(true)}

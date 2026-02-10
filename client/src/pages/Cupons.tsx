@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Coupon } from "../../../drizzle/schema";
 import { trpc } from "@/lib/trpc";
 import { AdminLayout } from "@/components/AdminLayout";
+import { useSearch } from "@/contexts/SearchContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -82,7 +83,7 @@ export default function Cupons() {
   const utils = trpc.useUtils();
 
   // Filters
-  const [search, setSearch] = useState("");
+  const { searchQuery: search } = useSearch();
 
   // Expanded cards (para dropdown de detalhes)
   const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
@@ -518,16 +519,7 @@ export default function Cupons() {
           </div>
         </div>
 
-        {/* Search */}
-        <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Buscar por código..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
-        </div>
+
 
         {/* Conteúdo: Loading / Empty / Cupons */}
         {isLoading ? (

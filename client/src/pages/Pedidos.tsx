@@ -1,4 +1,5 @@
 import { AdminLayout } from "@/components/AdminLayout";
+import { useSearch } from "@/contexts/SearchContext";
 import { PageHeader, StatusBadge, EmptyState, SectionCard } from "@/components/shared";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -65,7 +66,7 @@ import {
   QrCode,
   Star,
 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "wouter";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -838,13 +839,28 @@ export default function Pedidos() {
   const restaurantTimezone = establishment?.timezone || 'America/Sao_Paulo';
   const todayStart = getTodayStartInTimezone(restaurantTimezone);
 
+  // Busca global
+  const { searchQuery: globalSearch } = useSearch();
+
+  // Filtrar pedidos pela busca global (número do pedido, nome do cliente)
+  const filteredOrders = useMemo(() => {
+    if (!allOrders || !globalSearch.trim()) return allOrders;
+    const term = globalSearch.toLowerCase().trim();
+    return allOrders.filter((o: typeof allOrders[number]) =>
+      (o.orderNumber && o.orderNumber.toLowerCase().includes(term)) ||
+      (o.customerName && o.customerName.toLowerCase().includes(term)) ||
+      (o.customerPhone && o.customerPhone.includes(term))
+    );
+  }, [allOrders, globalSearch]);
+
   // Agrupar pedidos por status para o Kanban
+  type OrderItem = typeof allOrders[number];
   const ordersByStatus = {
-    new: allOrders?.filter(o => o.status === "new") ?? [],
-    preparing: allOrders?.filter(o => o.status === "preparing") ?? [],
-    ready: allOrders?.filter(o => o.status === "ready") ?? [],
-    completed: allOrders?.filter(o => o.status === "completed" && new Date(o.updatedAt || o.createdAt) >= todayStart) ?? [],
-    cancelled: allOrders?.filter(o => o.status === "cancelled") ?? [],
+    new: filteredOrders?.filter((o: OrderItem) => o.status === "new") ?? [],
+    preparing: filteredOrders?.filter((o: OrderItem) => o.status === "preparing") ?? [],
+    ready: filteredOrders?.filter((o: OrderItem) => o.status === "ready") ?? [],
+    completed: filteredOrders?.filter((o: OrderItem) => o.status === "completed" && new Date(o.updatedAt || o.createdAt) >= todayStart) ?? [],
+    cancelled: filteredOrders?.filter((o: OrderItem) => o.status === "cancelled") ?? [],
   };
 
   return (
@@ -1014,7 +1030,7 @@ export default function Pedidos() {
                   </div>
                 ) : columnOrders.length > 0 ? (
                   // Order cards
-                  columnOrders.map((order) => {
+                  columnOrders.map((order: OrderItem) => {
                     const config = statusConfig[order.status as OrderStatus];
                     const nextAction = getNextAction(order.status as OrderStatus);
                     const PaymentIcon = paymentMethodLabels[order.paymentMethod]?.icon || CreditCard;

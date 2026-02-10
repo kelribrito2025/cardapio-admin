@@ -5858,3 +5858,4 @@
 - [x] [Bug] Filtro de busca na página /catalogo (Cardápio) não filtra pelo nome dos produtos/itens
 - [x] Ocultar templates de notificações WhatsApp desativadas na aba de Templates (ex: se "Preparando" está desativado, não exibir o template de "Preparando")
 - [x] Card "Completos" na página /pedidos deve mostrar apenas pedidos do dia atual (limpeza automática à 00:00 respeitando timezone do restaurante)
+- [x] Busca global na topbar: filtrar conteúdo relevante em cada página (mesas, catálogo, categorias, complementos, pedidos, cupons, campanhas)
