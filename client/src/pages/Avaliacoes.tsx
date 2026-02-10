@@ -465,7 +465,7 @@ export default function Avaliacoes() {
           </Select>
         </div>
         <p className="text-sm text-muted-foreground">
-          {totalCount ?? reviewsList?.length ?? 0} avaliação(ões) encontrada(s)
+          {totalCount ?? reviewsList?.length ?? 0} {(totalCount ?? reviewsList?.length ?? 0) === 1 ? 'avaliação encontrada' : 'avaliações encontradas'}
         </p>
       </div>
 
