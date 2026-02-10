@@ -6013,3 +6013,5 @@
 - [x] Substituir ícone check verde da resposta por avatar com inicial do restaurante
 - [x] Corrigir erro acessibilidade: adicionar SheetTitle ao SheetContent da sidebar de avaliação
 - [x] Página de planos: alterar seleção padrão de anual para mensal
+- [x] Corrigir card "Seu Plano" na página de planos: remover dados hardcoded e mostrar plano real do utilizador
+- [x] Utilizadores sem assinatura devem ver "Plano Gratuito" no card "Seu Plano"

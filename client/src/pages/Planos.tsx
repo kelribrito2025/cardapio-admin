@@ -134,6 +134,9 @@ export default function Planos() {
   const { user } = useAuth();
   const itemsPerPage = 4;
 
+  // Buscar dados do estabelecimento para mostrar plano atual
+  const { data: establishment } = trpc.establishment.get.useQuery();
+
   // Mutation para criar checkout de plano
   const checkoutMutation = trpc.plans.createCheckout.useMutation({
     onSuccess: (result) => {
@@ -149,15 +152,39 @@ export default function Planos() {
     checkoutMutation.mutate({ planId, isAnnual });
   };
 
-  // Mock current plan
+  // Plano atual baseado nos dados reais do estabelecimento
+  const planNameMap: Record<string, string> = {
+    trial: "Período de Teste",
+    free: "Plano Gratuito",
+    basic: "Plano Essencial",
+    pro: "Plano Pro",
+    enterprise: "Plano Enterprise",
+  };
+
+  const planPriceMap: Record<string, { monthly: number; annual: number }> = {
+    trial: { monthly: 0, annual: 0 },
+    free: { monthly: 0, annual: 0 },
+    basic: { monthly: 79.90, annual: 799 },
+    pro: { monthly: 0, annual: 0 },
+    enterprise: { monthly: 0, annual: 0 },
+  };
+
+  const userPlanType = establishment?.planType || "free";
+  const userBillingPeriod = establishment?.billingPeriod || "monthly";
+  const isUserAnnual = userBillingPeriod === "annual";
+  const userPlanPrice = planPriceMap[userPlanType]?.[isUserAnnual ? "annual" : "monthly"] || 0;
+  const hasActivePlan = userPlanType !== "free" && userPlanType !== "trial";
+
   const currentPlan = {
-    id: "business",
-    name: "Plano Business",
-    price: 120,
-    period: "ano",
-    renewalDate: "10 Dez 2025",
-    billingEmail: user?.email || "critozcore@gmail.com",
-    isActive: false,
+    id: userPlanType,
+    name: planNameMap[userPlanType] || "Plano Gratuito",
+    price: userPlanPrice,
+    period: isUserAnnual ? "ano" : "mês",
+    renewalDate: establishment?.planExpiresAt
+      ? new Date(establishment.planExpiresAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })
+      : null,
+    billingEmail: user?.email || "",
+    isActive: hasActivePlan,
   };
 
   const filteredHistory = billingHistory.filter(
@@ -348,20 +375,24 @@ export default function Planos() {
                 <Button
                   className={cn(
                     "w-full font-medium",
-                    plan.highlighted
+                    (plan.id === userPlanType || (plan.id === "free" && (userPlanType === "free" || userPlanType === "trial")))
+                      ? "bg-muted hover:bg-muted text-muted-foreground cursor-default"
+                      : plan.highlighted
                       ? "bg-blue-600 hover:bg-blue-700 text-white"
                       : plan.id === "free"
                       ? "bg-muted hover:bg-muted text-muted-foreground cursor-default"
                       : "bg-card hover:bg-muted/50 text-foreground border border-border"
                   )}
-                  disabled={plan.id === "free" || !!plan.priceLabel || checkoutMutation.isPending}
+                  disabled={(plan.id === "free" && (userPlanType === "free" || userPlanType === "trial")) || plan.id === userPlanType || !!plan.priceLabel || checkoutMutation.isPending}
                   onClick={() => {
-                    if (plan.id !== "free" && !plan.priceLabel) {
+                    if (plan.id !== "free" && plan.id !== userPlanType && !plan.priceLabel) {
                       handleCheckout(plan.id);
                     }
                   }}
                 >
-                  {checkoutMutation.isPending ? (
+                  {(plan.id === userPlanType || (plan.id === "free" && (userPlanType === "free" || userPlanType === "trial"))) ? (
+                    "Plano Atual"
+                  ) : checkoutMutation.isPending ? (
                     <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Processando...</>
                   ) : (
                     plan.priceLabel ? "Em breve" : plan.buttonText
@@ -387,16 +418,20 @@ export default function Planos() {
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
           <div className="flex items-center gap-3">
             <span className="text-sm font-semibold text-foreground">Seu Plano</span>
-            <span className="text-sm text-muted-foreground">
-              Renova em {currentPlan.renewalDate}
-            </span>
+            {currentPlan.renewalDate && (
+              <span className="text-sm text-muted-foreground">
+                Renova em {currentPlan.renewalDate}
+              </span>
+            )}
           </div>
-          <Button
-            variant="outline"
-            className="text-foreground border-border hover:bg-muted"
-          >
-            Cancelar Plano
-          </Button>
+          {currentPlan.isActive && (
+            <Button
+              variant="outline"
+              className="text-foreground border-border hover:bg-muted"
+            >
+              Cancelar Plano
+            </Button>
+          )}
         </div>
         
         {/* Content - Two columns */}
@@ -407,39 +442,86 @@ export default function Planos() {
               {currentPlan.name}
             </h3>
             
-            <div className="flex items-baseline gap-1 mb-2">
-              <span className="text-3xl font-bold text-foreground">
-                {formatCurrency(currentPlan.price)}
-              </span>
-              <span className="text-muted-foreground text-sm">
-                /{currentPlan.period}
-              </span>
-            </div>
-            
-            <p className="text-sm text-muted-foreground">
-              E-mail de cobrança: {currentPlan.billingEmail}
-            </p>
+            {currentPlan.isActive ? (
+              <>
+                <div className="flex items-baseline gap-1 mb-2">
+                  <span className="text-3xl font-bold text-foreground">
+                    {formatCurrency(currentPlan.price)}
+                  </span>
+                  <span className="text-muted-foreground text-sm">
+                    /{currentPlan.period}
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  E-mail de cobrança: {currentPlan.billingEmail}
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="flex items-baseline gap-1 mb-2">
+                  <span className="text-3xl font-bold text-foreground">Grátis</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {userPlanType === "trial" ? "Você está no período de teste gratuito." : "Faça upgrade para desbloquear mais recursos."}
+                </p>
+              </>
+            )}
           </div>
 
           {/* Right column - Next Payment */}
           <div className="flex-1 px-6 py-5 border-t md:border-t-0 border-border/50">
-            <h4 className="text-sm font-medium text-blue-600 mb-3">
-              Próximo Pagamento
-            </h4>
-            <p className="text-2xl font-bold text-foreground mb-1">
-              Sem cobranças pendentes
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Sua assinatura está pausada ou inativa.
-            </p>
+            {currentPlan.isActive ? (
+              <>
+                <h4 className="text-sm font-medium text-blue-600 mb-3">
+                  Próximo Pagamento
+                </h4>
+                {currentPlan.renewalDate ? (
+                  <>
+                    <p className="text-2xl font-bold text-foreground mb-1">
+                      {formatCurrency(currentPlan.price)}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Próxima cobrança em {currentPlan.renewalDate}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-2xl font-bold text-foreground mb-1">
+                      Sem cobranças pendentes
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Sua assinatura está pausada ou inativa.
+                    </p>
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                <h4 className="text-sm font-medium text-blue-600 mb-3">
+                  Status
+                </h4>
+                <p className="text-2xl font-bold text-foreground mb-1">
+                  Sem cobranças
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {userPlanType === "trial" ? "Aproveite o período de teste sem custo." : "Você está no plano gratuito."}
+                </p>
+              </>
+            )}
           </div>
         </div>
         
         {/* Footer */}
         <div className="px-6 py-4 border-t border-border/50">
-          <button className="text-blue-600 text-sm font-medium hover:underline">
-            Fazer Upgrade
-          </button>
+          {currentPlan.isActive ? (
+            <button className="text-blue-600 text-sm font-medium hover:underline">
+              Fazer Upgrade
+            </button>
+          ) : (
+            <button className="text-blue-600 text-sm font-medium hover:underline">
+              Escolher um plano
+            </button>
+          )}
         </div>
       </div>
 
