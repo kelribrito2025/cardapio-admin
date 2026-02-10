@@ -5922,3 +5922,4 @@
 - [x] Adicionar features "Campanhas SMS" e "Cupons de desconto" ao plano Essencial
 - [x] Adicionar feature "Programa de fidelidade" ao plano Pro
 - [x] Corrigir menu público herdando dark mode do admin quando aberto na mesma aba do navegador
+- [x] Corrigir card de Confirmação via Botões na secção WhatsApp das Configurações no dark mode
