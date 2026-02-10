@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 
 type Theme = "light" | "dark";
 
@@ -6,6 +6,7 @@ interface ThemeContextType {
   theme: Theme;
   toggleTheme?: () => void;
   switchable: boolean;
+  forceTheme: (theme: Theme | null) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -29,18 +30,24 @@ export function ThemeProvider({
     return defaultTheme;
   });
 
+  // Tema forçado por páginas públicas (null = usar tema normal)
+  const [forcedTheme, setForcedTheme] = useState<Theme | null>(null);
+
+  const activeTheme = forcedTheme ?? theme;
+
   useEffect(() => {
     const root = document.documentElement;
     // Adicionar classe de transição temporária para animação suave
     root.classList.add("theme-transition");
     
-    if (theme === "dark") {
+    if (activeTheme === "dark") {
       root.classList.add("dark");
     } else {
       root.classList.remove("dark");
     }
 
-    if (switchable) {
+    // Só persistir no localStorage se não estiver forçado
+    if (switchable && forcedTheme === null) {
       localStorage.setItem("theme", theme);
     }
     
@@ -50,7 +57,7 @@ export function ThemeProvider({
     }, 350);
     
     return () => clearTimeout(timeout);
-  }, [theme, switchable]);
+  }, [activeTheme, theme, switchable, forcedTheme]);
 
   const toggleTheme = switchable
     ? () => {
@@ -58,8 +65,12 @@ export function ThemeProvider({
       }
     : undefined;
 
+  const forceTheme = useCallback((t: Theme | null) => {
+    setForcedTheme(t);
+  }, []);
+
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, switchable }}>
+    <ThemeContext.Provider value={{ theme: activeTheme, toggleTheme, switchable, forceTheme }}>
       {children}
     </ThemeContext.Provider>
   );

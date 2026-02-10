@@ -1,5 +1,6 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
 import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, Rocket } from "lucide-react";
@@ -263,18 +264,15 @@ export default function PublicMenu() {
   const registerSessionMutation = trpc.menuViews.registerSession.useMutation();
   
   // Forçar tema claro no menu público - isolar do tema do admin
+  const { forceTheme } = useTheme();
   useEffect(() => {
-    const root = document.documentElement;
-    const wasDark = root.classList.contains('dark');
-    // Sempre remover dark no menu público
-    root.classList.remove('dark');
+    // Forçar tema claro enquanto o menu público estiver montado
+    forceTheme('light');
     return () => {
-      // Restaurar tema anterior ao sair do menu público
-      if (wasDark) {
-        root.classList.add('dark');
-      }
+      // Restaurar tema do admin ao sair do menu público
+      forceTheme(null);
     };
-  }, []);
+  }, [forceTheme]);
 
   // Registrar sessão quando o cardápio é carregado
   useEffect(() => {

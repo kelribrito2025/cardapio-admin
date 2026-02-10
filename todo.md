@@ -5921,3 +5921,4 @@
 - [x] Adicionar ícone no cabeçalho da página Planos (igual às demais páginas)
 - [x] Adicionar features "Campanhas SMS" e "Cupons de desconto" ao plano Essencial
 - [x] Adicionar feature "Programa de fidelidade" ao plano Pro
+- [x] Corrigir menu público herdando dark mode do admin quando aberto na mesma aba do navegador
