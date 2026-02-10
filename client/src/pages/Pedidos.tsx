@@ -873,6 +873,25 @@ export default function Pedidos() {
     );
   }, [allOrders, globalSearch]);
 
+  // Estado para guardar o timestamp de quando cada coluna foi limpa manualmente
+  const [clearTimestamps, setClearTimestamps] = useState<Record<string, string>>(() => {
+    try {
+      const stored = localStorage.getItem('clearedColumns');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Verificar se é do mesmo dia
+        const clearedDate = new Date(parsed.timestamp || parsed.clearedAt?.completed || parsed.clearedAt?.cancelled || Date.now());
+        const now = new Date();
+        if (clearedDate.toDateString() !== now.toDateString()) {
+          localStorage.removeItem('clearedColumns');
+          return {};
+        }
+        return parsed.clearedAt || {};
+      }
+    } catch {}
+    return {};
+  });
+
   // Agrupar pedidos por status para o Kanban
   type OrderItem = typeof allOrders[number];
   const ordersByStatus = {
@@ -925,25 +944,6 @@ export default function Pedidos() {
     const interval = setInterval(checkReset, 60000);
     return () => clearInterval(interval);
   }, [todayStart, manuallyClearedColumns.size]);
-
-  // Estado para guardar o timestamp de quando cada coluna foi limpa manualmente
-  const [clearTimestamps, setClearTimestamps] = useState<Record<string, string>>(() => {
-    try {
-      const stored = localStorage.getItem('clearedColumns');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        // Verificar se é do mesmo dia
-        const clearedDate = new Date(parsed.timestamp || parsed.clearedAt?.completed || parsed.clearedAt?.cancelled || Date.now());
-        const now = new Date();
-        if (clearedDate.toDateString() !== now.toDateString()) {
-          localStorage.removeItem('clearedColumns');
-          return {};
-        }
-        return parsed.clearedAt || {};
-      }
-    } catch {}
-    return {};
-  });
 
   // Handler para limpeza manual de coluna (persiste no localStorage)
   const handleManualClear = (columnId: OrderStatus) => {
