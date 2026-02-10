@@ -58,8 +58,8 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
     <div className="space-y-6">
       {/* Header with icon */}
       <div className="flex items-start gap-4">
-        <div className="p-3 bg-emerald-100 rounded-xl">
-          <Gift className="h-6 w-6 text-emerald-600" />
+        <div className="p-3 bg-emerald-100 dark:bg-emerald-900/40 rounded-xl">
+          <Gift className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div className="flex-1">
           <h3 className="font-semibold text-lg">Programa de fidelidade</h3>
@@ -87,7 +87,7 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
                 onChange={(e) => setLoyaltyEnabled(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-card after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+              <div className="w-11 h-6 bg-muted dark:bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:after:bg-gray-300 after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
             </label>
           </div>
           

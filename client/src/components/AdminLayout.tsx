@@ -792,7 +792,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 <Popover>
                   <PopoverTrigger asChild>
                     <button
-                      className="flex items-center gap-2 px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-xs font-medium transition-colors border border-amber-200"
+                      className="flex items-center gap-2 px-3 py-2 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-300 rounded-lg text-xs font-medium transition-colors border border-amber-200 dark:border-amber-800/50"
                       style={{ borderRadius: '10px' }}
                     >
                       <Clock className="h-3.5 w-3.5" />
@@ -802,16 +802,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   <PopoverContent className="w-72 p-4" align="end">
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
-                        <div className="p-2 bg-amber-100 rounded-lg">
-                          <Sparkles className="h-4 w-4 text-amber-600" />
+                        <div className="p-2 bg-amber-100 dark:bg-amber-900/40 rounded-lg">
+                          <Sparkles className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                         </div>
                         <div>
                           <p className="font-semibold text-sm">Período de Avaliação</p>
                           <p className="text-xs text-muted-foreground">{trialInfo.trialDays} dias gratuitos</p>
                         </div>
                       </div>
-                      <div className="bg-amber-50 rounded-lg p-3 border border-amber-100">
-                        <p className="text-sm text-amber-800">
+                      <div className="bg-amber-50 dark:bg-amber-950/30 rounded-lg p-3 border border-amber-100 dark:border-amber-800/30">
+                        <p className="text-sm text-amber-800 dark:text-amber-300">
                           {trialInfo.trialExpired
                             ? 'Seu período de avaliação expirou. Faça upgrade para continuar usando todas as funcionalidades.'
                             : `Você ainda tem ${trialInfo.daysRemaining} ${trialInfo.daysRemaining === 1 ? 'dia' : 'dias'} restantes na sua avaliação gratuita.`

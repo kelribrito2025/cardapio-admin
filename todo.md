@@ -5923,3 +5923,5 @@
 - [x] Adicionar feature "Programa de fidelidade" ao plano Pro
 - [x] Corrigir menu público herdando dark mode do admin quando aberto na mesma aba do navegador
 - [x] Corrigir card de Confirmação via Botões na secção WhatsApp das Configurações no dark mode
+- [x] Corrigir toggle do Programa de Fidelidade quase invisível no dark mode
+- [x] Corrigir badge de Avaliação gratuita: 15 dias com cores claras no dark mode
