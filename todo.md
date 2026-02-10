@@ -5866,3 +5866,8 @@
 - [x] Isolar tema do menu público do tema do admin (modo escuro do admin não deve afetar menu público)
 - [x] Menu público deve manter tema claro padrão sempre, independente do modo escuro do admin
 - [x] Não compartilhar variáveis/tokens de tema entre admin e menu público
+
+## Bug - Tema Escuro na Página de Mesas
+- [x] Corrigir tema escuro no painel central de produtos da página de Mesas (fundo branco no modo dark)
+- [x] Corrigir tema escuro na sacola/painel direito da página de Mesas
+- [x] Corrigir tema escuro nos cards de produtos, barra de categorias e campo de busca

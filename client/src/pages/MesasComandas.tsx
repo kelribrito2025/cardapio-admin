@@ -765,11 +765,11 @@ export default function MesasComandas() {
         </div>
 
         <div className="flex flex-col items-center justify-center py-20">
-          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-            <Utensils className="h-10 w-10 text-gray-400" />
+          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
+            <Utensils className="h-10 w-10 text-muted-foreground" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Nenhuma mesa cadastrada</h3>
-          <p className="text-gray-500 mb-6 text-center max-w-md">
+          <h3 className="text-xl font-semibold text-foreground mb-2">Nenhuma mesa cadastrada</h3>
+          <p className="text-muted-foreground mb-6 text-center max-w-md">
             Crie suas mesas para começar a gerenciar o salão do seu estabelecimento.
           </p>
           <Button onClick={() => setShowCreateDialog(true)} className="bg-primary hover:bg-primary/90">
@@ -786,7 +786,7 @@ export default function MesasComandas() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div>
-                <label className="text-sm font-medium text-gray-700">Nome do espaço das mesas</label>
+                <label className="text-sm font-medium text-foreground">Nome do espaço das mesas</label>
                 <Input
                   type="text"
                   value={newSpaceName}
@@ -794,12 +794,12 @@ export default function MesasComandas() {
                   placeholder="Ex: Salão, Varanda, Área Externa..."
                   className="mt-1"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Opcional. Agrupa as mesas por local físico do restaurante.
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">Quantidade de mesas</label>
+                <label className="text-sm font-medium text-foreground">Quantidade de mesas</label>
                 <Input
                   type="number"
                   value={newTableCount}
@@ -810,7 +810,7 @@ export default function MesasComandas() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">Capacidade por mesa</label>
+                <label className="text-sm font-medium text-foreground">Capacidade por mesa</label>
                 <Input
                   type="number"
                   value={newTableCapacity}
@@ -867,7 +867,7 @@ export default function MesasComandas() {
                 "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 flex-shrink-0 whitespace-nowrap",
                 selectedSpaceId === "all"
                   ? "bg-red-500 text-white"
-                  : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
+                  : "bg-card border border-border text-muted-foreground hover:border-border/80"
               )}
             >
               <MapPin className="h-4 w-4" />
@@ -891,7 +891,7 @@ export default function MesasComandas() {
                   "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 flex-shrink-0 whitespace-nowrap",
                   selectedSpaceId === space.id
                     ? "bg-red-500 text-white"
-                    : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
+                    : "bg-card border border-border text-muted-foreground hover:border-border/80"
                 )}
               >
                 {space.name}
@@ -926,7 +926,7 @@ export default function MesasComandas() {
               <TooltipTrigger asChild>
                 <button
                   onClick={() => setShowManageSpacesDialog(true)}
-                  className="hidden md:flex px-3 py-2 rounded-lg text-sm font-medium transition-all items-center gap-1.5 bg-white border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                  className="hidden md:flex px-3 py-2 rounded-lg text-sm font-medium transition-all items-center gap-1.5 bg-card border border-border text-muted-foreground hover:border-border/80 hover:text-foreground"
                 >
                   <Settings className="h-4 w-4" />
                 </button>
@@ -948,7 +948,7 @@ export default function MesasComandas() {
             </button>
             <button
               onClick={() => setShowManageSpacesDialog(true)}
-              className="md:hidden px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-white border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700 flex-shrink-0"
+              className="md:hidden px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-card border border-border text-muted-foreground hover:border-border/80 hover:text-foreground flex-shrink-0"
             >
               <Settings className="h-4 w-4" />
             </button>
@@ -956,8 +956,8 @@ export default function MesasComandas() {
         </div>
 
         {/* Legenda de Status (clicável) */}
-        <div className="flex items-center gap-4 text-sm text-gray-600 flex-wrap">
-          <Filter className="h-5 w-5 text-gray-400" />
+        <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+          <Filter className="h-5 w-5 text-muted-foreground/70" />
           {statusLegend.map((item, index) => (
             <button
               key={item.status}
@@ -965,14 +965,14 @@ export default function MesasComandas() {
               className={cn(
                 "flex items-center gap-2 px-2 py-1 rounded-md transition-all",
                 statusFilter === item.status
-                  ? "bg-gray-100 ring-2 ring-gray-300"
-                  : "hover:bg-gray-50",
+                  ? "bg-muted ring-2 ring-border"
+                  : "hover:bg-muted/50",
                 index === 0 && "-ml-2.5"
               )}
             >
               <div className={cn("w-3 h-3 rounded-full", item.color)} />
               <span>{item.label}</span>
-              <span className="text-xs text-gray-400">({statusCounts[item.status]})</span>
+              <span className="text-xs text-muted-foreground/70">({statusCounts[item.status]})</span>
             </button>
           ))}
           {statusFilter && (
@@ -989,7 +989,7 @@ export default function MesasComandas() {
         {/* Loading */}
         {isLoading && (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         )}
 
@@ -1019,7 +1019,7 @@ export default function MesasComandas() {
                       <DropdownMenuTrigger asChild>
                         <button
                           onClick={(e) => e.stopPropagation()}
-                          className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-gray-200/80 transition-colors text-gray-400 hover:text-gray-600"
+                          className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
                         >
                           <MoreVertical className="h-4 w-4" />
                         </button>
@@ -1109,7 +1109,7 @@ export default function MesasComandas() {
                     }}
                     onClick={() => handleTableClick(table)}
                     className={cn(
-                      "w-full bg-white rounded-xl border border-border/50 p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
+                      "w-full bg-card rounded-xl border border-border/50 p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
                       "border-l-4 min-h-[120px]",
                       statusConfig.borderColor,
                       isDragging && "opacity-50 scale-95",
@@ -1118,7 +1118,7 @@ export default function MesasComandas() {
                   >
                     <div className="flex items-start justify-between" style={{ marginTop: "-5px" }}>
                       <div>
-                        <span className="text-3xl font-bold text-gray-900">{displayNumber}</span>
+                        <span className="text-3xl font-bold text-foreground">{displayNumber}</span>
                         {/* Indicador de mesa combinada */}
                         <div className="min-h-[20px]">
                           {isMergedTable ? (
@@ -1168,7 +1168,7 @@ export default function MesasComandas() {
                       </div>
                       {/* Contador de tempo para mesas ocupadas */}
                       {hasItems && table.occupiedAt && (
-                        <div className="flex items-center gap-1 text-sm text-gray-600 mr-6">
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground mr-6">
                           <Clock className="h-3.5 w-3.5" />
                           <span>{formatDuration(table.occupiedAt)}</span>
                         </div>
@@ -1184,13 +1184,13 @@ export default function MesasComandas() {
                     
                     {/* Informações da mesa ocupada */}
                     {hasItems && (
-                      <div className="space-y-1 text-sm text-gray-600">
+                      <div className="space-y-1 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Receipt className="h-3.5 w-3.5" />
                           <span>{itemsCount} {itemsCount === 1 ? 'item' : 'itens'}</span>
                         </div>
                         {tableTotal > 0 && (
-                          <div className="font-semibold text-gray-900">
+                          <div className="font-semibold text-foreground">
                             {formatCurrency(tableTotal)}
                           </div>
                         )}
@@ -1199,7 +1199,7 @@ export default function MesasComandas() {
 
                     {/* Informações da mesa reservada */}
                     {derivedStatus === "reserved" && !hasItems && (
-                      <div className="space-y-1 text-sm text-gray-600">
+                         <div className="space-y-1 text-sm text-muted-foreground">
                         {table.reservedName && (
                           <div className="flex items-center gap-1">
                             <UserRound className="h-3.5 w-3.5" />
@@ -1230,8 +1230,8 @@ export default function MesasComandas() {
 
         {/* Mensagem quando não há mesas no filtro */}
         {!isLoading && filteredTables.length === 0 && tables.length > 0 && (
-          <div className="flex flex-col items-center justify-center py-12 text-gray-500">
-            <AlertCircle className="h-10 w-10 mb-3 text-gray-300" />
+          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+            <AlertCircle className="h-10 w-10 mb-3 text-muted-foreground/50" />
             <p>Nenhuma mesa encontrada com os filtros selecionados.</p>
             <button
               onClick={() => {
@@ -1276,12 +1276,12 @@ export default function MesasComandas() {
               {selectedTable.tab && (
                 <div className="space-y-4 mb-6">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">Comanda</span>
+                    <span className="text-muted-foreground">Comanda</span>
                     <span className="font-medium">{selectedTable.tab.tabNumber}</span>
                   </div>
                   {selectedTable.occupiedAt && (
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">Tempo de uso</span>
+                      <span className="text-muted-foreground">Tempo de uso</span>
                       <span className="font-medium flex items-center gap-1">
                         <Clock className="h-4 w-4" />
                         {formatDuration(selectedTable.occupiedAt)}
@@ -1289,7 +1289,7 @@ export default function MesasComandas() {
                     </div>
                   )}
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">Pessoas</span>
+                    <span className="text-muted-foreground">Pessoas</span>
                     <span className="font-medium flex items-center gap-1">
                       <Users className="h-4 w-4" />
                       {selectedTable.currentGuests}
@@ -1301,20 +1301,20 @@ export default function MesasComandas() {
               {/* Lista de Itens */}
               {selectedTable.items && selectedTable.items.length > 0 && (
                 <div className="mb-6">
-                  <h4 className="font-medium text-gray-900 mb-3">Itens da Comanda</h4>
+                  <h4 className="font-medium text-foreground mb-3">Itens da Comanda</h4>
                   <div className="space-y-2">
                     {selectedTable.items.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                      <div key={item.id} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
                         <div className="flex-1">
-                          <p className="font-medium text-gray-900">{item.productName}</p>
-                          <p className="text-sm text-gray-500">
+                          <p className="font-medium text-foreground">{item.productName}</p>
+                          <p className="text-sm text-muted-foreground">
                             {item.quantity}x {formatCurrency(parseFloat(item.unitPrice))}
                           </p>
                           {item.notes && (
-                            <p className="text-xs text-gray-400 italic">{item.notes}</p>
+                            <p className="text-xs text-muted-foreground/70 italic">{item.notes}</p>
                           )}
                         </div>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-foreground">
                           {formatCurrency(parseFloat(item.totalPrice))}
                         </span>
                       </div>
@@ -1325,14 +1325,14 @@ export default function MesasComandas() {
 
               {/* Totais */}
               {selectedTable.tab && (
-                <div className="border-t border-gray-200 pt-4 mb-6 space-y-2">
+                <div className="border-t border-border pt-4 mb-6 space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">Subtotal</span>
+                    <span className="text-muted-foreground">Subtotal</span>
                     <span>{formatCurrency(parseFloat(selectedTable.tab.subtotal))}</span>
                   </div>
                   {parseFloat(selectedTable.tab.serviceCharge) > 0 && (
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">Taxa de Serviço (10%)</span>
+                      <span className="text-muted-foreground">Taxa de Serviço (10%)</span>
                       <span>{formatCurrency(parseFloat(selectedTable.tab.serviceCharge))}</span>
                     </div>
                   )}
@@ -1342,7 +1342,7 @@ export default function MesasComandas() {
                       <span>-{formatCurrency(parseFloat(selectedTable.tab.discount))}</span>
                     </div>
                   )}
-                  <div className="flex items-center justify-between text-lg font-bold pt-2 border-t border-gray-200">
+                  <div className="flex items-center justify-between text-lg font-bold pt-2 border-t border-border">
                     <span>Total</span>
                     <span>{formatCurrency(parseFloat(selectedTable.tab.total))}</span>
                   </div>
@@ -1426,7 +1426,7 @@ export default function MesasComandas() {
                 {selectedTable.status === "occupied" && (
                   <Button 
                     variant="ghost" 
-                    className="w-full text-gray-500 hover:text-gray-700"
+                    className="w-full text-muted-foreground hover:text-foreground"
                     onClick={() => handleClearTable(selectedTable)}
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
@@ -1447,7 +1447,7 @@ export default function MesasComandas() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium text-gray-700">Nome do espaço das mesas</label>
+              <label className="text-sm font-medium text-foreground">Nome do espaço das mesas</label>
               <Input
                 type="text"
                 value={newSpaceName}
@@ -1455,12 +1455,12 @@ export default function MesasComandas() {
                 placeholder="Ex: Salão, Varanda, Área Externa..."
                 className="mt-1"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Opcional. Agrupa as mesas por local físico do restaurante.
               </p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Quantidade de mesas</label>
+              <label className="text-sm font-medium text-foreground">Quantidade de mesas</label>
               <Input
                 type="number"
                 value={newTableCount}
@@ -1471,7 +1471,7 @@ export default function MesasComandas() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Capacidade por mesa</label>
+              <label className="text-sm font-medium text-foreground">Capacidade por mesa</label>
               <Input
                 type="number"
                 value={newTableCapacity}
@@ -1515,7 +1515,7 @@ export default function MesasComandas() {
             {spaces.length > 0 ? (
               <div className="space-y-2">
                 {spaces.map((space) => (
-                  <div key={space.id} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                  <div key={space.id} className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
                     {editingSpaceId === space.id ? (
                       <>
                         <Input
@@ -1546,7 +1546,7 @@ export default function MesasComandas() {
                     ) : (
                       <>
                         <span className="flex-1 font-medium">{space.name}</span>
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-muted-foreground">
                           {spaceTablesCount[space.id] || 0} mesas
                         </span>
                         <Button
@@ -1574,8 +1574,8 @@ export default function MesasComandas() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-6 text-gray-500">
-                <MapPin className="h-10 w-10 mx-auto mb-2 text-gray-300" />
+              <div className="text-center py-6 text-muted-foreground">
+                <MapPin className="h-10 w-10 mx-auto mb-2 text-muted-foreground/50" />
                 <p>Nenhum espaço cadastrado.</p>
                 <p className="text-sm">Use o botão <strong>+</strong> ao lado do campo de busca para criar espaços.</p>
               </div>
@@ -1590,7 +1590,7 @@ export default function MesasComandas() {
                 </h4>
                 <div className="max-h-48 overflow-y-auto space-y-1">
                   {tables.map((table) => (
-                    <div key={table.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg text-sm">
+                    <div key={table.id} className="flex items-center justify-between p-2 bg-muted/50 rounded-lg text-sm">
                       <span>Mesa {table.number}</span>
                       <Button
                         size="sm"
@@ -1627,9 +1627,9 @@ export default function MesasComandas() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <label className="text-sm font-medium text-gray-700">Nome do cliente</label>
+              <label className="text-sm font-medium text-foreground">Nome do cliente</label>
               <div className="relative mt-1">
-                <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   value={reserveName}
                   onChange={(e) => setReserveName(e.target.value)}
@@ -1639,9 +1639,9 @@ export default function MesasComandas() {
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Telefone</label>
+              <label className="text-sm font-medium text-foreground">Telefone</label>
               <div className="relative mt-1">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                <Input
                    value={reservePhone}
                    onChange={(e) => {
@@ -1662,9 +1662,9 @@ export default function MesasComandas() {
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Horário da reserva</label>
+              <label className="text-sm font-medium text-foreground">Horário da reserva</label>
               <div className="relative mt-1">
-                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="time"
                   value={reserveTime}
@@ -1674,9 +1674,9 @@ export default function MesasComandas() {
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Quantidade de pessoas</label>
+              <label className="text-sm font-medium text-foreground">Quantidade de pessoas</label>
               <div className="relative mt-1">
-                <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="number"
                   min="1"
@@ -1687,7 +1687,7 @@ export default function MesasComandas() {
                 />
               </div>
             </div>
-            <p className="text-xs text-gray-500">Todos os campos são opcionais.</p>
+            <p className="text-xs text-muted-foreground">Todos os campos são opcionais.</p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowReserveDialog(false)}>
