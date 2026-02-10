@@ -799,7 +799,7 @@ export default function Pedidos() {
     });
   };
 
-  // Filtrar pedidos completos para mostrar apenas os do dia atual (timezone do restaurante)
+  // Filtrar pedidos completos e cancelados para mostrar apenas os do dia atual (timezone do restaurante)
   const getTodayStartInTimezone = (tz: string): Date => {
     // Obter a data/hora atual no timezone do restaurante
     const now = new Date();
@@ -860,7 +860,7 @@ export default function Pedidos() {
     preparing: filteredOrders?.filter((o: OrderItem) => o.status === "preparing") ?? [],
     ready: filteredOrders?.filter((o: OrderItem) => o.status === "ready") ?? [],
     completed: filteredOrders?.filter((o: OrderItem) => o.status === "completed" && new Date(o.updatedAt || o.createdAt) >= todayStart) ?? [],
-    cancelled: filteredOrders?.filter((o: OrderItem) => o.status === "cancelled") ?? [],
+    cancelled: filteredOrders?.filter((o: OrderItem) => o.status === "cancelled" && new Date(o.updatedAt || o.createdAt) >= todayStart) ?? [],
   };
 
   return (

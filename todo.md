@@ -5937,3 +5937,6 @@
 - [x] Verificar se a limpeza automática às 00:00 (timezone do restaurante) está ativa no código
 - [x] Confirmar que a lógica é exclusivamente visual (front-end), sem remover dados do banco
 - [x] Não foi necessário reimplementar - funcionalidade está ativa
+
+## Limpeza diária de pedidos cancelados
+- [x] Aplicar mesma lógica de limpeza diária (00:00 timezone do restaurante) à coluna de Cancelados
