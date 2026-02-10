@@ -45,7 +45,7 @@ function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
 function StarRatingCompact({ rating }: { rating: number }) {
   return (
     <span className="inline-flex items-center gap-1">
-      {rating}
+      {Number(rating).toFixed(1)}
       <Star size={14} className="fill-amber-400 text-amber-400" />
     </span>
   );
