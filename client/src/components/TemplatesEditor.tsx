@@ -266,8 +266,8 @@ export function TemplatesEditor({
       {/* Header com título e descrição */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-slate-800">Editor de Mensagens</h3>
-          <p className="text-sm text-slate-500">Personalize as mensagens automáticas enviadas aos clientes</p>
+          <h3 className="text-lg font-semibold text-foreground">Editor de Mensagens</h3>
+          <p className="text-sm text-muted-foreground">Personalize as mensagens automáticas enviadas aos clientes</p>
         </div>
         <Button 
           onClick={onSave}
@@ -308,11 +308,11 @@ export function TemplatesEditor({
       </div>
 
       {/* Card de Variáveis - Novo Design Minimalista */}
-      <div className="bg-card rounded-2xl border border-slate-200 p-5">
+      <div className="bg-card rounded-2xl border border-border p-5">
         <div className="flex items-center gap-2 mb-4">
           <Info className="h-4 w-4 text-blue-500" />
-          <span className="text-sm font-semibold text-slate-700">Variáveis disponíveis</span>
-          <span className="text-xs text-slate-400 ml-1">• Clique para inserir</span>
+          <span className="text-sm font-semibold text-foreground">Variáveis disponíveis</span>
+          <span className="text-xs text-muted-foreground ml-1">• Clique para inserir</span>
         </div>
         <div className="flex flex-wrap gap-2">
           {(activeTemplate === 'reservation' ? RESERVATION_VARIABLES : VARIABLES).map((v) => (
@@ -322,13 +322,13 @@ export function TemplatesEditor({
               className={`group relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 copiedVar === v.name
                   ? 'bg-green-500 text-white scale-95'
-                  : 'bg-slate-100 text-slate-600 hover:bg-blue-500 hover:text-white hover:shadow-md'
+                  : 'bg-muted text-muted-foreground hover:bg-blue-500 hover:text-white hover:shadow-md'
               }`}
               title={v.description}
             >
               <span className="font-mono text-xs">{v.name.replace(/\{\{|\}\}/g, '')}</span>
               {copiedVar === v.name && (
-                <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-foreground text-background text-xs px-2 py-1 rounded whitespace-nowrap">
                   Inserido!
                 </span>
               )}
@@ -341,22 +341,22 @@ export function TemplatesEditor({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Card do Editor - Novo Design Clean */}
-        <div className="bg-card rounded-2xl border border-slate-200 overflow-hidden">
+        <div className="bg-card rounded-2xl border border-border overflow-hidden">
           {/* Header do Editor */}
-          <div className="px-5 py-4 border-b border-slate-100 bg-slate-50">
+          <div className="px-5 py-4 border-b border-border bg-muted/50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.bgColor}`}>
                   <span className={config.color}>{config.icon}</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-slate-800">{config.label}</h4>
-                  <p className="text-xs text-slate-500">{config.description}</p>
+                  <h4 className="font-semibold text-foreground">{config.label}</h4>
+                  <p className="text-xs text-muted-foreground">{config.description}</p>
                 </div>
               </div>
               <button
                 onClick={handleResetTemplate}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 Restaurar
@@ -370,19 +370,19 @@ export function TemplatesEditor({
               value={currentTemplate.value}
               onChange={(e) => currentTemplate.setter(e.target.value)}
               rows={14}
-              className="font-mono text-sm resize-none border-slate-200 rounded-xl focus:border-blue-400 focus:ring-blue-400 bg-slate-50"
+              className="font-mono text-sm resize-none border-border rounded-xl focus:border-blue-400 focus:ring-blue-400 bg-muted/50"
               placeholder="Digite sua mensagem aqui..."
             />
             <div className="flex items-center justify-between mt-3 px-1">
-              <span className="text-xs text-slate-400">
-                Use <code className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">*texto*</code> para <strong>negrito</strong>
+              <span className="text-xs text-muted-foreground">
+                Use <code className="bg-muted px-1.5 py-0.5 rounded text-muted-foreground">*texto*</code> para <strong>negrito</strong>
               </span>
               <span className={`text-xs font-semibold ${
                 currentTemplate.value.length > 900 
                   ? currentTemplate.value.length > 1000 
                     ? 'text-red-500' 
                     : 'text-orange-500'
-                  : 'text-slate-400'
+                  : 'text-muted-foreground'
               }`}>
                 {currentTemplate.value.length} / 1024
               </span>
@@ -391,7 +391,7 @@ export function TemplatesEditor({
         </div>
 
         {/* Card de Preview WhatsApp - Design Realista */}
-        <div className="bg-slate-200 rounded-2xl overflow-hidden border border-slate-300">
+        <div className="bg-muted rounded-2xl overflow-hidden border border-border">
           {/* Header do WhatsApp - Perspectiva do Cliente (recebendo mensagem do restaurante) */}
           <div className="bg-[#008069] px-4 py-3">
             <div className="flex items-center justify-between">
@@ -432,7 +432,7 @@ export function TemplatesEditor({
           >
             {/* Data do dia */}
             <div className="flex justify-center mb-4">
-              <span className="bg-white/90 text-slate-600 text-[11px] font-medium px-3 py-1 rounded-lg shadow-sm">
+              <span className="bg-card/90 text-muted-foreground text-[11px] font-medium px-3 py-1 rounded-lg shadow-sm">
                 HOJE
               </span>
             </div>
@@ -452,15 +452,15 @@ export function TemplatesEditor({
                   />
                   
                   {/* Conteúdo da mensagem */}
-                  <div className="text-[14px] text-slate-800 whitespace-pre-wrap break-words leading-relaxed pr-12">
+                  <div className="text-[14px] text-foreground whitespace-pre-wrap break-words leading-relaxed pr-12">
                     {formatWhatsAppText(currentTemplate.value) || (
-                      <span className="text-slate-400 italic">Sua mensagem aparecerá aqui...</span>
+                      <span className="text-muted-foreground italic">Sua mensagem aparecerá aqui...</span>
                     )}
                   </div>
                   
                   {/* Horário (sem checkmarks para mensagem recebida) */}
                   <div className="absolute bottom-2 right-2 flex items-center gap-1">
-                    <span className="text-[11px] text-slate-500">{getCurrentTime()}</span>
+                    <span className="text-[11px] text-muted-foreground">{getCurrentTime()}</span>
                   </div>
                 </div>
               </div>
@@ -468,14 +468,14 @@ export function TemplatesEditor({
           </div>
           
           {/* Footer do WhatsApp - Input de mensagem */}
-          <div className="bg-[#F0F2F5] px-3 py-2 flex items-center gap-2">
-            <button className="p-2 hover:bg-slate-200 rounded-full transition-colors">
-              <Smile className="h-6 w-6 text-slate-500" />
+          <div className="bg-muted/80 px-3 py-2 flex items-center gap-2">
+            <button className="p-2 hover:bg-muted rounded-full transition-colors">
+              <Smile className="h-6 w-6 text-muted-foreground" />
             </button>
-            <button className="p-2 hover:bg-slate-200 rounded-full transition-colors">
-              <Paperclip className="h-6 w-6 text-slate-500" />
+            <button className="p-2 hover:bg-muted rounded-full transition-colors">
+              <Paperclip className="h-6 w-6 text-muted-foreground" />
             </button>
-            <div className="flex-1 bg-card rounded-full px-4 py-2.5 text-sm text-slate-400">
+            <div className="flex-1 bg-card rounded-full px-4 py-2.5 text-sm text-muted-foreground">
               Digite uma mensagem
             </div>
             <button className="w-10 h-10 rounded-full bg-[#008069] flex items-center justify-center hover:bg-[#017561] transition-colors">
