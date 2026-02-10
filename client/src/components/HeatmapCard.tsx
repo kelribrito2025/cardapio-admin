@@ -295,7 +295,7 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
                       >
                         <div className="text-center">
                           <div className="font-semibold">{day} às {hour}h</div>
-                          <div className="text-blue-300">{count} visualizações</div>
+                          <div className="text-blue-300">{count} {count === 1 ? 'acesso' : 'acessos'}</div>
                         </div>
                       </TooltipContent>
                     </Tooltip>

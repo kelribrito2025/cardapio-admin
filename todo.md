@@ -6030,3 +6030,6 @@
 
 ## Subtítulo do Card Heatmap
 - [x] Alterar subtítulo do card de heatmap para "Dias e horários com mais acessos ao seu cardápio"
+
+## Tooltip do Heatmap
+- [x] Substituir "visualizações" por "acesso" (1) ou "acessos" (2+) no tooltip das células do heatmap
