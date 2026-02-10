@@ -492,8 +492,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   // Sidebar width based on collapsed state
-  const sidebarWidth = sidebarCollapsed ? "w-[63px]" : "w-[269px]";
-  const mainPadding = sidebarCollapsed ? "lg:pl-[63px]" : "lg:pl-[269px]";
+  const sidebarWidth = sidebarCollapsed ? "w-[63px]" : "w-[240px]";
+  const mainPadding = sidebarCollapsed ? "lg:pl-[63px]" : "lg:pl-[240px]";
 
   return (
     <div className="min-h-screen bg-background">
