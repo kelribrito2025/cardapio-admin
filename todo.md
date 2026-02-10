@@ -5977,3 +5977,12 @@
 - [x] Sidebar: reorganizar Cardápio como submenu de Menu (Menu > Cardápio, Avaliações)
 - [x] Badge: contador de avaliações pendentes no menu lateral
 - [x] Destaque visual para avaliações negativas (1-2 estrelas)
+
+## Controle de Avaliações (Toggle Ativar/Desativar)
+- [x] Schema: adicionar campo reviewsEnabled (boolean) e fakeReviewCount na tabela establishments
+- [x] Configurações > Estabelecimento: card "Avaliações do Restaurante" com toggle
+- [x] Menu público (desativado): nota fixa 5.0, quantidade fake, sem modal de avaliações
+- [x] Menu público (desativado): ocultar modal de avaliação pós-pedido entregue
+- [x] Admin (desativado): ocultar menu Avaliações no sidebar e badge
+- [x] Admin (desativado): bloquear acesso à página /avaliacoes com mensagem
+- [x] Backend: impedir criação de avaliações quando desativado

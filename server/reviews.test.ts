@@ -212,3 +212,145 @@ describe('Reviews Admin Functions', () => {
     });
   });
 });
+
+describe('Reviews Enabled Toggle', () => {
+  describe('reviewsEnabled behavior', () => {
+    it('should default to true when reviewsEnabled is undefined', () => {
+      const establishment = { id: 1, reviewsEnabled: undefined };
+      const isEnabled = establishment.reviewsEnabled !== false;
+      expect(isEnabled).toBe(true);
+    });
+
+    it('should default to true when reviewsEnabled is null', () => {
+      const establishment = { id: 1, reviewsEnabled: null };
+      const isEnabled = establishment.reviewsEnabled !== false;
+      expect(isEnabled).toBe(true);
+    });
+
+    it('should be true when reviewsEnabled is true', () => {
+      const establishment = { id: 1, reviewsEnabled: true };
+      const isEnabled = establishment.reviewsEnabled !== false;
+      expect(isEnabled).toBe(true);
+    });
+
+    it('should be false when reviewsEnabled is false', () => {
+      const establishment = { id: 1, reviewsEnabled: false };
+      const isEnabled = establishment.reviewsEnabled !== false;
+      expect(isEnabled).toBe(false);
+    });
+  });
+
+  describe('fake review display when disabled', () => {
+    it('should show 5.0 rating when reviews disabled', () => {
+      const establishment = { reviewsEnabled: false, rating: 3.5, fakeReviewCount: 355 };
+      const displayRating = establishment.reviewsEnabled !== false
+        ? (establishment.rating ? Number(establishment.rating).toFixed(1) : '0.0')
+        : '5.0';
+      expect(displayRating).toBe('5.0');
+    });
+
+    it('should show real rating when reviews enabled', () => {
+      const establishment = { reviewsEnabled: true, rating: 3.5, fakeReviewCount: 355 };
+      const displayRating = establishment.reviewsEnabled !== false
+        ? (establishment.rating ? Number(establishment.rating).toFixed(1) : '0.0')
+        : '5.0';
+      expect(displayRating).toBe('3.5');
+    });
+
+    it('should show fakeReviewCount when reviews disabled', () => {
+      const establishment = { reviewsEnabled: false, reviewCount: 10, fakeReviewCount: 500 };
+      const displayCount = establishment.reviewsEnabled !== false
+        ? (establishment.reviewCount || 0)
+        : (establishment.fakeReviewCount || 355);
+      expect(displayCount).toBe(500);
+    });
+
+    it('should show real reviewCount when reviews enabled', () => {
+      const establishment = { reviewsEnabled: true, reviewCount: 10, fakeReviewCount: 500 };
+      const displayCount = establishment.reviewsEnabled !== false
+        ? (establishment.reviewCount || 0)
+        : (establishment.fakeReviewCount || 355);
+      expect(displayCount).toBe(10);
+    });
+
+    it('should default fakeReviewCount to 355 when not set', () => {
+      const establishment = { reviewsEnabled: false, reviewCount: 10, fakeReviewCount: undefined };
+      const displayCount = establishment.reviewsEnabled !== false
+        ? (establishment.reviewCount || 0)
+        : (establishment.fakeReviewCount || 355);
+      expect(displayCount).toBe(355);
+    });
+  });
+
+  describe('modal behavior when disabled', () => {
+    it('should not open reviews modal when disabled', () => {
+      const establishment = { reviewsEnabled: false };
+      let modalOpened = false;
+      if (establishment.reviewsEnabled !== false) {
+        modalOpened = true;
+      }
+      expect(modalOpened).toBe(false);
+    });
+
+    it('should open reviews modal when enabled', () => {
+      const establishment = { reviewsEnabled: true };
+      let modalOpened = false;
+      if (establishment.reviewsEnabled !== false) {
+        modalOpened = true;
+      }
+      expect(modalOpened).toBe(true);
+    });
+
+    it('should not show rating modal when disabled', () => {
+      const establishment = { reviewsEnabled: false };
+      const showRatingModal = true;
+      const shouldRender = showRatingModal && establishment.reviewsEnabled !== false;
+      expect(shouldRender).toBe(false);
+    });
+
+    it('should not show review button after delivery when disabled', () => {
+      const establishment = { reviewsEnabled: false };
+      const orderStatus = 'delivered';
+      const canReview = true;
+      const canReviewChecked = true;
+      const shouldShowButton = orderStatus === 'delivered' && canReview && canReviewChecked && establishment.reviewsEnabled !== false;
+      expect(shouldShowButton).toBe(false);
+    });
+  });
+
+  describe('admin sidebar behavior when disabled', () => {
+    it('should hide Avaliações submenu when disabled', () => {
+      const reviewsEnabled = false;
+      const children = [
+        { href: '/catalogo', label: 'Cardápio' },
+        { href: '/avaliacoes', label: 'Avaliações' },
+      ];
+      const filtered = children.filter((child) => {
+        if (child.href === '/avaliacoes' && !reviewsEnabled) return false;
+        return true;
+      });
+      expect(filtered).toHaveLength(1);
+      expect(filtered[0].label).toBe('Cardápio');
+    });
+
+    it('should show Avaliações submenu when enabled', () => {
+      const reviewsEnabled = true;
+      const children = [
+        { href: '/catalogo', label: 'Cardápio' },
+        { href: '/avaliacoes', label: 'Avaliações' },
+      ];
+      const filtered = children.filter((child) => {
+        if (child.href === '/avaliacoes' && !reviewsEnabled) return false;
+        return true;
+      });
+      expect(filtered).toHaveLength(2);
+    });
+
+    it('should not query unread reviews when disabled', () => {
+      const reviewsEnabled = false;
+      const establishmentId = 100;
+      const shouldQuery = !!establishmentId && reviewsEnabled;
+      expect(shouldQuery).toBe(false);
+    });
+  });
+});

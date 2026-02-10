@@ -554,6 +554,13 @@
       "when": 1770742605053,
       "tag": "0078_normal_shockwave",
       "breakpoints": true
+    },
+    {
+      "idx": 79,
+      "version": "5",
+      "when": 1770746623884,
+      "tag": "0079_lying_alice",
+      "breakpoints": true
     }
   ]
 }

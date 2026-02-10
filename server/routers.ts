@@ -273,6 +273,8 @@ export const appRouter = router({
         deliveryFeeType: z.enum(["free", "fixed", "byNeighborhood"]).optional(),
         deliveryFeeFixed: z.string().optional(),
         timezone: z.string().optional(),
+        reviewsEnabled: z.boolean().optional(),
+        fakeReviewCount: z.number().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;

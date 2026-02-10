@@ -255,6 +255,25 @@ export default function Avaliacoes() {
     );
   }
 
+  // Bloquear acesso quando avaliações estão desativadas
+  if (establishment.reviewsEnabled === false) {
+    return (
+      <AdminLayout>
+        <div className="flex flex-col items-center justify-center h-64 text-center space-y-4">
+          <div className="p-4 bg-muted rounded-full">
+            <Star className="h-10 w-10 text-muted-foreground" />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold">Avaliações desativadas</h2>
+            <p className="text-muted-foreground mt-1 max-w-md">
+              As avaliações estão desativadas para o seu estabelecimento. Para ativar, acesse Configurações &gt; Estabelecimento &gt; Avaliações do Restaurante.
+            </p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
   return (
     <AdminLayout>
     <div className="space-y-6">

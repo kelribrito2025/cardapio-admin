@@ -1792,24 +1792,30 @@ export default function PublicMenu() {
                     <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate max-w-[180px] md:max-w-none">
                       {establishment.name}
                     </h1>
-                    {/* Rating - clicável para abrir modal de avaliações */}
+                    {/* Rating - clicável para abrir modal de avaliações (apenas se ativado) */}
                     <div className="relative flex-shrink-0" ref={ratingTooltipRef}>
                       <button
-                        onClick={() => setShowReviewsModal(true)}
-                        className="flex items-center gap-1 hover:bg-gray-100 rounded-lg px-1.5 py-0.5 transition-colors cursor-pointer"
+                        onClick={() => establishment.reviewsEnabled !== false && setShowReviewsModal(true)}
+                        className={`flex items-center gap-1 rounded-lg px-1.5 py-0.5 transition-colors ${establishment.reviewsEnabled !== false ? 'hover:bg-gray-100 cursor-pointer' : 'cursor-default'}`}
                       >
                         {/* Ícone de estrela */}
                         <Star className="h-3.5 w-3.5 md:h-4 md:w-4 text-yellow-400 fill-yellow-400" />
                         <span className="text-xs md:text-sm font-semibold text-gray-800">
-                          {establishment.rating ? Number(establishment.rating).toFixed(1) : '0.0'}
+                          {establishment.reviewsEnabled !== false
+                            ? (establishment.rating ? Number(establishment.rating).toFixed(1) : '0.0')
+                            : '5.0'}
                         </span>
                         {/* Quantidade de avaliações - apenas número no mobile */}
                         <span className="text-xs text-gray-500 md:hidden">
-                          ({establishment.reviewCount || 0})
+                          ({establishment.reviewsEnabled !== false
+                            ? (establishment.reviewCount || 0)
+                            : (establishment.fakeReviewCount || 355)})
                         </span>
                         {/* Quantidade de avaliações - texto completo no desktop */}
                         <span className="text-sm text-gray-500 hidden md:inline">
-                          ({establishment.reviewCount || 0} {(establishment.reviewCount || 0) === 1 ? 'avaliação' : 'avaliações'})
+                          {establishment.reviewsEnabled !== false
+                            ? `(${establishment.reviewCount || 0} ${(establishment.reviewCount || 0) === 1 ? 'avaliação' : 'avaliações'})`
+                            : `(${establishment.fakeReviewCount || 355} avaliações)`}
                         </span>
                       </button>
                     </div>
@@ -5084,7 +5090,7 @@ setOnlinePaymentUrl(null);
             {/* Footer */}
             <div className="border-t px-6 py-4 space-y-3" style={{backgroundColor: '#ffffff'}}>
               {/* Botão Avaliar restaurante - só aparece quando status for entregue E pode avaliar (30 dias) E verificação já terminou */}
-              {orderStatus === 'delivered' && canReview && canReviewChecked && (
+              {orderStatus === 'delivered' && canReview && canReviewChecked && establishment?.reviewsEnabled !== false && (
                 <button
                   onClick={() => {
                     setShowRatingModal(true);
@@ -5133,7 +5139,7 @@ setOnlinePaymentUrl(null);
       )}
 
       {/* Modal de Avaliação do Restaurante */}
-      {showRatingModal && (
+      {showRatingModal && establishment?.reviewsEnabled !== false && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center">
           {/* Backdrop */}
           <div 
@@ -5440,7 +5446,7 @@ setOnlinePaymentUrl(null);
         </div>
       )}
 
-      {showReviewsModal && establishment && (
+      {showReviewsModal && establishment && establishment.reviewsEnabled !== false && (
         <div className="fixed inset-0 z-[110] flex items-end md:items-center md:justify-center">
           {/* Backdrop */}
           <div 

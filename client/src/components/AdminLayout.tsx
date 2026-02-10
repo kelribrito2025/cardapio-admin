@@ -222,10 +222,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   // Get trial info
   const { data: trialInfo } = trpc.establishment.getTrialInfo.useQuery();
 
-  // Get unread reviews count for badge
+  // Get unread reviews count for badge (only when reviews are enabled)
+  const reviewsEnabled = establishment?.reviewsEnabled !== false;
   const { data: unreadReviewCount } = trpc.reviewsAdmin.unreadCount.useQuery(
     { establishmentId: establishment?.id || 0 },
-    { enabled: !!establishment?.id, refetchOnWindowFocus: true }
+    { enabled: !!establishment?.id && reviewsEnabled, refetchOnWindowFocus: true }
   );
 
   // Auto-expandir menu pai quando navegar para rota filha
@@ -722,9 +723,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           isExpanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
                         )}>
                           <div className="ml-4 mt-0.5 space-y-0.5">
-                            {item.children.map((child: any) => {
+                            {item.children.filter((child: any) => {
+                              // Ocultar submenu Avaliações quando reviewsEnabled === false
+                              if (child.href === '/avaliacoes' && !reviewsEnabled) return false;
+                              return true;
+                            }).map((child: any) => {
                               const childActive = location === child.href || (child.href !== '/' && location.startsWith(child.href));
-                              const childBadge = child.badgeKey === 'reviews' && typeof unreadReviewCount === 'number' && unreadReviewCount > 0 ? unreadReviewCount : 0;
+                              const childBadge = child.badgeKey === 'reviews' && reviewsEnabled && typeof unreadReviewCount === 'number' && unreadReviewCount > 0 ? unreadReviewCount : 0;
                               return (
                                 <Link
                                   key={child.href}

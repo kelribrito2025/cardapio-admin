@@ -176,6 +176,10 @@ export default function Configuracoes() {
   // Timezone state
   const [timezone, setTimezone] = useState('America/Sao_Paulo');
   
+  // Reviews settings state
+  const [reviewsEnabled, setReviewsEnabled] = useState(true);
+  const [fakeReviewCount, setFakeReviewCount] = useState(355);
+  
   // Business hours state
   type BusinessHourDay = {
     dayOfWeek: number;
@@ -319,6 +323,8 @@ export default function Configuracoes() {
       setDeliveryFeeType(establishment.deliveryFeeType || "free");
       setDeliveryFeeFixed(establishment.deliveryFeeFixed || "0");
       setTimezone(establishment.timezone || 'America/Sao_Paulo');
+      setReviewsEnabled(establishment.reviewsEnabled ?? true);
+      setFakeReviewCount(establishment.fakeReviewCount ?? 355);
     }
   }, [establishment]);
   
@@ -1542,6 +1548,81 @@ export default function Configuracoes() {
           {/* Programa de fidelidade */}
           <SectionCard title="Programa de fidelidade">
             <LoyaltySettingsCard establishmentId={establishment?.id || 0} />
+          </SectionCard>
+
+          {/* Avaliações do Restaurante */}
+          <SectionCard title="Avaliações do Restaurante">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium">Permitir avaliações de clientes</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Quando ativado, clientes podem avaliar após pedido entregue. Quando desativado, uma nota fixa 5.0 será exibida no menu público.
+                  </p>
+                </div>
+                <Switch
+                  checked={reviewsEnabled}
+                  onCheckedChange={(checked) => {
+                    setReviewsEnabled(checked);
+                    if (establishment?.id) {
+                      updateMutation.mutate({
+                        id: establishment.id,
+                        reviewsEnabled: checked,
+                      }, {
+                        onSuccess: () => {
+                          toast.success(checked ? "Avaliações ativadas" : "Avaliações desativadas");
+                          refetch();
+                        },
+                      });
+                    }
+                  }}
+                />
+              </div>
+              
+              {!reviewsEnabled && (
+                <div className="border border-border/50 rounded-lg p-4 bg-muted/30 space-y-3">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Info className="h-4 w-4" />
+                    <span>Configurações do modo desativado</span>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm">Quantidade de avaliações exibidas (visual)</Label>
+                    <div className="flex items-center gap-3">
+                      <Input
+                        type="number"
+                        min={0}
+                        max={9999}
+                        value={fakeReviewCount}
+                        onChange={(e) => setFakeReviewCount(Number(e.target.value))}
+                        className="w-32"
+                      />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          if (establishment?.id) {
+                            updateMutation.mutate({
+                              id: establishment.id,
+                              fakeReviewCount,
+                            }, {
+                              onSuccess: () => {
+                                toast.success("Quantidade atualizada");
+                                refetch();
+                              },
+                            });
+                          }
+                        }}
+                      >
+                        Salvar
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      No menu público será exibido: ⭐ 5.0 ({fakeReviewCount} avaliações)
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </SectionCard>
 
             </div>

@@ -98,6 +98,9 @@ export const establishments = mysqlTable("establishments", {
   billingPeriod: mysqlEnum("billingPeriod", ["monthly", "annual"]),
   planExpiresAt: timestamp("planExpiresAt"),
   planActivatedAt: timestamp("planActivatedAt"),
+  // Avaliações
+  reviewsEnabled: boolean("reviewsEnabled").default(true).notNull(),
+  fakeReviewCount: int("fakeReviewCount").default(355),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
