@@ -193,16 +193,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     setSearchQuery("");
   }, [location]);
 
-  // Usa um pequeno delay para permitir que a transição seja visível
-  useEffect(() => {
-    if (location === "/pdv" || location === "/pedidos" || location === "/configuracoes" || location === "/mesas") {
-      // Pequeno delay para garantir que a transição seja visível
-      const timer = setTimeout(() => {
-        setSidebarCollapsed(true);
-      }, 50);
-      return () => clearTimeout(timer);
-    }
-  }, [location]);
+
 
   // Get establishment data
   const { data: establishment, refetch: refetchEstablishment } = trpc.establishment.get.useQuery(
@@ -498,11 +489,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const handleNavClick = (href: string) => {
     // Fechar sidebar mobile
     setSidebarOpen(false);
-    
-    // Minimizar sidebar automaticamente ao clicar em Pedidos ou PDV (desktop)
-    if (href === "/pedidos" || href === "/pdv") {
-      setSidebarCollapsed(true);
-    }
   };
 
   // Sidebar width based on collapsed state
