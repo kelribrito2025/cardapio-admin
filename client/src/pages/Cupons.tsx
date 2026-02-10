@@ -49,10 +49,10 @@ import { ptBR } from "date-fns/locale";
 type CouponStatus = "active" | "inactive" | "expired" | "exhausted";
 
 const statusConfig: Record<CouponStatus, { label: string; color: string; bgColor: string; borderColor: string; icon: React.ReactNode }> = {
-  active: { label: "Ativo", color: "text-green-700", bgColor: "bg-green-50", borderColor: "border-green-200", icon: <CheckCircle className="h-3.5 w-3.5" /> },
+  active: { label: "Ativo", color: "text-green-700 dark:text-green-400", bgColor: "bg-green-50 dark:bg-green-950/40", borderColor: "border-green-200 dark:border-green-800", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   inactive: { label: "Inativo", color: "text-muted-foreground", bgColor: "bg-muted/50", borderColor: "border-border", icon: <XCircle className="h-3.5 w-3.5" /> },
-  expired: { label: "Expirado", color: "text-orange-700", bgColor: "bg-orange-50", borderColor: "border-orange-200", icon: <AlertCircle className="h-3.5 w-3.5" /> },
-  exhausted: { label: "Esgotado", color: "text-red-700", bgColor: "bg-red-50", borderColor: "border-red-200", icon: <Ban className="h-3.5 w-3.5" /> },
+  expired: { label: "Expirado", color: "text-orange-700 dark:text-orange-400", bgColor: "bg-orange-50 dark:bg-orange-950/40", borderColor: "border-orange-200 dark:border-orange-800", icon: <AlertCircle className="h-3.5 w-3.5" /> },
+  exhausted: { label: "Esgotado", color: "text-red-700 dark:text-red-400", bgColor: "bg-red-50 dark:bg-red-950/40", borderColor: "border-red-200 dark:border-red-800", icon: <Ban className="h-3.5 w-3.5" /> },
 };
 
 const statusBorderLeft: Record<CouponStatus, string> = {
@@ -292,8 +292,8 @@ export default function Cupons() {
           {/* Topo: código + status + ações */}
           <div className="flex items-center justify-between gap-2 mb-3">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="p-1.5 bg-red-50 rounded shrink-0">
-                <Ticket className="h-4 w-4 text-red-600" />
+              <div className="p-1.5 bg-red-50 dark:bg-red-950/40 rounded shrink-0">
+                <Ticket className="h-4 w-4 text-red-600 dark:text-red-400" />
               </div>
               <span className="font-mono font-bold text-base text-foreground truncate">{coupon.code}</span>
             </div>
@@ -314,8 +314,8 @@ export default function Cupons() {
           {/* Valor do desconto + seta de expandir */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 bg-red-50 rounded-lg px-3 py-1.5">
-                <span className="font-bold text-lg text-red-600">
+              <div className="flex items-center gap-1.5 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-1.5">
+                <span className="font-bold text-lg text-red-600 dark:text-red-400">
                   {formatCouponValue(coupon)}
                 </span>
               </div>
@@ -375,8 +375,8 @@ export default function Cupons() {
           {/* Topo: código + ações */}
           <div className="flex items-center justify-between gap-2 mb-3">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="p-1.5 bg-red-50 rounded shrink-0">
-                <Ticket className="h-4 w-4 text-red-600" />
+              <div className="p-1.5 bg-red-50 dark:bg-red-950/40 rounded shrink-0">
+                <Ticket className="h-4 w-4 text-red-600 dark:text-red-400" />
               </div>
               <span className="font-mono font-bold text-base text-foreground truncate">{coupon.code}</span>
             </div>
@@ -388,8 +388,8 @@ export default function Cupons() {
           {/* Valor do desconto + status + seta */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 bg-red-50 rounded-lg px-3 py-1.5">
-                <span className="font-bold text-xl text-red-600">
+              <div className="flex items-center gap-1.5 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-1.5">
+                <span className="font-bold text-xl text-red-600 dark:text-red-400">
                   {formatCouponValue(coupon)}
                 </span>
               </div>
@@ -464,11 +464,11 @@ export default function Cupons() {
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Ativos</p>
                 <div className="flex items-center gap-1.5 mt-1">
                   <span className="w-2 h-2 rounded-full bg-green-500" />
-                  <span className="text-2xl font-bold tracking-tight text-green-600">{activeCoupons}</span>
+                  <span className="text-2xl font-bold tracking-tight text-green-600 dark:text-green-400">{activeCoupons}</span>
                 </div>
               </div>
-              <div className="p-2.5 bg-green-100 rounded-lg shrink-0">
-                <CheckCircle className="h-5 w-5 text-green-600" />
+              <div className="p-2.5 bg-green-100 dark:bg-green-950/40 rounded-lg shrink-0">
+                <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
               </div>
             </div>
           </div>
@@ -494,11 +494,11 @@ export default function Cupons() {
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Expirados</p>
                 <div className="flex items-center gap-1.5 mt-1">
                   <span className="w-2 h-2 rounded-full bg-orange-500" />
-                  <span className="text-2xl font-bold tracking-tight text-orange-600">{expiredCoupons}</span>
+                  <span className="text-2xl font-bold tracking-tight text-orange-600 dark:text-orange-400">{expiredCoupons}</span>
                 </div>
               </div>
-              <div className="p-2.5 bg-orange-100 rounded-lg shrink-0">
-                <AlertCircle className="h-5 w-5 text-orange-600" />
+              <div className="p-2.5 bg-orange-100 dark:bg-orange-950/40 rounded-lg shrink-0">
+                <AlertCircle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
               </div>
             </div>
           </div>
@@ -509,11 +509,11 @@ export default function Cupons() {
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Esgotados</p>
                 <div className="flex items-center gap-1.5 mt-1">
                   <span className="w-2 h-2 rounded-full bg-red-500" />
-                  <span className="text-2xl font-bold tracking-tight text-red-600">{exhaustedCoupons}</span>
+                  <span className="text-2xl font-bold tracking-tight text-red-600 dark:text-red-400">{exhaustedCoupons}</span>
                 </div>
               </div>
-              <div className="p-2.5 bg-red-100 rounded-lg shrink-0">
-                <Ban className="h-5 w-5 text-red-600" />
+              <div className="p-2.5 bg-red-100 dark:bg-red-950/40 rounded-lg shrink-0">
+                <Ban className="h-5 w-5 text-red-600 dark:text-red-400" />
               </div>
             </div>
           </div>

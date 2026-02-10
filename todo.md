@@ -5899,3 +5899,6 @@
 ## Bug - Tema Escuro nos Cards de Estado Vazio dos Pedidos
 - [x] Corrigir tema escuro nos cards de estado vazio (Novos, Preparo, Prontos) na página de Pedidos - fundos claros no modo dark
 - [x] Adicionar dark variants a todos os bg-*-50, bg-*-100, border-*-200 e text-*-700/800 nos Pedidos
+
+## Bug - Tema Escuro nos Cupons (ícones e badges)
+- [x] Corrigir tema escuro nos ícones de status, badges e elementos restantes na página de Cupons
