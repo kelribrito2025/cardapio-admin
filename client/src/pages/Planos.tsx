@@ -107,6 +107,7 @@ const plans: Plan[] = [
       { text: "Análises avançadas" },
       { text: "Assistente de IA" },
       { text: "Relatórios personalizados" },
+      { text: "Programa de fidelidade" },
     ],
     buttonText: "Começar Agora",
   },

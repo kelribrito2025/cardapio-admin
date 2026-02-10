@@ -5920,3 +5920,4 @@
 - [x] Adicionar ícone no cabeçalho da página Ajuda e Suporte (igual às demais páginas)
 - [x] Adicionar ícone no cabeçalho da página Planos (igual às demais páginas)
 - [x] Adicionar features "Campanhas SMS" e "Cupons de desconto" ao plano Essencial
+- [x] Adicionar feature "Programa de fidelidade" ao plano Pro
