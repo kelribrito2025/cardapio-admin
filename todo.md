@@ -5959,3 +5959,6 @@
 ## Bug: Limpeza manual de pedidos não persiste após refresh
 - [x] Persistir limpeza manual no localStorage para sobreviver ao refresh da página
 - [x] Reset automático à meia-noite (timezone do restaurante)
+
+## Animação pulse no badge de trial
+- [x] Adicionar animação pulse no badge quando restarem menos de 3 dias de trial

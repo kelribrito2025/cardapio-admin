@@ -792,7 +792,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 <Popover>
                   <PopoverTrigger asChild>
                     <button
-                      className="flex items-center gap-2 px-2 py-1.5 md:px-3 md:py-2 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-300 rounded-lg text-xs font-medium transition-colors border border-amber-200 dark:border-amber-800/50"
+                      className={cn(
+                        "flex items-center gap-2 px-2 py-1.5 md:px-3 md:py-2 rounded-lg text-xs font-medium transition-colors border",
+                        trialInfo.daysRemaining <= 3
+                          ? "bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 border-red-300 dark:border-red-800/50 animate-pulse"
+                          : "bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/50"
+                      )}
                       style={{ borderRadius: '10px' }}
                     >
                       <Clock className="h-3.5 w-3.5 shrink-0" />
