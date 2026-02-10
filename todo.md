@@ -6033,3 +6033,6 @@
 
 ## Tooltip do Heatmap
 - [x] Substituir "visualizações" por "acesso" (1) ou "acessos" (2+) no tooltip das células do heatmap
+
+## Legenda do Heatmap
+- [x] Atualizar "Total acumulado" para "Total de acessos" na legenda inferior do heatmap

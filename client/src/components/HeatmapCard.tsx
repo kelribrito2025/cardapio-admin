@@ -321,9 +321,9 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
             <span className="text-[10px] text-muted-foreground">Mais</span>
           </div>
           
-          {/* Total de visualizações (acumulado geral) */}
+          {/* Total de acessos (acumulado geral) */}
           <div className="text-xs text-muted-foreground">
-            Total acumulado: <span className="font-semibold text-foreground">{(heatmapData?.totalViews ?? 0).toLocaleString('pt-BR')}</span>
+            Total de acessos: <span className="font-semibold text-foreground">{(heatmapData?.totalViews ?? 0).toLocaleString('pt-BR')}</span>
           </div>
         </div>
       </div>
