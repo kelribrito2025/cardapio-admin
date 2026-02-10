@@ -34,6 +34,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  Crown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -230,6 +231,7 @@ export default function Planos() {
         <PageHeader 
           title="Planos e Assinatura" 
           description="Gerencie seu plano e histórico de pagamentos"
+          icon={<Crown className="h-6 w-6 text-blue-600" />}
         />
       </div>
 

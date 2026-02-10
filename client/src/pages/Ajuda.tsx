@@ -8,6 +8,7 @@ import {
   Play,
   ChevronDown,
   ChevronUp,
+  HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -147,6 +148,7 @@ export default function Ajuda() {
         <PageHeader 
           title="Ajuda e Suporte" 
           description="Central de ajuda e suporte ao cliente"
+          icon={<HelpCircle className="h-6 w-6 text-blue-600" />}
         />
       </div>
 

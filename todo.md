@@ -5916,3 +5916,6 @@
 - [x] Renomear plano Básico para Essencial (R$ 79,90) e colocar preço do Pro como R$ --,-- em todos os locais
 - [x] Limpar dados mockados do Histórico de Pagamentos na página de Planos
 - [x] Atualizar textos das features dos planos Gratuito e Essencial na página de Planos
+- [x] Remover badge do menu Planos no dropdown do perfil
+- [x] Adicionar ícone no cabeçalho da página Ajuda e Suporte (igual às demais páginas)
+- [x] Adicionar ícone no cabeçalho da página Planos (igual às demais páginas)
