@@ -84,11 +84,11 @@ const kanbanColumns = [
     title: "Novos",
     color: "blue",
     borderColor: "border-t-blue-500",
-    iconBg: "bg-blue-100",
+    iconBg: "bg-blue-100 dark:bg-blue-950/50",
     iconColor: "text-blue-600",
     dotColor: "bg-blue-500",
-    placeholderBorder: "border-blue-300",
-    placeholderBg: "bg-blue-50",
+    placeholderBorder: "border-blue-300 dark:border-blue-800",
+    placeholderBg: "bg-blue-50 dark:bg-blue-950/30",
     placeholderText: "text-blue-500",
     icon: Clock,
   },
@@ -97,11 +97,11 @@ const kanbanColumns = [
     title: "Preparo",
     color: "amber",
     borderColor: "border-t-amber-500",
-    iconBg: "bg-amber-100",
+    iconBg: "bg-amber-100 dark:bg-amber-950/50",
     iconColor: "text-amber-600",
     dotColor: "bg-amber-500",
-    placeholderBorder: "border-amber-300",
-    placeholderBg: "bg-amber-50/50",
+    placeholderBorder: "border-amber-300 dark:border-amber-800",
+    placeholderBg: "bg-amber-50/50 dark:bg-amber-950/30",
     placeholderText: "text-amber-500",
     icon: ChefHat,
   },
@@ -110,11 +110,11 @@ const kanbanColumns = [
     title: "Prontos",
     color: "emerald",
     borderColor: "border-t-emerald-500",
-    iconBg: "bg-emerald-100",
+    iconBg: "bg-emerald-100 dark:bg-emerald-950/50",
     iconColor: "text-emerald-600",
     dotColor: "bg-emerald-500",
-    placeholderBorder: "border-emerald-300",
-    placeholderBg: "bg-emerald-50/50",
+    placeholderBorder: "border-emerald-300 dark:border-emerald-800",
+    placeholderBg: "bg-emerald-50/50 dark:bg-emerald-950/30",
     placeholderText: "text-emerald-500",
     icon: Package,
   },
@@ -136,11 +136,11 @@ const kanbanColumns = [
     title: "Cancelados",
     color: "red",
     borderColor: "border-t-red-500",
-    iconBg: "bg-red-100",
+    iconBg: "bg-red-100 dark:bg-red-950/50",
     iconColor: "text-red-600",
     dotColor: "bg-red-500",
-    placeholderBorder: "border-red-300",
-    placeholderBg: "bg-red-50",
+    placeholderBorder: "border-red-300 dark:border-red-800",
+    placeholderBg: "bg-red-50 dark:bg-red-950/30",
     placeholderText: "text-red-500",
     icon: XCircle,
   },
@@ -153,11 +153,11 @@ const statusConfig: Record<OrderStatus, {
   color: string;
   bgColor: string;
 }> = {
-  new: { label: "Novo", variant: "info", icon: Clock, color: "text-blue-600", bgColor: "bg-blue-50" },
-  preparing: { label: "Preparando", variant: "warning", icon: ChefHat, color: "text-amber-600", bgColor: "bg-amber-50" },
-  ready: { label: "Pronto", variant: "success", icon: Package, color: "text-emerald-600", bgColor: "bg-emerald-50" },
+  new: { label: "Novo", variant: "info", icon: Clock, color: "text-blue-600", bgColor: "bg-blue-50 dark:bg-blue-950/30" },
+  preparing: { label: "Preparando", variant: "warning", icon: ChefHat, color: "text-amber-600", bgColor: "bg-amber-50 dark:bg-amber-950/30" },
+  ready: { label: "Pronto", variant: "success", icon: Package, color: "text-emerald-600", bgColor: "bg-emerald-50 dark:bg-emerald-950/30" },
   completed: { label: "Finalizado", variant: "default", icon: CheckCircle, color: "text-muted-foreground", bgColor: "bg-muted" },
-  cancelled: { label: "Cancelado", variant: "error", icon: XCircle, color: "text-red-600", bgColor: "bg-red-50" },
+  cancelled: { label: "Cancelado", variant: "error", icon: XCircle, color: "text-red-600", bgColor: "bg-red-50 dark:bg-red-950/30" },
 };
 
 const paymentMethodLabels: Record<string, { label: string; icon: typeof CreditCard }> = {
@@ -878,8 +878,8 @@ export default function Pedidos() {
             !isWhatsappFetched || isWhatsappLoading
               ? "bg-muted/50 border-border text-muted-foreground"
               : whatsappStatus?.status === 'connected'
-                ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                : "bg-red-50 border-red-200 text-red-700"
+                ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400"
+                : "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
           )}>
             {/* Status */}
             <div className="flex items-center gap-2">
@@ -917,7 +917,7 @@ export default function Pedidos() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 hover:bg-red-100 text-red-500"
+                        className="h-7 w-7 hover:bg-red-100 dark:hover:bg-red-950/30 text-red-500"
                         onClick={() => {
                           if (confirm('Tem certeza que deseja desconectar o WhatsApp?')) {
                             disconnectWhatsapp.mutate();
@@ -1379,7 +1379,7 @@ export default function Pedidos() {
               {/* Info Cards - Layout Vertical */}
               <div className="px-6 py-4 space-y-4">
                 {/* Customer Info */}
-                <div className="border border-blue-200 bg-blue-50/50 rounded-xl p-4">
+                <div className="border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/30 rounded-xl p-4">
                   <h4 className="font-semibold text-base mb-3">Informações do Cliente</h4>
                   <div className="flex items-center justify-between gap-2 text-sm">
                     <div className="flex items-center gap-2">
@@ -1441,7 +1441,7 @@ export default function Pedidos() {
                 </div>
 
                 {/* Order Items */}
-                <div className="border border-amber-200 bg-amber-50/50 rounded-xl p-4">
+                <div className="border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/30 rounded-xl p-4">
                   <h4 className="font-semibold text-base mb-4">Itens do Pedido</h4>
                   <div className="space-y-3">
                     {orderDetails.items?.map((item, index) => (
@@ -1516,7 +1516,7 @@ export default function Pedidos() {
                 </div>
 
                 {/* Delivery & Payment Info - Unified Card */}
-                <div className="border border-emerald-200 bg-emerald-50/50 rounded-xl p-4">
+                <div className="border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/30 rounded-xl p-4">
                   <h4 className="font-semibold text-base mb-3">{orderDetails.deliveryType === 'dine_in' ? 'Consumo e Pagamento' : 'Entrega e Pagamento'}</h4>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
@@ -1559,7 +1559,7 @@ export default function Pedidos() {
 
                 {/* Informações Adicionais do iFood */}
                 {(orderDetails as any).source === 'ifood' && (
-                  <div className="border border-red-200 bg-red-50/50 rounded-xl p-4">
+                  <div className="border border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-950/30 rounded-xl p-4">
                     <h4 className="font-semibold text-base mb-3 flex items-center gap-2">
                       <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded">iFood</span>
                       Informações do Pedido
@@ -1598,7 +1598,7 @@ export default function Pedidos() {
                       {(orderDetails as any).externalData?.delivery?.observations && (
                         <div className="text-sm">
                           <span className="text-muted-foreground block mb-1">Observações de Entrega:</span>
-                          <span className="font-medium text-amber-700 bg-amber-100 px-2 py-1 rounded block">
+                          <span className="font-medium text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/30 px-2 py-1 rounded block">
                             {(orderDetails as any).externalData.delivery.observations}
                           </span>
                         </div>
@@ -1615,7 +1615,7 @@ export default function Pedidos() {
                       <div className="flex flex-col items-center">
                         <div className={cn(
                           "h-8 w-8 rounded-full flex items-center justify-center",
-                          orderDetails.status !== "cancelled" ? "bg-emerald-100 text-emerald-600" : "bg-muted text-muted-foreground"
+                          orderDetails.status !== "cancelled" ? "bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400" : "bg-muted text-muted-foreground"
                         )}>
                           <CheckCircle className="h-4 w-4" />
                         </div>
@@ -1631,7 +1631,7 @@ export default function Pedidos() {
                       <div className="flex flex-col items-center">
                         <div className={cn(
                           "h-8 w-8 rounded-full flex items-center justify-center",
-                          ["preparing", "ready", "completed"].includes(orderDetails.status) ? "bg-emerald-100 text-emerald-600" : "bg-muted text-muted-foreground"
+                          ["preparing", "ready", "completed"].includes(orderDetails.status) ? "bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400" : "bg-muted text-muted-foreground"
                         )}>
                           <ChefHat className="h-4 w-4" />
                         </div>
@@ -1647,7 +1647,7 @@ export default function Pedidos() {
                       <div className="flex flex-col items-center">
                         <div className={cn(
                           "h-8 w-8 rounded-full flex items-center justify-center",
-                          ["ready", "completed"].includes(orderDetails.status) ? "bg-emerald-100 text-emerald-600" : "bg-muted text-muted-foreground"
+                          ["ready", "completed"].includes(orderDetails.status) ? "bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400" : "bg-muted text-muted-foreground"
                         )}>
                           <Package className="h-4 w-4" />
                         </div>
@@ -1663,7 +1663,7 @@ export default function Pedidos() {
                       <div className="flex flex-col items-center">
                         <div className={cn(
                           "h-8 w-8 rounded-full flex items-center justify-center",
-                          orderDetails.status === "completed" ? "bg-emerald-100 text-emerald-600" : "bg-muted text-muted-foreground"
+                          orderDetails.status === "completed" ? "bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400" : "bg-muted text-muted-foreground"
                         )}>
                           <CheckCircle className="h-4 w-4" />
                         </div>
@@ -1680,9 +1680,9 @@ export default function Pedidos() {
               {/* Notes */}
               {orderDetails.notes && (
                 <div className="px-6 py-4">
-                  <div className="bg-amber-50 border border-amber-200/50 rounded-xl p-4">
-                    <h4 className="font-semibold text-sm text-amber-800 mb-2">Observações</h4>
-                    <p className="text-sm text-amber-700">{orderDetails.notes}</p>
+                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200/50 dark:border-amber-800/50 rounded-xl p-4">
+                    <h4 className="font-semibold text-sm text-amber-800 dark:text-amber-400 mb-2">Observações</h4>
+                    <p className="text-sm text-amber-700 dark:text-amber-300">{orderDetails.notes}</p>
                   </div>
                 </div>
               )}
@@ -1807,7 +1807,7 @@ export default function Pedidos() {
         <DialogContent className="sm:max-w-md" style={{borderRadius: '16px'}}>
           <DialogHeader>
             <div className="flex items-center gap-3 mb-1">
-              <div className="p-2.5 bg-emerald-100 rounded-xl">
+              <div className="p-2.5 bg-emerald-100 dark:bg-emerald-950/50 rounded-xl">
                 <MessageCircle className="h-6 w-6 text-emerald-600" />
               </div>
               <DialogTitle className="text-lg">Notificações de pedidos via WhatsApp</DialogTitle>

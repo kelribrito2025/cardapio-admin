@@ -5895,3 +5895,7 @@
 ## Bug - Tema Escuro no Card de Entrega do PDV
 - [x] Corrigir tema escuro no card de endereço de entrega (fundo claro/bege no modo dark)
 - [x] Adicionar dark variants a todos os bg-red-50, bg-blue-50, bg-amber-50, hover:bg-red-50 no PDV
+
+## Bug - Tema Escuro nos Cards de Estado Vazio dos Pedidos
+- [x] Corrigir tema escuro nos cards de estado vazio (Novos, Preparo, Prontos) na página de Pedidos - fundos claros no modo dark
+- [x] Adicionar dark variants a todos os bg-*-50, bg-*-100, border-*-200 e text-*-700/800 nos Pedidos
