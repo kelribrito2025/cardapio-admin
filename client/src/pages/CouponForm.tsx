@@ -63,6 +63,7 @@ export default function CouponForm() {
 
   // Validation errors
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [initialDataLoaded, setInitialDataLoaded] = useState(false);
 
   // Get establishment
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
@@ -73,9 +74,9 @@ export default function CouponForm() {
     { enabled: !!couponId }
   );
 
-  // Populate form when editing
+  // Populate form when editing (apenas na primeira vez)
   useEffect(() => {
-    if (coupon) {
+    if (coupon && !initialDataLoaded) {
       setCode(coupon.code);
       setType(coupon.type as "percentage" | "fixed");
       setValue(coupon.value);
@@ -88,8 +89,9 @@ export default function CouponForm() {
       setValidOrigins(coupon.validOrigins || []);
       setStartTime(coupon.startTime || "");
       setEndTime(coupon.endTime || "");
+      setInitialDataLoaded(true);
     }
-  }, [coupon]);
+  }, [coupon, initialDataLoaded]);
 
   // Mutations
   const createMutation = trpc.coupon.create.useMutation({

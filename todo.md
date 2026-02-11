@@ -6168,3 +6168,12 @@
 
 ## Tooltip no campo de quantidade de avaliações
 - [x] Adicionar tooltip ou texto de ajuda explicando o motivo do limite de 250 avaliações
+
+## Bug: Perda de dados digitados ao mudar de aba do navegador
+- [x] Corrigir re-fetch automático que sobrescreve estado local em Configurações
+- [x] Corrigir re-fetch automático que sobrescreve estado local em Atendimento
+- [x] Corrigir re-fetch automático que sobrescreve estado local em Estabelecimento
+- [x] Desabilitar refetchOnWindowFocus globalmente no QueryClient
+- [x] Adicionar flags initialDataLoaded em Configuracoes.tsx (establishment, businessHours, neighborhoodFees, printerSettings)
+- [x] Adicionar initialDataLoaded em CouponForm.tsx
+- [x] Reset de flags após save (onSuccess das mutations)

@@ -261,6 +261,12 @@ export default function Configuracoes() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [originalName, setOriginalName] = useState("");
   
+  // Flags para carregar dados do servidor apenas uma vez (evita sobrescrever edições ao voltar à aba)
+  const [initialDataLoaded, setInitialDataLoaded] = useState(false);
+  const [initialBusinessHoursLoaded, setInitialBusinessHoursLoaded] = useState(false);
+  const [initialNeighborhoodFeesLoaded, setInitialNeighborhoodFeesLoaded] = useState(false);
+  const [initialPrinterSettingsLoaded, setInitialPrinterSettingsLoaded] = useState(false);
+  
   // Social dropdown state for preview
   const [showSocialDropdown, setShowSocialDropdown] = useState(false);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
@@ -276,9 +282,9 @@ export default function Configuracoes() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Load establishment data
+  // Load establishment data (apenas no carregamento inicial)
   useEffect(() => {
-    if (establishment) {
+    if (establishment && !initialDataLoaded) {
       setName(establishment.name || "");
       setLogo(establishment.logo || "");
       setCoverImage(establishment.coverImage || "");
@@ -326,12 +332,13 @@ export default function Configuracoes() {
       setTimezone(establishment.timezone || 'America/Sao_Paulo');
       setReviewsEnabled(establishment.reviewsEnabled ?? true);
       setFakeReviewCount(Math.min(establishment.fakeReviewCount ?? 250, 250));
+      setInitialDataLoaded(true);
     }
-  }, [establishment]);
+  }, [establishment, initialDataLoaded]);
   
   // Load business hours when data is available
   useEffect(() => {
-    if (businessHoursData && businessHoursData.length > 0) {
+    if (businessHoursData && businessHoursData.length > 0 && !initialBusinessHoursLoaded) {
       const hoursMap = new Map(businessHoursData.map(h => [h.dayOfWeek, h]));
       setBusinessHours(prev => prev.map(day => {
         const savedHour = hoursMap.get(day.dayOfWeek);
@@ -345,23 +352,25 @@ export default function Configuracoes() {
         }
         return day;
       }));
+      setInitialBusinessHoursLoaded(true);
     }
-  }, [businessHoursData]);
+  }, [businessHoursData, initialBusinessHoursLoaded]);
   
   // Load neighborhood fees when data is available
   useEffect(() => {
-    if (neighborhoodFeesData) {
+    if (neighborhoodFeesData && !initialNeighborhoodFeesLoaded) {
       setNeighborhoodFees(neighborhoodFeesData.map(fee => ({
         id: fee.id,
         neighborhood: fee.neighborhood,
         fee: fee.fee,
       })));
+      setInitialNeighborhoodFeesLoaded(true);
     }
-  }, [neighborhoodFeesData]);
+  }, [neighborhoodFeesData, initialNeighborhoodFeesLoaded]);
   
   // Load printer settings when data is available
   useEffect(() => {
-    if (printerSettings) {
+    if (printerSettings && !initialPrinterSettingsLoaded) {
       setAutoPrintEnabled(printerSettings.autoPrintEnabled);
       setPrintOnNewOrder(printerSettings.printOnNewOrder);
       setPrintOnStatusChange(printerSettings.printOnStatusChange);
@@ -380,8 +389,9 @@ export default function Configuracoes() {
       setDirectPrintEnabled((printerSettings as any).directPrintEnabled || false);
       setDirectPrintIp((printerSettings as any).directPrintIp || "");
       setDirectPrintPort((printerSettings as any).directPrintPort || 9100);
+      setInitialPrinterSettingsLoaded(true);
     }
-  }, [printerSettings]);
+  }, [printerSettings, initialPrinterSettingsLoaded]);
 
   // Upload mutation
   const uploadMutation = trpc.upload.image.useMutation();
@@ -389,6 +399,7 @@ export default function Configuracoes() {
   // Mutations
   const createMutation = trpc.establishment.create.useMutation({
     onSuccess: () => {
+      setInitialDataLoaded(false);
       refetch();
       toast.success("Estabelecimento criado com sucesso");
     },
@@ -397,6 +408,7 @@ export default function Configuracoes() {
 
   const updateMutation = trpc.establishment.update.useMutation({
     onSuccess: () => {
+      setInitialDataLoaded(false);
       refetch();
       toast.success("Configurações salvas com sucesso");
     },
@@ -411,6 +423,7 @@ export default function Configuracoes() {
   
   const saveNoteMutation = trpc.establishment.savePublicNote.useMutation({
     onSuccess: () => {
+      setInitialDataLoaded(false);
       refetch();
       toast.success("Nota salva com sucesso! Ela ficará visível por 24 horas.");
     },
@@ -419,6 +432,7 @@ export default function Configuracoes() {
   
   const removeNoteMutation = trpc.establishment.removePublicNote.useMutation({
     onSuccess: () => {
+      setInitialDataLoaded(false);
       refetch();
       setPublicNote("");
       setPublicNoteCreatedAt(null);
@@ -429,6 +443,7 @@ export default function Configuracoes() {
   
   const saveBusinessHoursMutation = trpc.establishment.saveBusinessHours.useMutation({
     onSuccess: () => {
+      setInitialBusinessHoursLoaded(false);
       refetchBusinessHours();
       toast.success("Horários de funcionamento salvos com sucesso");
     },
@@ -438,6 +453,7 @@ export default function Configuracoes() {
   // Neighborhood fees mutations
   const createNeighborhoodFeeMutation = trpc.neighborhoodFees.create.useMutation({
     onSuccess: () => {
+      setInitialNeighborhoodFeesLoaded(false);
       refetchNeighborhoodFees();
     },
     onError: () => toast.error("Erro ao salvar taxa por bairro"),
@@ -445,6 +461,7 @@ export default function Configuracoes() {
   
   const updateNeighborhoodFeeMutation = trpc.neighborhoodFees.update.useMutation({
     onSuccess: () => {
+      setInitialNeighborhoodFeesLoaded(false);
       refetchNeighborhoodFees();
     },
     onError: () => toast.error("Erro ao atualizar taxa por bairro"),
@@ -452,6 +469,7 @@ export default function Configuracoes() {
   
   const deleteNeighborhoodFeeMutation = trpc.neighborhoodFees.delete.useMutation({
     onSuccess: () => {
+      setInitialNeighborhoodFeesLoaded(false);
       refetchNeighborhoodFees();
     },
     onError: () => toast.error("Erro ao remover taxa por bairro"),
@@ -490,6 +508,7 @@ export default function Configuracoes() {
 
   const savePrinterSettingsMutation = trpc.printer.saveSettings.useMutation({
     onSuccess: () => {
+      setInitialPrinterSettingsLoaded(false);
       refetchPrinterSettings();
       toast.success("Configurações de impressão salvas com sucesso");
     },
@@ -1572,6 +1591,7 @@ export default function Configuracoes() {
                       }, {
                         onSuccess: () => {
                           toast.success(checked ? "Avaliações ativadas" : "Avaliações desativadas");
+                          setInitialDataLoaded(false);
                           refetch();
                         },
                       });
@@ -1623,6 +1643,7 @@ export default function Configuracoes() {
                             }, {
                               onSuccess: () => {
                                 toast.success("Quantidade atualizada");
+                                setInitialDataLoaded(false);
                                 refetch();
                               },
                             });
