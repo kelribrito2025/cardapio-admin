@@ -6101,3 +6101,6 @@
 - [x] Corrigir lógica no backend: outOfStock só deve ser true quando hasStock=true E stockQuantity=0 (backend já estava correto)
 - [x] Corrigir lógica no frontend (MenuPublico): produtos com hasStock=false devem aparecer normalmente
 - [x] Badge "Indisponível" só aparece quando hasStock=true E quantidade=0 (corrigido em PublicMenu, PDVSlidebar e MobilePDVModal)
+
+## Bug: Menu público não atualiza disponibilidade após pedido
+- [x] Invalidar cache do menu público após criação de pedido para refletir estoque atualizado em tempo real

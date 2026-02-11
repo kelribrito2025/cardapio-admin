@@ -497,6 +497,9 @@ export default function PublicMenu() {
       if (slug) {
         clearCartFromStorage(slug);
       }
+      
+      // Invalidar cache do menu para atualizar disponibilidade dos produtos (estoque)
+      trpcUtils.publicMenu.getBySlug.invalidate({ slug: slug || "" });
       setOrderObservation("");
       setAppliedCoupon(null);
       setChangeAmount("");
