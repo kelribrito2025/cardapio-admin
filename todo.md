@@ -6076,3 +6076,7 @@
 ## Bug: Estoque não desconta ao comprar
 - [x] Corrigir: estoque não é descontado ao realizar compra/confirmar pedido
 - [x] Corrigir: menu público não mostra "Indisponível" após estoque chegar a zero
+
+## Badge de Estoque sem Produto na Sidebar
+- [x] Criar endpoint para contar itens de estoque com quantidade zero
+- [x] Adicionar badge vermelho no menu Estoque na sidebar com contagem de itens sem estoque

@@ -1907,6 +1907,19 @@ export async function getStockItemsByEstablishment(
     .orderBy(asc(stockItems.name));
 }
 
+export async function getOutOfStockCount(establishmentId: number): Promise<{ count: number }> {
+  const db = await getDb();
+  if (!db) return { count: 0 };
+  const result = await db.select({ count: sql<number>`count(*)` })
+    .from(stockItems)
+    .where(and(
+      eq(stockItems.establishmentId, establishmentId),
+      eq(stockItems.isActive, true),
+      sql`CAST(${stockItems.currentQuantity} AS DECIMAL(10,2)) <= 0`
+    ));
+  return { count: Number(result[0]?.count || 0) };
+}
+
 export async function getStockItemById(id: number) {
   const db = await getDb();
   if (!db) return undefined;

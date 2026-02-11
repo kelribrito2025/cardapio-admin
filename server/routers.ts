@@ -1170,6 +1170,12 @@ export const appRouter = router({
         return db.getStockMovementsByItem(input.stockItemId, input.limit);
       }),
     
+    outOfStockCount: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getOutOfStockCount(input.establishmentId);
+      }),
+
     recentMovements: protectedProcedure
       .input(z.object({
         establishmentId: z.number(),

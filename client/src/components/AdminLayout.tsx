@@ -229,6 +229,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { enabled: !!establishment?.id && reviewsEnabled, refetchOnWindowFocus: true }
   );
 
+  // Get out of stock count for badge
+  const { data: outOfStockData } = trpc.stock.outOfStockCount.useQuery(
+    { establishmentId: establishment?.id || 0 },
+    { enabled: !!establishment?.id, refetchOnWindowFocus: true }
+  );
+  const outOfStockCount = outOfStockData?.count || 0;
+
   // Auto-expandir menu pai quando navegar para rota filha
   useEffect(() => {
     if (location === '/catalogo' || location.startsWith('/catalogo/') || location === '/avaliacoes') {
@@ -767,6 +774,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     (item.href !== "/" && location.startsWith(item.href)));
                   
                   const showOrderBadge = item.href === "/pedidos" && newOrdersCount > 0;
+                  const showStockBadge = item.href === "/estoque" && outOfStockCount > 0;
                   const isComingSoon = item.comingSoon === true;
                   
                   const navContent = (
@@ -785,6 +793,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                             {newOrdersCount > 9 ? "9+" : newOrdersCount}
                           </span>
                         )}
+                        {showStockBadge && sidebarCollapsed && (
+                          <span className={cn(
+                            "absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center",
+                            isActive ? "bg-card text-primary" : "bg-red-500 text-white"
+                          )}>
+                            {outOfStockCount > 9 ? "9+" : outOfStockCount}
+                          </span>
+                        )}
                       </div>
                       {!sidebarCollapsed && (
                         <span className={cn(
@@ -798,6 +814,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                               isActive ? "bg-card text-primary" : "bg-red-500 text-white"
                             )}>
                               {newOrdersCount > 99 ? "99+" : newOrdersCount}
+                            </span>
+                          )}
+                          {showStockBadge && (
+                            <span className={cn(
+                              "text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center",
+                              isActive ? "bg-card text-primary" : "bg-red-500 text-white"
+                            )}>
+                              {outOfStockCount > 99 ? "99+" : outOfStockCount}
                             </span>
                           )}
                           {isComingSoon && (
