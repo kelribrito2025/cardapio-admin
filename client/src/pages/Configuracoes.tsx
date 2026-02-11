@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Dialog,
   DialogContent,
@@ -1586,7 +1587,17 @@ export default function Configuracoes() {
                     <span>Configurações do modo desativado</span>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm">Quantidade de avaliações exibidas (visual)</Label>
+                    <div className="flex items-center gap-1.5">
+                      <Label className="text-sm">Quantidade de avaliações exibidas (visual)</Label>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[260px] text-center">
+                          <p>Limite de 250 para manter a credibilidade do perfil. Valores muito altos podem parecer artificiais para os clientes.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
                     <div className="flex items-center gap-3">
                       <Input
                         type="number"
@@ -1622,7 +1633,7 @@ export default function Configuracoes() {
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      No menu público será exibido: ⭐ 5.0 ({fakeReviewCount} avaliações) — máximo 250
+                      No menu público será exibido: ⭐ 5.0 ({fakeReviewCount} avaliações)
                     </p>
                   </div>
                 </div>

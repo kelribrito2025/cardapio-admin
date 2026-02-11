@@ -6165,3 +6165,6 @@
 ## Limitação de avaliações quando opção desativada
 - [x] Quando a opção de Avaliações do Restaurante estiver desativada, limitar o campo de quantidade a no máximo 250 avaliações
 - [x] Validar no frontend (input max) e backend (zod schema)
+
+## Tooltip no campo de quantidade de avaliações
+- [x] Adicionar tooltip ou texto de ajuda explicando o motivo do limite de 250 avaliações
