@@ -6161,3 +6161,7 @@
 ## Bug: Busca no PDV não funciona sem acentos
 - [x] Implementar normalização de acentos na busca de produtos do PDV (ex: "agua" deve encontrar "Água mineral")
 - [x] Aplicar em PDV.tsx, PDVSlidebar.tsx e MobilePDVModal.tsx (MobilePDVModal já tinha normalização)
+
+## Limitação de avaliações quando opção desativada
+- [x] Quando a opção de Avaliações do Restaurante estiver desativada, limitar o campo de quantidade a no máximo 250 avaliações
+- [x] Validar no frontend (input max) e backend (zod schema)

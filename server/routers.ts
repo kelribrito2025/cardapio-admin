@@ -275,7 +275,7 @@ export const appRouter = router({
         deliveryFeeFixed: z.string().optional(),
         timezone: z.string().optional(),
         reviewsEnabled: z.boolean().optional(),
-        fakeReviewCount: z.number().optional(),
+        fakeReviewCount: z.number().min(0).max(250).optional(),
         ownerDisplayName: z.string().max(11).nullable().optional(),
       }))
       .mutation(async ({ input }) => {

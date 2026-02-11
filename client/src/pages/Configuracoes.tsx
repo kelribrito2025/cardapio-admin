@@ -178,7 +178,7 @@ export default function Configuracoes() {
   
   // Reviews settings state
   const [reviewsEnabled, setReviewsEnabled] = useState(true);
-  const [fakeReviewCount, setFakeReviewCount] = useState(355);
+  const [fakeReviewCount, setFakeReviewCount] = useState(250);
   
   // Business hours state
   type BusinessHourDay = {
@@ -324,7 +324,7 @@ export default function Configuracoes() {
       setDeliveryFeeFixed(establishment.deliveryFeeFixed || "0");
       setTimezone(establishment.timezone || 'America/Sao_Paulo');
       setReviewsEnabled(establishment.reviewsEnabled ?? true);
-      setFakeReviewCount(establishment.fakeReviewCount ?? 355);
+      setFakeReviewCount(Math.min(establishment.fakeReviewCount ?? 250, 250));
     }
   }, [establishment]);
   
@@ -1591,9 +1591,12 @@ export default function Configuracoes() {
                       <Input
                         type="number"
                         min={0}
-                        max={9999}
+                        max={250}
                         value={fakeReviewCount}
-                        onChange={(e) => setFakeReviewCount(Number(e.target.value))}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setFakeReviewCount(val > 250 ? 250 : val < 0 ? 0 : val);
+                        }}
                         className="w-32"
                       />
                       <Button
@@ -1601,9 +1604,11 @@ export default function Configuracoes() {
                         variant="outline"
                         onClick={() => {
                           if (establishment?.id) {
+                            const clampedCount = Math.min(Math.max(fakeReviewCount, 0), 250);
+                            setFakeReviewCount(clampedCount);
                             updateMutation.mutate({
                               id: establishment.id,
-                              fakeReviewCount,
+                              fakeReviewCount: clampedCount,
                             }, {
                               onSuccess: () => {
                                 toast.success("Quantidade atualizada");
@@ -1617,7 +1622,7 @@ export default function Configuracoes() {
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      No menu público será exibido: ⭐ 5.0 ({fakeReviewCount} avaliações)
+                      No menu público será exibido: ⭐ 5.0 ({fakeReviewCount} avaliações) — máximo 250
                     </p>
                   </div>
                 </div>
