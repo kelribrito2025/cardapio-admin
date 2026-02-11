@@ -6080,3 +6080,7 @@
 ## Badge de Estoque sem Produto na Sidebar
 - [x] Criar endpoint para contar itens de estoque com quantidade zero
 - [x] Adicionar badge vermelho no menu Estoque na sidebar com contagem de itens sem estoque
+
+## Bug: Entrada de estoque não atualiza quantidade
+- [x] Corrigir: movimentação de entrada não atualiza currentQuantity do item de estoque (tabela stockMovements não existia)
+- [x] Corrigir: badge de sem estoque continua após entrada de estoque (tabela stockMovements não existia)

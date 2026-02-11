@@ -1,0 +1,8 @@
+{
+  "query": "SELECT sm.id, sm.stock_item_id, sm.type, sm.quantity, sm.previous_quantity, sm.new_quantity, sm.reason, sm.created_at FROM stock_movements sm JOIN stock_items si ON sm.stock_item_id = si.id WHERE si.establishment_id = 30001 ORDER BY sm.created_at DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT sm.id, sm.stock_item_id, sm.type, sm.quantity, sm.previous_quantity, sm.new_quantity, sm.reason, sm.created_at FROM stock_movements sm JOIN stock_items si ON sm.stock_item_id = si.id WHERE si.establishment_id = 30001 ORDER BY sm.created_at DESC LIMIT 10;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table 'enmwmxpat34diouyku4te2.stock_movements' doesn't exist"
+  ]
+}
