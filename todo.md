@@ -6213,3 +6213,8 @@
 
 ## Layout mobile Catálogo: botão nova categoria + campo de busca na mesma linha
 - [x] Colocar campo de busca à esquerda e botão nova categoria à direita na mesma linha (versão mobile)
+
+## Ajuste botão mobile Catálogo
+- [x] Remover botão vermelho "+ item" acima do campo de busca no mobile
+- [x] Botão ao lado do campo de busca deve adicionar novo produto (não nova categoria)
+- [x] Botão ao lado do campo de busca na cor vermelha #db262f

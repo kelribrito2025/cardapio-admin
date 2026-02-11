@@ -620,7 +620,7 @@ export default function Catalogo() {
           description="Gerencie seus produtos e categorias"
           icon={<UtensilsCrossed className="h-6 w-6 text-blue-600" />}
           actions={
-<Button onClick={() => navigate("/catalogo/novo")} className="rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
+<Button onClick={() => navigate("/catalogo/novo")} className="hidden md:flex rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
               <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
               <span className="text-xs sm:text-sm">item</span>
             </Button>
@@ -628,7 +628,7 @@ export default function Catalogo() {
         />
       </div>
 
-      {/* Mobile Search + Nova Categoria - visible only on mobile */}
+      {/* Mobile Search + Novo Produto - visible only on mobile */}
       <div className="mb-4 md:hidden flex items-center gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -648,12 +648,12 @@ export default function Catalogo() {
           )}
         </div>
         <Button
-          variant="outline"
           size="icon"
-          onClick={() => { setNewCategoryName(""); setCategoryDialogOpen(true); }}
-          className="h-10 w-10 rounded-xl flex-shrink-0 border-border/50"
+          onClick={() => navigate("/catalogo/novo")}
+          className="h-10 w-10 rounded-xl flex-shrink-0"
+          style={{ backgroundColor: '#db262f', color: 'white' }}
         >
-          <FolderPlus className="h-4 w-4" />
+          <Plus className="h-5 w-5" />
         </Button>
       </div>
 
