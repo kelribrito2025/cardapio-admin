@@ -444,7 +444,7 @@ export function generateStatusMessage(
   // Substituir variáveis de tipo de entrega para status "ready"
   if (status === 'ready') {
     // {{deliveryMessage}} → exclusivamente para pedidos delivery
-    const deliveryMessage = '🛥 Nosso entregador já está a caminho.';
+    const deliveryMessage = '🛵 Nosso entregador já está a caminho.';
     messageTemplate = messageTemplate.replace(/{{deliveryMessage}}/g, deliveryMessage);
     
     // {{pickupMessage}} → para pedidos de retirada ou consumo no local

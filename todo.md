@@ -6194,3 +6194,6 @@
 
 ## Remover item Informações do menu lateral do menu público
 - [x] Remover o item "Informações" do menu lateral, deixando apenas "Meus Pedidos"
+
+## Corrigir emoji no template de mensagem de entrega
+- [x] Trocar emoji de barco pelo emoji de moto 🛵 no template de pedido pronto/entrega
