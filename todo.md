@@ -6140,3 +6140,6 @@
 
 ## Bug: botões de quantidade e adicionar desaparecem no modal do produto
 - [x] Investigar e corrigir: após esvaziar sacola e abrir modal do produto novamente, botões +/- e "Adicionar" não aparecem (corrigido: auto-fechar sacola quando vazia + remover sticky/z-index conflitante do footer)
+
+## Bug: borda colorida dos cards na página de Pedidos mais fina que na Dashboard
+- [x] Corrigir espessura da borda superior colorida dos cards na página de Pedidos para ficar igual à Dashboard (ordem das classes CSS corrigida)

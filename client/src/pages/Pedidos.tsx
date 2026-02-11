@@ -1085,7 +1085,7 @@ export default function Pedidos() {
             <div 
               key={column.id}
               className={cn(
-                "bg-card rounded-2xl flex flex-col overflow-hidden border-t-4 border border-border/50",
+                "bg-card rounded-2xl flex flex-col overflow-hidden border border-border/50 border-t-4",
                 column.borderColor,
                 // Card de Cancelados: visível apenas no mobile
                 column.id === "cancelled" && "md:hidden"
