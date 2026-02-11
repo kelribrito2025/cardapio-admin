@@ -529,13 +529,17 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   const productsList = products?.products || [];
   const sortedCategories = categories?.filter(c => c.isActive).slice().sort((a, b) => a.sortOrder - b.sortOrder) || [];
 
+  // Normalizar texto removendo acentos para busca
+  const normalizeText = (text: string) =>
+    text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
   // Filtrar produtos
   const filteredProducts = useMemo(() => {
     return productsList.filter((product) => {
       if (product.status !== 'active') return false;
       const matchesCategory = selectedCategory === null || product.categoryId === selectedCategory;
       const matchesSearch = searchQuery === "" || 
-        product.name.toLowerCase().includes(searchQuery.toLowerCase());
+        normalizeText(product.name).includes(normalizeText(searchQuery));
       return matchesCategory && matchesSearch;
     });
   }, [productsList, selectedCategory, searchQuery]);

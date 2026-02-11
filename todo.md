@@ -6157,3 +6157,7 @@
 - [x] Indisponível só quando hasStock=true E stockQuantity=0
 - [x] Corrigido em PDV.tsx, PDVSlidebar.tsx e MobilePDVModal.tsx
 - [x] Adicionado stockQuantity ao tipo Product no PDV.tsx
+
+## Bug: Busca no PDV não funciona sem acentos
+- [x] Implementar normalização de acentos na busca de produtos do PDV (ex: "agua" deve encontrar "Água mineral")
+- [x] Aplicar em PDV.tsx, PDVSlidebar.tsx e MobilePDVModal.tsx (MobilePDVModal já tinha normalização)

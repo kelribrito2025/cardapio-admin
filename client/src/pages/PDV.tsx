@@ -361,14 +361,18 @@ export default function PDV() {
 
   // Filtrar produtos
   const productsList = products?.products || [];
+  // Normalizar texto removendo acentos para busca
+  const normalizeText = (text: string) =>
+    text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
   const filteredProducts = productsList.filter((product) => {
     if (product.status !== 'active') return false;
     if (selectedCategory && product.categoryId !== selectedCategory) return false;
     if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+      const query = normalizeText(searchQuery);
       return (
-        product.name.toLowerCase().includes(query) ||
-        (product.description?.toLowerCase().includes(query) ?? false)
+        normalizeText(product.name).includes(query) ||
+        (product.description ? normalizeText(product.description).includes(query) : false)
       );
     }
     return true;
