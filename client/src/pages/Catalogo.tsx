@@ -628,9 +628,9 @@ export default function Catalogo() {
         />
       </div>
 
-      {/* Mobile Search Bar - visible only on mobile */}
-      <div className="mb-4 md:hidden">
-        <div className="relative">
+      {/* Mobile Search + Nova Categoria - visible only on mobile */}
+      <div className="mb-4 md:hidden flex items-center gap-2">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Buscar produto..."
@@ -647,6 +647,14 @@ export default function Catalogo() {
             </button>
           )}
         </div>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => { setNewCategoryName(""); setCategoryDialogOpen(true); }}
+          className="h-10 w-10 rounded-xl flex-shrink-0 border-border/50"
+        >
+          <FolderPlus className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* Products List */}

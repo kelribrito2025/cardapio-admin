@@ -6210,3 +6210,6 @@
 ## Campo de busca mobile na página de Catálogo
 - [x] Adicionar campo de busca visível na versão mobile da página de Catálogo para filtrar produtos
 - [x] Filtrar produtos em tempo real conforme o usuário digita (busca por nome, sem acentos)
+
+## Layout mobile Catálogo: botão nova categoria + campo de busca na mesma linha
+- [x] Colocar campo de busca à esquerda e botão nova categoria à direita na mesma linha (versão mobile)
