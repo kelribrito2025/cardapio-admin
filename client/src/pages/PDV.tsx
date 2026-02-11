@@ -62,6 +62,7 @@ type Product = {
   images: string[] | null;
   status: 'active' | 'paused' | 'archived';
   hasStock: boolean;
+  stockQuantity: number | null;
   categoryId: number | null;
 };
 
@@ -706,7 +707,8 @@ export default function PDV() {
 
   // Handler para abrir modal de produto
   const handleProductClick = (product: Product) => {
-    if (!product.hasStock) return;
+    // Produto indisponível apenas quando tem controle de estoque ativo E quantidade = 0
+    if (product.hasStock && (product.stockQuantity === null || product.stockQuantity === undefined || product.stockQuantity <= 0)) return;
     setSelectedProduct(product);
     setProductQuantity(1);
     setProductObservation("");
@@ -938,7 +940,7 @@ export default function PDV() {
                             <UtensilsCrossed className="h-12 w-12 text-white animate-placeholder-pulse" />
                           </div>
                         )}
-                        {!product.hasStock && (
+                        {product.hasStock && (product.stockQuantity === null || product.stockQuantity === undefined || product.stockQuantity <= 0) && (
                           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                             <span className="text-white text-sm font-medium px-3 py-1 bg-red-500 rounded-full">
                               Indisponível
@@ -968,7 +970,7 @@ export default function PDV() {
                               // Adicionar diretamente ao carrinho sem abrir modal
                               addToCart(product, 1, '', []);
                             }}
-                            disabled={!product.hasStock}
+                            disabled={product.hasStock && (product.stockQuantity === null || product.stockQuantity === undefined || product.stockQuantity <= 0)}
                           >
                             <Plus className="h-4 w-4" />
                             <span className="hidden xl:inline ml-1">Adicionar</span>

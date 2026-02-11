@@ -6151,3 +6151,9 @@
 - [x] Ocultar botão Sacola no header desktop quando carrinho estiver vazio, mostrar apenas Pedidos
 - [x] Quando houver itens no carrinho, exibir Sacola junto com Pedidos no desktop
 - [x] Nenhuma alteração na versão mobile
+
+## Bug: PDV mostrando itens como Indisponível com controle de estoque desativado
+- [x] Corrigir lógica no PDV: itens com hasStock=false não devem aparecer como Indisponível
+- [x] Indisponível só quando hasStock=true E stockQuantity=0
+- [x] Corrigido em PDV.tsx, PDVSlidebar.tsx e MobilePDVModal.tsx
+- [x] Adicionado stockQuantity ao tipo Product no PDV.tsx

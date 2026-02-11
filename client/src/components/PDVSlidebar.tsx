@@ -741,7 +741,8 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
   // Handlers
   const handleProductClick = (product: Product) => {
-    if ((product as any).outOfStock) {
+    // Produto indisponível apenas quando tem controle de estoque ativo E quantidade = 0
+    if (product.hasStock && (product.stockQuantity === null || product.stockQuantity === undefined || product.stockQuantity <= 0)) {
       toast.error("Produto indisponível");
       return;
     }
@@ -1544,7 +1545,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                             <UtensilsCrossed className="h-9 w-9 text-white animate-placeholder-pulse" />
                           </div>
                         )}
-                        {(product as any).outOfStock && (
+                        {product.hasStock && (product.stockQuantity === null || product.stockQuantity === undefined || product.stockQuantity <= 0) && (
                           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                             <span className="text-white text-xs font-medium px-2 py-0.5 bg-red-500 rounded-full">
                               Indisponível

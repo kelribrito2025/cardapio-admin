@@ -397,7 +397,8 @@ export function MobilePDVModal({
 
   // --- Handlers ---
   const handleProductClick = (product: Product) => {
-    if ((product as any).outOfStock) { toast.error("Produto indisponível"); return; }
+    // Produto indisponível apenas quando tem controle de estoque ativo E quantidade = 0
+    if (product.hasStock && (product.stockQuantity === null || product.stockQuantity === undefined || product.stockQuantity <= 0)) { toast.error("Produto indisponível"); return; }
     setSelectedProduct(product);
     setProductQuantity(1);
     setProductObservation("");
@@ -410,7 +411,8 @@ export function MobilePDVModal({
   // Adicionar item rapidamente (botão +): se não tem complementos, adiciona direto
   const handleQuickAdd = async (product: Product, e: React.MouseEvent) => {
     e.stopPropagation();
-    if ((product as any).outOfStock) { toast.error("Produto indisponível"); return; }
+    // Produto indisponível apenas quando tem controle de estoque ativo E quantidade = 0
+    if (product.hasStock && (product.stockQuantity === null || product.stockQuantity === undefined || product.stockQuantity <= 0)) { toast.error("Produto indisponível"); return; }
     
     try {
       // Verificar se o produto tem complementos
