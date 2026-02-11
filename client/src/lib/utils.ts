@@ -63,16 +63,24 @@ export function formatPriceInput(value: string): string {
 }
 
 /**
- * Converte valor formatado de moeda brasileira para número decimal
- * Formato esperado: brasileiro com vírgula (ex: "10,50" ou "1.234,56")
- * @param value - Valor formatado em formato brasileiro
- * @returns Número decimal como string (ex: "10.50", "1234.56")
+ * Converte valor formatado de moeda para número decimal
+ * Aceita formato brasileiro (vírgula como decimal: "10,50" ou "1.234,56")
+ * e formato americano (ponto como decimal: "10.50" ou "1234.56")
+ * @param value - Valor formatado em formato brasileiro ou americano
+ * @returns Número decimal como string (ex: "10.5", "1234.56")
  */
 export function parsePriceInput(value: string): string {
   if (!value) return '0';
   
-  // Remove pontos de milhar e substitui vírgula por ponto
-  const normalized = value.replace(/\./g, '').replace(',', '.');
-  const num = parseFloat(normalized);
-  return isNaN(num) ? '0' : num.toString();
+  // Detectar formato: se tem vírgula, é formato brasileiro
+  if (value.includes(',')) {
+    // Formato brasileiro: remove pontos de milhar e substitui vírgula por ponto
+    const normalized = value.replace(/\./g, '').replace(',', '.');
+    const num = parseFloat(normalized);
+    return isNaN(num) ? '0' : num.toString();
+  } else {
+    // Formato americano ou número puro: ponto é separador decimal
+    const num = parseFloat(value);
+    return isNaN(num) ? '0' : num.toString();
+  }
 }

@@ -1,0 +1,20 @@
+{
+  "query": "SELECT id, name, price FROM products WHERE id IN (300057, 300002);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, price FROM products WHERE id IN (300057, 300002);",
+  "rows": [
+    {
+      "id": "300057",
+      "name": "Variadas",
+      "price": "0.00"
+    },
+    {
+      "id": "300002",
+      "name": "Variadas",
+      "price": "0.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tprice\n300057\tVariadas\t0.00\n300002\tVariadas\t0.00\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

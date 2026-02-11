@@ -1,0 +1,8 @@
+{
+  "query": "SELECT p.id, p.name, p.price FROM products WHERE id IN (300057, 300002);\n\nSELECT cg.id as groupId, cg.name as groupName, cg.productId, ci.id as itemId, ci.name as itemName, ci.price as itemPrice \nFROM complement_groups cg \nJOIN complement_items ci ON ci.groupId = cg.id \nWHERE cg.productId IN (300057, 300002) \nORDER BY cg.productId, cg.id, ci.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.price FROM products WHERE id IN (300057, 300002);\n\nSELECT cg.id as groupId, cg.name as groupName, cg.productId, ci.id as itemId, ci.name as itemName, ci.price as itemPrice \nFROM complement_groups cg \nJOIN complement_items ci ON ci.groupId = cg.id \nWHERE cg.productId IN (300057, 300002) \nORDER BY cg.productId, cg.id, ci.id;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'p.id' in 'field list'"
+  ]
+}

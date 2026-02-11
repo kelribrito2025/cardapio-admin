@@ -6222,3 +6222,9 @@
 ## Bug: Dashboard mostra "Itens em Falta" mesmo sem controle de estoque ativado
 - [x] Investigar lógica de cálculo dos itens em falta na dashboard
 - [x] Corrigir para não contar itens em falta quando controle de estoque não está ativado (hasStock=false)
+
+## Bug: Preços de complementos voltam ao valor antigo após salvar (produtos 300057 e 300002)
+- [x] Investigar dados dos complementos dos produtos 300057 e 300002 no banco
+- [x] Investigar lógica de salvamento/atualização de complementos no backend
+- [x] Corrigir preços em centavos no banco (31 complementos divididos por 100)
+- [x] Corrigir bug na função parsePriceInput que multiplicava preços por 100 ao salvar sem editar (tratava ponto decimal como separador de milhar)
