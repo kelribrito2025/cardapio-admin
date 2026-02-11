@@ -1978,6 +1978,11 @@ export async function updateStockItem(id: number, data: Partial<InsertStockItem>
   }
   
   await db.update(stockItems).set(data).where(eq(stockItems.id, id));
+  
+  // Sincronizar stockQuantity do produto vinculado se quantidade foi alterada
+  if (data.currentQuantity !== undefined) {
+    await syncProductStockQuantity(id);
+  }
 }
 
 export async function deleteStockItem(id: number) {
@@ -1998,6 +2003,28 @@ function calculateStockStatus(
   if (currentQty <= minQty * 0.5) return "critical";
   if (currentQty <= minQty) return "low";
   return "ok";
+}
+
+/**
+ * Sincroniza o campo stockQuantity do produto vinculado com o currentQuantity do stockItem.
+ * Chamada automaticamente após qualquer alteração de quantidade no estoque.
+ */
+async function syncProductStockQuantity(stockItemId: number) {
+  const db = await getDb();
+  if (!db) return;
+  
+  try {
+    const item = await getStockItemById(stockItemId);
+    if (!item || !item.linkedProductId) return;
+    
+    await db.update(products)
+      .set({ stockQuantity: Number(item.currentQuantity) })
+      .where(eq(products.id, item.linkedProductId));
+    
+    console.log(`[Estoque] Sincronizado stockQuantity do produto ${item.linkedProductId} para ${item.currentQuantity}`);
+  } catch (error) {
+    console.error('[Estoque] Erro ao sincronizar stockQuantity:', error);
+  }
 }
 
 // ============ STOCK MOVEMENT FUNCTIONS ============
@@ -2034,6 +2061,9 @@ export async function addStockMovement(data: InsertStockMovement) {
   await db.update(stockItems)
     .set({ currentQuantity: newQty.toString(), status })
     .where(eq(stockItems.id, data.stockItemId));
+  
+  // Sincronizar stockQuantity do produto vinculado
+  await syncProductStockQuantity(data.stockItemId);
   
   return result[0].insertId;
 }

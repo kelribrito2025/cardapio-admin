@@ -6084,3 +6084,9 @@
 ## Bug: Entrada de estoque não atualiza quantidade
 - [x] Corrigir: movimentação de entrada não atualiza currentQuantity do item de estoque (tabela stockMovements não existia)
 - [x] Corrigir: badge de sem estoque continua após entrada de estoque (tabela stockMovements não existia)
+
+## Sincronização stockQuantity do produto com currentQuantity do stockItem
+- [x] Criar função syncProductStockQuantity que atualiza stockQuantity do produto vinculado
+- [x] Chamar sincronização em addStockMovement (entrada/saída/ajuste)
+- [x] Chamar sincronização em deductStockForOrder (desconto automático) - via addStockMovement
+- [x] Chamar sincronização em updateStockItem (quando currentQuantity é alterado)
