@@ -6218,3 +6218,7 @@
 - [x] Remover botão vermelho "+ item" acima do campo de busca no mobile
 - [x] Botão ao lado do campo de busca deve adicionar novo produto (não nova categoria)
 - [x] Botão ao lado do campo de busca na cor vermelha #db262f
+
+## Bug: Dashboard mostra "Itens em Falta" mesmo sem controle de estoque ativado
+- [x] Investigar lógica de cálculo dos itens em falta na dashboard
+- [x] Corrigir para não contar itens em falta quando controle de estoque não está ativado (hasStock=false)

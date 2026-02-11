@@ -1,0 +1,17 @@
+{
+  "query": "SELECT \n  COUNT(*) as total,\n  SUM(CASE WHEN hasStock = 1 THEN 1 ELSE 0 END) as com_controle_estoque,\n  SUM(CASE WHEN hasStock = 0 THEN 1 ELSE 0 END) as sem_controle_estoque,\n  SUM(CASE WHEN hasStock = 1 AND status = 'active' AND stockQuantity IS NOT NULL AND stockQuantity <= 0 THEN 1 ELSE 0 END) as em_falta_correto,\n  SUM(CASE WHEN hasStock = 0 THEN 1 ELSE 0 END) as em_falta_antigo_bug\nFROM products WHERE establishmentId = 210001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT \n  COUNT(*) as total,\n  SUM(CASE WHEN hasStock = 1 THEN 1 ELSE 0 END) as com_controle_estoque,\n  SUM(CASE WHEN hasStock = 0 THEN 1 ELSE 0 END) as sem_controle_estoque,\n  SUM(CASE WHEN hasStock = 1 AND status = 'active' AND stockQuantity IS NOT NULL AND stockQuantity <= 0 THEN 1 ELSE 0 END) as em_falta_correto,\n  SUM(CASE WHEN hasStock = 0 THEN 1 ELSE 0 END) as em_falta_antigo_bug\nFROM products WHERE establishmentId = 210001;",
+  "rows": [
+    {
+      "total": "55",
+      "com_controle_estoque": "0",
+      "sem_controle_estoque": "55",
+      "em_falta_correto": "0",
+      "em_falta_antigo_bug": "55"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tcom_controle_estoque\tsem_controle_estoque\tem_falta_correto\tem_falta_antigo_bug\n55\t0\t55\t0\t55\n",
+  "stderr": "",
+  "execution_time_ms": 117
+}

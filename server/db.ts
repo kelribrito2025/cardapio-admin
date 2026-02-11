@@ -767,7 +767,9 @@ export async function getLowStockProducts(establishmentId: number, threshold: nu
   return db.select().from(products)
     .where(and(
       eq(products.establishmentId, establishmentId),
-      eq(products.hasStock, false)
+      eq(products.hasStock, true),
+      eq(products.status, 'active'),
+      sql`${products.stockQuantity} IS NOT NULL AND ${products.stockQuantity} <= 0`
     ))
     .orderBy(asc(products.stockQuantity));
 }
@@ -1510,12 +1512,14 @@ export async function getDashboardStats(establishmentId: number, period: 'today'
   const revenueChange = calcChange(revenue, prevRevenue);
   const avgTicketChange = calcChange(avgTicket, prevAvgTicket);
   
-  // Low stock count (não muda por período, mas mantemos para consistência)
+  // Low stock count - conta apenas produtos com controle de estoque ativado (hasStock=true) e quantidade <= 0
   const lowStockResult = await db.select({ count: sql<number>`count(*)` })
     .from(products)
     .where(and(
       eq(products.establishmentId, establishmentId),
-      eq(products.hasStock, false)
+      eq(products.hasStock, true),
+      eq(products.status, 'active'),
+      sql`${products.stockQuantity} IS NOT NULL AND ${products.stockQuantity} <= 0`
     ));
   
   const lowStockCount = lowStockResult[0]?.count ?? 0;
