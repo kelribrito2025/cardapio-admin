@@ -711,7 +711,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
   // Handlers
   const handleProductClick = (product: Product) => {
-    if (!product.hasStock) {
+    if ((product as any).outOfStock) {
       toast.error("Produto indisponível");
       return;
     }
@@ -1514,7 +1514,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                             <UtensilsCrossed className="h-9 w-9 text-white animate-placeholder-pulse" />
                           </div>
                         )}
-                        {!product.hasStock && (
+                        {(product as any).outOfStock && (
                           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                             <span className="text-white text-xs font-medium px-2 py-0.5 bg-red-500 rounded-full">
                               Indisponível

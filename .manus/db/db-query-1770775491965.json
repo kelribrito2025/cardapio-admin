@@ -1,0 +1,34 @@
+{
+  "query": "SELECT establishmentId, COUNT(*) as total, SUM(CASE WHEN hasStock = 1 THEN 1 ELSE 0 END) as com_estoque, SUM(CASE WHEN hasStock = 0 THEN 1 ELSE 0 END) as sem_estoque FROM products WHERE establishmentId IN (30001, 60018, 90001, 150004) GROUP BY establishmentId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT establishmentId, COUNT(*) as total, SUM(CASE WHEN hasStock = 1 THEN 1 ELSE 0 END) as com_estoque, SUM(CASE WHEN hasStock = 0 THEN 1 ELSE 0 END) as sem_estoque FROM products WHERE establishmentId IN (30001, 60018, 90001, 150004) GROUP BY establishmentId;",
+  "rows": [
+    {
+      "establishmentId": "150004",
+      "total": "20",
+      "com_estoque": "0",
+      "sem_estoque": "20"
+    },
+    {
+      "establishmentId": "90001",
+      "total": "40",
+      "com_estoque": "0",
+      "sem_estoque": "40"
+    },
+    {
+      "establishmentId": "30001",
+      "total": "76",
+      "com_estoque": "0",
+      "sem_estoque": "76"
+    },
+    {
+      "establishmentId": "60018",
+      "total": "69",
+      "com_estoque": "0",
+      "sem_estoque": "69"
+    }
+  ],
+  "messages": [],
+  "stdout": "establishmentId\ttotal\tcom_estoque\tsem_estoque\n150004\t20\t0\t20\n90001\t40\t0\t40\n30001\t76\t0\t76\n60018\t69\t0\t69\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

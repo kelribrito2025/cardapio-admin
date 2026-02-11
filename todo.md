@@ -6093,3 +6093,11 @@
 
 ## Controle de estoque desativado por padrão
 - [x] Garantir que ao adicionar novo produto no catálogo, a opção de controle de estoque esteja desativada por padrão
+
+## Desativar controle de estoque em estabelecimentos específicos
+- [x] Desativar hasStock de todos os produtos dos estabelecimentos 30001, 60018, 90001 e 150004
+
+## Bug: Produtos não aparecem no menu público quando hasStock=false
+- [x] Corrigir lógica no backend: outOfStock só deve ser true quando hasStock=true E stockQuantity=0 (backend já estava correto)
+- [x] Corrigir lógica no frontend (MenuPublico): produtos com hasStock=false devem aparecer normalmente
+- [x] Badge "Indisponível" só aparece quando hasStock=true E quantidade=0 (corrigido em PublicMenu, PDVSlidebar e MobilePDVModal)

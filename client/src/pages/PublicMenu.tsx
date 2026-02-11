@@ -1306,7 +1306,7 @@ export default function PublicMenu() {
     
     // Categoria precisa ter pelo menos 1 produto ativo (visível no menu)
     const activeProducts = filteredProducts.filter(
-      (p) => p.categoryId === category.id && p.status === 'active' && p.hasStock
+      (p) => p.categoryId === category.id && p.status === 'active'
     );
     return activeProducts.length > 0;
   });
@@ -2045,11 +2045,9 @@ export default function PublicMenu() {
                             if (product.outOfStock) {
                               return; // Produto sem estoque - bloqueado
                             }
-                            if (product.hasStock) {
-                              setSelectedProduct(product);
-                              setProductQuantity(1);
-                              setProductObservation("");
-                            }
+                            setSelectedProduct(product);
+                            setProductQuantity(1);
+                            setProductObservation("");
                           }}
                         >
                           <ProductCard product={product} formatPrice={formatPrice} />
