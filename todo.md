@@ -6197,3 +6197,7 @@
 
 ## Corrigir emoji no template de mensagem de entrega
 - [x] Trocar emoji de barco pelo emoji de moto 🛵 no template de pedido pronto/entrega
+
+## Corrigir limites min/max dos complementos do estabelecimento 210001
+- [x] Comparar dados originais do Mindi com o banco para identificar discrepâncias nos limites de seleção
+- [x] Corrigir min/max de todos os 73 grupos de complementos conforme o cardápio original (66 correções aplicadas)

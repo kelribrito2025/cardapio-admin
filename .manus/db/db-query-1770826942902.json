@@ -1,0 +1,667 @@
+{
+  "query": "SELECT cg.id, cg.name, cg.minQuantity, cg.maxQuantity, cg.isRequired, p.name as productName, c.name as categoryName\nFROM complementGroups cg\nJOIN products p ON cg.productId = p.id\nJOIN categories c ON p.categoryId = c.id\nWHERE p.establishmentId = 210001\nORDER BY c.sortOrder, p.sortOrder, cg.sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.id, cg.name, cg.minQuantity, cg.maxQuantity, cg.isRequired, p.name as productName, c.name as categoryName\nFROM complementGroups cg\nJOIN products p ON cg.productId = p.id\nJOIN categories c ON p.categoryId = c.id\nWHERE p.establishmentId = 210001\nORDER BY c.sortOrder, p.sortOrder, cg.sortOrder;",
+  "rows": [
+    {
+      "id": "180001",
+      "name": "Sabor",
+      "minQuantity": "1",
+      "maxQuantity": "10",
+      "isRequired": "1",
+      "productName": "Variadas",
+      "categoryName": "Esfirras"
+    },
+    {
+      "id": "180002",
+      "name": "Sabor",
+      "minQuantity": "1",
+      "maxQuantity": "19",
+      "isRequired": "1",
+      "productName": "Grande",
+      "categoryName": "Pizza"
+    },
+    {
+      "id": "180003",
+      "name": "Borda",
+      "minQuantity": "0",
+      "maxQuantity": "4",
+      "isRequired": "0",
+      "productName": "Grande",
+      "categoryName": "Pizza"
+    },
+    {
+      "id": "180004",
+      "name": "Sabor",
+      "minQuantity": "1",
+      "maxQuantity": "19",
+      "isRequired": "1",
+      "productName": "Média",
+      "categoryName": "Pizza"
+    },
+    {
+      "id": "180005",
+      "name": "Borda",
+      "minQuantity": "0",
+      "maxQuantity": "4",
+      "isRequired": "0",
+      "productName": "Média",
+      "categoryName": "Pizza"
+    },
+    {
+      "id": "180006",
+      "name": "Sabor",
+      "minQuantity": "1",
+      "maxQuantity": "19",
+      "isRequired": "1",
+      "productName": "Pequena",
+      "categoryName": "Pizza"
+    },
+    {
+      "id": "180007",
+      "name": "Borda",
+      "minQuantity": "0",
+      "maxQuantity": "4",
+      "isRequired": "0",
+      "productName": "Pequena",
+      "categoryName": "Pizza"
+    },
+    {
+      "id": "180008",
+      "name": "Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Médio",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180009",
+      "name": "Molho",
+      "minQuantity": "1",
+      "maxQuantity": "5",
+      "isRequired": "1",
+      "productName": "Médio",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180010",
+      "name": "+",
+      "minQuantity": "1",
+      "maxQuantity": "15",
+      "isRequired": "1",
+      "productName": "Médio",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180011",
+      "name": "Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Grande",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180012",
+      "name": "Molho",
+      "minQuantity": "1",
+      "maxQuantity": "5",
+      "isRequired": "1",
+      "productName": "Grande",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180013",
+      "name": "+",
+      "minQuantity": "1",
+      "maxQuantity": "15",
+      "isRequired": "1",
+      "productName": "Grande",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180014",
+      "name": "Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Prato Econômico",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180015",
+      "name": "+",
+      "minQuantity": "1",
+      "maxQuantity": "9",
+      "isRequired": "1",
+      "productName": "Prato Econômico",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180016",
+      "name": "Molho",
+      "minQuantity": "1",
+      "maxQuantity": "5",
+      "isRequired": "1",
+      "productName": "Prato Econômico",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180017",
+      "name": "Tam",
+      "minQuantity": "1",
+      "maxQuantity": "2",
+      "isRequired": "1",
+      "productName": "Prato Econômico",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180018",
+      "name": "Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Alho e Óleo (Grande)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180019",
+      "name": "Molho",
+      "minQuantity": "1",
+      "maxQuantity": "5",
+      "isRequired": "1",
+      "productName": "Alho e Óleo (Grande)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180020",
+      "name": "+",
+      "minQuantity": "1",
+      "maxQuantity": "15",
+      "isRequired": "1",
+      "productName": "Alho e Óleo (Grande)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180021",
+      "name": "Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Alho e Óleo (Médio)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180022",
+      "name": "Molho",
+      "minQuantity": "1",
+      "maxQuantity": "5",
+      "isRequired": "1",
+      "productName": "Alho e Óleo (Médio)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180023",
+      "name": "+",
+      "minQuantity": "1",
+      "maxQuantity": "15",
+      "isRequired": "1",
+      "productName": "Alho e Óleo (Médio)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180024",
+      "name": "Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Prato Econômico  (Grande)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180025",
+      "name": "Molho",
+      "minQuantity": "1",
+      "maxQuantity": "5",
+      "isRequired": "1",
+      "productName": "Prato Econômico  (Grande)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180026",
+      "name": "+",
+      "minQuantity": "1",
+      "maxQuantity": "9",
+      "isRequired": "1",
+      "productName": "Prato Econômico  (Grande)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180027",
+      "name": "Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Prato Econômico  (Médio)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180028",
+      "name": "Molho",
+      "minQuantity": "1",
+      "maxQuantity": "5",
+      "isRequired": "1",
+      "productName": "Prato Econômico  (Médio)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180029",
+      "name": "+",
+      "minQuantity": "1",
+      "maxQuantity": "9",
+      "isRequired": "1",
+      "productName": "Prato Econômico  (Médio)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180030",
+      "name": "Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Prato Econômico Alho e óleo  (Grande)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180031",
+      "name": "Molho",
+      "minQuantity": "1",
+      "maxQuantity": "5",
+      "isRequired": "1",
+      "productName": "Prato Econômico Alho e óleo  (Grande)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180032",
+      "name": "+",
+      "minQuantity": "1",
+      "maxQuantity": "9",
+      "isRequired": "1",
+      "productName": "Prato Econômico Alho e óleo  (Grande)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180033",
+      "name": "Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Prato Econômico Alho e óleo (Médio)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180034",
+      "name": "Molho",
+      "minQuantity": "1",
+      "maxQuantity": "5",
+      "isRequired": "1",
+      "productName": "Prato Econômico Alho e óleo (Médio)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180035",
+      "name": "+",
+      "minQuantity": "1",
+      "maxQuantity": "9",
+      "isRequired": "1",
+      "productName": "Prato Econômico Alho e óleo (Médio)",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180036",
+      "name": "Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Alho e Óleo",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180037",
+      "name": "+",
+      "minQuantity": "1",
+      "maxQuantity": "15",
+      "isRequired": "1",
+      "productName": "Alho e Óleo",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180038",
+      "name": "Tam",
+      "minQuantity": "1",
+      "maxQuantity": "2",
+      "isRequired": "1",
+      "productName": "Alho e Óleo",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180039",
+      "name": "Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Prato Econômico Alho e óleo",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180040",
+      "name": "Molho",
+      "minQuantity": "1",
+      "maxQuantity": "5",
+      "isRequired": "1",
+      "productName": "Prato Econômico Alho e óleo",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180041",
+      "name": "+",
+      "minQuantity": "1",
+      "maxQuantity": "9",
+      "isRequired": "1",
+      "productName": "Prato Econômico Alho e óleo",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180042",
+      "name": "Tam",
+      "minQuantity": "1",
+      "maxQuantity": "2",
+      "isRequired": "1",
+      "productName": "Prato Econômico Alho e óleo",
+      "categoryName": "Macarrão"
+    },
+    {
+      "id": "180054",
+      "name": "1ª Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Combo 1",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180055",
+      "name": "1º Molho",
+      "minQuantity": "1",
+      "maxQuantity": "4",
+      "isRequired": "1",
+      "productName": "Combo 1",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180056",
+      "name": "1° Prato",
+      "minQuantity": "1",
+      "maxQuantity": "15",
+      "isRequired": "1",
+      "productName": "Combo 1",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180057",
+      "name": "2ª Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Combo 1",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180058",
+      "name": "2º Molho:",
+      "minQuantity": "1",
+      "maxQuantity": "4",
+      "isRequired": "1",
+      "productName": "Combo 1",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180059",
+      "name": "2° Prato:",
+      "minQuantity": "1",
+      "maxQuantity": "15",
+      "isRequired": "1",
+      "productName": "Combo 1",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180060",
+      "name": "Bebida Grátis",
+      "minQuantity": "1",
+      "maxQuantity": "2",
+      "isRequired": "1",
+      "productName": "Combo 1",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180043",
+      "name": "1ª Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Combo 2",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180044",
+      "name": "1º Molho",
+      "minQuantity": "1",
+      "maxQuantity": "4",
+      "isRequired": "1",
+      "productName": "Combo 2",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180045",
+      "name": "1° Prato",
+      "minQuantity": "1",
+      "maxQuantity": "15",
+      "isRequired": "1",
+      "productName": "Combo 2",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180046",
+      "name": "2ª Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Combo 2",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180047",
+      "name": "2º Molho",
+      "minQuantity": "1",
+      "maxQuantity": "4",
+      "isRequired": "1",
+      "productName": "Combo 2",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180048",
+      "name": "2° Prato",
+      "minQuantity": "1",
+      "maxQuantity": "15",
+      "isRequired": "1",
+      "productName": "Combo 2",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180049",
+      "name": "Bebida Grátis",
+      "minQuantity": "1",
+      "maxQuantity": "2",
+      "isRequired": "1",
+      "productName": "Combo 2",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180050",
+      "name": "Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Combo 3",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180051",
+      "name": "Molho",
+      "minQuantity": "1",
+      "maxQuantity": "5",
+      "isRequired": "1",
+      "productName": "Combo 3",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180052",
+      "name": "+",
+      "minQuantity": "1",
+      "maxQuantity": "15",
+      "isRequired": "1",
+      "productName": "Combo 3",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180053",
+      "name": "Bebida gratis",
+      "minQuantity": "1",
+      "maxQuantity": "2",
+      "isRequired": "1",
+      "productName": "Combo 3",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180061",
+      "name": "1ª Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Combo 4",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180062",
+      "name": "1º Molho",
+      "minQuantity": "1",
+      "maxQuantity": "4",
+      "isRequired": "1",
+      "productName": "Combo 4",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180063",
+      "name": "1° Prato",
+      "minQuantity": "1",
+      "maxQuantity": "15",
+      "isRequired": "1",
+      "productName": "Combo 4",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180064",
+      "name": "2ª Massa",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Combo 4",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180065",
+      "name": "2º Molho",
+      "minQuantity": "1",
+      "maxQuantity": "4",
+      "isRequired": "1",
+      "productName": "Combo 4",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180066",
+      "name": "2° Prato",
+      "minQuantity": "1",
+      "maxQuantity": "15",
+      "isRequired": "1",
+      "productName": "Combo 4",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180067",
+      "name": "Bebida Grátis",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Combo 4",
+      "categoryName": "Oferta do dia"
+    },
+    {
+      "id": "180068",
+      "name": "Complemento 1",
+      "minQuantity": "1",
+      "maxQuantity": "2",
+      "isRequired": "1",
+      "productName": "Batata recheada",
+      "categoryName": "Novidades"
+    },
+    {
+      "id": "180069",
+      "name": "Ingredientes",
+      "minQuantity": "1",
+      "maxQuantity": "14",
+      "isRequired": "1",
+      "productName": "Batata recheada",
+      "categoryName": "Novidades"
+    },
+    {
+      "id": "180070",
+      "name": "Carne, frango ou presunto",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Panqueca",
+      "categoryName": "Novidades"
+    },
+    {
+      "id": "180071",
+      "name": "Molho branco",
+      "minQuantity": "1",
+      "maxQuantity": "3",
+      "isRequired": "1",
+      "productName": "Panqueca",
+      "categoryName": "Novidades"
+    },
+    {
+      "id": "180072",
+      "name": "Ingredientes",
+      "minQuantity": "1",
+      "maxQuantity": "15",
+      "isRequired": "1",
+      "productName": "Omeletes",
+      "categoryName": "Novidades"
+    },
+    {
+      "id": "180073",
+      "name": "Complemento 2",
+      "minQuantity": "1",
+      "maxQuantity": "2",
+      "isRequired": "1",
+      "productName": "Omeletes",
+      "categoryName": "Novidades"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tminQuantity\tmaxQuantity\tisRequired\tproductName\tcategoryName\n180001\tSabor\t1\t10\t1\tVariadas\tEsfirras\n180002\tSabor\t1\t19\t1\tGrande\tPizza\n180003\tBorda\t0\t4\t0\tGrande\tPizza\n180004\tSabor\t1\t19\t1\tMédia\tPizza\n180005\tBorda\t0\t4\t0\tMédia\tPizza\n180006\tSabor\t1\t19\t1\tPequena\tPizza\n180007\tBorda\t0\t4\t0\tPequena\tPizza\n180008\tMassa\t1\t3\t1\tMédio\tMacarrão\n180009\tMolho\t1\t5\t1\tMédio\tMacarrão\n180010\t+\t1\t15\t1\tMédio\tMacarrão\n180011\tMassa\t1\t3\t1\tGrande\tMacarrão\n180012\tMolho\t1\t5\t1\tGrande\tMacarrão\n180013\t+\t1\t15\t1\tGrande\tMacarrão\n180014\tMassa\t1\t3\t1\tPrato Econômico\tMacarrão\n180015\t+\t1\t9\t1\tPrato Econômico\tMacarrão\n180016\tMolho\t1\t5\t1\tPrato Econômico\tMacarrão\n180017\tTam\t1\t2\t1\tPrato Econômico\tMacarrão\n180018\tMassa\t1\t3\t1\tAlho e Óleo (Grande)\tMacarrão\n180019\tMolho\t1\t5\t1\tAlho e Óleo (Grande)\tMacarrão\n180020\t+\t1\t15\t1\tAlho e Óleo (Grande)\tMacarrão\n180021\tMassa\t1\t3\t1\tAlho e Óleo (Médio)\tMacarrão\n180022\tMolho\t1\t5\t1\tAlho e Óleo (Médio)\tMacarrão\n180023\t+\t1\t15\t1\tAlho e Óleo (Médio)\tMacarrão\n180024\tMassa\t1\t3\t1\tPrato Econômico  (Grande)\tMacarrão\n180025\tMolho\t1\t5\t1\tPrato Econômico  (Grande)\tMacarrão\n180026\t+\t1\t9\t1\tPrato Econômico  (Grande)\tMacarrão\n180027\tMassa\t1\t3\t1\tPrato Econômico  (Médio)\tMacarrão\n180028\tMolho\t1\t5\t1\tPrato Econômico  (Médio)\tMacarrão\n180029\t+\t1\t9\t1\tPrato Econômico  (Médio)\tMacarrão\n180030\tMassa\t1\t3\t1\tPrato Econômico Alho e óleo  (Grande)\tMacarrão\n180031\tMolho\t1\t5\t1\tPrato Econômico Alho e óleo  (Grande)\tMacarrão\n180032\t+\t1\t9\t1\tPrato Econômico Alho e óleo  (Grande)\tMacarrão\n180033\tMassa\t1\t3\t1\tPrato Econômico Alho e óleo (Médio)\tMacarrão\n180034\tMolho\t1\t5\t1\tPrato Econômico Alho e óleo (Médio)\tMacarrão\n180035\t+\t1\t9\t1\tPrato Econômico Alho e óleo (Médio)\tMacarrão\n180036\tMassa\t1\t3\t1\tAlho e Óleo\tMacarrão\n180037\t+\t1\t15\t1\tAlho e Óleo\tMacarrão\n180038\tTam\t1\t2\t1\tAlho e Óleo\tMacarrão\n180039\tMassa\t1\t3\t1\tPrato Econômico Alho e óleo\tMacarrão\n180040\tMolho\t1\t5\t1\tPrato Econômico Alho e óleo\tMacarrão\n180041\t+\t1\t9\t1\tPrato Econômico Alho e óleo\tMacarrão\n180042\tTam\t1\t2\t1\tPrato Econômico Alho e óleo\tMacarrão\n180054\t1ª Massa\t1\t3\t1\tCombo 1\tOferta do dia\n180055\t1º Molho\t1\t4\t1\tCombo 1\tOferta do dia\n180056\t1° Prato\t1\t15\t1\tCombo 1\tOferta do dia\n180057\t2ª Massa\t1\t3\t1\tCombo 1\tOferta do dia\n180058\t2º Molho:\t1\t4\t1\tCombo 1\tOferta do dia\n180059\t2° Prato:\t1\t15\t1\tCombo 1\tOferta do dia\n180060\tBebida Grátis\t1\t2\t1\tCombo 1\tOferta do dia\n180043\t1ª Massa\t1\t3\t1\tCombo 2\tOferta do dia\n180044\t1º Molho\t1\t4\t1\tCombo 2\tOferta do dia\n180045\t1° Prato\t1\t15\t1\tCombo 2\tOferta do dia\n180046\t2ª Massa\t1\t3\t1\tCombo 2\tOferta do dia\n180047\t2º Molho\t1\t4\t1\tCombo 2\tOferta do dia\n180048\t2° Prato\t1\t15\t1\tCombo 2\tOferta do dia\n180049\tBebida Grátis\t1\t2\t1\tCombo 2\tOferta do dia\n180050\tMassa\t1\t3\t1\tCombo 3\tOferta do dia\n180051\tMolho\t1\t5\t1\tCombo 3\tOferta do dia\n180052\t+\t1\t15\t1\tCombo 3\tOferta do dia\n180053\tBebida gratis\t1\t2\t1\tCombo 3\tOferta do dia\n180061\t1ª Massa\t1\t3\t1\tCombo 4\tOferta do dia\n180062\t1º Molho\t1\t4\t1\tCombo 4\tOferta do dia\n180063\t1° Prato\t1\t15\t1\tCombo 4\tOferta do dia\n180064\t2ª Massa\t1\t3\t1\tCombo 4\tOferta do dia\n180065\t2º Molho\t1\t4\t1\tCombo 4\tOferta do dia\n180066\t2° Prato\t1\t15\t1\tCombo 4\tOferta do dia\n180067\tBebida Grátis\t1\t3\t1\tCombo 4\tOferta do dia\n180068\tComplemento 1\t1\t2\t1\tBatata recheada\tNovidades\n180069\tIngredientes\t1\t14\t1\tBatata recheada\tNovidades\n180070\tCarne, frango ou presunto\t1\t3\t1\tPanqueca\tNovidades\n180071\tMolho branco\t1\t3\t1\tPanqueca\tNovidades\n180072\tIngredientes\t1\t15\t1\tOmeletes\tNovidades\n180073\tComplemento 2\t1\t2\t1\tOmeletes\tNovidades\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}
