@@ -6110,3 +6110,6 @@
 - [x] Integrar restauração no fluxo de cancelamento (updateOrderStatus → cancelled)
 - [x] Registrar movimentação de entrada com motivo "Pedido cancelado"
 - [x] Sincronizar stockQuantity do produto após restauração (via addStockMovement que já chama syncProductStockQuantity)
+
+## Bug: Quantidade de estoque não atualiza em tempo real na edição do produto
+- [x] Corrigir campo stockQuantity na página de editar produto para refletir valor atualizado sem refresh

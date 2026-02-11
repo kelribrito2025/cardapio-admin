@@ -365,7 +365,7 @@ export default function ProductForm() {
 
   const { data: product, isLoading: productLoading } = trpc.product.get.useQuery(
     { id: Number(params.id) },
-    { enabled: isEditing && !!params.id }
+    { enabled: isEditing && !!params.id, refetchOnMount: 'always', staleTime: 0 }
   );
 
   const { data: existingGroups } = trpc.complement.listGroups.useQuery(
@@ -508,7 +508,7 @@ export default function ProductForm() {
     }
   };
 
-  // Load product data when editing - apenas na primeira vez
+  // Load product data when editing - apenas na primeira vez para campos editáveis
   useEffect(() => {
     if (product && !initialDataLoaded) {
       setName(product.name);
@@ -536,6 +536,15 @@ export default function ProductForm() {
       setInitialDataLoaded(true);
     }
   }, [product, initialDataLoaded]);
+
+  // Manter stockQuantity sempre sincronizado com o valor do servidor
+  // (atualiza mesmo após o carregamento inicial, ex: quando estoque muda por pedido)
+  useEffect(() => {
+    if (product && initialDataLoaded) {
+      setStockQuantity(product.stockQuantity ? String(product.stockQuantity) : "");
+      setHasStock(product.hasStock);
+    }
+  }, [product?.stockQuantity, product?.hasStock]);
 
   // Load existing complement groups when editing - apenas na primeira vez
   useEffect(() => {
