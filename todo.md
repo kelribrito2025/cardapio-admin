@@ -6143,3 +6143,6 @@
 
 ## Bug: borda colorida dos cards na página de Pedidos mais fina que na Dashboard
 - [x] Corrigir espessura da borda superior colorida dos cards na página de Pedidos para ficar igual à Dashboard (ordem das classes CSS corrigida)
+
+## Remover sombra do card Conectado/Desconectado na página de Pedidos
+- [x] Remover shadow do card de status de conexão na página de Pedidos

@@ -979,7 +979,7 @@ export default function Pedidos() {
         {/* Card de Status de Conexão WhatsApp */}
         <div className="hidden sm:flex items-center gap-3">
           <div className={cn(
-            "flex items-center gap-3 px-4 py-2 rounded-xl border text-sm font-medium shadow-sm whitespace-nowrap",
+            "flex items-center gap-3 px-4 py-2 rounded-xl border text-sm font-medium whitespace-nowrap",
             !isWhatsappFetched || isWhatsappLoading
               ? "bg-muted/50 border-border text-muted-foreground"
               : whatsappStatus?.status === 'connected'
