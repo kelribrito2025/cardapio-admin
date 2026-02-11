@@ -77,6 +77,23 @@ const unitLabels: Record<string, string> = {
   dúzia: "dz",
 };
 
+// Unidades que usam formato inteiro (sem vírgula)
+const integerUnits = ["unidade", "pacote", "caixa", "dúzia"];
+
+// Formata valor monetário: digita 100 → 1,00 / 050 → 0,50
+function formatCurrency(raw: string): string {
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) return "";
+  const num = parseInt(digits, 10);
+  const formatted = (num / 100).toFixed(2).replace(".", ",");
+  return formatted;
+}
+
+// Formata quantidade inteira: só dígitos, sem vírgula
+function formatInteger(raw: string): string {
+  return raw.replace(/\D/g, "");
+}
+
 export default function Estoque() {
   const utils = trpc.useUtils();
 
@@ -232,7 +249,7 @@ export default function Estoque() {
       currentQuantity: newItemQuantity || "0",
       minQuantity: newItemMinQuantity || "0",
       unit: newItemUnit as any,
-      costPerUnit: newItemCost || null,
+      costPerUnit: newItemCost ? newItemCost.replace(",", ".") : null,
     });
   };
 
@@ -245,7 +262,7 @@ export default function Estoque() {
       categoryId: newItemCategory ? parseInt(newItemCategory) : null,
       minQuantity: newItemMinQuantity || selectedItem.minQuantity,
       unit: newItemUnit as any,
-      costPerUnit: newItemCost || null,
+      costPerUnit: newItemCost ? newItemCost.replace(",", ".") : null,
     });
   };
 
@@ -267,9 +284,22 @@ export default function Estoque() {
     setSelectedItem(item);
     setNewItemName(item.name);
     setNewItemCategory(item.categoryId?.toString() || "");
-    setNewItemMinQuantity(item.minQuantity);
+    // Formatar quantidade mínima conforme unidade
+    const minQty = item.minQuantity || "0";
+    if (integerUnits.includes(item.unit)) {
+      setNewItemMinQuantity(String(parseInt(minQty) || 0));
+    } else {
+      setNewItemMinQuantity(minQty);
+    }
     setNewItemUnit(item.unit);
-    setNewItemCost(item.costPerUnit || "");
+    // Formatar custo como monetário
+    const cost = item.costPerUnit || "";
+    if (cost) {
+      const numCost = parseFloat(cost);
+      setNewItemCost(numCost.toFixed(2).replace(".", ","));
+    } else {
+      setNewItemCost("");
+    }
     setIsEditItemDialogOpen(true);
   };
 
@@ -633,38 +663,46 @@ export default function Estoque() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Nome do item *</Label>
-              <Input
-                id="name"
-                value={newItemName}
-                onChange={(e) => setNewItemName(capitalizeFirst(e.target.value))}
-                placeholder="Ex: Carne bovina"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="category">Categoria</Label>
-              <Select value={newItemCategory} onValueChange={setNewItemCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione uma categoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  {stockCategories?.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id.toString()}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Nome do item *</Label>
+                <Input
+                  id="name"
+                  value={newItemName}
+                  onChange={(e) => setNewItemName(capitalizeFirst(e.target.value))}
+                  placeholder="Ex: Carne bovina"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="category">Categoria</Label>
+                <Select value={newItemCategory} onValueChange={setNewItemCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {stockCategories?.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id.toString()}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="quantity">Quantidade inicial</Label>
                 <Input
                   id="quantity"
-                  type="number"
+                  inputMode="numeric"
                   value={newItemQuantity}
-                  onChange={(e) => setNewItemQuantity(e.target.value)}
+                  onChange={(e) => {
+                    if (integerUnits.includes(newItemUnit)) {
+                      setNewItemQuantity(formatInteger(e.target.value));
+                    } else {
+                      setNewItemQuantity(e.target.value);
+                    }
+                  }}
                   placeholder="0"
                 />
               </div>
@@ -692,9 +730,15 @@ export default function Estoque() {
                 <Label htmlFor="minQuantity">Quantidade mínima</Label>
                 <Input
                   id="minQuantity"
-                  type="number"
+                  inputMode="numeric"
                   value={newItemMinQuantity}
-                  onChange={(e) => setNewItemMinQuantity(e.target.value)}
+                  onChange={(e) => {
+                    if (integerUnits.includes(newItemUnit)) {
+                      setNewItemMinQuantity(formatInteger(e.target.value));
+                    } else {
+                      setNewItemMinQuantity(e.target.value);
+                    }
+                  }}
                   placeholder="0"
                 />
               </div>
@@ -702,10 +746,9 @@ export default function Estoque() {
                 <Label htmlFor="cost">Custo por unidade (R$)</Label>
                 <Input
                   id="cost"
-                  type="number"
-                  step="0.01"
+                  inputMode="numeric"
                   value={newItemCost}
-                  onChange={(e) => setNewItemCost(e.target.value)}
+                  onChange={(e) => setNewItemCost(formatCurrency(e.target.value))}
                   placeholder="0,00"
                 />
               </div>
@@ -732,37 +775,45 @@ export default function Estoque() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="edit-name">Nome do item *</Label>
-              <Input
-                id="edit-name"
-                value={newItemName}
-                onChange={(e) => setNewItemName(capitalizeFirst(e.target.value))}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="edit-category">Categoria</Label>
-              <Select value={newItemCategory} onValueChange={setNewItemCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione uma categoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  {stockCategories?.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id.toString()}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="edit-name">Nome do item *</Label>
+                <Input
+                  id="edit-name"
+                  value={newItemName}
+                  onChange={(e) => setNewItemName(capitalizeFirst(e.target.value))}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-category">Categoria</Label>
+                <Select value={newItemCategory} onValueChange={setNewItemCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {stockCategories?.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id.toString()}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="edit-minQuantity">Quantidade mínima</Label>
                 <Input
                   id="edit-minQuantity"
-                  type="number"
+                  inputMode="numeric"
                   value={newItemMinQuantity}
-                  onChange={(e) => setNewItemMinQuantity(e.target.value)}
+                  onChange={(e) => {
+                    if (integerUnits.includes(newItemUnit)) {
+                      setNewItemMinQuantity(formatInteger(e.target.value));
+                    } else {
+                      setNewItemMinQuantity(e.target.value);
+                    }
+                  }}
                 />
               </div>
               <div className="grid gap-2">
@@ -788,10 +839,10 @@ export default function Estoque() {
               <Label htmlFor="edit-cost">Custo por unidade (R$)</Label>
               <Input
                 id="edit-cost"
-                type="number"
-                step="0.01"
+                inputMode="numeric"
                 value={newItemCost}
-                onChange={(e) => setNewItemCost(e.target.value)}
+                onChange={(e) => setNewItemCost(formatCurrency(e.target.value))}
+                placeholder="0,00"
               />
             </div>
           </div>

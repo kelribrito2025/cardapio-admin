@@ -6041,3 +6041,8 @@
 - [x] Remover coluna "Custo unitário" da tabela de itens de estoque
 - [x] Remover coluna "Valor total" da tabela de itens de estoque
 - [x] Implementar busca por nome do item na página de estoque
+
+## Formulário de Estoque - Layout e Formatação
+- [x] Mover seleção de categoria para ao lado do campo nome do item
+- [x] Formatar quantidade mínima como inteiro (1, 2, 3) sem vírgula para unidade/pacote/caixa/dúzia
+- [x] Formatar custo por unidade com vírgula (ex: 100 → 1,00 / 050 → 0,50)
