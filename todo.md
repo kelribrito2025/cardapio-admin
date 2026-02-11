@@ -6122,3 +6122,9 @@
 - [x] Frontend PDV: limitar quantidade ao estoque disponível
 - [x] Frontend Mesas/Comandas: limitar quantidade ao estoque disponível
 - [x] Nenhum fluxo pode ignorar o estoque
+
+## Validação de estoque no carrinho/sacola (incremento de quantidade)
+- [x] Menu Público: impedir incremento de quantidade na sacola além do estoque disponível
+- [x] Menu Público: mostrar indicador visual quando limite de estoque é atingido na sacola
+- [x] PDV: impedir incremento de quantidade no carrinho além do estoque disponível (via updateCartItem)
+- [x] Mesas/Comandas: impedir incremento de quantidade no carrinho além do estoque disponível (via updateCartItem)

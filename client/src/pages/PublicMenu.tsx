@@ -2171,11 +2171,18 @@ export default function PublicMenu() {
                     {cart.map((item, index) => {
                       const complementsTotal = item.complements.reduce((sum, c) => sum + Number(c.price), 0);
                       const itemTotal = (Number(item.price) + complementsTotal) * item.quantity;
+                      // Buscar estoque disponível do produto
+                      const productData = products.find(p => p.id === item.productId);
+                      const availableStock = productData?.hasStock ? (productData as any).availableStock : null;
+                      const totalOfProductInCart = cart
+                        .filter(ci => ci.productId === item.productId)
+                        .reduce((sum, ci) => sum + ci.quantity, 0);
+                      const canIncrement = availableStock == null || totalOfProductInCart < availableStock;
                       return (
                         <div key={index} className="flex gap-3 pb-3 border-b border-gray-100 last:border-0 group">
                           <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start gap-2">
-                              <p className="font-medium text-gray-900 text-sm truncate flex-1">{item.quantity}x {item.name}</p>
+                              <p className="font-medium text-gray-900 text-sm truncate flex-1">{item.name}</p>
                               <div className="flex items-center gap-2 flex-shrink-0">
                                 {itemTotal > 0 && (
                                   <span className="text-sm font-semibold text-red-500">
@@ -2206,6 +2213,39 @@ export default function PublicMenu() {
                             {item.observation && (
                               <p className="text-xs text-gray-400 mt-0.5 truncate">Obs: {item.observation}</p>
                             )}
+                            {/* Controles de quantidade */}
+                            <div className="flex items-center gap-2 mt-2">
+                              <button
+                                onClick={() => {
+                                  if (item.quantity <= 1) {
+                                    setCart(prev => prev.filter((_, i) => i !== index));
+                                  } else {
+                                    setCart(prev => prev.map((ci, i) => i === index ? { ...ci, quantity: ci.quantity - 1 } : ci));
+                                  }
+                                }}
+                                className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors"
+                              >
+                                {item.quantity <= 1 ? <Trash2 className="h-3.5 w-3.5 text-red-500" /> : <Minus className="h-3.5 w-3.5" />}
+                              </button>
+                              <span className="text-sm font-semibold text-gray-900 min-w-[20px] text-center">{item.quantity}</span>
+                              <button
+                                onClick={() => {
+                                  if (!canIncrement) return;
+                                  setCart(prev => prev.map((ci, i) => i === index ? { ...ci, quantity: ci.quantity + 1 } : ci));
+                                }}
+                                disabled={!canIncrement}
+                                className={`w-7 h-7 flex items-center justify-center rounded-full border transition-colors ${
+                                  canIncrement
+                                    ? 'border-red-500 text-red-500 hover:bg-red-50'
+                                    : 'border-gray-200 text-gray-300 cursor-not-allowed'
+                                }`}
+                              >
+                                <Plus className="h-3.5 w-3.5" />
+                              </button>
+                              {availableStock != null && !canIncrement && (
+                                <span className="text-xs text-orange-500">Máx. atingido</span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       );
@@ -4476,43 +4516,81 @@ setOnlinePaymentUrl(null);
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {cart.map((item, index) => (
-                    <div key={index} className="flex items-start justify-between p-3 bg-gray-50 rounded-xl border-l-4 border-red-500">
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-gray-900">{item.quantity}x {item.name}</span>
-                          {parseFloat(item.price) * item.quantity > 0 && (
-                            <span className="text-red-500 font-semibold ml-2">
-                              R$ {(parseFloat(item.price) * item.quantity).toFixed(2).replace('.', ',')}
-                            </span>
+                  {cart.map((item, index) => {
+                    const complementsTotalMobile = item.complements.reduce((sum, c) => sum + parseFloat(c.price) * (c.quantity || 1), 0);
+                    const itemTotalMobile = (parseFloat(item.price) + complementsTotalMobile) * item.quantity;
+                    // Buscar estoque disponível do produto
+                    const productDataMobile = products.find(p => p.id === item.productId);
+                    const availableStockMobile = productDataMobile?.hasStock ? (productDataMobile as any).availableStock : null;
+                    const totalOfProductInCartMobile = cart
+                      .filter(ci => ci.productId === item.productId)
+                      .reduce((sum, ci) => sum + ci.quantity, 0);
+                    const canIncrementMobile = availableStockMobile == null || totalOfProductInCartMobile < availableStockMobile;
+                    return (
+                    <div key={index} className="p-3 bg-gray-50 rounded-xl border-l-4 border-red-500">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-gray-900">{item.name}</span>
+                            {itemTotalMobile > 0 && (
+                              <span className="text-red-500 font-semibold ml-2">
+                                {formatPrice(itemTotalMobile)}
+                              </span>
+                            )}
+                          </div>
+                          {item.complements.length > 0 && (
+                            <div className="mt-1">
+                              {item.complements.map((c, cIdx) => (
+                                <div key={cIdx} className="flex justify-between items-center text-xs">
+                                  <span className="text-gray-500">+ {(c.quantity || 1) > 1 ? `${c.quantity}x ` : ''}{c.name}</span>
+                                  <span className="text-red-500 font-medium">{formatPrice(parseFloat(c.price) * (c.quantity || 1))}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {item.observation && (
+                            <p className="text-xs text-gray-400 mt-1">Obs: {item.observation}</p>
                           )}
                         </div>
-                        {item.complements.length > 0 && (
-                          <div className="mt-1">
-                            {item.complements.map((c, cIdx) => (
-                              <div key={cIdx} className="flex justify-between items-center text-xs">
-                                <span className="text-gray-500">+ {(c.quantity || 1) > 1 ? `${c.quantity}x ` : ''}{c.name}</span>
-                                <span className="text-red-500 font-medium">{formatPrice(parseFloat(c.price) * (c.quantity || 1))}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {item.observation && (
-                          <p className="text-xs text-gray-400 mt-1">Obs: {item.observation}</p>
+                      </div>
+                      {/* Controles de quantidade */}
+                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => {
+                              if (item.quantity <= 1) {
+                                setCart(prev => prev.filter((_, i) => i !== index));
+                              } else {
+                                setCart(prev => prev.map((ci, i) => i === index ? { ...ci, quantity: ci.quantity - 1 } : ci));
+                              }
+                            }}
+                            className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                          >
+                            {item.quantity <= 1 ? <Trash2 className="h-4 w-4 text-red-500" /> : <Minus className="h-4 w-4" />}
+                          </button>
+                          <span className="text-base font-bold text-gray-900 min-w-[24px] text-center">{item.quantity}</span>
+                          <button
+                            onClick={() => {
+                              if (!canIncrementMobile) return;
+                              setCart(prev => prev.map((ci, i) => i === index ? { ...ci, quantity: ci.quantity + 1 } : ci));
+                            }}
+                            disabled={!canIncrementMobile}
+                            className={`w-8 h-8 flex items-center justify-center rounded-full border transition-colors ${
+                              canIncrementMobile
+                                ? 'border-red-500 text-red-500 hover:bg-red-50 active:bg-red-100'
+                                : 'border-gray-200 text-gray-300 cursor-not-allowed'
+                            }`}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </button>
+                        </div>
+                        {availableStockMobile != null && !canIncrementMobile && (
+                          <span className="text-xs text-orange-500 font-medium">Estoque máximo</span>
                         )}
                       </div>
-                      <button
-                        onClick={() => {
-                          const newCart = [...cart];
-                          newCart.splice(index, 1);
-                          setCart(newCart);
-                        }}
-                        className="ml-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
