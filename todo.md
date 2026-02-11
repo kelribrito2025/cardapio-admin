@@ -6177,3 +6177,10 @@
 - [x] Adicionar flags initialDataLoaded em Configuracoes.tsx (establishment, businessHours, neighborhoodFees, printerSettings)
 - [x] Adicionar initialDataLoaded em CouponForm.tsx
 - [x] Reset de flags após save (onSuccess das mutations)
+
+## Migração do cardápio Sr. Macarrão para estabelecimento 210001
+- [x] Acessar e extrair dados completos do cardápio via API Mindi (categorias, produtos, preços, descrições, complementos, fotos)
+- [x] Migrar 8 categorias para o estabelecimento 210001
+- [x] Migrar 55 produtos com 54 fotos para o estabelecimento 210001
+- [x] Migrar 73 grupos e 500 itens de complementos
+- [x] Validar migração completa no banco de dados

@@ -1,0 +1,50 @@
+{
+  "query": "SELECT c.name as categoria, c.isActive, COUNT(p.id) as produtos FROM categories c LEFT JOIN products p ON p.categoryId = c.id WHERE c.establishmentId = 210001 GROUP BY c.id ORDER BY c.sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT c.name as categoria, c.isActive, COUNT(p.id) as produtos FROM categories c LEFT JOIN products p ON p.categoryId = c.id WHERE c.establishmentId = 210001 GROUP BY c.id ORDER BY c.sortOrder;",
+  "rows": [
+    {
+      "categoria": "Esfirras",
+      "isActive": "1",
+      "produtos": "1"
+    },
+    {
+      "categoria": "Pizza",
+      "isActive": "1",
+      "produtos": "3"
+    },
+    {
+      "categoria": "Macarrão",
+      "isActive": "1",
+      "produtos": "11"
+    },
+    {
+      "categoria": "Oferta do dia",
+      "isActive": "1",
+      "produtos": "4"
+    },
+    {
+      "categoria": "Novidades",
+      "isActive": "1",
+      "produtos": "3"
+    },
+    {
+      "categoria": "Cachorro Quente",
+      "isActive": "1",
+      "produtos": "6"
+    },
+    {
+      "categoria": "Variedades",
+      "isActive": "0",
+      "produtos": "12"
+    },
+    {
+      "categoria": "Bebidas",
+      "isActive": "1",
+      "produtos": "15"
+    }
+  ],
+  "messages": [],
+  "stdout": "categoria\tisActive\tprodutos\nEsfirras\t1\t1\nPizza\t1\t3\nMacarrão\t1\t11\nOferta do dia\t1\t4\nNovidades\t1\t3\nCachorro Quente\t1\t6\nVariedades\t0\t12\nBebidas\t1\t15\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}
