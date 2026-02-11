@@ -6065,3 +6065,6 @@
 
 ## Cor do Badge de Avaliações
 - [x] Alterar cor dos badges de novas avaliações (e do menu pai) para vermelho, igual ao badge de novos pedidos
+
+## Estado Vazio do Estoque
+- [x] Remover botão "Adicionar primeiro item" do estado vazio e orientar utilizador a usar o catálogo

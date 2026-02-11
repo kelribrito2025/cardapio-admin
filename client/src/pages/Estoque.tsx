@@ -54,8 +54,10 @@ import {
   PackagePlus,
   PackageMinus,
   Filter,
+  UtensilsCrossed,
 } from "lucide-react";
 import { capitalizeFirst } from "@/lib/utils";
+import { Link } from "wouter";
 
 type StockStatus = "ok" | "low" | "critical" | "out_of_stock";
 
@@ -633,15 +635,14 @@ export default function Estoque() {
               <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">Nenhum item no estoque</h3>
               <p className="text-muted-foreground mb-4">
-                Adicione itens para começar a controlar seu estoque
+                Para adicionar itens ao estoque, ative o controle de estoque nos produtos do seu cardápio.
               </p>
-              <Button onClick={() => {
-                resetNewItemForm();
-                setIsNewItemDialogOpen(true);
-              }}>
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar primeiro item
-              </Button>
+              <Link href="/catalogo">
+                <Button variant="outline">
+                  <UtensilsCrossed className="h-4 w-4 mr-2" />
+                  Ir para o Cardápio
+                </Button>
+              </Link>
             </CardContent>
           )}
         </Card>
