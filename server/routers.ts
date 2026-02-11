@@ -678,6 +678,7 @@ export const appRouter = router({
               currentQuantity: input.stockQuantity ? String(input.stockQuantity) : "0",
               minQuantity: "0",
               unit: "unidade",
+              linkedProductId: id,
             });
           } catch (e) {
             console.error("Erro ao criar item de estoque automaticamente:", e);
@@ -704,18 +705,29 @@ export const appRouter = router({
         // Verificar se o produto já tinha estoque ativado antes
         const existingProduct = await db.getProductById(id);
         await db.updateProduct(id, data);
-        // Se ativou controle de estoque agora, criar item de estoque automaticamente
-        if (input.hasStock && existingProduct && !existingProduct.hasStock) {
+        // Se ativou controle de estoque, verificar se já existe item de estoque vinculado
+        if (input.hasStock && existingProduct) {
           try {
-            await db.createStockItem({
-              establishmentId: existingProduct.establishmentId,
-              name: input.name || existingProduct.name,
-              currentQuantity: input.stockQuantity ? String(input.stockQuantity) : "0",
-              minQuantity: "0",
-              unit: "unidade",
-            });
+            const existingStockItem = await db.getStockItemByLinkedProductId(id);
+            if (!existingStockItem) {
+              // Criar item de estoque vinculado ao produto
+              await db.createStockItem({
+                establishmentId: existingProduct.establishmentId,
+                name: input.name || existingProduct.name,
+                currentQuantity: input.stockQuantity ? String(input.stockQuantity) : "0",
+                minQuantity: "0",
+                unit: "unidade",
+                linkedProductId: id,
+              });
+            } else {
+              // Atualizar quantidade do item de estoque existente
+              await db.updateStockItem(existingStockItem.id, {
+                currentQuantity: input.stockQuantity ? String(input.stockQuantity) : existingStockItem.currentQuantity,
+                name: input.name || existingStockItem.name,
+              });
+            }
           } catch (e) {
-            console.error("Erro ao criar item de estoque automaticamente:", e);
+            console.error("Erro ao criar/atualizar item de estoque automaticamente:", e);
           }
         }
         return { success: true };

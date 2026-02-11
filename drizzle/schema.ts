@@ -261,6 +261,7 @@ export const stockItems = mysqlTable("stockItems", {
   maxQuantity: decimal("maxQuantity", { precision: 10, scale: 2 }),
   unit: mysqlEnum("unit", ["kg", "g", "L", "ml", "unidade", "pacote", "caixa", "dúzia"]).default("unidade").notNull(),
   costPerUnit: decimal("costPerUnit", { precision: 10, scale: 2 }),
+  linkedProductId: int("linkedProductId"),
   status: mysqlEnum("status", ["ok", "low", "critical", "out_of_stock"]).default("ok").notNull(),
   isActive: boolean("isActive").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

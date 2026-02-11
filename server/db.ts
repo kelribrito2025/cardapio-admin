@@ -1123,6 +1123,13 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
       });
     }
     
+    // Descontar estoque automaticamente quando o pedido entra em preparação
+    if (status === "preparing") {
+      deductStockForOrder(id).catch(err => {
+        console.error('[Estoque] Erro ao descontar estoque:', err);
+      });
+    }
+    
     // Enviar SMS quando o status mudar para "ready" (pedido pronto/saindo para entrega)
     if (status === "ready" && order.customerPhone && isValidPhoneNumber(order.customerPhone)) {
       // Buscar configurações do estabelecimento (nome e smsEnabled)
@@ -1876,6 +1883,25 @@ export async function getStockItemById(id: number) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+export async function getStockItemByLinkedProductId(productId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(stockItems)
+    .where(eq(stockItems.linkedProductId, productId))
+    .limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getStockItemsByLinkedProductIds(productIds: number[]) {
+  const db = await getDb();
+  if (!db) return [];
+  if (productIds.length === 0) return [];
+  
+  return db.select().from(stockItems)
+    .where(inArray(stockItems.linkedProductId, productIds));
+}
+
 export async function createStockItem(data: InsertStockItem) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -1975,6 +2001,58 @@ export async function getStockMovementsByItem(stockItemId: number, limit: number
     .where(eq(stockMovements.stockItemId, stockItemId))
     .orderBy(desc(stockMovements.createdAt))
     .limit(limit);
+}
+
+/**
+ * Desconta automaticamente o estoque dos itens vinculados quando um pedido é confirmado/completado.
+ * Para cada item do pedido, verifica se existe um stockItem vinculado ao productId
+ * e cria uma movimentação de saída.
+ */
+export async function deductStockForOrder(orderId: number) {
+  const db = await getDb();
+  if (!db) return;
+  
+  try {
+    // Buscar itens do pedido
+    const items = await getOrderItems(orderId);
+    if (items.length === 0) return;
+    
+    // Buscar productIds dos itens
+    const productIds = items.map(i => i.productId).filter(Boolean);
+    if (productIds.length === 0) return;
+    
+    // Buscar itens de estoque vinculados a esses produtos
+    const linkedStockItems = await getStockItemsByLinkedProductIds(productIds);
+    if (linkedStockItems.length === 0) return;
+    
+    // Criar mapa productId -> stockItem
+    const stockMap = new Map<number, typeof linkedStockItems[0]>();
+    for (const si of linkedStockItems) {
+      if (si.linkedProductId) {
+        stockMap.set(si.linkedProductId, si);
+      }
+    }
+    
+    // Para cada item do pedido, descontar do estoque
+    for (const orderItem of items) {
+      const stockItem = stockMap.get(orderItem.productId);
+      if (!stockItem) continue;
+      
+      await addStockMovement({
+        stockItemId: stockItem.id,
+        type: "exit",
+        quantity: String(orderItem.quantity),
+        previousQuantity: stockItem.currentQuantity,
+        newQuantity: String(Math.max(0, Number(stockItem.currentQuantity) - orderItem.quantity)),
+        reason: `Pedido #${orderId}`,
+        orderId: orderId,
+      });
+      
+      console.log(`[Estoque] Descontado ${orderItem.quantity}x "${orderItem.productName}" do estoque (item ${stockItem.id})`);
+    }
+  } catch (error) {
+    console.error('[Estoque] Erro ao descontar estoque para pedido', orderId, error);
+  }
 }
 
 export async function getRecentStockMovements(establishmentId: number, limit: number = 20) {

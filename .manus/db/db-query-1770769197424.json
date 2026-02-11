@@ -1,0 +1,20 @@
+{
+  "query": "SELECT id, name, hasStock, stockQuantity, establishmentId FROM products WHERE id = 120100; SELECT id, name, establishmentId, currentQuantity FROM stockItems WHERE establishmentId = 30001 ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, hasStock, stockQuantity, establishmentId FROM products WHERE id = 120100; SELECT id, name, establishmentId, currentQuantity FROM stockItems WHERE establishmentId = 30001 ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "120100",
+      "name": "Água mineral",
+      "hasStock": "1",
+      "stockQuantity": "5",
+      "establishmentId": "30001"
+    }
+  ],
+  "messages": [
+    "id\tname\testablishmentId\tcurrentQuantity",
+    "90001\tCoca Lata\t30001\t0.00"
+  ],
+  "stdout": "id\tname\thasStock\tstockQuantity\testablishmentId\n120100\tÁgua mineral\t1\t5\t30001\nid\tname\testablishmentId\tcurrentQuantity\n90001\tCoca Lata\t30001\t0.00\n",
+  "stderr": "",
+  "execution_time_ms": 121
+}

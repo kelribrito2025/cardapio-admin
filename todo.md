@@ -6051,3 +6051,8 @@
 ## Editar Produto - Controle de Estoque
 - [x] Ao ativar controle de estoque e salvar, criar automaticamente o item na página de estoque (sem redirecionar)
 - [x] Reverter redirecionamento incorreto para /estoque no ProductForm
+
+## Bug Fix e Vinculação Estoque-Produto
+- [x] Corrigir criação automática de item de estoque (item 120100 não foi criado)
+- [x] Adicionar campo linkedProductId ao stockItems para vincular produto ao estoque
+- [x] Descontar estoque automaticamente ao vender/confirmar pedido
