@@ -114,6 +114,8 @@ export default function PublicMenu() {
     price: string;
     images: string[] | null;
     hasStock: boolean;
+    availableStock?: number | null;
+    outOfStock?: boolean;
   } | null>(null);
   const [productQuantity, setProductQuantity] = useState(1);
   const [productObservation, setProductObservation] = useState("");
@@ -1564,7 +1566,9 @@ export default function PublicMenu() {
                           description: product.description,
                           price: product.price,
                           images: product.images,
-                          hasStock: product.hasStock
+                          hasStock: product.hasStock,
+                          availableStock: (product as any).availableStock ?? null,
+                          outOfStock: (product as any).outOfStock ?? false,
                         });
                         setSearchQuery("");
                         setIsSearchFocused(false);
@@ -2892,6 +2896,17 @@ export default function PublicMenu() {
             {/* Footer - Quantidade e Adicionar */}
             <div className="border-t p-4 bg-white flex items-center gap-4 flex-shrink-0 sticky bottom-0">
               {/* Controle de Quantidade */}
+              {(() => {
+                // Calcular quantidade já no carrinho para este produto
+                const alreadyInCart = cart
+                  .filter(item => item.productId === selectedProduct.id)
+                  .reduce((sum, item) => sum + item.quantity, 0);
+                const maxAvailable = selectedProduct.availableStock != null
+                  ? Math.max(0, selectedProduct.availableStock - alreadyInCart)
+                  : Infinity;
+                const canIncrease = productQuantity < maxAvailable;
+                
+                return (
               <div className="flex items-center gap-3 bg-gray-100 rounded-full px-2 py-1">
                 <button
                   onClick={() => setProductQuantity(Math.max(1, productQuantity - 1))}
@@ -2901,12 +2916,31 @@ export default function PublicMenu() {
                 </button>
                 <span className="w-8 text-center font-semibold">{productQuantity}</span>
                 <button
-                  onClick={() => setProductQuantity(productQuantity + 1)}
-                  className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+                  onClick={() => {
+                    if (canIncrease) {
+                      setProductQuantity(productQuantity + 1);
+                    }
+                  }}
+                  disabled={!canIncrease}
+                  className={`w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center transition-colors ${canIncrease ? 'hover:bg-gray-50' : 'opacity-40 cursor-not-allowed'}`}
                 >
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
+                );
+              })()}
+              {/* Indicador de estoque disponível */}
+              {selectedProduct.availableStock != null && selectedProduct.availableStock > 0 && (
+                <span className="text-xs text-gray-400 ml-1 whitespace-nowrap">
+                  {(() => {
+                    const alreadyInCartInfo = cart
+                      .filter(item => item.productId === selectedProduct.id)
+                      .reduce((sum, item) => sum + item.quantity, 0);
+                    const remaining = Math.max(0, selectedProduct.availableStock - alreadyInCartInfo);
+                    return `${remaining} dispon.`;
+                  })()}
+                </span>
+              )}
 
               {/* Botão Adicionar */}
               {(() => {
@@ -2965,12 +2999,22 @@ export default function PublicMenu() {
                 // Verificar se produto está sem estoque
                 const isOutOfStock = (selectedProduct as any).outOfStock === true;
                 
-                const canAddToCart = requiredGroupsMet && isStoreOpen && canAddZeroPriceItem && !isOutOfStock;
+                // Verificar limite de estoque
+                const alreadyInCartForAdd = cart
+                  .filter(item => item.productId === selectedProduct.id)
+                  .reduce((sum, item) => sum + item.quantity, 0);
+                const maxAvailableForAdd = selectedProduct.availableStock != null
+                  ? Math.max(0, selectedProduct.availableStock - alreadyInCartForAdd)
+                  : Infinity;
+                const exceedsStock = productQuantity > maxAvailableForAdd;
+                
+                const canAddToCart = requiredGroupsMet && isStoreOpen && canAddZeroPriceItem && !isOutOfStock && !exceedsStock;
                 
                 return (
                   <button
                     onClick={() => {
                       if (!isStoreOpen) return;
+                      if (exceedsStock) return;
                       
                       const newItem = {
                         productId: selectedProduct.id,
@@ -2986,6 +3030,14 @@ export default function PublicMenu() {
                       const wasCartEmpty = cart.length === 0;
                       
                       setCart((prev) => {
+                        // Validar estoque antes de adicionar
+                        const currentInCart = prev
+                          .filter(item => item.productId === selectedProduct.id)
+                          .reduce((sum, item) => sum + item.quantity, 0);
+                        if (selectedProduct.availableStock != null && (currentInCart + productQuantity) > selectedProduct.availableStock) {
+                          return prev; // Não adicionar se exceder estoque
+                        }
+                        
                         // Para itens com complementos, sempre adiciona como novo item
                         if (selectedComplementsList.length > 0) {
                           return [...prev, newItem];

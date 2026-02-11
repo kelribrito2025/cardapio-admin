@@ -47,6 +47,7 @@ type Product = {
   images: string[] | null;
   status: 'active' | 'paused' | 'archived';
   hasStock: boolean;
+  stockQuantity: number | null;
   categoryId: number | null;
 };
 
@@ -258,6 +259,18 @@ export function MobilePDVModal({
   };
 
   const addToCart = (product: Product, quantity: number, observation: string, complements: CartItem['complements']) => {
+    // Validar estoque antes de adicionar
+    if (product.hasStock && product.stockQuantity != null) {
+      const alreadyInCart = cart
+        .filter(item => item.productId === product.id)
+        .reduce((sum, item) => sum + item.quantity, 0);
+      if (alreadyInCart + quantity > product.stockQuantity) {
+        const remaining = Math.max(0, product.stockQuantity - alreadyInCart);
+        toast.error(`Estoque insuficiente: apenas ${remaining} unidade(s) disponível(is)`);
+        return;
+      }
+    }
+    
     setCart(prev => {
       const existingIndex = prev.findIndex(item =>
         item.productId === product.id &&
@@ -282,7 +295,24 @@ export function MobilePDVModal({
   };
 
   const updateCartItem = (index: number, updates: Partial<CartItem>) => {
-    setCart(prev => prev.map((item, i) => i === index ? { ...item, ...updates } : item));
+    setCart(prev => {
+      const item = prev[index];
+      if (updates.quantity && updates.quantity > (item?.quantity ?? 0)) {
+        // Incrementando quantidade - verificar estoque
+        const product = (products?.products || []).find((p: Product) => p.id === item?.productId);
+        if (product && product.hasStock && product.stockQuantity != null) {
+          const totalInCart = prev
+            .filter(ci => ci.productId === product.id)
+            .reduce((sum, ci) => sum + ci.quantity, 0);
+          const newTotal = totalInCart - (item?.quantity ?? 0) + updates.quantity;
+          if (newTotal > product.stockQuantity) {
+            toast.error(`Estoque insuficiente: apenas ${product.stockQuantity} unidade(s) disponível(is)`);
+            return prev;
+          }
+        }
+      }
+      return prev.map((item, i) => i === index ? { ...item, ...updates } : item);
+    });
   };
 
   const removeFromCart = (index: number) => {

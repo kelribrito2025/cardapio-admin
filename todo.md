@@ -6113,3 +6113,12 @@
 
 ## Bug: Quantidade de estoque não atualiza em tempo real na edição do produto
 - [x] Corrigir campo stockQuantity na página de editar produto para refletir valor atualizado sem refresh
+
+## Validação completa de estoque em todos os fluxos
+- [x] Backend: validar estoque antes de criar pedido público (createPublicOrder)
+- [x] Backend: validar estoque antes de criar pedido interno (createOrder - PDV/mesas)
+- [x] Frontend Menu Público: limitar quantidade no carrinho ao estoque disponível
+- [x] Frontend Menu Público: mostrar quantidade disponível ao cliente
+- [x] Frontend PDV: limitar quantidade ao estoque disponível
+- [x] Frontend Mesas/Comandas: limitar quantidade ao estoque disponível
+- [x] Nenhum fluxo pode ignorar o estoque

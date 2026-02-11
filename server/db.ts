@@ -445,18 +445,21 @@ export async function getPublicMenuData(slug: string) {
           .limit(1);
         
         const linkedStock = stockItem.length > 0 ? stockItem[0] : null;
-        const isOutOfStock = linkedStock 
-          ? Number(linkedStock.currentQuantity) <= 0 
-          : (product.stockQuantity !== null && product.stockQuantity <= 0);
+        const availableQty = linkedStock 
+          ? Number(linkedStock.currentQuantity)
+          : (product.stockQuantity !== null ? product.stockQuantity : null);
+        const isOutOfStock = availableQty !== null && availableQty <= 0;
         
         return {
           ...product,
           outOfStock: isOutOfStock,
+          availableStock: availableQty,
         };
       }
       return {
         ...product,
         outOfStock: false,
+        availableStock: null, // null = sem controle de estoque, quantidade ilimitada
       };
     })
   );
@@ -1040,6 +1043,60 @@ export async function getOrderItemsWithPrinter(orderId: number) {
 export async function createOrderWithNumber(data: InsertOrder, items: InsertOrderItem[]): Promise<{ id: number; orderNumber: string }> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+  
+  // ===== VALIDAÇÃO DE ESTOQUE =====
+  // Verificar se há estoque suficiente para todos os itens ANTES de criar o pedido
+  const productIds = items.map(i => i.productId).filter(Boolean);
+  if (productIds.length > 0) {
+    const productsWithStock = await db.select()
+      .from(products)
+      .where(and(
+        inArray(products.id, productIds),
+        eq(products.hasStock, true)
+      ));
+    
+    if (productsWithStock.length > 0) {
+      const linkedStockItemsList = await getStockItemsByLinkedProductIds(productsWithStock.map(p => p.id));
+      const stockMap = new Map<number, number>();
+      
+      for (const si of linkedStockItemsList) {
+        if (si.linkedProductId) {
+          stockMap.set(si.linkedProductId, Number(si.currentQuantity));
+        }
+      }
+      
+      for (const p of productsWithStock) {
+        if (!stockMap.has(p.id)) {
+          stockMap.set(p.id, p.stockQuantity ?? 0);
+        }
+      }
+      
+      const requestedQty = new Map<number, { qty: number; name: string }>();
+      for (const item of items) {
+        if (item.productId && stockMap.has(item.productId)) {
+          const existing = requestedQty.get(item.productId);
+          if (existing) {
+            existing.qty += (item.quantity ?? 1);
+          } else {
+            requestedQty.set(item.productId, { qty: item.quantity ?? 1, name: item.productName || '' });
+          }
+        }
+      }
+      
+      const insufficientItems: string[] = [];
+      Array.from(requestedQty.entries()).forEach(([productId, { qty, name }]) => {
+        const available = stockMap.get(productId) ?? 0;
+        if (qty > available) {
+          insufficientItems.push(`${name}: solicitado ${qty}, disponível ${available}`);
+        }
+      });
+      
+      if (insufficientItems.length > 0) {
+        console.log('[DB:createOrderWithNumber] Estoque insuficiente:', insufficientItems);
+        throw new Error(`Estoque insuficiente: ${insufficientItems.join('; ')}`);
+      }
+    }
+  }
   
   // Se não foi passado orderNumber, gerar automaticamente no formato #P1, #P2, etc.
   let orderNumber = data.orderNumber;
@@ -2264,6 +2321,65 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     }
   } catch (e) {
     console.log('[DB:createPublicOrder] Erro ao verificar configuração de confirmação:', e);
+  }
+  
+  // ===== VALIDAÇÃO DE ESTOQUE =====
+  // Verificar se há estoque suficiente para todos os itens ANTES de criar o pedido
+  const productIds = items.map(i => i.productId).filter(Boolean);
+  if (productIds.length > 0) {
+    // Buscar produtos com controle de estoque ativo
+    const productsWithStock = await db.select()
+      .from(products)
+      .where(and(
+        inArray(products.id, productIds),
+        eq(products.hasStock, true)
+      ));
+    
+    if (productsWithStock.length > 0) {
+      // Buscar itens de estoque vinculados
+      const linkedStockItemsList = await getStockItemsByLinkedProductIds(productsWithStock.map(p => p.id));
+      const stockMap = new Map<number, number>();
+      
+      for (const si of linkedStockItemsList) {
+        if (si.linkedProductId) {
+          stockMap.set(si.linkedProductId, Number(si.currentQuantity));
+        }
+      }
+      
+      // Para produtos sem stockItem vinculado, usar stockQuantity do produto
+      for (const p of productsWithStock) {
+        if (!stockMap.has(p.id)) {
+          stockMap.set(p.id, p.stockQuantity ?? 0);
+        }
+      }
+      
+      // Agrupar quantidades por produto (um mesmo produto pode aparecer várias vezes)
+      const requestedQty = new Map<number, { qty: number; name: string }>();
+      for (const item of items) {
+        if (item.productId && stockMap.has(item.productId)) {
+          const existing = requestedQty.get(item.productId);
+          if (existing) {
+            existing.qty += (item.quantity ?? 1);
+          } else {
+            requestedQty.set(item.productId, { qty: item.quantity ?? 1, name: item.productName || '' });
+          }
+        }
+      }
+      
+      // Verificar cada produto
+      const insufficientItems: string[] = [];
+      Array.from(requestedQty.entries()).forEach(([productId, { qty, name }]) => {
+        const available = stockMap.get(productId) ?? 0;
+        if (qty > available) {
+          insufficientItems.push(`${name}: solicitado ${qty}, disponível ${available}`);
+        }
+      });
+      
+      if (insufficientItems.length > 0) {
+        console.log('[DB:createPublicOrder] Estoque insuficiente:', insufficientItems);
+        throw new Error(`Estoque insuficiente: ${insufficientItems.join('; ')}`);
+      }
+    }
   }
   
   // Generate order number with format #P1, #P2, etc. (sem zeros à esquerda)
