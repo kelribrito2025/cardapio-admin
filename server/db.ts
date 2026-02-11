@@ -434,10 +434,37 @@ export async function getPublicMenuData(slug: string) {
     ))
     .orderBy(asc(products.sortOrder));
   
+  // Check stock for products with hasStock enabled
+  const productsWithStockInfo = await Promise.all(
+    menuProducts.map(async (product) => {
+      if (product.hasStock) {
+        // Check linked stock item
+        const stockItem = await db.select()
+          .from(stockItems)
+          .where(eq(stockItems.linkedProductId, product.id))
+          .limit(1);
+        
+        const linkedStock = stockItem.length > 0 ? stockItem[0] : null;
+        const isOutOfStock = linkedStock 
+          ? Number(linkedStock.currentQuantity) <= 0 
+          : (product.stockQuantity !== null && product.stockQuantity <= 0);
+        
+        return {
+          ...product,
+          outOfStock: isOutOfStock,
+        };
+      }
+      return {
+        ...product,
+        outOfStock: false,
+      };
+    })
+  );
+  
   return {
     establishment,
     categories: menuCategories,
-    products: menuProducts,
+    products: productsWithStockInfo,
     trialBlocked: false,
   };
 }

@@ -6068,3 +6068,7 @@
 
 ## Estado Vazio do Estoque
 - [x] Remover botão "Adicionar primeiro item" do estado vazio e orientar utilizador a usar o catálogo
+
+## Bloqueio de Produto sem Estoque no Menu Público
+- [x] Bloquear produto no menu público quando estoque vinculado chegar a zero
+- [x] Mostrar badge "Indisponível" no produto sem estoque no menu público

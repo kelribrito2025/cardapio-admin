@@ -1554,6 +1554,7 @@ export default function PublicMenu() {
                     <button
                       key={product.id}
                       onClick={() => {
+                        if ((product as any).outOfStock) return;
                         setSelectedProduct({
                           id: product.id,
                           name: product.name,
@@ -2041,6 +2042,9 @@ export default function PublicMenu() {
                         <div
                           key={product.id}
                           onClick={() => {
+                            if (product.outOfStock) {
+                              return; // Produto sem estoque - bloqueado
+                            }
                             if (product.hasStock) {
                               setSelectedProduct(product);
                               setProductQuantity(1);
@@ -6372,16 +6376,18 @@ function ProductCard({
     price: string;
     images: string[] | null;
     hasStock: boolean;
+    outOfStock?: boolean;
   };
   formatPrice: (price: string | number) => string;
 }) {
   const mainImage = product.images?.[0];
+  const isUnavailable = product.outOfStock === true;
 
   return (
-    <div className="bg-white rounded-lg border border-gray-100 overflow-hidden hover:border-gray-200 transition-colors cursor-pointer border-l-[3px] border-l-red-500">
+    <div className={`bg-white rounded-lg border border-gray-100 overflow-hidden hover:border-gray-200 transition-colors cursor-pointer border-l-[3px] ${isUnavailable ? 'border-l-gray-300 opacity-60' : 'border-l-red-500'}`}>
       <div className="flex">
         <div className="flex-1 p-3">
-          <h3 className="font-medium text-gray-900 text-sm leading-tight">{product.name}</h3>
+          <h3 className={`font-medium text-sm leading-tight ${isUnavailable ? 'text-gray-400' : 'text-gray-900'}`}>{product.name}</h3>
           {product.description && (
             <p className="text-xs text-gray-500 line-clamp-2 mt-0.5 leading-relaxed">
               {product.description}
@@ -6389,9 +6395,9 @@ function ProductCard({
           )}
           <div className="flex items-center gap-2 mt-1.5">
             {Number(product.price) > 0 && (
-              <span className="text-red-500 font-semibold text-sm">{formatPrice(product.price)}</span>
+              <span className={`font-semibold text-sm ${isUnavailable ? 'text-gray-400' : 'text-red-500'}`}>{formatPrice(product.price)}</span>
             )}
-            {!product.hasStock && (
+            {isUnavailable && (
               <span className="text-[10px] text-red-500 font-medium bg-red-50 px-1.5 py-0.5 rounded">
                 Indisponível
               </span>
