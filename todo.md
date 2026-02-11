@@ -6047,3 +6047,6 @@
 - [x] Formatar quantidade mínima como inteiro (1, 2, 3) sem vírgula para unidade/pacote/caixa/dúzia
 - [x] Formatar custo por unidade com vírgula (ex: 100 → 1,00 / 050 → 0,50)
 - [x] Remover campo "Custo por unidade (R$)" do modal de editar item de estoque
+
+## Editar Produto - Controle de Estoque
+- [x] Ao ativar controle de estoque e salvar, redirecionar automaticamente para a página de estoque

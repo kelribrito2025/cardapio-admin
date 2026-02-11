@@ -376,7 +376,11 @@ export default function ProductForm() {
   const createMutation = trpc.product.create.useMutation({
     onSuccess: () => {
       toast.success("Produto criado com sucesso");
-      navigate("/catalogo");
+      if (hasStock) {
+        navigate("/estoque");
+      } else {
+        navigate("/catalogo");
+      }
     },
     onError: (error) => {
       toast.error("Erro ao criar produto");
@@ -389,7 +393,10 @@ export default function ProductForm() {
       // Salvar complementos após atualizar o produto
       await saveComplementGroups(variables.id);
       toast.success("Produto atualizado com sucesso");
-      // Permanecer na página de edição em vez de redirecionar
+      if (hasStock) {
+        navigate("/estoque");
+      }
+      // Se não tem estoque, permanece na página de edição
     },
     onError: (error) => {
       toast.error("Erro ao atualizar produto");
