@@ -379,6 +379,13 @@ export default function PublicMenu() {
       clearCartFromStorage(slug);
     }
   }, [cart, slug]);
+
+  // Fechar sacola mobile automaticamente quando o carrinho fica vazio
+  useEffect(() => {
+    if (cart.length === 0 && showMobileBag) {
+      setShowMobileBag(false);
+    }
+  }, [cart.length, showMobileBag]);
   
   // Carregar dados de fidelidade do localStorage
   useEffect(() => {
@@ -2944,7 +2951,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Footer - Quantidade e Adicionar */}
-            <div className="border-t p-4 bg-white flex items-center gap-4 flex-shrink-0 sticky bottom-0">
+            <div className="border-t p-4 bg-white flex items-center gap-4 flex-shrink-0">
               {/* Controle de Quantidade */}
               {(() => {
                 // Calcular quantidade já no carrinho para este produto

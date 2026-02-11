@@ -6137,3 +6137,6 @@
 - [x] Lado direito: botão "Ver sacola"
 - [x] Info de entrega: grátis / taxa fixa com valor / "total sem entrega" (por bairro)
 - [x] Alterações apenas na versão mobile, desktop permanece igual
+
+## Bug: botões de quantidade e adicionar desaparecem no modal do produto
+- [x] Investigar e corrigir: após esvaziar sacola e abrir modal do produto novamente, botões +/- e "Adicionar" não aparecem (corrigido: auto-fechar sacola quando vazia + remover sticky/z-index conflitante do footer)
