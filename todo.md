@@ -6201,3 +6201,8 @@
 ## Corrigir limites min/max dos complementos do estabelecimento 210001
 - [x] Comparar dados originais do Mindi com o banco para identificar discrepâncias nos limites de seleção
 - [x] Corrigir min/max de todos os 73 grupos de complementos conforme o cardápio original (66 correções aplicadas)
+
+## Bug: Toggles de categorias aparecem todos desativados
+- [x] Investigar por que os toggles de ativação das categorias aparecem como desativados na página de Categorias
+- [x] Corrigir toggle para refletir o estado real (isActive) da categoria
+- [x] Corrigir toggle para atualizar visualmente ao clicar (toast mostra "Categoria ativada" mas toggle não muda)

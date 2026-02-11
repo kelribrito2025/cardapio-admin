@@ -218,9 +218,9 @@ function SortableCategoryItem({
           <TooltipTrigger asChild>
             <div onClick={(e) => e.stopPropagation()}>
               <Switch
-                checked={isEffectivelyActive}
+                checked={isActive}
                 onCheckedChange={(checked) => onToggleActive(category.id, checked)}
-                disabled={isTogglingActive || (!hasActiveProducts && !isActive)}
+                disabled={isTogglingActive}
                 className="data-[state=checked]:bg-green-500"
               />
             </div>
@@ -336,9 +336,11 @@ export default function Categorias() {
     return acc;
   }, {} as Record<number, number>) || {};
 
-  // Calculate active product count by category (status === 'active' && hasStock)
+  // Calculate active product count by category
+  // Produto ativo = status 'active' E (sem controle de estoque OU com estoque > 0)
   const activeProductCountByCategory = productsData?.products?.reduce((acc, product) => {
-    if (product.status === 'active' && product.hasStock) {
+    const isAvailable = product.status === 'active' && (!product.hasStock || (product.stockQuantity ?? 0) > 0);
+    if (isAvailable) {
       const categoryId = product.categoryId || 0;
       acc[categoryId] = (acc[categoryId] || 0) + 1;
     }
