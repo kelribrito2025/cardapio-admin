@@ -835,16 +835,6 @@ export default function Estoque() {
                 </Select>
               </div>
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="edit-cost">Custo por unidade (R$)</Label>
-              <Input
-                id="edit-cost"
-                inputMode="numeric"
-                value={newItemCost}
-                onChange={(e) => setNewItemCost(formatCurrency(e.target.value))}
-                placeholder="0,00"
-              />
-            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditItemDialogOpen(false)}>

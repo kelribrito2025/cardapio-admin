@@ -6046,3 +6046,4 @@
 - [x] Mover seleção de categoria para ao lado do campo nome do item
 - [x] Formatar quantidade mínima como inteiro (1, 2, 3) sem vírgula para unidade/pacote/caixa/dúzia
 - [x] Formatar custo por unidade com vírgula (ex: 100 → 1,00 / 050 → 0,50)
+- [x] Remover campo "Custo por unidade (R$)" do modal de editar item de estoque
