@@ -88,7 +88,7 @@ const menuSections = [
       ]},
       { icon: Tag, label: "Categorias", href: "/categorias", disabled: false },
       { icon: Layers, label: "Complementos", href: "/complementos", disabled: false },
-      { icon: Package, label: "Estoque", href: "/estoque", disabled: true, comingSoon: true },
+      { icon: Package, label: "Estoque", href: "/estoque", disabled: false },
     ]
   },
   {

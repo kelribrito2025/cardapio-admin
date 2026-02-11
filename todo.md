@@ -6059,3 +6059,6 @@
 
 ## Remoção do Botão Novo Item no Estoque
 - [x] Remover botão "Novo Item" da página de estoque (itens são criados via catálogo)
+
+## Badge Breve no Menu Estoque
+- [x] Remover badge "Breve" do item Estoque na sidebar
