@@ -365,13 +365,7 @@ export default function Estoque() {
               <Plus className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Categoria</span>
             </Button>
-            <Button onClick={() => {
-              resetNewItemForm();
-              setIsNewItemDialogOpen(true);
-            }} className="h-9 px-3.5 text-sm rounded-lg">
-              <Plus className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Novo Item</span>
-            </Button>
+
           </div>
         </div>
 

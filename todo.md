@@ -6056,3 +6056,6 @@
 - [x] Corrigir criação automática de item de estoque (item 120100 não foi criado)
 - [x] Adicionar campo linkedProductId ao stockItems para vincular produto ao estoque
 - [x] Descontar estoque automaticamente ao vender/confirmar pedido
+
+## Remoção do Botão Novo Item no Estoque
+- [x] Remover botão "Novo Item" da página de estoque (itens são criados via catálogo)
