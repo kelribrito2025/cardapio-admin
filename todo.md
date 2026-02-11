@@ -6146,3 +6146,8 @@
 
 ## Remover sombra do card Conectado/Desconectado na página de Pedidos
 - [x] Remover shadow do card de status de conexão na página de Pedidos
+
+## Ocultar botão Sacola no desktop quando carrinho vazio
+- [x] Ocultar botão Sacola no header desktop quando carrinho estiver vazio, mostrar apenas Pedidos
+- [x] Quando houver itens no carrinho, exibir Sacola junto com Pedidos no desktop
+- [x] Nenhuma alteração na versão mobile

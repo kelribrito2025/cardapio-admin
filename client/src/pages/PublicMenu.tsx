@@ -1647,18 +1647,18 @@ export default function PublicMenu() {
                   </span>
                 )}
               </button>
-              <button 
-                className="flex items-center gap-1.5 text-gray-600 font-medium text-sm hover:text-gray-900 transition-colors relative pr-3"
-                onClick={() => setShowMobileBag(true)}
-              >
-                <ShoppingBag className="h-4 w-4" />
-                <span>Sacola</span>
-                {cart.length > 0 && (
+              {cart.length > 0 && (
+                <button 
+                  className="flex items-center gap-1.5 text-gray-600 font-medium text-sm hover:text-gray-900 transition-colors relative pr-3"
+                  onClick={() => setShowMobileBag(true)}
+                >
+                  <ShoppingBag className="h-4 w-4" />
+                  <span>Sacola</span>
                   <span className="absolute -top-1.5 -right-0 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                     {cart.reduce((sum, item) => sum + item.quantity, 0)}
                   </span>
-                )}
-              </button>
+                </button>
+              )}
             </nav>
 
             {/* Mobile Menu Button */}
