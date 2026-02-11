@@ -6104,3 +6104,9 @@
 
 ## Bug: Menu público não atualiza disponibilidade após pedido
 - [x] Invalidar cache do menu público após criação de pedido para refletir estoque atualizado em tempo real
+
+## Restauração automática de estoque ao cancelar pedido
+- [x] Criar função restoreStockForOrder que devolve estoque dos itens do pedido cancelado
+- [x] Integrar restauração no fluxo de cancelamento (updateOrderStatus → cancelled)
+- [x] Registrar movimentação de entrada com motivo "Pedido cancelado"
+- [x] Sincronizar stockQuantity do produto após restauração (via addStockMovement que já chama syncProductStockQuantity)

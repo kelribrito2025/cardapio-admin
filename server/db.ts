@@ -1162,6 +1162,16 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
     // Nota: o desconto de estoque é feito na criação do pedido (createPublicOrder)
     // Não descontar novamente ao mudar de status para evitar dupla contagem
     
+    // Restaurar estoque quando pedido é cancelado
+    if (status === "cancelled") {
+      try {
+        await restoreStockForOrder(id);
+        console.log('[Estoque] Estoque restaurado para pedido cancelado:', id);
+      } catch (err) {
+        console.error('[Estoque] Erro ao restaurar estoque (cancelamento):', err);
+      }
+    }
+    
     // Enviar SMS quando o status mudar para "ready" (pedido pronto/saindo para entrega)
     if (status === "ready" && order.customerPhone && isValidPhoneNumber(order.customerPhone)) {
       // Buscar configurações do estabelecimento (nome e smsEnabled)
@@ -2127,6 +2137,62 @@ export async function deductStockForOrder(orderId: number) {
     }
   } catch (error) {
     console.error('[Estoque] Erro ao descontar estoque para pedido', orderId, error);
+  }
+}
+
+/**
+ * Restaura o estoque quando um pedido é cancelado.
+ * Para cada item do pedido, verifica se existe um stockItem vinculado ao productId
+ * e cria uma movimentação de entrada para devolver a quantidade.
+ */
+export async function restoreStockForOrder(orderId: number) {
+  const db = await getDb();
+  if (!db) return;
+  
+  try {
+    // Buscar itens do pedido
+    const items = await getOrderItems(orderId);
+    if (items.length === 0) return;
+    
+    // Buscar productIds dos itens
+    const productIds = items.map(i => i.productId).filter(Boolean);
+    if (productIds.length === 0) return;
+    
+    // Buscar itens de estoque vinculados a esses produtos
+    const linkedStockItems = await getStockItemsByLinkedProductIds(productIds);
+    if (linkedStockItems.length === 0) return;
+    
+    // Criar mapa productId -> stockItem
+    const stockMap = new Map<number, typeof linkedStockItems[0]>();
+    for (const si of linkedStockItems) {
+      if (si.linkedProductId) {
+        stockMap.set(si.linkedProductId, si);
+      }
+    }
+    
+    // Para cada item do pedido, restaurar o estoque
+    for (const orderItem of items) {
+      const stockItem = stockMap.get(orderItem.productId);
+      if (!stockItem) continue;
+      
+      // Buscar quantidade atual do stockItem (pode ter mudado desde o desconto)
+      const currentStockItem = await getStockItemById(stockItem.id);
+      if (!currentStockItem) continue;
+      
+      await addStockMovement({
+        stockItemId: stockItem.id,
+        type: "entry",
+        quantity: String(orderItem.quantity),
+        previousQuantity: currentStockItem.currentQuantity,
+        newQuantity: String(Number(currentStockItem.currentQuantity) + orderItem.quantity),
+        reason: `Pedido cancelado #${orderId}`,
+        orderId: orderId,
+      });
+      
+      console.log(`[Estoque] Restaurado ${orderItem.quantity}x "${orderItem.productName}" ao estoque (item ${stockItem.id})`);
+    }
+  } catch (error) {
+    console.error('[Estoque] Erro ao restaurar estoque para pedido cancelado', orderId, error);
   }
 }
 
