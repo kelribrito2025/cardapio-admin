@@ -2961,7 +2961,10 @@ export default function PublicMenu() {
                 const hasSelectedComplements = selectedComplementsList.length > 0;
                 const canAddZeroPriceItem = !hasZeroPrice || hasSelectedComplements;
                 
-                const canAddToCart = requiredGroupsMet && isStoreOpen && canAddZeroPriceItem;
+                // Verificar se produto está sem estoque
+                const isOutOfStock = (selectedProduct as any).outOfStock === true;
+                
+                const canAddToCart = requiredGroupsMet && isStoreOpen && canAddZeroPriceItem && !isOutOfStock;
                 
                 return (
                   <button
@@ -3021,7 +3024,11 @@ export default function PublicMenu() {
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                   >
-                    {!isStoreOpen ? (
+                    {isOutOfStock ? (
+                      <>
+                        <span>Indisponível</span>
+                      </>
+                    ) : !isStoreOpen ? (
                       <>
                         <Clock className="h-5 w-5" />
                         <span>Restaurante Fechado</span>

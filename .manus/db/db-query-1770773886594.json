@@ -1,0 +1,90 @@
+{
+  "query": "SELECT o.id, o.orderNumber, o.status, oi.productId, oi.productName, oi.quantity FROM orders o JOIN orderItems oi ON oi.orderId = o.id WHERE o.establishmentId = 30001 ORDER BY o.id DESC LIMIT 10",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT o.id, o.orderNumber, o.status, oi.productId, oi.productName, oi.quantity FROM orders o JOIN orderItems oi ON oi.orderId = o.id WHERE o.establishmentId = 30001 ORDER BY o.id DESC LIMIT 10",
+  "rows": [
+    {
+      "id": "480010",
+      "orderNumber": "#P15",
+      "status": "completed",
+      "productId": "120005",
+      "productName": "DUPLA DE SKIN",
+      "quantity": "1"
+    },
+    {
+      "id": "480009",
+      "orderNumber": "#P14",
+      "status": "completed",
+      "productId": "120005",
+      "productName": "DUPLA DE SKIN",
+      "quantity": "1"
+    },
+    {
+      "id": "480008",
+      "orderNumber": "#P13",
+      "status": "completed",
+      "productId": "120005",
+      "productName": "DUPLA DE SKIN",
+      "quantity": "1"
+    },
+    {
+      "id": "420068",
+      "orderNumber": "#P12",
+      "status": "cancelled",
+      "productId": "120069",
+      "productName": "CAMARÃO AO ALHO E ÓLEO",
+      "quantity": "1"
+    },
+    {
+      "id": "420068",
+      "orderNumber": "#P12",
+      "status": "cancelled",
+      "productId": "120001",
+      "productName": "SASHIMI DE SALMÃO",
+      "quantity": "1"
+    },
+    {
+      "id": "420067",
+      "orderNumber": "#P11",
+      "status": "cancelled",
+      "productId": "120002",
+      "productName": "SHASHIMI - TEMPURÁ",
+      "quantity": "1"
+    },
+    {
+      "id": "420066",
+      "orderNumber": "#P10",
+      "status": "completed",
+      "productId": "120001",
+      "productName": "SASHIMI DE SALMÃO",
+      "quantity": "1"
+    },
+    {
+      "id": "420065",
+      "orderNumber": "#P9",
+      "status": "completed",
+      "productId": "120005",
+      "productName": "DUPLA DE SKIN",
+      "quantity": "1"
+    },
+    {
+      "id": "420064",
+      "orderNumber": "#P8",
+      "status": "completed",
+      "productId": "120004",
+      "productName": "DUPLA KANI",
+      "quantity": "1"
+    },
+    {
+      "id": "420064",
+      "orderNumber": "#P8",
+      "status": "completed",
+      "productId": "120101",
+      "productName": "Refrigerantes",
+      "quantity": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tstatus\tproductId\tproductName\tquantity\n480010\t#P15\tcompleted\t120005\tDUPLA DE SKIN\t1\n480009\t#P14\tcompleted\t120005\tDUPLA DE SKIN\t1\n480008\t#P13\tcompleted\t120005\tDUPLA DE SKIN\t1\n420068\t#P12\tcancelled\t120069\tCAMARÃO AO ALHO E ÓLEO\t1\n420068\t#P12\tcancelled\t120001\tSASHIMI DE SALMÃO\t1\n420067\t#P11\tcancelled\t120002\tSHASHIMI - TEMPURÁ\t1\n420066\t#P10\tcompleted\t120001\tSASHIMI DE SALMÃO\t1\n420065\t#P9\tcompleted\t120005\tDUPLA DE SKIN\t1\n420064\t#P8\tcompleted\t120004\tDUPLA KANI\t1\n420064\t#P8\tcompleted\t120101\tRefrigerantes\t1\n",
+  "stderr": "",
+  "execution_time_ms": 67
+}

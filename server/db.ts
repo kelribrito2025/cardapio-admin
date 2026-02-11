@@ -1115,6 +1115,15 @@ export async function createOrderWithNumber(data: InsertOrder, items: InsertOrde
 // Manter função antiga para compatibilidade
 export async function createOrder(data: InsertOrder, items: InsertOrderItem[]): Promise<number> {
   const result = await createOrderWithNumber(data, items);
+  
+  // Descontar estoque automaticamente ao criar pedido (PDV, mesas, etc.)
+  try {
+    await deductStockForOrder(result.id);
+    console.log('[Estoque] Descontado para pedido (createOrder):', result.id);
+  } catch (err) {
+    console.error('[Estoque] Erro ao descontar estoque (createOrder):', err);
+  }
+  
   return result.id;
 }
 
@@ -1150,12 +1159,8 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
       });
     }
     
-    // Descontar estoque automaticamente quando o pedido entra em preparação
-    if (status === "preparing") {
-      deductStockForOrder(id).catch(err => {
-        console.error('[Estoque] Erro ao descontar estoque:', err);
-      });
-    }
+    // Nota: o desconto de estoque é feito na criação do pedido (createPublicOrder)
+    // Não descontar novamente ao mudar de status para evitar dupla contagem
     
     // Enviar SMS quando o status mudar para "ready" (pedido pronto/saindo para entrega)
     if (status === "ready" && order.customerPhone && isValidPhoneNumber(order.customerPhone)) {
@@ -2526,6 +2531,15 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     } catch (pushError) {
       console.error('[DB:createPublicOrder] Erro ao enviar push notifications:', pushError);
       // Não falhar o pedido por causa de erro de push
+    }
+    
+    // Descontar estoque automaticamente ao criar o pedido
+    try {
+      await deductStockForOrder(orderId);
+      console.log('[DB:createPublicOrder] Estoque descontado para pedido:', orderNumber);
+    } catch (stockError) {
+      console.error('[DB:createPublicOrder] Erro ao descontar estoque:', stockError);
+      // Não falhar o pedido por causa de erro de estoque
     }
     
     console.log('[DB:createPublicOrder] Pedido criado com sucesso:', { orderId, orderNumber });

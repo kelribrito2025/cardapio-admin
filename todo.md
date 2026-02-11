@@ -6072,3 +6072,7 @@
 ## Bloqueio de Produto sem Estoque no Menu Público
 - [x] Bloquear produto no menu público quando estoque vinculado chegar a zero
 - [x] Mostrar badge "Indisponível" no produto sem estoque no menu público
+
+## Bug: Estoque não desconta ao comprar
+- [x] Corrigir: estoque não é descontado ao realizar compra/confirmar pedido
+- [x] Corrigir: menu público não mostra "Indisponível" após estoque chegar a zero
