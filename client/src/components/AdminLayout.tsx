@@ -673,7 +673,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                                 <div className="relative">
                                   <item.icon className="h-4 w-4 flex-shrink-0 mx-auto" />
                                   {totalBadge > 0 && (
-                                    <span className="absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse bg-amber-500 text-white">
+                                    <span className="absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse bg-red-500 text-white">
                                       {totalBadge > 9 ? "9+" : totalBadge}
                                     </span>
                                   )}
@@ -707,7 +707,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           <span className="text-sm flex items-center gap-2 flex-1">
                             {item.label}
                             {totalBadge > 0 && (
-                              <span className="text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center bg-amber-500 text-white">
+                               <span className="text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center bg-red-500 text-white">
                                 {totalBadge > 99 ? "99+" : totalBadge}
                               </span>
                             )}
@@ -748,7 +748,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                                   <span className="text-sm flex items-center gap-2">
                                     {child.label}
                                     {childBadge > 0 && (
-                                      <span className="text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center bg-amber-500 text-white">
+                                      <span className="text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center bg-red-500 text-white">
                                         {childBadge > 99 ? "99+" : childBadge}
                                       </span>
                                     )}

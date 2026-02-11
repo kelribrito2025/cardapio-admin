@@ -6062,3 +6062,6 @@
 
 ## Badge Breve no Menu Estoque
 - [x] Remover badge "Breve" do item Estoque na sidebar
+
+## Cor do Badge de Avaliações
+- [x] Alterar cor dos badges de novas avaliações (e do menu pai) para vermelho, igual ao badge de novos pedidos
