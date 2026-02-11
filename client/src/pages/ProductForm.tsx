@@ -262,7 +262,7 @@ export default function ProductForm() {
   const [price, setPrice] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [status, setStatus] = useState<"active" | "paused">("active");
-  const [hasStock, setHasStock] = useState(true);
+  const [hasStock, setHasStock] = useState(false);
   const [stockQuantity, setStockQuantity] = useState<string>("");
   const [printerId, setPrinterId] = useState<string>("none"); // Setor/Impressora para este produto
   const [complementGroups, setComplementGroups] = useState<ComplementGroup[]>([]);

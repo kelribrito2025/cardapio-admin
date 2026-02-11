@@ -6090,3 +6090,6 @@
 - [x] Chamar sincronização em addStockMovement (entrada/saída/ajuste)
 - [x] Chamar sincronização em deductStockForOrder (desconto automático) - via addStockMovement
 - [x] Chamar sincronização em updateStockItem (quando currentQuantity é alterado)
+
+## Controle de estoque desativado por padrão
+- [x] Garantir que ao adicionar novo produto no catálogo, a opção de controle de estoque esteja desativada por padrão
