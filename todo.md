@@ -6206,3 +6206,7 @@
 - [x] Investigar por que os toggles de ativação das categorias aparecem como desativados na página de Categorias
 - [x] Corrigir toggle para refletir o estado real (isActive) da categoria
 - [x] Corrigir toggle para atualizar visualmente ao clicar (toast mostra "Categoria ativada" mas toggle não muda)
+
+## Campo de busca mobile na página de Catálogo
+- [x] Adicionar campo de busca visível na versão mobile da página de Catálogo para filtrar produtos
+- [x] Filtrar produtos em tempo real conforme o usuário digita (busca por nome, sem acentos)

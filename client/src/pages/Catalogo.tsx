@@ -259,8 +259,11 @@ export default function Catalogo() {
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
 
-  // Filters - use global search from topbar
-  const { searchQuery: search } = useSearch();
+  // Filters - use global search from topbar + local mobile search
+  const { searchQuery: globalSearch } = useSearch();
+  const [mobileSearch, setMobileSearch] = useState("");
+  // Combine global search (topbar) with local mobile search
+  const search = globalSearch || mobileSearch;
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [stockFilter, setStockFilter] = useState<string>("all");
@@ -623,6 +626,27 @@ export default function Catalogo() {
             </Button>
           }
         />
+      </div>
+
+      {/* Mobile Search Bar - visible only on mobile */}
+      <div className="mb-4 md:hidden">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar produto..."
+            value={mobileSearch}
+            onChange={(e) => setMobileSearch(e.target.value)}
+            className="pl-9 h-10 rounded-xl bg-card border-border/50"
+          />
+          {mobileSearch && (
+            <button
+              onClick={() => setMobileSearch("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Products List */}
