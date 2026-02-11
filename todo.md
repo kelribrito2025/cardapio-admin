@@ -6128,3 +6128,12 @@
 - [x] Menu Público: mostrar indicador visual quando limite de estoque é atingido na sacola
 - [x] PDV: impedir incremento de quantidade no carrinho além do estoque disponível (via updateCartItem)
 - [x] Mesas/Comandas: impedir incremento de quantidade no carrinho além do estoque disponível (via updateCartItem)
+
+## Redesign barra inferior mobile - Menu Público
+- [x] Mover menu "Pedidos" para o menu hamburger (3 barrinhas)
+- [x] Barra inferior fixa oculta até cliente adicionar item à sacola
+- [x] Efeito slide-up ao aparecer a barra
+- [x] Lado esquerdo: valor total + quantidade de itens
+- [x] Lado direito: botão "Ver sacola"
+- [x] Info de entrega: grátis / taxa fixa com valor / "total sem entrega" (por bairro)
+- [x] Alterações apenas na versão mobile, desktop permanece igual

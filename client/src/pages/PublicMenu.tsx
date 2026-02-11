@@ -173,6 +173,7 @@ export default function PublicMenu() {
   const [orderStatus, setOrderStatus] = useState<"sent" | "accepted" | "delivering" | "delivered" | "cancelled">("sent");
   const [cancellationReasonDisplay, setCancellationReasonDisplay] = useState<string | null>(null);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set());
   const [userOrders, setUserOrders] = useState<UserOrder[]>([]);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
@@ -1126,7 +1127,7 @@ export default function PublicMenu() {
 
   // Bloquear scroll do body quando modais estão abertos
   useEffect(() => {
-    const isAnyModalOpen = showOrdersModal || showTrackingModal || showMobileBag || checkoutStep > 0 || showInfoModal || showCouponModal || showReviewsModal || showRatingModal || selectedProduct !== null || showFullscreenImage || showNavigationModal || showLoyaltyModal || showNeighborhoodModal;
+    const isAnyModalOpen = showOrdersModal || showTrackingModal || showMobileBag || checkoutStep > 0 || showInfoModal || showCouponModal || showReviewsModal || showRatingModal || selectedProduct !== null || showFullscreenImage || showNavigationModal || showLoyaltyModal || showNeighborhoodModal || showMobileMenu;
     
     if (isAnyModalOpen) {
       document.body.style.overflow = 'hidden';
@@ -1137,7 +1138,7 @@ export default function PublicMenu() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [showOrdersModal, showTrackingModal, showMobileBag, checkoutStep, showInfoModal, showCouponModal, showReviewsModal, showRatingModal, selectedProduct, showFullscreenImage, showNavigationModal, showLoyaltyModal, showNeighborhoodModal]);
+  }, [showOrdersModal, showTrackingModal, showMobileBag, checkoutStep, showInfoModal, showCouponModal, showReviewsModal, showRatingModal, selectedProduct, showFullscreenImage, showNavigationModal, showLoyaltyModal, showNeighborhoodModal, showMobileMenu]);
 
   // Scroll the category nav to show the active category button
   const scrollCategoryNavToActive = useCallback((categoryId: number) => {
@@ -1654,7 +1655,7 @@ export default function PublicMenu() {
             </nav>
 
             {/* Mobile Menu Button */}
-            <button className="md:hidden p-2 text-gray-600 hover:text-gray-900 mr-4">
+            <button className="md:hidden p-2 text-gray-600 hover:text-gray-900 mr-4" onClick={() => setShowMobileMenu(true)}>
               <Menu className="h-5 w-5" />
             </button>
           </div>
@@ -2481,56 +2482,65 @@ export default function PublicMenu() {
         </div>
       </footer>
 
-      {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50">
-        <div className="flex items-center justify-around py-2">
-          {loyaltyEnabled?.enabled && (
-            <button 
-              className="flex flex-col items-center gap-0.5 px-4 py-2 text-gray-500"
-              onClick={() => {
-                setShowLoyaltyModal(true);
-                if (!isLoyaltyLoggedIn) {
-                  setLoyaltyStep('login');
-                } else {
-                  setLoyaltyStep('card');
-                  // Recarregar dados do cartão ao abrir o modal
-                  loyaltyCardQuery.refetch();
-                }
-              }}
+      {/* Mobile Bottom Bar - Sacola (aparece apenas quando tem itens) */}
+      {(() => {
+        const cartTotalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const cartSubtotal = cart.reduce((sum, item) => {
+          const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price) * (c.quantity || 1), 0);
+          return sum + (parseFloat(item.price) + complementsTotal) * item.quantity;
+        }, 0);
+        const hasItems = cart.length > 0;
+        
+        // Info de entrega
+        let deliveryLabel = '';
+        if (establishment.deliveryFeeType === 'free') {
+          deliveryLabel = 'Entrega Gr\u00e1tis';
+        } else if (establishment.deliveryFeeType === 'fixed' && establishment.deliveryFeeFixed) {
+          deliveryLabel = `Taxa de entrega: R$ ${Number(establishment.deliveryFeeFixed).toFixed(2).replace('.', ',')}`;
+        } else if (establishment.deliveryFeeType === 'byNeighborhood') {
+          deliveryLabel = 'Total sem entrega';
+        }
+        
+        return (
+          <>
+            <nav 
+              className={`md:hidden fixed bottom-0 left-0 right-0 bg-red-500 z-50 transition-transform duration-300 ease-out ${
+                hasItems ? 'translate-y-0' : 'translate-y-full'
+              }`}
+              style={{ boxShadow: '0 -4px 20px rgba(0,0,0,0.15)' }}
             >
-              <Gift className="h-5 w-5" />
-              <span className="text-xs font-medium">Fidelidade</span>
-            </button>
-          )}
-          <button 
-            className="flex flex-col items-center gap-0.5 px-4 py-2 text-gray-500 relative"
-            onClick={() => setShowOrdersModal(true)}
-          >
-            <ClipboardList className="h-5 w-5" />
-            {userOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length > 0 && (
-              <span className="absolute -top-0.5 right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                {userOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length}
-              </span>
-            )}
-            <span className="text-xs font-medium">Pedidos</span>
-          </button>
-          <button 
-            className="flex flex-col items-center gap-0.5 px-4 py-2 text-gray-500 relative"
-            onClick={() => setShowMobileBag(true)}
-          >
-            <ShoppingBag className="h-5 w-5" />
-            {cart.length > 0 && (
-              <span className="absolute -top-0.5 right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                {cart.reduce((sum, item) => sum + item.quantity, 0)}
-              </span>
-            )}
-            <span className="text-xs font-medium">Sacola</span>
-          </button>
-        </div>
-      </nav>
-
-      {/* Bottom padding for mobile nav */}
-      <div className="md:hidden h-16" />
+              <div className="flex items-center justify-between px-4 py-3">
+                {/* Lado esquerdo - Valor + Quantidade + Info entrega */}
+                <div className="flex flex-col">
+                  {deliveryLabel && (
+                    <span className="text-white/80 text-[11px] font-medium leading-tight">{deliveryLabel}</span>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-bold text-lg leading-tight">
+                      R$ {cartSubtotal.toFixed(2).replace('.', ',')}
+                    </span>
+                    <span className="text-white/70 text-xs">
+                      / {cartTotalQty} {cartTotalQty === 1 ? 'item' : 'itens'}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Lado direito - Bot\u00e3o Ver sacola */}
+                <button
+                  onClick={() => setShowMobileBag(true)}
+                  className="flex items-center gap-2 bg-white text-red-500 font-bold px-5 py-2.5 rounded-xl shadow-md hover:bg-gray-50 active:scale-95 transition-all"
+                >
+                  <ShoppingBag className="h-4 w-4" />
+                  <span className="text-sm">Ver sacola</span>
+                </button>
+              </div>
+            </nav>
+            
+            {/* Bottom padding for mobile nav - s\u00f3 quando tem itens */}
+            {hasItems && <div className="md:hidden h-[68px]" />}
+          </>
+        );
+      })()}
 
       {/* Modal Mais Informações */}
       {showInfoModal && (
@@ -6471,6 +6481,101 @@ setOnlinePaymentUrl(null);
                   </button>
                 ));
               })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Menu Drawer */}
+      {showMobileMenu && (
+        <div className="md:hidden fixed inset-0 z-[100]">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setShowMobileMenu(false)}
+          />
+          
+          {/* Drawer - desliza da direita */}
+          <div className="absolute right-0 top-0 bottom-0 w-72 bg-white shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-red-500 to-red-600 px-5 py-4 flex items-center justify-between">
+              <span className="text-white font-bold text-lg">Menu</span>
+              <button 
+                onClick={() => setShowMobileMenu(false)}
+                className="p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+              >
+                <X className="h-5 w-5 text-white" />
+              </button>
+            </div>
+            
+            {/* Menu Items */}
+            <div className="flex-1 overflow-y-auto py-2">
+              {/* Pedidos */}
+              <button
+                onClick={() => {
+                  setShowMobileMenu(false);
+                  setShowOrdersModal(true);
+                }}
+                className="w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors relative"
+              >
+                <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+                  <ClipboardList className="h-5 w-5 text-red-500" />
+                </div>
+                <div className="flex-1 text-left">
+                  <span className="font-semibold text-gray-900">Meus Pedidos</span>
+                  <p className="text-xs text-gray-500 mt-0.5">Acompanhe seus pedidos</p>
+                </div>
+                {userOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length > 0 && (
+                  <span className="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {userOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length}
+                  </span>
+                )}
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </button>
+              
+              {/* Fidelidade (se habilitado) */}
+              {loyaltyEnabled?.enabled && (
+                <button
+                  onClick={() => {
+                    setShowMobileMenu(false);
+                    setShowLoyaltyModal(true);
+                    if (!isLoyaltyLoggedIn) {
+                      setLoyaltyStep('login');
+                    } else {
+                      setLoyaltyStep('card');
+                      loyaltyCardQuery.refetch();
+                    }
+                  }}
+                  className="w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                    <Gift className="h-5 w-5 text-emerald-500" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <span className="font-semibold text-gray-900">Fidelidade</span>
+                    <p className="text-xs text-gray-500 mt-0.5">Programa de fidelidade</p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-gray-400" />
+                </button>
+              )}
+              
+              {/* Informa\u00e7\u00f5es */}
+              <button
+                onClick={() => {
+                  setShowMobileMenu(false);
+                  setShowInfoModal(true);
+                }}
+                className="w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+              >
+                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                  <Info className="h-5 w-5 text-blue-500" />
+                </div>
+                <div className="flex-1 text-left">
+                  <span className="font-semibold text-gray-900">Informa\u00e7\u00f5es</span>
+                  <p className="text-xs text-gray-500 mt-0.5">Sobre o estabelecimento</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </button>
             </div>
           </div>
         </div>
