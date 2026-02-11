@@ -1,0 +1,88 @@
+{
+  "query": "SELECT p.id, p.name, c.name as categoria, p.images FROM products p JOIN categories c ON p.categoryId = c.id WHERE p.establishmentId = 210001 AND p.images IS NOT NULL AND c.name IN ('Esfirras', 'Pizza', 'Macarrão', 'Oferta do dia', 'Novidades') ORDER BY c.sortOrder, p.sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, c.name as categoria, p.images FROM products p JOIN categories c ON p.categoryId = c.id WHERE p.establishmentId = 210001 AND p.images IS NOT NULL AND c.name IN ('Esfirras', 'Pizza', 'Macarrão', 'Oferta do dia', 'Novidades') ORDER BY c.sortOrder, p.sortOrder;",
+  "rows": [
+    {
+      "id": "300002",
+      "name": "Variadas",
+      "categoria": "Esfirras",
+      "images": "[\"https://storage.googleapis.com/mindi-static/df9bd902d5c7-Variadas.png\"]"
+    },
+    {
+      "id": "300003",
+      "name": "Grande",
+      "categoria": "Pizza",
+      "images": "[\"https://storage.googleapis.com/mindi-static/93a360d94cb5-Grande.png\"]"
+    },
+    {
+      "id": "300004",
+      "name": "Média",
+      "categoria": "Pizza",
+      "images": "[\"https://storage.googleapis.com/mindi-static/b44e01ecfef4-Média.png\"]"
+    },
+    {
+      "id": "300005",
+      "name": "Pequena",
+      "categoria": "Pizza",
+      "images": "[\"https://storage.googleapis.com/mindi-static/290d206ab2ee-Pequena.png\"]"
+    },
+    {
+      "id": "300006",
+      "name": "Médio",
+      "categoria": "Macarrão",
+      "images": "[\"https://storage.googleapis.com/mindi-static/f66b6918bf90-Médio.png\"]"
+    },
+    {
+      "id": "300007",
+      "name": "Grande",
+      "categoria": "Macarrão",
+      "images": "[\"https://storage.googleapis.com/mindi-static/801731037e16-Grande.png\"]"
+    },
+    {
+      "id": "300008",
+      "name": "Prato Econômico",
+      "categoria": "Macarrão",
+      "images": "[\"https://storage.googleapis.com/mindi-static/08da0f762b9d-Prato Econômico.png\"]"
+    },
+    {
+      "id": "300009",
+      "name": "Alho e Óleo (Grande)",
+      "categoria": "Macarrão",
+      "images": "[\"https://storage.googleapis.com/mindi-static/aad953dca889-Alho e Óleo (Grande).png\"]"
+    },
+    {
+      "id": "300019",
+      "name": "Combo 1",
+      "categoria": "Oferta do dia",
+      "images": "[\"https://storage.googleapis.com/mindi-static/e4db2dcd2f03-Combo 1.png\"]"
+    },
+    {
+      "id": "300017",
+      "name": "Combo 2",
+      "categoria": "Oferta do dia",
+      "images": "[\"https://storage.googleapis.com/mindi-static/46c66f70e0a9-Combo 2.png\"]"
+    },
+    {
+      "id": "300018",
+      "name": "Combo 3",
+      "categoria": "Oferta do dia",
+      "images": "[\"https://storage.googleapis.com/mindi-static/bb9f3257a60e-Combo 3.png\"]"
+    },
+    {
+      "id": "300020",
+      "name": "Combo 4",
+      "categoria": "Oferta do dia",
+      "images": "[\"https://storage.googleapis.com/mindi-static/faffb09a1f9c-Combo 4.png\"]"
+    },
+    {
+      "id": "300021",
+      "name": "Batata recheada",
+      "categoria": "Novidades",
+      "images": "[\"https://storage.googleapis.com/mindi-static/cd0b106be6e9-Batata recheada.png\"]"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tcategoria\timages\n300002\tVariadas\tEsfirras\t[\"https://storage.googleapis.com/mindi-static/df9bd902d5c7-Variadas.png\"]\n300003\tGrande\tPizza\t[\"https://storage.googleapis.com/mindi-static/93a360d94cb5-Grande.png\"]\n300004\tMédia\tPizza\t[\"https://storage.googleapis.com/mindi-static/b44e01ecfef4-Média.png\"]\n300005\tPequena\tPizza\t[\"https://storage.googleapis.com/mindi-static/290d206ab2ee-Pequena.png\"]\n300006\tMédio\tMacarrão\t[\"https://storage.googleapis.com/mindi-static/f66b6918bf90-Médio.png\"]\n300007\tGrande\tMacarrão\t[\"https://storage.googleapis.com/mindi-static/801731037e16-Grande.png\"]\n300008\tPrato Econômico\tMacarrão\t[\"https://storage.googleapis.com/mindi-static/08da0f762b9d-Prato Econômico.png\"]\n300009\tAlho e Óleo (Grande)\tMacarrão\t[\"https://storage.googleapis.com/mindi-static/aad953dca889-Alho e Óleo (Grande).png\"]\n300019\tCombo 1\tOferta do dia\t[\"https://storage.googleapis.com/mindi-static/e4db2dcd2f03-Combo 1.png\"]\n300017\tCombo 2\tOferta do dia\t[\"https://storage.googleapis.com/mindi-static/46c66f70e0a9-Combo 2.png\"]\n300018\tCombo 3\tOferta do dia\t[\"https://storage.googleapis.com/mindi-static/bb9f3257a60e-Combo 3.png\"]\n300020\tCombo 4\tOferta do dia\t[\"https://storage.googleapis.com/mindi-static/faffb09a1f9c-Combo 4.png\"]\n300021\tBatata recheada\tNovidades\t[\"https://storage.googleapis.com/mindi-static/cd0b106be6e9-Batata recheada.png\"]\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

@@ -6566,23 +6566,7 @@ setOnlinePaymentUrl(null);
                 </button>
               )}
               
-              {/* Informa\u00e7\u00f5es */}
-              <button
-                onClick={() => {
-                  setShowMobileMenu(false);
-                  setShowInfoModal(true);
-                }}
-                className="w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors"
-              >
-                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                  <Info className="h-5 w-5 text-blue-500" />
-                </div>
-                <div className="flex-1 text-left">
-                  <span className="font-semibold text-gray-900">Informa\u00e7\u00f5es</span>
-                  <p className="text-xs text-gray-500 mt-0.5">Sobre o estabelecimento</p>
-                </div>
-                <ChevronRight className="h-4 w-4 text-gray-400" />
-              </button>
+
             </div>
           </div>
         </div>

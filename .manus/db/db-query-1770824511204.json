@@ -1,0 +1,115 @@
+{
+  "query": "SELECT id, name, images FROM products WHERE establishmentId = 210001 AND images IS NOT NULL AND (images = '[\"\"]' OR images = '[\"\"]' OR images LIKE '%\"\"' OR LENGTH(images) < 10) ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, images FROM products WHERE establishmentId = 210001 AND images IS NOT NULL AND (images = '[\"\"]' OR images = '[\"\"]' OR images LIKE '%\"\"' OR LENGTH(images) < 10) ORDER BY id;",
+  "rows": [
+    {
+      "id": "300015",
+      "name": "Alho e Óleo",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300016",
+      "name": "Prato Econômico Alho e óleo",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300023",
+      "name": "Omeletes",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300024",
+      "name": "Cachorro quente aberto",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300025",
+      "name": "Cachorro quente fechado",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300026",
+      "name": "Cachorro quente fechado +refrigerante lata",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300027",
+      "name": "Cachorro quente aberto + refrigerante lata.",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300028",
+      "name": "Cachorro quente família, três cachorros quente aberto +refrigerante de 1 litro.",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300029",
+      "name": "Cachorro quente aberto  (cópia)",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300030",
+      "name": "PRESTIGIO",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300031",
+      "name": "MENTOS MORANGO",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300032",
+      "name": "MENTOS Frutas Vermelhas (bala)",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300033",
+      "name": "MENTOS Rainbow(bala)",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300034",
+      "name": "MENTOS STRONG MINT (PRETO)CHICLETE",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300035",
+      "name": "MENTOS Fresh Mind (azul)",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300036",
+      "name": "MENTOS Melancia 🍉",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300037",
+      "name": "MENTOS FRUIT",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300038",
+      "name": "MENTOS Tutti Fresh",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300039",
+      "name": "MENTOS Morango-Maca Verde+Framboesa",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300040",
+      "name": "MENTOS SPEARMINT (VERDE)",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300041",
+      "name": "Bombom (ouro branco).",
+      "images": "[\"\"]"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\timages\n300015\tAlho e Óleo\t[\"\"]\n300016\tPrato Econômico Alho e óleo\t[\"\"]\n300023\tOmeletes\t[\"\"]\n300024\tCachorro quente aberto\t[\"\"]\n300025\tCachorro quente fechado\t[\"\"]\n300026\tCachorro quente fechado +refrigerante lata\t[\"\"]\n300027\tCachorro quente aberto + refrigerante lata.\t[\"\"]\n300028\tCachorro quente família, três cachorros quente aberto +refrigerante de 1 litro.\t[\"\"]\n300029\tCachorro quente aberto  (cópia)\t[\"\"]\n300030\tPRESTIGIO\t[\"\"]\n300031\tMENTOS MORANGO\t[\"\"]\n300032\tMENTOS Frutas Vermelhas (bala)\t[\"\"]\n300033\tMENTOS Rainbow(bala)\t[\"\"]\n300034\tMENTOS STRONG MINT (PRETO)CHICLETE\t[\"\"]\n300035\tMENTOS Fresh Mind (azul)\t[\"\"]\n300036\tMENTOS Melancia 🍉\t[\"\"]\n300037\tMENTOS FRUIT\t[\"\"]\n300038\tMENTOS Tutti Fresh\t[\"\"]\n300039\tMENTOS Morango-Maca Verde+Framboesa\t[\"\"]\n300040\tMENTOS SPEARMINT (VERDE)\t[\"\"]\n300041\tBombom (ouro branco).\t[\"\"]\n",
+  "stderr": "",
+  "execution_time_ms": 70
+}

@@ -1,0 +1,185 @@
+{
+  "query": "SELECT id, name, categoryId FROM products WHERE establishmentId = 210001 AND images IS NULL ORDER BY categoryId, id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, categoryId FROM products WHERE establishmentId = 210001 AND images IS NULL ORDER BY categoryId, id;",
+  "rows": [
+    {
+      "id": "300015",
+      "name": "Alho e Óleo",
+      "categoryId": "240004"
+    },
+    {
+      "id": "300016",
+      "name": "Prato Econômico Alho e óleo",
+      "categoryId": "240004"
+    },
+    {
+      "id": "300022",
+      "name": "Panqueca",
+      "categoryId": "240006"
+    },
+    {
+      "id": "300023",
+      "name": "Omeletes",
+      "categoryId": "240006"
+    },
+    {
+      "id": "300024",
+      "name": "Cachorro quente aberto",
+      "categoryId": "240007"
+    },
+    {
+      "id": "300025",
+      "name": "Cachorro quente fechado",
+      "categoryId": "240007"
+    },
+    {
+      "id": "300026",
+      "name": "Cachorro quente fechado +refrigerante lata",
+      "categoryId": "240007"
+    },
+    {
+      "id": "300027",
+      "name": "Cachorro quente aberto + refrigerante lata.",
+      "categoryId": "240007"
+    },
+    {
+      "id": "300028",
+      "name": "Cachorro quente família, três cachorros quente aberto +refrigerante de 1 litro.",
+      "categoryId": "240007"
+    },
+    {
+      "id": "300029",
+      "name": "Cachorro quente aberto  (cópia)",
+      "categoryId": "240007"
+    },
+    {
+      "id": "300030",
+      "name": "PRESTIGIO",
+      "categoryId": "240008"
+    },
+    {
+      "id": "300031",
+      "name": "MENTOS MORANGO",
+      "categoryId": "240008"
+    },
+    {
+      "id": "300032",
+      "name": "MENTOS Frutas Vermelhas (bala)",
+      "categoryId": "240008"
+    },
+    {
+      "id": "300033",
+      "name": "MENTOS Rainbow(bala)",
+      "categoryId": "240008"
+    },
+    {
+      "id": "300034",
+      "name": "MENTOS STRONG MINT (PRETO)CHICLETE",
+      "categoryId": "240008"
+    },
+    {
+      "id": "300035",
+      "name": "MENTOS Fresh Mind (azul)",
+      "categoryId": "240008"
+    },
+    {
+      "id": "300036",
+      "name": "MENTOS Melancia 🍉",
+      "categoryId": "240008"
+    },
+    {
+      "id": "300037",
+      "name": "MENTOS FRUIT",
+      "categoryId": "240008"
+    },
+    {
+      "id": "300038",
+      "name": "MENTOS Tutti Fresh",
+      "categoryId": "240008"
+    },
+    {
+      "id": "300039",
+      "name": "MENTOS Morango-Maca Verde+Framboesa",
+      "categoryId": "240008"
+    },
+    {
+      "id": "300040",
+      "name": "MENTOS SPEARMINT (VERDE)",
+      "categoryId": "240008"
+    },
+    {
+      "id": "300041",
+      "name": "Bombom (ouro branco).",
+      "categoryId": "240008"
+    },
+    {
+      "id": "300044",
+      "name": "guarana cotuba 2 litros",
+      "categoryId": "240009"
+    },
+    {
+      "id": "300045",
+      "name": "guarana mineiro 2 litros",
+      "categoryId": "240009"
+    },
+    {
+      "id": "300046",
+      "name": "kuat 1 litro",
+      "categoryId": "240009"
+    },
+    {
+      "id": "300047",
+      "name": "refrigerante fanta laranja lata 310ml",
+      "categoryId": "240009"
+    },
+    {
+      "id": "300048",
+      "name": "coca cola 1 litro",
+      "categoryId": "240009"
+    },
+    {
+      "id": "300049",
+      "name": "refrigerante coca lata 310ml.",
+      "categoryId": "240009"
+    },
+    {
+      "id": "300050",
+      "name": "refrigerante coca lata zero 310ml.",
+      "categoryId": "240009"
+    },
+    {
+      "id": "300051",
+      "name": "coca cola 2 litros",
+      "categoryId": "240009"
+    },
+    {
+      "id": "300052",
+      "name": "cerveja brahma lata",
+      "categoryId": "240009"
+    },
+    {
+      "id": "300053",
+      "name": "cerveja skol lata",
+      "categoryId": "240009"
+    },
+    {
+      "id": "300054",
+      "name": "Fanta 1 litro",
+      "categoryId": "240009"
+    },
+    {
+      "id": "300055",
+      "name": "Fanta 2 litros",
+      "categoryId": "240009"
+    },
+    {
+      "id": "300056",
+      "name": "Fanta Guaraná 1 litro.",
+      "categoryId": "240009"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tcategoryId\n300015\tAlho e Óleo\t240004\n300016\tPrato Econômico Alho e óleo\t240004\n300022\tPanqueca\t240006\n300023\tOmeletes\t240006\n300024\tCachorro quente aberto\t240007\n300025\tCachorro quente fechado\t240007\n300026\tCachorro quente fechado +refrigerante lata\t240007\n300027\tCachorro quente aberto + refrigerante lata.\t240007\n300028\tCachorro quente família, três cachorros quente aberto +refrigerante de 1 litro.\t240007\n300029\tCachorro quente aberto  (cópia)\t240007\n300030\tPRESTIGIO\t240008\n300031\tMENTOS MORANGO\t240008\n300032\tMENTOS Frutas Vermelhas (bala)\t240008\n300033\tMENTOS Rainbow(bala)\t240008\n300034\tMENTOS STRONG MINT (PRETO)CHICLETE\t240008\n300035\tMENTOS Fresh Mind (azul)\t240008\n300036\tMENTOS Melancia 🍉\t240008\n300037\tMENTOS FRUIT\t240008\n300038\tMENTOS Tutti Fresh\t240008\n300039\tMENTOS Morango-Maca Verde+Framboesa\t240008\n300040\tMENTOS SPEARMINT (VERDE)\t240008\n300041\tBombom (ouro branco).\t240008\n300044\tguarana cotuba 2 litros\t240009\n300045\tguarana mineiro 2 litros\t240009\n300046\tkuat 1 litro\t240009\n300047\trefrigerante fanta laranja lata 310ml\t240009\n300048\tcoca cola 1 litro\t240009\n300049\trefrigerante coca lata 310ml.\t240009\n300050\trefrigerante coca lata zero 310ml.\t240009\n300051\tcoca cola 2 litros\t240009\n300052\tcerveja brahma lata\t240009\n300053\tcerveja skol lata\t240009\n300054\tFanta 1 litro\t240009\n300055\tFanta 2 litros\t240009\n300056\tFanta Guaraná 1 litro.\t240009\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

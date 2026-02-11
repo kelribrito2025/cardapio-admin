@@ -1,0 +1,30 @@
+{
+  "query": "SELECT id, name, images FROM products WHERE establishmentId = 210001 AND id IN (300010, 300011, 300013, 300014);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, images FROM products WHERE establishmentId = 210001 AND id IN (300010, 300011, 300013, 300014);",
+  "rows": [
+    {
+      "id": "300010",
+      "name": "Alho e Óleo (Médio)",
+      "images": "NULL"
+    },
+    {
+      "id": "300011",
+      "name": "Prato Econômico  (Grande)",
+      "images": "NULL"
+    },
+    {
+      "id": "300013",
+      "name": "Prato Econômico Alho e óleo  (Grande)",
+      "images": "NULL"
+    },
+    {
+      "id": "300014",
+      "name": "Prato Econômico Alho e óleo (Médio)",
+      "images": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\timages\n300010\tAlho e Óleo (Médio)\tNULL\n300011\tPrato Econômico  (Grande)\tNULL\n300013\tPrato Econômico Alho e óleo  (Grande)\tNULL\n300014\tPrato Econômico Alho e óleo (Médio)\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

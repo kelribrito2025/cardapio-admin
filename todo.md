@@ -6184,3 +6184,13 @@
 - [x] Migrar 55 produtos com 54 fotos para o estabelecimento 210001
 - [x] Migrar 73 grupos e 500 itens de complementos
 - [x] Validar migração completa no banco de dados
+
+## Remover fotos placeholder dos produtos migrados (estabelecimento 210001)
+- [ ] Identificar produtos com fotos placeholder/geradas automaticamente pelo Mindi
+- [ ] Remover imagens e deixar apenas o placeholder padrão do sistema
+
+## Melhorar fotos dos produtos do estabelecimento 210001
+- [x] Melhorar fotos: Esfirras (Variadas), Pizza (Grande, Média, Pequena), Macarrão (Médio, Grande, Prato Econômico, Alho e Óleo Grande), Oferta do dia (Combo 1-4), Novidades (Batata recheada) - 13 fotos melhoradas e enviadas para CDN
+
+## Remover item Informações do menu lateral do menu público
+- [x] Remover o item "Informações" do menu lateral, deixando apenas "Meus Pedidos"

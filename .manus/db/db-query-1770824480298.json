@@ -1,0 +1,280 @@
+{
+  "query": "SELECT id, name, images FROM products WHERE establishmentId = 210001 AND images IS NOT NULL ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, images FROM products WHERE establishmentId = 210001 AND images IS NOT NULL ORDER BY id;",
+  "rows": [
+    {
+      "id": "300002",
+      "name": "Variadas",
+      "images": "[\"https://storage.googleapis.com/mindi-static/df9bd902d5c7-Variadas.png\"]"
+    },
+    {
+      "id": "300003",
+      "name": "Grande",
+      "images": "[\"https://storage.googleapis.com/mindi-static/93a360d94cb5-Grande.png\"]"
+    },
+    {
+      "id": "300004",
+      "name": "Média",
+      "images": "[\"https://storage.googleapis.com/mindi-static/b44e01ecfef4-Média.png\"]"
+    },
+    {
+      "id": "300005",
+      "name": "Pequena",
+      "images": "[\"https://storage.googleapis.com/mindi-static/290d206ab2ee-Pequena.png\"]"
+    },
+    {
+      "id": "300006",
+      "name": "Médio",
+      "images": "[\"https://storage.googleapis.com/mindi-static/f66b6918bf90-Médio.png\"]"
+    },
+    {
+      "id": "300007",
+      "name": "Grande",
+      "images": "[\"https://storage.googleapis.com/mindi-static/801731037e16-Grande.png\"]"
+    },
+    {
+      "id": "300008",
+      "name": "Prato Econômico",
+      "images": "[\"https://storage.googleapis.com/mindi-static/08da0f762b9d-Prato Econômico.png\"]"
+    },
+    {
+      "id": "300009",
+      "name": "Alho e Óleo (Grande)",
+      "images": "[\"https://storage.googleapis.com/mindi-static/aad953dca889-Alho e Óleo (Grande).png\"]"
+    },
+    {
+      "id": "300010",
+      "name": "Alho e Óleo (Médio)",
+      "images": "[\"https://api-mindi-static.s3.amazonaws.com/storeid23435/4aafa197111f-Alho%20e%20%C3%93leo%20%28M%C3%A9dio%29%20%20.png\"]"
+    },
+    {
+      "id": "300011",
+      "name": "Prato Econômico  (Grande)",
+      "images": "[\"https://storage.googleapis.com/mindi-static/fad6e3f8c965-Prato Econômico  (Grande).png\"]"
+    },
+    {
+      "id": "300012",
+      "name": "Prato Econômico  (Médio)",
+      "images": "[\"https://trello-attachments.s3.amazonaws.com/5dbce075ce89cb401b8eda31/5e31d6fd86e97f86b9ba8f9d/f811f3c07fdecdba2dc6cfd251c461c7/01_-_2020_-_Sr_Maca_Img_Mindi_Medio.png\"]"
+    },
+    {
+      "id": "300013",
+      "name": "Prato Econômico Alho e óleo  (Grande)",
+      "images": "[\"https://trello-attachments.s3.amazonaws.com/5dbce075ce89cb401b8eda31/5e31d6fd86e97f86b9ba8f9d/f811f3c07fdecdba2dc6cfd251c461c7/01_-_2020_-_Sr_Maca_Img_Mindi_Medio.png\"]"
+    },
+    {
+      "id": "300014",
+      "name": "Prato Econômico Alho e óleo (Médio)",
+      "images": "[\"https://trello-attachments.s3.amazonaws.com/5dbce075ce89cb401b8eda31/5e31d6fd86e97f86b9ba8f9d/f811f3c07fdecdba2dc6cfd251c461c7/01_-_2020_-_Sr_Maca_Img_Mindi_Medio.png\"]"
+    },
+    {
+      "id": "300015",
+      "name": "Alho e Óleo",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300016",
+      "name": "Prato Econômico Alho e óleo",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300017",
+      "name": "Combo 2",
+      "images": "[\"https://storage.googleapis.com/mindi-static/46c66f70e0a9-Combo 2.png\"]"
+    },
+    {
+      "id": "300018",
+      "name": "Combo 3",
+      "images": "[\"https://storage.googleapis.com/mindi-static/bb9f3257a60e-Combo 3.png\"]"
+    },
+    {
+      "id": "300019",
+      "name": "Combo 1",
+      "images": "[\"https://storage.googleapis.com/mindi-static/e4db2dcd2f03-Combo 1.png\"]"
+    },
+    {
+      "id": "300020",
+      "name": "Combo 4",
+      "images": "[\"https://storage.googleapis.com/mindi-static/faffb09a1f9c-Combo 4.png\"]"
+    },
+    {
+      "id": "300021",
+      "name": "Batata recheada",
+      "images": "[\"https://storage.googleapis.com/mindi-static/cd0b106be6e9-Batata recheada.png\"]"
+    },
+    {
+      "id": "300023",
+      "name": "Omeletes",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300024",
+      "name": "Cachorro quente aberto",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300025",
+      "name": "Cachorro quente fechado",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300026",
+      "name": "Cachorro quente fechado +refrigerante lata",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300027",
+      "name": "Cachorro quente aberto + refrigerante lata.",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300028",
+      "name": "Cachorro quente família, três cachorros quente aberto +refrigerante de 1 litro.",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300029",
+      "name": "Cachorro quente aberto  (cópia)",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300030",
+      "name": "PRESTIGIO",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300031",
+      "name": "MENTOS MORANGO",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300032",
+      "name": "MENTOS Frutas Vermelhas (bala)",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300033",
+      "name": "MENTOS Rainbow(bala)",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300034",
+      "name": "MENTOS STRONG MINT (PRETO)CHICLETE",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300035",
+      "name": "MENTOS Fresh Mind (azul)",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300036",
+      "name": "MENTOS Melancia 🍉",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300037",
+      "name": "MENTOS FRUIT",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300038",
+      "name": "MENTOS Tutti Fresh",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300039",
+      "name": "MENTOS Morango-Maca Verde+Framboesa",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300040",
+      "name": "MENTOS SPEARMINT (VERDE)",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300041",
+      "name": "Bombom (ouro branco).",
+      "images": "[\"\"]"
+    },
+    {
+      "id": "300042",
+      "name": "🍊 Suco de laranja 450 ML",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/SGu0vNSv8wNjFa0qREv6V.jpeg\"]"
+    },
+    {
+      "id": "300043",
+      "name": "🍊 Suco de laranja 1 LITRO",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/ireRykeSQasFsop4jtaxf.webp\"]"
+    },
+    {
+      "id": "300044",
+      "name": "guarana cotuba 2 litros",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/HMedHpRg7ZasWqJ6Xh3jG.jpeg\"]"
+    },
+    {
+      "id": "300045",
+      "name": "guarana mineiro 2 litros",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/M50XH4bTZrPXfL-1jlenJ.jpeg\"]"
+    },
+    {
+      "id": "300046",
+      "name": "kuat 1 litro",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/IGcik9juuTTaUEc0dAvhm.jpeg\"]"
+    },
+    {
+      "id": "300047",
+      "name": "refrigerante fanta laranja lata 310ml",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/dZhn1WmCMDsIr8iKGkAsE.webp\"]"
+    },
+    {
+      "id": "300048",
+      "name": "coca cola 1 litro",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/9r16ior--kyVKyo613Tvk.jpeg\"]"
+    },
+    {
+      "id": "300049",
+      "name": "refrigerante coca lata 310ml.",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/gaoMeTXWwQkYMjErkvYAR.webp\"]"
+    },
+    {
+      "id": "300050",
+      "name": "refrigerante coca lata zero 310ml.",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/BkUYjRQ1-baT0a0J8Bmr0.webp\"]"
+    },
+    {
+      "id": "300051",
+      "name": "coca cola 2 litros",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/xWqxZTFYWkZ6QFgqhwvye.webp\"]"
+    },
+    {
+      "id": "300052",
+      "name": "cerveja brahma lata",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/edUpfXY421zNorAZCFfIb.webp\"]"
+    },
+    {
+      "id": "300053",
+      "name": "cerveja skol lata",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/EJIZvV2MhwTFGNlRafFEf.webp\"]"
+    },
+    {
+      "id": "300054",
+      "name": "Fanta 1 litro",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/tX8V7s3SBlk5Ee6v08OmE.webp\"]"
+    },
+    {
+      "id": "300055",
+      "name": "Fanta 2 litros",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/zLyVFA7n95nY4kriopt6j.jpeg\"]"
+    },
+    {
+      "id": "300056",
+      "name": "Fanta Guaraná 1 litro.",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/bH0d20VZJEhFUefFizTEf.jpeg\"]"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\timages\n300002\tVariadas\t[\"https://storage.googleapis.com/mindi-static/df9bd902d5c7-Variadas.png\"]\n300003\tGrande\t[\"https://storage.googleapis.com/mindi-static/93a360d94cb5-Grande.png\"]\n300004\tMédia\t[\"https://storage.googleapis.com/mindi-static/b44e01ecfef4-Média.png\"]\n300005\tPequena\t[\"https://storage.googleapis.com/mindi-static/290d206ab2ee-Pequena.png\"]\n300006\tMédio\t[\"https://storage.googleapis.com/mindi-static/f66b6918bf90-Médio.png\"]\n300007\tGrande\t[\"https://storage.googleapis.com/mindi-static/801731037e16-Grande.png\"]\n300008\tPrato Econômico\t[\"https://storage.googleapis.com/mindi-static/08da0f762b9d-Prato Econômico.png\"]\n300009\tAlho e Óleo (Grande)\t[\"https://storage.googleapis.com/mindi-static/aad953dca889-Alho e Óleo (Grande).png\"]\n300010\tAlho e Óleo (Médio)\t[\"https://api-mindi-static.s3.amazonaws.com/storeid23435/4aafa197111f-Alho%20e%20%C3%93leo%20%28M%C3%A9dio%29%20%20.png\"]\n300011\tPrato Econômico  (Grande)\t[\"https://storage.googleapis.com/mindi-static/fad6e3f8c965-Prato Econômico  (Grande).png\"]\n300012\tPrato Econômico  (Médio)\t[\"https://trello-attachments.s3.amazonaws.com/5dbce075ce89cb401b8eda31/5e31d6fd86e97f86b9ba8f9d/f811f3c07fdecdba2dc6cfd251c461c7/01_-_2020_-_Sr_Maca_Img_Mindi_Medio.png\"]\n300013\tPrato Econômico Alho e óleo  (Grande)\t[\"https://trello-attachments.s3.amazonaws.com/5dbce075ce89cb401b8eda31/5e31d6fd86e97f86b9ba8f9d/f811f3c07fdecdba2dc6cfd251c461c7/01_-_2020_-_Sr_Maca_Img_Mindi_Medio.png\"]\n300014\tPrato Econômico Alho e óleo (Médio)\t[\"https://trello-attachments.s3.amazonaws.com/5dbce075ce89cb401b8eda31/5e31d6fd86e97f86b9ba8f9d/f811f3c07fdecdba2dc6cfd251c461c7/01_-_2020_-_Sr_Maca_Img_Mindi_Medio.png\"]\n300015\tAlho e Óleo\t[\"\"]\n300016\tPrato Econômico Alho e óleo\t[\"\"]\n300017\tCombo 2\t[\"https://storage.googleapis.com/mindi-static/46c66f70e0a9-Combo 2.png\"]\n300018\tCombo 3\t[\"https://storage.googleapis.com/mindi-static/bb9f3257a60e-Combo 3.png\"]\n300019\tCombo 1\t[\"https://storage.googleapis.com/mindi-static/e4db2dcd2f03-Combo 1.png\"]\n300020\tCombo 4\t[\"https://storage.googleapis.com/mindi-static/faffb09a1f9c-Combo 4.png\"]\n300021\tBatata recheada\t[\"https://storage.googleapis.com/mindi-static/cd0b106be6e9-Batata recheada.png\"]\n300023\tOmeletes\t[\"\"]\n300024\tCachorro quente aberto\t[\"\"]\n300025\tCachorro quente fechado\t[\"\"]\n300026\tCachorro quente fechado +refrigerante lata\t[\"\"]\n300027\tCachorro quente aberto + refrigerante lata.\t[\"\"]\n300028\tCachorro quente família, três cachorros quente aberto +refrigerante de 1 litro.\t[\"\"]\n300029\tCachorro quente aberto  (cópia)\t[\"\"]\n300030\tPRESTIGIO\t[\"\"]\n300031\tMENTOS MORANGO\t[\"\"]\n300032\tMENTOS Frutas Vermelhas (bala)\t[\"\"]\n300033\tMENTOS Rainbow(bala)\t[\"\"]\n300034\tMENTOS STRONG MINT (PRETO)CHICLETE\t[\"\"]\n300035\tMENTOS Fresh Mind (azul)\t[\"\"]\n300036\tMENTOS Melancia 🍉\t[\"\"]\n300037\tMENTOS FRUIT\t[\"\"]\n300038\tMENTOS Tutti Fresh\t[\"\"]\n300039\tMENTOS Morango-Maca Verde+Framboesa\t[\"\"]\n300040\tMENTOS SPEARMINT (VERDE)\t[\"\"]\n300041\tBombom (ouro branco).\t[\"\"]\n300042\t🍊 Suco de laranja 450 ML\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/SGu0vNSv8wNjFa0qREv6V.jpeg\"]\n300043\t🍊 Suco de laranja 1 LITRO\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/ireRykeSQasFsop4jtaxf.webp\"]\n300044\tguarana cotuba 2 litros\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/HMedHpRg7ZasWqJ6Xh3jG.jpeg\"]\n300045\tguarana mineiro 2 litros\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/M50XH4bTZrPXfL-1jlenJ.jpeg\"]\n300046\tkuat 1 litro\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/IGcik9juuTTaUEc0dAvhm.jpeg\"]\n300047\trefrigerante fanta laranja lata 310ml\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/dZhn1WmCMDsIr8iKGkAsE.webp\"]\n300048\tcoca cola 1 litro\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/9r16ior--kyVKyo613Tvk.jpeg\"]\n300049\trefrigerante coca lata 310ml.\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/gaoMeTXWwQkYMjErkvYAR.webp\"]\n300050\trefrigerante coca lata zero 310ml.\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/BkUYjRQ1-baT0a0J8Bmr0.webp\"]\n300051\tcoca cola 2 litros\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/xWqxZTFYWkZ6QFgqhwvye.webp\"]\n300052\tcerveja brahma lata\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/edUpfXY421zNorAZCFfIb.webp\"]\n300053\tcerveja skol lata\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/EJIZvV2MhwTFGNlRafFEf.webp\"]\n300054\tFanta 1 litro\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/tX8V7s3SBlk5Ee6v08OmE.webp\"]\n300055\tFanta 2 litros\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/zLyVFA7n95nY4kriopt6j.jpeg\"]\n300056\tFanta Guaraná 1 litro.\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/bH0d20VZJEhFUefFizTEf.jpeg\"]\n",
+  "stderr": "",
+  "execution_time_ms": 99
+}

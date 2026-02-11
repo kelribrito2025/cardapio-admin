@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, images, COLUMN_TYPE FROM products p, information_schema.columns c WHERE c.table_name = 'products' AND c.column_name = 'images' AND p.id = 300002;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, images, COLUMN_TYPE FROM products p, information_schema.columns c WHERE c.table_name = 'products' AND c.column_name = 'images' AND p.id = 300002;",
+  "rows": [
+    {
+      "id": "300002",
+      "images": "[\"https://storage.googleapis.com/mindi-static/df9bd902d5c7-Variadas.png\"]",
+      "COLUMN_TYPE": "json"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\timages\tCOLUMN_TYPE\n300002\t[\"https://storage.googleapis.com/mindi-static/df9bd902d5c7-Variadas.png\"]\tjson\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}
