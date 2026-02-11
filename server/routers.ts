@@ -665,10 +665,24 @@ export const appRouter = router({
         status: z.enum(["active", "paused", "archived"]).optional(),
         stockQuantity: z.number().nullable().optional(),
         hasStock: z.boolean().optional(),
-        printerId: z.number().nullable().optional(), // Setor/Impressora para este produto
+        printerId: z.number().nullable().optional(),
       }))
       .mutation(async ({ input }) => {
         const id = await db.createProduct(input);
+        // Criar automaticamente item de estoque quando controle de estoque está ativado
+        if (input.hasStock) {
+          try {
+            await db.createStockItem({
+              establishmentId: input.establishmentId,
+              name: input.name,
+              currentQuantity: input.stockQuantity ? String(input.stockQuantity) : "0",
+              minQuantity: "0",
+              unit: "unidade",
+            });
+          } catch (e) {
+            console.error("Erro ao criar item de estoque automaticamente:", e);
+          }
+        }
         return { id };
       }),
     
@@ -683,11 +697,27 @@ export const appRouter = router({
         status: z.enum(["active", "paused", "archived"]).optional(),
         stockQuantity: z.number().nullable().optional(),
         hasStock: z.boolean().optional(),
-        printerId: z.number().nullable().optional(), // Setor/Impressora para este produto
+        printerId: z.number().nullable().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
+        // Verificar se o produto já tinha estoque ativado antes
+        const existingProduct = await db.getProductById(id);
         await db.updateProduct(id, data);
+        // Se ativou controle de estoque agora, criar item de estoque automaticamente
+        if (input.hasStock && existingProduct && !existingProduct.hasStock) {
+          try {
+            await db.createStockItem({
+              establishmentId: existingProduct.establishmentId,
+              name: input.name || existingProduct.name,
+              currentQuantity: input.stockQuantity ? String(input.stockQuantity) : "0",
+              minQuantity: "0",
+              unit: "unidade",
+            });
+          } catch (e) {
+            console.error("Erro ao criar item de estoque automaticamente:", e);
+          }
+        }
         return { success: true };
       }),
     

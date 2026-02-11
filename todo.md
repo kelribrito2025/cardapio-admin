@@ -6049,4 +6049,5 @@
 - [x] Remover campo "Custo por unidade (R$)" do modal de editar item de estoque
 
 ## Editar Produto - Controle de Estoque
-- [x] Ao ativar controle de estoque e salvar, redirecionar automaticamente para a página de estoque
+- [x] Ao ativar controle de estoque e salvar, criar automaticamente o item na página de estoque (sem redirecionar)
+- [x] Reverter redirecionamento incorreto para /estoque no ProductForm
