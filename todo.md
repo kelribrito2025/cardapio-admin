@@ -6352,3 +6352,4 @@
 - [x] Mobile: Mover toggle Grátis/Normal para dentro do menu de 3 pontinhos no dropdown de complementos do catálogo
 - [x] Catálogo: Adicionar visual cinza/esmaecido nos itens pausados na lista (estilo iFood) para diferenciar visualmente de itens ativos
 - [x] Catálogo: Botão de ativar (Play) não deve ficar com efeito de opacidade/cinza quando item está pausado
+- [x] Aplicar visual esmaecido (cinza + opacidade) nos itens de complemento pausados dentro do dropdown, mantendo botão ativar normal

@@ -359,7 +359,7 @@ function SortableInlineItem({
       className={cn(
         "bg-card rounded-lg border border-border/50",
         isDragging && "shadow-lg ring-2 ring-primary/30",
-        !item.isActive && "opacity-60"
+        !item.isActive && "bg-muted/40"
       )}
     >
       <div className="flex items-center gap-2 p-2">
@@ -367,14 +367,17 @@ function SortableInlineItem({
           type="button"
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded-md touch-none flex-shrink-0"
+          className={cn(
+            "cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded-md touch-none flex-shrink-0",
+            !item.isActive && "opacity-50"
+          )}
         >
           <GripVertical className="h-3.5 w-3.5 text-muted-foreground/50" />
         </button>
 
         {/* Image indicator */}
         {item.imageUrl && (
-          <div className="h-7 w-7 rounded-md overflow-hidden flex-shrink-0">
+          <div className={cn("h-7 w-7 rounded-md overflow-hidden flex-shrink-0", !item.isActive && "opacity-50 grayscale")}>
             <img src={item.imageUrl} alt="" className="h-full w-full object-cover" />
           </div>
         )}
@@ -398,7 +401,7 @@ function SortableInlineItem({
             />
           </div>
         ) : (
-          <div className="flex items-center gap-1 flex-1 min-w-0">
+          <div className={cn("flex items-center gap-1 flex-1 min-w-0", !item.isActive && "opacity-50")}>
             <span
               className={cn(
                 "text-sm truncate",
@@ -440,7 +443,8 @@ function SortableInlineItem({
                 "hidden md:flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border transition-colors flex-shrink-0",
                 isFree
                   ? "bg-green-100 text-green-700 border-green-300 hover:bg-green-200"
-                  : "bg-muted text-muted-foreground border-border hover:bg-muted/80"
+                  : "bg-muted text-muted-foreground border-border hover:bg-muted/80",
+                !item.isActive && "opacity-50"
               )}
             >
               {isFree ? (
@@ -461,7 +465,7 @@ function SortableInlineItem({
 
         {/* Mobile: show free badge inline (no toggle, just indicator) */}
         {isFree && (
-          <span className="flex md:hidden items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border bg-green-100 text-green-700 border-green-300 flex-shrink-0">
+          <span className={cn("flex md:hidden items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border bg-green-100 text-green-700 border-green-300 flex-shrink-0", !item.isActive && "opacity-50")}>
             <Gift className="h-3 w-3" />
             Grátis
           </span>
@@ -469,7 +473,7 @@ function SortableInlineItem({
 
         {/* Price - editable inline (hidden if free) */}
         {!isFree && (
-          <div className="relative flex-shrink-0">
+          <div className={cn("relative flex-shrink-0", !item.isActive && "opacity-50")}>
             <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">
               R$
             </span>
@@ -486,7 +490,7 @@ function SortableInlineItem({
 
         {/* Desktop: individual action buttons */}
         <div className="hidden md:flex items-center gap-0.5 flex-shrink-0">
-          {/* Toggle active */}
+          {/* Toggle active - NOT affected by opacity */}
           <Tooltip>
             <TooltipTrigger asChild>
               <button
@@ -511,7 +515,10 @@ function SortableInlineItem({
               <button
                 type="button"
                 onClick={() => onDelete(item.id)}
-                className="p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                className={cn(
+                  "p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors",
+                  !item.isActive && "opacity-50"
+                )}
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -529,7 +536,8 @@ function SortableInlineItem({
                   "p-1 rounded-md transition-colors",
                   isExpanded
                     ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-primary hover:bg-primary/5"
+                    : "text-muted-foreground hover:text-primary hover:bg-primary/5",
+                  !item.isActive && "opacity-50"
                 )}
               >
                 {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
@@ -549,7 +557,8 @@ function SortableInlineItem({
               "p-1 rounded-md transition-colors",
               isExpanded
                 ? "text-primary bg-primary/10"
-                : "text-muted-foreground hover:text-primary hover:bg-primary/5"
+                : "text-muted-foreground hover:text-primary hover:bg-primary/5",
+              !item.isActive && "opacity-50"
             )}
           >
             {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
@@ -559,7 +568,10 @@ function SortableInlineItem({
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className={cn(
+                  "p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors",
+                  !item.isActive && "opacity-50"
+                )}
               >
                 <MoreVertical className="h-4 w-4" />
               </button>
