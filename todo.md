@@ -6357,3 +6357,4 @@
 - [x] Bug: PDV perde lista de itens do carrinho ao navegar para outra página e voltar - deve persistir os itens
 - [x] PDV: Persistir dados de entrega (nome, telefone, endereço) e retirada (nome, telefone) no sessionStorage
 - [x] Catálogo: Reduzir largura do campo de edição do nome do complemento e adicionar botões salvar/cancelar
+- [x] Catálogo: Botões de ação (Normal, preço, pausar, lixeira, dropdown) não devem se mover quando campo de edição do nome é ativado

@@ -384,11 +384,11 @@ function SortableInlineItem({
 
         {/* Name - editable */}
         {isEditingName ? (
-          <div className="flex items-center gap-1 min-w-0">
+          <div className="flex items-center gap-1 flex-1 min-w-0">
             <Input
               value={editedName}
               onChange={(e) => setEditedName(e.target.value)}
-              className="h-7 text-sm w-40 md:w-56"
+              className="h-7 text-sm flex-1 min-w-0"
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSaveName();
