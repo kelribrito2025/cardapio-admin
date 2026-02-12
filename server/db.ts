@@ -1008,8 +1008,8 @@ export async function updateComplementItemsByName(
     priceMode?: "normal" | "free"; 
     price?: string;
     availabilityType?: "always" | "scheduled";
-    availableDays?: number[];
-    availableHours?: { day: number; startTime: string; endTime: string }[];
+    availableDays?: number[] | null;
+    availableHours?: { day: number; startTime: string; endTime: string }[] | null;
     badgeText?: string | null;
   }
 ) {
