@@ -430,14 +430,14 @@ function SortableInlineItem({
           </div>
         )}
 
-        {/* Price toggle: Normal / Grátis */}
+        {/* Price toggle: Normal / Grátis - desktop only */}
         <Tooltip>
           <TooltipTrigger asChild>
             <button
               type="button"
               onClick={handleToggleFree}
               className={cn(
-                "flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border transition-colors flex-shrink-0",
+                "hidden md:flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border transition-colors flex-shrink-0",
                 isFree
                   ? "bg-green-100 text-green-700 border-green-300 hover:bg-green-200"
                   : "bg-muted text-muted-foreground border-border hover:bg-muted/80"
@@ -458,6 +458,14 @@ function SortableInlineItem({
           </TooltipTrigger>
           <TooltipContent>{isFree ? "Clique para preço normal" : "Clique para marcar como GRÁTIS"}</TooltipContent>
         </Tooltip>
+
+        {/* Mobile: show free badge inline (no toggle, just indicator) */}
+        {isFree && (
+          <span className="flex md:hidden items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border bg-green-100 text-green-700 border-green-300 flex-shrink-0">
+            <Gift className="h-3 w-3" />
+            Grátis
+          </span>
+        )}
 
         {/* Price - editable inline (hidden if free) */}
         {!isFree && (
@@ -560,6 +568,19 @@ function SortableInlineItem({
               <DropdownMenuItem onClick={() => setIsEditingName(true)}>
                 <Pencil className="h-3.5 w-3.5 mr-2" />
                 Editar nome
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleToggleFree}>
+                {isFree ? (
+                  <>
+                    <span className="text-xs mr-2 font-bold">$</span>
+                    Preço normal
+                  </>
+                ) : (
+                  <>
+                    <Gift className="h-3.5 w-3.5 mr-2" />
+                    Marcar grátis
+                  </>
+                )}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onToggleActive(item.id, !item.isActive)}>
                 {item.isActive ? (

@@ -6349,3 +6349,4 @@
 - [x] Bug: Itens não aparecem na página de catálogo do estabelecimento Big Norte (mas aparecem no menu público)
 - [x] Remover badge "GRÁTIS" redundante ao lado do botão Editar quando item já está marcado como grátis no dropdown de complementos do catálogo
 - [x] Mobile: Consolidar botões de ação dos complementos (editar, pausar/ativar, excluir) em menu de 3 pontinhos no dropdown do catálogo
+- [x] Mobile: Mover toggle Grátis/Normal para dentro do menu de 3 pontinhos no dropdown de complementos do catálogo
