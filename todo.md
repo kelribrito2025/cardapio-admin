@@ -6284,3 +6284,8 @@
 
 ## Ajuste limite busca Criar Combo
 - [x] Alterar limite de resultados da busca de 10 para 7 itens
+
+## Adicionar foto e descrição no Criar Combo
+- [x] Upload de foto do combo acima do campo Nome na tela de overview
+- [x] Campo de descrição do combo abaixo do campo Nome
+- [x] Enviar descrição e imagem ao criar o combo

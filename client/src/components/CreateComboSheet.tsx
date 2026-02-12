@@ -24,7 +24,11 @@ import {
   UtensilsCrossed,
   Layers,
   ChevronRight,
+  Camera,
+  ImageIcon,
+  Loader2,
 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -80,11 +84,15 @@ export default function CreateComboSheet({
   // Editing group index (null = creating new)
   const [editingGroupIndex, setEditingGroupIndex] = useState<number | null>(null);
   
-  // Combo name and price
+  // Combo name, description, price and image
   const [comboName, setComboName] = useState("");
+  const [comboDescription, setComboDescription] = useState("");
   const [comboPrice, setComboPrice] = useState("");
+  const [comboImage, setComboImage] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Debounce search
   useEffect(() => {
@@ -99,6 +107,41 @@ export default function CreateComboSheet({
     { establishmentId, search: debouncedSearch || undefined, limit: 7 },
     { enabled: open && !!establishmentId }
   );
+
+  // Upload image mutation
+  const uploadMutation = trpc.upload.image.useMutation({
+    onSuccess: (data) => {
+      setComboImage(data.url);
+      toast.success("Imagem enviada com sucesso");
+    },
+    onError: () => toast.error("Erro ao enviar imagem"),
+    onSettled: () => setUploading(false),
+  });
+
+  const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Por favor, selecione uma imagem válida");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 5MB");
+      return;
+    }
+    setUploading(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(",")[1];
+      uploadMutation.mutate({ base64, mimeType: file.type, folder: "combos" });
+    };
+    reader.onerror = () => {
+      toast.error("Erro ao ler arquivo");
+      setUploading(false);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  }, [uploadMutation]);
 
   // Create combo mutation
   const createComboMutation = trpc.combo.create.useMutation({
@@ -123,7 +166,9 @@ export default function CreateComboSheet({
     setGroups([]);
     setEditingGroupIndex(null);
     setComboName("");
+    setComboDescription("");
     setComboPrice("");
+    setComboImage(null);
   }, []);
 
   // Reset when closing
@@ -254,7 +299,9 @@ export default function CreateComboSheet({
       establishmentId,
       categoryId,
       name: comboName.trim(),
+      description: comboDescription.trim() || undefined,
       price: comboPrice || "0",
+      images: comboImage ? [comboImage] : undefined,
       groups: groups.map((g, idx) => ({
         name: g.name,
         isRequired: g.isRequired,
@@ -266,7 +313,7 @@ export default function CreateComboSheet({
         })),
       })),
     });
-  }, [comboName, comboPrice, groups, establishmentId, categoryId, createComboMutation]);
+  }, [comboName, comboDescription, comboPrice, comboImage, groups, establishmentId, categoryId, createComboMutation]);
 
   // Render step 1: Select products
   const renderSelectProducts = () => (
@@ -615,6 +662,61 @@ export default function CreateComboSheet({
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4 space-y-5 bg-card">
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleImageUpload}
+        />
+
+        {/* Combo image */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">Foto do combo</Label>
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            className={cn(
+              "relative w-full h-36 rounded-xl border-2 border-dashed cursor-pointer transition-all flex items-center justify-center overflow-hidden",
+              comboImage
+                ? "border-transparent"
+                : "border-border/50 hover:border-red-300 bg-muted/30 hover:bg-muted/50"
+            )}
+          >
+            {uploading ? (
+              <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                <Loader2 className="h-8 w-8 animate-spin" />
+                <span className="text-xs">Enviando...</span>
+              </div>
+            ) : comboImage ? (
+              <>
+                <img src={comboImage} alt="Combo" className="h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                      className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                    >
+                      <Camera className="h-5 w-5 text-white" />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setComboImage(null); }}
+                      className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                    >
+                      <Trash2 className="h-5 w-5 text-white" />
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                <ImageIcon className="h-8 w-8" />
+                <span className="text-xs">Clique para adicionar foto</span>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Combo name */}
         <div className="space-y-2">
           <Label className="text-sm font-medium">Nome do combo *</Label>
@@ -623,6 +725,17 @@ export default function CreateComboSheet({
             value={comboName}
             onChange={(e) => setComboName(e.target.value)}
             className="h-11 rounded-xl"
+          />
+        </div>
+
+        {/* Combo description */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">Descrição do combo</Label>
+          <Textarea
+            placeholder="Ex: 2 lanches + batata + refrigerante"
+            value={comboDescription}
+            onChange={(e) => setComboDescription(e.target.value)}
+            className="rounded-xl resize-none min-h-[80px]"
           />
         </div>
 
