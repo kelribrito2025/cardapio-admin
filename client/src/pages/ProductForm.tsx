@@ -603,7 +603,7 @@ export default function ProductForm() {
       description: description.trim() || undefined,
       categoryId: categoryId && categoryId !== "none" ? Number(categoryId) : null,
       price: parsePriceInput(price),
-      images: images.length > 0 ? images : undefined,
+      images: images.length > 0 ? images : [],
       status,
       hasStock,
       stockQuantity: stockQuantity ? Number(stockQuantity) : null,

@@ -6239,3 +6239,7 @@
 
 ## Sidebar: Submenu "Menu" não deve recolher ao navegar
 - [x] Fazer com que o submenu "Menu" só recolha ao clicar novamente no próprio "Menu", não ao navegar para outra página (persistido no localStorage)
+
+## Bug: Excluir foto do produto não funciona
+- [x] Investigar por que ao excluir a foto de um produto e salvar, a foto não é removida (enviava undefined em vez de [] quando sem fotos)
+- [x] Corrigir para que a foto seja removida e o placeholder apareça (enviar [] ao backend)
