@@ -6334,3 +6334,4 @@
 - [x] Bug: Complementos/grupos não aparecem na página de edição do produto
 - [x] Bug: BATATA FRITA aparece como GRÁTIS no combo quando deveria mostrar o preço correto
 - [x] Bug: Ao criar combo e adicionar item que já possui complementos próprios, esses complementos não são importados/exibidos no combo
+- [x] UX: Sidebar Criar Combo - lista de resultados da busca precisa de scroll próprio para manter busca e botões visíveis

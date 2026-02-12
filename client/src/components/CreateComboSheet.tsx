@@ -349,9 +349,8 @@ export default function CreateComboSheet({
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-card">
-        {/* Instruction */}
+      {/* Instruction + Search (fixed) */}
+      <div className="p-4 pb-2 bg-card space-y-3 flex-shrink-0">
         <div>
           <h3 className="font-semibold text-base text-foreground">Adicionar produtos</h3>
           <p className="text-sm text-muted-foreground mt-1">
@@ -379,7 +378,10 @@ export default function CreateComboSheet({
             </button>
           )}
         </div>
+      </div>
 
+      {/* Scrollable content area: search results + grouped products */}
+      <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-4 bg-card">
         {/* Search Results */}
         <div className="space-y-1">
           {searchLoading ? (
@@ -436,18 +438,6 @@ export default function CreateComboSheet({
           )}
         </div>
 
-        {/* Group button (inline, only when items selected) */}
-        {selectedProducts.length > 0 && (
-          <Button
-            onClick={handleGroupProducts}
-            className="w-full rounded-xl h-11"
-            style={{ backgroundColor: '#db262f', color: 'white' }}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Agrupar {selectedProducts.length} {selectedProducts.length === 1 ? "produto" : "produtos"}
-          </Button>
-        )}
-
         {/* Grouped products */}
         {groupedProducts.length > 0 && (
           <div className="space-y-2">
@@ -488,17 +478,29 @@ export default function CreateComboSheet({
         )}
       </div>
 
-      {/* Footer - Continuar only when no items are selected */}
-      {groupedProducts.length > 0 && selectedProducts.length === 0 && (
-        <div className="p-4 border-t border-border/50 bg-card">
-          <Button
-            onClick={handleContinueToConfig}
-            className="w-full rounded-xl h-11"
-            style={{ backgroundColor: '#db262f', color: 'white' }}
-          >
-            Continuar
-            <ChevronRight className="h-4 w-4 ml-2" />
-          </Button>
+      {/* Footer - Fixed buttons at bottom */}
+      {(selectedProducts.length > 0 || (groupedProducts.length > 0 && selectedProducts.length === 0)) && (
+        <div className="p-4 border-t border-border/50 bg-card flex-shrink-0 space-y-2">
+          {selectedProducts.length > 0 && (
+            <Button
+              onClick={handleGroupProducts}
+              className="w-full rounded-xl h-11"
+              style={{ backgroundColor: '#db262f', color: 'white' }}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Agrupar {selectedProducts.length} {selectedProducts.length === 1 ? "produto" : "produtos"}
+            </Button>
+          )}
+          {groupedProducts.length > 0 && selectedProducts.length === 0 && (
+            <Button
+              onClick={handleContinueToConfig}
+              className="w-full rounded-xl h-11"
+              style={{ backgroundColor: '#db262f', color: 'white' }}
+            >
+              Continuar
+              <ChevronRight className="h-4 w-4 ml-2" />
+            </Button>
+          )}
         </div>
       )}
     </div>
