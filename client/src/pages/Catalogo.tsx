@@ -1041,11 +1041,11 @@ export default function Catalogo() {
           icon={<UtensilsCrossed className="h-6 w-6 text-blue-600" />}
           actions={
             <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={() => setCategoryDialogOpen(true)} className="hidden md:flex rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
+              <Button variant="outline" onClick={() => setCategoryDialogOpen(true)} className="hidden md:flex rounded-lg h-9 px-3 text-xs sm:text-sm sm:px-3.5">
                 <FolderPlus className="h-4 w-4 mr-1.5 sm:mr-2" />
                 <span className="text-xs sm:text-sm">categoria</span>
               </Button>
-              <Button onClick={() => navigate("/catalogo/novo")} className="hidden md:flex rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
+              <Button onClick={() => navigate("/catalogo/novo")} className="hidden md:flex rounded-lg h-9 px-3 text-xs sm:text-sm sm:px-3.5">
                 <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
                 <span className="text-xs sm:text-sm">item</span>
               </Button>

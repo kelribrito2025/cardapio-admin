@@ -6358,3 +6358,4 @@
 - [x] PDV: Persistir dados de entrega (nome, telefone, endereço) e retirada (nome, telefone) no sessionStorage
 - [x] Catálogo: Reduzir largura do campo de edição do nome do complemento e adicionar botões salvar/cancelar
 - [x] Catálogo: Botões de ação (Normal, preço, pausar, lixeira, dropdown) não devem se mover quando campo de edição do nome é ativado
+- [x] Catálogo: Remover sombras dos botões na lista de itens e header do catálogo
