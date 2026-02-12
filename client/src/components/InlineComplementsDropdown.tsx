@@ -412,12 +412,7 @@ function SortableInlineItem({
                 {item.badgeText}
               </Badge>
             )}
-            {isFree && (
-              <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200 text-[9px] px-1 py-0 h-4 flex-shrink-0">
-                <Gift className="h-2.5 w-2.5 mr-0.5" />
-                GRÁTIS
-              </Badge>
-            )}
+
             {item.availabilityType === "scheduled" && (
               <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200 text-[9px] px-1 py-0 h-4 flex-shrink-0">
                 <Clock className="h-2.5 w-2.5 mr-0.5" />
