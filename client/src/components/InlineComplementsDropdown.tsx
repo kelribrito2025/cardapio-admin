@@ -465,7 +465,7 @@ function SortableInlineItem({
                   ? "bg-green-100 text-green-700 border-green-300 hover:bg-green-200"
                   : "bg-muted text-muted-foreground border-border hover:bg-muted/80",
                 !item.isActive && "opacity-50"
-              )}
+              )} style={{height: '28px'}}
             >
               {isFree ? (
                 <>
@@ -503,7 +503,7 @@ function SortableInlineItem({
               value={localPrice}
               onChange={(e) => setLocalPrice(e.target.value)}
               onBlur={handlePriceBlur}
-              className="w-20 md:w-24 h-7 text-xs md:text-sm rounded-md border-border/50 text-right pl-7" style={{marginRight: '-1px', marginLeft: '-6px', width: '69px'}}
+              className="w-20 md:w-24 h-7 text-xs md:text-sm rounded-md border-border/50 text-right pl-7" style={{marginRight: '-2px', marginLeft: '-2px', width: '76px'}}
             />
           </div>
         )}
