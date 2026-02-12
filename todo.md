@@ -6236,3 +6236,6 @@
 - [x] Corrigir os 6 preços no banco (1000.00 -> 10.00)
 - [x] Adicionar normalização de preço ao carregar complementos do banco (formato americano -> brasileiro)
 - [x] Validar com teste de ciclo completo (5 ciclos salvar/recarregar sem alteração de preço)
+
+## Sidebar: Submenu "Menu" não deve recolher ao navegar
+- [x] Fazer com que o submenu "Menu" só recolha ao clicar novamente no próprio "Menu", não ao navegar para outra página (persistido no localStorage)

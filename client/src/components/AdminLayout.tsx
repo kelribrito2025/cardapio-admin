@@ -121,18 +121,29 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { searchQuery, setSearchQuery } = useSearch();
   
-  // Estado para submenus expandidos (Menu pai)
+  // Estado para submenus expandidos (Menu pai) - persistido no localStorage
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>(() => {
-    // Auto-expandir se estamos numa rota filha
-    const initial: Record<string, boolean> = {};
     if (typeof window !== 'undefined') {
+      // Tentar restaurar do localStorage
+      const saved = localStorage.getItem('expandedMenus');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch { /* ignore */ }
+      }
+      // Fallback: auto-expandir se estamos numa rota filha
       const path = window.location.pathname;
       if (path === '/catalogo' || path.startsWith('/catalogo/') || path === '/avaliacoes') {
-        initial['/menu-parent'] = true;
+        return { '/menu-parent': true };
       }
     }
-    return initial;
+    return {};
   });
+
+  // Persistir estado dos submenus expandidos no localStorage
+  useEffect(() => {
+    localStorage.setItem('expandedMenus', JSON.stringify(expandedMenus));
+  }, [expandedMenus]);
   
   // Estado local para controlar se o som está habilitado (sincronizado com localStorage)
   // IMPORTANTE: O padrão é FALSE (desativado) até o usuário clicar para ativar
@@ -236,10 +247,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   );
   const outOfStockCount = outOfStockData?.count || 0;
 
-  // Auto-expandir menu pai quando navegar para rota filha
+  // Auto-expandir submenu Menu quando navegar para rotas filhas (apenas se não estiver já expandido)
   useEffect(() => {
     if (location === '/catalogo' || location.startsWith('/catalogo/') || location === '/avaliacoes') {
-      setExpandedMenus(prev => ({ ...prev, '/menu-parent': true }));
+      setExpandedMenus(prev => {
+        if (prev['/menu-parent']) return prev; // Já está expandido, não alterar
+        return { ...prev, '/menu-parent': true };
+      });
     }
   }, [location]);
 
