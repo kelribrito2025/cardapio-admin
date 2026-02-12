@@ -910,26 +910,44 @@ export default function InlineComplementsDropdown({
                   <div className="flex items-center gap-1.5">
                     <label className="text-xs text-muted-foreground font-medium">Mín:</label>
                     <Input
-                      type="number"
-                      min={0}
-                      value={group.minQuantity ?? 0}
+                      type="text"
+                      inputMode="numeric"
+                      value={group.minQuantity === 0 || group.minQuantity == null ? '' : String(group.minQuantity)}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0;
+                        const raw = e.target.value.replace(/[^0-9]/g, '');
+                        if (raw === '') {
+                          updateGroupMutation.mutate({ id: group.id, minQuantity: 0 });
+                          return;
+                        }
+                        const val = Math.min(parseInt(raw, 10), 999);
                         updateGroupMutation.mutate({ id: group.id, minQuantity: val });
                       }}
+                      onFocus={(e) => {
+                        if (e.target.value === '0') e.target.value = '';
+                      }}
+                      placeholder="0"
                       className="w-16 h-7 text-sm text-center rounded-md"
                     />
                   </div>
                   <div className="flex items-center gap-1.5">
                     <label className="text-xs text-muted-foreground font-medium">Máx:</label>
                     <Input
-                      type="number"
-                      min={0}
-                      value={group.maxQuantity ?? 0}
+                      type="text"
+                      inputMode="numeric"
+                      value={group.maxQuantity === 0 || group.maxQuantity == null ? '' : String(group.maxQuantity)}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0;
+                        const raw = e.target.value.replace(/[^0-9]/g, '');
+                        if (raw === '') {
+                          updateGroupMutation.mutate({ id: group.id, maxQuantity: 0 });
+                          return;
+                        }
+                        const val = Math.min(parseInt(raw, 10), 999);
                         updateGroupMutation.mutate({ id: group.id, maxQuantity: val });
                       }}
+                      onFocus={(e) => {
+                        if (e.target.value === '0') e.target.value = '';
+                      }}
+                      placeholder="0"
                       className="w-16 h-7 text-sm text-center rounded-md"
                     />
                   </div>

@@ -1174,31 +1174,39 @@ export default function ProductForm() {
                                 <div className="flex items-center gap-1.5">
                                   <Label className="text-[10px] font-semibold text-muted-foreground">Mín:</Label>
                                   <Input
-                                    type="number"
-                                    min="0"
-                                    value={group.minQuantity}
-                                    onChange={(e) =>
-                                      updateComplementGroup(groupIndex, {
-                                        minQuantity: Number(e.target.value),
-                                      })
-                                    }
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={group.minQuantity === 0 || group.minQuantity == null ? '' : String(group.minQuantity)}
+                                    onChange={(e) => {
+                                      const raw = e.target.value.replace(/[^0-9]/g, '');
+                                      if (raw === '') {
+                                        updateComplementGroup(groupIndex, { minQuantity: 0 });
+                                        return;
+                                      }
+                                      const val = Math.min(parseInt(raw, 10), 999);
+                                      updateComplementGroup(groupIndex, { minQuantity: val });
+                                    }}
+                                    placeholder="0"
                                     className="w-14 h-8 text-sm rounded-md border-border/50"
                                   />
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                   <Label className="text-[10px] font-semibold text-muted-foreground">Máx:</Label>
                                   <Input
-                                    type="number"
-                                    min="1"
-                                    max={group.items.length || 1}
-                                    value={group.maxQuantity}
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={group.maxQuantity === 0 || group.maxQuantity == null ? '' : String(group.maxQuantity)}
                                     onChange={(e) => {
-                                      const value = Number(e.target.value);
+                                      const raw = e.target.value.replace(/[^0-9]/g, '');
+                                      if (raw === '') {
+                                        updateComplementGroup(groupIndex, { maxQuantity: 0 });
+                                        return;
+                                      }
+                                      const val = Math.min(parseInt(raw, 10), 999);
                                       const maxAllowed = group.items.length || 1;
-                                      updateComplementGroup(groupIndex, {
-                                        maxQuantity: Math.min(value, maxAllowed),
-                                      });
+                                      updateComplementGroup(groupIndex, { maxQuantity: Math.min(val, maxAllowed) });
                                     }}
+                                    placeholder="0"
                                     className="w-14 h-8 text-sm rounded-md border-border/50"
                                   />
                                 </div>
