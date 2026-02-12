@@ -541,6 +541,13 @@ export const appRouter = router({
         return { success: true };
       }),
     
+    duplicate: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const newId = await db.duplicateCategory(input.id);
+        return { id: newId };
+      }),
+
     reorder: protectedProcedure
       .input(z.array(z.object({
         id: z.number(),

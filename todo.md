@@ -6243,3 +6243,11 @@
 ## Bug: Excluir foto do produto não funciona
 - [x] Investigar por que ao excluir a foto de um produto e salvar, a foto não é removida (enviava undefined em vez de [] quando sem fotos)
 - [x] Corrigir para que a foto seja removida e o placeholder apareça (enviar [] ao backend)
+
+## Redesign header de categoria no Catálogo
+- [x] Remover ícone de lixeira da linha do título da categoria
+- [x] Mover contagem de itens para ao lado direito do nome da categoria
+- [x] Adicionar botão Pausar/Play para pausar/ativar a categoria
+- [x] Adicionar botão 3 pontinhos com menu: Duplicar categoria e Remover categoria
+- [x] Adicionar botão setinha (chevron) para minimizar/expandir itens da categoria
+- [x] Implementar lógica de duplicar categoria no backend

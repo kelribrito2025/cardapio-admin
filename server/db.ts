@@ -594,6 +594,68 @@ export async function deleteCategory(id: number) {
   await db.delete(categories).where(eq(categories.id, id));
 }
 
+export async function duplicateCategory(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Buscar categoria original
+  const [original] = await db.select().from(categories).where(eq(categories.id, id));
+  if (!original) throw new Error("Category not found");
+  
+  // Buscar maior sortOrder
+  const existingCategories = await db.select({ sortOrder: categories.sortOrder })
+    .from(categories)
+    .where(eq(categories.establishmentId, original.establishmentId))
+    .orderBy(desc(categories.sortOrder))
+    .limit(1);
+  const maxSortOrder = existingCategories.length > 0 ? existingCategories[0].sortOrder : -1;
+  
+  // Criar nova categoria
+  const result = await db.insert(categories).values({
+    name: `${original.name} (cópia)`,
+    establishmentId: original.establishmentId,
+    description: original.description,
+    isActive: original.isActive,
+    sortOrder: maxSortOrder + 1,
+  });
+  const newCategoryId = result[0].insertId;
+  
+  // Duplicar produtos da categoria
+  const categoryProducts = await db.select().from(products)
+    .where(eq(products.categoryId, id))
+    .orderBy(asc(products.sortOrder));
+  
+  for (const product of categoryProducts) {
+    const { id: productId, createdAt, updatedAt, ...productData } = product;
+    const newProductResult = await db.insert(products).values({
+      ...productData,
+      categoryId: newCategoryId,
+    });
+    const newProductId = newProductResult[0].insertId;
+    
+    // Duplicar complementos do produto
+    const groups = await getComplementGroupsByProduct(productId);
+    for (const group of groups) {
+      const { id: groupId, productId: _, createdAt: __, items, ...groupData } = group;
+      const newGroupResult = await db.insert(complementGroups).values({
+        ...groupData,
+        productId: newProductId,
+      });
+      const newGroupId = newGroupResult[0].insertId;
+      
+      for (const item of (items || [])) {
+        const { id: itemId, groupId: _, createdAt: __, ...itemData } = item;
+        await db.insert(complementItems).values({
+          ...itemData,
+          groupId: newGroupId,
+        });
+      }
+    }
+  }
+  
+  return newCategoryId;
+}
+
 export async function reorderCategories(categoryOrders: { id: number; sortOrder: number }[]) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");

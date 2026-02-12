@@ -47,6 +47,10 @@ import {
   X,
   Pencil,
   MoreVertical,
+  Pause,
+  Play,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
@@ -288,6 +292,27 @@ export default function Catalogo() {
   // Drag between categories state
   const [activeProduct, setActiveProduct] = useState<any>(null);
   const [activeProductCategoryId, setActiveProductCategoryId] = useState<number | null>(null);
+  
+  // Collapsed categories state (persisted in localStorage)
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<number>>(() => {
+    try {
+      const saved = localStorage.getItem('collapsedCategories');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch { return new Set(); }
+  });
+  
+  const toggleCategoryCollapse = (categoryId: number) => {
+    setCollapsedCategories(prev => {
+      const next = new Set(prev);
+      if (next.has(categoryId)) {
+        next.delete(categoryId);
+      } else {
+        next.add(categoryId);
+      }
+      localStorage.setItem('collapsedCategories', JSON.stringify(Array.from(next)));
+      return next;
+    });
+  };
 
   // Check if filters are active (disable drag when filters are active)
   const hasActiveFilters: boolean = !!(search || categoryFilter !== "all" || statusFilter !== "all" || stockFilter !== "all" || orderBy !== "sortOrder");
@@ -434,6 +459,23 @@ export default function Catalogo() {
       toast.success("Categoria excluída com sucesso");
     },
     onError: () => toast.error("Erro ao excluir categoria"),
+  });
+
+  const duplicateCategoryMutation = trpc.category.duplicate.useMutation({
+    onSuccess: () => {
+      refetchCategories();
+      refetchProducts();
+      toast.success("Categoria duplicada com sucesso");
+    },
+    onError: () => toast.error("Erro ao duplicar categoria"),
+  });
+
+  const toggleCategoryStatusMutation = trpc.category.update.useMutation({
+    onSuccess: () => {
+      refetchCategories();
+      toast.success("Status da categoria atualizado");
+    },
+    onError: () => toast.error("Erro ao atualizar status da categoria"),
   });
 
   // Mutation para mover produto entre categorias
@@ -762,31 +804,80 @@ export default function Catalogo() {
                       </Button>
                     </div>
                   ) : (
-                    <div
-                      className="group flex items-center gap-1.5 px-2 py-1 -mx-2 -my-1 rounded-md cursor-pointer hover:bg-muted/50 transition-all duration-200"
-                      onClick={() => {
-                        setEditingCategoryId(category.id);
-                        setEditingCategoryName(category.name);
-                      }}
-                    >
-                      <h3 className="font-bold text-base group-hover:text-primary transition-colors">
-                        {category.name}
-                      </h3>
-                      <Pencil className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-primary transition-colors duration-200" />
+                    <div className="flex items-center gap-1.5">
+                      <div
+                        className="group flex items-center gap-1.5 px-2 py-1 -mx-2 -my-1 rounded-md cursor-pointer hover:bg-muted/50 transition-all duration-200"
+                        onClick={() => {
+                          setEditingCategoryId(category.id);
+                          setEditingCategoryName(category.name);
+                        }}
+                      >
+                        <h3 className={cn(
+                          "font-bold text-base group-hover:text-primary transition-colors",
+                          !category.isActive && "text-muted-foreground line-through"
+                        )}>
+                          {category.name}
+                        </h3>
+                        <Pencil className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-primary transition-colors duration-200" />
+                      </div>
+                      <span className="text-xs text-muted-foreground font-medium">
+                        {categoryProducts.length} {categoryProducts.length === 1 ? "ítem" : "ítens"}
+                      </span>
+                      {!category.isActive && (
+                        <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">Pausada</span>
+                      )}
                     </div>
                   )}
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground font-medium">
-                      {categoryProducts.length} {categoryProducts.length === 1 ? "ítem" : "ítens"}
-                    </span>
+                  <div className="flex items-center gap-1">
+                    {/* Botão Pausar/Play */}
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="icon"
-                          className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                          className={cn(
+                            "h-8 w-8 rounded-lg",
+                            category.isActive
+                              ? "text-muted-foreground hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200"
+                              : "text-emerald-600 bg-emerald-50 border-emerald-200 hover:text-emerald-700 hover:bg-emerald-100"
+                          )}
                           onClick={(e) => {
                             e.stopPropagation();
+                            toggleCategoryStatusMutation.mutate({
+                              id: category.id,
+                              isActive: !category.isActive,
+                            });
+                          }}
+                          disabled={toggleCategoryStatusMutation.isPending}
+                        >
+                          {category.isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{category.isActive ? "Pausar categoria" : "Ativar categoria"}</TooltipContent>
+                    </Tooltip>
+                    {/* Botão 3 pontinhos - Duplicar/Remover */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => duplicateCategoryMutation.mutate({ id: category.id })}
+                          disabled={duplicateCategoryMutation.isPending}
+                        >
+                          <Copy className="h-4 w-4 mr-2" />
+                          Duplicar categoria
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={() => {
                             setCategoryToDelete({
                               id: category.id,
                               name: category.name,
@@ -795,13 +886,31 @@ export default function Catalogo() {
                             setDeleteCategoryDialogOpen(true);
                           }}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Remover categoria
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    {/* Botão Minimizar/Expandir */}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleCategoryCollapse(category.id);
+                          }}
+                        >
+                          {collapsedCategories.has(category.id) ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>Excluir categoria</TooltipContent>
+                      <TooltipContent>{collapsedCategories.has(category.id) ? "Expandir itens" : "Minimizar itens"}</TooltipContent>
                     </Tooltip>
                   </div>
                 </div>
+                {!collapsedCategories.has(category.id) && (
                 <SortableContext
                   items={categoryProducts.map((p) => p.id)}
                   strategy={verticalListSortingStrategy}
@@ -824,6 +933,7 @@ export default function Catalogo() {
                     ))}
                   </div>
                 </SortableContext>
+                )}
               </div>
             );
           })}
