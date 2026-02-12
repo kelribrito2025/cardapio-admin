@@ -165,40 +165,22 @@ function SortableProductItem({
           </div>
         )}
       </div>
-      {/* Botões de ação (toggle, duplicar, excluir) */}
+      {/* Botões de ação (toggle + menu 3 pontinhos) */}
       <div className="flex items-center gap-2 flex-shrink-0">
         <Switch
           checked={product.status === "active"}
           onCheckedChange={() => onToggleStatus(product.id, product.status)}
           className="scale-90"
         />
-        {/* Botões visíveis apenas em desktop */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onDuplicate(product.id)}
-          className="hidden md:flex h-8 w-8 rounded-md hover:bg-accent"
-        >
-          <Copy className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onDelete(product.id)}
-          className="hidden md:flex h-8 w-8 rounded-md hover:bg-destructive/10 text-destructive"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-        {/* Menu dropdown visível apenas em mobile */}
+        {/* Menu 3 pontinhos sem estilo de botão */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden h-8 w-8 rounded-md"
+            <button
+              className="p-1 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+              onClick={(e) => e.stopPropagation()}
             >
-              <MoreVertical className="h-4 w-4" />
-            </Button>
+              <MoreVertical className="h-4.5 w-4.5" />
+            </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => onDuplicate(product.id)}>

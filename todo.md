@@ -6256,3 +6256,9 @@
 - [x] Adicionar ícone de arrastar (GripVertical) ao lado esquerdo do título da categoria
 - [x] Ao iniciar arraste de categoria, minimizar automaticamente todos os itens de todas as categorias
 - [x] Ao soltar a categoria, restaurar o estado anterior de colapso
+
+## Ajuste botões de ação dos itens no Catálogo
+- [x] Remover botões de Duplicar e Excluir visíveis diretamente na linha do item
+- [x] Adicionar ícone de 3 pontinhos (MoreVertical) sem estilo de botão, apenas o ícone
+- [x] Ao clicar nos 3 pontinhos, abrir menu dropdown com opções "Duplicar" e "Excluir"
+- [x] Manter Switch (toggle) para pausar/ativar o item
