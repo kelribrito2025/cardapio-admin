@@ -21,7 +21,6 @@ import CouponForm from "./pages/CouponForm";
 import PrinterApp from "./pages/PrinterApp";
 import TesteImpressao from "./pages/TesteImpressao";
 import Impressoras from "./pages/Impressoras";
-import Categorias from "./pages/Categorias";
 import Complementos from "./pages/Complementos";
 import Campanhas from "./pages/Campanhas";
 import PDV from "./pages/PDV";
@@ -58,7 +57,6 @@ function AdminRoutes() {
         <Route path="/catalogo" component={Catalogo} />
         <Route path="/catalogo/novo" component={ProductForm} />
         <Route path="/catalogo/editar/:id" component={ProductForm} />
-        <Route path="/categorias" component={Categorias} />
         <Route path="/complementos" component={Complementos} />
         <Route path="/pedidos" component={Pedidos} />
         <Route path="/estoque" component={Estoque} />

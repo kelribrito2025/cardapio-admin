@@ -147,11 +147,7 @@ function SortableProductItem({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
             <h4 className="font-semibold text-base truncate">{product.name}</h4>
-            {product.status !== "active" && (
-              <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium whitespace-nowrap">
-                {product.status === "paused" ? "Pausado" : "Arquivado"}
-              </span>
-            )}
+
             {product.hasStock && product.stockQuantity !== null && product.stockQuantity <= 0 && (
               <StatusBadge variant="error">Sem estoque</StatusBadge>
             )}

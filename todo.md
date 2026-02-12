@@ -6310,3 +6310,7 @@
 - [x] Igualar badge "Pausado" dos itens ao badge "Pausada" da categoria (mesmo tamanho, cor e estilo)
 - [x] Adicionar botão "Criar Categoria" na página Catálogo
 - [x] Scroll automático para o final da lista ao criar nova categoria
+
+## Remover página /categorias e badge Pausado dos itens
+- [x] Remover página /categorias (componente, rota e link no sidebar)
+- [x] Remover badge "Pausado" dos itens na lista do catálogo (manter apenas badge da categoria)
