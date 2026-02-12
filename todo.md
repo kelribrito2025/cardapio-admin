@@ -6292,3 +6292,7 @@
 
 ## Ajuste botão Criar Combo no header da categoria
 - [x] Mudar botão para exibir apenas texto "Criar Combo" sem ícone
+
+## Ajuste mobile: botões da categoria no Catálogo
+- [x] Esconder botões "Criar Combo" e "Pausar/Play" na versão mobile
+- [x] Adicionar opções "Pausar/Ativar categoria" e "Criar Combo" no menu de 3 pontinhos acima de Duplicar e Remover

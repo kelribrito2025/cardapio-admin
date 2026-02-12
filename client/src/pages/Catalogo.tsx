@@ -20,6 +20,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -37,6 +38,7 @@ import {
   Play,
   ChevronUp,
   ChevronDown,
+  Layers,
 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
@@ -399,11 +401,11 @@ function SortableCategoryItem({
           )}
         </div>
         <div className="flex items-center gap-1">
-          {/* Botão Criar Combo */}
+          {/* Botão Criar Combo - hidden on mobile */}
           <Button
             variant="outline"
             size="sm"
-            className="h-8 rounded-lg text-xs font-medium text-muted-foreground hover:text-red-600 hover:bg-red-50 hover:border-red-200 px-3"
+            className="h-8 rounded-lg text-xs font-medium text-muted-foreground hover:text-red-600 hover:bg-red-50 hover:border-red-200 px-3 hidden sm:inline-flex"
             onClick={(e) => {
               e.stopPropagation();
               onCreateCombo(category.id, category.name);
@@ -411,14 +413,14 @@ function SortableCategoryItem({
           >
             Criar Combo
           </Button>
-          {/* Botão Pausar/Play */}
+          {/* Botão Pausar/Play - hidden on mobile */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="outline"
                 size="icon"
                 className={cn(
-                  "h-8 w-8 rounded-lg",
+                  "h-8 w-8 rounded-lg hidden sm:inline-flex",
                   category.isActive
                     ? "text-muted-foreground hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200"
                     : "text-emerald-600 bg-emerald-50 border-emerald-200 hover:text-emerald-700 hover:bg-emerald-100"
@@ -447,6 +449,26 @@ function SortableCategoryItem({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              {/* Mobile-only: Pausar/Ativar e Criar Combo */}
+              <DropdownMenuItem
+                className="sm:hidden"
+                onClick={() => onToggleCategoryStatus(category.id, !category.isActive)}
+                disabled={toggleCategoryStatusPending}
+              >
+                {category.isActive ? (
+                  <><Pause className="h-4 w-4 mr-2" />Pausar categoria</>
+                ) : (
+                  <><Play className="h-4 w-4 mr-2" />Ativar categoria</>
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="sm:hidden"
+                onClick={() => onCreateCombo(category.id, category.name)}
+              >
+                <Layers className="h-4 w-4 mr-2" />
+                Criar Combo
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="sm:hidden" />
               <DropdownMenuItem
                 onClick={() => onDuplicateCategory(category.id)}
                 disabled={duplicateCategoryPending}
