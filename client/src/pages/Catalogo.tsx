@@ -39,6 +39,7 @@ import {
   ChevronUp,
   ChevronDown,
   Layers,
+  FolderPlus,
 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback, startTransition } from "react";
 import { useLocation } from "wouter";
@@ -147,9 +148,9 @@ function SortableProductItem({
           <div className="flex items-center gap-1.5">
             <h4 className="font-semibold text-base truncate">{product.name}</h4>
             {product.status !== "active" && (
-              <StatusBadge variant={product.status === "paused" ? "warning" : "default"}>
+              <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium whitespace-nowrap">
                 {product.status === "paused" ? "Pausado" : "Arquivado"}
-              </StatusBadge>
+              </span>
             )}
             {product.hasStock && product.stockQuantity !== null && product.stockQuantity <= 0 && (
               <StatusBadge variant="error">Sem estoque</StatusBadge>
@@ -683,6 +684,10 @@ export default function Catalogo() {
       setCategoryDialogOpen(false);
       setNewCategoryName("");
       toast.success("Categoria criada");
+      // Scroll to bottom after a short delay to let the new category render
+      setTimeout(() => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }, 500);
     },
     onError: () => toast.error("Erro ao criar categoria"),
   });
@@ -947,10 +952,16 @@ export default function Catalogo() {
           description="Gerencie seus produtos e categorias"
           icon={<UtensilsCrossed className="h-6 w-6 text-blue-600" />}
           actions={
-<Button onClick={() => navigate("/catalogo/novo")} className="hidden md:flex rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
-              <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
-              <span className="text-xs sm:text-sm">item</span>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={() => setCategoryDialogOpen(true)} className="hidden md:flex rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
+                <FolderPlus className="h-4 w-4 mr-1.5 sm:mr-2" />
+                <span className="text-xs sm:text-sm">categoria</span>
+              </Button>
+              <Button onClick={() => navigate("/catalogo/novo")} className="hidden md:flex rounded-lg shadow-sm h-9 px-3 text-xs sm:text-sm sm:px-3.5">
+                <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
+                <span className="text-xs sm:text-sm">item</span>
+              </Button>
+            </div>
           }
         />
       </div>
@@ -974,6 +985,14 @@ export default function Catalogo() {
             </button>
           )}
         </div>
+        <Button
+          size="icon"
+          variant="outline"
+          onClick={() => setCategoryDialogOpen(true)}
+          className="h-10 w-10 rounded-xl flex-shrink-0"
+        >
+          <FolderPlus className="h-5 w-5" />
+        </Button>
         <Button
           size="icon"
           onClick={() => navigate("/catalogo/novo")}

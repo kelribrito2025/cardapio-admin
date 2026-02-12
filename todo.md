@@ -6305,3 +6305,8 @@
   - Esconder CategoryDropZone durante drag de categoria
   - Usar startTransition para batch collapse update
   - Adicionar position relative durante drag
+
+## Ajuste badge Pausado dos itens e botão Criar Categoria
+- [x] Igualar badge "Pausado" dos itens ao badge "Pausada" da categoria (mesmo tamanho, cor e estilo)
+- [x] Adicionar botão "Criar Categoria" na página Catálogo
+- [x] Scroll automático para o final da lista ao criar nova categoria
