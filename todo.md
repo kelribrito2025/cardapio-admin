@@ -6289,3 +6289,6 @@
 - [x] Upload de foto do combo acima do campo Nome na tela de overview
 - [x] Campo de descrição do combo abaixo do campo Nome
 - [x] Enviar descrição e imagem ao criar o combo
+
+## Ajuste botão Criar Combo no header da categoria
+- [x] Mudar botão para exibir apenas texto "Criar Combo" sem ícone

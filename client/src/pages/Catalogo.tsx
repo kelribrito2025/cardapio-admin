@@ -37,7 +37,6 @@ import {
   Play,
   ChevronUp,
   ChevronDown,
-  Layers,
 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
@@ -401,22 +400,17 @@ function SortableCategoryItem({
         </div>
         <div className="flex items-center gap-1">
           {/* Botão Criar Combo */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-50 hover:border-red-200"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onCreateCombo(category.id, category.name);
-                }}
-              >
-                <Layers className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Criar combo</TooltipContent>
-          </Tooltip>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 rounded-lg text-xs font-medium text-muted-foreground hover:text-red-600 hover:bg-red-50 hover:border-red-200 px-3"
+            onClick={(e) => {
+              e.stopPropagation();
+              onCreateCombo(category.id, category.name);
+            }}
+          >
+            Criar Combo
+          </Button>
           {/* Botão Pausar/Play */}
           <Tooltip>
             <TooltipTrigger asChild>
