@@ -384,9 +384,9 @@ export default function CreateComboSheet({
         <div className="space-y-1">
           {searchLoading ? (
             <div className="py-8 text-center text-sm text-muted-foreground">Buscando...</div>
-          ) : filteredResults.length === 0 ? (
+          ) : filteredResults.length === 0 && debouncedSearch ? (
             <div className="py-8 text-center text-sm text-muted-foreground">
-              {debouncedSearch ? "Nenhum produto encontrado" : "Digite para buscar produtos"}
+              Nenhum produto encontrado
             </div>
           ) : (
             filteredResults.map((product) => {
