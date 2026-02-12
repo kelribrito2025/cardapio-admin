@@ -436,7 +436,7 @@ export default function CreateComboSheet({
           )}
         </div>
 
-        {/* Group button */}
+        {/* Group button (inline, only when items selected) */}
         {selectedProducts.length > 0 && (
           <Button
             onClick={handleGroupProducts}
@@ -488,8 +488,8 @@ export default function CreateComboSheet({
         )}
       </div>
 
-      {/* Footer */}
-      {groupedProducts.length > 0 && (
+      {/* Footer - Continuar only when no items are selected */}
+      {groupedProducts.length > 0 && selectedProducts.length === 0 && (
         <div className="p-4 border-t border-border/50 bg-card">
           <Button
             onClick={handleContinueToConfig}

@@ -6324,3 +6324,7 @@
 
 ## Remover itens pré-visualizados na slidebar Criar Combo
 - [x] Não exibir itens pré-carregados - mostrar resultados apenas quando o usuário digitar na busca
+
+## Ajuste botões Agrupar/Continuar na slidebar Criar Combo
+- [x] Quando há itens selecionados: mostrar apenas botão "Agrupar X produtos"
+- [x] Quando não há itens selecionados e já tem agrupados: mostrar apenas botão "Continuar"
