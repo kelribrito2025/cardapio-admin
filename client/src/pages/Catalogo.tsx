@@ -5,13 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -22,7 +15,6 @@ import {
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
@@ -35,14 +27,9 @@ import {
   Plus,
   Search,
   UtensilsCrossed,
-  Edit,
   Copy,
   Trash2,
   GripVertical,
-  FolderPlus,
-  ArrowUpDown,
-  ImageIcon,
-  Layers,
   Check,
   X,
   Pencil,
@@ -52,7 +39,7 @@ import {
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 import {
@@ -65,8 +52,6 @@ import {
   useSensors,
   DragEndEvent,
   DragStartEvent,
-  DragOverEvent,
-  DragOverlay,
   useDroppable,
 } from "@dnd-kit/core";
 import {
@@ -258,6 +243,238 @@ function CategoryDropZone({ categoryId, categoryName, isActive }: { categoryId: 
   );
 }
 
+// Sortable Category Item Component - wraps the entire category card to make it draggable
+function SortableCategoryItem({
+  category,
+  categoryProducts,
+  isDropTarget,
+  isDraggingCategory,
+  isCollapsed,
+  isEditing,
+  editingName,
+  hasActiveFilters,
+  onToggleCategoryCollapse,
+  onStartEditing,
+  onEditingNameChange,
+  onSaveEdit,
+  onCancelEdit,
+  onToggleCategoryStatus,
+  onDuplicateCategory,
+  onDeleteCategory,
+  toggleCategoryStatusPending,
+  updateCategoryPending,
+  duplicateCategoryPending,
+  children,
+}: {
+  category: any;
+  categoryProducts: any[];
+  isDropTarget: boolean;
+  isDraggingCategory: boolean;
+  isCollapsed: boolean;
+  isEditing: boolean;
+  editingName: string;
+  hasActiveFilters: boolean;
+  onToggleCategoryCollapse: (id: number) => void;
+  onStartEditing: (id: number, name: string) => void;
+  onEditingNameChange: (name: string) => void;
+  onSaveEdit: (id: number, name: string) => void;
+  onCancelEdit: () => void;
+  onToggleCategoryStatus: (id: number, isActive: boolean) => void;
+  onDuplicateCategory: (id: number) => void;
+  onDeleteCategory: (id: number, name: string, productCount: number) => void;
+  toggleCategoryStatusPending: boolean;
+  updateCategoryPending: boolean;
+  duplicateCategoryPending: boolean;
+  children: React.ReactNode;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ 
+    id: `cat-${category.id}`,
+    disabled: hasActiveFilters,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "bg-card rounded-xl border border-border/50 overflow-hidden transition-all duration-200",
+        isDropTarget && "ring-2 ring-primary/50 ring-offset-2",
+        "border-t-4 border-t-red-500",
+        isDragging && "shadow-2xl ring-2 ring-primary/30"
+      )}
+    >
+      {/* Drop zone for this category */}
+      <CategoryDropZone 
+        categoryId={category.id} 
+        categoryName={category.name} 
+        isActive={isDropTarget} 
+      />
+      <div className="flex items-center justify-between p-4 border-b border-border/50 bg-muted/20" style={{height: '52px'}}>
+        {/* Drag handle + title area */}
+        <div className="flex items-center gap-1.5">
+          {/* GripVertical drag handle for category */}
+          {!hasActiveFilters && (
+            <button
+              {...attributes}
+              {...listeners}
+              className="cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded-md touch-none flex-shrink-0"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <GripVertical className="h-5 w-5 text-muted-foreground" />
+            </button>
+          )}
+          {isEditing ? (
+            <div className="flex items-center gap-1.5">
+              <Input
+                value={editingName}
+                onChange={(e) => onEditingNameChange(capitalizeFirst(e.target.value))}
+                className="h-8 w-48 font-bold text-base"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && editingName.trim()) {
+                    onSaveEdit(category.id, editingName.trim());
+                  } else if (e.key === "Escape") {
+                    onCancelEdit();
+                  }
+                }}
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100"
+                onClick={() => {
+                  if (editingName.trim()) {
+                    onSaveEdit(category.id, editingName.trim());
+                  }
+                }}
+                disabled={!editingName.trim() || updateCategoryPending}
+              >
+                <Check className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 text-red-600 hover:text-red-700 hover:bg-red-100"
+                onClick={onCancelEdit}
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div
+                className="group flex items-center gap-1.5 px-2 py-1 -my-1 rounded-md cursor-pointer hover:bg-muted/50 transition-all duration-200"
+                onClick={() => onStartEditing(category.id, category.name)}
+              >
+                <h3 className={cn(
+                  "font-bold text-base group-hover:text-primary transition-colors",
+                  !category.isActive && "text-muted-foreground line-through"
+                )}>
+                  {category.name}
+                </h3>
+                <Pencil className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-primary transition-colors duration-200" />
+              </div>
+              <span className="text-xs text-muted-foreground font-medium">
+                {categoryProducts.length} {categoryProducts.length === 1 ? "ítem" : "ítens"}
+              </span>
+              {!category.isActive && (
+                <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">Pausada</span>
+              )}
+            </>
+          )}
+        </div>
+        <div className="flex items-center gap-1">
+          {/* Botão Pausar/Play */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className={cn(
+                  "h-8 w-8 rounded-lg",
+                  category.isActive
+                    ? "text-muted-foreground hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200"
+                    : "text-emerald-600 bg-emerald-50 border-emerald-200 hover:text-emerald-700 hover:bg-emerald-100"
+                )}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleCategoryStatus(category.id, !category.isActive);
+                }}
+                disabled={toggleCategoryStatusPending}
+              >
+                {category.isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{category.isActive ? "Pausar categoria" : "Ativar categoria"}</TooltipContent>
+          </Tooltip>
+          {/* Botão 3 pontinhos - Duplicar/Remover */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => onDuplicateCategory(category.id)}
+                disabled={duplicateCategoryPending}
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Duplicar categoria
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive"
+                onClick={() => onDeleteCategory(category.id, category.name, categoryProducts.length)}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Remover categoria
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {/* Botão Minimizar/Expandir */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleCategoryCollapse(category.id);
+                }}
+              >
+                {isCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{isCollapsed ? "Expandir itens" : "Minimizar itens"}</TooltipContent>
+          </Tooltip>
+        </div>
+      </div>
+      {/* Products list - hidden when collapsed or when dragging categories */}
+      {!isCollapsed && !isDraggingCategory && children}
+    </div>
+  );
+}
+
 export default function Catalogo() {
   const [, navigate] = useLocation();
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
@@ -293,6 +510,10 @@ export default function Catalogo() {
   const [activeProduct, setActiveProduct] = useState<any>(null);
   const [activeProductCategoryId, setActiveProductCategoryId] = useState<number | null>(null);
   
+  // Category drag state
+  const [isDraggingCategory, setIsDraggingCategory] = useState(false);
+  const preCollapseStateRef = useRef<Set<number> | null>(null);
+  
   // Collapsed categories state (persisted in localStorage)
   const [collapsedCategories, setCollapsedCategories] = useState<Set<number>>(() => {
     try {
@@ -301,7 +522,7 @@ export default function Catalogo() {
     } catch { return new Set(); }
   });
   
-  const toggleCategoryCollapse = (categoryId: number) => {
+  const toggleCategoryCollapse = useCallback((categoryId: number) => {
     setCollapsedCategories(prev => {
       const next = new Set(prev);
       if (next.has(categoryId)) {
@@ -312,7 +533,7 @@ export default function Catalogo() {
       localStorage.setItem('collapsedCategories', JSON.stringify(Array.from(next)));
       return next;
     });
-  };
+  }, []);
 
   // Check if filters are active (disable drag when filters are active)
   const hasActiveFilters: boolean = !!(search || categoryFilter !== "all" || statusFilter !== "all" || stockFilter !== "all" || orderBy !== "sortOrder");
@@ -424,7 +645,7 @@ export default function Catalogo() {
   });
 
   const reorderCategoriesMutation = trpc.category.reorder.useMutation({
-    onError: (error) => {
+    onError: () => {
       toast.error("Erro ao reordenar categorias");
       // Revert on error
       if (categories) {
@@ -434,7 +655,7 @@ export default function Catalogo() {
   });
 
   const reorderProductsMutation = trpc.product.reorder.useMutation({
-    onError: (error) => {
+    onError: () => {
       toast.error("Erro ao reordenar produtos");
       refetchProducts();
     },
@@ -490,8 +711,6 @@ export default function Catalogo() {
     },
   });
 
-  // Nota: Removido bloqueio para usuários sem estabelecimento - agora a página de Catálogo mostra normalmente
-
   const formatCurrency = (value: string | number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
@@ -523,26 +742,90 @@ export default function Catalogo() {
     }
   };
 
-  // Handle drag start - track which product is being dragged
+  // Category sortable IDs (prefixed with "cat-" to distinguish from product IDs)
+  const categorySortableIds = useMemo(() => 
+    localCategories.map(c => `cat-${c.id}`),
+    [localCategories]
+  );
+
+  // Handle drag start - detect if dragging a category or product
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    const productId = active.id as number;
+    const activeId = String(active.id);
     
-    // Find the product and its category
-    for (const [catId, products] of Object.entries(localProductsByCategory)) {
-      const product = products.find((p: any) => p.id === productId);
-      if (product) {
-        setActiveProduct(product);
-        setActiveProductCategoryId(Number(catId));
-        break;
+    if (activeId.startsWith('cat-')) {
+      // Dragging a category - auto-collapse all categories
+      setIsDraggingCategory(true);
+      // Save current collapse state before collapsing all
+      preCollapseStateRef.current = new Set(collapsedCategories);
+      // Collapse all categories (don't persist to localStorage during drag)
+      const allCategoryIds = new Set(localCategories.map(c => c.id));
+      setCollapsedCategories(allCategoryIds);
+    } else {
+      // Dragging a product
+      const productId = active.id as number;
+      for (const [catId, products] of Object.entries(localProductsByCategory)) {
+        const product = products.find((p: any) => p.id === productId);
+        if (product) {
+          setActiveProduct(product);
+          setActiveProductCategoryId(Number(catId));
+          break;
+        }
       }
     }
   };
 
-  // Handle drag end - check if dropped on different category
+  // Handle drag end - check if dropped on different category or reorder categories
   const handleGlobalDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    const activeId = String(active.id);
     
+    // Handle category drag end
+    if (activeId.startsWith('cat-')) {
+      setIsDraggingCategory(false);
+      
+      // Restore previous collapse state
+      if (preCollapseStateRef.current !== null) {
+        setCollapsedCategories(preCollapseStateRef.current);
+        // Also persist the restored state to localStorage
+        localStorage.setItem('collapsedCategories', JSON.stringify(Array.from(preCollapseStateRef.current)));
+        preCollapseStateRef.current = null;
+      }
+      
+      if (!over) return;
+      
+      const overId = String(over.id);
+      if (!overId.startsWith('cat-')) return;
+      
+      const activeCatId = Number(activeId.replace('cat-', ''));
+      const overCatId = Number(overId.replace('cat-', ''));
+      
+      if (activeCatId === overCatId) return;
+      
+      const oldIndex = localCategories.findIndex(c => c.id === activeCatId);
+      const newIndex = localCategories.findIndex(c => c.id === overCatId);
+      
+      if (oldIndex === -1 || newIndex === -1) return;
+      
+      // Optimistic update
+      const newCategories = arrayMove(localCategories, oldIndex, newIndex);
+      setLocalCategories(newCategories);
+      
+      // Persist to server
+      const updates = newCategories.map((cat, index) => ({
+        id: cat.id,
+        sortOrder: index,
+      }));
+      
+      reorderCategoriesMutation.mutate(updates, {
+        onSuccess: () => {
+          toast.success("Ordem das categorias atualizada");
+        },
+      });
+      return;
+    }
+    
+    // Handle product drag end
     setActiveProduct(null);
     setActiveProductCategoryId(null);
     
@@ -609,50 +892,7 @@ export default function Catalogo() {
     }
   };
 
-  // Handle product drag end (legacy - for individual category contexts)
-  const handleProductDragEnd = (event: DragEndEvent, categoryId: number) => {
-    const { active, over } = event;
-    
-    if (!over || active.id === over.id) return;
-
-    const categoryProducts = localProductsByCategory[categoryId] || [];
-    const oldIndex = categoryProducts.findIndex((p) => p.id === active.id);
-    const newIndex = categoryProducts.findIndex((p) => p.id === over.id);
-
-    if (oldIndex === -1 || newIndex === -1) return;
-
-    // Optimistic update
-    const newProducts = arrayMove(categoryProducts, oldIndex, newIndex);
-    setLocalProductsByCategory({
-      ...localProductsByCategory,
-      [categoryId]: newProducts,
-    });
-
-    // Persist to server
-    const updates = newProducts.map((product, index) => ({
-      id: product.id,
-      sortOrder: index,
-    }));
-    
-    reorderProductsMutation.mutate(updates, {
-      onSuccess: () => {
-        toast.success("Ordem atualizada");
-      },
-    });
-  };
-
-
   const products = productsData?.products || [];
-
-  // Count products per category for reorder mode
-  const productCountByCategory = useMemo(() => {
-    const counts: Record<number, number> = {};
-    products.forEach((p) => {
-      const catId = p.categoryId || 0;
-      counts[catId] = (counts[catId] || 0) + 1;
-    });
-    return counts;
-  }, [products]);
 
   return (
     <AdminLayout>
@@ -738,6 +978,10 @@ export default function Catalogo() {
           onDragStart={handleDragStart}
           onDragEnd={handleGlobalDragEnd}
         >
+        <SortableContext
+          items={categorySortableIds}
+          strategy={verticalListSortingStrategy}
+        >
         <div className="space-y-5">
           {localCategories.map((category) => {
             const categoryProducts = localProductsByCategory[category.id] || [];
@@ -747,170 +991,43 @@ export default function Catalogo() {
             if (categoryProducts.length === 0 && !activeProduct) return null;
             
             return (
-              <div 
-                key={category.id} 
-                className={cn(
-                  "bg-card rounded-xl border border-border/50 overflow-hidden transition-all duration-200",
-                  isDropTarget && "ring-2 ring-primary/50 ring-offset-2",
-                  "border-t-4 border-t-red-500"
-                )}
+              <SortableCategoryItem
+                key={category.id}
+                category={category}
+                categoryProducts={categoryProducts}
+                isDropTarget={isDropTarget}
+                isDraggingCategory={isDraggingCategory}
+                isCollapsed={collapsedCategories.has(category.id)}
+                isEditing={editingCategoryId === category.id}
+                editingName={editingCategoryName}
+                hasActiveFilters={hasActiveFilters}
+                onToggleCategoryCollapse={toggleCategoryCollapse}
+                onStartEditing={(id, name) => {
+                  setEditingCategoryId(id);
+                  setEditingCategoryName(name);
+                }}
+                onEditingNameChange={setEditingCategoryName}
+                onSaveEdit={(id, name) => {
+                  updateCategoryMutation.mutate({ id, name });
+                }}
+                onCancelEdit={() => {
+                  setEditingCategoryId(null);
+                  setEditingCategoryName("");
+                }}
+                onToggleCategoryStatus={(id, isActive) => {
+                  toggleCategoryStatusMutation.mutate({ id, isActive });
+                }}
+                onDuplicateCategory={(id) => {
+                  duplicateCategoryMutation.mutate({ id });
+                }}
+                onDeleteCategory={(id, name, productCount) => {
+                  setCategoryToDelete({ id, name, productCount });
+                  setDeleteCategoryDialogOpen(true);
+                }}
+                toggleCategoryStatusPending={toggleCategoryStatusMutation.isPending}
+                updateCategoryPending={updateCategoryMutation.isPending}
+                duplicateCategoryPending={duplicateCategoryMutation.isPending}
               >
-                {/* Drop zone for this category */}
-                <CategoryDropZone 
-                  categoryId={category.id} 
-                  categoryName={category.name} 
-                  isActive={isDropTarget} 
-                />
-                <div className="flex items-center justify-between p-4 border-b border-border/50 bg-muted/20" style={{height: '52px'}}>
-                  {editingCategoryId === category.id ? (
-                    <div className="flex items-center gap-1.5">
-                      <Input
-                        value={editingCategoryName}
-                        onChange={(e) => setEditingCategoryName(capitalizeFirst(e.target.value))}
-                        className="h-8 w-48 font-bold text-base"
-                        autoFocus
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && editingCategoryName.trim()) {
-                            updateCategoryMutation.mutate({ id: category.id, name: editingCategoryName.trim() });
-                          } else if (e.key === "Escape") {
-                            setEditingCategoryId(null);
-                            setEditingCategoryName("");
-                          }
-                        }}
-                      />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100"
-                        onClick={() => {
-                          if (editingCategoryName.trim()) {
-                            updateCategoryMutation.mutate({ id: category.id, name: editingCategoryName.trim() });
-                          }
-                        }}
-                        disabled={!editingCategoryName.trim() || updateCategoryMutation.isPending}
-                      >
-                        <Check className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 text-red-600 hover:text-red-700 hover:bg-red-100"
-                        onClick={() => {
-                          setEditingCategoryId(null);
-                          setEditingCategoryName("");
-                        }}
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1.5">
-                      <div
-                        className="group flex items-center gap-1.5 px-2 py-1 -mx-2 -my-1 rounded-md cursor-pointer hover:bg-muted/50 transition-all duration-200"
-                        onClick={() => {
-                          setEditingCategoryId(category.id);
-                          setEditingCategoryName(category.name);
-                        }}
-                      >
-                        <h3 className={cn(
-                          "font-bold text-base group-hover:text-primary transition-colors",
-                          !category.isActive && "text-muted-foreground line-through"
-                        )}>
-                          {category.name}
-                        </h3>
-                        <Pencil className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-primary transition-colors duration-200" />
-                      </div>
-                      <span className="text-xs text-muted-foreground font-medium">
-                        {categoryProducts.length} {categoryProducts.length === 1 ? "ítem" : "ítens"}
-                      </span>
-                      {!category.isActive && (
-                        <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">Pausada</span>
-                      )}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1">
-                    {/* Botão Pausar/Play */}
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className={cn(
-                            "h-8 w-8 rounded-lg",
-                            category.isActive
-                              ? "text-muted-foreground hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200"
-                              : "text-emerald-600 bg-emerald-50 border-emerald-200 hover:text-emerald-700 hover:bg-emerald-100"
-                          )}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleCategoryStatusMutation.mutate({
-                              id: category.id,
-                              isActive: !category.isActive,
-                            });
-                          }}
-                          disabled={toggleCategoryStatusMutation.isPending}
-                        >
-                          {category.isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>{category.isActive ? "Pausar categoria" : "Ativar categoria"}</TooltipContent>
-                    </Tooltip>
-                    {/* Botão 3 pontinhos - Duplicar/Remover */}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => duplicateCategoryMutation.mutate({ id: category.id })}
-                          disabled={duplicateCategoryMutation.isPending}
-                        >
-                          <Copy className="h-4 w-4 mr-2" />
-                          Duplicar categoria
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive focus:text-destructive"
-                          onClick={() => {
-                            setCategoryToDelete({
-                              id: category.id,
-                              name: category.name,
-                              productCount: categoryProducts.length
-                            });
-                            setDeleteCategoryDialogOpen(true);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Remover categoria
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    {/* Botão Minimizar/Expandir */}
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleCategoryCollapse(category.id);
-                          }}
-                        >
-                          {collapsedCategories.has(category.id) ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>{collapsedCategories.has(category.id) ? "Expandir itens" : "Minimizar itens"}</TooltipContent>
-                    </Tooltip>
-                  </div>
-                </div>
-                {!collapsedCategories.has(category.id) && (
                 <SortableContext
                   items={categoryProducts.map((p) => p.id)}
                   strategy={verticalListSortingStrategy}
@@ -933,8 +1050,7 @@ export default function Catalogo() {
                     ))}
                   </div>
                 </SortableContext>
-                )}
-              </div>
+              </SortableCategoryItem>
             );
           })}
           
@@ -958,6 +1074,7 @@ export default function Catalogo() {
                   {(localProductsByCategory[0]?.length || 0)} {(localProductsByCategory[0]?.length || 0) === 1 ? "produto" : "produtos"}
                 </span>
               </div>
+              {!isDraggingCategory && (
               <SortableContext
                 items={(localProductsByCategory[0] || []).map((p) => p.id)}
                 strategy={verticalListSortingStrategy}
@@ -980,9 +1097,11 @@ export default function Catalogo() {
                   ))}
                 </div>
               </SortableContext>
+              )}
             </div>
           ) : null}
         </div>
+        </SortableContext>
         </DndContext>
       )}
 

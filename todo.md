@@ -6251,3 +6251,8 @@
 - [x] Adicionar botão 3 pontinhos com menu: Duplicar categoria e Remover categoria
 - [x] Adicionar botão setinha (chevron) para minimizar/expandir itens da categoria
 - [x] Implementar lógica de duplicar categoria no backend
+
+## Ícone de arrastar nas categorias + auto-minimizar ao arrastar
+- [x] Adicionar ícone de arrastar (GripVertical) ao lado esquerdo do título da categoria
+- [x] Ao iniciar arraste de categoria, minimizar automaticamente todos os itens de todas as categorias
+- [x] Ao soltar a categoria, restaurar o estado anterior de colapso
