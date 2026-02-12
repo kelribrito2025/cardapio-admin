@@ -3,7 +3,6 @@ import { PageHeader, StatusBadge, EmptyState, SectionCard } from "@/components/s
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -165,13 +164,30 @@ function SortableProductItem({
           </div>
         )}
       </div>
-      {/* Botões de ação (toggle + menu 3 pontinhos) */}
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <Switch
-          checked={product.status === "active"}
-          onCheckedChange={() => onToggleStatus(product.id, product.status)}
-          className="scale-90"
-        />
+      {/* Botões de ação (pausar/play + menu 3 pontinhos) */}
+      <div className="flex items-center gap-1.5 flex-shrink-0">
+        {/* Botão Pausar/Play igual ao da categoria */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className={cn(
+                "h-8 w-8 rounded-lg",
+                product.status === "active"
+                  ? "text-muted-foreground hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200"
+                  : "text-emerald-600 bg-emerald-50 border-emerald-200 hover:text-emerald-700 hover:bg-emerald-100"
+              )}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleStatus(product.id, product.status);
+              }}
+            >
+              {product.status === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{product.status === "active" ? "Pausar item" : "Ativar item"}</TooltipContent>
+        </Tooltip>
         {/* Menu 3 pontinhos sem estilo de botão */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

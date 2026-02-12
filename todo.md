@@ -6262,3 +6262,7 @@
 - [x] Adicionar ícone de 3 pontinhos (MoreVertical) sem estilo de botão, apenas o ícone
 - [x] Ao clicar nos 3 pontinhos, abrir menu dropdown com opções "Duplicar" e "Excluir"
 - [x] Manter Switch (toggle) para pausar/ativar o item
+
+## Substituir Switch por botão Pausar/Play nos itens do Catálogo
+- [x] Remover Switch/toggle vermelho dos itens
+- [x] Adicionar botão Pausar/Play (ícone Pause/Play) igual ao da categoria
