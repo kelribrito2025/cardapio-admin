@@ -67,6 +67,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { cn, capitalizeFirst } from "@/lib/utils";
 import { useSearch } from "@/contexts/SearchContext";
 import CreateComboSheet from "@/components/CreateComboSheet";
+import InlineComplementsDropdown from "@/components/InlineComplementsDropdown";
 
 // Sortable Product Item Component
 function SortableProductItem({
@@ -77,6 +78,8 @@ function SortableProductItem({
   onDelete,
   onEdit,
   formatCurrency,
+  expandedComplementProductId,
+  onToggleComplements,
 }: {
   product: any;
   isDragDisabled: boolean;
@@ -85,6 +88,8 @@ function SortableProductItem({
   onDelete: (id: number) => void;
   onEdit: (id: number) => void;
   formatCurrency: (value: string | number) => string;
+  expandedComplementProductId: number | null;
+  onToggleComplements: (id: number) => void;
 }) {
   const {
     attributes,
@@ -102,122 +107,169 @@ function SortableProductItem({
     zIndex: isDragging ? 1000 : 1,
   };
 
+  const isComplementsOpen = expandedComplementProductId === product.id;
+
   return (
     <div
       ref={setNodeRef}
-      style={{
-        ...style,
-        height: '60px',
-      }}
+      style={style}
       className={cn(
-        "flex items-center gap-3.5 p-3.5 hover:bg-muted/30 transition-colors bg-card",
         isDragging && "shadow-lg rounded-lg border border-border/50"
       )}
     >
-      {!isDragDisabled && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              {...attributes}
-              {...listeners}
-              className="cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded-md touch-none"
-            >
-              <GripVertical className="h-5 w-5 text-muted-foreground" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>Arraste para reordenar</TooltipContent>
-        </Tooltip>
-      )}
-      {/* Área clicável para edição */}
-      <div 
-        className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
-        onClick={() => onEdit(product.id)}
+      <div
+        style={{ height: '60px' }}
+        className={cn(
+          "flex items-center gap-3.5 p-3.5 hover:bg-muted/30 transition-colors bg-card",
+        )}
       >
-        <div className="hidden md:flex h-12 w-12 rounded-lg bg-gradient-to-br from-red-500 to-red-600 items-center justify-center overflow-hidden flex-shrink-0">
-          {product.images && product.images.length > 0 ? (
-            <img
-              src={product.images[0]}
-              alt={product.name}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <UtensilsCrossed className="h-5 w-5 text-white animate-placeholder-pulse" />
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <h4 className="font-semibold text-base truncate">{product.name}</h4>
-
-            {product.hasStock && product.stockQuantity !== null && product.stockQuantity <= 0 && (
-              <StatusBadge variant="error">Sem estoque</StatusBadge>
+        {!isDragDisabled && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                {...attributes}
+                {...listeners}
+                className="cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded-md touch-none"
+              >
+                <GripVertical className="h-5 w-5 text-muted-foreground" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Arraste para reordenar</TooltipContent>
+          </Tooltip>
+        )}
+        {/* Área clicável para edição */}
+        <div 
+          className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => onEdit(product.id)}
+        >
+          <div className="hidden md:flex h-12 w-12 rounded-lg bg-gradient-to-br from-red-500 to-red-600 items-center justify-center overflow-hidden flex-shrink-0">
+            {product.images && product.images.length > 0 ? (
+              <img
+                src={product.images[0]}
+                alt={product.name}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <UtensilsCrossed className="h-5 w-5 text-white animate-placeholder-pulse" />
             )}
           </div>
-          {/* Mobile: preço abaixo do nome */}
-          {Number(product.price) > 0 && (
-            <p className="md:hidden text-sm font-medium text-primary mt-0.5">{formatCurrency(product.price)}</p>
-          )}
-          {product.description && (
-            <p className="hidden md:block text-sm text-muted-foreground truncate mt-1">
-              {product.description}
-            </p>
-          )}
-        </div>
-        {/* Desktop: preço na mesma linha */}
-        {Number(product.price) > 0 && (
-          <div className="hidden md:block text-right flex-shrink-0">
-            <p className="font-semibold text-base text-primary">{formatCurrency(product.price)}</p>
-          </div>
-        )}
-      </div>
-      {/* Botões de ação (pausar/play + menu 3 pontinhos) */}
-      <div className="flex items-center gap-1.5 flex-shrink-0">
-        {/* Botão Pausar/Play igual ao da categoria */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className={cn(
-                "h-8 w-8 rounded-lg",
-                product.status === "active"
-                  ? "text-muted-foreground hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200"
-                  : "text-emerald-600 bg-emerald-50 border-emerald-200 hover:text-emerald-700 hover:bg-emerald-100"
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5">
+              <h4 className="font-semibold text-base truncate">{product.name}</h4>
+
+              {product.hasStock && product.stockQuantity !== null && product.stockQuantity <= 0 && (
+                <StatusBadge variant="error">Sem estoque</StatusBadge>
               )}
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleStatus(product.id, product.status);
-              }}
-            >
-              {product.status === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{product.status === "active" ? "Pausar item" : "Ativar item"}</TooltipContent>
-        </Tooltip>
-        {/* Menu 3 pontinhos sem estilo de botão */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              className="p-1 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <MoreVertical className="h-4.5 w-4.5" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => onDuplicate(product.id)}>
-              <Copy className="h-4 w-4 mr-2" />
-              Duplicar
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => onDelete(product.id)}
-              className="text-destructive focus:text-destructive"
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Excluir
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </div>
+            {/* Mobile: preço abaixo do nome */}
+            {Number(product.price) > 0 && (
+              <p className="md:hidden text-sm font-medium text-primary mt-0.5">{formatCurrency(product.price)}</p>
+            )}
+            {product.description && (
+              <p className="hidden md:block text-sm text-muted-foreground truncate mt-1">
+                {product.description}
+              </p>
+            )}
+          </div>
+        </div>
+        {/* Botão Complementos (desktop) + seta (mobile) */}
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {/* Desktop: botão texto "Complementos" */}
+          <Button
+            variant="outline"
+            size="sm"
+            className={cn(
+              "h-8 rounded-lg text-xs font-medium px-2.5 hidden md:inline-flex",
+              isComplementsOpen
+                ? "bg-primary/10 text-primary border-primary/30"
+                : "text-muted-foreground hover:text-primary hover:bg-primary/5 hover:border-primary/20"
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleComplements(product.id);
+            }}
+          >
+            <Layers className="h-3.5 w-3.5 mr-1" />
+            Complementos
+            {isComplementsOpen ? <ChevronUp className="h-3.5 w-3.5 ml-1" /> : <ChevronDown className="h-3.5 w-3.5 ml-1" />}
+          </Button>
+          {/* Mobile: ícone seta */}
+          <Button
+            variant="outline"
+            size="icon"
+            className={cn(
+              "h-8 w-8 rounded-lg md:hidden",
+              isComplementsOpen
+                ? "bg-primary/10 text-primary border-primary/30"
+                : "text-muted-foreground hover:text-primary"
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleComplements(product.id);
+            }}
+          >
+            {isComplementsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </Button>
+          {/* Desktop: preço na mesma linha */}
+          {Number(product.price) > 0 && (
+            <div className="hidden md:block text-right flex-shrink-0 min-w-[80px]">
+              <p className="font-semibold text-base text-primary">{formatCurrency(product.price)}</p>
+            </div>
+          )}
+          {/* Botão Pausar/Play igual ao da categoria */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className={cn(
+                  "h-8 w-8 rounded-lg",
+                  product.status === "active"
+                    ? "text-muted-foreground hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200"
+                    : "text-emerald-600 bg-emerald-50 border-emerald-200 hover:text-emerald-700 hover:bg-emerald-100"
+                )}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleStatus(product.id, product.status);
+                }}
+              >
+                {product.status === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{product.status === "active" ? "Pausar item" : "Ativar item"}</TooltipContent>
+          </Tooltip>
+          {/* Menu 3 pontinhos sem estilo de botão */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="p-1 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreVertical className="h-4.5 w-4.5" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onDuplicate(product.id)}>
+                <Copy className="h-4 w-4 mr-2" />
+                Duplicar
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => onDelete(product.id)}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Excluir
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
+      {/* Inline Complements Dropdown */}
+      <InlineComplementsDropdown
+        productId={product.id}
+        isOpen={isComplementsOpen}
+        onClose={() => onToggleComplements(product.id)}
+      />
     </div>
   );
 }
@@ -555,6 +607,12 @@ export default function Catalogo() {
   const [activeProduct, setActiveProduct] = useState<any>(null);
   const [activeProductCategoryId, setActiveProductCategoryId] = useState<number | null>(null);
   
+  // Inline complements dropdown state
+  const [expandedComplementProductId, setExpandedComplementProductId] = useState<number | null>(null);
+  const handleToggleComplements = useCallback((productId: number) => {
+    setExpandedComplementProductId(prev => prev === productId ? null : productId);
+  }, []);
+
   // Category drag state
   const [isDraggingCategory, setIsDraggingCategory] = useState(false);
   const preCollapseStateRef = useRef<Set<number> | null>(null);
@@ -1116,6 +1174,8 @@ export default function Catalogo() {
                         }}
                         onEdit={(id) => navigate(`/catalogo/editar/${id}`)}
                         formatCurrency={formatCurrency}
+                        expandedComplementProductId={expandedComplementProductId}
+                        onToggleComplements={handleToggleComplements}
                       />
                     ))}
                   </div>
@@ -1163,6 +1223,8 @@ export default function Catalogo() {
                       }}
                       onEdit={(id) => navigate(`/catalogo/editar/${id}`)}
                       formatCurrency={formatCurrency}
+                      expandedComplementProductId={expandedComplementProductId}
+                      onToggleComplements={handleToggleComplements}
                     />
                   ))}
                 </div>

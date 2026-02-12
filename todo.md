@@ -6335,3 +6335,8 @@
 - [x] Bug: BATATA FRITA aparece como GRÁTIS no combo quando deveria mostrar o preço correto
 - [x] Bug: Ao criar combo e adicionar item que já possui complementos próprios, esses complementos não são importados/exibidos no combo
 - [x] UX: Sidebar Criar Combo - lista de resultados da busca precisa de scroll próprio para manter busca e botões visíveis
+- [x] Feature: Botão "Complementos" por item na página de catálogo com dropdown expansível inline
+- [x] Feature: Dropdown mostra grupos de complementos com tags (Obrigatório/Opcional/Reutilizado), pausar, drag-and-drop
+- [x] Feature: Itens dentro do grupo com nome, preço editável inline, pausar, deletar, drag-and-drop
+- [x] Feature: Versão mobile com ícone de seta para expandir complementos
+- [x] Feature: Estado vazio "Nenhum complemento configurado" com botão "Adicionar complemento"
