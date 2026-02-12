@@ -551,7 +551,7 @@ export default function CreateComboSheet({
           <div className="space-y-2 w-[140px] flex-shrink-0">
             <Label className="text-sm font-medium">Tipo</Label>
             <Select value={groupType} onValueChange={(v) => setGroupType(v as "required" | "optional")}>
-              <SelectTrigger className="h-11 rounded-xl">
+              <SelectTrigger className="h-11 rounded-xl" style={{height: '44px'}}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
