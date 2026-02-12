@@ -537,29 +537,29 @@ export default function CreateComboSheet({
           Quantos produtos o cliente poderá escolher?
         </h3>
 
-        {/* Group name */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Nome do grupo *</Label>
-          <Input
-            placeholder="Ex: Escolha seu lanche"
-            value={groupName}
-            onChange={(e) => setGroupName(e.target.value)}
-            className="h-11 rounded-xl"
-          />
-        </div>
-
-        {/* Group type */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Tipo do grupo</Label>
-          <Select value={groupType} onValueChange={(v) => setGroupType(v as "required" | "optional")}>
-            <SelectTrigger className="h-11 rounded-xl">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="required">Obrigatório</SelectItem>
-              <SelectItem value="optional">Opcional</SelectItem>
-            </SelectContent>
-          </Select>
+        {/* Group name + type in same row */}
+        <div className="flex gap-3 items-end">
+          <div className="space-y-2 flex-1">
+            <Label className="text-sm font-medium">Nome do grupo *</Label>
+            <Input
+              placeholder="Ex: Escolha seu lanche"
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
+              className="h-11 rounded-xl"
+            />
+          </div>
+          <div className="space-y-2 w-[140px] flex-shrink-0">
+            <Label className="text-sm font-medium">Tipo</Label>
+            <Select value={groupType} onValueChange={(v) => setGroupType(v as "required" | "optional")}>
+              <SelectTrigger className="h-11 rounded-xl">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="required">Obrigatório</SelectItem>
+                <SelectItem value="optional">Opcional</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Max quantity */}
