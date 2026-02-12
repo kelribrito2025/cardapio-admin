@@ -1,0 +1,80 @@
+{
+  "query": "SELECT p.id, p.name, p.isCombo, \n  (SELECT COUNT(*) FROM complementGroups cg WHERE cg.productId = p.id) as complementGroupCount,\n  (SELECT GROUP_CONCAT(cg.name SEPARATOR ', ') FROM complementGroups cg WHERE cg.productId = p.id) as groupNames\nFROM products p \nWHERE p.establishmentId = 30001 AND p.isCombo = 0\nAND (SELECT COUNT(*) FROM complementGroups cg WHERE cg.productId = p.id) > 0\nLIMIT 10",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.isCombo, \n  (SELECT COUNT(*) FROM complementGroups cg WHERE cg.productId = p.id) as complementGroupCount,\n  (SELECT GROUP_CONCAT(cg.name SEPARATOR ', ') FROM complementGroups cg WHERE cg.productId = p.id) as groupNames\nFROM products p \nWHERE p.establishmentId = 30001 AND p.isCombo = 0\nAND (SELECT COUNT(*) FROM complementGroups cg WHERE cg.productId = p.id) > 0\nLIMIT 10",
+  "rows": [
+    {
+      "id": "120016",
+      "name": "EBITEN",
+      "isCombo": "0",
+      "complementGroupCount": "1",
+      "groupNames": "Escolha a quantidade"
+    },
+    {
+      "id": "120077",
+      "name": "Sucos da fruta",
+      "isCombo": "0",
+      "complementGroupCount": "1",
+      "groupNames": "Escolha a fruta"
+    },
+    {
+      "id": "120094",
+      "name": "Cervejas",
+      "isCombo": "0",
+      "complementGroupCount": "1",
+      "groupNames": "Escolha sua bebida"
+    },
+    {
+      "id": "120092",
+      "name": "Yakissoba P/ 2 Pessoas",
+      "isCombo": "0",
+      "complementGroupCount": "1",
+      "groupNames": "Escolha o seu yakissoba abaixo:"
+    },
+    {
+      "id": "120100",
+      "name": "Água mineral",
+      "isCombo": "0",
+      "complementGroupCount": "1",
+      "groupNames": "Escolha o iten:"
+    },
+    {
+      "id": "120102",
+      "name": "Bebidas quentes",
+      "isCombo": "0",
+      "complementGroupCount": "1",
+      "groupNames": "Selecione a bebida "
+    },
+    {
+      "id": "120085",
+      "name": "Caipirinhas",
+      "isCombo": "0",
+      "complementGroupCount": "1",
+      "groupNames": "Escolha o sabor"
+    },
+    {
+      "id": "120101",
+      "name": "Refrigerantes",
+      "isCombo": "0",
+      "complementGroupCount": "1",
+      "groupNames": "Escolha o refri abaixo:"
+    },
+    {
+      "id": "120063",
+      "name": "HARUMAKI (Rolinho primavera)",
+      "isCombo": "0",
+      "complementGroupCount": "1",
+      "groupNames": "Escolha o sabor:"
+    },
+    {
+      "id": "120093",
+      "name": "Caipvodkas",
+      "isCombo": "0",
+      "complementGroupCount": "1",
+      "groupNames": "Escolha o sabor"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tisCombo\tcomplementGroupCount\tgroupNames\n120016\tEBITEN\t0\t1\tEscolha a quantidade\n120077\tSucos da fruta\t0\t1\tEscolha a fruta\n120094\tCervejas\t0\t1\tEscolha sua bebida\n120092\tYakissoba P/ 2 Pessoas\t0\t1\tEscolha o seu yakissoba abaixo:\n120100\tÁgua mineral\t0\t1\tEscolha o iten:\n120102\tBebidas quentes\t0\t1\tSelecione a bebida \n120085\tCaipirinhas\t0\t1\tEscolha o sabor\n120101\tRefrigerantes\t0\t1\tEscolha o refri abaixo:\n120063\tHARUMAKI (Rolinho primavera)\t0\t1\tEscolha o sabor:\n120093\tCaipvodkas\t0\t1\tEscolha o sabor\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

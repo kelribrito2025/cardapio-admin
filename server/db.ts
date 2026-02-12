@@ -7037,13 +7037,14 @@ export async function createCombo(data: {
   const comboProductId = result.insertId;
 
   // 2. Criar os grupos e itens
+  let currentSortOrder = 0;
   for (const group of data.groups) {
     const [groupResult] = await db.insert(comboGroups).values({
       productId: comboProductId,
       name: group.name,
       isRequired: group.isRequired,
       maxQuantity: group.maxQuantity,
-      sortOrder: group.sortOrder,
+      sortOrder: currentSortOrder++,
     });
     const groupId = groupResult.insertId;
 
@@ -7054,6 +7055,40 @@ export async function createCombo(data: {
         productId: item.productId,
         sortOrder: item.sortOrder,
       });
+
+      // 4. Importar complementos do item (se existirem) como complementGroups do combo
+      const itemComplements = await getComplementGroupsByProduct(item.productId);
+      for (const compGroup of itemComplements) {
+        if (compGroup.items.length === 0) continue; // Pular grupos vazios
+        
+        // Copiar o complementGroup do item original para o produto-combo
+        const [copiedGroupResult] = await db.insert(complementGroups).values({
+          productId: comboProductId,
+          name: compGroup.name,
+          minQuantity: compGroup.minQuantity,
+          maxQuantity: compGroup.maxQuantity,
+          isRequired: compGroup.isRequired,
+          sortOrder: compGroup.sortOrder,
+        });
+        const copiedGroupId = copiedGroupResult.insertId;
+
+        // Copiar todos os complementItems do grupo original
+        for (const compItem of compGroup.items) {
+          await db.insert(complementItems).values({
+            groupId: copiedGroupId,
+            name: compItem.name,
+            price: compItem.price,
+            imageUrl: compItem.imageUrl,
+            isActive: compItem.isActive,
+            priceMode: compItem.priceMode,
+            sortOrder: compItem.sortOrder,
+            availabilityType: compItem.availabilityType,
+            availableDays: compItem.availableDays,
+            availableHours: compItem.availableHours,
+            badgeText: compItem.badgeText,
+          });
+        }
+      }
     }
   }
 

@@ -783,10 +783,11 @@ export const appRouter = router({
         // Verificar se o produto é um combo
         const product = await db.getProductById(input.productId);
         
-        // Se for combo, buscar os comboGroups e converter para formato de complementos
+        // Se for combo, buscar TANTO comboGroups QUANTO complementGroups (importados dos itens)
         if (product?.isCombo) {
+          // 1. Buscar comboGroups (grupos definidos na criação do combo)
           const comboGroupsData = await db.getComboGroupsByProductId(input.productId);
-          return comboGroupsData.map(group => ({
+          const convertedComboGroups = comboGroupsData.map(group => ({
             id: group.id,
             productId: group.productId,
             name: group.name,
@@ -803,7 +804,7 @@ export const appRouter = router({
               price: item.productPrice || '0',
               imageUrl: item.productImages?.[0] || null,
               isActive: item.productStatus === 'active',
-              priceMode: (Number(item.productPrice) > 0 ? 'normal' : 'free') as 'normal' | 'free', // Mostrar preço real do produto no combo
+              priceMode: (Number(item.productPrice) > 0 ? 'normal' : 'free') as 'normal' | 'free',
               sortOrder: item.sortOrder,
               availabilityType: 'always' as const,
               availableDays: null,
@@ -813,6 +814,18 @@ export const appRouter = router({
               updatedAt: group.updatedAt,
             })),
           }));
+
+          // 2. Buscar complementGroups (importados dos itens que tinham complementos)
+          const complementGroupsData = await db.getComplementGroupsByProduct(input.productId);
+          const complementGroupsWithItems = await Promise.all(
+            complementGroupsData.map(async (group) => {
+              const items = await db.getComplementItemsByGroup(group.id);
+              return { ...group, items };
+            })
+          );
+
+          // 3. Combinar ambos os tipos de grupos
+          return [...convertedComboGroups, ...complementGroupsWithItems];
         }
         
         // Se NÃO for combo, buscar complementos normais
@@ -1257,11 +1270,11 @@ export const appRouter = router({
         const product = await db.getProductById(input.productId);
         if (!product) return [];
         
-        // Se for combo, buscar os comboGroups e converter para formato de complementos
+        // Se for combo, buscar TANTO comboGroups QUANTO complementGroups (importados dos itens)
         if (product.isCombo) {
+          // 1. Buscar comboGroups (grupos definidos na criação do combo)
           const comboGroupsData = await db.getComboGroupsByProductId(input.productId);
-          // Converter comboGroups para o formato esperado pelo frontend (mesmo formato de complementGroups)
-          return comboGroupsData.map(group => ({
+          const convertedComboGroups = comboGroupsData.map(group => ({
             id: group.id,
             productId: group.productId,
             name: group.name,
@@ -1272,7 +1285,7 @@ export const appRouter = router({
             createdAt: group.createdAt,
             updatedAt: group.updatedAt,
             items: group.items
-              .filter(item => item.productStatus === 'active') // Só mostrar itens ativos
+              .filter(item => item.productStatus === 'active')
               .map(item => ({
                 id: item.id,
                 groupId: group.id,
@@ -1280,7 +1293,7 @@ export const appRouter = router({
                 price: item.productPrice || '0',
                 imageUrl: item.productImages?.[0] || null,
                 isActive: item.productStatus === 'active',
-                priceMode: (Number(item.productPrice) > 0 ? 'normal' : 'free') as 'normal' | 'free', // Mostrar preço real do produto no combo
+                priceMode: (Number(item.productPrice) > 0 ? 'normal' : 'free') as 'normal' | 'free',
                 sortOrder: item.sortOrder,
                 availabilityType: 'always' as const,
                 availableDays: null,
@@ -1290,6 +1303,18 @@ export const appRouter = router({
                 updatedAt: group.updatedAt,
               })),
           }));
+
+          // 2. Buscar complementGroups (importados dos itens que tinham complementos)
+          const complementGroupsData = await db.getComplementGroupsByProduct(input.productId);
+          const complementGroupsWithItems = await Promise.all(
+            complementGroupsData.map(async (group) => {
+              const items = await db.getComplementItemsByGroup(group.id);
+              return { ...group, items: items.filter(item => item.isActive) };
+            })
+          );
+
+          // 3. Combinar ambos os tipos de grupos
+          return [...convertedComboGroups, ...complementGroupsWithItems];
         }
         
         // Se NÃO for combo, buscar complementos normais
