@@ -780,6 +780,42 @@ export const appRouter = router({
     listGroups: protectedProcedure
       .input(z.object({ productId: z.number() }))
       .query(async ({ input }) => {
+        // Verificar se o produto é um combo
+        const product = await db.getProductById(input.productId);
+        
+        // Se for combo, buscar os comboGroups e converter para formato de complementos
+        if (product?.isCombo) {
+          const comboGroupsData = await db.getComboGroupsByProductId(input.productId);
+          return comboGroupsData.map(group => ({
+            id: group.id,
+            productId: group.productId,
+            name: group.name,
+            minQuantity: group.isRequired ? 1 : 0,
+            maxQuantity: group.maxQuantity,
+            isRequired: group.isRequired,
+            sortOrder: group.sortOrder,
+            createdAt: group.createdAt,
+            updatedAt: group.updatedAt,
+            items: group.items.map(item => ({
+              id: item.id,
+              groupId: group.id,
+              name: item.productName || 'Produto',
+              price: item.productPrice || '0',
+              imageUrl: item.productImages?.[0] || null,
+              isActive: item.productStatus === 'active',
+              priceMode: (Number(item.productPrice) > 0 ? 'normal' : 'free') as 'normal' | 'free', // Mostrar preço real do produto no combo
+              sortOrder: item.sortOrder,
+              availabilityType: 'always' as const,
+              availableDays: null,
+              availableHours: null,
+              badgeText: null,
+              createdAt: group.createdAt,
+              updatedAt: group.updatedAt,
+            })),
+          }));
+        }
+        
+        // Se NÃO for combo, buscar complementos normais
         const groups = await db.getComplementGroupsByProduct(input.productId);
         const groupsWithItems = await Promise.all(
           groups.map(async (group) => {
@@ -1217,11 +1253,50 @@ export const appRouter = router({
     getProductComplements: publicProcedure
       .input(z.object({ productId: z.number() }))
       .query(async ({ input }) => {
+        // Verificar se o produto é um combo
+        const product = await db.getProductById(input.productId);
+        if (!product) return [];
+        
+        // Se for combo, buscar os comboGroups e converter para formato de complementos
+        if (product.isCombo) {
+          const comboGroupsData = await db.getComboGroupsByProductId(input.productId);
+          // Converter comboGroups para o formato esperado pelo frontend (mesmo formato de complementGroups)
+          return comboGroupsData.map(group => ({
+            id: group.id,
+            productId: group.productId,
+            name: group.name,
+            minQuantity: group.isRequired ? 1 : 0,
+            maxQuantity: group.maxQuantity,
+            isRequired: group.isRequired,
+            sortOrder: group.sortOrder,
+            createdAt: group.createdAt,
+            updatedAt: group.updatedAt,
+            items: group.items
+              .filter(item => item.productStatus === 'active') // Só mostrar itens ativos
+              .map(item => ({
+                id: item.id,
+                groupId: group.id,
+                name: item.productName || 'Produto',
+                price: item.productPrice || '0',
+                imageUrl: item.productImages?.[0] || null,
+                isActive: item.productStatus === 'active',
+                priceMode: (Number(item.productPrice) > 0 ? 'normal' : 'free') as 'normal' | 'free', // Mostrar preço real do produto no combo
+                sortOrder: item.sortOrder,
+                availabilityType: 'always' as const,
+                availableDays: null,
+                availableHours: null,
+                badgeText: null,
+                createdAt: group.createdAt,
+                updatedAt: group.updatedAt,
+              })),
+          }));
+        }
+        
+        // Se NÃO for combo, buscar complementos normais
         const groups = await db.getComplementGroupsByProduct(input.productId);
         
-        // Obter timezone do estabelecimento via produto
-        const product = await db.getProductById(input.productId);
-        const tz = product ? await db.getEstablishmentTimezone(product.establishmentId) : 'America/Sao_Paulo';
+        // Obter timezone do estabelecimento
+        const tz = await db.getEstablishmentTimezone(product.establishmentId);
         const localTime = db.getLocalDate(tz);
         const currentDay = localTime.getDay();
         const currentTime = localTime.toTimeString().slice(0, 5);

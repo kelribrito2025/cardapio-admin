@@ -6327,4 +6327,9 @@
 
 ## Ajuste botões Agrupar/Continuar na slidebar Criar Combo
 - [x] Quando há itens selecionados: mostrar apenas botão "Agrupar X produtos"
-- [x] Quando não há itens selecionados e já tem agrupados: mostrar apenas botão "Continuar"
+- [x] Quando não há itens selecionados e já tem agrupados: mostrar apenas botão "C- [x] Bug: Complementos/grupos dos combos não aparecem no menu público
+- [ ] Investigar como os combos são salvos no banco (comboGroups, comboGroupItems)
+- [ ] Investigar como o menu público carrega dados dos combos
+- [ ] Corrigir exibição dos grupos/complementos no menu público
+- [x] Bug: Complementos/grupos não aparecem na página de edição do produto
+- [x] Bug: BATATA FRITA aparece como GRÁTIS no combo quando deveria mostrar o preço correto

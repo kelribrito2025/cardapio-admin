@@ -1,0 +1,8 @@
+{
+  "query": "SELECT cgi.id, cgi.comboGroupId, cgi.productId, cgi.additionalPrice, p.name, p.price FROM comboGroupItems cgi LEFT JOIN products p ON cgi.productId = p.id WHERE cgi.comboGroupId IN (7, 8);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cgi.id, cgi.comboGroupId, cgi.productId, cgi.additionalPrice, p.name, p.price FROM comboGroupItems cgi LEFT JOIN products p ON cgi.productId = p.id WHERE cgi.comboGroupId IN (7, 8);",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'cgi.additionalprice' in 'field list'"
+  ]
+}

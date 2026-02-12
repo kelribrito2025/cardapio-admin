@@ -1,0 +1,58 @@
+{
+  "query": "SELECT cgi.id, cgi.comboGroupId, cgi.productId, p.name as productName FROM comboGroupItems cgi LEFT JOIN products p ON cgi.productId = p.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cgi.id, cgi.comboGroupId, cgi.productId, p.name as productName FROM comboGroupItems cgi LEFT JOIN products p ON cgi.productId = p.id;",
+  "rows": [
+    {
+      "id": "7",
+      "comboGroupId": "7",
+      "productId": "120068",
+      "productName": "BATATA FRITA"
+    },
+    {
+      "id": "8",
+      "comboGroupId": "8",
+      "productId": "120101",
+      "productName": "Refrigerantes"
+    },
+    {
+      "id": "1",
+      "comboGroupId": "1",
+      "productId": "150018",
+      "productName": "Dog Duplo"
+    },
+    {
+      "id": "3",
+      "comboGroupId": "3",
+      "productId": "150066",
+      "productName": "Batata Frita Grande com Cheddar"
+    },
+    {
+      "id": "6",
+      "comboGroupId": "6",
+      "productId": "150074",
+      "productName": "Água com gás"
+    },
+    {
+      "id": "5",
+      "comboGroupId": "5",
+      "productId": "150074",
+      "productName": "Água com gás"
+    },
+    {
+      "id": "4",
+      "comboGroupId": "4",
+      "productId": "150074",
+      "productName": "Água com gás"
+    },
+    {
+      "id": "2",
+      "comboGroupId": "2",
+      "productId": "150074",
+      "productName": "Água com gás"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcomboGroupId\tproductId\tproductName\n7\t7\t120068\tBATATA FRITA\n8\t8\t120101\tRefrigerantes\n1\t1\t150018\tDog Duplo\n3\t3\t150066\tBatata Frita Grande com Cheddar\n6\t6\t150074\tÁgua com gás\n5\t5\t150074\tÁgua com gás\n4\t4\t150074\tÁgua com gás\n2\t2\t150074\tÁgua com gás\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

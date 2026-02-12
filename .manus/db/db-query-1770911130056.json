@@ -1,0 +1,9 @@
+{
+  "query": "SELECT cg.id, cg.productId, cg.name, cg.isRequired FROM complementGroups cg WHERE cg.productId IN (300061, 300062, 300063, 300064, 300067);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.id, cg.productId, cg.name, cg.isRequired FROM complementGroups cg WHERE cg.productId IN (300061, 300062, 300063, 300064, 300067);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 49
+}

@@ -1,0 +1,50 @@
+{
+  "query": "SELECT p.id, p.name, p.isCombo FROM products p WHERE p.establishmentId = 30001 AND p.categoryId IN (SELECT id FROM categories WHERE name LIKE '%COMBO%') ORDER BY p.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.isCombo FROM products p WHERE p.establishmentId = 30001 AND p.categoryId IN (SELECT id FROM categories WHERE name LIKE '%COMBO%') ORDER BY p.id;",
+  "rows": [
+    {
+      "id": "120055",
+      "name": "COMBINADO SIMPLES | 13 peças",
+      "isCombo": "0"
+    },
+    {
+      "id": "120056",
+      "name": "COMBINADO ESPECIAL | 26 peças",
+      "isCombo": "0"
+    },
+    {
+      "id": "120057",
+      "name": "SUSHI SIMPLES | 9 peças",
+      "isCombo": "0"
+    },
+    {
+      "id": "120058",
+      "name": "SUSHI ESPECIAL | 23 Peças",
+      "isCombo": "0"
+    },
+    {
+      "id": "120059",
+      "name": "SASHIMI ESPECIAL | 17 Peças",
+      "isCombo": "0"
+    },
+    {
+      "id": "120060",
+      "name": "SUSHI HARUNO | 25 peças",
+      "isCombo": "0"
+    },
+    {
+      "id": "120061",
+      "name": "SUSHI BRASIL | 20 Peças",
+      "isCombo": "0"
+    },
+    {
+      "id": "120062",
+      "name": "SUSHI JUMBO | 18 Peças",
+      "isCombo": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tisCombo\n120055\tCOMBINADO SIMPLES | 13 peças\t0\n120056\tCOMBINADO ESPECIAL | 26 peças\t0\n120057\tSUSHI SIMPLES | 9 peças\t0\n120058\tSUSHI ESPECIAL | 23 Peças\t0\n120059\tSASHIMI ESPECIAL | 17 Peças\t0\n120060\tSUSHI HARUNO | 25 peças\t0\n120061\tSUSHI BRASIL | 20 Peças\t0\n120062\tSUSHI JUMBO | 18 Peças\t0\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

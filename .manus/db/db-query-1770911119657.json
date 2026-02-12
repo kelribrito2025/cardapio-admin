@@ -1,0 +1,70 @@
+{
+  "query": "SELECT p.id, p.name, p.isCombo FROM products p WHERE p.isCombo = 1; SELECT cg.id, cg.productId, cg.name, cg.isRequired, cg.maxQuantity FROM comboGroups cg; SELECT cgi.id, cgi.comboGroupId, cgi.productId FROM comboGroupItems cgi;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.isCombo FROM products p WHERE p.isCombo = 1; SELECT cg.id, cg.productId, cg.name, cg.isRequired, cg.maxQuantity FROM comboGroups cg; SELECT cgi.id, cgi.comboGroupId, cgi.productId FROM comboGroupItems cgi;",
+  "rows": [
+    {
+      "id": "300067",
+      "name": "teste com 2",
+      "isCombo": "1"
+    },
+    {
+      "id": "id",
+      "name": "comboGroupId",
+      "isCombo": "productId"
+    },
+    {
+      "id": "1",
+      "name": "1",
+      "isCombo": "150018"
+    },
+    {
+      "id": "2",
+      "name": "2",
+      "isCombo": "150074"
+    },
+    {
+      "id": "3",
+      "name": "3",
+      "isCombo": "150066"
+    },
+    {
+      "id": "4",
+      "name": "4",
+      "isCombo": "150074"
+    },
+    {
+      "id": "5",
+      "name": "5",
+      "isCombo": "150074"
+    },
+    {
+      "id": "6",
+      "name": "6",
+      "isCombo": "150074"
+    },
+    {
+      "id": "7",
+      "name": "7",
+      "isCombo": "120068"
+    },
+    {
+      "id": "8",
+      "name": "8",
+      "isCombo": "120101"
+    }
+  ],
+  "messages": [
+    "id\tproductId\tname\tisRequired\tmaxQuantity",
+    "1\t300061\tEscolha o lanche\t1\t1",
+    "2\t300061\tlanches\t1\t1",
+    "3\t300062\tjjjjjjjj\t1\t1",
+    "4\t300062\tbebidas\t0\t1",
+    "5\t300063\tdsfsdfsdf\t1\t1",
+    "6\t300064\tersres\t1\t1",
+    "7\t300067\tteste combo\t1\t1",
+    "8\t300067\tbebidas\t0\t1"
+  ],
+  "stdout": "id\tname\tisCombo\n300067\tteste com 2\t1\nid\tproductId\tname\tisRequired\tmaxQuantity\n1\t300061\tEscolha o lanche\t1\t1\n2\t300061\tlanches\t1\t1\n3\t300062\tjjjjjjjj\t1\t1\n4\t300062\tbebidas\t0\t1\n5\t300063\tdsfsdfsdf\t1\t1\n6\t300064\tersres\t1\t1\n7\t300067\tteste combo\t1\t1\n8\t300067\tbebidas\t0\t1\nid\tcomboGroupId\tproductId\n1\t1\t150018\n2\t2\t150074\n3\t3\t150066\n4\t4\t150074\n5\t5\t150074\n6\t6\t150074\n7\t7\t120068\n8\t8\t120101\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}
