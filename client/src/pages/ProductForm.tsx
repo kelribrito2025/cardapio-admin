@@ -555,13 +555,20 @@ export default function ProductForm() {
         minQuantity: group.minQuantity,
         maxQuantity: group.maxQuantity,
         isRequired: group.isRequired,
-        items: group.items?.map((item: any) => ({
-          id: item.id,
-          uniqueId: `existing-${item.id}`, // ID único para drag & drop
-          name: item.name,
-          price: String(item.price),
-          imageUrl: item.imageUrl || null,
-        })) || [],
+        items: group.items?.map((item: any) => {
+          // Normalizar preço do banco (formato americano "10.00") para formato brasileiro ("10,00")
+          // Isso garante que parsePriceInput sempre receba formato consistente ao salvar
+          const rawPrice = String(item.price);
+          const numPrice = parseFloat(rawPrice) || 0;
+          const normalizedPrice = numPrice.toFixed(2).replace('.', ',');
+          return {
+            id: item.id,
+            uniqueId: `existing-${item.id}`, // ID único para drag & drop
+            name: item.name,
+            price: normalizedPrice,
+            imageUrl: item.imageUrl || null,
+          };
+        }) || [],
       }));
       setComplementGroups(formattedGroups);
       setInitialComplementsLoaded(true);

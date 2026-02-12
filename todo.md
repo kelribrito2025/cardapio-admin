@@ -6228,3 +6228,11 @@
 - [x] Investigar lógica de salvamento/atualização de complementos no backend
 - [x] Corrigir preços em centavos no banco (31 complementos divididos por 100)
 - [x] Corrigir bug na função parsePriceInput que multiplicava preços por 100 ao salvar sem editar (tratava ponto decimal como separador de milhar)
+
+## Bug RECORRENTE: Preços de complementos do estabelecimento 210001 voltam a valores errados
+- [x] Verificar estado atual dos preços no banco (6 complementos do produto 300002 com 1000.00)
+- [x] Investigar se a correção do parsePriceInput foi deployada corretamente (sim, estava no código)
+- [x] Investigar causa raiz: usuário salvou produto antes do deploy da correção
+- [x] Corrigir os 6 preços no banco (1000.00 -> 10.00)
+- [x] Adicionar normalização de preço ao carregar complementos do banco (formato americano -> brasileiro)
+- [x] Validar com teste de ciclo completo (5 ciclos salvar/recarregar sem alteração de preço)
