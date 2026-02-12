@@ -236,24 +236,38 @@ export default function PDV() {
   const [isEditingMode, setIsEditingMode] = useState(false);
   
   // Estados para entrega
-  const [deliveryAddress, setDeliveryAddress] = useState({
-    name: "",
-    phone: "",
-    street: "",
-    number: "",
-    neighborhood: "",
-    complement: "",
-    reference: ""
+  const [deliveryAddress, setDeliveryAddress] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = sessionStorage.getItem('pdv_deliveryAddress');
+        if (saved) return JSON.parse(saved);
+      } catch (e) { /* ignore */ }
+    }
+    return { name: "", phone: "", street: "", number: "", neighborhood: "", complement: "", reference: "" };
   });
 
   // PDV Customer - busca automática por telefone
   const [pdvCustomerFound, setPdvCustomerFound] = useState(false);
   const pdvCustomerUpsertMutation = trpc.pdvCustomer.upsert.useMutation();
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("cash");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem('pdv_paymentMethod');
+      if (saved === 'cash' || saved === 'card' || saved === 'pix') return saved;
+    }
+    return "cash";
+  });
   const [changeAmount, setChangeAmount] = useState("");
   const [showDeliverySidebar, setShowDeliverySidebar] = useState(false);
   const [showNeighborhoodSelector, setShowNeighborhoodSelector] = useState(false);
-  const [selectedNeighborhoodFee, setSelectedNeighborhoodFee] = useState<{id: number; neighborhood: string; fee: string} | null>(null);
+  const [selectedNeighborhoodFee, setSelectedNeighborhoodFee] = useState<{id: number; neighborhood: string; fee: string} | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = sessionStorage.getItem('pdv_neighborhoodFee');
+        if (saved) return JSON.parse(saved);
+      } catch (e) { /* ignore */ }
+    }
+    return null;
+  });
 
   // Estados para sidebar de pagamento (Retirada)
   const [showPaymentSidebar, setShowPaymentSidebar] = useState(false);
@@ -265,8 +279,14 @@ export default function PDV() {
     return "cash";
   });
   const [receivedAmount, setReceivedAmount] = useState("");
-  const [pickupClientName, setPickupClientName] = useState("");
-  const [pickupClientPhone, setPickupClientPhone] = useState("");
+  const [pickupClientName, setPickupClientName] = useState(() => {
+    if (typeof window !== 'undefined') return sessionStorage.getItem('pdv_pickupName') || "";
+    return "";
+  });
+  const [pickupClientPhone, setPickupClientPhone] = useState(() => {
+    if (typeof window !== 'undefined') return sessionStorage.getItem('pdv_pickupPhone') || "";
+    return "";
+  });
   
   // Estado para forma de pagamento favorita (salva no localStorage)
   const [favoritePaymentMethod, setFavoritePaymentMethod] = useState<PaymentMethodType>(() => {
@@ -312,6 +332,33 @@ export default function PDV() {
     sessionStorage.setItem('pdv_orderType', orderType);
   }, [orderType]);
 
+  // Persistir dados de entrega no sessionStorage
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('pdv_deliveryAddress', JSON.stringify(deliveryAddress));
+    } catch (e) { /* ignore */ }
+  }, [deliveryAddress]);
+
+  // Persistir dados de retirada no sessionStorage
+  useEffect(() => {
+    sessionStorage.setItem('pdv_pickupName', pickupClientName);
+  }, [pickupClientName]);
+  useEffect(() => {
+    sessionStorage.setItem('pdv_pickupPhone', pickupClientPhone);
+  }, [pickupClientPhone]);
+
+  // Persistir forma de pagamento no sessionStorage
+  useEffect(() => {
+    sessionStorage.setItem('pdv_paymentMethod', paymentMethod || '');
+  }, [paymentMethod]);
+
+  // Persistir taxa de bairro selecionada no sessionStorage
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('pdv_neighborhoodFee', selectedNeighborhoodFee ? JSON.stringify(selectedNeighborhoodFee) : '');
+    } catch (e) { /* ignore */ }
+  }, [selectedNeighborhoodFee]);
+
   // Estados para limpar/desfazer
   const [clearedCart, setClearedCart] = useState<CartItem[] | null>(null);
   
@@ -348,7 +395,7 @@ export default function PDV() {
   useEffect(() => {
     if (deliveryCustomer && deliveryPhoneDigits.length >= 10) {
       setPdvCustomerFound(true);
-      setDeliveryAddress(prev => ({
+      setDeliveryAddress((prev: { name: string; phone: string; street: string; number: string; neighborhood: string; complement: string; reference: string }) => ({
         ...prev,
         name: prev.name || deliveryCustomer.name || "",
         street: prev.street || deliveryCustomer.street || "",

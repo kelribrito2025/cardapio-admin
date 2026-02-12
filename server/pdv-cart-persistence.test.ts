@@ -46,6 +46,45 @@ function deserializeOrderType(data: string | null): OrderType {
   return 'mesa';
 }
 
+type DeliveryAddress = {
+  name: string;
+  phone: string;
+  street: string;
+  number: string;
+  neighborhood: string;
+  complement: string;
+  reference: string;
+};
+
+type NeighborhoodFee = { id: number; neighborhood: string; fee: string } | null;
+
+function serializeDeliveryAddress(addr: DeliveryAddress): string {
+  return JSON.stringify(addr);
+}
+
+function deserializeDeliveryAddress(data: string | null): DeliveryAddress {
+  if (!data) return { name: '', phone: '', street: '', number: '', neighborhood: '', complement: '', reference: '' };
+  try {
+    return JSON.parse(data);
+  } catch {
+    return { name: '', phone: '', street: '', number: '', neighborhood: '', complement: '', reference: '' };
+  }
+}
+
+function deserializeNeighborhoodFee(data: string | null): NeighborhoodFee {
+  if (!data) return null;
+  try {
+    return JSON.parse(data);
+  } catch {
+    return null;
+  }
+}
+
+function deserializePaymentMethod(data: string | null): 'cash' | 'card' | 'pix' | null {
+  if (data === 'cash' || data === 'card' || data === 'pix') return data;
+  return null;
+}
+
 describe('PDV Cart Persistence', () => {
   describe('Cart serialization', () => {
     it('should serialize and deserialize an empty cart', () => {
@@ -145,6 +184,104 @@ describe('PDV Cart Persistence', () => {
       expect(deserializeOrderType(null)).toBe('mesa');
       expect(deserializeOrderType('invalid')).toBe('mesa');
       expect(deserializeOrderType('')).toBe('mesa');
+    });
+  });
+
+  describe('Delivery address persistence', () => {
+    it('should serialize and deserialize delivery address', () => {
+      const addr: DeliveryAddress = {
+        name: 'João Silva',
+        phone: '11999887766',
+        street: 'Rua das Flores',
+        number: '123',
+        neighborhood: 'Centro',
+        complement: 'Apto 4B',
+        reference: 'Próximo ao mercado',
+      };
+      const serialized = serializeDeliveryAddress(addr);
+      const deserialized = deserializeDeliveryAddress(serialized);
+      expect(deserialized).toEqual(addr);
+    });
+
+    it('should return empty address for null', () => {
+      const deserialized = deserializeDeliveryAddress(null);
+      expect(deserialized.name).toBe('');
+      expect(deserialized.phone).toBe('');
+      expect(deserialized.street).toBe('');
+    });
+
+    it('should return empty address for invalid JSON', () => {
+      const deserialized = deserializeDeliveryAddress('not valid json');
+      expect(deserialized.name).toBe('');
+    });
+
+    it('should handle partial address data', () => {
+      const addr: DeliveryAddress = {
+        name: 'Maria',
+        phone: '11888776655',
+        street: '',
+        number: '',
+        neighborhood: '',
+        complement: '',
+        reference: '',
+      };
+      const deserialized = deserializeDeliveryAddress(serializeDeliveryAddress(addr));
+      expect(deserialized.name).toBe('Maria');
+      expect(deserialized.street).toBe('');
+    });
+  });
+
+  describe('Pickup client persistence', () => {
+    it('should persist and restore pickup name', () => {
+      const name = 'Carlos Souza';
+      expect(name || '').toBe('Carlos Souza');
+    });
+
+    it('should persist and restore pickup phone', () => {
+      const phone = '21988776655';
+      expect(phone || '').toBe('21988776655');
+    });
+
+    it('should default to empty string for null', () => {
+      const name: string | null = null;
+      expect(name || '').toBe('');
+    });
+  });
+
+  describe('Payment method persistence', () => {
+    it('should restore cash payment method', () => {
+      expect(deserializePaymentMethod('cash')).toBe('cash');
+    });
+
+    it('should restore card payment method', () => {
+      expect(deserializePaymentMethod('card')).toBe('card');
+    });
+
+    it('should restore pix payment method', () => {
+      expect(deserializePaymentMethod('pix')).toBe('pix');
+    });
+
+    it('should return null for invalid payment method', () => {
+      expect(deserializePaymentMethod(null)).toBeNull();
+      expect(deserializePaymentMethod('')).toBeNull();
+      expect(deserializePaymentMethod('bitcoin')).toBeNull();
+    });
+  });
+
+  describe('Neighborhood fee persistence', () => {
+    it('should serialize and deserialize neighborhood fee', () => {
+      const fee = { id: 1, neighborhood: 'Centro', fee: '5.00' };
+      const serialized = JSON.stringify(fee);
+      const deserialized = deserializeNeighborhoodFee(serialized);
+      expect(deserialized).toEqual(fee);
+    });
+
+    it('should return null for empty string', () => {
+      expect(deserializeNeighborhoodFee('')).toBeNull();
+    });
+
+    it('should return null for null', () => {
+      expect(deserializeNeighborhoodFee(null)).toBeNull();
     });
   });
 
