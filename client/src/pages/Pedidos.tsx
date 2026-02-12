@@ -1188,7 +1188,7 @@ export default function Pedidos() {
                                   </span>
                                 )}
                               </div>
-                              <span className="py-0.5 bg-black text-white font-bold uppercase tracking-wide" style={{borderRadius: '5px', fontSize: '8px', height: '16px', paddingRight: '5px', paddingLeft: '5px'}}>
+                              <span className="py-0.5 bg-gray-200 text-gray-600 font-bold uppercase tracking-wide" style={{borderRadius: '5px', fontSize: '8px', height: '16px', paddingRight: '5px', paddingLeft: '5px'}}>
                                 {order.deliveryType === "delivery" ? "Entrega" : order.deliveryType === "dine_in" ? "Consumo" : "Retirada"}
                               </span>
                             </div>
