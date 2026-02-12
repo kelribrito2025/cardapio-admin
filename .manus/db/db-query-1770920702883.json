@@ -1,0 +1,17 @@
+{
+  "query": "SELECT u.id as userId, u.name as userName, e.id as estId, e.name as estName, \n(SELECT COUNT(*) FROM products WHERE establishmentId = e.id) as productCount\nFROM users u \nLEFT JOIN establishments e ON e.userId = u.id \nWHERE u.name LIKE '%ssica%' OR e.name LIKE '%Big Norte%'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT u.id as userId, u.name as userName, e.id as estId, e.name as estName, \n(SELECT COUNT(*) FROM products WHERE establishmentId = e.id) as productCount\nFROM users u \nLEFT JOIN establishments e ON e.userId = u.id \nWHERE u.name LIKE '%ssica%' OR e.name LIKE '%Big Norte%'",
+  "rows": [
+    {
+      "userId": "550919",
+      "userName": "Jéssica",
+      "estId": "60018",
+      "estName": "Big Norte",
+      "productCount": "69"
+    }
+  ],
+  "messages": [],
+  "stdout": "userId\tuserName\testId\testName\tproductCount\n550919\tJéssica\t60018\tBig Norte\t69\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

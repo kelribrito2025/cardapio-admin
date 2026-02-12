@@ -6346,3 +6346,4 @@
 - [x] Feature: Dropdown expandível ao clicar no item com badge/destaque e disponibilidade
 - [x] Remover ícone do botão "Complementos" na página de catálogo (manter apenas texto + seta)
 - [x] Adicionar badge de contagem de complementos no botão "Complementos" do catálogo
+- [x] Bug: Itens não aparecem na página de catálogo do estabelecimento Big Norte (mas aparecem no menu público)

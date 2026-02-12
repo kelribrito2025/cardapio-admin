@@ -739,7 +739,7 @@ export async function getProductsByEstablishment(
     complementCount: sql<number>`(
       SELECT COUNT(*) FROM complementItems ci
       INNER JOIN complementGroups cg ON ci.groupId = cg.id
-      WHERE cg.productId = ${products.id}
+      WHERE cg.productId = products.id
     )`.as('complementCount'),
   }).from(products).where(whereClause).orderBy(orderByClause);
   
