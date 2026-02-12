@@ -40,7 +40,7 @@ import {
   ChevronDown,
   Layers,
 } from "lucide-react";
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback, startTransition } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 import {
@@ -95,7 +95,7 @@ function SortableProductItem({
   } = useSortable({ id: product.id, disabled: isDragDisabled });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1000 : 1,
@@ -303,10 +303,11 @@ function SortableCategoryItem({
   });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1000 : 1,
+    position: isDragging ? 'relative' as const : undefined,
   };
 
   return (
@@ -314,18 +315,20 @@ function SortableCategoryItem({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "bg-card rounded-xl border border-border/50 overflow-hidden transition-all duration-200",
+        "bg-card rounded-xl border border-border/50 overflow-hidden",
         isDropTarget && "ring-2 ring-primary/50 ring-offset-2",
         "border-t-4 border-t-red-500",
         isDragging && "shadow-2xl ring-2 ring-primary/30"
       )}
     >
-      {/* Drop zone for this category */}
-      <CategoryDropZone 
-        categoryId={category.id} 
-        categoryName={category.name} 
-        isActive={isDropTarget} 
-      />
+      {/* Drop zone for this category - hidden during category drag */}
+      {!isDraggingCategory && (
+        <CategoryDropZone 
+          categoryId={category.id} 
+          categoryName={category.name} 
+          isActive={isDropTarget} 
+        />
+      )}
       <div className="flex items-center justify-between p-4 border-b border-border/50 bg-muted/20" style={{height: '52px'}}>
         {/* Drag handle + title area */}
         <div className="flex items-center gap-1.5">
@@ -798,9 +801,11 @@ export default function Catalogo() {
       setIsDraggingCategory(true);
       // Save current collapse state before collapsing all
       preCollapseStateRef.current = new Set(collapsedCategories);
-      // Collapse all categories (don't persist to localStorage during drag)
-      const allCategoryIds = new Set(localCategories.map(c => c.id));
-      setCollapsedCategories(allCategoryIds);
+      // Use startTransition to batch the collapse update as low-priority
+      startTransition(() => {
+        const allCategoryIds = new Set(localCategories.map(c => c.id));
+        setCollapsedCategories(allCategoryIds);
+      });
     } else {
       // Dragging a product
       const productId = active.id as number;
@@ -1103,7 +1108,7 @@ export default function Catalogo() {
           {(localProductsByCategory[0] && localProductsByCategory[0].length > 0) || activeProduct ? (
             <div 
               className={cn(
-                "bg-card rounded-xl border border-border/50 overflow-hidden transition-all duration-200",
+                "bg-card rounded-xl border border-border/50 overflow-hidden",
                 activeProduct && activeProductCategoryId !== 0 && "ring-2 ring-primary/50 ring-offset-2"
               )}
             >

@@ -6296,3 +6296,12 @@
 ## Ajuste mobile: botões da categoria no Catálogo
 - [x] Esconder botões "Criar Combo" e "Pausar/Play" na versão mobile
 - [x] Adicionar opções "Pausar/Ativar categoria" e "Criar Combo" no menu de 3 pontinhos acima de Duplicar e Remover
+
+## Bug: Drag & Drop de categorias no Catálogo não está fluido
+- [x] Comparar implementação de drag entre /categorias e /catalogo
+- [x] Corrigir drag para ficar fluido como na página /categorias
+  - Usar CSS.Translate em vez de CSS.Transform (sem scale)
+  - Remover transition-all duration-200 conflitante
+  - Esconder CategoryDropZone durante drag de categoria
+  - Usar startTransition para batch collapse update
+  - Adicionar position relative durante drag
