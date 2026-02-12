@@ -397,6 +397,7 @@ function SortableCategoryItem({
     <div
       ref={setNodeRef}
       style={style}
+      data-category-id={category.id}
       className={cn(
         "bg-card rounded-xl border border-border/50 overflow-hidden",
         isDropTarget && "ring-2 ring-primary/50 ring-offset-2",
@@ -738,6 +739,27 @@ export default function Catalogo() {
       setLocalProductsByCategory(grouped);
     }
   }, [productsData]);
+
+  // Scroll restoration: when returning from product edit, scroll to the category
+  useEffect(() => {
+    const scrollCategoryId = sessionStorage.getItem('catalogo_scroll_category');
+    if (scrollCategoryId && productsData?.products && localCategories.length > 0) {
+      sessionStorage.removeItem('catalogo_scroll_category');
+      // Small delay to ensure DOM is rendered
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          const el = document.querySelector(`[data-category-id="${scrollCategoryId}"]`);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Adjust for fixed header offset
+            setTimeout(() => {
+              window.scrollBy({ top: -80, behavior: 'smooth' });
+            }, 300);
+          }
+        }, 100);
+      });
+    }
+  }, [productsData, localCategories]);
 
   // Mutations - MUST be called before any early return
   const toggleStatusMutation = trpc.product.toggleStatus.useMutation({
@@ -1201,7 +1223,10 @@ export default function Catalogo() {
                           setProductToDelete(id);
                           setDeleteDialogOpen(true);
                         }}
-                        onEdit={(id) => navigate(`/catalogo/editar/${id}`)}
+                        onEdit={(id) => {
+                          sessionStorage.setItem('catalogo_scroll_category', String(category.id));
+                          navigate(`/catalogo/editar/${id}`);
+                        }}
                         formatCurrency={formatCurrency}
                         expandedComplementProductId={expandedComplementProductId}
                         onToggleComplements={handleToggleComplements}
@@ -1216,6 +1241,7 @@ export default function Catalogo() {
           {/* Products without category */}
           {(localProductsByCategory[0] && localProductsByCategory[0].length > 0) || activeProduct ? (
             <div 
+              data-category-id="0"
               className={cn(
                 "bg-card rounded-xl border border-border/50 overflow-hidden",
                 activeProduct && activeProductCategoryId !== 0 && "ring-2 ring-primary/50 ring-offset-2"
@@ -1250,7 +1276,10 @@ export default function Catalogo() {
                         setProductToDelete(id);
                         setDeleteDialogOpen(true);
                       }}
-                      onEdit={(id) => navigate(`/catalogo/editar/${id}`)}
+                      onEdit={(id) => {
+                        sessionStorage.setItem('catalogo_scroll_category', '0');
+                        navigate(`/catalogo/editar/${id}`);
+                      }}
                       formatCurrency={formatCurrency}
                       expandedComplementProductId={expandedComplementProductId}
                       onToggleComplements={handleToggleComplements}
