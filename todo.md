@@ -6281,3 +6281,6 @@
 - [x] Etapa 2: Botões Voltar e Concluir
 - [x] Upsell: Seção para adicionar grupos adicionais após concluir primeiro grupo
 - [x] Salvar combo como novo tipo de produto com estrutura de grupos
+
+## Ajuste limite busca Criar Combo
+- [x] Alterar limite de resultados da busca de 10 para 7 itens
