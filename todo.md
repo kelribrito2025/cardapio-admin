@@ -6356,3 +6356,4 @@
 - [x] Bug: Erro de estoque insuficiente ao fazer pedido mesmo quando estoque não está ativado (itens 120063 e 300067, estabelecimento 30001)
 - [x] Bug: PDV perde lista de itens do carrinho ao navegar para outra página e voltar - deve persistir os itens
 - [x] PDV: Persistir dados de entrega (nome, telefone, endereço) e retirada (nome, telefone) no sessionStorage
+- [x] Catálogo: Reduzir largura do campo de edição do nome do complemento e adicionar botões salvar/cancelar
