@@ -582,6 +582,13 @@
       "when": 1770904747478,
       "tag": "0082_small_king_cobra",
       "breakpoints": true
+    },
+    {
+      "idx": 83,
+      "version": "5",
+      "when": 1770928854948,
+      "tag": "0083_early_paper_doll",
+      "breakpoints": true
     }
   ]
 }

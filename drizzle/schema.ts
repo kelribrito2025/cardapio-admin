@@ -135,7 +135,7 @@ export const products = mysqlTable("products", {
   images: json("images").$type<string[]>(),
   status: mysqlEnum("status", ["active", "paused", "archived"]).default("active").notNull(),
   stockQuantity: int("stockQuantity"),
-  hasStock: boolean("hasStock").default(true).notNull(),
+  hasStock: boolean("hasStock").default(false).notNull(),
   sortOrder: int("sortOrder").default(0).notNull(),
   salesCount: int("salesCount").default(0).notNull(),
   printerId: int("printerId"), // ID da impressora/setor para este produto (ex: Cozinha, Sushi Bar)
