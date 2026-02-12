@@ -1,0 +1,60 @@
+{
+  "query": "SELECT p.id, p.name, \n  (SELECT COUNT(*) FROM complementItems ci INNER JOIN complementGroups cg ON ci.groupId = cg.id WHERE cg.productId = p.id) as complementCount\nFROM products p \nWHERE p.establishmentId = 60018\nLIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, \n  (SELECT COUNT(*) FROM complementItems ci INNER JOIN complementGroups cg ON ci.groupId = cg.id WHERE cg.productId = p.id) as complementCount\nFROM products p \nWHERE p.establishmentId = 60018\nLIMIT 10;",
+  "rows": [
+    {
+      "id": "150019",
+      "name": "Dog frango",
+      "complementCount": "23"
+    },
+    {
+      "id": "150018",
+      "name": "Dog Duplo",
+      "complementCount": "23"
+    },
+    {
+      "id": "150021",
+      "name": "Dog Calabresa",
+      "complementCount": "23"
+    },
+    {
+      "id": "150022",
+      "name": "Big Lanche",
+      "complementCount": "23"
+    },
+    {
+      "id": "150020",
+      "name": "Dog bacon",
+      "complementCount": "23"
+    },
+    {
+      "id": "150023",
+      "name": "Big burguer",
+      "complementCount": "23"
+    },
+    {
+      "id": "150026",
+      "name": "Big bacon",
+      "complementCount": "23"
+    },
+    {
+      "id": "150024",
+      "name": "Big frango",
+      "complementCount": "23"
+    },
+    {
+      "id": "150027",
+      "name": "Big Calabresa",
+      "complementCount": "23"
+    },
+    {
+      "id": "150025",
+      "name": "Big frango com Catupiry",
+      "complementCount": "23"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tcomplementCount\n150019\tDog frango\t23\n150018\tDog Duplo\t23\n150021\tDog Calabresa\t23\n150022\tBig Lanche\t23\n150020\tDog bacon\t23\n150023\tBig burguer\t23\n150026\tBig bacon\t23\n150024\tBig frango\t23\n150027\tBig Calabresa\t23\n150025\tBig frango com Catupiry\t23\n",
+  "stderr": "",
+  "execution_time_ms": 88
+}

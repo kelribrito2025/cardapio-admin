@@ -1,0 +1,60 @@
+{
+  "query": "SELECT p.id, p.name, \n  (SELECT COUNT(*) FROM complementItems ci INNER JOIN complementGroups cg ON ci.groupId = cg.id WHERE cg.productId = p.id) as complementCount\nFROM products p \nWHERE p.establishmentId = 60018 AND (SELECT COUNT(*) FROM complementItems ci INNER JOIN complementGroups cg ON ci.groupId = cg.id WHERE cg.productId = p.id) > 0\nLIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, \n  (SELECT COUNT(*) FROM complementItems ci INNER JOIN complementGroups cg ON ci.groupId = cg.id WHERE cg.productId = p.id) as complementCount\nFROM products p \nWHERE p.establishmentId = 60018 AND (SELECT COUNT(*) FROM complementItems ci INNER JOIN complementGroups cg ON ci.groupId = cg.id WHERE cg.productId = p.id) > 0\nLIMIT 10;",
+  "rows": [
+    {
+      "id": "150045",
+      "name": "FRANGO COM QUEIJO",
+      "complementCount": "8"
+    },
+    {
+      "id": "150039",
+      "name": "CARNE",
+      "complementCount": "8"
+    },
+    {
+      "id": "150027",
+      "name": "Big Calabresa",
+      "complementCount": "23"
+    },
+    {
+      "id": "150030",
+      "name": "Especial de bacon",
+      "complementCount": "23"
+    },
+    {
+      "id": "150035",
+      "name": "Big tudo",
+      "complementCount": "23"
+    },
+    {
+      "id": "150076",
+      "name": "Sucos com leite 500 ml",
+      "complementCount": "12"
+    },
+    {
+      "id": "150091",
+      "name": "LANCHE DO DIA - Big Calabresa",
+      "complementCount": "23"
+    },
+    {
+      "id": "150029",
+      "name": "Especial de frango",
+      "complementCount": "23"
+    },
+    {
+      "id": "150032",
+      "name": "Especial egg",
+      "complementCount": "23"
+    },
+    {
+      "id": "150051",
+      "name": "ESPECIAL DE PIZZA",
+      "complementCount": "8"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tcomplementCount\n150045\tFRANGO COM QUEIJO\t8\n150039\tCARNE\t8\n150027\tBig Calabresa\t23\n150030\tEspecial de bacon\t23\n150035\tBig tudo\t23\n150076\tSucos com leite 500 ml\t12\n150091\tLANCHE DO DIA - Big Calabresa\t23\n150029\tEspecial de frango\t23\n150032\tEspecial egg\t23\n150051\tESPECIAL DE PIZZA\t8\n",
+  "stderr": "",
+  "execution_time_ms": 67
+}

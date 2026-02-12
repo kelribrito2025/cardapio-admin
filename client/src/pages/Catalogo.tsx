@@ -189,27 +189,38 @@ function SortableProductItem({
               onToggleComplements(product.id);
             }}
           >
-            <Layers className="h-3.5 w-3.5 mr-1" />
+            {product.complementCount > 0 && (
+              <span className="inline-flex items-center justify-center h-5 min-w-[20px] px-1 rounded-full bg-primary text-white text-[10px] font-bold">
+                {product.complementCount}
+              </span>
+            )}
             Complementos
             {isComplementsOpen ? <ChevronUp className="h-3.5 w-3.5 ml-1" /> : <ChevronDown className="h-3.5 w-3.5 ml-1" />}
           </Button>
           {/* Mobile: ícone seta */}
-          <Button
-            variant="outline"
-            size="icon"
-            className={cn(
-              "h-8 w-8 rounded-lg md:hidden",
-              isComplementsOpen
-                ? "bg-primary/10 text-primary border-primary/30"
-                : "text-muted-foreground hover:text-primary"
+          <div className="relative md:hidden">
+            <Button
+              variant="outline"
+              size="icon"
+              className={cn(
+                "h-8 w-8 rounded-lg",
+                isComplementsOpen
+                  ? "bg-primary/10 text-primary border-primary/30"
+                  : "text-muted-foreground hover:text-primary"
+              )}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleComplements(product.id);
+              }}
+            >
+              {isComplementsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+            {product.complementCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center h-4 min-w-[16px] px-0.5 rounded-full bg-primary text-white text-[9px] font-bold">
+                {product.complementCount}
+              </span>
             )}
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleComplements(product.id);
-            }}
-          >
-            {isComplementsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </Button>
+          </div>
           {/* Desktop: preço na mesma linha */}
           {Number(product.price) > 0 && (
             <div className="hidden md:block text-right flex-shrink-0 min-w-[80px]">

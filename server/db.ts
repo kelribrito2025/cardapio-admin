@@ -1,4 +1,4 @@
-import { eq, desc, asc, and, like, notLike, sql, gte, lte, lt, or, ne, inArray, isNotNull } from "drizzle-orm";
+import { eq, desc, asc, and, like, notLike, sql, gte, lte, lt, or, ne, inArray, isNotNull, getTableColumns } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate, notifyPrintOrder } from "./_core/sse";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
@@ -734,7 +734,14 @@ export async function getProductsByEstablishment(
       orderByClause = asc(products.sortOrder);
   }
   
-  let query = db.select().from(products).where(whereClause).orderBy(orderByClause);
+  let query = db.select({
+    ...getTableColumns(products),
+    complementCount: sql<number>`(
+      SELECT COUNT(*) FROM complementItems ci
+      INNER JOIN complementGroups cg ON ci.groupId = cg.id
+      WHERE cg.productId = ${products.id}
+    )`.as('complementCount'),
+  }).from(products).where(whereClause).orderBy(orderByClause);
   
   if (filters?.limit) {
     query = query.limit(filters.limit) as typeof query;

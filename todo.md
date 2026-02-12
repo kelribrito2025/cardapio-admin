@@ -6344,3 +6344,5 @@
 - [x] Feature: Editar nome do grupo e do item inline no dropdown de complementos do catálogo (texto "Editar" em vermelho)
 - [x] Feature: Toggle grátis/normal para complementos no dropdown do catálogo
 - [x] Feature: Dropdown expandível ao clicar no item com badge/destaque e disponibilidade
+- [x] Remover ícone do botão "Complementos" na página de catálogo (manter apenas texto + seta)
+- [x] Adicionar badge de contagem de complementos no botão "Complementos" do catálogo
