@@ -6314,3 +6314,6 @@
 ## Remover página /categorias e badge Pausado dos itens
 - [x] Remover página /categorias (componente, rota e link no sidebar)
 - [x] Remover badge "Pausado" dos itens na lista do catálogo (manter apenas badge da categoria)
+
+## Ajuste mobile: preço abaixo do nome do item no Catálogo
+- [x] Mover preço para abaixo do nome do item na versão mobile em tamanho menor

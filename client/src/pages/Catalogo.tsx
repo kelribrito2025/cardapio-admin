@@ -152,14 +152,19 @@ function SortableProductItem({
               <StatusBadge variant="error">Sem estoque</StatusBadge>
             )}
           </div>
+          {/* Mobile: preço abaixo do nome */}
+          {Number(product.price) > 0 && (
+            <p className="md:hidden text-sm font-medium text-primary mt-0.5">{formatCurrency(product.price)}</p>
+          )}
           {product.description && (
             <p className="hidden md:block text-sm text-muted-foreground truncate mt-1">
               {product.description}
             </p>
           )}
         </div>
+        {/* Desktop: preço na mesma linha */}
         {Number(product.price) > 0 && (
-          <div className="text-right flex-shrink-0">
+          <div className="hidden md:block text-right flex-shrink-0">
             <p className="font-semibold text-base text-primary">{formatCurrency(product.price)}</p>
           </div>
         )}
