@@ -761,7 +761,7 @@ export default function Catalogo() {
                   categoryName={category.name} 
                   isActive={isDropTarget} 
                 />
-                <div className="flex items-center justify-between p-4 border-b border-border/50 bg-muted/20" style={{height: '46px'}}>
+                <div className="flex items-center justify-between p-4 border-b border-border/50 bg-muted/20" style={{height: '52px'}}>
                   {editingCategoryId === category.id ? (
                     <div className="flex items-center gap-1.5">
                       <Input
