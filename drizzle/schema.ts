@@ -139,6 +139,7 @@ export const products = mysqlTable("products", {
   sortOrder: int("sortOrder").default(0).notNull(),
   salesCount: int("salesCount").default(0).notNull(),
   printerId: int("printerId"), // ID da impressora/setor para este produto (ex: Cozinha, Sushi Bar)
+  isCombo: boolean("isCombo").default(false).notNull(), // Se é um combo (produto composto por grupos de itens)
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -785,3 +786,31 @@ export const pdvCustomers = mysqlTable("pdv_customers", {
 
 export type PdvCustomer = typeof pdvCustomers.$inferSelect;
 export type InsertPdvCustomer = typeof pdvCustomers.$inferInsert;
+
+
+// Combo Groups - Grupos dentro de um combo (ex: "Escolha seu lanche", "Escolha sua bebida")
+export const comboGroups = mysqlTable("comboGroups", {
+  id: int("id").autoincrement().primaryKey(),
+  productId: int("productId").notNull(), // ID do produto-combo pai
+  name: varchar("name", { length: 255 }).notNull(), // Ex: "Escolha seu lanche"
+  isRequired: boolean("isRequired").default(true).notNull(), // Obrigatório ou opcional
+  maxQuantity: int("maxQuantity").default(1).notNull(), // Quantidade máxima que o cliente pode escolher
+  sortOrder: int("sortOrder").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ComboGroup = typeof comboGroups.$inferSelect;
+export type InsertComboGroup = typeof comboGroups.$inferInsert;
+
+// Combo Group Items - Itens vinculados a cada grupo do combo
+export const comboGroupItems = mysqlTable("comboGroupItems", {
+  id: int("id").autoincrement().primaryKey(),
+  comboGroupId: int("comboGroupId").notNull(), // ID do grupo
+  productId: int("productId").notNull(), // ID do produto vinculado
+  sortOrder: int("sortOrder").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ComboGroupItem = typeof comboGroupItems.$inferSelect;
+export type InsertComboGroupItem = typeof comboGroupItems.$inferInsert;

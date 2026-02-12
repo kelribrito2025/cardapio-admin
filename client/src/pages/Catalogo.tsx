@@ -37,6 +37,7 @@ import {
   Play,
   ChevronUp,
   ChevronDown,
+  Layers,
 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
@@ -63,6 +64,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { cn, capitalizeFirst } from "@/lib/utils";
 import { useSearch } from "@/contexts/SearchContext";
+import CreateComboSheet from "@/components/CreateComboSheet";
 
 // Sortable Product Item Component
 function SortableProductItem({
@@ -259,6 +261,7 @@ function SortableCategoryItem({
   onToggleCategoryStatus,
   onDuplicateCategory,
   onDeleteCategory,
+  onCreateCombo,
   toggleCategoryStatusPending,
   updateCategoryPending,
   duplicateCategoryPending,
@@ -280,6 +283,7 @@ function SortableCategoryItem({
   onToggleCategoryStatus: (id: number, isActive: boolean) => void;
   onDuplicateCategory: (id: number) => void;
   onDeleteCategory: (id: number, name: string, productCount: number) => void;
+  onCreateCombo: (categoryId: number, categoryName: string) => void;
   toggleCategoryStatusPending: boolean;
   updateCategoryPending: boolean;
   duplicateCategoryPending: boolean;
@@ -396,6 +400,23 @@ function SortableCategoryItem({
           )}
         </div>
         <div className="flex items-center gap-1">
+          {/* Botão Criar Combo */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-50 hover:border-red-200"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCreateCombo(category.id, category.name);
+                }}
+              >
+                <Layers className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Criar combo</TooltipContent>
+          </Tooltip>
           {/* Botão Pausar/Play */}
           <Tooltip>
             <TooltipTrigger asChild>
@@ -495,6 +516,11 @@ export default function Catalogo() {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [deleteCategoryDialogOpen, setDeleteCategoryDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<{ id: number; name: string; productCount: number } | null>(null);
+  
+  // Combo Sheet state
+  const [comboSheetOpen, setComboSheetOpen] = useState(false);
+  const [comboSheetCategoryId, setComboSheetCategoryId] = useState<number>(0);
+  const [comboSheetCategoryName, setComboSheetCategoryName] = useState("");
   
   // Local state for drag and drop
   const [localCategories, setLocalCategories] = useState<any[]>([]);
@@ -1022,6 +1048,11 @@ export default function Catalogo() {
                   setCategoryToDelete({ id, name, productCount });
                   setDeleteCategoryDialogOpen(true);
                 }}
+                onCreateCombo={(id, name) => {
+                  setComboSheetCategoryId(id);
+                  setComboSheetCategoryName(name);
+                  setComboSheetOpen(true);
+                }}
                 toggleCategoryStatusPending={toggleCategoryStatusMutation.isPending}
                 updateCategoryPending={updateCategoryMutation.isPending}
                 duplicateCategoryPending={duplicateCategoryMutation.isPending}
@@ -1195,6 +1226,21 @@ export default function Catalogo() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Create Combo Sheet */}
+      {establishmentId && (
+        <CreateComboSheet
+          open={comboSheetOpen}
+          onOpenChange={setComboSheetOpen}
+          establishmentId={establishmentId}
+          categoryId={comboSheetCategoryId}
+          categoryName={comboSheetCategoryName}
+          onSuccess={() => {
+            refetchProducts();
+            refetchCategories();
+          }}
+        />
+      )}
     </AdminLayout>
   );
 }

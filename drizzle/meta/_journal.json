@@ -575,6 +575,13 @@
       "when": 1770769255103,
       "tag": "0081_smiling_zemo",
       "breakpoints": true
+    },
+    {
+      "idx": 82,
+      "version": "5",
+      "when": 1770904747478,
+      "tag": "0082_small_king_cobra",
+      "breakpoints": true
     }
   ]
 }

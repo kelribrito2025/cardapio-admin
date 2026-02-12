@@ -6266,3 +6266,18 @@
 ## Substituir Switch por botão Pausar/Play nos itens do Catálogo
 - [x] Remover Switch/toggle vermelho dos itens
 - [x] Adicionar botão Pausar/Play (ícone Pause/Play) igual ao da categoria
+
+## Funcionalidade: Criar Combo (Catálogo)
+- [x] Schema de banco: tabelas comboGroups e comboGroupItems
+- [x] Procedures tRPC: CRUD de combos (criar, listar, deletar)
+- [x] Botão "Criar combo" no header da categoria (à esquerda do botão Pausar)
+- [x] Slidebar lateral direita (Sheet) com padrão visual da plataforma
+- [x] Etapa 1: Seleção de produtos com busca debounce (300ms), limite 10 resultados
+- [x] Etapa 1: Preview com foto, nome, categoria disponível e checkbox
+- [x] Etapa 1: Botão "Agrupar produtos" e seção "Adicionados" com drag icon e remover
+- [x] Etapa 1: Botão "Continuar" habilitado com ao menos 1 item agrupado
+- [x] Etapa 2: Configuração do grupo (nome, tipo obrigatório/opcional, quantidade máxima)
+- [x] Etapa 2: Validação - nome obrigatório e ao menos 1 item
+- [x] Etapa 2: Botões Voltar e Concluir
+- [x] Upsell: Seção para adicionar grupos adicionais após concluir primeiro grupo
+- [x] Salvar combo como novo tipo de produto com estrutura de grupos

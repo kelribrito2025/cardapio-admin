@@ -36,7 +36,9 @@ import {
   tabs, InsertTab, Tab,
   tabItems, InsertTabItem, TabItem,
   scheduledCampaigns, InsertScheduledCampaign, ScheduledCampaign,
-  pdvCustomers, InsertPdvCustomer, PdvCustomer
+  pdvCustomers, InsertPdvCustomer, PdvCustomer,
+  comboGroups, InsertComboGroup, ComboGroup,
+  comboGroupItems, InsertComboGroupItem, ComboGroupItem
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -6988,4 +6990,167 @@ export async function getUnreadReviewCount(establishmentId: number): Promise<num
 
   const count = result[0]?.count;
   return typeof count === 'string' ? parseInt(count) : (count ?? 0);
+}
+
+
+// ============================================================
+// COMBO FUNCTIONS
+// ============================================================
+
+/**
+ * Criar combo completo (produto + grupos + itens)
+ */
+export async function createCombo(data: {
+  establishmentId: number;
+  categoryId: number;
+  name: string;
+  description?: string;
+  price: string;
+  images?: string[];
+  groups: {
+    name: string;
+    isRequired: boolean;
+    maxQuantity: number;
+    sortOrder: number;
+    items: { productId: number; sortOrder: number }[];
+  }[];
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // 1. Criar o produto-combo
+  const maxSortOrder = await db.select({ max: sql<number>`COALESCE(MAX(${products.sortOrder}), 0)` })
+    .from(products)
+    .where(eq(products.categoryId, data.categoryId));
+  
+  const [result] = await db.insert(products).values({
+    establishmentId: data.establishmentId,
+    categoryId: data.categoryId,
+    name: data.name,
+    description: data.description || null,
+    price: data.price,
+    images: data.images || null,
+    status: "active",
+    isCombo: true,
+    sortOrder: (maxSortOrder[0]?.max ?? 0) + 1,
+  });
+  const comboProductId = result.insertId;
+
+  // 2. Criar os grupos e itens
+  for (const group of data.groups) {
+    const [groupResult] = await db.insert(comboGroups).values({
+      productId: comboProductId,
+      name: group.name,
+      isRequired: group.isRequired,
+      maxQuantity: group.maxQuantity,
+      sortOrder: group.sortOrder,
+    });
+    const groupId = groupResult.insertId;
+
+    // 3. Criar itens do grupo
+    for (const item of group.items) {
+      await db.insert(comboGroupItems).values({
+        comboGroupId: groupId,
+        productId: item.productId,
+        sortOrder: item.sortOrder,
+      });
+    }
+  }
+
+  return { id: comboProductId };
+}
+
+/**
+ * Buscar grupos de um combo com seus itens
+ */
+export async function getComboGroupsByProductId(productId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const groups = await db.select()
+    .from(comboGroups)
+    .where(eq(comboGroups.productId, productId))
+    .orderBy(asc(comboGroups.sortOrder));
+
+  const groupsWithItems = await Promise.all(
+    groups.map(async (group) => {
+      const items = await db.select({
+        id: comboGroupItems.id,
+        comboGroupId: comboGroupItems.comboGroupId,
+        productId: comboGroupItems.productId,
+        sortOrder: comboGroupItems.sortOrder,
+        productName: products.name,
+        productPrice: products.price,
+        productImages: products.images,
+        productStatus: products.status,
+        categoryId: products.categoryId,
+      })
+        .from(comboGroupItems)
+        .leftJoin(products, eq(comboGroupItems.productId, products.id))
+        .where(eq(comboGroupItems.comboGroupId, group.id))
+        .orderBy(asc(comboGroupItems.sortOrder));
+
+      return { ...group, items };
+    })
+  );
+
+  return groupsWithItems;
+}
+
+/**
+ * Deletar um combo (produto + grupos + itens)
+ */
+export async function deleteCombo(productId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // 1. Buscar grupos do combo
+  const groups = await db.select({ id: comboGroups.id })
+    .from(comboGroups)
+    .where(eq(comboGroups.productId, productId));
+
+  // 2. Deletar itens de cada grupo
+  for (const group of groups) {
+    await db.delete(comboGroupItems).where(eq(comboGroupItems.comboGroupId, group.id));
+  }
+
+  // 3. Deletar grupos
+  await db.delete(comboGroups).where(eq(comboGroups.productId, productId));
+
+  // 4. Deletar o produto-combo
+  await db.delete(products).where(eq(products.id, productId));
+}
+
+/**
+ * Buscar produtos para seleção no combo (busca com filtro)
+ */
+export async function searchProductsForCombo(establishmentId: number, search?: string, limit: number = 10) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const conditions = [
+    eq(products.establishmentId, establishmentId),
+    eq(products.isCombo, false), // Não incluir outros combos
+  ];
+
+  if (search && search.trim()) {
+    conditions.push(like(products.name, `%${search.trim()}%`));
+  }
+
+  const result = await db.select({
+    id: products.id,
+    name: products.name,
+    price: products.price,
+    images: products.images,
+    status: products.status,
+    categoryId: products.categoryId,
+    categoryName: categories.name,
+  })
+    .from(products)
+    .leftJoin(categories, eq(products.categoryId, categories.id))
+    .where(and(...conditions))
+    .orderBy(asc(products.name))
+    .limit(limit);
+
+  return result;
 }

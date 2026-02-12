@@ -4222,6 +4222,57 @@ export const appRouter = router({
         return db.getUnreadReviewCount(input.establishmentId);
       }),
   }),
+
+  // ============================================================
+  // COMBO
+  // ============================================================
+  combo: router({
+    create: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        categoryId: z.number(),
+        name: z.string().min(1),
+        description: z.string().optional(),
+        price: z.string(),
+        images: z.array(z.string()).optional(),
+        groups: z.array(z.object({
+          name: z.string().min(1),
+          isRequired: z.boolean(),
+          maxQuantity: z.number().min(1),
+          sortOrder: z.number(),
+          items: z.array(z.object({
+            productId: z.number(),
+            sortOrder: z.number(),
+          })),
+        })),
+      }))
+      .mutation(async ({ input }) => {
+        return db.createCombo(input);
+      }),
+
+    getGroups: protectedProcedure
+      .input(z.object({ productId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getComboGroupsByProductId(input.productId);
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ productId: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteCombo(input.productId);
+        return { success: true };
+      }),
+
+    searchProducts: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        search: z.string().optional(),
+        limit: z.number().optional(),
+      }))
+      .query(async ({ input }) => {
+        return db.searchProductsForCombo(input.establishmentId, input.search, input.limit);
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
