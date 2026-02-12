@@ -1176,15 +1176,22 @@ export default function Pedidos() {
                             <div className={cn("p-2 rounded-full bg-card/90 shadow-sm", config.color)}>
                               <config.icon className="h-4 w-4" />
                             </div>
-                            <span className={cn("font-bold text-base", config.color)}>
-                              {order.orderNumber?.startsWith('#') ? order.orderNumber : `#${order.orderNumber}`}
-                            </span>
-                            {/* Badge iFood */}
-                            {(order as any).source === 'ifood' && (
-                              <span className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full shadow-sm">
-                                iFood
+                            <div className="flex flex-col">
+                              <div className="flex items-center gap-2">
+                                <span className={cn("font-bold text-base", config.color)}>
+                                  {order.orderNumber?.startsWith('#') ? order.orderNumber : `#${order.orderNumber}`}
+                                </span>
+                                {/* Badge iFood */}
+                                {(order as any).source === 'ifood' && (
+                                  <span className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full shadow-sm">
+                                    iFood
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-[10px] font-medium text-muted-foreground capitalize">
+                                {order.deliveryType === "delivery" ? "Entrega" : order.deliveryType === "dine_in" ? "Local" : "Retirada"}
                               </span>
-                            )}
+                            </div>
                           </div>
                           <div className={cn("flex items-center gap-1.5 text-sm font-medium", config.color)}>
                             <Clock className="h-4 w-4" />
@@ -1223,10 +1230,7 @@ export default function Pedidos() {
                                 {paymentMethodLabels[order.paymentMethod]?.label}
                               </span>
                               
-                              {/* Tag de entrega/retirada */}
-                              <span className="px-1.5 py-0.5 bg-muted/50 rounded text-[10px] font-medium capitalize whitespace-nowrap">
-                                {order.deliveryType === "delivery" ? "Entrega" : order.deliveryType === "dine_in" ? "Local" : "Retirada"}
-                              </span>
+
                             </div>
                             
                             {/* Valor total */}
