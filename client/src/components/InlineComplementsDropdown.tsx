@@ -483,7 +483,7 @@ function SortableInlineItem({
               value={localPrice}
               onChange={(e) => setLocalPrice(e.target.value)}
               onBlur={handlePriceBlur}
-              className="w-20 md:w-24 h-7 text-xs md:text-sm rounded-md border-border/50 text-right pl-7"
+              className="w-20 md:w-24 h-7 text-xs md:text-sm rounded-md border-border/50 text-right pl-7" style={{marginRight: '-1px', marginLeft: '-6px', width: '69px'}}
             />
           </div>
         )}
