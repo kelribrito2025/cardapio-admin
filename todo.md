@@ -6341,3 +6341,6 @@
 - [x] Feature: Versão mobile com ícone de seta para expandir complementos
 - [x] Feature: Estado vazio "Nenhum complemento configurado" com botão "Adicionar complemento"
 - [x] Feature: Campos editáveis Mín, Máx e checkbox Obrigatório em cada grupo no dropdown de complementos do catálogo
+- [x] Feature: Editar nome do grupo e do item inline no dropdown de complementos do catálogo (texto "Editar" em vermelho)
+- [x] Feature: Toggle grátis/normal para complementos no dropdown do catálogo
+- [x] Feature: Dropdown expandível ao clicar no item com badge/destaque e disponibilidade
