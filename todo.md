@@ -6317,3 +6317,10 @@
 
 ## Ajuste mobile: preço abaixo do nome do item no Catálogo
 - [x] Mover preço para abaixo do nome do item na versão mobile em tamanho menor
+
+## Imagens placeholder estilo iFood para itens sem foto
+- [ ] Criar 5 modelos de imagens placeholder com padrões de comida estilo iFood
+- [ ] Upload para S3 e integrar no sistema como fallback para itens sem foto
+
+## Remover itens pré-visualizados na slidebar Criar Combo
+- [x] Não exibir itens pré-carregados - mostrar resultados apenas quando o usuário digitar na busca
