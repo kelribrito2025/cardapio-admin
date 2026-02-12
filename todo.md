@@ -6350,3 +6350,5 @@
 - [x] Remover badge "GRÁTIS" redundante ao lado do botão Editar quando item já está marcado como grátis no dropdown de complementos do catálogo
 - [x] Mobile: Consolidar botões de ação dos complementos (editar, pausar/ativar, excluir) em menu de 3 pontinhos no dropdown do catálogo
 - [x] Mobile: Mover toggle Grátis/Normal para dentro do menu de 3 pontinhos no dropdown de complementos do catálogo
+- [x] Catálogo: Adicionar visual cinza/esmaecido nos itens pausados na lista (estilo iFood) para diferenciar visualmente de itens ativos
+- [x] Catálogo: Botão de ativar (Play) não deve ficar com efeito de opacidade/cinza quando item está pausado

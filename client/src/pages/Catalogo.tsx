@@ -120,7 +120,10 @@ function SortableProductItem({
       <div
         style={{ height: '60px' }}
         className={cn(
-          "flex items-center gap-3.5 p-3.5 hover:bg-muted/30 transition-colors bg-card",
+          "flex items-center gap-3.5 p-3.5 transition-colors",
+          product.status === "active"
+            ? "hover:bg-muted/30 bg-card"
+            : "bg-muted/40"
         )}
       >
         {!isDragDisabled && (
@@ -129,7 +132,10 @@ function SortableProductItem({
               <button
                 {...attributes}
                 {...listeners}
-                className="cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded-md touch-none"
+                className={cn(
+                  "cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded-md touch-none",
+                  product.status !== "active" && "opacity-50"
+                )}
               >
                 <GripVertical className="h-5 w-5 text-muted-foreground" />
               </button>
@@ -139,10 +145,18 @@ function SortableProductItem({
         )}
         {/* Área clicável para edição */}
         <div 
-          className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
+          className={cn(
+            "flex items-center gap-3 flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity",
+            product.status !== "active" && "opacity-50"
+          )}
           onClick={() => onEdit(product.id)}
         >
-          <div className="hidden md:flex h-12 w-12 rounded-lg bg-gradient-to-br from-red-500 to-red-600 items-center justify-center overflow-hidden flex-shrink-0">
+          <div className={cn(
+            "hidden md:flex h-12 w-12 rounded-lg items-center justify-center overflow-hidden flex-shrink-0",
+            product.status === "active"
+              ? "bg-gradient-to-br from-red-500 to-red-600"
+              : "bg-gradient-to-br from-gray-400 to-gray-500 grayscale"
+          )}>
             {product.images && product.images.length > 0 ? (
               <img
                 src={product.images[0]}
@@ -155,7 +169,10 @@ function SortableProductItem({
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
-              <h4 className="font-semibold text-base truncate">{product.name}</h4>
+              <h4 className={cn(
+                "font-semibold text-base truncate",
+                product.status !== "active" && "text-muted-foreground"
+              )}>{product.name}</h4>
 
               {product.hasStock && product.stockQuantity !== null && product.stockQuantity <= 0 && (
                 <StatusBadge variant="error">Sem estoque</StatusBadge>
@@ -182,7 +199,8 @@ function SortableProductItem({
               "h-8 rounded-lg text-xs font-medium px-2.5 hidden md:inline-flex",
               isComplementsOpen
                 ? "bg-primary/10 text-primary border-primary/30"
-                : "text-muted-foreground hover:text-primary hover:bg-primary/5 hover:border-primary/20"
+                : "text-muted-foreground hover:text-primary hover:bg-primary/5 hover:border-primary/20",
+              product.status !== "active" && "opacity-50"
             )}
             onClick={(e) => {
               e.stopPropagation();
@@ -198,7 +216,7 @@ function SortableProductItem({
             {isComplementsOpen ? <ChevronUp className="h-3.5 w-3.5 ml-1" /> : <ChevronDown className="h-3.5 w-3.5 ml-1" />}
           </Button>
           {/* Mobile: ícone seta */}
-          <div className="relative md:hidden">
+          <div className={cn("relative md:hidden", product.status !== "active" && "opacity-50")}>
             <Button
               variant="outline"
               size="icon"
@@ -223,7 +241,7 @@ function SortableProductItem({
           </div>
           {/* Desktop: preço na mesma linha */}
           {Number(product.price) > 0 && (
-            <div className="hidden md:block text-right flex-shrink-0 min-w-[80px]">
+            <div className={cn("hidden md:block text-right flex-shrink-0 min-w-[80px]", product.status !== "active" && "opacity-50")}>
               <p className="font-semibold text-base text-primary">{formatCurrency(product.price)}</p>
             </div>
           )}
@@ -253,7 +271,7 @@ function SortableProductItem({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                className="p-1 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                className={cn("p-1 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground", product.status !== "active" && "opacity-50")}
                 onClick={(e) => e.stopPropagation()}
               >
                 <MoreVertical className="h-4.5 w-4.5" />
