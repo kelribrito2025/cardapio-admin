@@ -906,12 +906,12 @@ export const appRouter = router({
         sortOrder: z.number().optional(),
         badgeText: z.string().nullable().optional(),
         availabilityType: z.enum(["always", "scheduled"]).optional(),
-        availableDays: z.array(z.number()).optional(),
+        availableDays: z.array(z.number()).nullable().optional(),
         availableHours: z.array(z.object({
           day: z.number(),
           startTime: z.string(),
           endTime: z.string(),
-        })).optional(),
+        })).nullable().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
@@ -958,12 +958,12 @@ export const appRouter = router({
         priceMode: z.enum(["normal", "free"]).optional(),
         price: z.string().optional(),
         availabilityType: z.enum(["always", "scheduled"]).optional(),
-        availableDays: z.array(z.number()).optional(),
+        availableDays: z.array(z.number()).nullable().optional(),
         availableHours: z.array(z.object({
           day: z.number(),
           startTime: z.string(),
           endTime: z.string(),
-        })).optional(),
+        })).nullable().optional(),
         badgeText: z.string().nullable().optional(),
       }))
       .mutation(async ({ input }) => {
