@@ -6340,3 +6340,4 @@
 - [x] Feature: Itens dentro do grupo com nome, preço editável inline, pausar, deletar, drag-and-drop
 - [x] Feature: Versão mobile com ícone de seta para expandir complementos
 - [x] Feature: Estado vazio "Nenhum complemento configurado" com botão "Adicionar complemento"
+- [x] Feature: Campos editáveis Mín, Máx e checkbox Obrigatório em cada grupo no dropdown de complementos do catálogo

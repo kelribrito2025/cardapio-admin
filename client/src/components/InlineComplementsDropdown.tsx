@@ -282,6 +282,13 @@ export default function InlineComplementsDropdown({
     onError: () => toast.error("Erro ao alterar status"),
   });
 
+  const updateGroupMutation = trpc.complement.updateGroup.useMutation({
+    onSuccess: () => {
+      refetch();
+    },
+    onError: () => toast.error("Erro ao atualizar grupo"),
+  });
+
   // DnD sensors
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -381,7 +388,7 @@ export default function InlineComplementsDropdown({
                 className="border border-border/50 rounded-xl p-3 md:p-4 bg-muted/20"
               >
                 {/* Group header */}
-                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <GripVertical className="h-4 w-4 text-muted-foreground/50 flex-shrink-0 hidden md:block cursor-grab" />
                   <h5 className="font-semibold text-sm flex-1 min-w-0 truncate">{group.name}</h5>
                   <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap">
@@ -395,9 +402,6 @@ export default function InlineComplementsDropdown({
                         Opcional
                       </span>
                     )}
-                    <span className="text-[10px] md:text-xs text-muted-foreground">
-                      Mín: {group.minQuantity} / Máx: {group.maxQuantity}
-                    </span>
                     {/* Delete group */}
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -411,6 +415,48 @@ export default function InlineComplementsDropdown({
                       </TooltipTrigger>
                       <TooltipContent>Excluir grupo</TooltipContent>
                     </Tooltip>
+                  </div>
+                </div>
+
+                {/* Group settings: Mín, Máx, Obrigatório */}
+                <div className="flex items-center gap-3 mb-3 flex-wrap">
+                  <div className="flex items-center gap-1.5">
+                    <label className="text-xs text-muted-foreground font-medium">Mín:</label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={group.minQuantity ?? 0}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0;
+                        updateGroupMutation.mutate({ id: group.id, minQuantity: val });
+                      }}
+                      className="w-16 h-7 text-sm text-center rounded-md"
+                    />
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <label className="text-xs text-muted-foreground font-medium">Máx:</label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={group.maxQuantity ?? 0}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0;
+                        updateGroupMutation.mutate({ id: group.id, maxQuantity: val });
+                      }}
+                      className="w-16 h-7 text-sm text-center rounded-md"
+                    />
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      id={`required-${group.id}`}
+                      checked={!!group.isRequired}
+                      onChange={(e) => {
+                        updateGroupMutation.mutate({ id: group.id, isRequired: e.target.checked });
+                      }}
+                      className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
+                    />
+                    <label htmlFor={`required-${group.id}`} className="text-xs font-medium cursor-pointer">Obrigatório</label>
                   </div>
                 </div>
 
