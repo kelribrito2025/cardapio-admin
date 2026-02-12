@@ -6361,3 +6361,4 @@
 - [x] Catálogo: Remover sombras dos botões na lista de itens e header do catálogo
 - [x] Bug: Erro de validação no catálogo - availableDays e availableHours enviados como null em vez de array
 - [x] Pedidos: Mover tipo de entrega (Retirada/Entrega/Mesa) para abaixo do número do pedido no card, em vez da linha do preço
+- [x] Pedidos: Estilizar tipo de entrega abaixo do número do pedido como badge escuro (fundo preto, texto branco, arredondado)

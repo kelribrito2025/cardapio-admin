@@ -1188,8 +1188,8 @@ export default function Pedidos() {
                                   </span>
                                 )}
                               </div>
-                              <span className="text-[10px] font-medium text-muted-foreground capitalize">
-                                {order.deliveryType === "delivery" ? "Entrega" : order.deliveryType === "dine_in" ? "Local" : "Retirada"}
+                              <span className="px-2 py-0.5 bg-black text-white text-[10px] font-bold rounded-full uppercase tracking-wide">
+                                {order.deliveryType === "delivery" ? "Entrega" : order.deliveryType === "dine_in" ? "Consumo" : "Retirada"}
                               </span>
                             </div>
                           </div>
