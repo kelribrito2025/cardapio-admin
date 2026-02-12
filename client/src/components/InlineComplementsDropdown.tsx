@@ -16,6 +16,7 @@ import {
   Clock,
   Pencil,
   Check,
+  MoreVertical,
 } from "lucide-react";
 import {
   Tooltip,
@@ -42,6 +43,13 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn, capitalizeFirst } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 const DAYS_OF_WEEK = [
@@ -402,7 +410,7 @@ function SortableInlineItem({
             <button
               type="button"
               onClick={() => setIsEditingName(true)}
-              className="text-red-600 hover:text-red-700 text-[10px] font-medium flex-shrink-0 hover:underline"
+              className="hidden md:inline text-red-600 hover:text-red-700 text-[10px] font-medium flex-shrink-0 hover:underline"
             >
               Editar
             </button>
@@ -468,57 +476,115 @@ function SortableInlineItem({
           </div>
         )}
 
-        {/* Toggle active */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              type="button"
-              onClick={() => onToggleActive(item.id, !item.isActive)}
-              className={cn(
-                "p-1 rounded-md transition-colors flex-shrink-0",
-                item.isActive
-                  ? "text-muted-foreground hover:text-orange-600 hover:bg-orange-50"
-                  : "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
-              )}
-            >
-              {item.isActive ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>{item.isActive ? "Pausar" : "Ativar"}</TooltipContent>
-        </Tooltip>
+        {/* Desktop: individual action buttons */}
+        <div className="hidden md:flex items-center gap-0.5 flex-shrink-0">
+          {/* Toggle active */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={() => onToggleActive(item.id, !item.isActive)}
+                className={cn(
+                  "p-1 rounded-md transition-colors",
+                  item.isActive
+                    ? "text-muted-foreground hover:text-orange-600 hover:bg-orange-50"
+                    : "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                )}
+              >
+                {item.isActive ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>{item.isActive ? "Pausar" : "Ativar"}</TooltipContent>
+          </Tooltip>
 
-        {/* Delete */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              type="button"
-              onClick={() => onDelete(item.id)}
-              className="p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors flex-shrink-0"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>Excluir</TooltipContent>
-        </Tooltip>
+          {/* Delete */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={() => onDelete(item.id)}
+                className="p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Excluir</TooltipContent>
+          </Tooltip>
 
-        {/* Expand/Collapse for badge + availability */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              type="button"
-              onClick={onToggleExpand}
-              className={cn(
-                "p-1 rounded-md transition-colors flex-shrink-0",
-                isExpanded
-                  ? "text-primary bg-primary/10"
-                  : "text-muted-foreground hover:text-primary hover:bg-primary/5"
-              )}
-            >
-              {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>Badge e disponibilidade</TooltipContent>
-        </Tooltip>
+          {/* Expand/Collapse for badge + availability */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={onToggleExpand}
+                className={cn(
+                  "p-1 rounded-md transition-colors",
+                  isExpanded
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground hover:text-primary hover:bg-primary/5"
+                )}
+              >
+                {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Badge e disponibilidade</TooltipContent>
+          </Tooltip>
+        </div>
+
+        {/* Mobile: 3-dot dropdown menu */}
+        <div className="flex md:hidden items-center gap-0.5 flex-shrink-0">
+          {/* Expand/Collapse for badge + availability */}
+          <button
+            type="button"
+            onClick={onToggleExpand}
+            className={cn(
+              "p-1 rounded-md transition-colors",
+              isExpanded
+                ? "text-primary bg-primary/10"
+                : "text-muted-foreground hover:text-primary hover:bg-primary/5"
+            )}
+          >
+            {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+          </button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[140px]">
+              <DropdownMenuItem onClick={() => setIsEditingName(true)}>
+                <Pencil className="h-3.5 w-3.5 mr-2" />
+                Editar nome
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onToggleActive(item.id, !item.isActive)}>
+                {item.isActive ? (
+                  <>
+                    <Pause className="h-3.5 w-3.5 mr-2" />
+                    Pausar
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-3.5 w-3.5 mr-2" />
+                    Ativar
+                  </>
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => onDelete(item.id)}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash2 className="h-3.5 w-3.5 mr-2" />
+                Excluir
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Expanded details */}
