@@ -205,9 +205,23 @@ export default function PDV() {
   });
 
   // Estados
-  const [orderType, setOrderType] = useState<OrderType>("mesa");
+  const [orderType, setOrderType] = useState<OrderType>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem('pdv_orderType');
+      if (saved === 'mesa' || saved === 'retirada' || saved === 'entrega') return saved;
+    }
+    return "mesa";
+  });
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = sessionStorage.getItem('pdv_cart');
+        if (saved) return JSON.parse(saved);
+      } catch (e) { /* ignore */ }
+    }
+    return [];
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productQuantity, setProductQuantity] = useState(1);
@@ -285,6 +299,18 @@ export default function PDV() {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{code: string; discount: number; couponId: number} | null>(null);
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+
+  // Persistir carrinho no sessionStorage para não perder ao navegar
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('pdv_cart', JSON.stringify(cart));
+    } catch (e) { /* ignore */ }
+  }, [cart]);
+
+  // Persistir tipo de pedido no sessionStorage
+  useEffect(() => {
+    sessionStorage.setItem('pdv_orderType', orderType);
+  }, [orderType]);
 
   // Estados para limpar/desfazer
   const [clearedCart, setClearedCart] = useState<CartItem[] | null>(null);
