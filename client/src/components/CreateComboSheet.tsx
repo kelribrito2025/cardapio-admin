@@ -104,7 +104,7 @@ export default function CreateComboSheet({
 
   // Search products query
   const { data: searchResults, isLoading: searchLoading } = trpc.combo.searchProducts.useQuery(
-    { establishmentId, search: debouncedSearch || undefined, limit: 7 },
+    { establishmentId, search: debouncedSearch || undefined, limit: 20 },
     { enabled: open && !!establishmentId && debouncedSearch.trim().length > 0 }
   );
 
