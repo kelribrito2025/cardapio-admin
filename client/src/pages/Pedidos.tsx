@@ -1432,11 +1432,11 @@ export default function Pedidos() {
       /* Lista Compacta */
       <div className="space-y-4">
         {/* Filtros de status */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2.5 flex-wrap">
           <button
             onClick={() => setListStatusFilter('all')}
             className={cn(
-              "px-3 py-1.5 rounded-lg text-xs font-medium transition-all border",
+              "px-4 py-2 rounded-xl text-sm font-medium transition-all border",
               listStatusFilter === 'all' ? "bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700" : "bg-card border-border text-muted-foreground hover:text-foreground"
             )}
           >
@@ -1449,11 +1449,11 @@ export default function Pedidos() {
                 key={col.id}
                 onClick={() => setListStatusFilter(col.id)}
                 className={cn(
-                  "px-3 py-1.5 rounded-lg text-xs font-medium transition-all border flex items-center gap-1.5",
+                  "px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2",
                   listStatusFilter === col.id ? `${col.tabBg} ${col.tabText} ${col.tabBorder}` : "bg-card border-border text-muted-foreground hover:text-foreground"
                 )}
               >
-                <span className={cn("w-2 h-2 rounded-full", col.dotColor)} />
+                <span className={cn("w-2.5 h-2.5 rounded-full", col.dotColor)} />
                 {col.title} ({count})
               </button>
             );
@@ -1463,7 +1463,7 @@ export default function Pedidos() {
         {/* Tabela compacta */}
         <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
           {/* Header da tabela */}
-          <div className="grid grid-cols-[60px_1fr_120px_100px_100px_120px_140px] gap-2 px-4 py-3 bg-muted/50 border-b border-border/50 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+          <div className="grid grid-cols-[70px_1fr_140px_110px_120px_130px_150px] gap-3 px-5 py-3.5 bg-muted/50 border-b border-border/50 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             <span>Status</span>
             <span>Pedido</span>
             <span>Cliente</span>
@@ -1477,7 +1477,7 @@ export default function Pedidos() {
           <div className="divide-y divide-border/30">
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="grid grid-cols-[60px_1fr_120px_100px_100px_120px_140px] gap-2 px-4 py-3 items-center">
+                <div key={i} className="grid grid-cols-[70px_1fr_140px_110px_120px_130px_150px] gap-3 px-5 py-3.5 items-center">
                   <div className="skeleton h-5 w-12 rounded" />
                   <div className="skeleton h-4 w-24 rounded" />
                   <div className="skeleton h-4 w-20 rounded" />
@@ -1513,12 +1513,12 @@ export default function Pedidos() {
                 return (
                   <div
                     key={order.id}
-                    className="grid grid-cols-[60px_1fr_120px_100px_100px_120px_140px] gap-2 px-4 py-2.5 items-center hover:bg-muted/30 transition-colors cursor-pointer"
+                    className="grid grid-cols-[70px_1fr_140px_110px_120px_130px_150px] gap-3 px-5 py-3.5 items-center hover:bg-muted/30 transition-colors cursor-pointer"
                     onClick={() => setSelectedOrder(order.id)}
                   >
                     {/* Status badge */}
                     <span
-                      className="inline-flex items-center justify-center py-1 px-2 rounded-md text-[10px] font-bold uppercase tracking-wide"
+                      className="inline-flex items-center justify-center py-1.5 px-2.5 rounded-lg text-[11px] font-bold uppercase tracking-wide"
                       style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
                     >
                       {config.label.slice(0, 4)}
@@ -1526,44 +1526,44 @@ export default function Pedidos() {
 
                     {/* Pedido info */}
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className={cn("font-bold text-sm", config.color)}>
+                      <span className={cn("font-bold text-base", config.color)}>
                         {order.orderNumber?.startsWith('#') ? order.orderNumber : `#${order.orderNumber}`}
                       </span>
                       {(order as any).source === 'ifood' && (
                         <span className="px-1.5 py-0.5 bg-red-500 text-white text-[9px] font-bold rounded-full">iFood</span>
                       )}
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
+                      <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                        <Clock className="h-3.5 w-3.5" />
                         {timeStr}
                       </span>
                     </div>
 
                     {/* Cliente */}
-                    <span className="text-sm truncate">{order.customerName || '—'}</span>
+                    <span className="text-sm font-medium truncate">{order.customerName || '—'}</span>
 
                     {/* Tipo de entrega */}
                     <span
-                      className="inline-flex items-center justify-center py-0.5 px-2 rounded text-[9px] font-bold uppercase tracking-wide w-fit"
+                      className="inline-flex items-center justify-center py-1 px-2.5 rounded-md text-[10px] font-bold uppercase tracking-wide w-fit"
                       style={{ backgroundColor: config.badgeBg + '20', color: config.badgeBg }}
                     >
                       {order.deliveryType === 'delivery' ? 'Entrega' : order.deliveryType === 'dine_in' ? 'Consumo' : 'Retirada'}
                     </span>
 
                     {/* Pagamento */}
-                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <PaymentIcon className="h-3.5 w-3.5" />
+                    <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <PaymentIcon className="h-4 w-4" />
                       {paymentMethodLabels[order.paymentMethod]?.label || order.paymentMethod}
                     </span>
 
                     {/* Valor */}
-                    <span className="text-sm font-bold text-primary text-right">{formatCurrency(order.total)}</span>
+                    <span className="text-base font-bold text-primary text-right">{formatCurrency(order.total)}</span>
 
                     {/* Ações */}
                     <div className="flex items-center gap-1 justify-end" onClick={(e) => e.stopPropagation()}>
                       {nextAction && (
                         <Button
                           size="sm"
-                          className="h-7 px-3 rounded-md text-xs shadow-sm hover:opacity-90"
+                          className="h-8 px-4 rounded-lg text-xs font-semibold shadow-sm hover:opacity-90"
                           style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
                           onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
                           disabled={loadingOrderId !== null}
@@ -1579,13 +1579,13 @@ export default function Pedidos() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 rounded-md bg-destructive/10 text-destructive hover:bg-destructive/20"
+                          className="h-8 w-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20"
                           onClick={() => {
                             setOrderToCancel(order.id);
                             setCancelDialogOpen(true);
                           }}
                         >
-                          <XCircle className="h-3.5 w-3.5" />
+                          <XCircle className="h-4 w-4" />
                         </Button>
                       )}
                     </div>

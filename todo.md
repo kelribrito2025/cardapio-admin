@@ -6394,3 +6394,4 @@
 - [x] Adicionar placeholder contextual no campo "Nome do grupo" baseado na categoria selecionada (ex: "Deseja descartáveis?" para Descartáveis)
 - [x] Trocar foto da página de Criar Conta pela imagem do homem no restaurante com burger e tablet
 - [x] Alterar cor de fundo do tab selecionado na lista de pedidos: de preto para cor clara do badge do status (azul claro para Novos, vermelho claro para Preparo, etc.)
+- [x] Aumentar tamanho dos textos, botões e elementos da visualização em lista de Pedidos para ficar no padrão do Kanban e demais páginas
