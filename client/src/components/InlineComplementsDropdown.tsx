@@ -384,11 +384,12 @@ function SortableInlineItem({
 
         {/* Name - editable */}
         {isEditingName ? (
-          <div className="flex items-center gap-1 flex-1 min-w-0">
+          <div className="flex items-center gap-1 min-w-0">
             <Input
               value={editedName}
               onChange={(e) => setEditedName(e.target.value)}
-              className="h-7 text-sm flex-1 min-w-0"
+              className="h-7 text-sm min-w-0"
+              style={{ width: `${Math.max(editedName.length * 8 + 24, 60)}px`, maxWidth: '300px' }}
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSaveName();
@@ -401,23 +402,25 @@ function SortableInlineItem({
             <Button
               type="button"
               variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-green-600 hover:text-green-700 hover:bg-green-50 flex-shrink-0"
+              size="sm"
+              className="h-7 px-2 text-green-600 hover:text-green-700 hover:bg-green-50 flex-shrink-0 gap-1"
               onClick={handleSaveName}
             >
               <Check className="h-3.5 w-3.5" />
+              <span className="text-xs">Salvar</span>
             </Button>
             <Button
               type="button"
               variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-muted-foreground hover:text-red-600 hover:bg-red-50 flex-shrink-0"
+              size="sm"
+              className="h-7 px-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 flex-shrink-0 gap-1"
               onClick={() => {
                 setIsEditingName(false);
                 setEditedName(item.name);
               }}
             >
               <X className="h-3.5 w-3.5" />
+              <span className="text-xs">Cancelar</span>
             </Button>
           </div>
         ) : (
