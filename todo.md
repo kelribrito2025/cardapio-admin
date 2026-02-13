@@ -6371,3 +6371,4 @@
 - [x] Reset diário automático da numeração de pedidos (#P1) à 00:00, respeitando fuso horário do estabelecimento
 - [x] Pedidos: Alterar cores dos botões de ação (Aceitar, Pronto, Finalizar) para combinar com a cor da coluna do kanban
 - [x] Pedidos: Alterar cor do card de Preparo de dourado/âmbar para vermelho
+- [x] Bug crítico: Acompanhamento de pedido retorna pedido antigo após reset diário da numeração - usar ID único em vez de número visual

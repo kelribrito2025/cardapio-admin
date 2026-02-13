@@ -134,7 +134,10 @@ export function getTotalConnections(): number {
   return total;
 }
 
-// ==================== FUNÇÕES PARA PEDIDOS (por orderNumber) ====================
+// ==================== FUNÇÕES PARA PEDIDOS (por orderNumber ou orderId) ====================
+
+// Map<orderId (string), Set<Response>> - conexões por orderId único
+const orderIdConnections = new Map<string, Set<Response>>();
 
 /**
  * Adiciona uma conexão SSE para um pedido (identificado pelo orderNumber)
@@ -146,6 +149,74 @@ export function addOrderConnection(orderNumber: string, res: Response): void {
   orderConnections.get(orderNumber)!.add(res);
   
   console.log(`[SSE-Order] Nova conexão para pedido ${orderNumber}. Total: ${orderConnections.get(orderNumber)!.size}`);
+}
+
+/**
+ * Adiciona uma conexão SSE para um pedido por orderId (único, sem colisão)
+ */
+export function addOrderIdConnection(orderId: string, res: Response): void {
+  if (!orderIdConnections.has(orderId)) {
+    orderIdConnections.set(orderId, new Set());
+  }
+  orderIdConnections.get(orderId)!.add(res);
+  
+  console.log(`[SSE-Order] Nova conexão por orderId ${orderId}. Total: ${orderIdConnections.get(orderId)!.size}`);
+}
+
+/**
+ * Adiciona uma conexão SSE para múltiplos pedidos por orderId
+ */
+export function addOrderIdConnectionForMultiple(orderIds: string[], res: Response): void {
+  orderIds.forEach(orderId => {
+    if (!orderIdConnections.has(orderId)) {
+      orderIdConnections.set(orderId, new Set());
+    }
+    orderIdConnections.get(orderId)!.add(res);
+  });
+  
+  console.log(`[SSE-Order] Nova conexão para ${orderIds.length} pedidos por orderId: ${orderIds.join(', ')}`);
+}
+
+/**
+ * Remove uma conexão SSE de um pedido por orderId
+ */
+export function removeOrderIdConnection(orderId: string, res: Response): void {
+  const conns = orderIdConnections.get(orderId);
+  if (conns) {
+    conns.delete(res);
+    if (conns.size === 0) {
+      orderIdConnections.delete(orderId);
+    }
+  }
+}
+
+/**
+ * Remove uma conexão SSE de múltiplos pedidos por orderId
+ */
+export function removeOrderIdConnectionFromMultiple(orderIds: string[], res: Response): void {
+  orderIds.forEach(orderId => {
+    removeOrderIdConnection(orderId, res);
+  });
+}
+
+/**
+ * Envia um evento SSE para todas as conexões de um pedido por orderId
+ */
+export function sendOrderIdEvent(orderId: string, eventType: string, data: unknown): void {
+  const conns = orderIdConnections.get(orderId);
+  if (!conns || conns.size === 0) return;
+  
+  const eventData = JSON.stringify(data);
+  const message = `event: ${eventType}\ndata: ${eventData}\n\n`;
+  
+  conns.forEach((res) => {
+    try {
+      res.write(message);
+    } catch (error) {
+      console.error(`[SSE-Order] Erro ao enviar evento por orderId:`, error);
+      removeOrderIdConnection(orderId, res);
+    }
+  });
 }
 
 /**
@@ -214,6 +285,7 @@ export function sendOrderEvent(orderNumber: string, eventType: string, data: unk
 
 /**
  * Notifica sobre atualização de status do pedido
+ * Envia para conexões por orderNumber (legado) E por orderId (único)
  */
 export function notifyOrderStatusUpdate(orderNumber: string, data: {
   id: number;
@@ -222,9 +294,16 @@ export function notifyOrderStatusUpdate(orderNumber: string, data: {
   updatedAt: Date;
   cancellationReason?: string | null;
 }): void {
-  console.log(`[SSE-Order] notifyOrderStatusUpdate chamado para orderNumber: ${orderNumber}, novo status: ${data.status}`);
-  console.log(`[SSE-Order] Conexões ativas para este pedido: ${orderConnections.get(orderNumber)?.size || 0}`);
+  console.log(`[SSE-Order] notifyOrderStatusUpdate chamado para orderNumber: ${orderNumber}, orderId: ${data.id}, novo status: ${data.status}`);
+  
+  // Enviar para conexões por orderNumber (legado)
+  console.log(`[SSE-Order] Conexões ativas por orderNumber: ${orderConnections.get(orderNumber)?.size || 0}`);
   sendOrderEvent(orderNumber, "order_status_update", data);
+  
+  // Enviar para conexões por orderId (único, sem colisão)
+  const orderIdStr = data.id.toString();
+  console.log(`[SSE-Order] Conexões ativas por orderId: ${orderIdConnections.get(orderIdStr)?.size || 0}`);
+  sendOrderIdEvent(orderIdStr, "order_status_update", data);
 }
 
 /**

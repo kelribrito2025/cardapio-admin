@@ -8,8 +8,8 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
-import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, sendAllOrdersHeartbeat, sendEvent } from "./sse";
-import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrderById, getOrderItems, getOrderItemsWithPrinter, getEstablishmentById, getPrinterSettings, getActivePrinters, getTabById, getTabItems, getTableById } from "../db";
+import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, addOrderIdConnectionForMultiple, removeOrderIdConnectionFromMultiple, sendAllOrdersHeartbeat, sendEvent } from "./sse";
+import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrdersByIds, getOrderById, getOrderItems, getOrderItemsWithPrinter, getEstablishmentById, getPrinterSettings, getActivePrinters, getTabById, getTabItems, getTableById } from "../db";
 import { sdk } from "./sdk";
 import { startScheduledCampaignJob } from "../scheduledCampaignJob";
 
@@ -1639,7 +1639,75 @@ async function startServer() {
     }
   });
   
-  // SSE endpoint para clientes acompanharem pedidos em tempo real (por orderNumbers)
+  // SSE endpoint para clientes acompanharem pedidos em tempo real (por orderIds - PREFERRED)
+  app.get("/api/orders/track/stream/byid", async (req, res) => {
+    try {
+      const orderIdsParam = req.query.ids as string;
+      
+      if (!orderIdsParam) {
+        res.status(400).json({ error: "Order IDs required" });
+        return;
+      }
+      
+      const orderIds = orderIdsParam.split(',').map(o => o.trim()).filter(o => o.length > 0);
+      
+      if (orderIds.length === 0) {
+        res.status(400).json({ error: "At least one order ID required" });
+        return;
+      }
+      
+      console.log(`[SSE-Order] Iniciando conexão por orderId para pedidos: ${orderIds.join(', ')}`);
+      
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+      res.setHeader("X-Accel-Buffering", "no");
+      res.flushHeaders();
+      
+      res.write(`event: connected\ndata: ${JSON.stringify({ orderIds })}\n\n`);
+      
+      // Buscar e enviar o status atual de cada pedido por ID
+      try {
+        const currentOrders = await getOrdersByIds(orderIds.map(id => parseInt(id, 10)));
+        console.log(`[SSE-Order] Enviando status atual de ${currentOrders.length} pedidos (por orderId)`);
+        
+        for (const order of currentOrders) {
+          const statusUpdate = {
+            id: order.id,
+            orderNumber: order.orderNumber,
+            status: order.status,
+            cancellationReason: order.cancellationReason || undefined
+          };
+          res.write(`event: order_status_update\ndata: ${JSON.stringify(statusUpdate)}\n\n`);
+          console.log(`[SSE-Order] Enviado status inicial: orderId=${order.id} (${order.orderNumber}) -> ${order.status}`);
+        }
+      } catch (error) {
+        console.error('[SSE-Order] Erro ao buscar status inicial dos pedidos por orderId:', error);
+      }
+      
+      addOrderIdConnectionForMultiple(orderIds, res);
+      
+      const heartbeatInterval = setInterval(() => {
+        try {
+          res.write(`event: heartbeat\ndata: ${JSON.stringify({ timestamp: Date.now() })}\n\n`);
+        } catch (error) {
+          console.error("[SSE-Order] Erro ao enviar heartbeat:", error);
+        }
+      }, 30000);
+      
+      req.on("close", () => {
+        clearInterval(heartbeatInterval);
+        removeOrderIdConnectionFromMultiple(orderIds, res);
+        console.log(`[SSE-Order] Conexão fechada para pedidos (por orderId): ${orderIds.join(', ')}`);
+      });
+      
+    } catch (error) {
+      console.error("[SSE-Order] Erro ao estabelecer conexão por orderId:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+  
+  // SSE endpoint para clientes acompanharem pedidos em tempo real (por orderNumbers) - LEGACY
   app.get("/api/orders/track/stream", async (req, res) => {
     try {
       const orderNumbersParam = req.query.orders as string;

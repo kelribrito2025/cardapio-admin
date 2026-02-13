@@ -2882,11 +2882,30 @@ export async function getPublicOrderByNumber(orderNumber: string, establishmentI
   const db = await getDb();
   if (!db) return undefined;
   
+  // ORDER BY createdAt DESC to get the most recent order with this number
+  // (important after daily number reset where multiple orders can have the same number)
   const result = await db.select().from(orders)
     .where(and(
       eq(orders.orderNumber, orderNumber),
       eq(orders.establishmentId, establishmentId)
     ))
+    .orderBy(desc(orders.createdAt))
+    .limit(1);
+  
+  if (result.length === 0) return undefined;
+  
+  const order = result[0];
+  const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id));
+  
+  return { ...order, items };
+}
+
+export async function getPublicOrderById(orderId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(orders)
+    .where(eq(orders.id, orderId))
     .limit(1);
   
   if (result.length === 0) return undefined;
@@ -3110,6 +3129,19 @@ export async function getOrdersByOrderNumbers(orderNumbers: string[]) {
   
   const result = await db.select().from(orders)
     .where(sql`${orders.orderNumber} IN (${sql.join(orderNumbers.map(n => sql`${n}`), sql`, `)})`);
+  
+  return result;
+}
+
+// ============ GET ORDERS BY IDS ============
+export async function getOrdersByIds(orderIds: number[]) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  if (orderIds.length === 0) return [];
+  
+  const result = await db.select().from(orders)
+    .where(sql`${orders.id} IN (${sql.join(orderIds.map(id => sql`${id}`), sql`, `)})`);
   
   return result;
 }

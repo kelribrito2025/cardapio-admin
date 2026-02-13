@@ -1594,7 +1594,7 @@ export const appRouter = router({
         }
       }),
     
-    // Get order by number (for tracking)
+    // Get order by number (for tracking) - legacy, returns most recent match
     getOrderByNumber: publicProcedure
       .input(z.object({
         orderNumber: z.string(),
@@ -1602,6 +1602,15 @@ export const appRouter = router({
       }))
       .query(async ({ input }) => {
         return db.getPublicOrderByNumber(input.orderNumber, input.establishmentId);
+      }),
+    
+    // Get order by unique ID (for tracking - preferred over getOrderByNumber)
+    getOrderById: publicProcedure
+      .input(z.object({
+        orderId: z.number(),
+      }))
+      .query(async ({ input }) => {
+        return db.getPublicOrderById(input.orderId);
       }),
     
     // Get orders by phone (for order history)

@@ -61,12 +61,13 @@ const getOrdersStorageKey = (establishmentId: number) => `orders_${establishment
 // Tipo de pedido do usuário
 type UserOrder = {
   id: string;
+  orderId?: number; // ID único do banco de dados (para tracking sem colisão)
   date: string;
   items: Array<{ name: string; quantity: number; price: string; complements: Array<{ name: string; price: string; quantity: number }> }>;
   total: string;
   status: "sent" | "accepted" | "delivering" | "delivered" | "cancelled";
   deliveryType: "pickup" | "delivery" | "dine_in";
-  paymentMethod: "cash" | "card" | "pix" | "card_online";
+  paymentMethod: "cash" | "card" | "pix" | "card_online" | "online";
   address?: { street: string; number: string; neighborhood: string; complement: string; reference: string };
   customerName: string;
   customerPhone: string;
@@ -309,6 +310,76 @@ export default function PublicMenu() {
             setOrderSent(true);
             setOrderStatus('sent');
             setCreatedOrderNumber(result.orderNumber);
+            
+            // Salvar orderId e orderNumber no userOrders e iniciar SSE tracking
+            const onlineOrderId = result.orderId;
+            if (onlineOrderId) {
+              // Usar orderId para tracking
+              setCurrentOrderNumber(onlineOrderId.toString());
+              setSelectedOrderId(result.orderNumber);
+              
+              // Criar pedido no histórico local com orderId
+              const onlineNewOrder = {
+                id: result.orderNumber,
+                orderId: onlineOrderId,
+                date: new Date().toISOString(),
+                items: cart.map(item => ({
+                  name: item.name,
+                  quantity: item.quantity,
+                  price: item.price,
+                  complements: item.complements.map(c => ({ name: c.name, price: c.price, quantity: c.quantity || 1 }))
+                })),
+                total: cart.reduce((sum, item) => {
+                  const itemTotal = parseFloat(item.price) * item.quantity;
+                  const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price) * (c.quantity || 1), 0) * item.quantity;
+                  return sum + itemTotal + complementsTotal;
+                }, 0).toFixed(2),
+                status: 'sent' as const,
+                deliveryType,
+                paymentMethod: 'online' as const,
+                address: deliveryType === 'delivery' ? deliveryAddress : undefined,
+                customerName: customerInfo.name,
+                customerPhone: customerInfo.phone,
+                observation: orderObservation
+              };
+              
+              const establishmentId = data?.establishment?.id;
+              if (establishmentId) {
+                const existingOrders = loadOrdersFromStorage(establishmentId);
+                // Verificar se já não foi adicionado
+                if (!existingOrders.find(o => o.orderId === onlineOrderId)) {
+                  const updatedOrders = [onlineNewOrder, ...existingOrders];
+                  saveOrdersToStorage(establishmentId, updatedOrders);
+                  setUserOrders(updatedOrders);
+                }
+              }
+              
+              // Iniciar SSE tracking usando orderId
+              const trackingId = onlineOrderId.toString();
+              orderSSE.trackOrder(trackingId, (update) => {
+                const newStatus = statusMap[update.status] || 'sent';
+                setUserOrders(prevOrders => {
+                  const newOrders = prevOrders.map(order => {
+                    const updateOId = update.id ? update.id.toString() : '';
+                    if (order.orderId?.toString() === updateOId || order.id === update.orderNumber) {
+                      return { ...order, status: newStatus };
+                    }
+                    return order;
+                  });
+                  if (data?.establishment?.id) {
+                    saveOrdersToStorage(data.establishment.id, newOrders);
+                  }
+                  return newOrders;
+                });
+              });
+            }
+            
+            // Limpar sacola
+            setCart([]);
+            if (slug) {
+              clearCartFromStorage(slug);
+            }
+            
             clearInterval(pollInterval);
           }
           // Se pagou mas pedido ainda não foi criado, continuar polling
@@ -425,6 +496,7 @@ export default function PublicMenu() {
       // Criar novo pedido para o histórico local
       const newOrder = {
         id: result.orderNumber,
+        orderId: result.orderId, // ID único do banco (para tracking sem colisão com reset diário)
         date: new Date().toISOString(),
         items: cart.map(item => ({
           name: item.name,
@@ -455,17 +527,21 @@ export default function PublicMenu() {
         setUserOrders(updatedOrders);
       }
       setSelectedOrderId(newOrder.id);
-      setCurrentOrderNumber(result.orderNumber);
+      // Usar orderId para tracking SSE (evita colisão com reset diário)
+      setCurrentOrderNumber(result.orderId.toString());
+      // Salvar o número visual do pedido para exibição na tela de sucesso
+      setCreatedOrderNumber(result.orderNumber);
       
-      // Iniciar tracking SSE APENAS após o pedido ser criado com sucesso
-      orderSSE.trackOrder(result.orderNumber, (update) => {
+      // Iniciar tracking SSE usando orderId (único, sem colisão com reset diário)
+      const trackingId = result.orderId.toString();
+      orderSSE.trackOrder(trackingId, (update) => {
         console.log('[PublicMenu] Atualização SSE recebida (novo pedido):', update);
         const newStatus = statusMap[update.status] || 'sent';
         
-        // Atualizar o pedido no estado local
+        // Atualizar o pedido no estado local (match por orderId)
         setUserOrders(prevOrders => {
           const newOrders = prevOrders.map(order => {
-            if (order.id === update.orderNumber) {
+            if (order.orderId === update.id || order.id === update.orderNumber) {
               return { ...order, status: newStatus };
             }
             return order;
@@ -485,8 +561,9 @@ export default function PublicMenu() {
         
         // Se o modal de tracking está aberto para este pedido, atualizar diretamente
         // Usa refs para evitar problemas de closure
-        console.log('[PublicMenu] Modal aberto:', showTrackingModalRef.current, 'Pedido atual:', currentOrderNumberRef.current, 'Pedido atualizado:', update.orderNumber);
-        if (showTrackingModalRef.current && currentOrderNumberRef.current === update.orderNumber) {
+        const currentTrackingId = currentOrderNumberRef.current;
+        console.log('[PublicMenu] Modal aberto:', showTrackingModalRef.current, 'Tracking ID atual:', currentTrackingId, 'Pedido atualizado orderId:', update.id);
+        if (showTrackingModalRef.current && (currentTrackingId === trackingId || currentTrackingId === update.orderNumber)) {
           console.log('[PublicMenu] Atualizando orderStatus no modal para:', newStatus);
           setOrderStatus(newStatus);
           if (update.cancellationReason) {
@@ -579,12 +656,26 @@ export default function PublicMenu() {
     { enabled: false } // Só busca quando chamado manualmente
   );
 
-  // Query para buscar status do pedido atual
+  // Determinar o orderId numérico para buscar no servidor
+  // currentOrderNumber pode ser orderId (novo) ou orderNumber (legado)
+  const currentOrderIdForQuery = (() => {
+    if (!currentOrderNumber) return 0;
+    // Se é um número puro, é orderId
+    const parsed = parseInt(currentOrderNumber, 10);
+    if (!isNaN(parsed) && parsed > 0 && !currentOrderNumber.startsWith('#') && !currentOrderNumber.startsWith('P')) {
+      return parsed;
+    }
+    // Se é orderNumber visual (ex: #P1, P1), buscar o orderId do userOrders
+    const order = userOrders.find(o => o.id === currentOrderNumber);
+    return order?.orderId || 0;
+  })();
+
+  // Query para buscar status do pedido atual usando orderId (único, sem colisão)
   // Não usa polling - atualizações vem via SSE ou sincronização manual
-  const { data: currentOrderData, refetch: refetchOrderStatus } = trpc.publicMenu.getOrderByNumber.useQuery(
-    { orderNumber: currentOrderNumber || "", establishmentId: data?.establishment?.id || 0 },
+  const { data: currentOrderData, refetch: refetchOrderStatus } = trpc.publicMenu.getOrderById.useQuery(
+    { orderId: currentOrderIdForQuery },
     { 
-      enabled: !!currentOrderNumber && !!data?.establishment?.id && showTrackingModal,
+      enabled: currentOrderIdForQuery > 0 && showTrackingModal,
       refetchOnMount: true, // Buscar ao montar
       staleTime: 30000, // Considerar dados válidos por 30 segundos
     }
@@ -594,7 +685,10 @@ export default function PublicMenu() {
   useEffect(() => {
     if (showTrackingModal && currentOrderNumber) {
       // Inicializar orderStatus com o status do pedido selecionado do userOrders
-      const selectedOrder = userOrders.find(o => o.id === currentOrderNumber);
+      // Buscar por orderId (numérico) ou por id (orderNumber visual)
+      const selectedOrder = userOrders.find(o => 
+        o.orderId?.toString() === currentOrderNumber || o.id === currentOrderNumber
+      );
       if (selectedOrder) {
         setOrderStatus(selectedOrder.status);
         // Limpar motivo de cancelamento se não for cancelado
@@ -621,11 +715,13 @@ export default function PublicMenu() {
     
     // Callback dedicado para o modal de tracking
     // Este callback é criado DENTRO do useEffect, então sempre terá acesso aos valores atuais
-    const modalStatusCallback = (update: { orderNumber: string; status: string; cancellationReason?: string }) => {
+    const modalStatusCallback = (update: { id?: number; orderNumber: string; status: string; cancellationReason?: string }) => {
       console.log('[PublicMenu] [Modal Listener] Atualização SSE recebida:', update);
       
       // Verificar se a atualização é para o pedido que está sendo visualizado
-      if (update.orderNumber === currentOrderNumber) {
+      // Comparar por orderId (novo) ou orderNumber (legado)
+      const updateOrderId = update.id ? update.id.toString() : '';
+      if (updateOrderId === currentOrderNumber || update.orderNumber === currentOrderNumber) {
         const newStatus = statusMap[update.status] || 'sent';
         console.log('[PublicMenu] [Modal Listener] Atualizando orderStatus para:', newStatus);
         
@@ -655,7 +751,10 @@ export default function PublicMenu() {
   // Usa setOrderStatus com callback para evitar problemas de closure com orderStatus
   useEffect(() => {
     if (showTrackingModal && currentOrderNumber) {
-      const selectedOrder = userOrders.find(o => o.id === currentOrderNumber);
+      // Buscar por orderId (numérico) ou por id (orderNumber visual)
+      const selectedOrder = userOrders.find(o => 
+        o.orderId?.toString() === currentOrderNumber || o.id === currentOrderNumber
+      );
       if (selectedOrder) {
         // Usar callback para comparar com o valor atual e evitar problemas de stale closure
         setOrderStatus(prevStatus => {
@@ -698,7 +797,7 @@ export default function PublicMenu() {
       // Atualizar o status do pedido no localStorage e no estado
       setUserOrders(prevOrders => {
         const updatedOrders = prevOrders.map(order => 
-          order.id === selectedOrderId ? { ...order, status: mappedStatus } : order
+          (order.orderId?.toString() === selectedOrderId || order.id === selectedOrderId) ? { ...order, status: mappedStatus } : order
         );
         // Salvar no localStorage por establishmentId
         if (data?.establishment?.id) {
@@ -749,8 +848,10 @@ export default function PublicMenu() {
       return;
     }
     
-    // Buscar o pedido selecionado usando a ref
-    const selectedOrder = userOrdersRef.current.find(o => o.id === selectedOrderId);
+    // Buscar o pedido selecionado usando a ref - buscar por orderId ou orderNumber visual
+    const selectedOrder = userOrdersRef.current.find(o => 
+      o.orderId?.toString() === selectedOrderId || o.id === selectedOrderId
+    );
     
     // Se não tem telefone do cliente, não pode verificar
     if (!selectedOrder?.customerPhone) {
@@ -861,11 +962,13 @@ export default function PublicMenu() {
         const updatedOrders = await Promise.all(
           ordersToUpdate.map(async (order) => {
             try {
-              // Usar trpcUtils.client para chamada imperativa
-              const response = await trpcUtils.client.publicMenu.getOrderByNumber.query({
-                orderNumber: order.id,
-                establishmentId: data.establishment.id
-              });
+              // Usar orderId (sem colisão) quando disponível, fallback para orderNumber (legado)
+              const response = order.orderId 
+                ? await trpcUtils.client.publicMenu.getOrderById.query({ orderId: order.orderId })
+                : await trpcUtils.client.publicMenu.getOrderByNumber.query({
+                    orderNumber: order.id,
+                    establishmentId: data.establishment.id
+                  });
               
               if (response?.status) {
                 const newStatus = localStatusMap[response.status] || order.status;
@@ -991,14 +1094,15 @@ export default function PublicMenu() {
     setSseInitialized(true);
     
     // Callback para atualizações de status
-    const handleStatusUpdate = (update: { orderNumber: string; status: string; cancellationReason?: string }) => {
+    const handleStatusUpdate = (update: { id?: number; orderNumber: string; status: string; cancellationReason?: string }) => {
       console.log('[PublicMenu] Atualização SSE recebida:', update);
       const newStatus = statusMap[update.status] || 'sent';
+      const updateOrderId = update.id ? update.id.toString() : '';
       
-      // Atualizar o pedido no estado local
+      // Atualizar o pedido no estado local - buscar por orderId ou orderNumber
       setUserOrders(prevOrders => {
         const newOrders = prevOrders.map(order => {
-          if (order.id === update.orderNumber) {
+          if (order.orderId?.toString() === updateOrderId || order.id === update.orderNumber) {
             return { ...order, status: newStatus };
           }
           return order;
@@ -1018,8 +1122,9 @@ export default function PublicMenu() {
       
       // Se o modal de tracking está aberto para este pedido, atualizar diretamente
       // Usa refs para evitar problemas de closure
-      console.log('[PublicMenu] Modal aberto:', showTrackingModalRef.current, 'Pedido atual:', currentOrderNumberRef.current, 'Pedido atualizado:', update.orderNumber);
-      if (showTrackingModalRef.current && currentOrderNumberRef.current === update.orderNumber) {
+      const currentRef = currentOrderNumberRef.current;
+      console.log('[PublicMenu] Modal aberto:', showTrackingModalRef.current, 'Pedido atual:', currentRef, 'Pedido atualizado: orderId=', updateOrderId, 'orderNumber=', update.orderNumber);
+      if (showTrackingModalRef.current && (currentRef === updateOrderId || currentRef === update.orderNumber)) {
         console.log('[PublicMenu] Atualizando orderStatus no modal para:', newStatus);
         setOrderStatus(newStatus);
         if (update.cancellationReason) {
@@ -1028,16 +1133,18 @@ export default function PublicMenu() {
       }
     };
     
-    // Registrar cada pedido ativo no SSE singleton
+    // Registrar cada pedido ativo no SSE singleton usando orderId (sem colisão com reset diário)
     // O singleton garante que apenas UMA conexão seja aberta
     activeOrders.forEach(order => {
-      orderSSE.trackOrder(order.id, handleStatusUpdate);
+      const trackingId = order.orderId ? order.orderId.toString() : order.id;
+      orderSSE.trackOrder(trackingId, handleStatusUpdate);
     });
     
     // Cleanup: remover pedidos do tracking quando o componente desmontar
     return () => {
       activeOrders.forEach(order => {
-        orderSSE.untrackOrder(order.id);
+        const trackingId = order.orderId ? order.orderId.toString() : order.id;
+        orderSSE.untrackOrder(trackingId);
       });
     };
   }, [userOrders.length, sseInitialized]); // Executar quando pedidos forem carregados do localStorage
@@ -1051,14 +1158,15 @@ export default function PublicMenu() {
     );
     
     // Callback para atualizações de status
-    const handleStatusUpdate = (update: { orderNumber: string; status: string; cancellationReason?: string }) => {
+    const handleStatusUpdate = (update: { id?: number; orderNumber: string; status: string; cancellationReason?: string }) => {
       console.log('[PublicMenu] Atualização SSE recebida:', update);
       const newStatus = statusMap[update.status] || 'sent';
+      const updateOrderId = update.id ? update.id.toString() : '';
       
-      // Atualizar o pedido no estado local
+      // Atualizar o pedido no estado local - buscar por orderId ou orderNumber
       setUserOrders(prevOrders => {
         const newOrders = prevOrders.map(order => {
-          if (order.id === update.orderNumber) {
+          if (order.orderId?.toString() === updateOrderId || order.id === update.orderNumber) {
             return { ...order, status: newStatus };
           }
           return order;
@@ -1077,7 +1185,8 @@ export default function PublicMenu() {
       }
       
       // Se o modal de tracking está aberto para este pedido, atualizar diretamente
-      if (showTrackingModalRef.current && currentOrderNumberRef.current === update.orderNumber) {
+      const currentRef = currentOrderNumberRef.current;
+      if (showTrackingModalRef.current && (currentRef === updateOrderId || currentRef === update.orderNumber)) {
         console.log('[PublicMenu] Atualizando orderStatus no modal para:', newStatus);
         setOrderStatus(newStatus);
         if (update.cancellationReason) {
@@ -1086,10 +1195,11 @@ export default function PublicMenu() {
       }
     };
     
-    // Registrar cada pedido ativo no SSE singleton (o singleton evita duplicatas)
+    // Registrar cada pedido ativo no SSE singleton usando orderId (sem colisão com reset diário)
     activeOrders.forEach(order => {
       // Atualizar callback para garantir que use os valores mais recentes
-      orderSSE.updateCallback(order.id, handleStatusUpdate);
+      const trackingId = order.orderId ? order.orderId.toString() : order.id;
+      orderSSE.updateCallback(trackingId, handleStatusUpdate);
     });
     
     // NÃO fazer cleanup aqui - o cleanup só deve acontecer quando o componente desmontar
@@ -4191,9 +4301,9 @@ setOnlinePaymentUrl(null);
                     <h3 className="text-2xl font-bold text-green-600 mb-2">
                       {onlinePaymentStatus === 'confirmed' ? 'Pagamento confirmado!' : 'Pedido enviado com sucesso!'}
                     </h3>
-                    {currentOrderNumber && (
+                    {(createdOrderNumber || selectedOrderId) && (
                       <p className="text-xl font-semibold text-gray-800 mb-4">
-                        Número do pedido: <span className="text-primary">{currentOrderNumber}</span>
+                        Número do pedido: <span className="text-primary">{createdOrderNumber || selectedOrderId}</span>
                       </p>
                     )}
                     <p className="text-gray-600">
@@ -4929,10 +5039,11 @@ setOnlinePaymentUrl(null);
                                 </div>
                                 <button
                                   onClick={() => {
-                                    setSelectedOrderId(order.id);
-                                    setCurrentOrderNumber(order.id);
-                                    setShowOrdersModal(false);
-                                    setShowTrackingModal(true);
+                                     setSelectedOrderId(order.id);
+                                     // Usar orderId para tracking (evita colisão com reset diário)
+                                     setCurrentOrderNumber(order.orderId ? order.orderId.toString() : order.id);
+                                     setShowOrdersModal(false);
+                                     setShowTrackingModal(true);
                                   }}
                                   className="mt-3 w-full py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
                                 >
@@ -5047,7 +5158,9 @@ setOnlinePaymentUrl(null);
                                       
                                       // Preencher dados do pedido anterior
                                       setDeliveryType(order.deliveryType);
-                                      setPaymentMethod(order.paymentMethod);
+                                      // Mapear 'online' para 'pix' já que 'online' não é uma opção selecionável
+                                      const mappedPayment = order.paymentMethod === 'online' ? 'pix' : order.paymentMethod;
+                                      setPaymentMethod(mappedPayment);
                                       setCustomerInfo({
                                         name: order.customerName,
                                         phone: order.customerPhone
@@ -5111,7 +5224,17 @@ setOnlinePaymentUrl(null);
                     <Package className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-white">Acompanhar Pedido{currentOrderNumber ? ` #${currentOrderNumber}` : ''}</h2>
+                    <h2 className="text-lg font-bold text-white">Acompanhar Pedido{(() => {
+                      // Exibir o número visual do pedido (ex: #P1) e não o orderId numérico
+                      if (!selectedOrderId) return '';
+                      // Se selectedOrderId já é visual (começa com # ou P), usar diretamente
+                      if (selectedOrderId.startsWith('#') || selectedOrderId.startsWith('P')) {
+                        return ` ${selectedOrderId.startsWith('#') ? selectedOrderId : '#' + selectedOrderId}`;
+                      }
+                      // Se é orderId numérico, buscar o orderNumber visual do currentOrderData ou userOrders
+                      const visualOrder = currentOrderData?.orderNumber || userOrders.find(o => o.orderId?.toString() === selectedOrderId)?.id;
+                      return visualOrder ? ` ${visualOrder.startsWith('#') ? visualOrder : '#' + visualOrder}` : '';
+                    })()}</h2>
                     <p className="text-sm text-white/80">Acompanhe o status em tempo real</p>
                   </div>
                 </div>

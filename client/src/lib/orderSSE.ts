@@ -12,6 +12,7 @@
 type OrderStatus = "sent" | "accepted" | "delivering" | "delivered" | "cancelled";
 
 interface OrderStatusUpdate {
+  id?: number;
   orderNumber: string;
   status: string;
   cancellationReason?: string;
@@ -251,11 +252,11 @@ class OrderSSEManager {
 
     this.isConnecting = true;
 
-    // Criar lista de orderNumbers
-    const orderNumbers = Array.from(this.connectedOrders).join(',');
-    const url = `/api/orders/track/stream?orders=${encodeURIComponent(orderNumbers)}`;
+    // Criar lista de orderIds para o endpoint por ID (sem colisão com reset diário)
+    const orderIds = Array.from(this.connectedOrders).join(',');
+    const url = `/api/orders/track/stream/byid?ids=${encodeURIComponent(orderIds)}`;
     
-    console.log(`[SSE-Public] Conectando com ${this.connectedOrders.size} pedidos: ${orderNumbers}`);
+    console.log(`[SSE-Public] Conectando com ${this.connectedOrders.size} pedidos (por orderId): ${orderIds}`);
     
     try {
       this.eventSource = new EventSource(url);
@@ -271,14 +272,16 @@ class OrderSSEManager {
       this.eventSource.addEventListener('order_status_update', (event) => {
         try {
           const data: OrderStatusUpdate = JSON.parse(event.data);
-          console.log('[SSE-Public] Atualização recebida:', data.orderNumber, '->', data.status);
-          console.log('[SSE-Public] Callbacks registrados para este pedido:', this.callbacks.get(data.orderNumber)?.length || 0);
+          // O orderId é a chave usada em connectedOrders e callbacks
+          const orderId = data.id ? data.id.toString() : data.orderNumber;
+          console.log('[SSE-Public] Atualização recebida: orderId=', orderId, 'orderNumber=', data.orderNumber, '->', data.status);
+          console.log('[SSE-Public] Callbacks registrados para este pedido:', this.callbacks.get(orderId)?.length || 0);
           console.log('[SSE-Public] Todos os pedidos com callbacks:', Array.from(this.callbacks.keys()));
           
-          // Notificar todos os callbacks registrados para este pedido
-          const callbacks = this.callbacks.get(data.orderNumber);
+          // Notificar todos os callbacks registrados para este pedido (por orderId)
+          const callbacks = this.callbacks.get(orderId);
           if (callbacks && callbacks.length > 0) {
-            console.log('[SSE-Public] Chamando', callbacks.length, 'callbacks para', data.orderNumber);
+            console.log('[SSE-Public] Chamando', callbacks.length, 'callbacks para orderId', orderId);
             // Fazer uma cópia do array para evitar problemas se um callback se remover durante a iteração
             [...callbacks].forEach(cb => {
               try {
@@ -288,7 +291,7 @@ class OrderSSEManager {
               }
             });
           } else {
-            console.log('[SSE-Public] NENHUM callback encontrado para', data.orderNumber);
+            console.log('[SSE-Public] NENHUM callback encontrado para orderId', orderId);
           }
         } catch (e) {
           console.error('[SSE-Public] Erro ao processar evento:', e);
