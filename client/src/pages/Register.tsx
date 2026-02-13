@@ -52,7 +52,7 @@ export default function Register() {
   };
 
   return (
-    <AuthLayout>
+    <AuthLayout backgroundImage="https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/eysJjMqcdzBIgDRm.jpg">
       {/* Logo - visible on mobile */}
       <div className="flex items-center gap-3 mb-8 lg:mb-6">
         <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
