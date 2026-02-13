@@ -1194,8 +1194,7 @@ export default function Pedidos() {
                               const diffHours = Math.floor(diffMins / 60);
                               if (diffMins < 1) return 'agora';
                               if (diffMins < 60) return `${diffMins} min`;
-                              if (diffHours === 1) return '1 hora';
-                              return `${diffHours} horas`;
+                              return `${diffHours}h`;
                             })()}
                           </div>
                         </div>
