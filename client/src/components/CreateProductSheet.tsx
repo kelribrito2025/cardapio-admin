@@ -799,34 +799,6 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
             ) : (
               /* Category selected - show groups for this category */
               <>
-                {/* Back to categories */}
-                <button
-                  onClick={() => setActiveGroupCategory(null)}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-1"
-                >
-                  <ArrowLeft className="h-3.5 w-3.5" />
-                  Voltar às categorias
-                </button>
-
-                {/* Category label */}
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={cn(
-                    "p-1.5 rounded-lg",
-                    activeGroupCategory === "ingredientes" && "bg-orange-100 dark:bg-orange-950/30",
-                    activeGroupCategory === "especificacoes" && "bg-blue-100 dark:bg-blue-950/30",
-                    activeGroupCategory === "descartaveis" && "bg-emerald-100 dark:bg-emerald-950/30",
-                  )}>
-                    {activeGroupCategory === "ingredientes" && <UtensilsCrossed className="h-4 w-4 text-orange-600 dark:text-orange-400" />}
-                    {activeGroupCategory === "especificacoes" && <ClipboardList className="h-4 w-4 text-blue-600 dark:text-blue-400" />}
-                    {activeGroupCategory === "descartaveis" && <PackageOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
-                  </div>
-                  <h3 className="font-semibold text-sm">
-                    {activeGroupCategory === "ingredientes" && "Ingredientes"}
-                    {activeGroupCategory === "especificacoes" && "Especificações"}
-                    {activeGroupCategory === "descartaveis" && "Descartáveis"}
-                  </h3>
-                </div>
-
                 {/* Groups for this category */}
                 {complementGroups.filter(g => g.category === activeGroupCategory).length === 0 ? (
                   <div className="text-center py-8">
@@ -935,14 +907,30 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
 
           {/* Footer */}
           <div className="p-4 border-t border-border/50 bg-card">
-            <Button
-              onClick={() => setStep(3)}
-              className="w-full rounded-xl h-11"
-              style={{ backgroundColor: '#db262f', color: 'white' }}
-            >
-              Avançar
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  if (activeGroupCategory) {
+                    setActiveGroupCategory(null);
+                  } else {
+                    setStep(1);
+                  }
+                }}
+                className="flex-1 rounded-xl h-11"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Voltar
+              </Button>
+              <Button
+                onClick={() => setStep(3)}
+                className="flex-1 rounded-xl h-11"
+                style={{ backgroundColor: '#db262f', color: 'white' }}
+              >
+                Avançar
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
           </div>
         </div>
       );

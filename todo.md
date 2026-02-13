@@ -6386,3 +6386,6 @@
 - [x] Alinhar estilo visual da slidebar de criar produto com a slidebar de criar combo (background branco, mesmo padrão)
 - [x] Passo 2 da slidebar de criar produto: adicionar 3 abas/cards antes de criar/copiar grupo — Ingredientes, Especificações, Descartáveis
 - [x] Cada aba leva ao mesmo fluxo de criar/copiar grupos (mudança visual, sem alterar lógica)
+- [x] Remover link "Voltar às categorias" do topo do conteúdo no Passo 2 da slidebar de criar produto
+- [x] Remover título com ícone da categoria do conteúdo no Passo 2
+- [x] Adicionar botão "Voltar" ao lado esquerdo do botão "Avançar" no footer do Passo 2
