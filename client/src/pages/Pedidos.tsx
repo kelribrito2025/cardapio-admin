@@ -22,7 +22,6 @@ import {
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
@@ -210,8 +209,8 @@ export default function Pedidos() {
   const [whatsappMsgFading, setWhatsappMsgFading] = useState(false);
   const [, navigate] = useLocation();
 
-  // Carrossel de mensagens do modal WhatsApp
-  const whatsappMessages = [
+  // Carrossel de mensagens do modal WhatsApp (estabilizado com useMemo)
+  const whatsappMessages = useMemo(() => [
     {
       text: <>Olá <strong>João Silva!</strong> Boa tarde, Tudo bem?</>,
       text2: <>Seu pedido <strong>#1234</strong> foi recebido com sucesso!</>,
@@ -236,7 +235,7 @@ export default function Pedidos() {
       items: ['Obrigado pela preferência!'],
       time: '13:00',
     },
-  ];
+  ], []);
 
   useEffect(() => {
     if (!whatsappInfoModalOpen) return;
@@ -1016,7 +1015,6 @@ export default function Pedidos() {
                 <div className="flex items-center gap-1">
                   {whatsappStatus?.status === 'connected' ? (
                 /* Quando conectado: Desconectar */
-                <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
@@ -1037,10 +1035,8 @@ export default function Pedidos() {
                       <p>Desconectar WhatsApp</p>
                     </TooltipContent>
                   </Tooltip>
-                </TooltipProvider>
               ) : (
                 /* Quando desconectado: Conectar via QR Code */
-                <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
@@ -1065,7 +1061,6 @@ export default function Pedidos() {
                       <p>Conectar WhatsApp via QR Code</p>
                     </TooltipContent>
                   </Tooltip>
-                </TooltipProvider>
               )}
                 </div>
               </>
@@ -1106,7 +1101,6 @@ export default function Pedidos() {
                 </div>
                 <div className="flex items-center gap-2">
                   {(column.id === "completed" || column.id === "cancelled") && columnOrders.length > 0 ? (
-                    <TooltipProvider delayDuration={300}>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
@@ -1127,7 +1121,6 @@ export default function Pedidos() {
                           <p className="text-xs">Clique para limpar {column.id === "completed" ? "pedidos completos" : "pedidos cancelados"} da tela</p>
                         </TooltipContent>
                       </Tooltip>
-                    </TooltipProvider>
                   ) : (
                     <div className={cn("p-2.5 rounded-lg shrink-0", column.iconBg)}>
                       <Icon className={cn("h-5 w-5", column.iconColor)} />
@@ -1259,60 +1252,46 @@ export default function Pedidos() {
                                     <Printer className="h-4 w-4 mr-2" />
                                     <span className="text-sm">Impressão Normal</span>
                                   </div>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleToggleFavoritePrintMethod('normal');
-                                        }}
-                                        className="p-1 hover:bg-accent-foreground/10 rounded"
-                                      >
-                                        <Star 
-                                          className={cn(
-                                            "h-4 w-4 transition-colors",
-                                            printerSettings?.defaultPrintMethod === 'normal' 
-                                              ? "fill-amber-500 text-amber-500" 
-                                              : "text-amber-500"
-                                          )} 
-                                        />
-                                      </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="left" className="max-w-[220px]">
-                                      <p className="font-medium">Definir como impressão padrão</p>
-                                      <p className="text-xs text-muted-foreground">Ao marcar como favorito, essa opção será usada automaticamente ao clicar em Aceitar pedido.</p>
-                                    </TooltipContent>
-                                  </Tooltip>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleToggleFavoritePrintMethod('normal');
+                                    }}
+                                    className="p-1 hover:bg-accent-foreground/10 rounded"
+                                    title="Definir como impressão padrão. Ao marcar como favorito, essa opção será usada automaticamente ao clicar em Aceitar pedido."
+                                  >
+                                    <Star 
+                                      className={cn(
+                                        "h-4 w-4 transition-colors",
+                                        printerSettings?.defaultPrintMethod === 'normal' 
+                                          ? "fill-amber-500 text-amber-500" 
+                                          : "text-amber-500"
+                                      )} 
+                                    />
+                                  </button>
                                 </div>
                                 <div className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" onClick={() => handlePrintMultiPrinter(order.id)}>
                                   <div className="flex items-center">
                                     <Printer className="h-4 w-4 mr-2" />
                                     <span className="text-sm">Múltiplas Impressoras (Android)</span>
                                   </div>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleToggleFavoritePrintMethod('android');
-                                        }}
-                                        className="p-1 hover:bg-accent-foreground/10 rounded"
-                                      >
-                                        <Star 
-                                          className={cn(
-                                            "h-4 w-4 transition-colors",
-                                            printerSettings?.defaultPrintMethod === 'android' 
-                                              ? "fill-amber-500 text-amber-500" 
-                                              : "text-amber-500"
-                                          )} 
-                                        />
-                                      </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="left" className="max-w-[220px]">
-                                      <p className="font-medium">Definir como impressão padrão</p>
-                                      <p className="text-xs text-muted-foreground">Ao marcar como favorito, essa opção será usada automaticamente ao clicar em Aceitar pedido.</p>
-                                    </TooltipContent>
-                                  </Tooltip>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleToggleFavoritePrintMethod('android');
+                                    }}
+                                    className="p-1 hover:bg-accent-foreground/10 rounded"
+                                    title="Definir como impressão padrão. Ao marcar como favorito, essa opção será usada automaticamente ao clicar em Aceitar pedido."
+                                  >
+                                    <Star 
+                                      className={cn(
+                                        "h-4 w-4 transition-colors",
+                                        printerSettings?.defaultPrintMethod === 'android' 
+                                          ? "fill-amber-500 text-amber-500" 
+                                          : "text-amber-500"
+                                      )} 
+                                    />
+                                  </button>
                                 </div>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -1422,60 +1401,46 @@ export default function Pedidos() {
                     <Printer className="h-4 w-4 mr-2" />
                     <span className="text-sm">Impressão Normal</span>
                   </div>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleToggleFavoritePrintMethod('normal');
-                        }}
-                        className="p-1 hover:bg-accent-foreground/10 rounded"
-                      >
-                        <Star 
-                          className={cn(
-                            "h-4 w-4 transition-colors",
-                            printerSettings?.defaultPrintMethod === 'normal' 
-                              ? "fill-amber-500 text-amber-500" 
-                              : "text-amber-500"
-                          )} 
-                        />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="left" className="max-w-[220px]">
-                      <p className="font-medium">Definir como impressão padrão</p>
-                      <p className="text-xs text-muted-foreground">Ao marcar como favorito, essa opção será usada automaticamente ao clicar em Aceitar pedido.</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleFavoritePrintMethod('normal');
+                    }}
+                    className="p-1 hover:bg-accent-foreground/10 rounded"
+                    title="Definir como impressão padrão. Ao marcar como favorito, essa opção será usada automaticamente ao clicar em Aceitar pedido."
+                  >
+                    <Star 
+                      className={cn(
+                        "h-4 w-4 transition-colors",
+                        printerSettings?.defaultPrintMethod === 'normal' 
+                          ? "fill-amber-500 text-amber-500" 
+                          : "text-amber-500"
+                      )} 
+                    />
+                  </button>
                 </div>
                 <div className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" onClick={() => orderDetails && handlePrintMultiPrinter(orderDetails.id)}>
                   <div className="flex items-center">
                     <Printer className="h-4 w-4 mr-2" />
                     <span className="text-sm">Múltiplas Impressoras (Android)</span>
                   </div>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleToggleFavoritePrintMethod('android');
-                        }}
-                        className="p-1 hover:bg-accent-foreground/10 rounded"
-                      >
-                        <Star 
-                          className={cn(
-                            "h-4 w-4 transition-colors",
-                            printerSettings?.defaultPrintMethod === 'android' 
-                              ? "fill-amber-500 text-amber-500" 
-                              : "text-amber-500"
-                          )} 
-                        />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="left" className="max-w-[220px]">
-                      <p className="font-medium">Definir como impressão padrão</p>
-                      <p className="text-xs text-muted-foreground">Ao marcar como favorito, essa opção será usada automaticamente ao clicar em Aceitar pedido.</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleFavoritePrintMethod('android');
+                    }}
+                    className="p-1 hover:bg-accent-foreground/10 rounded"
+                    title="Definir como impressão padrão. Ao marcar como favorito, essa opção será usada automaticamente ao clicar em Aceitar pedido."
+                  >
+                    <Star 
+                      className={cn(
+                        "h-4 w-4 transition-colors",
+                        printerSettings?.defaultPrintMethod === 'android' 
+                          ? "fill-amber-500 text-amber-500" 
+                          : "text-amber-500"
+                      )} 
+                    />
+                  </button>
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>

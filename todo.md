@@ -6364,3 +6364,4 @@
 - [x] Pedidos: Estilizar tipo de entrega abaixo do número do pedido como badge escuro (fundo preto, texto branco, arredondado)
 - [x] Fix catálogo: ao voltar da edição de produto, rolar para a categoria que estava sendo editada em vez de voltar ao topo
 - [x] Fix campos Mín/Máx dos adicionais no catálogo: permitir apagar completamente (sem ficar preso no zero), aceitar apenas inteiros, limitar a 999
+- [x] Bug: Maximum call stack size exceeded na página /pedidos - recursão infinita em useMemo / Tooltip nesting no editor visual
