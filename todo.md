@@ -6372,3 +6372,4 @@
 - [x] Pedidos: Alterar cores dos botões de ação (Aceitar, Pronto, Finalizar) para combinar com a cor da coluna do kanban
 - [x] Pedidos: Alterar cor do card de Preparo de dourado/âmbar para vermelho
 - [x] Bug crítico: Acompanhamento de pedido retorna pedido antigo após reset diário da numeração - usar ID único em vez de número visual
+- [x] Bug: Badge de contagem de complementos no catálogo não atualiza ao excluir todos os complementos de um item - só some ao atualizar a página

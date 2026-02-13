@@ -683,6 +683,8 @@ export default function InlineComplementsDropdown({
   const createGroupMutation = trpc.complement.createGroup.useMutation({
     onSuccess: () => {
       refetch();
+      // Invalidar lista de produtos para atualizar o badge de contagem de complementos
+      utils.product.list.invalidate();
       setAddingGroupName("");
       toast.success("Grupo criado");
     },
@@ -692,6 +694,8 @@ export default function InlineComplementsDropdown({
   const deleteGroupMutation = trpc.complement.deleteGroup.useMutation({
     onSuccess: () => {
       refetch();
+      // Invalidar lista de produtos para atualizar o badge de contagem de complementos
+      utils.product.list.invalidate();
       toast.success("Grupo excluído");
     },
     onError: () => toast.error("Erro ao excluir grupo"),
@@ -700,6 +704,8 @@ export default function InlineComplementsDropdown({
   const createItemMutation = trpc.complement.createItem.useMutation({
     onSuccess: () => {
       refetch();
+      // Invalidar lista de produtos para atualizar o badge de contagem de complementos
+      utils.product.list.invalidate();
       setAddingItemToGroup(null);
       setNewItemName("");
       setNewItemPrice("0,00");
@@ -718,6 +724,8 @@ export default function InlineComplementsDropdown({
   const deleteItemMutation = trpc.complement.deleteItem.useMutation({
     onSuccess: () => {
       refetch();
+      // Invalidar lista de produtos para atualizar o badge de contagem de complementos
+      utils.product.list.invalidate();
       toast.success("Item excluído");
     },
     onError: () => toast.error("Erro ao excluir item"),
