@@ -1202,7 +1202,7 @@ export default function Pedidos() {
                         </div>
 
                         {/* Content */}
-                        <div className="p-4">
+                        <div className="p-4" style={{height: '101px'}}>
                           {/* Linha compacta com todas as informações */}
                           <div className="flex items-center justify-between gap-2 flex-wrap">
                             <div className="flex items-center gap-2 min-w-0 flex-1">
