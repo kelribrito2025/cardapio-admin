@@ -6396,3 +6396,5 @@
 - [x] Alterar cor de fundo do tab selecionado na lista de pedidos: de preto para cor clara do badge do status (azul claro para Novos, vermelho claro para Preparo, etc.)
 - [x] Aumentar tamanho dos textos, botões e elementos da visualização em lista de Pedidos para ficar no padrão do Kanban e demais páginas
 - [x] Corrigir badges de tipo de entrega (Entrega, Retirada, Consumo) no modo lista de Pedidos para ter o mesmo visual do modo Kanban
+- [x] Exibir nome completo do status no badge da coluna STATUS no modo lista de Pedidos (em vez de abreviado)
+- [x] Criar coluna separada TEMPO no modo lista de Pedidos e remover o tempo da coluna PEDIDO

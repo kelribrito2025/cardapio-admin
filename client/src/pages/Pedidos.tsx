@@ -1463,9 +1463,10 @@ export default function Pedidos() {
         {/* Tabela compacta */}
         <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
           {/* Header da tabela */}
-          <div className="grid grid-cols-[70px_1fr_140px_110px_120px_130px_150px] gap-3 px-5 py-3.5 bg-muted/50 border-b border-border/50 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          <div className="grid grid-cols-[100px_1fr_70px_140px_110px_120px_120px_150px] gap-3 px-5 py-3.5 bg-muted/50 border-b border-border/50 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             <span>Status</span>
             <span>Pedido</span>
+            <span>Tempo</span>
             <span>Cliente</span>
             <span>Tipo</span>
             <span>Pagamento</span>
@@ -1477,9 +1478,10 @@ export default function Pedidos() {
           <div className="divide-y divide-border/30">
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="grid grid-cols-[70px_1fr_140px_110px_120px_130px_150px] gap-3 px-5 py-3.5 items-center">
-                  <div className="skeleton h-5 w-12 rounded" />
+                <div key={i} className="grid grid-cols-[100px_1fr_70px_140px_110px_120px_120px_150px] gap-3 px-5 py-3.5 items-center">
+                  <div className="skeleton h-5 w-20 rounded" />
                   <div className="skeleton h-4 w-24 rounded" />
+                  <div className="skeleton h-4 w-12 rounded" />
                   <div className="skeleton h-4 w-20 rounded" />
                   <div className="skeleton h-4 w-16 rounded" />
                   <div className="skeleton h-4 w-16 rounded" />
@@ -1513,7 +1515,7 @@ export default function Pedidos() {
                 return (
                   <div
                     key={order.id}
-                    className="grid grid-cols-[70px_1fr_140px_110px_120px_130px_150px] gap-3 px-5 py-3.5 items-center hover:bg-muted/30 transition-colors cursor-pointer"
+                    className="grid grid-cols-[100px_1fr_70px_140px_110px_120px_120px_150px] gap-3 px-5 py-3.5 items-center hover:bg-muted/30 transition-colors cursor-pointer"
                     onClick={() => setSelectedOrder(order.id)}
                   >
                     {/* Status badge */}
@@ -1521,7 +1523,7 @@ export default function Pedidos() {
                       className="inline-flex items-center justify-center py-1.5 px-2.5 rounded-lg text-[11px] font-bold uppercase tracking-wide"
                       style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
                     >
-                      {config.label.slice(0, 4)}
+                      {config.label}
                     </span>
 
                     {/* Pedido info */}
@@ -1532,11 +1534,13 @@ export default function Pedidos() {
                       {(order as any).source === 'ifood' && (
                         <span className="px-1.5 py-0.5 bg-red-500 text-white text-[9px] font-bold rounded-full">iFood</span>
                       )}
-                      <span className="text-sm text-muted-foreground flex items-center gap-1.5">
-                        <Clock className="h-3.5 w-3.5" />
-                        {timeStr}
-                      </span>
                     </div>
+
+                    {/* Tempo */}
+                    <span className="text-sm text-muted-foreground flex items-center gap-1">
+                      <Clock className="h-3.5 w-3.5" />
+                      {timeStr}
+                    </span>
 
                     {/* Cliente */}
                     <span className="text-sm font-medium truncate">{order.customerName || '—'}</span>
