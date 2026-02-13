@@ -67,6 +67,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { cn, capitalizeFirst } from "@/lib/utils";
 import { useSearch } from "@/contexts/SearchContext";
 import CreateComboSheet from "@/components/CreateComboSheet";
+import CreateProductSheet from "@/components/CreateProductSheet";
 import InlineComplementsDropdown from "@/components/InlineComplementsDropdown";
 
 // Sortable Product Item Component
@@ -622,6 +623,7 @@ export default function Catalogo() {
   
   // Combo Sheet state
   const [comboSheetOpen, setComboSheetOpen] = useState(false);
+  const [productSheetOpen, setProductSheetOpen] = useState(false);
   const [comboSheetCategoryId, setComboSheetCategoryId] = useState<number>(0);
   const [comboSheetCategoryName, setComboSheetCategoryName] = useState("");
   
@@ -1067,7 +1069,7 @@ export default function Catalogo() {
                 <FolderPlus className="h-4 w-4 mr-1.5 sm:mr-2" />
                 <span className="text-xs sm:text-sm">categoria</span>
               </Button>
-              <Button onClick={() => navigate("/catalogo/novo")} className="hidden md:flex rounded-lg h-9 px-3 text-xs sm:text-sm sm:px-3.5">
+              <Button onClick={() => setProductSheetOpen(true)} className="hidden md:flex rounded-lg h-9 px-3 text-xs sm:text-sm sm:px-3.5">
                 <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
                 <span className="text-xs sm:text-sm">item</span>
               </Button>
@@ -1105,7 +1107,7 @@ export default function Catalogo() {
         </Button>
         <Button
           size="icon"
-          onClick={() => navigate("/catalogo/novo")}
+          onClick={() => setProductSheetOpen(true)}
           className="h-10 w-10 rounded-xl flex-shrink-0"
           style={{ backgroundColor: '#db262f', color: 'white' }}
         >
@@ -1141,7 +1143,7 @@ export default function Catalogo() {
             description="Comece adicionando seu primeiro produto ao catálogo"
             action={{
               label: "Criar Produto",
-              onClick: () => navigate("/catalogo/novo")
+              onClick: () => setProductSheetOpen(true)
             }}
           />
         </SectionCard>
@@ -1387,6 +1389,19 @@ export default function Catalogo() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Create Product Sheet */}
+      {establishmentId && (
+        <CreateProductSheet
+          open={productSheetOpen}
+          onOpenChange={setProductSheetOpen}
+          establishmentId={establishmentId}
+          onSuccess={() => {
+            refetchProducts();
+            refetchCategories();
+          }}
+        />
+      )}
 
       {/* Create Combo Sheet */}
       {establishmentId && (

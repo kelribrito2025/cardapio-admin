@@ -6377,3 +6377,9 @@
 - [x] Catálogo: Adicionar textos "Salvar" e "Cancelar" ao lado dos ícones check e X no campo de edição do complemento
 - [x] Catálogo: Manter botões de ação (Normal, preço, pausar, lixeira) fixos à direita quando campo de edição do nome do complemento está ativo
 - [x] Catálogo: Aumentar largura do campo de edição do nome do complemento para ~1.5x-2x o tamanho do texto
+- [x] Refatorar criação de produto: substituir modal central por slidebar lateral direita (padrão Combo)
+- [x] Slidebar Etapa 1: Informações básicas (imagem, nome, descrição, categoria, status, estoque)
+- [x] Slidebar Etapa 2: Grupos de complementos (criar/copiar grupo, criar/copiar complemento)
+- [x] Slidebar Etapa 3: Disponibilidade e preço final (preço, categorias, horários)
+- [x] Progress bar no topo da slidebar (Passo 1 de 3)
+- [x] Não impactar botão de Complementos existente no catálogo
