@@ -6407,3 +6407,4 @@
 - [x] Auto-salvar estoque e preço ao clicar fora do campo (onBlur)
 - [ ] Corrigir formato do campo de preço inline no Catálogo para padrão brasileiro (R$ 0,00)
 - [x] Implementar máscara de moeda brasileira no campo de preço inline do Catálogo (digitar 500 = 5,00)
+- [x] Aplicar campo de preço editável inline com máscara de moeda nos complementos da página de Catálogo (sem cor vermelha)

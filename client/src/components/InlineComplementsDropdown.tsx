@@ -317,24 +317,31 @@ function SortableInlineItem({
     zIndex: isDragging ? 1000 : 1,
   };
 
-  const [localPrice, setLocalPrice] = useState(
-    item.price ? formatDisplayPrice(item.price) : "0,00"
-  );
+  // Currency mask: store as cents for proper formatting
+  const priceToCents = (price: string | number) => Math.round(Number(typeof price === 'string' ? parseFloat(price) : price) * 100) || 0;
+  const formatPriceBR = (cents: number) => {
+    const str = String(cents).padStart(3, '0');
+    return `${str.slice(0, -2)},${str.slice(-2)}`;
+  };
+
+  const [priceCents, setPriceCents] = useState(item.price ? priceToCents(item.price) : 0);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(item.name);
   const isFree = item.priceMode === "free";
 
-  function formatDisplayPrice(value: string | number): string {
-    const num = typeof value === "string" ? parseFloat(value) : value;
-    if (isNaN(num)) return "0,00";
-    return num.toFixed(2).replace(".", ",");
+  useEffect(() => {
+    setPriceCents(item.price ? priceToCents(item.price) : 0);
+  }, [item.price]);
+
+  function handlePriceChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    const cents = parseInt(raw, 10) || 0;
+    setPriceCents(cents);
   }
 
   function handlePriceBlur() {
-    const cleaned = localPrice.replace(/[^\d,]/g, "").replace(",", ".");
-    const num = parseFloat(cleaned);
-    const finalPrice = isNaN(num) ? "0" : num.toFixed(2);
-    setLocalPrice(formatDisplayPrice(finalPrice));
+    const newPrice = priceCents / 100;
+    const finalPrice = newPrice.toFixed(2);
     onUpdatePrice(item.id, finalPrice);
   }
 
@@ -496,19 +503,21 @@ function SortableInlineItem({
           </span>
         )}
 
-        {/* Price - editable inline (hidden if free) */}
+        {/* Price - editable inline with currency mask (hidden if free) */}
         {!isFree && (
           <div className={cn("relative flex-shrink-0", !item.isActive && "opacity-50")}>
-            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">
+            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium pointer-events-none">
               R$
             </span>
-            <Input
+            <input
               type="text"
               inputMode="numeric"
-              value={localPrice}
-              onChange={(e) => setLocalPrice(e.target.value)}
+              value={formatPriceBR(priceCents)}
+              onChange={handlePriceChange}
               onBlur={handlePriceBlur}
-              className="w-20 md:w-24 h-7 text-xs md:text-sm rounded-md border-border/50 text-right pl-7" style={{marginRight: '-2px', marginLeft: '-2px', width: '76px'}}
+              onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-[90px] h-7 pl-7 pr-2 text-sm text-right font-semibold rounded-lg border border-border/60 bg-muted/30 text-foreground focus:outline-none focus:ring-2 focus:ring-border/50 focus:border-border transition-all"
             />
           </div>
         )}
