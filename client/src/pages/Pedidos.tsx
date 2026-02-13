@@ -92,6 +92,9 @@ const kanbanColumns = [
     placeholderBorder: "border-blue-300 dark:border-blue-800",
     placeholderBg: "bg-blue-50 dark:bg-blue-950/30",
     placeholderText: "text-blue-500",
+    tabBg: "bg-blue-100 dark:bg-blue-950/50",
+    tabText: "text-blue-700 dark:text-blue-300",
+    tabBorder: "border-blue-200 dark:border-blue-800",
     icon: Clock,
   },
   {
@@ -105,6 +108,9 @@ const kanbanColumns = [
     placeholderBorder: "border-red-300 dark:border-red-800",
     placeholderBg: "bg-red-50/50 dark:bg-red-950/30",
     placeholderText: "text-red-500",
+    tabBg: "bg-red-100 dark:bg-red-950/50",
+    tabText: "text-red-700 dark:text-red-300",
+    tabBorder: "border-red-200 dark:border-red-800",
     icon: ChefHat,
   },
   {
@@ -118,6 +124,9 @@ const kanbanColumns = [
     placeholderBorder: "border-emerald-300 dark:border-emerald-800",
     placeholderBg: "bg-emerald-50/50 dark:bg-emerald-950/30",
     placeholderText: "text-emerald-500",
+    tabBg: "bg-emerald-100 dark:bg-emerald-950/50",
+    tabText: "text-emerald-700 dark:text-emerald-300",
+    tabBorder: "border-emerald-200 dark:border-emerald-800",
     icon: Package,
   },
   {
@@ -131,6 +140,9 @@ const kanbanColumns = [
     placeholderBorder: "border-border",
     placeholderBg: "bg-muted/50",
     placeholderText: "text-muted-foreground",
+    tabBg: "bg-gray-200 dark:bg-gray-800",
+    tabText: "text-gray-700 dark:text-gray-300",
+    tabBorder: "border-gray-300 dark:border-gray-700",
     icon: CheckCircle2,
   },
   {
@@ -144,6 +156,9 @@ const kanbanColumns = [
     placeholderBorder: "border-red-300 dark:border-red-800",
     placeholderBg: "bg-red-50 dark:bg-red-950/30",
     placeholderText: "text-red-500",
+    tabBg: "bg-red-100 dark:bg-red-950/50",
+    tabText: "text-red-700 dark:text-red-300",
+    tabBorder: "border-red-200 dark:border-red-800",
     icon: XCircle,
   },
 ];
@@ -1422,7 +1437,7 @@ export default function Pedidos() {
             onClick={() => setListStatusFilter('all')}
             className={cn(
               "px-3 py-1.5 rounded-lg text-xs font-medium transition-all border",
-              listStatusFilter === 'all' ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"
+              listStatusFilter === 'all' ? "bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700" : "bg-card border-border text-muted-foreground hover:text-foreground"
             )}
           >
             Todos ({filteredOrders?.length || 0})
@@ -1435,7 +1450,7 @@ export default function Pedidos() {
                 onClick={() => setListStatusFilter(col.id)}
                 className={cn(
                   "px-3 py-1.5 rounded-lg text-xs font-medium transition-all border flex items-center gap-1.5",
-                  listStatusFilter === col.id ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"
+                  listStatusFilter === col.id ? `${col.tabBg} ${col.tabText} ${col.tabBorder}` : "bg-card border-border text-muted-foreground hover:text-foreground"
                 )}
               >
                 <span className={cn("w-2 h-2 rounded-full", col.dotColor)} />
