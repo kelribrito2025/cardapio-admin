@@ -684,12 +684,6 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
           <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setStep(1)}
-                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
-                >
-                  <ArrowLeft className="h-5 w-5 text-white" />
-                </button>
                 <div className="p-2 bg-white/20 rounded-lg">
                   <Layers className="h-5 w-5 text-white" />
                 </div>
@@ -944,12 +938,9 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
           <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setStep2Sub("groups-list")}
-                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
-                >
-                  <ArrowLeft className="h-5 w-5 text-white" />
-                </button>
+                <div className="p-2 bg-white/20 rounded-lg">
+                  <Layers className="h-5 w-5 text-white" />
+                </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">Configurar grupo</h2>
                   <p className="text-sm text-white/80">
@@ -1019,15 +1010,25 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
 
           {/* Footer */}
           <div className="p-4 border-t border-border/50 bg-card">
-            <Button
-              onClick={handleSaveGroupConfig}
-              disabled={!groupName.trim()}
-              className="w-full rounded-xl h-11"
-              style={{ backgroundColor: '#db262f', color: 'white' }}
-            >
-              Avançar
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setStep2Sub("groups-list")}
+                className="flex-1 rounded-xl h-11"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Voltar
+              </Button>
+              <Button
+                onClick={handleSaveGroupConfig}
+                disabled={!groupName.trim()}
+                className="flex-1 rounded-xl h-11"
+                style={{ backgroundColor: '#db262f', color: 'white' }}
+              >
+                Avançar
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
           </div>
         </div>
       );
@@ -1044,12 +1045,9 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
           <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setStep2Sub("groups-list")}
-                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
-                >
-                  <ArrowLeft className="h-5 w-5 text-white" />
-                </button>
+                <div className="p-2 bg-white/20 rounded-lg">
+                  <Layers className="h-5 w-5 text-white" />
+                </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">{currentGroup?.name || "Grupo"}</h2>
                   <p className="text-sm text-white/80">Adicione os complementos</p>
@@ -1171,14 +1169,24 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
 
           {/* Footer */}
           <div className="p-4 border-t border-border/50 bg-card">
-            <Button
-              onClick={handleFinishGroup}
-              className="w-full rounded-xl h-11"
-              style={{ backgroundColor: '#db262f', color: 'white' }}
-            >
-              <Check className="h-4 w-4 mr-2" />
-              Concluir grupo
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setStep2Sub("group-config")}
+                className="flex-1 rounded-xl h-11"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Voltar
+              </Button>
+              <Button
+                onClick={handleFinishGroup}
+                className="flex-1 rounded-xl h-11"
+                style={{ backgroundColor: '#db262f', color: 'white' }}
+              >
+                <Check className="h-4 w-4 mr-2" />
+                Concluir grupo
+              </Button>
+            </div>
           </div>
         </div>
       );
@@ -1197,12 +1205,9 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
           <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <button
-                  onClick={() => { setCopyProductId(null); setStep2Sub("groups-list"); }}
-                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
-                >
-                  <ArrowLeft className="h-5 w-5 text-white" />
-                </button>
+                <div className="p-2 bg-white/20 rounded-lg">
+                  <Copy className="h-5 w-5 text-white" />
+                </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">Copiar grupo</h2>
                   <p className="text-sm text-white/80">Selecione um produto para copiar</p>
@@ -1260,15 +1265,25 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
 
           {/* Footer */}
           <div className="p-4 border-t border-border/50 bg-card">
-            <Button
-              onClick={handleCopyGroups}
-              disabled={!copyProductId || !copyGroups}
-              className="w-full rounded-xl h-11"
-              style={{ backgroundColor: '#db262f', color: 'white' }}
-            >
-              <Copy className="h-4 w-4 mr-2" />
-              Copiar complementos
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => { setCopyProductId(null); setStep2Sub("groups-list"); }}
+                className="flex-1 rounded-xl h-11"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Voltar
+              </Button>
+              <Button
+                onClick={handleCopyGroups}
+                disabled={!copyProductId || !copyGroups}
+                className="flex-1 rounded-xl h-11"
+                style={{ backgroundColor: '#db262f', color: 'white' }}
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Copiar complementos
+              </Button>
+            </div>
           </div>
         </div>
       );
@@ -1287,12 +1302,6 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
         <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => setStep(2)}
-                className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="h-5 w-5 text-white" />
-              </button>
               <div className="p-2 bg-white/20 rounded-lg">
                 <Clock className="h-5 w-5 text-white" />
               </div>
@@ -1497,25 +1506,35 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border/50 bg-card space-y-2">
-          <Button
-            onClick={handleSubmit}
-            disabled={createMutation.isPending || !price}
-            className="w-full rounded-xl h-11"
-            style={{ backgroundColor: '#db262f', color: 'white' }}
-          >
-            {createMutation.isPending ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Criando...
-              </>
-            ) : (
-              <>
-                <Check className="h-4 w-4 mr-2" />
-                Criar produto
-              </>
-            )}
-          </Button>
+        <div className="p-4 border-t border-border/50 bg-card">
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setStep(2)}
+              className="flex-1 rounded-xl h-11"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={createMutation.isPending || !price}
+              className="flex-1 rounded-xl h-11"
+              style={{ backgroundColor: '#db262f', color: 'white' }}
+            >
+              {createMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Criando...
+                </>
+              ) : (
+                <>
+                  <Check className="h-4 w-4 mr-2" />
+                  Criar produto
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     );

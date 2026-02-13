@@ -6389,3 +6389,5 @@
 - [x] Remover link "Voltar às categorias" do topo do conteúdo no Passo 2 da slidebar de criar produto
 - [x] Remover título com ícone da categoria do conteúdo no Passo 2
 - [x] Adicionar botão "Voltar" ao lado esquerdo do botão "Avançar" no footer do Passo 2
+- [x] Remover botão de seta voltar do header vermelho do Passo 2 (já tem Voltar no footer)
+- [x] Remover botão de seta voltar do header vermelho de TODOS os passos e sub-passos da slidebar de criar produto
