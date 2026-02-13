@@ -1543,8 +1543,8 @@ export default function Pedidos() {
 
                     {/* Tipo de entrega */}
                     <span
-                      className="inline-flex items-center justify-center py-1 px-2.5 rounded-md text-[10px] font-bold uppercase tracking-wide w-fit"
-                      style={{ backgroundColor: config.badgeBg + '20', color: config.badgeBg }}
+                      className="inline-flex items-center justify-center py-0.5 font-bold uppercase tracking-wide w-fit"
+                      style={{ borderRadius: '5px', fontSize: '9px', height: '18px', paddingRight: '6px', paddingLeft: '6px', color: config.badgeText, backgroundColor: config.badgeBg }}
                     >
                       {order.deliveryType === 'delivery' ? 'Entrega' : order.deliveryType === 'dine_in' ? 'Consumo' : 'Retirada'}
                     </span>
