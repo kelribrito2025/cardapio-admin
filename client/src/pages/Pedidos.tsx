@@ -1342,7 +1342,8 @@ export default function Pedidos() {
                             {nextAction && (
                               <Button
                                 size="sm"
-                                className="flex-1 h-9 rounded-lg shadow-sm text-sm"
+                                className="flex-1 h-9 rounded-lg shadow-sm text-sm hover:opacity-90"
+                                style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
                                 onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
                                 disabled={loadingOrderId !== null}
                               >
@@ -1547,7 +1548,8 @@ export default function Pedidos() {
                       {nextAction && (
                         <Button
                           size="sm"
-                          className="h-7 px-3 rounded-md text-xs shadow-sm"
+                          className="h-7 px-3 rounded-md text-xs shadow-sm hover:opacity-90"
+                          style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
                           onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
                           disabled={loadingOrderId !== null}
                         >
