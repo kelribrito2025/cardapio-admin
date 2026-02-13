@@ -6405,3 +6405,5 @@
 - [x] Adicionar campo de Estoque editável inline ao lado esquerdo do preço na versão desktop da página de Catálogo
 - [x] Tornar campo de Preço editável inline na versão desktop da página de Catálogo
 - [x] Auto-salvar estoque e preço ao clicar fora do campo (onBlur)
+- [ ] Corrigir formato do campo de preço inline no Catálogo para padrão brasileiro (R$ 0,00)
+- [x] Implementar máscara de moeda brasileira no campo de preço inline do Catálogo (digitar 500 = 5,00)

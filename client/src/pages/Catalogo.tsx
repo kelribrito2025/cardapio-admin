@@ -113,24 +113,36 @@ function SortableProductItem({
   const isComplementsOpen = expandedComplementProductId === product.id;
 
   // Inline editable fields state
-  const [localPrice, setLocalPrice] = useState(product.price ? String(Number(product.price).toFixed(2)).replace('.', ',') : '0,00');
+  const formatPriceBR = (cents: number) => {
+    const str = String(cents).padStart(3, '0');
+    const reais = str.slice(0, -2);
+    const centavos = str.slice(-2);
+    return `${reais},${centavos}`;
+  };
+
+  const priceToCents = (price: string | number) => Math.round(Number(price) * 100);
+
+  const [priceCents, setPriceCents] = useState(product.price ? priceToCents(product.price) : 0);
   const [localStock, setLocalStock] = useState(product.hasStock && product.stockQuantity !== null ? String(product.stockQuantity) : '');
   const priceRef = useRef<HTMLInputElement>(null);
   const stockRef = useRef<HTMLInputElement>(null);
 
   // Sync local state when product changes from server
   useEffect(() => {
-    setLocalPrice(product.price ? String(Number(product.price).toFixed(2)).replace('.', ',') : '0,00');
+    setPriceCents(product.price ? priceToCents(product.price) : 0);
     setLocalStock(product.hasStock && product.stockQuantity !== null ? String(product.stockQuantity) : '');
   }, [product.price, product.stockQuantity, product.hasStock]);
 
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    const cents = parseInt(raw, 10) || 0;
+    setPriceCents(cents);
+  };
+
   const handlePriceBlur = () => {
-    const numericValue = localPrice.replace(/[^0-9,]/g, '').replace(',', '.');
-    const parsed = parseFloat(numericValue);
-    if (!isNaN(parsed) && parsed !== Number(product.price)) {
-      onUpdateInline?.(product.id, { price: parsed.toFixed(2) });
-    } else {
-      setLocalPrice(product.price ? String(Number(product.price).toFixed(2)).replace('.', ',') : '0,00');
+    const newPrice = priceCents / 100;
+    if (newPrice !== Number(product.price)) {
+      onUpdateInline?.(product.id, { price: newPrice.toFixed(2) });
     }
   };
 
@@ -293,9 +305,9 @@ function SortableProductItem({
               <input
                 ref={priceRef}
                 type="text"
-                inputMode="decimal"
-                value={localPrice}
-                onChange={(e) => setLocalPrice(e.target.value.replace(/[^0-9,]/g, ''))}
+                inputMode="numeric"
+                value={formatPriceBR(priceCents)}
+                onChange={handlePriceChange}
                 onBlur={handlePriceBlur}
                 onKeyDown={(e) => { if (e.key === 'Enter') priceRef.current?.blur(); }}
                 onClick={(e) => e.stopPropagation()}
