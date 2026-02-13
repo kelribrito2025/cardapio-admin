@@ -1033,7 +1033,7 @@ export default function Pedidos() {
                 /* Conectado */
                 <>
                   <span className="w-4 h-4 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" style={{width: '10px', height: '10px'}} />
-                  <span>Conectado</span>
+                  <span style={{fontSize: '13px'}}>Conectado</span>
                 </>
               ) : (
                 /* Desconectado */
