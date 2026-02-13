@@ -24,7 +24,7 @@ export function AuthLayout({ children, backgroundImage }: AuthLayoutProps) {
         {/* Background image */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${backgroundImage || '/gerente-restaurante.png'})` }}
+          style={{ backgroundImage: `url(${backgroundImage || 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/izKjqeVrEuGPpySX.jpg'})` }}
         />
         {/* Red overlay with 60% opacity (40% transparency) */}
         <div className="absolute inset-0 bg-gradient-to-br from-red-600/60 via-red-700/60 to-red-900/60" />

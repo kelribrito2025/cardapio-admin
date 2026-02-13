@@ -6398,3 +6398,4 @@
 - [x] Corrigir badges de tipo de entrega (Entrega, Retirada, Consumo) no modo lista de Pedidos para ter o mesmo visual do modo Kanban
 - [x] Exibir nome completo do status no badge da coluna STATUS no modo lista de Pedidos (em vez de abreviado)
 - [x] Criar coluna separada TEMPO no modo lista de Pedidos e remover o tempo da coluna PEDIDO
+- [x] Trocar foto da página de Login pela imagem dos dois bartenders com tablet
