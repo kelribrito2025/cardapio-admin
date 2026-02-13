@@ -6375,3 +6375,4 @@
 - [x] Bug: Badge de contagem de complementos no catálogo não atualiza ao excluir todos os complementos de um item - só some ao atualizar a página
 - [x] Catálogo: Campo de edição do nome do complemento deve ter largura proporcional ao texto, não largura total
 - [x] Catálogo: Adicionar textos "Salvar" e "Cancelar" ao lado dos ícones check e X no campo de edição do complemento
+- [x] Catálogo: Manter botões de ação (Normal, preço, pausar, lixeira) fixos à direita quando campo de edição do nome do complemento está ativo

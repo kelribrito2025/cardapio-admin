@@ -383,78 +383,80 @@ function SortableInlineItem({
         )}
 
         {/* Name - editable */}
-        {isEditingName ? (
-          <div className="flex items-center gap-1 min-w-0">
-            <Input
-              value={editedName}
-              onChange={(e) => setEditedName(e.target.value)}
-              className="h-7 text-sm min-w-0"
-              style={{ width: `${Math.max(editedName.length * 8 + 24, 60)}px`, maxWidth: '300px' }}
-              autoFocus
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSaveName();
-                if (e.key === "Escape") {
+        <div className="flex-1 min-w-0">
+          {isEditingName ? (
+            <div className="flex items-center gap-1 min-w-0">
+              <Input
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                className="h-7 text-sm min-w-0"
+                style={{ width: `${Math.max(editedName.length * 8 + 24, 60)}px`, maxWidth: '300px' }}
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSaveName();
+                  if (e.key === "Escape") {
+                    setIsEditingName(false);
+                    setEditedName(item.name);
+                  }
+                }}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-green-600 hover:text-green-700 hover:bg-green-50 flex-shrink-0 gap-1"
+                onClick={handleSaveName}
+              >
+                <Check className="h-3.5 w-3.5" />
+                <span className="text-xs">Salvar</span>
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 flex-shrink-0 gap-1"
+                onClick={() => {
                   setIsEditingName(false);
                   setEditedName(item.name);
-                }
-              }}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-green-600 hover:text-green-700 hover:bg-green-50 flex-shrink-0 gap-1"
-              onClick={handleSaveName}
-            >
-              <Check className="h-3.5 w-3.5" />
-              <span className="text-xs">Salvar</span>
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 flex-shrink-0 gap-1"
-              onClick={() => {
-                setIsEditingName(false);
-                setEditedName(item.name);
-              }}
-            >
-              <X className="h-3.5 w-3.5" />
-              <span className="text-xs">Cancelar</span>
-            </Button>
-          </div>
-        ) : (
-          <div className={cn("flex items-center gap-1 flex-1 min-w-0", !item.isActive && "opacity-50")}>
-            <span
-              className={cn(
-                "text-sm truncate",
-                !item.isActive && "line-through text-muted-foreground"
+                }}
+              >
+                <X className="h-3.5 w-3.5" />
+                <span className="text-xs">Cancelar</span>
+              </Button>
+            </div>
+          ) : (
+            <div className={cn("flex items-center gap-1 min-w-0", !item.isActive && "opacity-50")}>
+              <span
+                className={cn(
+                  "text-sm truncate",
+                  !item.isActive && "line-through text-muted-foreground"
+                )}
+              >
+                {item.name}
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsEditingName(true)}
+                className="hidden md:inline text-red-600 hover:text-red-700 text-[10px] font-medium flex-shrink-0 hover:underline"
+              >
+                Editar
+              </button>
+              {/* Badges */}
+              {item.badgeText && (
+                <Badge variant="secondary" className="bg-red-100 text-red-600 border-red-200 animate-pulse text-[9px] px-1 py-0 h-4 flex-shrink-0">
+                  {item.badgeText}
+                </Badge>
               )}
-            >
-              {item.name}
-            </span>
-            <button
-              type="button"
-              onClick={() => setIsEditingName(true)}
-              className="hidden md:inline text-red-600 hover:text-red-700 text-[10px] font-medium flex-shrink-0 hover:underline"
-            >
-              Editar
-            </button>
-            {/* Badges */}
-            {item.badgeText && (
-              <Badge variant="secondary" className="bg-red-100 text-red-600 border-red-200 animate-pulse text-[9px] px-1 py-0 h-4 flex-shrink-0">
-                {item.badgeText}
-              </Badge>
-            )}
 
-            {item.availabilityType === "scheduled" && (
-              <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200 text-[9px] px-1 py-0 h-4 flex-shrink-0">
-                <Clock className="h-2.5 w-2.5 mr-0.5" />
-                Horário
-              </Badge>
-            )}
-          </div>
-        )}
+              {item.availabilityType === "scheduled" && (
+                <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200 text-[9px] px-1 py-0 h-4 flex-shrink-0">
+                  <Clock className="h-2.5 w-2.5 mr-0.5" />
+                  Horário
+                </Badge>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Price toggle: Normal / Grátis - desktop only */}
         <Tooltip>
