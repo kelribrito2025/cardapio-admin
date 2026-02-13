@@ -1166,7 +1166,7 @@ export default function Pedidos() {
                         className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-200"
                       >
                         {/* Header colorido com ícone - estilo original */}
-                        <div className={cn("px-4 py-3 flex items-center justify-between rounded-t-xl", config.bgColor)}>
+                        <div className={cn("px-4 py-3 flex items-center justify-between rounded-t-xl", config.bgColor)} style={{height: '60px'}}>
                           <div className="flex items-center gap-3">
                             <div className={cn("p-2 rounded-full bg-card/90 shadow-sm", config.color)}>
                               <config.icon className="h-4 w-4" />
