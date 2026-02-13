@@ -390,7 +390,7 @@ function SortableInlineItem({
                 value={editedName}
                 onChange={(e) => setEditedName(e.target.value)}
                 className="h-7 text-sm min-w-0"
-                style={{ width: `${Math.max(editedName.length * 8 + 24, 60)}px`, maxWidth: '300px' }}
+                style={{ width: `${Math.max(editedName.length * 14 + 32, 120)}px`, maxWidth: '400px' }}
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleSaveName();

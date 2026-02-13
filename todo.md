@@ -6376,3 +6376,4 @@
 - [x] Catálogo: Campo de edição do nome do complemento deve ter largura proporcional ao texto, não largura total
 - [x] Catálogo: Adicionar textos "Salvar" e "Cancelar" ao lado dos ícones check e X no campo de edição do complemento
 - [x] Catálogo: Manter botões de ação (Normal, preço, pausar, lixeira) fixos à direita quando campo de edição do nome do complemento está ativo
+- [x] Catálogo: Aumentar largura do campo de edição do nome do complemento para ~1.5x-2x o tamanho do texto
