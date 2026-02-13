@@ -41,7 +41,7 @@ import {
   Layers,
   FolderPlus,
 } from "lucide-react";
-import { useState, useEffect, useMemo, useRef, useCallback, startTransition } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback, startTransition, type FocusEvent } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 import {
@@ -81,6 +81,7 @@ function SortableProductItem({
   formatCurrency,
   expandedComplementProductId,
   onToggleComplements,
+  onUpdateInline,
 }: {
   product: any;
   isDragDisabled: boolean;
@@ -91,6 +92,7 @@ function SortableProductItem({
   formatCurrency: (value: string | number) => string;
   expandedComplementProductId: number | null;
   onToggleComplements: (id: number) => void;
+  onUpdateInline?: (id: number, data: { price?: string; stockQuantity?: number | null; hasStock?: boolean }) => void;
 }) {
   const {
     attributes,
@@ -109,6 +111,38 @@ function SortableProductItem({
   };
 
   const isComplementsOpen = expandedComplementProductId === product.id;
+
+  // Inline editable fields state
+  const [localPrice, setLocalPrice] = useState(product.price ? String(Number(product.price).toFixed(2)).replace('.', ',') : '0,00');
+  const [localStock, setLocalStock] = useState(product.hasStock && product.stockQuantity !== null ? String(product.stockQuantity) : '');
+  const priceRef = useRef<HTMLInputElement>(null);
+  const stockRef = useRef<HTMLInputElement>(null);
+
+  // Sync local state when product changes from server
+  useEffect(() => {
+    setLocalPrice(product.price ? String(Number(product.price).toFixed(2)).replace('.', ',') : '0,00');
+    setLocalStock(product.hasStock && product.stockQuantity !== null ? String(product.stockQuantity) : '');
+  }, [product.price, product.stockQuantity, product.hasStock]);
+
+  const handlePriceBlur = () => {
+    const numericValue = localPrice.replace(/[^0-9,]/g, '').replace(',', '.');
+    const parsed = parseFloat(numericValue);
+    if (!isNaN(parsed) && parsed !== Number(product.price)) {
+      onUpdateInline?.(product.id, { price: parsed.toFixed(2) });
+    } else {
+      setLocalPrice(product.price ? String(Number(product.price).toFixed(2)).replace('.', ',') : '0,00');
+    }
+  };
+
+  const handleStockBlur = () => {
+    const parsed = parseInt(localStock, 10);
+    if (localStock === '' && product.hasStock) {
+      // User cleared stock - disable stock control
+      onUpdateInline?.(product.id, { hasStock: false, stockQuantity: null });
+    } else if (!isNaN(parsed) && (parsed !== product.stockQuantity || !product.hasStock)) {
+      onUpdateInline?.(product.id, { hasStock: true, stockQuantity: parsed });
+    }
+  };
 
   return (
     <div
@@ -240,12 +274,35 @@ function SortableProductItem({
               </span>
             )}
           </div>
-          {/* Desktop: preço na mesma linha */}
-          {Number(product.price) > 0 && (
-            <div className={cn("hidden md:block text-right flex-shrink-0 min-w-[80px]", product.status !== "active" && "opacity-50")}>
-              <p className="font-semibold text-base text-primary">{formatCurrency(product.price)}</p>
+          {/* Desktop: Estoque + Preço editáveis inline */}
+          <div className={cn("hidden md:flex items-center gap-2 flex-shrink-0", product.status !== "active" && "opacity-50")}>
+            <input
+              ref={stockRef}
+              type="text"
+              inputMode="numeric"
+              value={localStock}
+              placeholder="Estoque"
+              onChange={(e) => setLocalStock(e.target.value.replace(/[^0-9]/g, ''))}
+              onBlur={handleStockBlur}
+              onKeyDown={(e) => { if (e.key === 'Enter') stockRef.current?.blur(); }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-[80px] h-8 px-2.5 text-sm text-center font-medium rounded-lg border border-border/60 bg-muted/30 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
+            />
+            <div className="relative">
+              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-primary font-medium pointer-events-none">R$</span>
+              <input
+                ref={priceRef}
+                type="text"
+                inputMode="decimal"
+                value={localPrice}
+                onChange={(e) => setLocalPrice(e.target.value.replace(/[^0-9,]/g, ''))}
+                onBlur={handlePriceBlur}
+                onKeyDown={(e) => { if (e.key === 'Enter') priceRef.current?.blur(); }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-[100px] h-8 pl-8 pr-2.5 text-sm text-right font-semibold rounded-lg border border-border/60 bg-muted/30 text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
+              />
             </div>
-          )}
+          </div>
           {/* Botão Pausar/Play igual ao da categoria */}
           <Tooltip>
             <TooltipTrigger asChild>
@@ -871,6 +928,21 @@ export default function Catalogo() {
     },
   });
 
+  // Mutation para atualização inline (preço/estoque)
+  const inlineUpdateMutation = trpc.product.update.useMutation({
+    onSuccess: () => {
+      refetchProducts();
+    },
+    onError: () => {
+      toast.error("Erro ao atualizar produto");
+      refetchProducts();
+    },
+  });
+
+  const handleInlineUpdate = useCallback((id: number, data: { price?: string; stockQuantity?: number | null; hasStock?: boolean }) => {
+    inlineUpdateMutation.mutate({ id, ...data });
+  }, [inlineUpdateMutation]);
+
   const formatCurrency = (value: string | number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
@@ -1232,6 +1304,7 @@ export default function Catalogo() {
                         formatCurrency={formatCurrency}
                         expandedComplementProductId={expandedComplementProductId}
                         onToggleComplements={handleToggleComplements}
+                        onUpdateInline={handleInlineUpdate}
                       />
                     ))}
                   </div>
@@ -1285,6 +1358,7 @@ export default function Catalogo() {
                       formatCurrency={formatCurrency}
                       expandedComplementProductId={expandedComplementProductId}
                       onToggleComplements={handleToggleComplements}
+                      onUpdateInline={handleInlineUpdate}
                     />
                   ))}
                 </div>

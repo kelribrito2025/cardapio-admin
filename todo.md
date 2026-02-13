@@ -6399,3 +6399,9 @@
 - [x] Exibir nome completo do status no badge da coluna STATUS no modo lista de Pedidos (em vez de abreviado)
 - [x] Criar coluna separada TEMPO no modo lista de Pedidos e remover o tempo da coluna PEDIDO
 - [x] Trocar foto da página de Login pela imagem dos dois bartenders com tablet
+- [ ] Adicionar campo de Estoque editável inline ao lado esquerdo do preço na versão desktop do cardápio
+- [ ] Tornar campo de Preço editável inline na versão desktop do cardápio
+- [x] Auto-salvar estoque e preço ao clicar fora do campo (onBlur)
+- [x] Adicionar campo de Estoque editável inline ao lado esquerdo do preço na versão desktop da página de Catálogo
+- [x] Tornar campo de Preço editável inline na versão desktop da página de Catálogo
+- [x] Auto-salvar estoque e preço ao clicar fora do campo (onBlur)
