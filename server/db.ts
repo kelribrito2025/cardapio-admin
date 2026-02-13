@@ -1113,6 +1113,56 @@ export async function getOrderItemsWithPrinter(orderId: number) {
   return items;
 }
 
+/**
+ * Gera o próximo número de pedido diário (#P1, #P2, etc.)
+ * Reinicia automaticamente à 00:00 no fuso horário do estabelecimento.
+ */
+async function getNextDailyOrderNumber(establishmentId: number): Promise<string> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Buscar timezone do estabelecimento
+  const estResult = await db.select({ timezone: establishments.timezone })
+    .from(establishments)
+    .where(eq(establishments.id, establishmentId))
+    .limit(1);
+  const timezone = estResult.length > 0 ? estResult[0].timezone : 'America/Sao_Paulo';
+
+  // Calcular início do dia atual no fuso horário do estabelecimento
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit' });
+  const todayStr = formatter.format(now); // formato YYYY-MM-DD
+  // Converter início do dia local para UTC
+  const startOfDayLocal = new Date(`${todayStr}T00:00:00`);
+  // Obter offset do timezone para converter para UTC
+  const utcFormatter = new Intl.DateTimeFormat('en-US', { timeZone: timezone, hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const parts = utcFormatter.formatToParts(now);
+  const localTimeStr = `${parts.find(p => p.type === 'year')?.value}-${parts.find(p => p.type === 'month')?.value}-${parts.find(p => p.type === 'day')?.value}T${parts.find(p => p.type === 'hour')?.value}:${parts.find(p => p.type === 'minute')?.value}:${parts.find(p => p.type === 'second')?.value}`;
+  const localTime = new Date(localTimeStr);
+  const offsetMs = now.getTime() - localTime.getTime();
+  const startOfDayUTC = new Date(startOfDayLocal.getTime() + offsetMs);
+
+  // Buscar último pedido do dia atual para o estabelecimento
+  const lastOrderResult = await db.select({ orderNumber: orders.orderNumber })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      gte(orders.createdAt, startOfDayUTC)
+    ))
+    .orderBy(desc(orders.id))
+    .limit(1);
+
+  let nextNumber = 1;
+  if (lastOrderResult.length > 0 && lastOrderResult[0].orderNumber) {
+    const match = lastOrderResult[0].orderNumber.match(/#P(\d+)/);
+    if (match) {
+      nextNumber = parseInt(match[1], 10) + 1;
+    }
+  }
+
+  return `#P${nextNumber}`;
+}
+
 export async function createOrderWithNumber(data: InsertOrder, items: InsertOrderItem[]): Promise<{ id: number; orderNumber: string }> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -1172,24 +1222,10 @@ export async function createOrderWithNumber(data: InsertOrder, items: InsertOrde
   }
   
   // Se não foi passado orderNumber, gerar automaticamente no formato #P1, #P2, etc.
+  // Reset diário automático: numeração reinicia à 00:00 no fuso horário do estabelecimento
   let orderNumber = data.orderNumber;
   if (!orderNumber || orderNumber.match(/^\d+$/)) {
-    // Buscar último pedido do estabelecimento para gerar próximo número
-    const lastOrderResult = await db.select({ orderNumber: orders.orderNumber })
-      .from(orders)
-      .where(eq(orders.establishmentId, data.establishmentId))
-      .orderBy(desc(orders.id))
-      .limit(1);
-    
-    let nextNumber = 1;
-    if (lastOrderResult.length > 0 && lastOrderResult[0].orderNumber) {
-      const lastNumber = lastOrderResult[0].orderNumber;
-      const match = lastNumber.match(/#P(\d+)/);
-      if (match) {
-        nextNumber = parseInt(match[1], 10) + 1;
-      }
-    }
-    orderNumber = `#P${nextNumber}`;
+    orderNumber = await getNextDailyOrderNumber(data.establishmentId);
   }
   
   // Definir status padrão como 'preparing' para pedidos do PDV
@@ -2458,25 +2494,8 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
   }
   
   // Generate order number with format #P1, #P2, etc. (sem zeros à esquerda)
-  // Get the next order number from the database
-  const lastOrderResult = await db.select({ orderNumber: orders.orderNumber })
-    .from(orders)
-    .where(eq(orders.establishmentId, data.establishmentId))
-    .orderBy(desc(orders.id))
-    .limit(1);
-  
-  let nextNumber = 1;
-  if (lastOrderResult.length > 0 && lastOrderResult[0].orderNumber) {
-    const lastNumber = lastOrderResult[0].orderNumber;
-    // Extract number from format #P1, #P2, etc.
-    const match = lastNumber.match(/#P(\d+)/);
-    if (match) {
-      nextNumber = parseInt(match[1], 10) + 1;
-    }
-  }
-  
-  // Formato simplificado: #P1, #P2, #P3... (sem zeros à esquerda)
-  const orderNumber = `#P${nextNumber}`;
+  // Reset diário automático: numeração reinicia à 00:00 no fuso horário do estabelecimento
+  const orderNumber = await getNextDailyOrderNumber(data.establishmentId);
   console.log('[DB:createPublicOrder] Order number gerado:', orderNumber);
   
   // Definir status inicial baseado na configuração de confirmação

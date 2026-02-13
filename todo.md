@@ -6368,3 +6368,4 @@
 - [x] Pedidos: Alterar cor do badge de tipo de entrega para combinar com a cor da coluna do kanban (em vez de vermelho fixo)
 - [x] Pedidos: Modo lista compacta - adicionar toggle para alternar entre visualização kanban e lista compacta
 - [x] Templates WhatsApp: Adicionar método de pagamento na variável {{itensPedido}} abaixo do total (ex: 💰 Pagamento via: *PIX*)
+- [x] Reset diário automático da numeração de pedidos (#P1) à 00:00, respeitando fuso horário do estabelecimento
