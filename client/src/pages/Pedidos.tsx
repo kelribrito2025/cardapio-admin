@@ -64,6 +64,9 @@ import {
   Link2Off,
   QrCode,
   Star,
+  LayoutGrid,
+  List,
+  Eye,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "wouter";
@@ -205,6 +208,14 @@ export default function Pedidos() {
   const [isPollingQrCode, setIsPollingQrCode] = useState(false);
   // Estado para rastrear qual pedido está com loading de ação
   const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null);
+  // Estado para alternar entre visualização kanban e lista compacta
+  const [viewMode, setViewMode] = useState<'kanban' | 'list'>(() => {
+    try {
+      return (localStorage.getItem('pedidos_viewMode') as 'kanban' | 'list') || 'kanban';
+    } catch { return 'kanban'; }
+  });
+  // Estado para filtro de status na lista compacta
+  const [listStatusFilter, setListStatusFilter] = useState<OrderStatus | 'all'>('all');
   // Estado para o modal informativo de WhatsApp
   const [whatsappInfoModalOpen, setWhatsappInfoModalOpen] = useState(false);
   const [whatsappMsgIndex, setWhatsappMsgIndex] = useState(0);
@@ -977,8 +988,31 @@ export default function Pedidos() {
           description="Gerencie os pedidos do seu estabelecimento"
           icon={<ClipboardList className="h-6 w-6 text-blue-600" />}
         />
-        {/* Card de Status de Conexão WhatsApp */}
+        {/* Toggle Kanban/Lista + WhatsApp Status */}
         <div className="hidden sm:flex items-center gap-3">
+          {/* Toggle de visualização */}
+          <div className="flex items-center bg-muted rounded-lg p-1 gap-0.5">
+            <button
+              onClick={() => { setViewMode('kanban'); localStorage.setItem('pedidos_viewMode', 'kanban'); }}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                viewMode === 'kanban' ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <LayoutGrid className="h-3.5 w-3.5" />
+              Kanban
+            </button>
+            <button
+              onClick={() => { setViewMode('list'); localStorage.setItem('pedidos_viewMode', 'list'); }}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                viewMode === 'list' ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <List className="h-3.5 w-3.5" />
+              Lista
+            </button>
+          </div>
           <div className={cn(
             "flex items-center gap-3 px-4 py-2 rounded-xl border text-sm font-medium whitespace-nowrap",
             !isWhatsappFetched || isWhatsappLoading
@@ -1072,6 +1106,7 @@ export default function Pedidos() {
       </div>
 
       {/* Kanban Board */}
+      {viewMode === 'kanban' ? (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:h-[calc(100vh-200px)]">
         {kanbanColumns.map((column) => {
           const columnOrders = ordersByStatus[column.id];
@@ -1377,6 +1412,174 @@ export default function Pedidos() {
           );
         })}
       </div>
+      ) : (
+      /* Lista Compacta */
+      <div className="space-y-4">
+        {/* Filtros de status */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => setListStatusFilter('all')}
+            className={cn(
+              "px-3 py-1.5 rounded-lg text-xs font-medium transition-all border",
+              listStatusFilter === 'all' ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
+            Todos ({filteredOrders?.length || 0})
+          </button>
+          {kanbanColumns.map((col) => {
+            const count = ordersByStatus[col.id]?.length || 0;
+            return (
+              <button
+                key={col.id}
+                onClick={() => setListStatusFilter(col.id)}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-xs font-medium transition-all border flex items-center gap-1.5",
+                  listStatusFilter === col.id ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <span className={cn("w-2 h-2 rounded-full", col.dotColor)} />
+                {col.title} ({count})
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Tabela compacta */}
+        <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+          {/* Header da tabela */}
+          <div className="grid grid-cols-[60px_1fr_120px_100px_100px_120px_140px] gap-2 px-4 py-3 bg-muted/50 border-b border-border/50 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            <span>Status</span>
+            <span>Pedido</span>
+            <span>Cliente</span>
+            <span>Tipo</span>
+            <span>Pagamento</span>
+            <span className="text-right">Valor</span>
+            <span className="text-right">Ações</span>
+          </div>
+
+          {/* Linhas */}
+          <div className="divide-y divide-border/30">
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="grid grid-cols-[60px_1fr_120px_100px_100px_120px_140px] gap-2 px-4 py-3 items-center">
+                  <div className="skeleton h-5 w-12 rounded" />
+                  <div className="skeleton h-4 w-24 rounded" />
+                  <div className="skeleton h-4 w-20 rounded" />
+                  <div className="skeleton h-4 w-16 rounded" />
+                  <div className="skeleton h-4 w-16 rounded" />
+                  <div className="skeleton h-4 w-16 rounded ml-auto" />
+                  <div className="skeleton h-7 w-20 rounded ml-auto" />
+                </div>
+              ))
+            ) : (() => {
+              const listOrders = listStatusFilter === 'all'
+                ? [...(ordersByStatus.new || []), ...(ordersByStatus.preparing || []), ...(ordersByStatus.ready || []), ...(ordersByStatus.completed || []), ...(ordersByStatus.cancelled || [])]
+                : ordersByStatus[listStatusFilter] || [];
+
+              if (listOrders.length === 0) {
+                return (
+                  <div className="py-12 flex flex-col items-center justify-center text-center">
+                    <Inbox className="h-10 w-10 text-muted-foreground/30 mb-3" />
+                    <p className="text-sm text-muted-foreground">Nenhum pedido encontrado</p>
+                  </div>
+                );
+              }
+
+              return listOrders.map((order: OrderItem) => {
+                const config = statusConfig[order.status as OrderStatus];
+                const nextAction = getNextAction(order.status as OrderStatus);
+                const PaymentIcon = paymentMethodLabels[order.paymentMethod]?.icon || CreditCard;
+                const diffMs = Date.now() - new Date(order.createdAt).getTime();
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMins / 60);
+                const timeStr = diffMins < 1 ? 'agora' : diffMins < 60 ? `${diffMins} min` : `${diffHours}h`;
+
+                return (
+                  <div
+                    key={order.id}
+                    className="grid grid-cols-[60px_1fr_120px_100px_100px_120px_140px] gap-2 px-4 py-2.5 items-center hover:bg-muted/30 transition-colors cursor-pointer"
+                    onClick={() => setSelectedOrder(order.id)}
+                  >
+                    {/* Status badge */}
+                    <span
+                      className="inline-flex items-center justify-center py-1 px-2 rounded-md text-[10px] font-bold uppercase tracking-wide"
+                      style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
+                    >
+                      {config.label.slice(0, 4)}
+                    </span>
+
+                    {/* Pedido info */}
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className={cn("font-bold text-sm", config.color)}>
+                        {order.orderNumber?.startsWith('#') ? order.orderNumber : `#${order.orderNumber}`}
+                      </span>
+                      {(order as any).source === 'ifood' && (
+                        <span className="px-1.5 py-0.5 bg-red-500 text-white text-[9px] font-bold rounded-full">iFood</span>
+                      )}
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {timeStr}
+                      </span>
+                    </div>
+
+                    {/* Cliente */}
+                    <span className="text-sm truncate">{order.customerName || '—'}</span>
+
+                    {/* Tipo de entrega */}
+                    <span
+                      className="inline-flex items-center justify-center py-0.5 px-2 rounded text-[9px] font-bold uppercase tracking-wide w-fit"
+                      style={{ backgroundColor: config.badgeBg + '20', color: config.badgeBg }}
+                    >
+                      {order.deliveryType === 'delivery' ? 'Entrega' : order.deliveryType === 'dine_in' ? 'Consumo' : 'Retirada'}
+                    </span>
+
+                    {/* Pagamento */}
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <PaymentIcon className="h-3.5 w-3.5" />
+                      {paymentMethodLabels[order.paymentMethod]?.label || order.paymentMethod}
+                    </span>
+
+                    {/* Valor */}
+                    <span className="text-sm font-bold text-primary text-right">{formatCurrency(order.total)}</span>
+
+                    {/* Ações */}
+                    <div className="flex items-center gap-1 justify-end" onClick={(e) => e.stopPropagation()}>
+                      {nextAction && (
+                        <Button
+                          size="sm"
+                          className="h-7 px-3 rounded-md text-xs shadow-sm"
+                          onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
+                          disabled={loadingOrderId !== null}
+                        >
+                          {loadingOrderId === order.id ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            nextAction.label
+                          )}
+                        </Button>
+                      )}
+                      {order.status !== 'completed' && order.status !== 'cancelled' && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 rounded-md bg-destructive/10 text-destructive hover:bg-destructive/20"
+                          onClick={() => {
+                            setOrderToCancel(order.id);
+                            setCancelDialogOpen(true);
+                          }}
+                        >
+                          <XCircle className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        </div>
+      </div>
+      )}
 
       {/* Order Details Sidebar */}
       <Sheet open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>

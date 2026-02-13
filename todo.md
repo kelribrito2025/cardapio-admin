@@ -6366,3 +6366,4 @@
 - [x] Fix campos Mín/Máx dos adicionais no catálogo: permitir apagar completamente (sem ficar preso no zero), aceitar apenas inteiros, limitar a 999
 - [x] Bug: Maximum call stack size exceeded na página /pedidos - recursão infinita em useMemo / Tooltip nesting no editor visual
 - [x] Pedidos: Alterar cor do badge de tipo de entrega para combinar com a cor da coluna do kanban (em vez de vermelho fixo)
+- [x] Pedidos: Modo lista compacta - adicionar toggle para alternar entre visualização kanban e lista compacta
