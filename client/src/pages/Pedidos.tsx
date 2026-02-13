@@ -151,12 +151,14 @@ const statusConfig: Record<OrderStatus, {
   icon: typeof Clock;
   color: string;
   bgColor: string;
+  badgeBg: string;
+  badgeText: string;
 }> = {
-  new: { label: "Novo", variant: "info", icon: Clock, color: "text-blue-600", bgColor: "bg-blue-50 dark:bg-blue-950/30" },
-  preparing: { label: "Preparando", variant: "warning", icon: ChefHat, color: "text-amber-600", bgColor: "bg-amber-50 dark:bg-amber-950/30" },
-  ready: { label: "Pronto", variant: "success", icon: Package, color: "text-emerald-600", bgColor: "bg-emerald-50 dark:bg-emerald-950/30" },
-  completed: { label: "Finalizado", variant: "default", icon: CheckCircle, color: "text-muted-foreground", bgColor: "bg-muted" },
-  cancelled: { label: "Cancelado", variant: "error", icon: XCircle, color: "text-red-600", bgColor: "bg-red-50 dark:bg-red-950/30" },
+  new: { label: "Novo", variant: "info", icon: Clock, color: "text-blue-600", bgColor: "bg-blue-50 dark:bg-blue-950/30", badgeBg: "#3b82f6", badgeText: "#ffffff" },
+  preparing: { label: "Preparando", variant: "warning", icon: ChefHat, color: "text-amber-600", bgColor: "bg-amber-50 dark:bg-amber-950/30", badgeBg: "#d97706", badgeText: "#ffffff" },
+  ready: { label: "Pronto", variant: "success", icon: Package, color: "text-emerald-600", bgColor: "bg-emerald-50 dark:bg-emerald-950/30", badgeBg: "#059669", badgeText: "#ffffff" },
+  completed: { label: "Finalizado", variant: "default", icon: CheckCircle, color: "text-muted-foreground", bgColor: "bg-muted", badgeBg: "#6b7280", badgeText: "#ffffff" },
+  cancelled: { label: "Cancelado", variant: "error", icon: XCircle, color: "text-red-600", bgColor: "bg-red-50 dark:bg-red-950/30", badgeBg: "#dc2626", badgeText: "#ffffff" },
 };
 
 const paymentMethodLabels: Record<string, { label: string; icon: typeof CreditCard }> = {
@@ -1181,7 +1183,7 @@ export default function Pedidos() {
                                   </span>
                                 )}
                               </div>
-                              <span className="py-0.5 bg-gray-200 text-gray-600 font-bold uppercase tracking-wide" style={{borderRadius: '5px', fontSize: '8px', height: '16px', paddingRight: '5px', paddingLeft: '5px', color: '#ffffff', backgroundColor: '#ff4747'}}>
+                              <span className="py-0.5 font-bold uppercase tracking-wide" style={{borderRadius: '5px', fontSize: '8px', height: '16px', paddingRight: '5px', paddingLeft: '5px', color: config.badgeText, backgroundColor: config.badgeBg}}>
                                 {order.deliveryType === "delivery" ? "Entrega" : order.deliveryType === "dine_in" ? "Consumo" : "Retirada"}
                               </span>
                             </div>
