@@ -1799,6 +1799,7 @@ export const appRouter = router({
                       notes: item.notes,
                     })),
                     orderTotal: order.total,
+                    paymentMethod: order.paymentMethod,
                   }
                 );
               }

@@ -6367,3 +6367,4 @@
 - [x] Bug: Maximum call stack size exceeded na página /pedidos - recursão infinita em useMemo / Tooltip nesting no editor visual
 - [x] Pedidos: Alterar cor do badge de tipo de entrega para combinar com a cor da coluna do kanban (em vez de vermelho fixo)
 - [x] Pedidos: Modo lista compacta - adicionar toggle para alternar entre visualização kanban e lista compacta
+- [x] Templates WhatsApp: Adicionar método de pagamento na variável {{itensPedido}} abaixo do total (ex: 💰 Pagamento via: *PIX*)

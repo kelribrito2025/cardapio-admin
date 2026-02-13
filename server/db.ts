@@ -2745,6 +2745,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
               })),
               orderTotal: data.total,
               template: whatsappConfig.templateNewOrder,
+              paymentMethod: data.paymentMethod,
             }
           );
           console.log('[DB:createPublicOrder] Mensagem de confirmação com botões enviada:', orderNumber);
@@ -2777,6 +2778,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
                 notes: item.notes,
               })),
               orderTotal: data.total,
+              paymentMethod: data.paymentMethod,
             }
           );
           

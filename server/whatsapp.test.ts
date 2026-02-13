@@ -112,5 +112,81 @@ describe('WhatsApp Integration', () => {
       expect(message).toContain('#P505');
       expect(message).toContain('Restaurante');
     });
+
+    it('should include payment method in itensPedido when provided', () => {
+      const template = '{{itensPedido}}';
+      const message = generateStatusMessage(
+        'new',
+        '#P600',
+        'Ana',
+        'Restaurante',
+        template,
+        undefined, // deliveryType
+        undefined, // cancellationReason
+        [{ productName: 'Pizza', quantity: 1, unitPrice: '30.00', totalPrice: '30.00' }],
+        '30.00',
+        undefined, // timezone
+        'pix'
+      );
+      
+      expect(message).toContain('Total: R$ 30,00');
+      expect(message).toContain('Pagamento via: *PIX*');
+    });
+
+    it('should include payment method as Cartão for credit', () => {
+      const template = '{{itensPedido}}';
+      const message = generateStatusMessage(
+        'new',
+        '#P601',
+        'Bruno',
+        'Restaurante',
+        template,
+        undefined,
+        undefined,
+        [{ productName: 'Hambúrguer', quantity: 2, unitPrice: '20.00', totalPrice: '40.00' }],
+        '40.00',
+        undefined,
+        'credit'
+      );
+      
+      expect(message).toContain('Pagamento via: *Cartão*');
+    });
+
+    it('should include payment method as Dinheiro for cash', () => {
+      const template = '{{itensPedido}}';
+      const message = generateStatusMessage(
+        'new',
+        '#P602',
+        'Carlos',
+        'Restaurante',
+        template,
+        undefined,
+        undefined,
+        [{ productName: 'Suco', quantity: 1, unitPrice: '10.00', totalPrice: '10.00' }],
+        '10.00',
+        undefined,
+        'cash'
+      );
+      
+      expect(message).toContain('Pagamento via: *Dinheiro*');
+    });
+
+    it('should not include payment method when not provided', () => {
+      const template = '{{itensPedido}}';
+      const message = generateStatusMessage(
+        'new',
+        '#P603',
+        'Diana',
+        'Restaurante',
+        template,
+        undefined,
+        undefined,
+        [{ productName: 'Açaí', quantity: 1, unitPrice: '25.00', totalPrice: '25.00' }],
+        '25.00'
+      );
+      
+      expect(message).toContain('Total: R$ 25,00');
+      expect(message).not.toContain('Pagamento via');
+    });
   });
 });

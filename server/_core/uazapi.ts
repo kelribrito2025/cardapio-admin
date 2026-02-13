@@ -428,7 +428,8 @@ export function generateStatusMessage(
     notes?: string | null;
   }> | null,
   orderTotal?: string | null,
-  timezone?: string
+  timezone?: string,
+  paymentMethod?: string | null
 ): string {
   // Default templates
   const defaultTemplates: Record<string, string> = {
@@ -505,7 +506,25 @@ export function generateStatusMessage(
     
     // Adicionar total se fornecido
     if (orderTotal) {
-      itensPedidoText += `\n\n💰 *Total: R$ ${parseFloat(orderTotal).toFixed(2).replace('.', ',')}*`;
+      itensPedidoText += `\n\n🧾 *Total: R$ ${parseFloat(orderTotal).toFixed(2).replace('.', ',')}*`;
+    }
+    
+    // Adicionar método de pagamento se fornecido
+    if (paymentMethod) {
+      const paymentLabels: Record<string, string> = {
+        'pix': 'PIX',
+        'credit': 'Cartão',
+        'debit': 'Cartão',
+        'card': 'Cartão',
+        'credit_card': 'Cartão',
+        'debit_card': 'Cartão',
+        'cash': 'Dinheiro',
+        'online': 'Cartão Online',
+        'credit_online': 'Cartão Online',
+        'meal_voucher': 'Vale Refeição',
+      };
+      const paymentLabel = paymentLabels[paymentMethod] || paymentMethod;
+      itensPedidoText += `\n💰 Pagamento via: *${paymentLabel}*`;
     }
   }
   
@@ -540,6 +559,7 @@ export async function sendOrderStatusNotification(
     }> | null;
     orderTotal?: string | null;
     timezone?: string;
+    paymentMethod?: string | null;
   }
 ): Promise<SendTextResponse> {
   const message = generateStatusMessage(
@@ -552,7 +572,8 @@ export async function sendOrderStatusNotification(
     data.cancellationReason,
     data.orderItems,
     data.orderTotal,
-    data.timezone
+    data.timezone,
+    data.paymentMethod
   );
   
   return sendTextMessage(instanceToken, phone, message);
@@ -631,6 +652,7 @@ export async function sendOrderConfirmationRequest(
     orderTotal: string;
     template?: string | null;
     timezone?: string;
+    paymentMethod?: string | null;
   }
 ): Promise<SendTextResponse> {
   const message = generateStatusMessage(
@@ -650,7 +672,8 @@ export async function sendOrderConfirmationRequest(
       notes: item.notes,
     })),
     data.orderTotal,
-    data.timezone
+    data.timezone,
+    data.paymentMethod
   );
 
   // Button for confirmation (only confirm button)
