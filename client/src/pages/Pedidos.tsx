@@ -97,14 +97,14 @@ const kanbanColumns = [
   {
     id: "preparing" as OrderStatus,
     title: "Preparo",
-    color: "amber",
-    borderColor: "border-t-amber-500",
-    iconBg: "bg-amber-100 dark:bg-amber-950/50",
-    iconColor: "text-amber-600",
-    dotColor: "bg-amber-500",
-    placeholderBorder: "border-amber-300 dark:border-amber-800",
-    placeholderBg: "bg-amber-50/50 dark:bg-amber-950/30",
-    placeholderText: "text-amber-500",
+    color: "red",
+    borderColor: "border-t-red-500",
+    iconBg: "bg-red-100 dark:bg-red-950/50",
+    iconColor: "text-red-600",
+    dotColor: "bg-red-500",
+    placeholderBorder: "border-red-300 dark:border-red-800",
+    placeholderBg: "bg-red-50/50 dark:bg-red-950/30",
+    placeholderText: "text-red-500",
     icon: ChefHat,
   },
   {
@@ -158,7 +158,7 @@ const statusConfig: Record<OrderStatus, {
   badgeText: string;
 }> = {
   new: { label: "Novo", variant: "info", icon: Clock, color: "text-blue-600", bgColor: "bg-blue-50 dark:bg-blue-950/30", badgeBg: "#3b82f6", badgeText: "#ffffff" },
-  preparing: { label: "Preparando", variant: "warning", icon: ChefHat, color: "text-amber-600", bgColor: "bg-amber-50 dark:bg-amber-950/30", badgeBg: "#d97706", badgeText: "#ffffff" },
+  preparing: { label: "Preparando", variant: "warning", icon: ChefHat, color: "text-red-600", bgColor: "bg-red-50 dark:bg-red-950/30", badgeBg: "#dc2626", badgeText: "#ffffff" },
   ready: { label: "Pronto", variant: "success", icon: Package, color: "text-emerald-600", bgColor: "bg-emerald-50 dark:bg-emerald-950/30", badgeBg: "#059669", badgeText: "#ffffff" },
   completed: { label: "Finalizado", variant: "default", icon: CheckCircle, color: "text-muted-foreground", bgColor: "bg-muted", badgeBg: "#6b7280", badgeText: "#ffffff" },
   cancelled: { label: "Cancelado", variant: "error", icon: XCircle, color: "text-red-600", bgColor: "bg-red-50 dark:bg-red-950/30", badgeBg: "#dc2626", badgeText: "#ffffff" },
@@ -1390,8 +1390,8 @@ export default function Pedidos() {
                     ) : column.id === "preparing" ? (
                       // Coluna Preparo: ícone de chef
                       <>
-                        <ChefHat className="h-8 w-8 text-amber-300 mb-2" />
-                        <span className="text-sm text-amber-400">Nenhum pedido em preparo</span>
+                        <ChefHat className="h-8 w-8 text-red-300 mb-2" />
+                        <span className="text-sm text-red-400">Nenhum pedido em preparo</span>
                       </>
                     ) : column.id === "ready" ? (
                       // Coluna Prontos: ícone de pacote
