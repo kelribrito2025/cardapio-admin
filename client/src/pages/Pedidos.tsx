@@ -1020,7 +1020,7 @@ export default function Pedidos() {
               : whatsappStatus?.status === 'connected'
                 ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400"
                 : "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
-          )}>
+          )} style={{height: '35px', width: '170px'}}>
             {/* Status */}
             <div className="flex items-center gap-2">
               {!isWhatsappFetched || isWhatsappLoading ? (
