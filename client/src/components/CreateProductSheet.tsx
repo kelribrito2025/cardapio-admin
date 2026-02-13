@@ -494,7 +494,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
       </div>
 
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-5">
+      <div className="flex-1 overflow-y-auto p-4 space-y-5 bg-card">
         {/* Product image */}
         <div>
           <Label className="text-sm font-semibold mb-2 block">Imagem do produto</Label>
@@ -703,7 +703,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-card">
             {complementGroups.length === 0 ? (
               <div className="text-center py-10">
                 <div className="p-4 bg-muted/30 rounded-2xl inline-block mb-3">
@@ -846,7 +846,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-5">
+          <div className="flex-1 overflow-y-auto p-4 space-y-5 bg-card">
             <div>
               <Label className="text-sm font-semibold">Nome do grupo *</Label>
               <Input
@@ -941,7 +941,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-card">
             {/* New item form */}
             <div className="border border-border/50 rounded-xl p-4 bg-muted/10 space-y-3">
               <h4 className="text-sm font-semibold">Novo complemento</h4>
@@ -1094,7 +1094,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-card">
             {productsWithComplements.length === 0 ? (
               <div className="text-center py-10">
                 <p className="text-sm text-muted-foreground">
@@ -1192,7 +1192,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-5">
+        <div className="flex-1 overflow-y-auto p-4 space-y-5 bg-card">
           {/* Price */}
           <div>
             <Label className="text-sm font-semibold">Preço do produto *</Label>

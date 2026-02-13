@@ -6383,3 +6383,4 @@
 - [x] Slidebar Etapa 3: Disponibilidade e preço final (preço, categorias, horários)
 - [x] Progress bar no topo da slidebar (Passo 1 de 3)
 - [x] Não impactar botão de Complementos existente no catálogo
+- [x] Alinhar estilo visual da slidebar de criar produto com a slidebar de criar combo (background branco, mesmo padrão)
