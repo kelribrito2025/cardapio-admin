@@ -967,7 +967,15 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
               <Input
                 value={groupName}
                 onChange={(e) => setGroupName(capitalizeFirst(e.target.value))}
-                placeholder="Ex: Adicionais, Molhos, Tamanho..."
+                placeholder={
+                  activeGroupCategory === "ingredientes"
+                    ? "Ex: Adicionais, Molhos, Extras..."
+                    : activeGroupCategory === "especificacoes"
+                    ? "Ex: Ponto da carne, Tamanho, Tipo de pão..."
+                    : activeGroupCategory === "descartaveis"
+                    ? "Ex: Deseja descartáveis?, Talheres, Guardanapos..."
+                    : "Ex: Adicionais, Molhos, Tamanho..."
+                }
                 className="mt-1.5 h-10 rounded-xl border-border/50"
               />
             </div>

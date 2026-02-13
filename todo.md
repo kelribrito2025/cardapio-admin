@@ -6391,3 +6391,4 @@
 - [x] Adicionar botão "Voltar" ao lado esquerdo do botão "Avançar" no footer do Passo 2
 - [x] Remover botão de seta voltar do header vermelho do Passo 2 (já tem Voltar no footer)
 - [x] Remover botão de seta voltar do header vermelho de TODOS os passos e sub-passos da slidebar de criar produto
+- [x] Adicionar placeholder contextual no campo "Nome do grupo" baseado na categoria selecionada (ex: "Deseja descartáveis?" para Descartáveis)
