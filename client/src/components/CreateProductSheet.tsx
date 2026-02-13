@@ -28,6 +28,9 @@ import {
   Layers,
   Clock,
   GripVertical,
+  UtensilsCrossed,
+  ClipboardList,
+  PackageOpen,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn, capitalizeFirst, parsePriceInput } from "@/lib/utils";
@@ -41,12 +44,15 @@ interface ComplementItem {
   imageUrl?: string | null;
 }
 
+type GroupCategory = "ingredientes" | "especificacoes" | "descartaveis";
+
 interface ComplementGroup {
   name: string;
   isRequired: boolean;
   minQuantity: number;
   maxQuantity: number;
   items: ComplementItem[];
+  category: GroupCategory;
 }
 
 type Step = 1 | 2 | 3;
@@ -80,6 +86,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
   // Step 2: Complement groups
   const [complementGroups, setComplementGroups] = useState<ComplementGroup[]>([]);
   const [editingGroupIndex, setEditingGroupIndex] = useState<number | null>(null);
+  const [activeGroupCategory, setActiveGroupCategory] = useState<GroupCategory | null>(null);
   // Group config form
   const [groupName, setGroupName] = useState("");
   const [groupIsRequired, setGroupIsRequired] = useState(false);
@@ -206,6 +213,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
     setScheduleEndTime("23:00");
     setPrinterId("none");
     setCopyProductId(null);
+    setActiveGroupCategory(null);
   }, []);
 
   useEffect(() => {
@@ -371,6 +379,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
           minQuantity: groupMinQty,
           maxQuantity: groupMaxQty,
           items: [],
+          category: activeGroupCategory || "ingredientes",
         },
       ]);
       setEditingGroupIndex(complementGroups.length);
@@ -427,6 +436,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
         price: parseFloat(String(item.price || "0")).toFixed(2).replace('.', ','),
         imageUrl: item.imageUrl || null,
       })),
+      category: activeGroupCategory || "ingredientes",
     }));
 
     setComplementGroups(prev => [...prev, ...copied]);
@@ -704,102 +714,223 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-card">
-            {complementGroups.length === 0 ? (
-              <div className="text-center py-10">
-                <div className="p-4 bg-muted/30 rounded-2xl inline-block mb-3">
-                  <Layers className="h-8 w-8 text-muted-foreground" />
-                </div>
-                <p className="text-sm text-muted-foreground mb-1">
-                  Nenhum grupo de complemento
+            {/* Category tabs when no category is selected */}
+            {!activeGroupCategory ? (
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground text-center mb-2">
+                  Escolha o tipo de complemento que deseja adicionar
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  Adicione grupos como "Adicionais", "Molhos", etc.
-                </p>
+
+                {/* Ingredientes */}
+                <button
+                  onClick={() => setActiveGroupCategory("ingredientes")}
+                  className="w-full flex items-center gap-4 p-4 rounded-xl border border-border/50 hover:border-red-300 hover:bg-red-50/50 dark:hover:bg-red-950/10 transition-all group"
+                >
+                  <div className="p-3 rounded-xl bg-orange-100 dark:bg-orange-950/30 group-hover:bg-orange-200 dark:group-hover:bg-orange-950/50 transition-colors">
+                    <UtensilsCrossed className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <h4 className="font-semibold text-sm">Ingredientes</h4>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Adicionais, molhos, acompanhamentos e extras
+                    </p>
+                  </div>
+                  {complementGroups.filter(g => g.category === "ingredientes").length > 0 && (
+                    <span className="text-[10px] font-semibold bg-orange-100 text-orange-700 dark:bg-orange-950/30 dark:text-orange-400 px-2 py-0.5 rounded-full">
+                      {complementGroups.filter(g => g.category === "ingredientes").length}
+                    </span>
+                  )}
+                  <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                </button>
+
+                {/* Especificações */}
+                <button
+                  onClick={() => setActiveGroupCategory("especificacoes")}
+                  className="w-full flex items-center gap-4 p-4 rounded-xl border border-border/50 hover:border-red-300 hover:bg-red-50/50 dark:hover:bg-red-950/10 transition-all group"
+                >
+                  <div className="p-3 rounded-xl bg-blue-100 dark:bg-blue-950/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-950/50 transition-colors">
+                    <ClipboardList className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <h4 className="font-semibold text-sm">Especificações</h4>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Perguntas sobre preparo, tamanho, ponto, etc.
+                    </p>
+                  </div>
+                  {complementGroups.filter(g => g.category === "especificacoes").length > 0 && (
+                    <span className="text-[10px] font-semibold bg-blue-100 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400 px-2 py-0.5 rounded-full">
+                      {complementGroups.filter(g => g.category === "especificacoes").length}
+                    </span>
+                  )}
+                  <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                </button>
+
+                {/* Descartáveis */}
+                <button
+                  onClick={() => setActiveGroupCategory("descartaveis")}
+                  className="w-full flex items-center gap-4 p-4 rounded-xl border border-border/50 hover:border-red-300 hover:bg-red-50/50 dark:hover:bg-red-950/10 transition-all group"
+                >
+                  <div className="p-3 rounded-xl bg-emerald-100 dark:bg-emerald-950/30 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-950/50 transition-colors">
+                    <PackageOpen className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <h4 className="font-semibold text-sm">Descartáveis</h4>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Embalagens, talheres, guardanapos, etc.
+                    </p>
+                  </div>
+                  {complementGroups.filter(g => g.category === "descartaveis").length > 0 && (
+                    <span className="text-[10px] font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 px-2 py-0.5 rounded-full">
+                      {complementGroups.filter(g => g.category === "descartaveis").length}
+                    </span>
+                  )}
+                  <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                </button>
+
+                {/* Summary of all groups */}
+                {complementGroups.length > 0 && (
+                  <div className="mt-4 p-3 rounded-xl bg-muted/30 border border-border/50">
+                    <p className="text-xs font-semibold text-muted-foreground">
+                      {complementGroups.length} grupo(s) adicionado(s) no total
+                    </p>
+                  </div>
+                )}
               </div>
             ) : (
-              complementGroups.map((group, idx) => (
-                <div
-                  key={idx}
-                  className="border border-border/50 rounded-xl p-3 bg-muted/20 space-y-2"
+              /* Category selected - show groups for this category */
+              <>
+                {/* Back to categories */}
+                <button
+                  onClick={() => setActiveGroupCategory(null)}
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-1"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">{group.name}</span>
-                      {group.isRequired && (
-                        <span className="text-[10px] bg-red-100 text-red-700 dark:bg-red-950/30 dark:text-red-400 px-1.5 py-0.5 rounded font-medium">
-                          Obrigatório
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEditGroup(idx)}
-                        className="h-7 w-7 rounded-lg"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemoveGroup(idx)}
-                        className="h-7 w-7 rounded-lg hover:bg-destructive/10"
-                      >
-                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                      </Button>
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {group.items.length} {group.items.length === 1 ? "item" : "itens"} • Mín: {group.minQuantity} / Máx: {group.maxQuantity}
-                  </p>
-                  {group.items.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-1">
-                      {group.items.slice(0, 5).map((item, i) => (
-                        <span key={i} className="text-[10px] bg-card px-2 py-0.5 rounded-md border border-border/50">
-                          {item.name}
-                        </span>
-                      ))}
-                      {group.items.length > 5 && (
-                        <span className="text-[10px] text-muted-foreground px-1">
-                          +{group.items.length - 5} mais
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))
-            )}
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  Voltar às categorias
+                </button>
 
-            {/* Action buttons */}
-            <div className="space-y-2 pt-2">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setEditingGroupIndex(null);
-                  setGroupName("");
-                  setGroupIsRequired(false);
-                  setGroupMinQty(0);
-                  setGroupMaxQty(1);
-                  setStep2Sub("group-config");
-                }}
-                className="w-full rounded-xl h-10 border-dashed"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Criar novo grupo
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setCopyProductId(null);
-                  setStep2Sub("copy-group");
-                }}
-                className="w-full rounded-xl h-10 border-dashed"
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Copiar grupo existente
-              </Button>
-            </div>
+                {/* Category label */}
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={cn(
+                    "p-1.5 rounded-lg",
+                    activeGroupCategory === "ingredientes" && "bg-orange-100 dark:bg-orange-950/30",
+                    activeGroupCategory === "especificacoes" && "bg-blue-100 dark:bg-blue-950/30",
+                    activeGroupCategory === "descartaveis" && "bg-emerald-100 dark:bg-emerald-950/30",
+                  )}>
+                    {activeGroupCategory === "ingredientes" && <UtensilsCrossed className="h-4 w-4 text-orange-600 dark:text-orange-400" />}
+                    {activeGroupCategory === "especificacoes" && <ClipboardList className="h-4 w-4 text-blue-600 dark:text-blue-400" />}
+                    {activeGroupCategory === "descartaveis" && <PackageOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
+                  </div>
+                  <h3 className="font-semibold text-sm">
+                    {activeGroupCategory === "ingredientes" && "Ingredientes"}
+                    {activeGroupCategory === "especificacoes" && "Especificações"}
+                    {activeGroupCategory === "descartaveis" && "Descartáveis"}
+                  </h3>
+                </div>
+
+                {/* Groups for this category */}
+                {complementGroups.filter(g => g.category === activeGroupCategory).length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="p-4 bg-muted/30 rounded-2xl inline-block mb-3">
+                      <Layers className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Nenhum grupo adicionado
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {activeGroupCategory === "ingredientes" && 'Adicione grupos como "Adicionais", "Molhos", etc.'}
+                      {activeGroupCategory === "especificacoes" && 'Adicione perguntas como "Ponto da carne", "Tamanho", etc.'}
+                      {activeGroupCategory === "descartaveis" && 'Adicione grupos como "Embalagens", "Talheres", etc.'}
+                    </p>
+                  </div>
+                ) : (
+                  complementGroups.map((group, idx) => {
+                    if (group.category !== activeGroupCategory) return null;
+                    return (
+                      <div
+                        key={idx}
+                        className="border border-border/50 rounded-xl p-3 bg-muted/20 space-y-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-sm">{group.name}</span>
+                            {group.isRequired && (
+                              <span className="text-[10px] bg-red-100 text-red-700 dark:bg-red-950/30 dark:text-red-400 px-1.5 py-0.5 rounded font-medium">
+                                Obrigatório
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleEditGroup(idx)}
+                              className="h-7 w-7 rounded-lg"
+                            >
+                              <ChevronRight className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleRemoveGroup(idx)}
+                              className="h-7 w-7 rounded-lg hover:bg-destructive/10"
+                            >
+                              <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                            </Button>
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {group.items.length} {group.items.length === 1 ? "item" : "itens"} • Mín: {group.minQuantity} / Máx: {group.maxQuantity}
+                        </p>
+                        {group.items.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-1">
+                            {group.items.slice(0, 5).map((item, i) => (
+                              <span key={i} className="text-[10px] bg-card px-2 py-0.5 rounded-md border border-border/50">
+                                {item.name}
+                              </span>
+                            ))}
+                            {group.items.length > 5 && (
+                              <span className="text-[10px] text-muted-foreground px-1">
+                                +{group.items.length - 5} mais
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+
+                {/* Action buttons */}
+                <div className="space-y-2 pt-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setEditingGroupIndex(null);
+                      setGroupName("");
+                      setGroupIsRequired(false);
+                      setGroupMinQty(0);
+                      setGroupMaxQty(1);
+                      setStep2Sub("group-config");
+                    }}
+                    className="w-full rounded-xl h-10 border-dashed"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Criar novo grupo
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setCopyProductId(null);
+                      setStep2Sub("copy-group");
+                    }}
+                    className="w-full rounded-xl h-10 border-dashed"
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copiar grupo existente
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Footer */}
@@ -833,7 +964,12 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
                 </button>
                 <div>
                   <h2 className="text-lg font-bold text-white">Configurar grupo</h2>
-                  <p className="text-sm text-white/80">Defina as regras do grupo</p>
+                  <p className="text-sm text-white/80">
+                    {activeGroupCategory === "ingredientes" && "Ingredientes — "}
+                    {activeGroupCategory === "especificacoes" && "Especificações — "}
+                    {activeGroupCategory === "descartaveis" && "Descartáveis — "}
+                    Defina as regras do grupo
+                  </p>
                 </div>
               </div>
               <button

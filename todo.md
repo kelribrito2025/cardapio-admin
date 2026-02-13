@@ -6384,3 +6384,5 @@
 - [x] Progress bar no topo da slidebar (Passo 1 de 3)
 - [x] Não impactar botão de Complementos existente no catálogo
 - [x] Alinhar estilo visual da slidebar de criar produto com a slidebar de criar combo (background branco, mesmo padrão)
+- [x] Passo 2 da slidebar de criar produto: adicionar 3 abas/cards antes de criar/copiar grupo — Ingredientes, Especificações, Descartáveis
+- [x] Cada aba leva ao mesmo fluxo de criar/copiar grupos (mudança visual, sem alterar lógica)
