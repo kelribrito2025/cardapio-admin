@@ -6408,3 +6408,5 @@
 - [ ] Corrigir formato do campo de preço inline no Catálogo para padrão brasileiro (R$ 0,00)
 - [x] Implementar máscara de moeda brasileira no campo de preço inline do Catálogo (digitar 500 = 5,00)
 - [x] Aplicar campo de preço editável inline com máscara de moeda nos complementos da página de Catálogo (sem cor vermelha)
+- [x] Aplicar máscara de moeda brasileira nos campos de preço do CreateProductSheet
+- [x] Aplicar máscara de moeda brasileira no campo de preço do CreateComboSheet

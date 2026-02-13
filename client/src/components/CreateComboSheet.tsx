@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn, parsePriceInput } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 // Types
@@ -88,6 +88,17 @@ export default function CreateComboSheet({
   const [comboName, setComboName] = useState("");
   const [comboDescription, setComboDescription] = useState("");
   const [comboPrice, setComboPrice] = useState("");
+
+  // Price formatting - Brazilian currency mask
+  const formatPriceInputLocal = (value: string): string => {
+    const numbers = value.replace(/\D/g, "");
+    const cents = parseInt(numbers || "0", 10);
+    const reais = cents / 100;
+    return reais.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
   const [comboImage, setComboImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   
@@ -300,7 +311,7 @@ export default function CreateComboSheet({
       categoryId,
       name: comboName.trim(),
       description: comboDescription.trim() || undefined,
-      price: comboPrice || "0",
+      price: parsePriceInput(comboPrice) || "0",
       images: comboImage ? [comboImage] : undefined,
       groups: groups.map((g, idx) => ({
         name: g.name,
@@ -743,17 +754,19 @@ export default function CreateComboSheet({
 
         {/* Combo price */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Preço do combo (R$)</Label>
-          <Input
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="0,00"
-            value={comboPrice}
-            onChange={(e) => setComboPrice(e.target.value)}
-            className="h-11 rounded-xl"
-          />
-          <p className="text-xs text-muted-foreground">Deixe em branco ou 0 para calcular automaticamente</p>
+          <Label className="text-sm font-medium">Preço do combo *</Label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">R$</span>
+            <Input
+              type="text"
+              inputMode="numeric"
+              placeholder="0,00"
+              value={comboPrice}
+              onChange={(e) => setComboPrice(formatPriceInputLocal(e.target.value))}
+              className="h-11 rounded-xl pl-10 font-semibold"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">Deixe em branco ou 0,00 para calcular automaticamente</p>
         </div>
 
         {/* Groups list */}
