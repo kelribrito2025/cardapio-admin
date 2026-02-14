@@ -14,7 +14,6 @@ export function buildDriverDeliveryMessage(order: {
   changeAmount: string | null;
 }, deliveryFeeOverride?: number): string {
   const address = order.customerAddress || '';
-  const mapsLink = address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` : '';
   const fee = deliveryFeeOverride !== undefined ? deliveryFeeOverride : parseFloat(order.deliveryFee || '0');
   
   // Parse address parts: "Rua X, 123 - Apto 1, Bairro Y (Ref: ponto ref)"
@@ -72,8 +71,7 @@ export function buildDriverDeliveryMessage(order: {
     `💰 Total: R$ ${parseFloat(order.total || '0').toFixed(2).replace('.', ',')}\n` +
     `🛵 Taxa de entrega: R$ ${fee.toFixed(2).replace('.', ',')}` +
     trocoBlock +
-    (order.notes ? `\n\n*Observações:* ${order.notes}` : '') +
-    (mapsLink ? `\n\n📍 Abrir no mapa: ${mapsLink}` : '');
+    (order.notes ? `\n\n*Observações:* ${order.notes}` : '');
   
   return message;
 }

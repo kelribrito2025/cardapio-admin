@@ -104,15 +104,8 @@ describe('buildDriverDeliveryMessage', () => {
     expect(msg).not.toContain('Observações');
   });
 
-  it('should include Google Maps link when address is present', () => {
+  it('should NOT include Google Maps link in the message', () => {
     const msg = buildDriverDeliveryMessage(baseOrder);
-    expect(msg).toContain('Abrir no mapa:');
-    expect(msg).toContain('google.com/maps');
-  });
-
-  it('should NOT include Google Maps link when address is empty', () => {
-    const order = { ...baseOrder, customerAddress: null };
-    const msg = buildDriverDeliveryMessage(order);
     expect(msg).not.toContain('Abrir no mapa');
     expect(msg).not.toContain('google.com/maps');
   });
@@ -199,7 +192,6 @@ describe('buildDriverDeliveryMessage', () => {
     const totalIdx = msg.indexOf('Total:');
     const taxaIdx = msg.indexOf('Taxa de entrega:');
     const trocoIdx = msg.indexOf('*Troco para:*');
-    const mapaIdx = msg.indexOf('Abrir no mapa:');
     
     expect(novaEntregaIdx).toBeLessThan(pedidoIdx);
     expect(pedidoIdx).toBeLessThan(clienteIdx);
@@ -209,6 +201,5 @@ describe('buildDriverDeliveryMessage', () => {
     expect(pagamentoIdx).toBeLessThan(totalIdx);
     expect(totalIdx).toBeLessThan(taxaIdx);
     expect(taxaIdx).toBeLessThan(trocoIdx);
-    expect(trocoIdx).toBeLessThan(mapaIdx);
   });
 });

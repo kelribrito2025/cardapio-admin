@@ -6472,3 +6472,4 @@
 - [x] Adicionar emoji de troco (💵) com texto "Vai precisar de troco?" quando for dinheiro
 - [x] Aplicar mesmo formato nas 3 mensagens: markReadyAndAssign, assignDriver, resendNotification
 - [x] Corrigir duplo # no orderNumber das mensagens (orderNumber já inclui #)
+- [x] Remover link "Abrir no mapa" da mensagem WhatsApp do entregador
