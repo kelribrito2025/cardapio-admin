@@ -381,7 +381,7 @@ function DriverFormSheet({
                 <Bell className="h-4 w-4 text-red-500" />
                 <Label className="text-sm font-medium">Quando acionar o entregador?</Label>
               </div>
-              <p className="text-xs text-muted-foreground -mt-1">Configuração global do estabelecimento. Define em que momento o entregador recebe a mensagem de nova entrega.</p>
+              <p className="text-xs text-muted-foreground -mt-1">Define em que momento o entregador recebe a mensagem de nova entrega.</p>
               <div className="space-y-2">
                 <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${notifyTiming === "on_ready" ? "border-red-400 bg-red-50 shadow-sm" : "border-border/50 hover:border-red-300 bg-muted/30 hover:bg-muted/50"}`}>
                   <input
