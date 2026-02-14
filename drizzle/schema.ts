@@ -98,6 +98,8 @@ export const establishments = mysqlTable("establishments", {
   billingPeriod: mysqlEnum("billingPeriod", ["monthly", "annual"]),
   planExpiresAt: timestamp("planExpiresAt"),
   planActivatedAt: timestamp("planActivatedAt"),
+  // Configuração de acionamento do entregador
+  driverNotifyTiming: mysqlEnum("driverNotifyTiming", ["on_accepted", "on_ready"]).default("on_ready").notNull(),
   // Avaliações
   ownerDisplayName: varchar("ownerDisplayName", { length: 11 }),
   reviewsEnabled: boolean("reviewsEnabled").default(true).notNull(),
@@ -212,6 +214,8 @@ export const orders = mysqlTable("orders", {
   externalDisplayId: varchar("externalDisplayId", { length: 50 }), // ID de exibição (ex: #1234)
   externalStatus: varchar("externalStatus", { length: 50 }), // Status original da plataforma
   externalData: json("externalData").$type<Record<string, unknown>>(), // Dados completos do pedido externo
+  // Controle de notificação ao entregador (evitar duplicatas)
+  deliveryNotified: boolean("deliveryNotified").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   completedAt: timestamp("completedAt"),

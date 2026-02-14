@@ -6473,3 +6473,19 @@
 - [x] Aplicar mesmo formato nas 3 mensagens: markReadyAndAssign, assignDriver, resendNotification
 - [x] Corrigir duplo # no orderNumber das mensagens (orderNumber já inclui #)
 - [x] Remover link "Abrir no mapa" da mensagem WhatsApp do entregador
+
+## Configuração de Momento de Acionamento do Entregador
+- [x] Adicionar campo driverNotifyTiming no schema de establishments (on_accepted / on_ready, padrão: on_ready)
+- [x] Adicionar campo deliveryNotified (boolean) no schema de orders para evitar duplicatas
+- [x] Migrar banco de dados com os novos campos
+- [x] Criar DB helpers para get/update driverNotifyTiming
+- [x] Criar tRPC procedure para get/update configuração de timing
+- [x] Atualizar fluxo de aceitar pedido: se timing=on_accepted, acionar entregador automaticamente
+- [x] Atualizar fluxo de marcar como pronto: se timing=on_ready, acionar entregador (manter comportamento atual)
+- [x] Verificar deliveryNotified antes de enviar para evitar duplicatas
+- [x] Marcar deliveryNotified=true após envio bem-sucedido
+- [x] Enviar apenas para pedidos com modalidade Entrega
+- [x] Verificar se existe entregador ativo antes de enviar
+- [x] Adicionar opção de configuração no modal de novo entregador (abaixo da estratégia de repasse)
+- [x] Padrão: "Quando o pedido for marcado como pronto"
+- [x] Testes unitários para a nova lógica

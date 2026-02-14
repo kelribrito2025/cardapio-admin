@@ -1913,6 +1913,73 @@ export const appRouter = router({
           console.error('[WhatsApp] Erro ao enviar notificação:', error);
           // Não falhar a mutação por erro no WhatsApp
         }
+
+        // Acionamento automático do entregador quando timing = on_accepted
+        if (input.status === 'preparing') {
+          try {
+            const order = await db.getOrderById(input.id);
+            if (order && order.deliveryType === 'delivery' && !order.deliveryNotified) {
+              const timing = await db.getDriverNotifyTiming(order.establishmentId);
+              if (timing === 'on_accepted') {
+                const establishment = await db.getEstablishmentByUserId((await db.getEstablishmentById(order.establishmentId))?.userId || 0);
+                const estId = order.establishmentId;
+                const activeDrivers = await db.getActiveDriversByEstablishment(estId);
+                
+                if (activeDrivers.length === 1) {
+                  // Auto-assign single driver and notify
+                  const driver = activeDrivers[0];
+                  const deliveryFee = parseFloat(order.deliveryFee || '0');
+                  let repasseValue = 0;
+                  if (driver.repasseStrategy === 'neighborhood') repasseValue = deliveryFee;
+                  else if (driver.repasseStrategy === 'fixed') repasseValue = parseFloat(driver.fixedValue || '0');
+                  else if (driver.repasseStrategy === 'percentage') repasseValue = deliveryFee * (parseFloat(driver.percentageValue || '0') / 100);
+
+                  const existingDelivery = await db.getDeliveryByOrderId(input.id);
+                  if (!existingDelivery) {
+                    const deliveryId = await db.createDelivery({
+                      establishmentId: estId,
+                      orderId: input.id,
+                      driverId: driver.id,
+                      deliveryFee: String(deliveryFee),
+                      repasseValue: String(repasseValue.toFixed(2)),
+                      paymentStatus: 'pending',
+                      whatsappSent: false,
+                    });
+
+                    const config = await db.getWhatsappConfig(estId);
+                    if (config && config.instanceToken && config.status === 'connected') {
+                      const message = buildDriverDeliveryMessage(order, deliveryFee);
+                      const { sendTextMessage } = await import('./_core/uazapi');
+                      await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+                      await db.markDeliveryWhatsappSent(deliveryId);
+                    }
+                    await db.markOrderDeliveryNotified(input.id);
+                    console.log(`[Driver Notify] Entregador ${driver.name} acionado automaticamente (on_accepted) para pedido ${order.orderNumber}`);
+                  }
+                } else if (activeDrivers.length > 1) {
+                  // Múltiplos entregadores: notificar todos (broadcast)
+                  const config = await db.getWhatsappConfig(estId);
+                  if (config && config.instanceToken && config.status === 'connected') {
+                    const deliveryFee = parseFloat(order.deliveryFee || '0');
+                    const message = buildDriverDeliveryMessage(order, deliveryFee);
+                    const { sendTextMessage } = await import('./_core/uazapi');
+                    for (const driver of activeDrivers) {
+                      try {
+                        await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+                      } catch (e) {
+                        console.error(`[Driver Notify] Erro ao notificar entregador ${driver.name}:`, e);
+                      }
+                    }
+                  }
+                  await db.markOrderDeliveryNotified(input.id);
+                  console.log(`[Driver Notify] ${activeDrivers.length} entregadores notificados (on_accepted) para pedido ${order.orderNumber}`);
+                }
+              }
+            }
+          } catch (error) {
+            console.error('[Driver Notify] Erro ao acionar entregador no aceite:', error);
+          }
+        }
         
         return { success: true };
       }),
@@ -1939,7 +2006,14 @@ export const appRouter = router({
 
         // Check if delivery already exists
         const existingDelivery = await db.getDeliveryByOrderId(input.orderId);
-        if (existingDelivery) throw new TRPCError({ code: 'CONFLICT', message: 'Pedido já possui entregador atribuído' });
+        if (existingDelivery) {
+          // Se já foi atribuído (ex: on_accepted), apenas marcar como pronto sem erro
+          if (order.deliveryNotified) {
+            await db.updateOrderStatus(input.orderId, 'out_for_delivery');
+            return { action: 'assigned', driverId: existingDelivery.driverId, whatsappSent: true, deliveryId: existingDelivery.id };
+          }
+          throw new TRPCError({ code: 'CONFLICT', message: 'Pedido já possui entregador atribuído' });
+        }
 
         // Get active drivers
         const activeDrivers = await db.getActiveDriversByEstablishment(establishment.id);
@@ -2003,20 +2077,26 @@ export const appRouter = router({
         // Update order status to out_for_delivery
         await db.updateOrderStatus(input.orderId, 'out_for_delivery');
 
-        // Send WhatsApp notification to driver
+        // Send WhatsApp notification to driver (skip if already notified on_accepted)
         let whatsappSent = false;
-        try {
-          const config = await db.getWhatsappConfig(establishment.id);
-          if (config && config.instanceToken && config.status === 'connected') {
-            const message = buildDriverDeliveryMessage(order, deliveryFee);
+        const alreadyNotified = order.deliveryNotified;
+        if (!alreadyNotified) {
+          try {
+            const config = await db.getWhatsappConfig(establishment.id);
+            if (config && config.instanceToken && config.status === 'connected') {
+              const message = buildDriverDeliveryMessage(order, deliveryFee);
 
-            const { sendTextMessage } = await import('./_core/uazapi');
-            await sendTextMessage(config.instanceToken, driver.whatsapp, message);
-            await db.markDeliveryWhatsappSent(deliveryId);
-            whatsappSent = true;
+              const { sendTextMessage } = await import('./_core/uazapi');
+              await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+              await db.markDeliveryWhatsappSent(deliveryId);
+              whatsappSent = true;
+            }
+          } catch (error) {
+            console.error('[Driver WhatsApp] Erro ao enviar notificação:', error);
           }
-        } catch (error) {
-          console.error('[Driver WhatsApp] Erro ao enviar notifica\u00e7\u00e3o:', error);
+          await db.markOrderDeliveryNotified(input.orderId);
+        } else {
+          whatsappSent = true; // Já foi enviado no aceite
         }
 
         // Also send customer notification for "ready" status
@@ -4791,23 +4871,28 @@ export const appRouter = router({
           whatsappSent: false,
         });
         
-        // Auto-send WhatsApp notification to driver
+        // Auto-send WhatsApp notification to driver (skip if already notified)
         let whatsappSent = false;
-        try {
-          if (driver.isActive) {
-            const config = await db.getWhatsappConfig(establishment.id);
-            if (config && config.instanceToken && config.status === 'connected') {
-              const message = buildDriverDeliveryMessage(order, deliveryFee);
-              
-              const { sendTextMessage } = await import('./_core/uazapi');
-              await sendTextMessage(config.instanceToken, driver.whatsapp, message);
-              await db.markDeliveryWhatsappSent(deliveryId);
-              whatsappSent = true;
+        const alreadyNotified = order.deliveryNotified;
+        if (!alreadyNotified) {
+          try {
+            if (driver.isActive) {
+              const config = await db.getWhatsappConfig(establishment.id);
+              if (config && config.instanceToken && config.status === 'connected') {
+                const message = buildDriverDeliveryMessage(order, deliveryFee);
+                
+                const { sendTextMessage } = await import('./_core/uazapi');
+                await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+                await db.markDeliveryWhatsappSent(deliveryId);
+                whatsappSent = true;
+              }
             }
+          } catch (error) {
+            console.error('[Driver WhatsApp] Erro ao enviar notificação automática:', error);
           }
-        } catch (error) {
-          console.error('[Driver WhatsApp] Erro ao enviar notificação automática:', error);
-          // Don't fail the assignment if WhatsApp fails
+          await db.markOrderDeliveryNotified(input.orderId);
+        } else {
+          whatsappSent = true; // Já notificado no aceite
         }
         
         return { deliveryId, whatsappSent };
@@ -4895,6 +4980,25 @@ export const appRouter = router({
         if (!delivery) return null;
         const driver = await db.getDriverById(delivery.driverId);
         return { ...delivery, driver };
+      }),
+
+    // Get driver notify timing setting
+    getNotifyTiming: protectedProcedure
+      .query(async ({ ctx }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        const timing = await db.getDriverNotifyTiming(establishment.id);
+        return { timing };
+      }),
+
+    // Update driver notify timing setting
+    updateNotifyTiming: protectedProcedure
+      .input(z.object({ timing: z.enum(["on_accepted", "on_ready"]) }))
+      .mutation(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        await db.updateDriverNotifyTiming(establishment.id, input.timing);
+        return { success: true };
       }),
   }),
 });

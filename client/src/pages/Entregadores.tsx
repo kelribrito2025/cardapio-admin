@@ -21,6 +21,8 @@ import {
   CheckCircle2,
   XCircle,
   Loader2,
+  Bell,
+  Clock,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -118,6 +120,19 @@ function DriverFormSheet({
   onSuccess: () => void;
 }) {
   const [form, setForm] = useState<DriverFormData>(defaultFormData);
+  
+  // Configuração global de timing de notificação do entregador
+  const { data: notifyTimingData } = trpc.driver.getNotifyTiming.useQuery();
+  const updateNotifyTimingMutation = trpc.driver.updateNotifyTiming.useMutation();
+  const utils = trpc.useUtils();
+  const [notifyTiming, setNotifyTiming] = useState<"on_accepted" | "on_ready">("on_ready");
+  
+  // Sync local state with server data
+  useEffect(() => {
+    if (notifyTimingData?.timing) {
+      setNotifyTiming(notifyTimingData.timing);
+    }
+  }, [notifyTimingData?.timing]);
   const [saving, setSaving] = useState(false);
   const [whatsappStatus, setWhatsappStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid' | 'error'>('idle');
   const [whatsappName, setWhatsappName] = useState<string | null>(null);
@@ -358,6 +373,60 @@ function DriverFormSheet({
                 checked={form.isActive}
                 onCheckedChange={(checked) => setForm((f) => ({ ...f, isActive: checked }))}
               />
+            </div>
+
+            {/* Momento de acionamento do entregador (configuração global) */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Bell className="h-4 w-4 text-red-500" />
+                <Label className="text-sm font-medium">Quando acionar o entregador?</Label>
+              </div>
+              <p className="text-xs text-muted-foreground -mt-1">Configuração global do estabelecimento. Define em que momento o entregador recebe a mensagem de nova entrega.</p>
+              <div className="space-y-2">
+                <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${notifyTiming === "on_ready" ? "border-red-400 bg-red-50 shadow-sm" : "border-border/50 hover:border-red-300 bg-muted/30 hover:bg-muted/50"}`}>
+                  <input
+                    type="radio"
+                    name="notifyTiming"
+                    value="on_ready"
+                    checked={notifyTiming === "on_ready"}
+                    onChange={async () => {
+                      setNotifyTiming("on_ready");
+                      try {
+                        await updateNotifyTimingMutation.mutateAsync({ timing: "on_ready" });
+                        utils.driver.getNotifyTiming.invalidate();
+                        toast.success("Configuração atualizada");
+                      } catch { toast.error("Erro ao salvar configuração"); }
+                    }}
+                    className="mt-0.5 accent-red-500"
+                  />
+                  <div>
+                    <span className="text-sm font-medium">Quando o pedido for marcado como pronto</span>
+                    <p className="text-xs text-muted-foreground">Padrão. O entregador é acionado somente quando o pedido estiver pronto para sair.</p>
+                  </div>
+                </label>
+
+                <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${notifyTiming === "on_accepted" ? "border-red-400 bg-red-50 shadow-sm" : "border-border/50 hover:border-red-300 bg-muted/30 hover:bg-muted/50"}`}>
+                  <input
+                    type="radio"
+                    name="notifyTiming"
+                    value="on_accepted"
+                    checked={notifyTiming === "on_accepted"}
+                    onChange={async () => {
+                      setNotifyTiming("on_accepted");
+                      try {
+                        await updateNotifyTimingMutation.mutateAsync({ timing: "on_accepted" });
+                        utils.driver.getNotifyTiming.invalidate();
+                        toast.success("Configuração atualizada");
+                      } catch { toast.error("Erro ao salvar configuração"); }
+                    }}
+                    className="mt-0.5 accent-red-500"
+                  />
+                  <div>
+                    <span className="text-sm font-medium">Quando o pedido for aceito</span>
+                    <p className="text-xs text-muted-foreground">Agiliza a entrega. O entregador é acionado assim que o restaurante aceita o pedido.</p>
+                  </div>
+                </label>
+              </div>
             </div>
 
             {/* Estratégia de repasse */}

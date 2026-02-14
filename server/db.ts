@@ -7720,3 +7720,38 @@ export async function getDeliveryById(id: number) {
   const [delivery] = await db.select().from(deliveries).where(eq(deliveries.id, id));
   return delivery || null;
 }
+
+
+// ============ DRIVER NOTIFY TIMING ============
+
+export async function getDriverNotifyTiming(establishmentId: number): Promise<"on_accepted" | "on_ready"> {
+  const db = await getDb();
+  if (!db) return "on_ready";
+  const [result] = await db.select({ driverNotifyTiming: establishments.driverNotifyTiming })
+    .from(establishments)
+    .where(eq(establishments.id, establishmentId))
+    .limit(1);
+  return (result?.driverNotifyTiming as "on_accepted" | "on_ready") || "on_ready";
+}
+
+export async function updateDriverNotifyTiming(establishmentId: number, timing: "on_accepted" | "on_ready") {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(establishments).set({ driverNotifyTiming: timing }).where(eq(establishments.id, establishmentId));
+}
+
+export async function markOrderDeliveryNotified(orderId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(orders).set({ deliveryNotified: true }).where(eq(orders.id, orderId));
+}
+
+export async function isOrderDeliveryNotified(orderId: number): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+  const [result] = await db.select({ deliveryNotified: orders.deliveryNotified })
+    .from(orders)
+    .where(eq(orders.id, orderId))
+    .limit(1);
+  return result?.deliveryNotified === true;
+}
