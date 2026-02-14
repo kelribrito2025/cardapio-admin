@@ -862,7 +862,7 @@ export default function InlineComplementsDropdown({
             return (
               <div
                 key={group.id}
-                className="border border-border/50 rounded-xl p-3 md:p-4 bg-muted/20"
+                className={`border border-border/50 rounded-xl p-3 md:p-4 bg-muted/20 ${group.isActive === false ? 'opacity-50' : ''}`}
               >
                 {/* Group header */}
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -901,6 +901,11 @@ export default function InlineComplementsDropdown({
 
                   <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap">
                     {/* Tags */}
+                    {group.isActive === false && (
+                      <span className="text-[10px] md:text-xs bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded-full font-medium">
+                        Pausado
+                      </span>
+                    )}
                     {group.isRequired ? (
                       <span className="text-[10px] md:text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full font-medium">
                         Obrigatório

@@ -1404,10 +1404,12 @@ export const appRouter = router({
           // 2. Buscar complementGroups (importados dos itens que tinham complementos)
           const complementGroupsData = await db.getComplementGroupsByProduct(input.productId);
           const complementGroupsWithItems = await Promise.all(
-            complementGroupsData.map(async (group) => {
-              const items = await db.getComplementItemsByGroup(group.id);
-              return { ...group, items: items.filter(item => item.isActive) };
-            })
+            complementGroupsData
+              .filter(group => group.isActive !== false) // Filtrar grupos pausados
+              .map(async (group) => {
+                const items = await db.getComplementItemsByGroup(group.id);
+                return { ...group, items: items.filter(item => item.isActive) };
+              })
           );
 
           // 3. Combinar ambos os tipos de grupos
@@ -1461,13 +1463,15 @@ export const appRouter = router({
         };
         
         const groupsWithItems = await Promise.all(
-          groups.map(async (group) => {
-            const items = await db.getComplementItemsByGroup(group.id);
-            return {
-              ...group,
-              items: items.filter(item => isComplementAvailable(item)),
-            };
-          })
+          groups
+            .filter(group => group.isActive !== false) // Filtrar grupos pausados
+            .map(async (group) => {
+              const items = await db.getComplementItemsByGroup(group.id);
+              return {
+                ...group,
+                items: items.filter(item => isComplementAvailable(item)),
+              };
+            })
         );
         return groupsWithItems;
       }),
