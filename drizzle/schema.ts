@@ -195,7 +195,7 @@ export const orders = mysqlTable("orders", {
   customerName: varchar("customerName", { length: 255 }),
   customerPhone: varchar("customerPhone", { length: 30 }),
   customerAddress: text("customerAddress"),
-  status: mysqlEnum("status", ["pending_confirmation", "new", "preparing", "ready", "completed", "cancelled"]).default("pending_confirmation").notNull(),
+  status: mysqlEnum("status", ["pending_confirmation", "new", "preparing", "ready", "out_for_delivery", "completed", "cancelled"]).default("pending_confirmation").notNull(),
   deliveryType: mysqlEnum("deliveryType", ["delivery", "pickup", "dine_in"]).default("delivery").notNull(),
   paymentMethod: mysqlEnum("paymentMethod", ["cash", "card", "pix", "boleto", "card_online"]).default("cash").notNull(),
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),

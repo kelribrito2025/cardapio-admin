@@ -1567,7 +1567,7 @@ export async function createOrder(data: InsertOrder, items: InsertOrderItem[]): 
   return result.id;
 }
 
-export async function updateOrderStatus(id: number, status: "new" | "preparing" | "ready" | "completed" | "cancelled", cancellationReason?: string) {
+export async function updateOrderStatus(id: number, status: "new" | "preparing" | "ready" | "out_for_delivery" | "completed" | "cancelled", cancellationReason?: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   

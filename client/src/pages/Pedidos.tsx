@@ -53,6 +53,7 @@ import {
   Trash2,
   Edit,
   ArrowLeft,
+  Truck,
   Plus,
   MoreVertical,
   CheckCircle2,
@@ -77,7 +78,7 @@ import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-type OrderStatus = "new" | "preparing" | "ready" | "completed" | "cancelled";
+type OrderStatus = "new" | "preparing" | "ready" | "out_for_delivery" | "completed" | "cancelled";
 
 // Configuração das colunas Kanban
 const kanbanColumns = [
@@ -175,6 +176,7 @@ const statusConfig: Record<OrderStatus, {
   new: { label: "Novo", variant: "info", icon: Clock, color: "text-blue-600", bgColor: "bg-blue-50 dark:bg-blue-950/30", badgeBg: "#3b82f6", badgeText: "#ffffff" },
   preparing: { label: "Preparando", variant: "warning", icon: ChefHat, color: "text-red-600", bgColor: "bg-red-50 dark:bg-red-950/30", badgeBg: "#dc2626", badgeText: "#ffffff" },
   ready: { label: "Pronto", variant: "success", icon: Package, color: "text-emerald-600", bgColor: "bg-emerald-50 dark:bg-emerald-950/30", badgeBg: "#059669", badgeText: "#ffffff" },
+  out_for_delivery: { label: "Em entrega", variant: "info", icon: Truck, color: "text-orange-600", bgColor: "bg-orange-50 dark:bg-orange-950/30", badgeBg: "#ea580c", badgeText: "#ffffff" },
   completed: { label: "Finalizado", variant: "default", icon: CheckCircle, color: "text-muted-foreground", bgColor: "bg-muted", badgeBg: "#6b7280", badgeText: "#ffffff" },
   cancelled: { label: "Cancelado", variant: "error", icon: XCircle, color: "text-red-600", bgColor: "bg-red-50 dark:bg-red-950/30", badgeBg: "#dc2626", badgeText: "#ffffff" },
 };
@@ -768,6 +770,20 @@ export default function Pedidos() {
   };
 
   const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
+    // Smart driver assignment: intercept when marking as "ready"
+    if (newStatus === "ready") {
+      setLoadingOrderId(orderId);
+      markReadyAndAssignMutation.mutate(
+        { orderId },
+        {
+          onSettled: () => {
+            setLoadingOrderId(null);
+          },
+        }
+      );
+      return;
+    }
+
     setLoadingOrderId(orderId);
     updateStatusMutation.mutate(
       { id: orderId, status: newStatus },
@@ -820,6 +836,39 @@ export default function Pedidos() {
     }
   };
 
+  // Driver assignment states
+  const [driverModalOpen, setDriverModalOpen] = useState(false);
+  const [driverModalOrderId, setDriverModalOrderId] = useState<number | null>(null);
+  const [driverModalDrivers, setDriverModalDrivers] = useState<Array<{ id: number; name: string; whatsapp: string }>>([]);
+  const [assigningDriverId, setAssigningDriverId] = useState<number | null>(null);
+
+  // Smart driver assignment mutation
+  const markReadyAndAssignMutation = trpc.orders.markReadyAndAssign.useMutation({
+    onSuccess: (result, variables) => {
+      if (result.action === 'marked_ready') {
+        // No active drivers, just marked as ready
+        toast.success("Pedido pronto para entrega!");
+      } else if (result.action === 'choose_driver') {
+        // Multiple drivers, show modal
+        setDriverModalOrderId(variables.orderId);
+        setDriverModalDrivers(result.drivers || []);
+        setDriverModalOpen(true);
+        toast.info("Selecione o entregador para este pedido");
+      } else if (result.action === 'assigned') {
+        // Auto-assigned or manually selected
+        toast.success("Pedido em entrega!" + (result.whatsappSent ? " Notificação enviada ao entregador." : ""));
+        setDriverModalOpen(false);
+        setDriverModalOrderId(null);
+        setAssigningDriverId(null);
+      }
+      utils.orders.list.invalidate();
+    },
+    onError: (err) => {
+      toast.error(err.message || "Erro ao atribuir entregador");
+      setAssigningDriverId(null);
+    },
+  });
+
   const getNextAction = (status: OrderStatus): { label: string; newStatus: OrderStatus } | null => {
     switch (status) {
       case "new":
@@ -827,6 +876,8 @@ export default function Pedidos() {
       case "preparing":
         return { label: "Pronto", newStatus: "ready" };
       case "ready":
+        return { label: "Finalizar", newStatus: "completed" };
+      case "out_for_delivery":
         return { label: "Finalizar", newStatus: "completed" };
       default:
         return null;
@@ -921,10 +972,10 @@ export default function Pedidos() {
 
   // Agrupar pedidos por status para o Kanban
   type OrderItem = typeof allOrders[number];
-  const ordersByStatus = {
+  const ordersByStatus: Record<string, OrderItem[]> = {
     new: filteredOrders?.filter((o: OrderItem) => o.status === "new") ?? [],
     preparing: filteredOrders?.filter((o: OrderItem) => o.status === "preparing") ?? [],
-    ready: filteredOrders?.filter((o: OrderItem) => o.status === "ready") ?? [],
+    ready: filteredOrders?.filter((o: OrderItem) => o.status === "ready" || o.status === "out_for_delivery") ?? [],
     completed: filteredOrders?.filter((o: OrderItem) => {
       if (o.status !== "completed") return false;
       const orderTime = new Date(o.updatedAt || o.createdAt);
@@ -2215,6 +2266,74 @@ export default function Pedidos() {
             >
               <MessageCircle className="h-4 w-4" />
               Conectar WhatsApp
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de seleção de entregador */}
+      <Dialog open={driverModalOpen} onOpenChange={(open) => {
+        if (!open) {
+          setDriverModalOpen(false);
+          setDriverModalOrderId(null);
+          setAssigningDriverId(null);
+        }
+      }}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Truck className="h-5 w-5 text-orange-500" />
+              Selecionar Entregador
+            </DialogTitle>
+            <DialogDescription>
+              Escolha o entregador para este pedido. A notificação será enviada automaticamente via WhatsApp.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-2 max-h-[300px] overflow-y-auto">
+            {driverModalDrivers.map((driver) => (
+              <button
+                key={driver.id}
+                disabled={assigningDriverId !== null}
+                onClick={() => {
+                  if (!driverModalOrderId) return;
+                  setAssigningDriverId(driver.id);
+                  markReadyAndAssignMutation.mutate({
+                    orderId: driverModalOrderId,
+                    driverId: driver.id,
+                  });
+                }}
+                className={cn(
+                  "w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left",
+                  assigningDriverId === driver.id
+                    ? "border-orange-500 bg-orange-50 dark:bg-orange-950/30"
+                    : "border-border hover:border-orange-300 hover:bg-orange-50/50 dark:hover:bg-orange-950/20",
+                  assigningDriverId !== null && assigningDriverId !== driver.id && "opacity-50"
+                )}
+              >
+                <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-950/50 flex items-center justify-center flex-shrink-0">
+                  <Truck className="h-5 w-5 text-orange-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm truncate">{driver.name}</p>
+                  <p className="text-xs text-muted-foreground">{driver.whatsapp}</p>
+                </div>
+                {assigningDriverId === driver.id && (
+                  <Loader2 className="h-4 w-4 animate-spin text-orange-500" />
+                )}
+              </button>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDriverModalOpen(false);
+                setDriverModalOrderId(null);
+              }}
+              disabled={assigningDriverId !== null}
+              className="rounded-xl"
+            >
+              Cancelar
             </Button>
           </DialogFooter>
         </DialogContent>

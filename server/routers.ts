@@ -1850,7 +1850,7 @@ export const appRouter = router({
     updateStatus: protectedProcedure
       .input(z.object({
         id: z.number(),
-        status: z.enum(["new", "preparing", "ready", "completed", "cancelled"]),
+        status: z.enum(["new", "preparing", "ready", "out_for_delivery", "completed", "cancelled"]),
         cancellationReason: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
@@ -1877,7 +1877,7 @@ export const appRouter = router({
                 await sendOrderStatusNotification(
                   config.instanceToken,
                   order.customerPhone,
-                  input.status,
+                  input.status as 'new' | 'preparing' | 'ready' | 'out_for_delivery' | 'completed' | 'cancelled',
                   {
                     customerName: order.customerName || 'Cliente',
                     orderNumber: order.orderNumber,
@@ -1913,6 +1913,167 @@ export const appRouter = router({
         }
         
         return { success: true };
+      }),
+
+    // Smart driver assignment: mark as ready and auto-assign driver
+    markReadyAndAssign: protectedProcedure
+      .input(z.object({
+        orderId: z.number(),
+        driverId: z.number().optional(), // If provided, assign this specific driver
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento n\u00e3o encontrado' });
+
+        const order = await db.getOrderById(input.orderId);
+        if (!order) throw new TRPCError({ code: 'NOT_FOUND', message: 'Pedido n\u00e3o encontrado' });
+
+        // Check if delivery already exists
+        const existingDelivery = await db.getDeliveryByOrderId(input.orderId);
+        if (existingDelivery) throw new TRPCError({ code: 'CONFLICT', message: 'Pedido j\u00e1 possui entregador atribu\u00eddo' });
+
+        // Get active drivers
+        const activeDrivers = await db.getActiveDriversByEstablishment(establishment.id);
+
+        let driverId = input.driverId;
+
+        // If no specific driver provided, check logic
+        if (!driverId) {
+          if (activeDrivers.length === 0) {
+            // No active drivers: just mark as ready, don't assign
+            await db.updateOrderStatus(input.orderId, 'ready');
+            return { action: 'marked_ready', driverId: null, whatsappSent: false };
+          } else if (activeDrivers.length === 1) {
+            // Only 1 active driver: auto-assign
+            driverId = activeDrivers[0].id;
+          } else {
+            // 2+ active drivers: return list for modal selection
+            // First mark as ready
+            await db.updateOrderStatus(input.orderId, 'ready');
+            return {
+              action: 'choose_driver',
+              drivers: activeDrivers.map(d => ({
+                id: d.id,
+                name: d.name,
+                whatsapp: d.whatsapp,
+              })),
+              driverId: null,
+              whatsappSent: false,
+            };
+          }
+        }
+
+        // Assign driver and change status to out_for_delivery
+        const driver = await db.getDriverById(driverId);
+        if (!driver) throw new TRPCError({ code: 'NOT_FOUND', message: 'Entregador n\u00e3o encontrado' });
+
+        const deliveryFee = parseFloat(order.deliveryFee || '0');
+
+        // Calculate repasse
+        let repasseValue = 0;
+        if (driver.repasseStrategy === 'neighborhood') {
+          repasseValue = deliveryFee;
+        } else if (driver.repasseStrategy === 'fixed') {
+          repasseValue = parseFloat(driver.fixedValue || '0');
+        } else if (driver.repasseStrategy === 'percentage') {
+          const pct = parseFloat(driver.percentageValue || '0');
+          repasseValue = deliveryFee * (pct / 100);
+        }
+
+        // Create delivery record
+        const deliveryId = await db.createDelivery({
+          establishmentId: establishment.id,
+          orderId: input.orderId,
+          driverId,
+          deliveryFee: String(deliveryFee),
+          repasseValue: String(repasseValue.toFixed(2)),
+          paymentStatus: 'pending',
+          whatsappSent: false,
+        });
+
+        // Update order status to out_for_delivery
+        await db.updateOrderStatus(input.orderId, 'out_for_delivery');
+
+        // Send WhatsApp notification to driver
+        let whatsappSent = false;
+        try {
+          const config = await db.getWhatsappConfig(establishment.id);
+          if (config && config.instanceToken && config.status === 'connected') {
+            const address = order.customerAddress || '';
+            const mapsLink = address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` : '';
+
+            const message = `\u{1F69A} *Nova entrega para voc\u00ea!*\n\n` +
+              `*Pedido:* #${order.orderNumber}\n` +
+              `*Cliente:* ${order.customerName || 'N/A'}\n` +
+              `*Telefone:* ${order.customerPhone || 'N/A'}\n\n` +
+              `*Endere\u00e7o:* ${address || 'N/A'}\n\n` +
+              `*Pagamento:* ${order.paymentMethod === 'cash' ? 'Dinheiro' : order.paymentMethod === 'card' ? 'Cart\u00e3o' : order.paymentMethod === 'pix' ? 'Pix' : order.paymentMethod}\n\n` +
+              `*Total do pedido:* R$ ${parseFloat(order.total || '0').toFixed(2).replace('.', ',')}\n` +
+              `*Taxa de entrega:* R$ ${deliveryFee.toFixed(2).replace('.', ',')}\n` +
+              (order.notes ? `\n*Observa\u00e7\u00f5es:* ${order.notes}\n` : '') +
+              (mapsLink ? `\n\u{1F4CD} Abrir no mapa: ${mapsLink}` : '');
+
+            const { sendTextMessage } = await import('./_core/uazapi');
+            await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+            await db.markDeliveryWhatsappSent(deliveryId);
+            whatsappSent = true;
+          }
+        } catch (error) {
+          console.error('[Driver WhatsApp] Erro ao enviar notifica\u00e7\u00e3o:', error);
+        }
+
+        // Also send customer notification for "ready" status
+        try {
+          if (order.customerPhone) {
+            const config = await db.getWhatsappConfig(establishment.id);
+            if (config && config.status === 'connected' && config.notifyOnReady && config.instanceToken) {
+              const { sendOrderStatusNotification } = await import('./_core/uazapi');
+              const est = await db.getEstablishmentById(order.establishmentId);
+              const orderItems = await db.getOrderItems(order.id);
+              await sendOrderStatusNotification(
+                config.instanceToken,
+                order.customerPhone,
+                'ready',
+                {
+                  customerName: order.customerName || 'Cliente',
+                  orderNumber: order.orderNumber,
+                  establishmentName: est?.name || 'Restaurante',
+                  template: (order.deliveryType === 'pickup' || order.deliveryType === 'dine_in')
+                    ? (config.templateReadyPickup || config.templateReady)
+                    : config.templateReady,
+                  deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
+                  cancellationReason: null,
+                  orderItems: orderItems.map(item => ({
+                    productName: item.productName,
+                    quantity: item.quantity ?? 1,
+                    unitPrice: item.unitPrice,
+                    totalPrice: item.totalPrice,
+                    complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
+                    notes: item.notes,
+                  })),
+                  orderTotal: order.total,
+                  paymentMethod: order.paymentMethod,
+                }
+              );
+            }
+          }
+        } catch (error) {
+          console.error('[WhatsApp] Erro ao notificar cliente:', error);
+        }
+
+        return { action: 'assigned', driverId, whatsappSent, deliveryId };
+      }),
+
+    // Get active drivers count for smart assignment UI
+    getActiveDriversForAssignment: protectedProcedure
+      .query(async ({ ctx }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) return { count: 0, drivers: [] };
+        const drivers = await db.getActiveDriversByEstablishment(establishment.id);
+        return {
+          count: drivers.length,
+          drivers: drivers.map(d => ({ id: d.id, name: d.name, whatsapp: d.whatsapp })),
+        };
       }),
   }),
 

@@ -412,7 +412,7 @@ function getGreeting(timezone: string = 'America/Sao_Paulo'): string {
  * Generate order status message based on template
  */
 export function generateStatusMessage(
-  status: 'new' | 'preparing' | 'ready' | 'completed' | 'cancelled',
+  status: 'new' | 'preparing' | 'ready' | 'out_for_delivery' | 'completed' | 'cancelled',
   orderNumber: string,
   customerName: string,
   establishmentName: string,
@@ -541,7 +541,7 @@ export function generateStatusMessage(
 export async function sendOrderStatusNotification(
   instanceToken: string,
   phone: string,
-  status: 'new' | 'preparing' | 'ready' | 'completed' | 'cancelled',
+  status: 'new' | 'preparing' | 'ready' | 'out_for_delivery' | 'completed' | 'cancelled',
   data: {
     customerName: string;
     orderNumber: string;

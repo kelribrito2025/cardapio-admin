@@ -6453,3 +6453,11 @@
 - [x] Padronizar slidebar de Novo Entregador com o mesmo estilo da slidebar de Criar Combo do Catálogo
 - [x] Adicionar ícone X no header da slidebar de Novo Entregador para fechar
 - [x] Validação de WhatsApp em tempo real via UAZAPI antes de salvar entregador
+
+## Fluxo inteligente de atribuição de entregadores
+- [ ] Ao marcar pedido como "Pronto": verificar entregadores ativos
+- [ ] Se 1 entregador ativo: atribuir automaticamente + status "Em entrega" + enviar WhatsApp
+- [ ] Se 2+ entregadores ativos: abrir modal de seleção de entregador
+- [ ] Se 0 entregadores ativos: não fazer nada (apenas marcar como Pronto normalmente)
+- [ ] Após seleção no modal: atribuir + status "Em entrega" + enviar WhatsApp
+- [ ] Backend: endpoint para auto-assign com mudança de status

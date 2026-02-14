@@ -603,6 +603,13 @@
       "when": 1771078354730,
       "tag": "0085_bumpy_nico_minoru",
       "breakpoints": true
+    },
+    {
+      "idx": 86,
+      "version": "5",
+      "when": 1771090710945,
+      "tag": "0086_curious_magneto",
+      "breakpoints": true
     }
   ]
 }
