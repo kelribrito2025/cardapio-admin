@@ -6431,3 +6431,4 @@
 - [ ] Backend: Endpoint para excluir grupo inteiro
 - [ ] Backend: Endpoint para alterar regras (mín/máx/obrigatório) globalmente
 - [x] Bug: Pausar grupo na página de Complementos não reflete na página de Catálogo (grupo continua visível/ativo)
+- [x] Mover item "Grupos" para dentro do submenu "Menu", abaixo de "Cardápio"

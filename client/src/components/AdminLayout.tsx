@@ -83,9 +83,9 @@ const menuSections = [
       { icon: ClipboardList, label: "Pedidos", href: "/pedidos", disabled: false },
       { icon: BookOpen, label: "Menu", href: "/menu-parent", disabled: false, isParent: true, children: [
         { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo", disabled: false },
+        { icon: Layers, label: "Grupos", href: "/complementos", disabled: false },
         { icon: Star, label: "Avaliações", href: "/avaliacoes", disabled: false, badgeKey: "reviews" },
       ]},
-      { icon: Layers, label: "Grupos", href: "/complementos", disabled: false },
       { icon: Package, label: "Estoque", href: "/estoque", disabled: false },
     ]
   },
