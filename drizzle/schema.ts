@@ -155,6 +155,7 @@ export const complementGroups = mysqlTable("complementGroups", {
   minQuantity: int("minQuantity").default(0).notNull(),
   maxQuantity: int("maxQuantity").default(1).notNull(),
   isRequired: boolean("isRequired").default(false).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
   sortOrder: int("sortOrder").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

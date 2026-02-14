@@ -6415,3 +6415,18 @@
 - [x] Adicionar tela intermediária "Criar novo grupo / Copiar grupo existente" no AddGroupSheet após seleção de categoria
 - [x] Centralizar botões "Adicionar item" e "Adicionar grupo" no dropdown de complementos, "Adicionar grupo" vermelho e "Adicionar item" com destaque
 - [x] Bug: Ao limpar campo de estoque no Catálogo (deixar vazio), o item deve desaparecer da página de Estoque
+
+## Redesign da Página de Complementos - Gestão Global de Grupos
+- [x] Nível 1: Lista de grupos com nome, qtd complementos, qtd produtos vinculados
+- [x] Nível 1: Botão pausar grupo inteiro (todos complementos ficam indisponíveis)
+- [x] Nível 1: Botão excluir grupo inteiro
+- [x] Nível 2: Expandir grupo mostra complementos (igual Catálogo)
+- [x] Nível 2: Editar mín/máx/obrigatório globalmente (altera para todos os produtos)
+- [x] Nível 2: Pausar/reativar complemento individual
+- [x] Nível 2: Editar preço, tipo (Normal/Grátis), reordenar complementos
+- [x] Nível 2: Adicionar novo complemento ao grupo
+- [x] Nível 2: Excluir complemento individual
+- [ ] Backend: Endpoints para listar grupos globais com contagem de produtos
+- [ ] Backend: Endpoint para pausar/reativar grupo inteiro
+- [ ] Backend: Endpoint para excluir grupo inteiro
+- [ ] Backend: Endpoint para alterar regras (mín/máx/obrigatório) globalmente

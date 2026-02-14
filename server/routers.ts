@@ -991,6 +991,83 @@ export const appRouter = router({
         await db.deleteComplementItem(input.id);
         return { success: true };
       }),
+    
+    // ---- Global Group Management ----
+    
+    // List all unique groups across all products of an establishment
+    listAllGroups: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getAllComplementGroupsByEstablishment(input.establishmentId);
+      }),
+    
+    // Pause/activate a group globally by name
+    toggleGroupActive: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        groupName: z.string(),
+        isActive: z.boolean(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.toggleComplementGroupByName(input.establishmentId, input.groupName, input.isActive);
+        return { success: true };
+      }),
+    
+    // Delete a group globally by name
+    deleteGroupByName: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        groupName: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.deleteComplementGroupByName(input.establishmentId, input.groupName);
+        return { success: true };
+      }),
+    
+    // Update group rules (min, max, required, name) globally by name
+    updateGroupRules: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        groupName: z.string(),
+        newName: z.string().optional(),
+        minQuantity: z.number().optional(),
+        maxQuantity: z.number().optional(),
+        isRequired: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { establishmentId, groupName, newName, ...data } = input;
+        const updateData = { ...data, ...(newName ? { name: newName } : {}) };
+        await db.updateComplementGroupRulesByName(establishmentId, groupName, updateData);
+        return { success: true };
+      }),
+    
+    // Delete a complement item by name across all groups
+    deleteItemByName: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        itemName: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.deleteComplementItemByName(input.establishmentId, input.itemName);
+        return { success: true };
+      }),
+    
+    // Add a complement item to all groups with a specific name
+    addItemToGroupByName: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        groupName: z.string(),
+        name: z.string().min(1),
+        price: z.string().default("0"),
+      }))
+      .mutation(async ({ input }) => {
+        const count = await db.addComplementItemToGroupByName(
+          input.establishmentId,
+          input.groupName,
+          { name: input.name, price: input.price }
+        );
+        return { success: true, groupsAffected: count };
+      }),
   }),
 
   // ============ ORDERS ============

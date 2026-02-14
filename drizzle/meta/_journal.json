@@ -589,6 +589,13 @@
       "when": 1770928854948,
       "tag": "0083_early_paper_doll",
       "breakpoints": true
+    },
+    {
+      "idx": 84,
+      "version": "5",
+      "when": 1771073452601,
+      "tag": "0084_safe_iron_monger",
+      "breakpoints": true
     }
   ]
 }

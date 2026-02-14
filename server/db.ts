@@ -1045,6 +1045,278 @@ export async function updateComplementItemsByName(
     );
 }
 
+// ============ GLOBAL COMPLEMENT GROUP MANAGEMENT ============
+
+// Get all unique complement groups across all products of an establishment
+export async function getAllComplementGroupsByEstablishment(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Get all products for this establishment
+  const establishmentProducts = await db.select({ id: products.id, name: products.name })
+    .from(products)
+    .where(eq(products.establishmentId, establishmentId));
+  
+  if (establishmentProducts.length === 0) return [];
+  
+  const productIds = establishmentProducts.map(p => p.id);
+  
+  // Get all complement groups for these products
+  const allGroups = await db.select()
+    .from(complementGroups)
+    .where(inArray(complementGroups.productId, productIds))
+    .orderBy(asc(complementGroups.name));
+  
+  if (allGroups.length === 0) return [];
+  
+  // Group by name to identify unique groups (same group can be in multiple products)
+  const uniqueGroups = new Map<string, {
+    name: string;
+    groupIds: number[];
+    productIds: number[];
+    productCount: number;
+    complementCount: number;
+    minQuantity: number;
+    maxQuantity: number;
+    isRequired: boolean;
+    isActive: boolean;
+    items: any[];
+  }>();
+  
+  for (const group of allGroups) {
+    const key = group.name.toLowerCase().trim();
+    if (uniqueGroups.has(key)) {
+      const existing = uniqueGroups.get(key)!;
+      if (!existing.groupIds.includes(group.id)) {
+        existing.groupIds.push(group.id);
+      }
+      if (!existing.productIds.includes(group.productId)) {
+        existing.productIds.push(group.productId);
+        existing.productCount++;
+      }
+    } else {
+      uniqueGroups.set(key, {
+        name: group.name,
+        groupIds: [group.id],
+        productIds: [group.productId],
+        productCount: 1,
+        complementCount: 0,
+        minQuantity: group.minQuantity,
+        maxQuantity: group.maxQuantity,
+        isRequired: group.isRequired,
+        isActive: group.isActive,
+        items: [],
+      });
+    }
+  }
+  
+  // Get all items for all groups
+  const allGroupIds = allGroups.map(g => g.id);
+  const allItems = await db.select()
+    .from(complementItems)
+    .where(inArray(complementItems.groupId, allGroupIds))
+    .orderBy(asc(complementItems.sortOrder));
+  
+  // Assign items to their unique groups (deduplicate by name)
+  for (const item of allItems) {
+    // Find which unique group this item belongs to
+    const group = allGroups.find(g => g.id === item.groupId);
+    if (!group) continue;
+    
+    const key = group.name.toLowerCase().trim();
+    const uniqueGroup = uniqueGroups.get(key);
+    if (!uniqueGroup) continue;
+    
+    // Check if we already have an item with this name
+    const existingItem = uniqueGroup.items.find(
+      (i: any) => i.name.toLowerCase().trim() === item.name.toLowerCase().trim()
+    );
+    
+    if (!existingItem) {
+      uniqueGroup.items.push({
+        ...item,
+        usageCount: 1,
+      });
+      uniqueGroup.complementCount++;
+    } else {
+      existingItem.usageCount = (existingItem.usageCount || 1) + 1;
+    }
+  }
+  
+  return Array.from(uniqueGroups.values()).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// Pause/activate all complement groups with the same name across all products
+export async function toggleComplementGroupByName(
+  establishmentId: number,
+  groupName: string,
+  isActive: boolean
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const establishmentProducts = await db.select({ id: products.id })
+    .from(products)
+    .where(eq(products.establishmentId, establishmentId));
+  
+  if (establishmentProducts.length === 0) return;
+  
+  const productIds = establishmentProducts.map(p => p.id);
+  
+  // Update all groups with this name
+  await db.update(complementGroups)
+    .set({ isActive })
+    .where(
+      and(
+        inArray(complementGroups.productId, productIds),
+        eq(complementGroups.name, groupName)
+      )
+    );
+}
+
+// Delete all complement groups with the same name across all products
+export async function deleteComplementGroupByName(
+  establishmentId: number,
+  groupName: string
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const establishmentProducts = await db.select({ id: products.id })
+    .from(products)
+    .where(eq(products.establishmentId, establishmentId));
+  
+  if (establishmentProducts.length === 0) return;
+  
+  const productIds = establishmentProducts.map(p => p.id);
+  
+  // Find all groups with this name
+  const groupsToDelete = await db.select({ id: complementGroups.id })
+    .from(complementGroups)
+    .where(
+      and(
+        inArray(complementGroups.productId, productIds),
+        eq(complementGroups.name, groupName)
+      )
+    );
+  
+  if (groupsToDelete.length === 0) return;
+  
+  const groupIds = groupsToDelete.map(g => g.id);
+  
+  // Delete all items in these groups
+  await db.delete(complementItems).where(inArray(complementItems.groupId, groupIds));
+  
+  // Delete the groups themselves
+  await db.delete(complementGroups).where(inArray(complementGroups.id, groupIds));
+}
+
+// Update group rules (min, max, required) globally by name
+export async function updateComplementGroupRulesByName(
+  establishmentId: number,
+  groupName: string,
+  data: {
+    name?: string;
+    minQuantity?: number;
+    maxQuantity?: number;
+    isRequired?: boolean;
+    isActive?: boolean;
+  }
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const establishmentProducts = await db.select({ id: products.id })
+    .from(products)
+    .where(eq(products.establishmentId, establishmentId));
+  
+  if (establishmentProducts.length === 0) return;
+  
+  const productIds = establishmentProducts.map(p => p.id);
+  
+  await db.update(complementGroups)
+    .set(data)
+    .where(
+      and(
+        inArray(complementGroups.productId, productIds),
+        eq(complementGroups.name, groupName)
+      )
+    );
+}
+
+// Delete a complement item by name across all groups of an establishment
+export async function deleteComplementItemByName(
+  establishmentId: number,
+  itemName: string
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const establishmentProducts = await db.select({ id: products.id })
+    .from(products)
+    .where(eq(products.establishmentId, establishmentId));
+  
+  if (establishmentProducts.length === 0) return;
+  
+  const productIds = establishmentProducts.map(p => p.id);
+  
+  const allGroups = await db.select({ id: complementGroups.id })
+    .from(complementGroups)
+    .where(inArray(complementGroups.productId, productIds));
+  
+  if (allGroups.length === 0) return;
+  
+  const groupIds = allGroups.map(g => g.id);
+  
+  await db.delete(complementItems)
+    .where(
+      and(
+        inArray(complementItems.groupId, groupIds),
+        eq(complementItems.name, itemName)
+      )
+    );
+}
+
+// Add a complement item to all groups with a specific name across all products
+export async function addComplementItemToGroupByName(
+  establishmentId: number,
+  groupName: string,
+  itemData: { name: string; price: string; sortOrder?: number }
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const establishmentProducts = await db.select({ id: products.id })
+    .from(products)
+    .where(eq(products.establishmentId, establishmentId));
+  
+  if (establishmentProducts.length === 0) return;
+  
+  const productIds = establishmentProducts.map(p => p.id);
+  
+  // Find all groups with this name
+  const groups = await db.select({ id: complementGroups.id })
+    .from(complementGroups)
+    .where(
+      and(
+        inArray(complementGroups.productId, productIds),
+        eq(complementGroups.name, groupName)
+      )
+    );
+  
+  // Add the item to each group
+  for (const group of groups) {
+    await db.insert(complementItems).values({
+      groupId: group.id,
+      name: itemData.name,
+      price: itemData.price,
+      sortOrder: itemData.sortOrder ?? 999,
+    });
+  }
+  
+  return groups.length;
+}
+
 // ============ ORDER FUNCTIONS ============
 export async function getOrdersByEstablishment(
   establishmentId: number,
