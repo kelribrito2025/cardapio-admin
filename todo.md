@@ -6412,3 +6412,4 @@
 - [x] Aplicar máscara de moeda brasileira no campo de preço do CreateComboSheet
 - [x] Remover campo "Nome do grupo" e botão "Adicionar grupo" inline do dropdown de complementos no Catálogo
 - [x] Adicionar botão "Adicionar grupo" que abre slidebar com seleção de categoria (Ingredientes, Especificações, Descartáveis) reutilizando fluxo do CreateProductSheet step 2
+- [x] Adicionar tela intermediária "Criar novo grupo / Copiar grupo existente" no AddGroupSheet após seleção de categoria

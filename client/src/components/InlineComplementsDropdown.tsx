@@ -672,10 +672,12 @@ function SortableInlineItem({
 // ---- Main Component ----
 export default function InlineComplementsDropdown({
   productId,
+  establishmentId,
   isOpen,
   onClose,
 }: {
   productId: number;
+  establishmentId?: number;
   isOpen: boolean;
   onClose: () => void;
 }) {
@@ -846,6 +848,7 @@ export default function InlineComplementsDropdown({
           </Button>
           <AddGroupSheet
             productId={productId}
+            establishmentId={establishmentId || 0}
             open={addGroupSheetOpen}
             onOpenChange={setAddGroupSheetOpen}
             onGroupCreated={() => { refetch(); utils.product.list.invalidate(); }}
@@ -1113,6 +1116,7 @@ export default function InlineComplementsDropdown({
             </Button>
             <AddGroupSheet
               productId={productId}
+              establishmentId={establishmentId || 0}
               open={addGroupSheetOpen}
               onOpenChange={setAddGroupSheetOpen}
               onGroupCreated={() => { refetch(); utils.product.list.invalidate(); }}

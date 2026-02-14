@@ -82,6 +82,7 @@ function SortableProductItem({
   expandedComplementProductId,
   onToggleComplements,
   onUpdateInline,
+  establishmentId,
 }: {
   product: any;
   isDragDisabled: boolean;
@@ -93,6 +94,7 @@ function SortableProductItem({
   expandedComplementProductId: number | null;
   onToggleComplements: (id: number) => void;
   onUpdateInline?: (id: number, data: { price?: string; stockQuantity?: number | null; hasStock?: boolean }) => void;
+  establishmentId?: number;
 }) {
   const {
     attributes,
@@ -366,6 +368,7 @@ function SortableProductItem({
       {/* Inline Complements Dropdown */}
       <InlineComplementsDropdown
         productId={product.id}
+        establishmentId={establishmentId}
         isOpen={isComplementsOpen}
         onClose={() => onToggleComplements(product.id)}
       />
@@ -1317,6 +1320,7 @@ export default function Catalogo() {
                         expandedComplementProductId={expandedComplementProductId}
                         onToggleComplements={handleToggleComplements}
                         onUpdateInline={handleInlineUpdate}
+                        establishmentId={establishmentId || undefined}
                       />
                     ))}
                   </div>
@@ -1371,6 +1375,7 @@ export default function Catalogo() {
                       expandedComplementProductId={expandedComplementProductId}
                       onToggleComplements={handleToggleComplements}
                       onUpdateInline={handleInlineUpdate}
+                      establishmentId={establishmentId || undefined}
                     />
                   ))}
                 </div>

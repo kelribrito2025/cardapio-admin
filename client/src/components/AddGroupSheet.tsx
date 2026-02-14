@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { trpc } from "@/lib/trpc";
-import { capitalizeFirst, parsePriceInput } from "@/lib/utils";
+import { capitalizeFirst, parsePriceInput, cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
   X,
@@ -21,10 +21,13 @@ import {
   Trash2,
   ImagePlus,
   Loader2,
+  Copy,
+  Check,
+  Package,
 } from "lucide-react";
 
 type CategoryType = "ingredientes" | "especificacoes" | "descartaveis";
-type SubStep = "categories" | "group-config" | "group-items";
+type SubStep = "categories" | "choose" | "group-config" | "group-items" | "copy-group";
 
 interface ComplementItem {
   uniqueId: string;
@@ -35,6 +38,7 @@ interface ComplementItem {
 
 interface AddGroupSheetProps {
   productId: number;
+  establishmentId: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onGroupCreated: () => void;
@@ -42,6 +46,7 @@ interface AddGroupSheetProps {
 
 export default function AddGroupSheet({
   productId,
+  establishmentId,
   open,
   onOpenChange,
   onGroupCreated,
@@ -61,7 +66,19 @@ export default function AddGroupSheet({
   const [newItemImage, setNewItemImage] = useState<string | null>(null);
   const [uploadingItemImage, setUploadingItemImage] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [copyProductId, setCopyProductId] = useState<number | null>(null);
   const itemFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Queries
+  const { data: allProducts } = trpc.product.list.useQuery(
+    { establishmentId },
+    { enabled: open && subStep === "copy-group" }
+  );
+
+  const { data: copyGroups } = trpc.complement.listGroups.useQuery(
+    { productId: copyProductId! },
+    { enabled: open && !!copyProductId && subStep === "copy-group" }
+  );
 
   // Mutations
   const createGroupMutation = trpc.complement.createGroup.useMutation();
@@ -90,6 +107,7 @@ export default function AddGroupSheet({
     setNewItemName("");
     setNewItemPrice("");
     setNewItemImage(null);
+    setCopyProductId(null);
   }, []);
 
   const handleClose = () => {
@@ -99,7 +117,7 @@ export default function AddGroupSheet({
 
   const handleSelectCategory = (cat: CategoryType) => {
     setCategory(cat);
-    setSubStep("group-config");
+    setSubStep("choose");
   };
 
   const handleSaveGroupConfig = () => {
@@ -157,7 +175,6 @@ export default function AddGroupSheet({
     }
     setIsSaving(true);
     try {
-      // Create group
       const result = await createGroupMutation.mutateAsync({
         productId,
         name: groupName.trim(),
@@ -166,18 +183,16 @@ export default function AddGroupSheet({
         isRequired: groupIsRequired,
       });
 
-      // Create items
       for (let i = 0; i < items.length; i++) {
         await createItemMutation.mutateAsync({
           groupId: result.id,
           name: items[i].name,
-          price: parsePriceInput(items[i].price),
+          price: String(parsePriceInput(items[i].price)),
           imageUrl: items[i].imageUrl || null,
           sortOrder: i,
         });
       }
 
-      // Invalidate queries
       utils.complement.listGroups.invalidate();
       utils.product.list.invalidate();
 
@@ -186,6 +201,47 @@ export default function AddGroupSheet({
       handleClose();
     } catch {
       toast.error("Erro ao criar grupo de complementos");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCopyGroups = async () => {
+    if (!copyGroups || copyGroups.length === 0) {
+      toast.error("Nenhum grupo de complemento encontrado neste produto");
+      return;
+    }
+    setIsSaving(true);
+    try {
+      for (const g of copyGroups) {
+        const result = await createGroupMutation.mutateAsync({
+          productId,
+          name: g.name,
+          minQuantity: g.minQuantity,
+          maxQuantity: g.maxQuantity,
+          isRequired: g.isRequired,
+        });
+
+        const groupItems = (g as any).items || [];
+        for (let i = 0; i < groupItems.length; i++) {
+          await createItemMutation.mutateAsync({
+            groupId: result.id,
+            name: groupItems[i].name,
+            price: String(groupItems[i].price || "0"),
+            imageUrl: groupItems[i].imageUrl || null,
+            sortOrder: i,
+          });
+        }
+      }
+
+      utils.complement.listGroups.invalidate();
+      utils.product.list.invalidate();
+
+      toast.success(`${copyGroups.length} grupo(s) copiado(s) com sucesso`);
+      onGroupCreated();
+      handleClose();
+    } catch {
+      toast.error("Erro ao copiar grupos de complementos");
     } finally {
       setIsSaving(false);
     }
@@ -286,6 +342,205 @@ export default function AddGroupSheet({
     </div>
   );
 
+  // ---- Render: Choose (Criar novo / Copiar existente) ----
+  const renderChoose = () => (
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-white/20 rounded-lg">
+              <Layers className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-white">Complementos</h2>
+              <p className="text-sm text-white/80">
+                {category === "ingredientes" && "Ingredientes — "}
+                {category === "especificacoes" && "Especificações — "}
+                {category === "descartaveis" && "Descartáveis — "}
+                Grupos de complementos
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleClose}
+            className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+          >
+            <X className="h-5 w-5 text-white" />
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto p-4 bg-card">
+        <div className="flex flex-col items-center justify-center py-10">
+          <div className="p-4 bg-muted/30 rounded-2xl mb-4">
+            <Layers className="h-12 w-12 text-muted-foreground/40" />
+          </div>
+          <h3 className="text-base font-semibold text-foreground mb-1">
+            Nenhum grupo adicionado
+          </h3>
+          <p className="text-sm text-muted-foreground mb-8">
+            Adicione grupos como "Adicionais", "Molhos", etc.
+          </p>
+
+          <div className="w-full space-y-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setGroupName("");
+                setGroupIsRequired(false);
+                setGroupMinQty(0);
+                setGroupMaxQty(4);
+                setItems([]);
+                setSubStep("group-config");
+              }}
+              className="w-full rounded-xl h-12 border-dashed text-base"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Criar novo grupo
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setCopyProductId(null);
+                setSubStep("copy-group");
+              }}
+              className="w-full rounded-xl h-12 border-dashed text-base"
+            >
+              <Copy className="h-5 w-5 mr-2" />
+              Copiar grupo existente
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="p-4 border-t border-border/50 bg-card">
+        <Button
+          variant="outline"
+          onClick={() => {
+            setCategory(null);
+            setSubStep("categories");
+          }}
+          className="w-full rounded-xl h-11"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Voltar
+        </Button>
+      </div>
+    </div>
+  );
+
+  // ---- Render: Copy Group ----
+  const renderCopyGroup = () => {
+    const productsList = allProducts && 'products' in allProducts ? (allProducts as any).products : (allProducts || []) as any[];
+    const productsWithComplements = productsList.filter(
+      (p: any) => p.complementCount > 0 && !p.isCombo && p.id !== productId
+    );
+
+    return (
+      <div className="flex flex-col h-full">
+        {/* Header */}
+        <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-lg">
+                <Copy className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white">Copiar grupo</h2>
+                <p className="text-sm text-white/80">Selecione um produto para copiar</p>
+              </div>
+            </div>
+            <button
+              onClick={handleClose}
+              className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+            >
+              <X className="h-5 w-5 text-white" />
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-card">
+          {productsWithComplements.length === 0 ? (
+            <div className="text-center py-10">
+              <p className="text-sm text-muted-foreground">
+                Nenhum produto com complementos encontrado
+              </p>
+            </div>
+          ) : (
+            productsWithComplements.map((product: any) => (
+              <div
+                key={product.id}
+                onClick={() => setCopyProductId(product.id)}
+                className={cn(
+                  "flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all border",
+                  copyProductId === product.id
+                    ? "bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-800"
+                    : "bg-card border-border/50 hover:bg-muted/50"
+                )}
+              >
+                <div className="h-10 w-10 rounded-lg bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                  {product.images && (product.images as string[]).length > 0 ? (
+                    <img src={(product.images as string[])[0]} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <Package className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{product.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {product.complementCount} complemento(s)
+                  </p>
+                </div>
+                {copyProductId === product.id && (
+                  <Check className="h-5 w-5 text-red-500 flex-shrink-0" />
+                )}
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="p-4 border-t border-border/50 bg-card">
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setCopyProductId(null);
+                setSubStep("choose");
+              }}
+              className="flex-1 rounded-xl h-11"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar
+            </Button>
+            <Button
+              onClick={handleCopyGroups}
+              disabled={!copyProductId || !copyGroups || isSaving}
+              className="flex-1 rounded-xl h-11"
+              style={{ backgroundColor: "#db262f", color: "white" }}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Copiando...
+                </>
+              ) : (
+                <>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copiar complementos
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // ---- Render: Group Config ----
   const renderGroupConfig = () => (
     <div className="flex flex-col h-full">
@@ -376,10 +631,7 @@ export default function AddGroupSheet({
         <div className="flex gap-3">
           <Button
             variant="outline"
-            onClick={() => {
-              setCategory(null);
-              setSubStep("categories");
-            }}
+            onClick={() => setSubStep("choose")}
             className="flex-1 rounded-xl h-11"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -590,6 +842,8 @@ export default function AddGroupSheet({
       >
         <VisuallyHidden><SheetTitle>Grupo de complementos</SheetTitle></VisuallyHidden>
         {subStep === "categories" && renderCategories()}
+        {subStep === "choose" && renderChoose()}
+        {subStep === "copy-group" && renderCopyGroup()}
         {subStep === "group-config" && renderGroupConfig()}
         {subStep === "group-items" && renderGroupItems()}
       </SheetContent>
