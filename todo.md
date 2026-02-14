@@ -6489,3 +6489,4 @@
 - [x] Adicionar opção de configuração no modal de novo entregador (abaixo da estratégia de repasse)
 - [x] Padrão: "Quando o pedido for marcado como pronto"
 - [x] Testes unitários para a nova lógica
+- [x] Bug: Ao editar entregador, campos (nome, email, WhatsApp, etc.) não ficam preenchidos com os dados existentes

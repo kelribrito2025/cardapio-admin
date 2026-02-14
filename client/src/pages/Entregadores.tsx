@@ -166,9 +166,9 @@ function DriverFormSheet({
     }
   }, []);
 
-  // Reset form when opening
-  const handleOpenChange = (isOpen: boolean) => {
-    if (isOpen && editingDriver) {
+  // Sync form when editingDriver or open changes
+  useEffect(() => {
+    if (open && editingDriver) {
       setForm({
         name: editingDriver.name || "",
         email: editingDriver.email || "",
@@ -178,15 +178,17 @@ function DriverFormSheet({
         fixedValue: editingDriver.fixedValue || "",
         percentageValue: editingDriver.percentageValue || "",
       });
-      // Trigger validation for existing number
       if (editingDriver.whatsapp) {
         checkWhatsApp(editingDriver.whatsapp);
       }
-    } else if (isOpen) {
+    } else if (open) {
       setForm(defaultFormData);
       setWhatsappStatus('idle');
       setWhatsappName(null);
     }
+  }, [open, editingDriver]);
+
+  const handleOpenChange = (isOpen: boolean) => {
     onOpenChange(isOpen);
   };
 
