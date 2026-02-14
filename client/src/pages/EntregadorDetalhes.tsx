@@ -10,7 +10,6 @@ import {
   DollarSign,
   Clock,
   CheckCircle2,
-  TrendingUp,
   Truck,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -139,13 +138,7 @@ export default function EntregadorDetalhes() {
             variant="emerald"
             loading={metricsLoading}
           />
-          <StatCard
-            title="Média por entrega"
-            value={metricsLoading ? "..." : formatCurrency(metrics?.avgPerDelivery ?? 0)}
-            icon={TrendingUp}
-            variant="blue"
-            loading={metricsLoading}
-          />
+
         </div>
 
         {/* Deliveries Table */}

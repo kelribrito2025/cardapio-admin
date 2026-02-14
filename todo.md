@@ -6491,3 +6491,4 @@
 - [x] Testes unitários para a nova lógica
 - [x] Bug: Ao editar entregador, campos (nome, email, WhatsApp, etc.) não ficam preenchidos com os dados existentes
 - [x] Alterar título da mensagem do entregador de "Nova entrega" para "Nova entrega!"
+- [x] Remover card "Média por entrega" da página de detalhes do entregador
