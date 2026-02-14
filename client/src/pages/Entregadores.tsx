@@ -15,6 +15,7 @@ import {
   Trash2,
   Eye,
   Phone,
+  Package,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -402,7 +403,7 @@ export default function Entregadores() {
       />
 
       {/* Metrics Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mt-6">
         <StatCard
           title="Cadastrados"
           value={metricsLoading ? "..." : metrics?.total ?? 0}
@@ -426,9 +427,16 @@ export default function Entregadores() {
         />
         <StatCard
           title="Repasses (7 dias)"
-          value={metricsLoading ? "..." : `${formatCurrency(metrics?.repasses7d ?? 0)} · ${metrics?.entregas7d ?? 0} entregas`}
+          value={metricsLoading ? "..." : formatCurrency(metrics?.repasses7d ?? 0)}
           icon={DollarSign}
           variant="amber"
+          loading={metricsLoading}
+        />
+        <StatCard
+          title="Entregas (7 dias)"
+          value={metricsLoading ? "..." : metrics?.entregas7d ?? 0}
+          icon={Package}
+          variant="violet"
           loading={metricsLoading}
         />
       </div>

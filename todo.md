@@ -6449,3 +6449,4 @@
 - [ ] Registrar delivery_whatsapp_sent no banco para evitar duplicatas
 - [ ] Menu lateral: adicionar "Entregadores" abaixo de "Pedidos"
 - [ ] Testes unitários para endpoints de entregadores
+- [x] Ajustar cards de métricas Entregadores: separar Repasses (7d) em valor e novo card para quantidade de entregas
