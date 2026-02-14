@@ -16,6 +16,7 @@ import {
   Eye,
   Phone,
   Package,
+  ArrowLeft,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -195,141 +196,179 @@ function DriverFormSheet({
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>{editingDriver ? "Editar Entregador" : "Novo Entregador"}</SheetTitle>
-        </SheetHeader>
-
-        <div className="space-y-6 mt-6">
-          {/* Nome */}
-          <div className="space-y-2">
-            <Label htmlFor="driver-name">Nome completo *</Label>
-            <Input
-              id="driver-name"
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              placeholder="Nome do entregador"
-            />
-          </div>
-
-          {/* Email */}
-          <div className="space-y-2">
-            <Label htmlFor="driver-email">E-mail (opcional)</Label>
-            <Input
-              id="driver-email"
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-              placeholder="email@exemplo.com"
-            />
-          </div>
-
-          {/* WhatsApp */}
-          <div className="space-y-2">
-            <Label htmlFor="driver-whatsapp">WhatsApp *</Label>
-            <Input
-              id="driver-whatsapp"
-              value={form.whatsapp}
-              onChange={(e) => handleWhatsappChange(e.target.value)}
-              placeholder="(00) 00000-0000"
-            />
-          </div>
-
-          {/* Status */}
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>Entregador ativo</Label>
-              <p className="text-sm text-muted-foreground">Disponível para receber pedidos</p>
-            </div>
-            <Switch
-              checked={form.isActive}
-              onCheckedChange={(checked) => setForm((f) => ({ ...f, isActive: checked }))}
-            />
-          </div>
-
-          {/* Estratégia de repasse */}
-          <div className="space-y-3">
-            <Label>Estratégia de repasse</Label>
-            <div className="space-y-3">
-              <label className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${form.repasseStrategy === "neighborhood" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}>
-                <input
-                  type="radio"
-                  name="strategy"
-                  value="neighborhood"
-                  checked={form.repasseStrategy === "neighborhood"}
-                  onChange={() => setForm((f) => ({ ...f, repasseStrategy: "neighborhood" }))}
-                  className="mt-1"
-                />
+      <SheetContent side="right" className="w-full sm:max-w-[420px] !p-0 !gap-0 !h-dvh" hideCloseButton>
+        <SheetTitle className="sr-only">{editingDriver ? "Editar Entregador" : "Novo Entregador"}</SheetTitle>
+        <div className="flex flex-col h-full">
+          {/* Header - gradient style like CreateComboSheet */}
+          <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => onOpenChange(false)}
+                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                >
+                  <ArrowLeft className="h-5 w-5 text-white" />
+                </button>
                 <div>
-                  <span className="font-medium">Valor por bairro</span>
-                  <p className="text-sm text-muted-foreground">Repasse igual ao valor cobrado na zona de entrega.</p>
+                  <h2 className="text-lg font-bold text-white">
+                    {editingDriver ? "Editar Entregador" : "Novo Entregador"}
+                  </h2>
+                  <p className="text-sm text-white/80">
+                    {editingDriver ? "Atualize os dados do entregador" : "Cadastre um novo entregador"}
+                  </p>
                 </div>
-              </label>
-
-              <label className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${form.repasseStrategy === "fixed" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}>
-                <input
-                  type="radio"
-                  name="strategy"
-                  value="fixed"
-                  checked={form.repasseStrategy === "fixed"}
-                  onChange={() => setForm((f) => ({ ...f, repasseStrategy: "fixed" }))}
-                  className="mt-1"
-                />
-                <div className="flex-1">
-                  <span className="font-medium">Valor fixo por entrega</span>
-                  <p className="text-sm text-muted-foreground">Valor fixo independente da distância.</p>
-                  {form.repasseStrategy === "fixed" && (
-                    <div className="mt-2">
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={form.fixedValue}
-                        onChange={(e) => setForm((f) => ({ ...f, fixedValue: e.target.value }))}
-                        placeholder="R$ 0,00"
-                        className="w-40"
-                      />
-                    </div>
-                  )}
-                </div>
-              </label>
-
-              <label className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${form.repasseStrategy === "percentage" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}>
-                <input
-                  type="radio"
-                  name="strategy"
-                  value="percentage"
-                  checked={form.repasseStrategy === "percentage"}
-                  onChange={() => setForm((f) => ({ ...f, repasseStrategy: "percentage" }))}
-                  className="mt-1"
-                />
-                <div className="flex-1">
-                  <span className="font-medium">Percentual por entrega</span>
-                  <p className="text-sm text-muted-foreground">Ex: 70% da taxa de entrega.</p>
-                  {form.repasseStrategy === "percentage" && (
-                    <div className="mt-2 flex items-center gap-2">
-                      <Input
-                        type="number"
-                        step="1"
-                        min="0"
-                        max="100"
-                        value={form.percentageValue}
-                        onChange={(e) => setForm((f) => ({ ...f, percentageValue: e.target.value }))}
-                        placeholder="70"
-                        className="w-24"
-                      />
-                      <span className="text-sm text-muted-foreground">%</span>
-                    </div>
-                  )}
-                </div>
-              </label>
+              </div>
+              <div className="p-2 bg-white/20 rounded-lg">
+                <Truck className="h-5 w-5 text-white" />
+              </div>
             </div>
           </div>
 
-          {/* Save button */}
-          <Button onClick={handleSave} disabled={saving} className="w-full">
-            {saving ? "Salvando..." : editingDriver ? "Salvar Alterações" : "Cadastrar Entregador"}
-          </Button>
+          {/* Content - scrollable */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-5">
+            {/* Nome */}
+            <div className="space-y-2">
+              <Label htmlFor="driver-name" className="text-sm font-medium">Nome completo *</Label>
+              <Input
+                id="driver-name"
+                value={form.name}
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                placeholder="Nome do entregador"
+                className="h-10 rounded-xl bg-background border-border/50"
+              />
+            </div>
+
+            {/* Email */}
+            <div className="space-y-2">
+              <Label htmlFor="driver-email" className="text-sm font-medium">E-mail (opcional)</Label>
+              <Input
+                id="driver-email"
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                placeholder="email@exemplo.com"
+                className="h-10 rounded-xl bg-background border-border/50"
+              />
+            </div>
+
+            {/* WhatsApp */}
+            <div className="space-y-2">
+              <Label htmlFor="driver-whatsapp" className="text-sm font-medium">WhatsApp *</Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="driver-whatsapp"
+                  value={form.whatsapp}
+                  onChange={(e) => handleWhatsappChange(e.target.value)}
+                  placeholder="(00) 00000-0000"
+                  className="h-10 pl-9 rounded-xl bg-background border-border/50"
+                />
+              </div>
+            </div>
+
+            {/* Status */}
+            <div className="flex items-center justify-between p-3 rounded-xl border border-border/50 bg-muted/30">
+              <div>
+                <span className="text-sm font-medium">Entregador ativo</span>
+                <p className="text-xs text-muted-foreground">Disponível para receber pedidos</p>
+              </div>
+              <Switch
+                checked={form.isActive}
+                onCheckedChange={(checked) => setForm((f) => ({ ...f, isActive: checked }))}
+              />
+            </div>
+
+            {/* Estratégia de repasse */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">Estratégia de repasse</Label>
+              <div className="space-y-2">
+                <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${form.repasseStrategy === "neighborhood" ? "border-red-400 bg-red-50 shadow-sm" : "border-border/50 hover:border-red-300 bg-muted/30 hover:bg-muted/50"}`}>
+                  <input
+                    type="radio"
+                    name="strategy"
+                    value="neighborhood"
+                    checked={form.repasseStrategy === "neighborhood"}
+                    onChange={() => setForm((f) => ({ ...f, repasseStrategy: "neighborhood" }))}
+                    className="mt-0.5 accent-red-500"
+                  />
+                  <div>
+                    <span className="text-sm font-medium">Valor por bairro</span>
+                    <p className="text-xs text-muted-foreground">Repasse igual ao valor cobrado na zona de entrega.</p>
+                  </div>
+                </label>
+
+                <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${form.repasseStrategy === "fixed" ? "border-red-400 bg-red-50 shadow-sm" : "border-border/50 hover:border-red-300 bg-muted/30 hover:bg-muted/50"}`}>
+                  <input
+                    type="radio"
+                    name="strategy"
+                    value="fixed"
+                    checked={form.repasseStrategy === "fixed"}
+                    onChange={() => setForm((f) => ({ ...f, repasseStrategy: "fixed" }))}
+                    className="mt-0.5 accent-red-500"
+                  />
+                  <div className="flex-1">
+                    <span className="text-sm font-medium">Valor fixo por entrega</span>
+                    <p className="text-xs text-muted-foreground">Valor fixo independente da distância.</p>
+                    {form.repasseStrategy === "fixed" && (
+                      <div className="mt-2">
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={form.fixedValue}
+                          onChange={(e) => setForm((f) => ({ ...f, fixedValue: e.target.value }))}
+                          placeholder="R$ 0,00"
+                          className="w-40 h-9 rounded-xl bg-background border-border/50"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </label>
+
+                <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${form.repasseStrategy === "percentage" ? "border-red-400 bg-red-50 shadow-sm" : "border-border/50 hover:border-red-300 bg-muted/30 hover:bg-muted/50"}`}>
+                  <input
+                    type="radio"
+                    name="strategy"
+                    value="percentage"
+                    checked={form.repasseStrategy === "percentage"}
+                    onChange={() => setForm((f) => ({ ...f, repasseStrategy: "percentage" }))}
+                    className="mt-0.5 accent-red-500"
+                  />
+                  <div className="flex-1">
+                    <span className="text-sm font-medium">Percentual por entrega</span>
+                    <p className="text-xs text-muted-foreground">Ex: 70% da taxa de entrega.</p>
+                    {form.repasseStrategy === "percentage" && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <Input
+                          type="number"
+                          step="1"
+                          min="0"
+                          max="100"
+                          value={form.percentageValue}
+                          onChange={(e) => setForm((f) => ({ ...f, percentageValue: e.target.value }))}
+                          placeholder="70"
+                          className="w-24 h-9 rounded-xl bg-background border-border/50"
+                        />
+                        <span className="text-sm text-muted-foreground">%</span>
+                      </div>
+                    )}
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer - styled like CreateComboSheet */}
+          <div className="p-4 border-t border-border/50 bg-card">
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+              className="w-full rounded-xl h-11"
+              style={{ backgroundColor: '#db262f', color: 'white' }}
+            >
+              {saving ? "Salvando..." : editingDriver ? "Salvar Alterações" : "Cadastrar Entregador"}
+            </Button>
+          </div>
         </div>
       </SheetContent>
     </Sheet>
