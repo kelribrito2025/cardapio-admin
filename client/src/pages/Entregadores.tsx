@@ -436,7 +436,7 @@ export default function Entregadores() {
           title="Entregas (7 dias)"
           value={metricsLoading ? "..." : metrics?.entregas7d ?? 0}
           icon={Package}
-          variant="violet"
+          variant="primary"
           loading={metricsLoading}
         />
       </div>
