@@ -836,11 +836,11 @@ export default function InlineComplementsDropdown({
         </div>
       ) : !groups || groups.length === 0 ? (
         /* Empty state */
-        <div className="text-center py-4">
+        <div className="flex flex-col items-center py-4">
           <p className="text-sm text-muted-foreground mb-3">Nenhum complemento configurado</p>
           <Button
             size="sm"
-            className="h-8 rounded-lg text-xs"
+            className="h-8 rounded-lg text-xs bg-primary hover:bg-primary/90 text-primary-foreground"
             onClick={() => setAddGroupSheetOpen(true)}
           >
             <Plus className="h-3.5 w-3.5 mr-1" />
@@ -1093,9 +1093,9 @@ export default function InlineComplementsDropdown({
                       setNewItemName("");
                       setNewItemPrice("0,00");
                     }}
-                    className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary mt-2 py-1 transition-colors"
+                    className="flex items-center justify-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 mt-3 py-2 px-4 rounded-lg border-2 border-dashed border-primary/40 hover:border-primary/60 hover:bg-primary/5 w-full transition-all"
                   >
-                    <Plus className="h-3.5 w-3.5" />
+                    <Plus className="h-4 w-4" />
                     Adicionar item
                   </button>
                 )}
@@ -1104,14 +1104,13 @@ export default function InlineComplementsDropdown({
           })}
 
           {/* Add new group */}
-          <div className="flex items-center gap-2 pt-1">
+          <div className="flex justify-center pt-2">
             <Button
               size="sm"
-              variant="outline"
-              className="h-7 rounded-lg text-xs"
+              className="h-8 rounded-lg text-xs bg-primary hover:bg-primary/90 text-primary-foreground px-4"
               onClick={() => setAddGroupSheetOpen(true)}
             >
-              <Plus className="h-3 w-3 mr-1" />
+              <Plus className="h-3.5 w-3.5 mr-1" />
               Adicionar grupo
             </Button>
             <AddGroupSheet
