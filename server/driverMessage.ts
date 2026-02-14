@@ -62,7 +62,7 @@ export function buildDriverDeliveryMessage(order: {
     }
   }
   
-  const message = `🛵 *NOVA ENTREGA*\n\n` +
+  const message = `🛵 *NOVA ENTREGA!*\n\n` +
     `📦 Pedido: ${order.orderNumber}\n` +
     `👤 Cliente: ${order.customerName || 'N/A'}\n` +
     `📞 Telefone: ${order.customerPhone || 'N/A'}\n` +

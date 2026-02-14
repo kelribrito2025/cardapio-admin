@@ -16,7 +16,7 @@ describe('buildDriverDeliveryMessage', () => {
 
   it('should include NOVA ENTREGA header with emoji', () => {
     const msg = buildDriverDeliveryMessage(baseOrder);
-    expect(msg).toContain('*NOVA ENTREGA*');
+    expect(msg).toContain('*NOVA ENTREGA!*');
     expect(msg).toContain('🛵');
   });
 
