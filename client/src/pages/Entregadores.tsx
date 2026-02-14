@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { trpc } from "@/lib/trpc";
 import { AdminLayout } from "@/components/AdminLayout";
 import { PageHeader, StatCard, EmptyState, TableSkeleton } from "@/components/shared";
@@ -17,6 +17,10 @@ import {
   Phone,
   Package,
   ArrowLeft,
+  X,
+  CheckCircle2,
+  XCircle,
+  Loader2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -115,9 +119,37 @@ function DriverFormSheet({
 }) {
   const [form, setForm] = useState<DriverFormData>(defaultFormData);
   const [saving, setSaving] = useState(false);
+  const [whatsappStatus, setWhatsappStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid' | 'error'>('idle');
+  const [whatsappName, setWhatsappName] = useState<string | null>(null);
+  const checkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const createMutation = trpc.driver.create.useMutation();
   const updateMutation = trpc.driver.update.useMutation();
+  const checkWhatsAppMutation = trpc.driver.checkWhatsApp.useMutation();
+
+  // Debounced WhatsApp validation
+  const checkWhatsApp = useCallback(async (phone: string) => {
+    const digits = phone.replace(/\D/g, '');
+    if (digits.length < 10) {
+      setWhatsappStatus('idle');
+      setWhatsappName(null);
+      return;
+    }
+    setWhatsappStatus('checking');
+    try {
+      const result = await checkWhatsAppMutation.mutateAsync({ phone: digits });
+      if (result.exists) {
+        setWhatsappStatus('valid');
+        setWhatsappName(result.verifiedName || null);
+      } else {
+        setWhatsappStatus('invalid');
+        setWhatsappName(null);
+      }
+    } catch {
+      setWhatsappStatus('error');
+      setWhatsappName(null);
+    }
+  }, []);
 
   // Reset form when opening
   const handleOpenChange = (isOpen: boolean) => {
@@ -131,8 +163,14 @@ function DriverFormSheet({
         fixedValue: editingDriver.fixedValue || "",
         percentageValue: editingDriver.percentageValue || "",
       });
+      // Trigger validation for existing number
+      if (editingDriver.whatsapp) {
+        checkWhatsApp(editingDriver.whatsapp);
+      }
     } else if (isOpen) {
       setForm(defaultFormData);
+      setWhatsappStatus('idle');
+      setWhatsappName(null);
     }
     onOpenChange(isOpen);
   };
@@ -182,7 +220,7 @@ function DriverFormSheet({
     }
   };
 
-  // WhatsApp mask
+  // WhatsApp mask + debounced validation
   const handleWhatsappChange = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11);
     let masked = digits;
@@ -192,6 +230,14 @@ function DriverFormSheet({
       masked = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
     }
     setForm((f) => ({ ...f, whatsapp: masked }));
+    setWhatsappStatus('idle');
+    setWhatsappName(null);
+    
+    // Debounce: wait 800ms after typing stops
+    if (checkTimeoutRef.current) clearTimeout(checkTimeoutRef.current);
+    if (digits.length >= 10) {
+      checkTimeoutRef.current = setTimeout(() => checkWhatsApp(masked), 800);
+    }
   };
 
   return (
@@ -212,9 +258,12 @@ function DriverFormSheet({
                   </p>
                 </div>
               </div>
-              <div className="p-2 bg-white/20 rounded-lg">
-                <Truck className="h-5 w-5 text-white" />
-              </div>
+              <button
+                onClick={() => onOpenChange(false)}
+                className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+              >
+                <X className="h-5 w-5 text-white" />
+              </button>
             </div>
           </div>
 
@@ -255,9 +304,48 @@ function DriverFormSheet({
                   value={form.whatsapp}
                   onChange={(e) => handleWhatsappChange(e.target.value)}
                   placeholder="(00) 00000-0000"
-                  className="h-10 pl-9 rounded-xl bg-background border-border/50"
+                  className={`h-10 pl-9 pr-10 rounded-xl bg-background ${
+                    whatsappStatus === 'valid' ? 'border-green-500 focus-visible:ring-green-500' :
+                    whatsappStatus === 'invalid' ? 'border-red-500 focus-visible:ring-red-500' :
+                    'border-border/50'
+                  }`}
                 />
+                {/* Validation indicator */}
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  {whatsappStatus === 'checking' && (
+                    <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
+                  )}
+                  {whatsappStatus === 'valid' && (
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  )}
+                  {whatsappStatus === 'invalid' && (
+                    <XCircle className="h-4 w-4 text-red-500" />
+                  )}
+                </div>
               </div>
+              {/* Validation feedback */}
+              {whatsappStatus === 'valid' && (
+                <p className="text-xs text-green-600 flex items-center gap-1">
+                  <CheckCircle2 className="h-3 w-3" />
+                  Número válido no WhatsApp{whatsappName ? ` \u2014 ${whatsappName}` : ''}
+                </p>
+              )}
+              {whatsappStatus === 'invalid' && (
+                <p className="text-xs text-red-500 flex items-center gap-1">
+                  <XCircle className="h-3 w-3" />
+                  Número não encontrado no WhatsApp
+                </p>
+              )}
+              {whatsappStatus === 'error' && (
+                <p className="text-xs text-amber-500">
+                  Não foi possível verificar. WhatsApp pode não estar conectado.
+                </p>
+              )}
+              {whatsappStatus === 'checking' && (
+                <p className="text-xs text-muted-foreground">
+                  Verificando número no WhatsApp...
+                </p>
+              )}
             </div>
 
             {/* Status */}

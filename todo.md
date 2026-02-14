@@ -6451,3 +6451,5 @@
 - [ ] Testes unitários para endpoints de entregadores
 - [x] Ajustar cards de métricas Entregadores: separar Repasses (7d) em valor e novo card para quantidade de entregas
 - [x] Padronizar slidebar de Novo Entregador com o mesmo estilo da slidebar de Criar Combo do Catálogo
+- [x] Adicionar ícone X no header da slidebar de Novo Entregador para fechar
+- [x] Validação de WhatsApp em tempo real via UAZAPI antes de salvar entregador

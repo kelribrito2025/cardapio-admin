@@ -716,3 +716,60 @@ export async function configureWebhook(
     };
   }
 }
+
+
+/**
+ * Check if a phone number is registered on WhatsApp
+ * Uses UAZAPI /chat/check endpoint
+ */
+export async function checkWhatsAppNumber(
+  instanceToken: string,
+  phone: string
+): Promise<{ exists: boolean; verifiedName?: string; error?: string }> {
+  try {
+    // Format phone number (remove non-digits and ensure country code)
+    let formattedPhone = phone.replace(/\D/g, '');
+    
+    // Add Brazil country code if not present
+    if (!formattedPhone.startsWith('55')) {
+      formattedPhone = '55' + formattedPhone;
+    }
+    
+    console.log('[UAZAPI] Verificando número no WhatsApp:', formattedPhone);
+    
+    const response = await makeInstanceRequest<Array<{
+      query: string;
+      jid?: string;
+      lid?: string;
+      isInWhatsapp: boolean;
+      verifiedName?: string;
+      error?: string;
+    }>>(instanceToken, '/chat/check', 'POST', {
+      numbers: [formattedPhone],
+    });
+    
+    const result = Array.isArray(response) ? response[0] : null;
+    
+    if (!result) {
+      return { exists: false, error: 'Resposta inválida da API' };
+    }
+    
+    console.log('[UAZAPI] Resultado da verificação:', {
+      phone: formattedPhone,
+      isInWhatsapp: result.isInWhatsapp,
+      verifiedName: result.verifiedName,
+    });
+    
+    return {
+      exists: result.isInWhatsapp,
+      verifiedName: result.verifiedName || undefined,
+      error: result.error || undefined,
+    };
+  } catch (error) {
+    console.error('[UAZAPI] Falha ao verificar número:', error);
+    return {
+      exists: false,
+      error: error instanceof Error ? error.message : 'Falha ao verificar número',
+    };
+  }
+}

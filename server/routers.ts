@@ -4732,6 +4732,28 @@ export const appRouter = router({
         return db.getActiveDriversByEstablishment(establishment.id);
       }),
 
+    // Check if a WhatsApp number is valid
+    checkWhatsApp: protectedProcedure
+      .input(z.object({ phone: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        const config = await db.getWhatsappConfig(establishment.id);
+        if (!config || !config.instanceToken || config.status !== 'connected') {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'WhatsApp não está conectado. Configure na página de Configurações.' });
+        }
+        
+        const { checkWhatsAppNumber } = await import('./_core/uazapi');
+        const result = await checkWhatsAppNumber(config.instanceToken, input.phone);
+        
+        return {
+          exists: result.exists,
+          verifiedName: result.verifiedName,
+          error: result.error,
+        };
+      }),
+
     // Get delivery info for an order
     getByOrderId: protectedProcedure
       .input(z.object({ orderId: z.number() }))
