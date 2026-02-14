@@ -468,8 +468,17 @@ export async function getPublicMenuData(slug: string) {
     })
   );
   
+  // Calcular status de abertura no servidor (fonte de verdade)
+  // Isso garante que frontend e backend usem a mesma lógica
+  const storeStatus = await getEstablishmentOpenStatus(establishment.id);
+  
   return {
-    establishment,
+    establishment: {
+      ...establishment,
+      // Sobrescrever com status calculado pelo servidor
+      computedIsOpen: storeStatus.isOpen,
+      computedManuallyClosed: storeStatus.manuallyClosed,
+    },
     categories: menuCategories,
     products: productsWithStockInfo,
     trialBlocked: false,
@@ -3891,31 +3900,44 @@ export function shouldAutoReopen(manuallyClosedAt: Date | null, businessHoursDat
   const currentDayOfWeek = currentDate.getDay();
   const currentTime = currentDate.toTimeString().slice(0, 5);
   
+  // IMPORTANTE: manuallyClosedAt e currentDate devem estar no mesmo "espaço" de tempo.
+  // getLocalDate() cria uma Date cujos getHours()/getDay() retornam valores locais,
+  // então precisamos converter manuallyClosedAt da mesma forma para comparar corretamente.
+  // Extrair hora/dia do fechamento manual para comparação baseada em string de tempo.
+  const closedHour = manuallyClosedAt.getHours();
+  const closedMin = manuallyClosedAt.getMinutes();
+  const closedTimeStr = `${String(closedHour).padStart(2, '0')}:${String(closedMin).padStart(2, '0')}`;
+  const closedDayOfWeek = manuallyClosedAt.getDay();
+  
   // Encontrar o horário de hoje
   const todayHours = businessHoursData.find(h => h.dayOfWeek === currentDayOfWeek);
   
   if (!todayHours || !todayHours.isActive || !todayHours.openTime) return false;
   
-  // Verificar se o horário de abertura de hoje já passou desde o fechamento manual
-  const closedTime = manuallyClosedAt.getTime();
-  const openTimeToday = new Date(currentDate);
-  const [openHour, openMin] = todayHours.openTime.split(':').map(Number);
-  openTimeToday.setHours(openHour, openMin, 0, 0);
-  
-  // Se o fechamento foi antes do horário de abertura de hoje e agora já passou o horário de abertura
-  if (closedTime < openTimeToday.getTime() && currentDate.getTime() >= openTimeToday.getTime()) {
-    return true;
-  }
-  
-  // Se o fechamento foi em um dia anterior e hoje tem horário de abertura
+  // Normalizar datas para comparação de dia (sem hora)
   const closedDate = new Date(manuallyClosedAt);
   closedDate.setHours(0, 0, 0, 0);
   const today = new Date(currentDate);
   today.setHours(0, 0, 0, 0);
+  const isSameDay = closedDate.getTime() === today.getTime();
+  const isDifferentDay = closedDate.getTime() < today.getTime();
   
-  if (closedDate.getTime() < today.getTime() && currentTime >= todayHours.openTime) {
+  // Caso 1: Fechamento foi em um dia anterior
+  // Reabrir se hoje tem horário ativo e já passou do horário de abertura
+  if (isDifferentDay && currentTime >= todayHours.openTime) {
     return true;
   }
+  
+  // Caso 2: Fechamento foi no mesmo dia, ANTES do horário de abertura
+  // Ex: Fechou às 08:00, abre às 11:00, agora são 12:00 → reabrir
+  if (isSameDay && closedTimeStr < todayHours.openTime && currentTime >= todayHours.openTime) {
+    return true;
+  }
+  
+  // Caso 3: Fechamento foi no mesmo dia, DURANTE o expediente
+  // Ex: Sábado abre 11:00-00:00, dono fechou às 15:00, agora são 18:00
+  // Manter fechado até o PRÓXIMO período de abertura (dia seguinte)
+  // Não reabrir no mesmo dia - o dono fechou intencionalmente
   
   return false;
 }
@@ -3989,8 +4011,17 @@ export async function getEstablishmentOpenStatus(establishmentId: number): Promi
   const nextOpening = getNextOpeningTime(hours, localDate);
   
   // Verificar se deve reabrir automaticamente
+  // IMPORTANTE: converter manuallyClosedAt para o mesmo "espaço" de tempo que localDate
+  // localDate é criado via getLocalDate() que produz uma Date cujos getHours()/getDay() são locais
+  // manuallyClosedAt vem do DB como UTC, então precisamos convertê-lo da mesma forma
+  let localClosedAt: Date | null = null;
+  if (establishment.manuallyClosedAt) {
+    localClosedAt = new Date(
+      new Date(establishment.manuallyClosedAt).toLocaleString('en-US', { timeZone: tz })
+    );
+  }
   const autoReopen = shouldAutoReopen(
-    establishment.manuallyClosedAt ? new Date(establishment.manuallyClosedAt) : null,
+    localClosedAt,
     hours,
     localDate
   );
