@@ -6414,3 +6414,4 @@
 - [x] Adicionar botão "Adicionar grupo" que abre slidebar com seleção de categoria (Ingredientes, Especificações, Descartáveis) reutilizando fluxo do CreateProductSheet step 2
 - [x] Adicionar tela intermediária "Criar novo grupo / Copiar grupo existente" no AddGroupSheet após seleção de categoria
 - [x] Centralizar botões "Adicionar item" e "Adicionar grupo" no dropdown de complementos, "Adicionar grupo" vermelho e "Adicionar item" com destaque
+- [x] Bug: Ao limpar campo de estoque no Catálogo (deixar vazio), o item deve desaparecer da página de Estoque

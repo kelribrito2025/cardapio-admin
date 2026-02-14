@@ -712,6 +712,18 @@ export const appRouter = router({
         // Verificar se o produto já tinha estoque ativado antes
         const existingProduct = await db.getProductById(id);
         await db.updateProduct(id, data);
+        // Se desativou controle de estoque, remover item de estoque vinculado
+        if (input.hasStock === false) {
+          try {
+            const existingStockItem = await db.getStockItemByLinkedProductId(id);
+            if (existingStockItem) {
+              await db.deleteStockItem(existingStockItem.id);
+              console.log(`[Estoque] Removido item de estoque vinculado ao produto ${id}`);
+            }
+          } catch (e) {
+            console.error("Erro ao remover item de estoque automaticamente:", e);
+          }
+        }
         // Se ativou controle de estoque, verificar se já existe item de estoque vinculado
         if (input.hasStock && existingProduct) {
           try {
