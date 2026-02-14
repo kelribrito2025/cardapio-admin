@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -587,6 +588,7 @@ export default function AddGroupSheet({
         side="right"
         className="w-full sm:max-w-md p-0 flex flex-col [&>button]:hidden"
       >
+        <VisuallyHidden><SheetTitle>Grupo de complementos</SheetTitle></VisuallyHidden>
         {subStep === "categories" && renderCategories()}
         {subStep === "group-config" && renderGroupConfig()}
         {subStep === "group-items" && renderGroupItems()}
