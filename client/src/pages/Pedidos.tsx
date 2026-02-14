@@ -331,16 +331,22 @@ export default function Pedidos() {
     }
   }, [whatsappStatus?.status, isPollingQrCode]);
 
-  // Modal informativo: exibir no primeiro acesso se WhatsApp não estiver conectado
+  // Modal informativo: exibir APENAS uma vez para novos usuários que nunca conectaram WhatsApp
   useEffect(() => {
     if (!isWhatsappFetched || isWhatsappLoading) return;
-    if (whatsappStatus?.status === 'connected') return;
     
-    // Verificar se já foi dispensado nesta sessão
-    const dismissed = sessionStorage.getItem('whatsapp-info-modal-dismissed');
-    if (dismissed) return;
+    // Se WhatsApp está conectado, nunca mostrar o modal e marcar como visto permanentemente
+    if (whatsappStatus?.status === 'connected') {
+      localStorage.setItem('whatsapp-info-modal-seen', 'true');
+      setWhatsappInfoModalOpen(false);
+      return;
+    }
     
-    // Mostrar modal
+    // Verificar se já foi dispensado permanentemente (localStorage persiste entre sessões)
+    const alreadySeen = localStorage.getItem('whatsapp-info-modal-seen');
+    if (alreadySeen) return;
+    
+    // Mostrar modal apenas para novos usuários que nunca viram
     setWhatsappInfoModalOpen(true);
   }, [isWhatsappFetched, isWhatsappLoading, whatsappStatus?.status]);
   
@@ -2183,7 +2189,7 @@ export default function Pedidos() {
       {/* Modal Informativo - Conectar WhatsApp para notificações */}
       <Dialog open={whatsappInfoModalOpen} onOpenChange={(open) => {
         if (!open) {
-          sessionStorage.setItem('whatsapp-info-modal-dismissed', 'true');
+          localStorage.setItem('whatsapp-info-modal-seen', 'true');
         }
         setWhatsappInfoModalOpen(open);
       }}>
@@ -2255,7 +2261,7 @@ export default function Pedidos() {
               variant="outline"
               className="rounded-xl sm:order-1"
               onClick={() => {
-                sessionStorage.setItem('whatsapp-info-modal-dismissed', 'true');
+                localStorage.setItem('whatsapp-info-modal-seen', 'true');
                 setWhatsappInfoModalOpen(false);
               }}
             >
@@ -2264,7 +2270,7 @@ export default function Pedidos() {
             <Button
               className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white gap-2 sm:order-2"
               onClick={() => {
-                sessionStorage.setItem('whatsapp-info-modal-dismissed', 'true');
+                localStorage.setItem('whatsapp-info-modal-seen', 'true');
                 setWhatsappInfoModalOpen(false);
                 // Abrir modal de QR Code do WhatsApp
                 connectWhatsapp.mutate();
