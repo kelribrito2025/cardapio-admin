@@ -1926,11 +1926,18 @@ export const appRouter = router({
         if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento n\u00e3o encontrado' });
 
         const order = await db.getOrderById(input.orderId);
-        if (!order) throw new TRPCError({ code: 'NOT_FOUND', message: 'Pedido n\u00e3o encontrado' });
+        if (!order) throw new TRPCError({ code: 'NOT_FOUND', message: 'Pedido não encontrado' });
+
+        // Only apply driver assignment for delivery orders
+        // Pickup and dine_in orders don't need a driver
+        if (order.deliveryType !== 'delivery') {
+          await db.updateOrderStatus(input.orderId, 'ready');
+          return { action: 'marked_ready', driverId: null, whatsappSent: false };
+        }
 
         // Check if delivery already exists
         const existingDelivery = await db.getDeliveryByOrderId(input.orderId);
-        if (existingDelivery) throw new TRPCError({ code: 'CONFLICT', message: 'Pedido j\u00e1 possui entregador atribu\u00eddo' });
+        if (existingDelivery) throw new TRPCError({ code: 'CONFLICT', message: 'Pedido já possui entregador atribuído' });
 
         // Get active drivers
         const activeDrivers = await db.getActiveDriversByEstablishment(establishment.id);
@@ -2038,7 +2045,7 @@ export const appRouter = router({
                   customerName: order.customerName || 'Cliente',
                   orderNumber: order.orderNumber,
                   establishmentName: est?.name || 'Restaurante',
-                  template: (order.deliveryType === 'pickup' || order.deliveryType === 'dine_in')
+                  template: ((order.deliveryType as string) === 'pickup' || (order.deliveryType as string) === 'dine_in')
                     ? (config.templateReadyPickup || config.templateReady)
                     : config.templateReady,
                   deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,

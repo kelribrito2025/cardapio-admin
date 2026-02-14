@@ -770,18 +770,26 @@ export default function Pedidos() {
   };
 
   const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
-    // Smart driver assignment: intercept when marking as "ready"
+    // Smart driver assignment: intercept when marking as "ready" for DELIVERY orders only
     if (newStatus === "ready") {
-      setLoadingOrderId(orderId);
-      markReadyAndAssignMutation.mutate(
-        { orderId },
-        {
-          onSettled: () => {
-            setLoadingOrderId(null);
-          },
-        }
-      );
-      return;
+      // Find the order to check its deliveryType
+      const order = allOrders.find((o: any) => o.id === orderId);
+      const isDeliveryOrder = order?.deliveryType === 'delivery';
+
+      if (isDeliveryOrder) {
+        // Delivery order: use smart driver assignment flow
+        setLoadingOrderId(orderId);
+        markReadyAndAssignMutation.mutate(
+          { orderId },
+          {
+            onSettled: () => {
+              setLoadingOrderId(null);
+            },
+          }
+        );
+        return;
+      }
+      // Pickup/dine_in: fall through to normal status update
     }
 
     setLoadingOrderId(orderId);
