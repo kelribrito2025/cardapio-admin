@@ -188,7 +188,7 @@ export default function EntregadorDetalhes() {
 
                       return (
                         <tr key={delivery.id} className="border-b border-border/30 hover:bg-muted/20 transition-colors">
-                          <td className="p-4 font-medium">#{order?.orderNumber || "—"}</td>
+                          <td className="p-4 font-medium">{order?.orderNumber || "—"}</td>
                           <td className="p-4">{order?.customerName || "—"}</td>
                           <td className="p-4 text-sm text-muted-foreground">{neighborhood}</td>
                           <td className="p-4 text-right">{formatCurrency(parseFloat(delivery.deliveryFee || "0"))}</td>
@@ -230,7 +230,7 @@ export default function EntregadorDetalhes() {
                   return (
                     <div key={delivery.id} className="p-4 space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="font-medium">#{order?.orderNumber || "—"}</span>
+                        <span className="font-medium">{order?.orderNumber || "—"}</span>
                         <Badge
                           variant={delivery.paymentStatus === "paid" ? "default" : "secondary"}
                           className={delivery.paymentStatus === "paid" ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100" : "bg-amber-100 text-amber-700 hover:bg-amber-100"}
