@@ -300,7 +300,7 @@ function SortableProductItem({
               onBlur={handleStockBlur}
               onKeyDown={(e) => { if (e.key === 'Enter') stockRef.current?.blur(); }}
               onClick={(e) => e.stopPropagation()}
-              className="w-[80px] h-8 px-2.5 text-sm text-center font-medium rounded-lg border border-border/60 bg-muted/30 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
+              className="w-[77px] h-8 text-sm text-center font-medium rounded-lg border border-border/60 bg-muted/30 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all" style={{paddingRight: '7px', paddingLeft: '7px'}}
             />
             <div className="relative">
               <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-primary font-medium pointer-events-none">R$</span>
@@ -313,7 +313,7 @@ function SortableProductItem({
                 onBlur={handlePriceBlur}
                 onKeyDown={(e) => { if (e.key === 'Enter') priceRef.current?.blur(); }}
                 onClick={(e) => e.stopPropagation()}
-                className="w-[100px] h-8 pl-8 pr-2.5 text-sm text-right font-semibold rounded-lg border border-border/60 bg-muted/30 text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
+                className="w-[92px] h-8 pl-8 pr-2.5 text-sm text-right font-semibold rounded-lg border border-border/60 bg-muted/30 text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
               />
             </div>
           </div>
