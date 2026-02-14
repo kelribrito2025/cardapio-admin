@@ -401,7 +401,7 @@ function DriverFormSheet({
                   />
                   <div>
                     <span className="text-sm font-medium">Quando o pedido for marcado como pronto</span>
-                    <p className="text-xs text-muted-foreground">Padrão. O entregador é acionado somente quando o pedido estiver pronto para sair.</p>
+                    <p className="text-xs text-muted-foreground">O entregador é acionado somente quando o pedido estiver pronto para sair.</p>
                   </div>
                 </label>
 
