@@ -43,6 +43,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn, capitalizeFirst } from "@/lib/utils";
+import AddGroupSheet from "@/components/AddGroupSheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -686,6 +687,7 @@ export default function InlineComplementsDropdown({
   const [expandedItemId, setExpandedItemId] = useState<number | null>(null);
   const [editingGroupId, setEditingGroupId] = useState<number | null>(null);
   const [editedGroupName, setEditedGroupName] = useState("");
+  const [addGroupSheetOpen, setAddGroupSheetOpen] = useState(false);
 
   // Fetch complement groups for this product
   const { data: groups, isLoading, refetch } = trpc.complement.listGroups.useQuery(
@@ -834,26 +836,20 @@ export default function InlineComplementsDropdown({
         /* Empty state */
         <div className="text-center py-4">
           <p className="text-sm text-muted-foreground mb-3">Nenhum complemento configurado</p>
-          <div className="flex items-center gap-2 justify-center">
-            <Input
-              value={addingGroupName}
-              onChange={(e) => setAddingGroupName(capitalizeFirst(e.target.value))}
-              placeholder="Nome do grupo (ex: Molhos)"
-              className="max-w-[240px] h-8 text-sm rounded-lg"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleCreateGroup();
-              }}
-            />
-            <Button
-              size="sm"
-              className="h-8 rounded-lg text-xs"
-              onClick={handleCreateGroup}
-              disabled={!addingGroupName.trim() || createGroupMutation.isPending}
-            >
-              <Plus className="h-3.5 w-3.5 mr-1" />
-              Adicionar grupo
-            </Button>
-          </div>
+          <Button
+            size="sm"
+            className="h-8 rounded-lg text-xs"
+            onClick={() => setAddGroupSheetOpen(true)}
+          >
+            <Plus className="h-3.5 w-3.5 mr-1" />
+            Adicionar grupo
+          </Button>
+          <AddGroupSheet
+            productId={productId}
+            open={addGroupSheetOpen}
+            onOpenChange={setAddGroupSheetOpen}
+            onGroupCreated={() => { refetch(); utils.product.list.invalidate(); }}
+          />
         </div>
       ) : (
         /* Groups list */
@@ -1106,25 +1102,21 @@ export default function InlineComplementsDropdown({
 
           {/* Add new group */}
           <div className="flex items-center gap-2 pt-1">
-            <Input
-              value={addingGroupName}
-              onChange={(e) => setAddingGroupName(capitalizeFirst(e.target.value))}
-              placeholder="Novo grupo (ex: Molhos)"
-              className="max-w-[240px] h-7 text-sm rounded-lg"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleCreateGroup();
-              }}
-            />
             <Button
               size="sm"
               variant="outline"
               className="h-7 rounded-lg text-xs"
-              onClick={handleCreateGroup}
-              disabled={!addingGroupName.trim() || createGroupMutation.isPending}
+              onClick={() => setAddGroupSheetOpen(true)}
             >
               <Plus className="h-3 w-3 mr-1" />
-              Grupo
+              Adicionar grupo
             </Button>
+            <AddGroupSheet
+              productId={productId}
+              open={addGroupSheetOpen}
+              onOpenChange={setAddGroupSheetOpen}
+              onGroupCreated={() => { refetch(); utils.product.list.invalidate(); }}
+            />
           </div>
         </div>
       )}

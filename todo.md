@@ -6410,3 +6410,5 @@
 - [x] Aplicar campo de preço editável inline com máscara de moeda nos complementos da página de Catálogo (sem cor vermelha)
 - [x] Aplicar máscara de moeda brasileira nos campos de preço do CreateProductSheet
 - [x] Aplicar máscara de moeda brasileira no campo de preço do CreateComboSheet
+- [x] Remover campo "Nome do grupo" e botão "Adicionar grupo" inline do dropdown de complementos no Catálogo
+- [x] Adicionar botão "Adicionar grupo" que abre slidebar com seleção de categoria (Ingredientes, Especificações, Descartáveis) reutilizando fluxo do CreateProductSheet step 2
