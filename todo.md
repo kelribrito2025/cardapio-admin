@@ -6464,3 +6464,11 @@
 - [x] Fluxo de entregadores deve se aplicar APENAS a pedidos de entrega (delivery), não para retirada (pickup) ou consumo no local (dine_in)
 - [x] Bug: Modal de Notificações WhatsApp aparece mesmo quando WhatsApp já está conectado - deve aparecer apenas uma vez para novos usuários
 - [x] Bug: Botão "Ver pedidos" na notificação de novo pedido faz reload completo da página em vez de navegação SPA
+
+## Mensagem WhatsApp do Entregador - Melhorias
+- [x] Atualizar formato da mensagem WhatsApp para entregador conforme modelo do usuário
+- [x] Incluir informação de troco (changeAmount) quando pagamento for dinheiro
+- [x] Separar endereço em linhas: rua+número, bairro, referência
+- [x] Adicionar emoji de troco (💵) com texto "Vai precisar de troco?" quando for dinheiro
+- [x] Aplicar mesmo formato nas 3 mensagens: markReadyAndAssign, assignDriver, resendNotification
+- [x] Corrigir duplo # no orderNumber das mensagens (orderNumber já inclui #)

@@ -14,6 +14,8 @@ import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
 import { ifoodRouter } from "./ifoodRouter";
 import { adminRouter } from "./adminRouter";
 
+import { buildDriverDeliveryMessage } from './driverMessage';
+
 export const appRouter = router({
   system: systemRouter,
   ifood: ifoodRouter,
@@ -2006,19 +2008,7 @@ export const appRouter = router({
         try {
           const config = await db.getWhatsappConfig(establishment.id);
           if (config && config.instanceToken && config.status === 'connected') {
-            const address = order.customerAddress || '';
-            const mapsLink = address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` : '';
-
-            const message = `\u{1F69A} *Nova entrega para voc\u00ea!*\n\n` +
-              `*Pedido:* #${order.orderNumber}\n` +
-              `*Cliente:* ${order.customerName || 'N/A'}\n` +
-              `*Telefone:* ${order.customerPhone || 'N/A'}\n\n` +
-              `*Endere\u00e7o:* ${address || 'N/A'}\n\n` +
-              `*Pagamento:* ${order.paymentMethod === 'cash' ? 'Dinheiro' : order.paymentMethod === 'card' ? 'Cart\u00e3o' : order.paymentMethod === 'pix' ? 'Pix' : order.paymentMethod}\n\n` +
-              `*Total do pedido:* R$ ${parseFloat(order.total || '0').toFixed(2).replace('.', ',')}\n` +
-              `*Taxa de entrega:* R$ ${deliveryFee.toFixed(2).replace('.', ',')}\n` +
-              (order.notes ? `\n*Observa\u00e7\u00f5es:* ${order.notes}\n` : '') +
-              (mapsLink ? `\n\u{1F4CD} Abrir no mapa: ${mapsLink}` : '');
+            const message = buildDriverDeliveryMessage(order, deliveryFee);
 
             const { sendTextMessage } = await import('./_core/uazapi');
             await sendTextMessage(config.instanceToken, driver.whatsapp, message);
@@ -4807,19 +4797,7 @@ export const appRouter = router({
           if (driver.isActive) {
             const config = await db.getWhatsappConfig(establishment.id);
             if (config && config.instanceToken && config.status === 'connected') {
-              const address = order.customerAddress || '';
-              const mapsLink = address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` : '';
-              
-              const message = `\u{1F69A} *Nova entrega para você!*\n\n` +
-                `*Pedido:* #${order.orderNumber}\n` +
-                `*Cliente:* ${order.customerName || 'N/A'}\n` +
-                `*Telefone:* ${order.customerPhone || 'N/A'}\n\n` +
-                `*Endereço:* ${address || 'N/A'}\n\n` +
-                `*Pagamento:* ${order.paymentMethod === 'cash' ? 'Dinheiro' : order.paymentMethod === 'card' ? 'Cartão' : order.paymentMethod === 'pix' ? 'Pix' : order.paymentMethod}\n\n` +
-                `*Total do pedido:* R$ ${parseFloat(order.total || '0').toFixed(2).replace('.', ',')}\n` +
-                `*Taxa de entrega:* R$ ${deliveryFee.toFixed(2).replace('.', ',')}\n` +
-                (order.notes ? `\n*Observações:* ${order.notes}\n` : '') +
-                (mapsLink ? `\n\u{1F4CD} Abrir no mapa: ${mapsLink}` : '');
+              const message = buildDriverDeliveryMessage(order, deliveryFee);
               
               const { sendTextMessage } = await import('./_core/uazapi');
               await sendTextMessage(config.instanceToken, driver.whatsapp, message);
@@ -4866,20 +4844,7 @@ export const appRouter = router({
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'WhatsApp não está conectado' });
         }
         
-        // Build address for Google Maps link
-        const address = order.customerAddress || '';
-        const mapsLink = address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` : '';
-        
-        const message = `🚚 *Nova entrega para você!*\n\n` +
-          `*Pedido:* #${order.orderNumber}\n` +
-          `*Cliente:* ${order.customerName || 'N/A'}\n` +
-          `*Telefone:* ${order.customerPhone || 'N/A'}\n\n` +
-          `*Endereço:* ${address || 'N/A'}\n\n` +
-          `*Pagamento:* ${order.paymentMethod === 'cash' ? 'Dinheiro' : order.paymentMethod === 'card' ? 'Cartão' : order.paymentMethod === 'pix' ? 'Pix' : order.paymentMethod}\n\n` +
-          `*Total do pedido:* R$ ${parseFloat(order.total || '0').toFixed(2).replace('.', ',')}\n` +
-          `*Taxa de entrega:* R$ ${parseFloat(order.deliveryFee || '0').toFixed(2).replace('.', ',')}\n` +
-          (order.notes ? `\n*Observações:* ${order.notes}\n` : '') +
-          (mapsLink ? `\n📍 Abrir no mapa: ${mapsLink}` : '');
+        const message = buildDriverDeliveryMessage(order);
         
         try {
           const { sendTextMessage } = await import('./_core/uazapi');
