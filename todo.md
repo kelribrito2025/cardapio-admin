@@ -6463,3 +6463,4 @@
 - [ ] Backend: endpoint para auto-assign com mudança de status
 - [x] Fluxo de entregadores deve se aplicar APENAS a pedidos de entrega (delivery), não para retirada (pickup) ou consumo no local (dine_in)
 - [x] Bug: Modal de Notificações WhatsApp aparece mesmo quando WhatsApp já está conectado - deve aparecer apenas uma vez para novos usuários
+- [x] Bug: Botão "Ver pedidos" na notificação de novo pedido faz reload completo da página em vez de navegação SPA

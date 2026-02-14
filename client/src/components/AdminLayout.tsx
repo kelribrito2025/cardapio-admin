@@ -115,7 +115,7 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   const { user, loading: authLoading, logout } = useAuth();
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   const { newOrdersCount, unlockAudio, isAudioUnlocked } = useNewOrders();
   const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -186,7 +186,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         action: {
           label: "Ver pedidos",
           onClick: () => {
-            window.location.href = "/pedidos";
+            navigate("/pedidos");
           },
         },
       });
