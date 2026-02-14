@@ -815,3 +815,41 @@ export const comboGroupItems = mysqlTable("comboGroupItems", {
 
 export type ComboGroupItem = typeof comboGroupItems.$inferSelect;
 export type InsertComboGroupItem = typeof comboGroupItems.$inferInsert;
+
+// Delivery drivers
+export const drivers = mysqlTable("drivers", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 320 }),
+  whatsapp: varchar("whatsapp", { length: 30 }).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  // Repasse strategy: "neighborhood" = valor por bairro, "fixed" = valor fixo, "percentage" = percentual da taxa
+  repasseStrategy: mysqlEnum("repasseStrategy", ["neighborhood", "fixed", "percentage"]).default("neighborhood").notNull(),
+  fixedValue: decimal("fixedValue", { precision: 10, scale: 2 }),
+  percentageValue: decimal("percentageValue", { precision: 5, scale: 2 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Driver = typeof drivers.$inferSelect;
+export type InsertDriver = typeof drivers.$inferInsert;
+
+// Deliveries (link between orders and drivers)
+export const deliveries = mysqlTable("deliveries", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  orderId: int("orderId").notNull(),
+  driverId: int("driverId").notNull(),
+  deliveryFee: decimal("deliveryFee", { precision: 10, scale: 2 }).notNull(),
+  repasseValue: decimal("repasseValue", { precision: 10, scale: 2 }).notNull(),
+  paymentStatus: mysqlEnum("paymentStatus", ["pending", "paid"]).default("pending").notNull(),
+  paidAt: timestamp("paidAt"),
+  whatsappSent: boolean("whatsappSent").default(false).notNull(),
+  whatsappSentAt: timestamp("whatsappSentAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Delivery = typeof deliveries.$inferSelect;
+export type InsertDelivery = typeof deliveries.$inferInsert;

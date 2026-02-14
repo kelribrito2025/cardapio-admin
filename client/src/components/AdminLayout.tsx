@@ -35,6 +35,7 @@ import {
   Sun,
   Star,
   BookOpen,
+  Truck,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -81,6 +82,7 @@ const menuSections = [
     title: "GESTÃO",
     items: [
       { icon: ClipboardList, label: "Pedidos", href: "/pedidos", disabled: false },
+      { icon: Truck, label: "Entregadores", href: "/entregadores", disabled: false },
       { icon: BookOpen, label: "Menu", href: "/menu-parent", disabled: false, isParent: true, children: [
         { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo", disabled: false },
         { icon: Layers, label: "Grupos", href: "/complementos", disabled: false },

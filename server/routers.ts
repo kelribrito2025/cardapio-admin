@@ -4483,7 +4483,264 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.searchProductsForCombo(input.establishmentId, input.search, input.limit);
       }),
+   }),
+
+  // ============ ENTREGADORES (DRIVERS) ============
+  driver: router({
+    list: protectedProcedure
+      .query(async ({ ctx }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        const allDrivers = await db.getDriversByEstablishment(establishment.id);
+        
+        // Enrich each driver with 7-day stats and pending total
+        const enriched = await Promise.all(
+          allDrivers.map(async (driver) => {
+            const last7 = await db.getDriverDeliveriesLast7Days(driver.id);
+            const pendingTotal = await db.getDriverPendingTotal(driver.id);
+            return {
+              ...driver,
+              deliveriesLast7Days: last7.count,
+              repasseLast7Days: last7.totalRepasse,
+              pendingTotal,
+            };
+          })
+        );
+        
+        return enriched;
+      }),
+
+    metrics: protectedProcedure
+      .query(async ({ ctx }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        return db.getDriverMetrics(establishment.id);
+      }),
+
+    getById: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const driver = await db.getDriverById(input.id);
+        if (!driver) throw new TRPCError({ code: 'NOT_FOUND', message: 'Entregador não encontrado' });
+        return driver;
+      }),
+
+    getDetailMetrics: protectedProcedure
+      .input(z.object({ driverId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getDriverDetailMetrics(input.driverId);
+      }),
+
+    getDeliveries: protectedProcedure
+      .input(z.object({ driverId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getDeliveriesByDriverWithOrders(input.driverId);
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1, 'Nome é obrigatório'),
+        email: z.string().email().optional().or(z.literal('')),
+        whatsapp: z.string().min(1, 'WhatsApp é obrigatório'),
+        isActive: z.boolean().default(true),
+        repasseStrategy: z.enum(['neighborhood', 'fixed', 'percentage']).default('neighborhood'),
+        fixedValue: z.string().optional(),
+        percentageValue: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        const id = await db.createDriver({
+          establishmentId: establishment.id,
+          name: input.name,
+          email: input.email || null,
+          whatsapp: input.whatsapp,
+          isActive: input.isActive,
+          repasseStrategy: input.repasseStrategy,
+          fixedValue: input.fixedValue || null,
+          percentageValue: input.percentageValue || null,
+        });
+        
+        return { id };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().min(1).optional(),
+        email: z.string().email().optional().or(z.literal('')),
+        whatsapp: z.string().min(1).optional(),
+        isActive: z.boolean().optional(),
+        repasseStrategy: z.enum(['neighborhood', 'fixed', 'percentage']).optional(),
+        fixedValue: z.string().optional().nullable(),
+        percentageValue: z.string().optional().nullable(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await db.updateDriver(id, data as any);
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteDriver(input.id);
+        return { success: true };
+      }),
+
+    // Assign a driver to an order (create delivery record)
+    assignToOrder: protectedProcedure
+      .input(z.object({
+        orderId: z.number(),
+        driverId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        // Check if delivery already exists for this order
+        const existing = await db.getDeliveryByOrderId(input.orderId);
+        if (existing) throw new TRPCError({ code: 'CONFLICT', message: 'Este pedido já possui um entregador atribuído' });
+        
+        const driver = await db.getDriverById(input.driverId);
+        if (!driver) throw new TRPCError({ code: 'NOT_FOUND', message: 'Entregador não encontrado' });
+        
+        const order = await db.getOrderById(input.orderId);
+        if (!order) throw new TRPCError({ code: 'NOT_FOUND', message: 'Pedido não encontrado' });
+        
+        const deliveryFee = parseFloat(order.deliveryFee || '0');
+        
+        // Calculate repasse based on strategy
+        let repasseValue = 0;
+        if (driver.repasseStrategy === 'neighborhood') {
+          repasseValue = deliveryFee; // Same as delivery fee
+        } else if (driver.repasseStrategy === 'fixed') {
+          repasseValue = parseFloat(driver.fixedValue || '0');
+        } else if (driver.repasseStrategy === 'percentage') {
+          const pct = parseFloat(driver.percentageValue || '0');
+          repasseValue = deliveryFee * (pct / 100);
+        }
+        
+        const deliveryId = await db.createDelivery({
+          establishmentId: establishment.id,
+          orderId: input.orderId,
+          driverId: input.driverId,
+          deliveryFee: String(deliveryFee),
+          repasseValue: String(repasseValue.toFixed(2)),
+          paymentStatus: 'pending',
+          whatsappSent: false,
+        });
+        
+        // Auto-send WhatsApp notification to driver
+        let whatsappSent = false;
+        try {
+          if (driver.isActive) {
+            const config = await db.getWhatsappConfig(establishment.id);
+            if (config && config.instanceToken && config.status === 'connected') {
+              const address = order.customerAddress || '';
+              const mapsLink = address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` : '';
+              
+              const message = `\u{1F69A} *Nova entrega para você!*\n\n` +
+                `*Pedido:* #${order.orderNumber}\n` +
+                `*Cliente:* ${order.customerName || 'N/A'}\n` +
+                `*Telefone:* ${order.customerPhone || 'N/A'}\n\n` +
+                `*Endereço:* ${address || 'N/A'}\n\n` +
+                `*Pagamento:* ${order.paymentMethod === 'cash' ? 'Dinheiro' : order.paymentMethod === 'card' ? 'Cartão' : order.paymentMethod === 'pix' ? 'Pix' : order.paymentMethod}\n\n` +
+                `*Total do pedido:* R$ ${parseFloat(order.total || '0').toFixed(2).replace('.', ',')}\n` +
+                `*Taxa de entrega:* R$ ${deliveryFee.toFixed(2).replace('.', ',')}\n` +
+                (order.notes ? `\n*Observações:* ${order.notes}\n` : '') +
+                (mapsLink ? `\n\u{1F4CD} Abrir no mapa: ${mapsLink}` : '');
+              
+              const { sendTextMessage } = await import('./_core/uazapi');
+              await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+              await db.markDeliveryWhatsappSent(deliveryId);
+              whatsappSent = true;
+            }
+          }
+        } catch (error) {
+          console.error('[Driver WhatsApp] Erro ao enviar notificação automática:', error);
+          // Don't fail the assignment if WhatsApp fails
+        }
+        
+        return { deliveryId, whatsappSent };
+      }),
+
+    // Mark delivery as paid
+    markAsPaid: protectedProcedure
+      .input(z.object({ deliveryId: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.markDeliveryAsPaid(input.deliveryId);
+        return { success: true };
+      }),
+
+    // Send WhatsApp notification to driver
+    sendWhatsappNotification: protectedProcedure
+      .input(z.object({ deliveryId: z.number() }))
+      .mutation(async ({ input }) => {
+        // Get delivery by ID using a helper
+        const del = await db.getDeliveryById(input.deliveryId);
+        
+        if (!del) throw new TRPCError({ code: 'NOT_FOUND', message: 'Entrega não encontrada' });
+        if (del.whatsappSent) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Notificação já foi enviada' });
+        
+        const driver = await db.getDriverById(del.driverId);
+        if (!driver) throw new TRPCError({ code: 'NOT_FOUND', message: 'Entregador não encontrado' });
+        
+        const order = await db.getOrderById(del.orderId);
+        if (!order) throw new TRPCError({ code: 'NOT_FOUND', message: 'Pedido não encontrado' });
+        
+        const establishment = await db.getEstablishmentById(order.establishmentId);
+        const config = await db.getWhatsappConfig(order.establishmentId);
+        
+        if (!config || !config.instanceToken || config.status !== 'connected') {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'WhatsApp não está conectado' });
+        }
+        
+        // Build address for Google Maps link
+        const address = order.customerAddress || '';
+        const mapsLink = address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` : '';
+        
+        const message = `🚚 *Nova entrega para você!*\n\n` +
+          `*Pedido:* #${order.orderNumber}\n` +
+          `*Cliente:* ${order.customerName || 'N/A'}\n` +
+          `*Telefone:* ${order.customerPhone || 'N/A'}\n\n` +
+          `*Endereço:* ${address || 'N/A'}\n\n` +
+          `*Pagamento:* ${order.paymentMethod === 'cash' ? 'Dinheiro' : order.paymentMethod === 'card' ? 'Cartão' : order.paymentMethod === 'pix' ? 'Pix' : order.paymentMethod}\n\n` +
+          `*Total do pedido:* R$ ${parseFloat(order.total || '0').toFixed(2).replace('.', ',')}\n` +
+          `*Taxa de entrega:* R$ ${parseFloat(order.deliveryFee || '0').toFixed(2).replace('.', ',')}\n` +
+          (order.notes ? `\n*Observações:* ${order.notes}\n` : '') +
+          (mapsLink ? `\n📍 Abrir no mapa: ${mapsLink}` : '');
+        
+        try {
+          const { sendTextMessage } = await import('./_core/uazapi');
+          await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+          await db.markDeliveryWhatsappSent(input.deliveryId);
+          return { success: true };
+        } catch (error) {
+          console.error('[Driver WhatsApp] Erro ao enviar:', error);
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Erro ao enviar mensagem WhatsApp' });
+        }
+      }),
+
+    // Get active drivers for assignment dropdown
+    listActive: protectedProcedure
+      .query(async ({ ctx }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        return db.getActiveDriversByEstablishment(establishment.id);
+      }),
+
+    // Get delivery info for an order
+    getByOrderId: protectedProcedure
+      .input(z.object({ orderId: z.number() }))
+      .query(async ({ input }) => {
+        const delivery = await db.getDeliveryByOrderId(input.orderId);
+        if (!delivery) return null;
+        const driver = await db.getDriverById(delivery.driverId);
+        return { ...delivery, driver };
+      }),
   }),
 });
-
 export type AppRouter = typeof appRouter;

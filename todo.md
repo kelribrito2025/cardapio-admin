@@ -6432,3 +6432,20 @@
 - [ ] Backend: Endpoint para alterar regras (mín/máx/obrigatório) globalmente
 - [x] Bug: Pausar grupo na página de Complementos não reflete na página de Catálogo (grupo continua visível/ativo)
 - [x] Mover item "Grupos" para dentro do submenu "Menu", abaixo de "Cardápio"
+
+## Página de Entregadores
+- [ ] Schema: tabela drivers (nome, email, whatsapp, status, estratégia repasse, valor fixo, percentual)
+- [ ] Schema: tabela deliveries (pedido, entregador, valor taxa, valor repasse, status pago/pendente)
+- [ ] DB helpers: CRUD de entregadores
+- [ ] DB helpers: métricas de entregadores (cadastrados, ativos, inativos, repasses 7 dias)
+- [ ] DB helpers: lista de entregas por entregador
+- [ ] tRPC procedures: CRUD entregadores + métricas + entregas
+- [ ] Página /entregadores: cards de métricas (cadastrados, ativos, inativos, repasses 7 dias)
+- [ ] Página /entregadores: tabela de entregadores com nome, whatsapp, status, estratégia, entregas, total a receber
+- [ ] Slidebar criar/editar entregador com campos: nome, email, whatsapp, status, estratégia repasse
+- [ ] Página detalhes do entregador: métricas individuais + lista de entregas
+- [ ] Botão marcar entrega como paga
+- [ ] Integração UAZAPI: envio automático WhatsApp ao marcar pedido como "Saiu para entrega"
+- [ ] Registrar delivery_whatsapp_sent no banco para evitar duplicatas
+- [ ] Menu lateral: adicionar "Entregadores" abaixo de "Pedidos"
+- [ ] Testes unitários para endpoints de entregadores

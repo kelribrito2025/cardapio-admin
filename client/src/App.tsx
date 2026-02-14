@@ -28,6 +28,8 @@ import AccountSecurity from "./pages/AccountSecurity";
 import Ajuda from "./pages/Ajuda";
 import MesasComandas from "./pages/MesasComandas";
 import Avaliacoes from "./pages/Avaliacoes";
+import Entregadores from "./pages/Entregadores";
+import EntregadorDetalhes from "./pages/EntregadorDetalhes";
 import { GlobalPDVHandle } from "./components/GlobalPDVHandle";
 
 // Admin Pages (Super Admin)
@@ -71,6 +73,8 @@ function AdminRoutes() {
         <Route path="/pdv" component={PDV} />
         <Route path="/mesas" component={MesasComandas} />
         <Route path="/avaliacoes" component={Avaliacoes} />
+        <Route path="/entregadores" component={Entregadores} />
+        <Route path="/entregadores/:id" component={EntregadorDetalhes} />
         <Route path="/conta-seguranca" component={AccountSecurity} />
         <Route path="/ajuda" component={Ajuda} />
         

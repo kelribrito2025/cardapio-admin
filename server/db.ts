@@ -38,7 +38,9 @@ import {
   scheduledCampaigns, InsertScheduledCampaign, ScheduledCampaign,
   pdvCustomers, InsertPdvCustomer, PdvCustomer,
   comboGroups, InsertComboGroup, ComboGroup,
-  comboGroupItems, InsertComboGroupItem, ComboGroupItem
+  comboGroupItems, InsertComboGroupItem, ComboGroupItem,
+  drivers, InsertDriver, Driver,
+  deliveries, InsertDelivery, Delivery
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -7520,4 +7522,201 @@ export async function searchProductsForCombo(establishmentId: number, search?: s
     .limit(limit);
 
   return result;
+}
+
+// ============ DRIVERS (ENTREGADORES) ============
+
+export async function createDriver(data: Omit<InsertDriver, 'id' | 'createdAt' | 'updatedAt'>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const [result] = await db.insert(drivers).values(data);
+  return result.insertId;
+}
+
+export async function updateDriver(id: number, data: Partial<Omit<InsertDriver, 'id' | 'createdAt' | 'updatedAt'>>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(drivers).set(data).where(eq(drivers.id, id));
+}
+
+export async function deleteDriver(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(drivers).where(eq(drivers.id, id));
+}
+
+export async function getDriverById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const [driver] = await db.select().from(drivers).where(eq(drivers.id, id));
+  return driver || null;
+}
+
+export async function getDriversByEstablishment(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(drivers)
+    .where(eq(drivers.establishmentId, establishmentId))
+    .orderBy(asc(drivers.name));
+}
+
+export async function getDriverMetrics(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return { total: 0, active: 0, inactive: 0, repasses7d: 0, entregas7d: 0 };
+  
+  const allDrivers = await db.select().from(drivers)
+    .where(eq(drivers.establishmentId, establishmentId));
+  
+  const total = allDrivers.length;
+  const active = allDrivers.filter(d => d.isActive).length;
+  const inactive = total - active;
+  
+  // Repasses últimos 7 dias
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  
+  const recentDeliveries = await db.select().from(deliveries)
+    .where(
+      and(
+        eq(deliveries.establishmentId, establishmentId),
+        gte(deliveries.createdAt, sevenDaysAgo)
+      )
+    );
+  
+  const repasses7d = recentDeliveries.reduce((sum, d) => sum + parseFloat(d.repasseValue || '0'), 0);
+  const entregas7d = recentDeliveries.length;
+  
+  return { total, active, inactive, repasses7d, entregas7d };
+}
+
+// ============ DELIVERIES (ENTREGAS) ============
+
+export async function createDelivery(data: Omit<InsertDelivery, 'id' | 'createdAt' | 'updatedAt'>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const [result] = await db.insert(deliveries).values(data);
+  return result.insertId;
+}
+
+export async function getDeliveryByOrderId(orderId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const [delivery] = await db.select().from(deliveries).where(eq(deliveries.orderId, orderId));
+  return delivery || null;
+}
+
+export async function getDeliveriesByDriver(driverId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(deliveries)
+    .where(eq(deliveries.driverId, driverId))
+    .orderBy(desc(deliveries.createdAt));
+}
+
+export async function getDeliveriesByDriverWithOrders(driverId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const driverDeliveries = await db.select().from(deliveries)
+    .where(eq(deliveries.driverId, driverId))
+    .orderBy(desc(deliveries.createdAt));
+  
+  // Enrich with order data
+  const enriched = await Promise.all(
+    driverDeliveries.map(async (del) => {
+      const order = await db.select().from(orders).where(eq(orders.id, del.orderId));
+      return {
+        ...del,
+        order: order[0] || null,
+      };
+    })
+  );
+  
+  return enriched;
+}
+
+export async function getDriverDetailMetrics(driverId: number) {
+  const db = await getDb();
+  if (!db) return { totalDeliveries: 0, totalBruto: 0, totalPending: 0, totalPaid: 0, avgPerDelivery: 0 };
+  
+  const allDeliveries = await db.select().from(deliveries)
+    .where(eq(deliveries.driverId, driverId));
+  
+  const totalDeliveries = allDeliveries.length;
+  const totalBruto = allDeliveries.reduce((sum, d) => sum + parseFloat(d.deliveryFee || '0'), 0);
+  const totalPending = allDeliveries.filter(d => d.paymentStatus === 'pending')
+    .reduce((sum, d) => sum + parseFloat(d.repasseValue || '0'), 0);
+  const totalPaid = allDeliveries.filter(d => d.paymentStatus === 'paid')
+    .reduce((sum, d) => sum + parseFloat(d.repasseValue || '0'), 0);
+  const avgPerDelivery = totalDeliveries > 0 ? totalBruto / totalDeliveries : 0;
+  
+  return { totalDeliveries, totalBruto, totalPending, totalPaid, avgPerDelivery };
+}
+
+export async function markDeliveryAsPaid(deliveryId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(deliveries).set({ paymentStatus: 'paid', paidAt: new Date() }).where(eq(deliveries.id, deliveryId));
+}
+
+export async function markDeliveryWhatsappSent(deliveryId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(deliveries).set({ whatsappSent: true, whatsappSentAt: new Date() }).where(eq(deliveries.id, deliveryId));
+}
+
+export async function getDriverDeliveriesLast7Days(driverId: number) {
+  const db = await getDb();
+  if (!db) return { count: 0, totalRepasse: 0 };
+  
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  
+  const recent = await db.select().from(deliveries)
+    .where(
+      and(
+        eq(deliveries.driverId, driverId),
+        gte(deliveries.createdAt, sevenDaysAgo)
+      )
+    );
+  
+  return {
+    count: recent.length,
+    totalRepasse: recent.reduce((sum, d) => sum + parseFloat(d.repasseValue || '0'), 0),
+  };
+}
+
+export async function getDriverPendingTotal(driverId: number) {
+  const db = await getDb();
+  if (!db) return 0;
+  
+  const pending = await db.select().from(deliveries)
+    .where(
+      and(
+        eq(deliveries.driverId, driverId),
+        eq(deliveries.paymentStatus, 'pending')
+      )
+    );
+  
+  return pending.reduce((sum, d) => sum + parseFloat(d.repasseValue || '0'), 0);
+}
+
+export async function getActiveDriversByEstablishment(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(drivers)
+    .where(
+      and(
+        eq(drivers.establishmentId, establishmentId),
+        eq(drivers.isActive, true)
+      )
+    )
+    .orderBy(asc(drivers.name));
+}
+
+export async function getDeliveryById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const [delivery] = await db.select().from(deliveries).where(eq(deliveries.id, id));
+  return delivery || null;
 }
