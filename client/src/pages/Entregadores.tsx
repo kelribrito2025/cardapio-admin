@@ -203,12 +203,6 @@ function DriverFormSheet({
           <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <button
-                  onClick={() => onOpenChange(false)}
-                  className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
-                >
-                  <ArrowLeft className="h-5 w-5 text-white" />
-                </button>
                 <div>
                   <h2 className="text-lg font-bold text-white">
                     {editingDriver ? "Editar Entregador" : "Novo Entregador"}
