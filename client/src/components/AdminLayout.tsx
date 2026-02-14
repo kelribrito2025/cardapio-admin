@@ -85,7 +85,7 @@ const menuSections = [
         { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo", disabled: false },
         { icon: Star, label: "Avaliações", href: "/avaliacoes", disabled: false, badgeKey: "reviews" },
       ]},
-      { icon: Layers, label: "Complementos", href: "/complementos", disabled: false },
+      { icon: Layers, label: "Grupos", href: "/complementos", disabled: false },
       { icon: Package, label: "Estoque", href: "/estoque", disabled: false },
     ]
   },
