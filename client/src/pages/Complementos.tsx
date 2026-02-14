@@ -1311,7 +1311,7 @@ export default function Complementos() {
     <AdminLayout>
       <TooltipProvider>
         <PageHeader
-          title="Complementos"
+          title="Grupos de Complementos"
           description="Gerencie seus grupos de complementos. Alterações refletem em todos os produtos."
           icon={<Layers className="h-6 w-6 text-blue-600" />}
         />
