@@ -6540,3 +6540,6 @@
 - [x] Painel direita: usar SectionCard como wrapper independente
 - [x] Cards de pedidos: seguir padrão visual dos cards da Dashboard (sem sombra, borda leve, padding consistente)
 - [x] Empty state: mais limpo e alinhado com o padrão do sistema
+
+## Calendário: Estilo Pill/Chip nos Pedidos
+- [x] Cada pedido dentro da célula do calendário deve ter fundo arredondado verde claro (pill/chip) como na referência

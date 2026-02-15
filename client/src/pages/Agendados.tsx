@@ -354,21 +354,18 @@ export default function Agendados() {
                         </span>
                       </div>
 
-                      {/* Order labels inside cell — green/primary text like reference */}
-                      <div className="space-y-0.5">
+                      {/* Order labels inside cell — pill/chip style like reference */}
+                      <div className="space-y-1 mt-0.5">
                         {dayOrders.slice(0, 3).map((o, i) => (
                           <div
                             key={i}
-                            className={cn(
-                              "text-[10px] leading-tight font-medium truncate max-w-full",
-                              isSelected ? "text-primary" : "text-emerald-600 dark:text-emerald-400"
-                            )}
+                            className="text-[10px] leading-normal font-medium truncate px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
                           >
-                            {o.customerName.length > 14 ? o.customerName.slice(0, 14) + "..." : o.customerName}
+                            {o.customerName.length > 12 ? o.customerName.slice(0, 12) + "..." : o.customerName}
                           </div>
                         ))}
                         {dayOrders.length > 3 && (
-                          <div className="text-[10px] text-muted-foreground/60 font-medium">
+                          <div className="text-[10px] text-muted-foreground/60 font-medium px-2">
                             +{dayOrders.length - 3} mais
                           </div>
                         )}
