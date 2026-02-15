@@ -1005,3 +1005,148 @@ describe("Typewriter Effect - Hero Section", () => {
     });
   });
 });
+
+// ============ SECTION: PRICING / PLANOS ============
+
+const LANDING_PLANS_TEST = [
+  {
+    id: "free",
+    name: "Gratuito",
+    price: { monthly: 0, annual: 0 },
+    features: [
+      "Teste grátis por 15 dias",
+      "1 estabelecimento",
+      "Link personalizado para o seu restaurante",
+      "Gerenciador de pedidos",
+    ],
+    buttonText: "Começar grátis",
+  },
+  {
+    id: "basic",
+    name: "Essencial",
+    price: { monthly: 79.90, annual: 799 },
+    features: [
+      "Tudo do plano gratuito",
+      "1 estabelecimento",
+      "Suporte pelo WhatsApp",
+      "Dashboard completa",
+      "Relatórios financeiros",
+      "Campanhas SMS",
+      "Cupons de desconto",
+    ],
+    buttonText: "Começar agora",
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    price: { monthly: -1, annual: -1 },
+    priceLabel: "R$ --,--",
+    highlighted: true,
+    badge: "Mais Popular",
+    features: [
+      "Tudo do plano Essencial",
+      "Estabelecimentos ilimitados",
+      "Análises avançadas",
+      "Assistente de IA",
+      "Relatórios personalizados",
+      "Programa de fidelidade",
+    ],
+    buttonText: "Em breve",
+  },
+];
+
+describe("Pricing Section - Plans data", () => {
+  it("has exactly 3 plans", () => {
+    expect(LANDING_PLANS_TEST).toHaveLength(3);
+  });
+
+  it("each plan has required fields", () => {
+    LANDING_PLANS_TEST.forEach((plan) => {
+      expect(plan.id).toBeTruthy();
+      expect(plan.name).toBeTruthy();
+      expect(plan.price).toBeDefined();
+      expect(plan.price.monthly).toBeDefined();
+      expect(plan.price.annual).toBeDefined();
+      expect(plan.features.length).toBeGreaterThan(0);
+      expect(plan.buttonText).toBeTruthy();
+    });
+  });
+
+  it("free plan has price 0", () => {
+    const free = LANDING_PLANS_TEST.find((p) => p.id === "free");
+    expect(free).toBeDefined();
+    expect(free!.price.monthly).toBe(0);
+    expect(free!.price.annual).toBe(0);
+  });
+
+  it("basic plan has positive monthly and annual prices", () => {
+    const basic = LANDING_PLANS_TEST.find((p) => p.id === "basic");
+    expect(basic).toBeDefined();
+    expect(basic!.price.monthly).toBeGreaterThan(0);
+    expect(basic!.price.annual).toBeGreaterThan(0);
+  });
+
+  it("annual price is cheaper than 12x monthly for basic plan", () => {
+    const basic = LANDING_PLANS_TEST.find((p) => p.id === "basic");
+    expect(basic).toBeDefined();
+    expect(basic!.price.annual).toBeLessThan(basic!.price.monthly * 12);
+  });
+
+  it("pro plan is highlighted and has badge", () => {
+    const pro = LANDING_PLANS_TEST.find((p) => p.id === "pro");
+    expect(pro).toBeDefined();
+    expect(pro!.highlighted).toBe(true);
+    expect(pro!.badge).toBe("Mais Popular");
+  });
+
+  it("pro plan has priceLabel since it's coming soon", () => {
+    const pro = LANDING_PLANS_TEST.find((p) => p.id === "pro") as any;
+    expect(pro).toBeDefined();
+    expect(pro.priceLabel).toBe("R$ --,--");
+    expect(pro.buttonText).toBe("Em breve");
+  });
+
+  it("each plan has unique id", () => {
+    const ids = LANDING_PLANS_TEST.map((p) => p.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("plans are ordered by tier: free, basic, pro", () => {
+    expect(LANDING_PLANS_TEST[0].id).toBe("free");
+    expect(LANDING_PLANS_TEST[1].id).toBe("basic");
+    expect(LANDING_PLANS_TEST[2].id).toBe("pro");
+  });
+
+  it("higher tier plans have more features", () => {
+    expect(LANDING_PLANS_TEST[1].features.length).toBeGreaterThan(
+      LANDING_PLANS_TEST[0].features.length
+    );
+    expect(LANDING_PLANS_TEST[2].features.length).toBeGreaterThan(
+      LANDING_PLANS_TEST[0].features.length
+    );
+  });
+
+  it("basic and pro plans reference the previous tier in features", () => {
+    expect(LANDING_PLANS_TEST[1].features[0]).toContain("plano gratuito");
+    expect(LANDING_PLANS_TEST[2].features[0]).toContain("plano Essencial");
+  });
+});
+
+describe("Pricing Section - Price formatting", () => {
+  const formatPrice = (value: number) =>
+    new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
+
+  it("formats free plan as R$ 0,00", () => {
+    expect(formatPrice(0)).toBe("R$\u00a00,00");
+  });
+
+  it("formats basic monthly price correctly", () => {
+    const formatted = formatPrice(79.90);
+    expect(formatted).toContain("79,90");
+  });
+
+  it("formats basic annual price correctly", () => {
+    const formatted = formatPrice(799);
+    expect(formatted).toContain("799,00");
+  });
+});

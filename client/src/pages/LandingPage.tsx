@@ -26,7 +26,9 @@ import {
   Smartphone,
   Globe,
   QrCode,
-  Palette
+  Palette,
+  Check,
+  Crown
 } from "lucide-react";
 
 // CDN URLs dos mockups do dashboard
@@ -1188,6 +1190,262 @@ function CatalogShowcaseSection() {
   );
 }
 
+// ============ SEÇÃO DE PLANOS ============
+
+interface LandingPlan {
+  id: string;
+  name: string;
+  price: { monthly: number; annual: number };
+  priceLabel?: string;
+  features: string[];
+  buttonText: string;
+  highlighted?: boolean;
+  badge?: string;
+}
+
+const LANDING_PLANS: LandingPlan[] = [
+  {
+    id: "free",
+    name: "Gratuito",
+    price: { monthly: 0, annual: 0 },
+    features: [
+      "Teste grátis por 15 dias",
+      "1 estabelecimento",
+      "Link personalizado para o seu restaurante",
+      "Gerenciador de pedidos",
+    ],
+    buttonText: "Começar grátis",
+  },
+  {
+    id: "basic",
+    name: "Essencial",
+    price: { monthly: 79.90, annual: 799 },
+    features: [
+      "Tudo do plano gratuito",
+      "1 estabelecimento",
+      "Suporte pelo WhatsApp",
+      "Dashboard completa",
+      "Relatórios financeiros",
+      "Campanhas SMS",
+      "Cupons de desconto",
+    ],
+    buttonText: "Começar agora",
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    price: { monthly: -1, annual: -1 },
+    priceLabel: "R$ --,--",
+    highlighted: true,
+    badge: "Mais Popular",
+    features: [
+      "Tudo do plano Essencial",
+      "Estabelecimentos ilimitados",
+      "Análises avançadas",
+      "Assistente de IA",
+      "Relatórios personalizados",
+      "Programa de fidelidade",
+    ],
+    buttonText: "Em breve",
+  },
+];
+
+function PricingSection() {
+  const [isAnnual, setIsAnnual] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
+      { threshold: 0.05 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const formatPrice = (value: number) =>
+    new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
+
+  return (
+    <section
+      ref={sectionRef}
+      id="precos"
+      className="py-20 md:py-28 bg-gradient-to-b from-white to-gray-50/80"
+    >
+      <div className="max-w-6xl mx-auto px-4">
+        {/* Header */}
+        <div
+          className={`text-center mb-14 transition-all duration-700 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-red-50 text-red-600 rounded-full text-sm font-semibold mb-4">
+            <Crown className="w-4 h-4" />
+            PLANOS E PREÇOS
+          </span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            Escolha o plano ideal{" "}
+            <span className="text-red-500">para você</span>
+          </h2>
+          <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+            Comece grátis e escale conforme seu negócio cresce. Sem surpresas, sem taxas escondidas.
+          </p>
+        </div>
+
+        {/* Toggle Mensal/Anual */}
+        <div
+          className={`flex justify-center mb-12 transition-all duration-700 delay-100 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
+            <button
+              onClick={() => setIsAnnual(false)}
+              className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                !isAnnual
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Mensal
+            </button>
+            <button
+              onClick={() => setIsAnnual(true)}
+              className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                isAnnual
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Anual
+              <span className="ml-1.5 text-xs text-green-600 font-semibold">-17%</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Plans Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+          {LANDING_PLANS.map((plan, index) => {
+            const price = isAnnual ? plan.price.annual : plan.price.monthly;
+            const period = isAnnual ? "/ano" : "/mês";
+            const delay = 200 + index * 150;
+
+            return (
+              <div
+                key={plan.id}
+                className={`relative rounded-2xl border p-7 transition-all duration-700 overflow-hidden ${
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+                } ${
+                  plan.highlighted
+                    ? "border-red-400 border-2 shadow-xl shadow-red-100/50 scale-[1.02] md:scale-105 z-10 bg-white"
+                    : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg"
+                }`}
+                style={{ transitionDelay: `${delay}ms` }}
+              >
+                {/* Glow effect for highlighted */}
+                {plan.highlighted && (
+                  <div
+                    className="absolute -top-20 -right-20 w-64 h-64 bg-red-400/15 rounded-full blur-3xl pointer-events-none"
+                    aria-hidden="true"
+                  />
+                )}
+
+                {/* Badge */}
+                {plan.badge && (
+                  <div className="absolute top-4 right-4 z-10">
+                    <span className="bg-red-100 text-red-700 text-xs font-semibold px-3 py-1 rounded-full">
+                      {plan.badge}
+                    </span>
+                  </div>
+                )}
+
+                {/* Plan Name */}
+                <h3 className="text-xl font-bold text-gray-900 mb-1">{plan.name}</h3>
+                <p className="text-sm text-gray-400 mb-5">
+                  {plan.id === "free"
+                    ? "Para quem está começando"
+                    : plan.id === "basic"
+                    ? "Para negócios em crescimento"
+                    : "Para operações avançadas"}
+                </p>
+
+                {/* Price */}
+                <div className="flex items-baseline gap-1 mb-6">
+                  <span className="text-4xl font-extrabold text-gray-900">
+                    {price === 0
+                      ? "Grátis"
+                      : plan.priceLabel
+                      ? plan.priceLabel
+                      : formatPrice(price)}
+                  </span>
+                  {(price > 0 || plan.priceLabel) && !plan.priceLabel && (
+                    <span className="text-gray-400 text-sm">{period}</span>
+                  )}
+                </div>
+
+                {/* Divider */}
+                <div className="relative mb-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-100"></div>
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="bg-white px-3 text-xs text-gray-400 uppercase tracking-wider">
+                      O que está incluso
+                    </span>
+                  </div>
+                </div>
+
+                {/* Features */}
+                <ul className="space-y-3 mb-8">
+                  {plan.features.map((feature, i) => (
+                    <li key={i} className="flex items-center gap-3 text-sm text-gray-600">
+                      <Check
+                        className={`h-4 w-4 flex-shrink-0 ${
+                          plan.highlighted ? "text-red-500" : "text-gray-400"
+                        }`}
+                      />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA Button */}
+                <Link
+                  href="/register"
+                  className={`block w-full text-center py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 ${
+                    plan.highlighted
+                      ? "bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-200/50 hover:shadow-xl hover:shadow-red-300/50"
+                      : plan.id === "pro"
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-gray-900 hover:bg-gray-800 text-white"
+                  }`}
+                  onClick={(e) => {
+                    if (plan.priceLabel) e.preventDefault();
+                  }}
+                >
+                  {plan.buttonText}
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Bottom note */}
+        <div
+          className={`text-center mt-10 transition-all duration-700 delay-700 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <p className="text-sm text-gray-400">
+            Todos os planos incluem suporte técnico. Cancele a qualquer momento.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ============ MAIN LANDING PAGE ============
 export default function LandingPage() {
   return (
@@ -1197,6 +1455,7 @@ export default function LandingPage() {
       <ProblemSolutionSection />
       <ClientsShowcaseSection />
       <CatalogShowcaseSection />
+      <PricingSection />
       {/* Novas seções serão adicionadas aqui */}
     </div>
   );

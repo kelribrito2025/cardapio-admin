@@ -6638,3 +6638,9 @@
 
 ## Efeito Typewriter na Hero Section
 - [x] Adicionar efeito de digitação animado no título principal da Hero Section da landing page
+
+## Landing Page - Seção de Planos
+- [x] Adicionar seção de planos na landing page baseada na página /planos existente
+- [x] Manter mesmos dados, preços e features dos planos
+- [x] Estilo visual consistente com o resto da landing page
+- [x] Responsividade completa
