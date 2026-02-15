@@ -421,41 +421,7 @@ export default function LandingPage() {
       <HeroSection />
       <PainPointsStrip />
       
-      {/* Placeholder sections - to be built next */}
-      <section id="funcionalidades" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Funcionalidades</h2>
-          <p className="text-gray-500">Seção em construção...</p>
-        </div>
-      </section>
-      
-      <section id="como-funciona" className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Como funciona</h2>
-          <p className="text-gray-500">Seção em construção...</p>
-        </div>
-      </section>
-      
-      <section id="precos" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Preços</h2>
-          <p className="text-gray-500">Seção em construção...</p>
-        </div>
-      </section>
-      
-      <section id="faq" className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">FAQ</h2>
-          <p className="text-gray-500">Seção em construção...</p>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-8 bg-gray-900 text-center">
-        <p className="text-sm text-gray-400">
-          &copy; {new Date().getFullYear()} Cardápio Admin. Todos os direitos reservados.
-        </p>
-      </footer>
+      {/* Novas seções serão adicionadas aqui */}
     </div>
   );
 }
