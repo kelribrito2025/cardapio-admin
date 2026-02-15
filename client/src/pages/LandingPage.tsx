@@ -377,31 +377,7 @@ function HeroSection() {
                 />
               </div>
 
-              {/* Mobile Mockup - Overlapping */}
-              <div
-                className="absolute -bottom-6 -left-6 sm:-left-10 z-20 w-36 sm:w-44"
-                style={{
-                  animation: "hero-float-delayed 6s ease-in-out infinite",
-                }}
-              >
-                <div className="rounded-[1.5rem] overflow-hidden shadow-2xl shadow-gray-900/15 border-[3px] border-gray-800 bg-gray-800">
-                  {/* Phone notch */}
-                  <div className="bg-gray-800 px-4 py-1.5 flex items-center justify-between">
-                    <span className="text-[8px] text-gray-400 font-medium">9:41</span>
-                    <div className="w-16 h-4 bg-gray-900 rounded-full" />
-                    <div className="flex gap-0.5">
-                      <div className="w-2.5 h-1.5 bg-gray-400 rounded-sm" />
-                      <div className="w-1 h-1.5 bg-gray-400 rounded-sm" />
-                    </div>
-                  </div>
-                  <img
-                    src={PEDIDOS_MOCKUP}
-                    alt="Pedidos no mobile"
-                    className="w-full h-auto"
-                    loading="eager"
-                  />
-                </div>
-              </div>
+
 
               {/* Floating stat cards */}
               <div

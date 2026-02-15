@@ -6644,3 +6644,6 @@
 - [x] Manter mesmos dados, preços e features dos planos
 - [x] Estilo visual consistente com o resto da landing page
 - [x] Responsividade completa
+
+## Remover Mockup Mobile da Hero
+- [x] Remover o mockup mobile (celular) da Hero Section da landing page
