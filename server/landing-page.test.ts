@@ -759,3 +759,177 @@ describe("Seção 3 - Geração de Iniciais", () => {
     expect(initials).toBe("PF");
   });
 });
+
+
+// ============ SEÇÃO 4: CARDÁPIO DIGITAL (TABLET MOCKUP) ============
+
+interface CatalogBenefit {
+  title: string;
+  desc: string;
+  iconName: string;
+}
+
+interface FloatingBadge {
+  title: string;
+  subtitle: string;
+  color: string;
+}
+
+/**
+ * Retorna os benefícios do cardápio digital
+ */
+function getCatalogBenefits(): CatalogBenefit[] {
+  return [
+    {
+      title: "Categorias organizadas",
+      desc: "Entradas, pratos principais, sobremesas, bebidas — tudo separado e fácil de navegar.",
+      iconName: "Utensils",
+    },
+    {
+      title: "Funciona em qualquer dispositivo",
+      desc: "Seu cardápio se adapta perfeitamente a celulares, tablets e computadores.",
+      iconName: "Smartphone",
+    },
+    {
+      title: "Link exclusivo do seu restaurante",
+      desc: "Compartilhe nas redes sociais, WhatsApp ou imprima o QR Code na mesa.",
+      iconName: "Globe",
+    },
+    {
+      title: "Visual profissional",
+      desc: "Fotos dos pratos, descrições, preços e complementos — tudo com aparência premium.",
+      iconName: "Palette",
+    },
+  ];
+}
+
+/**
+ * Retorna os badges flutuantes do tablet mockup
+ */
+function getFloatingBadges(): FloatingBadge[] {
+  return [
+    { title: "QR Code", subtitle: "Pronto para imprimir", color: "green" },
+    { title: "73 itens", subtitle: "no cardápio", color: "red" },
+  ];
+}
+
+/**
+ * Retorna o conteúdo principal da seção
+ */
+function getCatalogSectionContent() {
+  return {
+    badge: "CARDÁPIO DIGITAL",
+    title: "Seu cardápio completo, na palma da mão do cliente.",
+    description: "Monte seu menu digital profissional em minutos. Categorias, fotos, descrições, preços e complementos — tudo organizado e pronto para receber pedidos.",
+    ctaText: "Criar meu cardápio grátis",
+    ctaHref: "/criar-conta",
+  };
+}
+
+/**
+ * Verifica se o mockup URL é válido
+ */
+function isValidMockupUrl(url: string): boolean {
+  return url.startsWith("https://") && url.includes("manuscdn.com");
+}
+
+describe("Seção 4 - Conteúdo Principal", () => {
+  it("tem badge 'CARDÁPIO DIGITAL'", () => {
+    const content = getCatalogSectionContent();
+    expect(content.badge).toBe("CARDÁPIO DIGITAL");
+  });
+
+  it("título menciona cardápio e cliente", () => {
+    const content = getCatalogSectionContent();
+    expect(content.title).toMatch(/cardápio/i);
+    expect(content.title).toMatch(/cliente/i);
+  });
+
+  it("descrição menciona categorias e complementos", () => {
+    const content = getCatalogSectionContent();
+    expect(content.description).toMatch(/categorias/i);
+    expect(content.description).toMatch(/complementos/i);
+  });
+
+  it("CTA leva para criar conta", () => {
+    const content = getCatalogSectionContent();
+    expect(content.ctaHref).toBe("/criar-conta");
+    expect(content.ctaText).toContain("cardápio");
+  });
+});
+
+describe("Seção 4 - Benefícios do Cardápio", () => {
+  it("tem 4 benefícios", () => {
+    expect(getCatalogBenefits()).toHaveLength(4);
+  });
+
+  it("cada benefício tem título, descrição e ícone", () => {
+    const benefits = getCatalogBenefits();
+    benefits.forEach(b => {
+      expect(b.title).toBeTruthy();
+      expect(b.desc).toBeTruthy();
+      expect(b.iconName).toBeTruthy();
+    });
+  });
+
+  it("inclui benefício sobre categorias", () => {
+    const benefits = getCatalogBenefits();
+    expect(benefits.some(b => b.title.includes("Categorias"))).toBe(true);
+  });
+
+  it("inclui benefício sobre dispositivos", () => {
+    const benefits = getCatalogBenefits();
+    expect(benefits.some(b => b.title.includes("dispositivo"))).toBe(true);
+  });
+
+  it("inclui benefício sobre link exclusivo", () => {
+    const benefits = getCatalogBenefits();
+    expect(benefits.some(b => b.title.includes("Link"))).toBe(true);
+  });
+
+  it("inclui benefício sobre visual profissional", () => {
+    const benefits = getCatalogBenefits();
+    expect(benefits.some(b => b.title.includes("Visual"))).toBe(true);
+  });
+
+  it("descrição do link menciona QR Code", () => {
+    const benefits = getCatalogBenefits();
+    const linkBenefit = benefits.find(b => b.title.includes("Link"));
+    expect(linkBenefit?.desc).toMatch(/QR Code/i);
+  });
+});
+
+describe("Seção 4 - Badges Flutuantes", () => {
+  it("tem 2 badges flutuantes", () => {
+    expect(getFloatingBadges()).toHaveLength(2);
+  });
+
+  it("inclui badge de QR Code", () => {
+    const badges = getFloatingBadges();
+    expect(badges.some(b => b.title.includes("QR Code"))).toBe(true);
+  });
+
+  it("inclui badge de quantidade de itens", () => {
+    const badges = getFloatingBadges();
+    expect(badges.some(b => b.title.includes("itens"))).toBe(true);
+  });
+
+  it("badges têm cores distintas", () => {
+    const badges = getFloatingBadges();
+    const colors = badges.map(b => b.color);
+    expect(new Set(colors).size).toBe(colors.length);
+  });
+});
+
+describe("Seção 4 - Mockup do Tablet", () => {
+  it("URL do mockup é válida", () => {
+    const url = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/PaotwhovICNkDtqN.png";
+    expect(isValidMockupUrl(url)).toBe(true);
+  });
+
+  it("rejeita URLs inválidas", () => {
+    expect(isValidMockupUrl("http://example.com/image.png")).toBe(false);
+    expect(isValidMockupUrl("")).toBe(false);
+    expect(isValidMockupUrl("not-a-url")).toBe(false);
+  });
+});

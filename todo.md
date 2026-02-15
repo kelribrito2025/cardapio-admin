@@ -6617,3 +6617,10 @@
 - [x] Cards com foto de capa, logo, nome, cidade/estado e botão "Ver cardápio"
 - [x] Animação de entrada suave ao scroll
 - [x] Responsividade completa (mobile: scroll horizontal touch)
+
+## Landing Page - Seção 4: Cardápio Digital (Tablet Mockup)
+- [x] Capturar screenshot do cardápio/catálogo real do sistema
+- [x] Moldura de tablet à esquerda com screenshot do cardápio
+- [x] Conteúdo à direita: badge, título, descrição, lista de benefícios, CTA
+- [x] Animação de entrada suave ao scroll
+- [x] Responsividade completa (mobile: coluna única, tablet abaixo)

@@ -21,12 +21,18 @@ import {
   PieChart,
   PackageCheck,
   Minus,
-  Plus
+  Plus,
+  Utensils,
+  Smartphone,
+  Globe,
+  QrCode,
+  Palette
 } from "lucide-react";
 
 // CDN URLs dos mockups do dashboard
 const DASHBOARD_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/DWjiyUgKrQTrHTOQ.png";
 const PEDIDOS_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/CCbkhjOUaWvUSZhB.png";
+const CATALOG_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/PaotwhovICNkDtqN.png";
 
 // ============ NAVBAR ============
 function LandingNavbar() {
@@ -972,6 +978,191 @@ function ClientsShowcaseSection() {
   );
 }
 
+// ============ SEÇÃO 4: CARDÁPIO DIGITAL (TABLET MOCKUP) ============
+function CatalogShowcaseSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const benefits = [
+    {
+      icon: <Utensils className="w-5 h-5" />,
+      title: "Categorias organizadas",
+      desc: "Entradas, pratos principais, sobremesas, bebidas — tudo separado e fácil de navegar."
+    },
+    {
+      icon: <Smartphone className="w-5 h-5" />,
+      title: "Funciona em qualquer dispositivo",
+      desc: "Seu cardápio se adapta perfeitamente a celulares, tablets e computadores."
+    },
+    {
+      icon: <Globe className="w-5 h-5" />,
+      title: "Link exclusivo do seu restaurante",
+      desc: "Compartilhe nas redes sociais, WhatsApp ou imprima o QR Code na mesa."
+    },
+    {
+      icon: <Palette className="w-5 h-5" />,
+      title: "Visual profissional",
+      desc: "Fotos dos pratos, descrições, preços e complementos — tudo com aparência premium."
+    },
+  ];
+
+  return (
+    <section
+      ref={sectionRef}
+      className="py-20 lg:py-28 bg-gradient-to-b from-white to-gray-50/80 overflow-hidden"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Coluna esquerda — Tablet Mockup */}
+          <div
+            className={`relative transition-all duration-1000 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
+            }`}
+          >
+            {/* Moldura do Tablet */}
+            <div className="relative mx-auto max-w-[540px]">
+              {/* Sombra externa */}
+              <div className="absolute -inset-4 bg-gradient-to-br from-red-500/10 via-orange-500/5 to-transparent rounded-[2.5rem] blur-2xl" />
+              
+              {/* Corpo do tablet */}
+              <div className="relative bg-gray-900 rounded-[2rem] p-3 shadow-2xl shadow-gray-900/20">
+                {/* Barra superior do tablet */}
+                <div className="flex items-center justify-center mb-2">
+                  <div className="w-2 h-2 rounded-full bg-gray-700" />
+                </div>
+                
+                {/* Tela do tablet */}
+                <div className="relative rounded-xl overflow-hidden bg-white">
+                  <img
+                    src={CATALOG_MOCKUP}
+                    alt="Cardápio digital do CardápioAdmin"
+                    className="w-full h-auto"
+                    loading="lazy"
+                  />
+                  {/* Overlay sutil no topo */}
+                  <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white/40 to-transparent" />
+                </div>
+                
+                {/* Barra inferior do tablet (home button) */}
+                <div className="flex items-center justify-center mt-2">
+                  <div className="w-10 h-1 rounded-full bg-gray-700" />
+                </div>
+              </div>
+
+              {/* Badge flutuante */}
+              <div
+                className={`absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-lg shadow-gray-200/60 p-3 border border-gray-100 transition-all duration-700 delay-500 ${
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                }`}
+                style={{ animation: isVisible ? "hero-float 4s ease-in-out infinite" : "none" }}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
+                    <QrCode className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900">QR Code</p>
+                    <p className="text-[10px] text-gray-500">Pronto para imprimir</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Badge flutuante esquerda */}
+              <div
+                className={`absolute top-1/4 -left-6 bg-white rounded-2xl shadow-lg shadow-gray-200/60 p-3 border border-gray-100 transition-all duration-700 delay-700 ${
+                  isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                }`}
+                style={{ animation: isVisible ? "hero-float-delayed 5s ease-in-out infinite" : "none" }}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
+                    <ShoppingBag className="w-4 h-4 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900">73 itens</p>
+                    <p className="text-[10px] text-gray-500">no cardápio</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Coluna direita — Conteúdo */}
+          <div
+            className={`transition-all duration-1000 delay-200 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
+            }`}
+          >
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-red-50 border border-red-100 rounded-full px-4 py-1.5 mb-6">
+              <Utensils className="w-4 h-4 text-red-500" />
+              <span className="text-sm font-medium text-red-600">CARDÁPIO DIGITAL</span>
+            </div>
+
+            {/* Título */}
+            <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-gray-900 leading-tight mb-5">
+              Seu cardápio completo,{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
+                na palma da mão do cliente.
+              </span>
+            </h2>
+
+            {/* Descrição */}
+            <p className="text-lg text-gray-600 leading-relaxed mb-8">
+              Monte seu menu digital profissional em minutos. Categorias, fotos, descrições, 
+              preços e complementos — tudo organizado e pronto para receber pedidos.
+            </p>
+
+            {/* Lista de benefícios */}
+            <div className="space-y-5 mb-10">
+              {benefits.map((benefit, i) => (
+                <div
+                  key={i}
+                  className={`flex items-start gap-4 transition-all duration-500 ${
+                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                  }`}
+                  style={{ transitionDelay: `${400 + i * 150}ms` }}
+                >
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-red-50 to-orange-50 border border-red-100 flex items-center justify-center text-red-500">
+                    {benefit.icon}
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-0.5">{benefit.title}</h4>
+                    <p className="text-sm text-gray-500 leading-relaxed">{benefit.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <Link
+              href="/criar-conta"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-red-500/25 hover:shadow-red-500/40 hover:scale-[1.02] transition-all duration-300"
+            >
+              Criar meu cardápio grátis
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ============ MAIN LANDING PAGE ============
 export default function LandingPage() {
   return (
@@ -980,6 +1171,7 @@ export default function LandingPage() {
       <HeroSection />
       <ProblemSolutionSection />
       <ClientsShowcaseSection />
+      <CatalogShowcaseSection />
       {/* Novas seções serão adicionadas aqui */}
     </div>
   );
