@@ -6610,3 +6610,10 @@
 - [x] Cards comparativos: Marketplace (❌) vs CardápioAdmin (✅)
 - [x] Micro-animações: entrada suave, contadores animados
 - [x] Responsividade completa (mobile: coluna única)
+
+## Landing Page - Seção 3: Clientes que vendem conosco
+- [x] Gerar imagens de capa e logos para 6 estabelecimentos fictícios
+- [x] Carrossel horizontal com scroll suave e auto-play
+- [x] Cards com foto de capa, logo, nome, cidade/estado e botão "Ver cardápio"
+- [x] Animação de entrada suave ao scroll
+- [x] Responsividade completa (mobile: scroll horizontal touch)

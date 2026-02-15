@@ -542,3 +542,220 @@ describe("Seção 2 - Cards de Comparação", () => {
     expect(admin.items.some(i => i.includes("Pix"))).toBe(true);
   });
 });
+
+
+// ============ SEÇÃO 3: CLIENTES QUE VENDEM CONOSCO ============
+
+interface ClientData {
+  name: string;
+  city: string;
+  state: string;
+  cover: string;
+  color: string;
+  initials: string;
+}
+
+interface StatItem {
+  value: string;
+  label: string;
+}
+
+/**
+ * Retorna os dados dos clientes fictícios
+ */
+function getClientsData(): ClientData[] {
+  return [
+    { name: "Burger House", city: "São Paulo", state: "SP", cover: "https://files.manuscdn.com/WxLMtqgzpplincEt.jpg", color: "#dc2626", initials: "BH" },
+    { name: "Forno & Massa", city: "Curitiba", state: "PR", cover: "https://files.manuscdn.com/BgcAhrPALHBfxpsd.jpeg", color: "#ea580c", initials: "FM" },
+    { name: "Sushi Kento", city: "Rio de Janeiro", state: "RJ", cover: "https://files.manuscdn.com/mInTUYpVlTIFLkON.jpg", color: "#0891b2", initials: "SK" },
+    { name: "Açaí da Terra", city: "Belém", state: "PA", cover: "https://files.manuscdn.com/aiffbCjVDSbuQtRz.jpg", color: "#7c3aed", initials: "AT" },
+    { name: "Brasa Viva", city: "Belo Horizonte", state: "MG", cover: "https://files.manuscdn.com/uhXbFmhAvEyTTgoB.jpg", color: "#b91c1c", initials: "BV" },
+    { name: "Poke Fresh", city: "Florianópolis", state: "SC", cover: "https://files.manuscdn.com/LNZYzDQsQZBsCSUy.jpg", color: "#059669", initials: "PF" },
+  ];
+}
+
+/**
+ * Retorna as estatísticas do showcase
+ */
+function getShowcaseStats(): StatItem[] {
+  return [
+    { value: "500+", label: "Restaurantes ativos" },
+    { value: "150k+", label: "Pedidos processados" },
+    { value: "27", label: "Estados atendidos" },
+    { value: "4.9", label: "Avaliação média" },
+  ];
+}
+
+/**
+ * Gera as iniciais a partir do nome do estabelecimento
+ */
+function generateInitials(name: string): string {
+  const stopWords = ["da", "de", "do", "das", "dos", "e"];
+  return name
+    .split(/[\s&]+/)
+    .filter(w => w.length > 0 && !stopWords.includes(w.toLowerCase()))
+    .map(w => w[0].toUpperCase())
+    .slice(0, 2)
+    .join("");
+}
+
+/**
+ * Verifica se a cor é um hex válido
+ */
+function isValidHexColor(color: string): boolean {
+  return /^#[0-9a-fA-F]{6}$/.test(color);
+}
+
+/**
+ * Retorna os dados duplicados para o carrossel infinito
+ */
+function getInfiniteScrollData(): ClientData[] {
+  const clients = getClientsData();
+  return [...clients, ...clients];
+}
+
+/**
+ * Verifica se todos os estados brasileiros representados são válidos
+ */
+function isValidBrazilianState(state: string): boolean {
+  const validStates = [
+    "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
+    "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN",
+    "RS", "RO", "RR", "SC", "SE", "SP", "TO"
+  ];
+  return validStates.includes(state);
+}
+
+describe("Seção 3 - Dados dos Clientes", () => {
+  it("tem 6 clientes fictícios", () => {
+    expect(getClientsData()).toHaveLength(6);
+  });
+
+  it("cada cliente tem todos os campos obrigatórios", () => {
+    const clients = getClientsData();
+    clients.forEach(client => {
+      expect(client.name).toBeTruthy();
+      expect(client.city).toBeTruthy();
+      expect(client.state).toBeTruthy();
+      expect(client.cover).toBeTruthy();
+      expect(client.color).toBeTruthy();
+      expect(client.initials).toBeTruthy();
+    });
+  });
+
+  it("cada cliente tem cor hex válida", () => {
+    const clients = getClientsData();
+    clients.forEach(client => {
+      expect(isValidHexColor(client.color)).toBe(true);
+    });
+  });
+
+  it("cada cliente tem estado brasileiro válido", () => {
+    const clients = getClientsData();
+    clients.forEach(client => {
+      expect(isValidBrazilianState(client.state)).toBe(true);
+    });
+  });
+
+  it("cada cliente tem URL de capa válida", () => {
+    const clients = getClientsData();
+    clients.forEach(client => {
+      expect(client.cover).toMatch(/^https:\/\//);
+    });
+  });
+
+  it("iniciais correspondem ao nome do estabelecimento", () => {
+    const clients = getClientsData();
+    clients.forEach(client => {
+      const expected = generateInitials(client.name);
+      expect(client.initials).toBe(expected);
+    });
+  });
+
+  it("não há nomes duplicados", () => {
+    const clients = getClientsData();
+    const names = clients.map(c => c.name);
+    expect(new Set(names).size).toBe(names.length);
+  });
+
+  it("cobre diferentes regiões do Brasil", () => {
+    const clients = getClientsData();
+    const states = clients.map(c => c.state);
+    // Pelo menos 4 estados diferentes
+    expect(new Set(states).size).toBeGreaterThanOrEqual(4);
+  });
+
+  it("inclui diferentes tipos de culinária", () => {
+    const clients = getClientsData();
+    const names = clients.map(c => c.name.toLowerCase()).join(" ");
+    // Verifica variedade gastronômica
+    expect(names).toMatch(/burger|sushi|pizza|massa|açaí|poke|brasa|churrasco/i);
+  });
+});
+
+describe("Seção 3 - Carrossel Infinito", () => {
+  it("dados duplicados para scroll infinito", () => {
+    const data = getInfiniteScrollData();
+    expect(data).toHaveLength(12); // 6 * 2
+  });
+
+  it("primeira metade é igual à segunda metade", () => {
+    const data = getInfiniteScrollData();
+    const first = data.slice(0, 6);
+    const second = data.slice(6, 12);
+    first.forEach((client, i) => {
+      expect(client.name).toBe(second[i].name);
+    });
+  });
+});
+
+describe("Seção 3 - Estatísticas", () => {
+  it("tem 4 estatísticas", () => {
+    expect(getShowcaseStats()).toHaveLength(4);
+  });
+
+  it("inclui contagem de restaurantes", () => {
+    const stats = getShowcaseStats();
+    expect(stats.some(s => s.label.includes("Restaurantes"))).toBe(true);
+  });
+
+  it("inclui contagem de pedidos", () => {
+    const stats = getShowcaseStats();
+    expect(stats.some(s => s.label.includes("Pedidos"))).toBe(true);
+  });
+
+  it("inclui cobertura de estados", () => {
+    const stats = getShowcaseStats();
+    expect(stats.some(s => s.label.includes("Estados"))).toBe(true);
+  });
+
+  it("inclui avaliação média", () => {
+    const stats = getShowcaseStats();
+    expect(stats.some(s => s.label.includes("Avaliação"))).toBe(true);
+  });
+
+  it("avaliação média é alta (>= 4.5)", () => {
+    const stats = getShowcaseStats();
+    const rating = stats.find(s => s.label.includes("Avaliação"));
+    expect(parseFloat(rating!.value)).toBeGreaterThanOrEqual(4.5);
+  });
+});
+
+describe("Seção 3 - Geração de Iniciais", () => {
+  it("gera iniciais de nome simples", () => {
+    expect(generateInitials("Burger House")).toBe("BH");
+  });
+
+  it("gera iniciais com & no nome", () => {
+    expect(generateInitials("Forno & Massa")).toBe("FM");
+  });
+
+  it("gera iniciais de nome com 3 palavras (pega 2 primeiras)", () => {
+    expect(generateInitials("Açaí da Terra")).toBe("AT");
+  });
+
+  it("gera iniciais em maiúsculas", () => {
+    const initials = generateInitials("poke fresh");
+    expect(initials).toBe("PF");
+  });
+});

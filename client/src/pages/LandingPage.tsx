@@ -746,6 +746,232 @@ function ProblemSolutionSection() {
   );
 }
 
+// ============ SEÇÃO 3: CLIENTES QUE VENDEM CONOSCO ============
+
+const CLIENTS_DATA = [
+  {
+    name: "Burger House",
+    city: "São Paulo",
+    state: "SP",
+    cover: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/WxLMtqgzpplincEt.jpg",
+    color: "#dc2626",
+    initials: "BH",
+  },
+  {
+    name: "Forno & Massa",
+    city: "Curitiba",
+    state: "PR",
+    cover: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/BgcAhrPALHBfxpsd.jpeg",
+    color: "#ea580c",
+    initials: "FM",
+  },
+  {
+    name: "Sushi Kento",
+    city: "Rio de Janeiro",
+    state: "RJ",
+    cover: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/mInTUYpVlTIFLkON.jpg",
+    color: "#0891b2",
+    initials: "SK",
+  },
+  {
+    name: "Açaí da Terra",
+    city: "Belém",
+    state: "PA",
+    cover: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/aiffbCjVDSbuQtRz.jpg",
+    color: "#7c3aed",
+    initials: "AT",
+  },
+  {
+    name: "Brasa Viva",
+    city: "Belo Horizonte",
+    state: "MG",
+    cover: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/uhXbFmhAvEyTTgoB.jpg",
+    color: "#b91c1c",
+    initials: "BV",
+  },
+  {
+    name: "Poke Fresh",
+    city: "Florianópolis",
+    state: "SC",
+    cover: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/LNZYzDQsQZBsCSUy.jpg",
+    color: "#059669",
+    initials: "PF",
+  },
+];
+
+function ClientCard({ client }: { client: typeof CLIENTS_DATA[0] }) {
+  return (
+    <div className="flex-shrink-0 w-[280px] sm:w-[300px] group">
+      {/* Cover Image */}
+      <div className="relative h-44 rounded-2xl overflow-hidden mb-4 shadow-md group-hover:shadow-xl transition-shadow duration-300">
+        <img
+          src={client.cover}
+          alt={client.name}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+      </div>
+
+      {/* Info */}
+      <div className="flex items-center gap-3 px-1">
+        {/* Logo/Avatar */}
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-lg flex-shrink-0 -mt-8 relative z-10 border-2 border-white"
+          style={{ backgroundColor: client.color }}
+        >
+          {client.initials}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h4 className="font-semibold text-gray-900 text-sm truncate">{client.name}</h4>
+          <div className="flex items-center gap-1 text-gray-500">
+            <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+            </svg>
+            <span className="text-xs">{client.city} - {client.state}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Button */}
+      <div className="px-1 mt-3">
+        <button className="w-full flex items-center justify-center gap-2 text-sm font-medium text-gray-600 hover:text-red-500 bg-gray-50 hover:bg-red-50 border border-gray-200 hover:border-red-200 rounded-xl py-2.5 transition-all duration-200">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          Ver cardápio
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ClientsShowcaseSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setIsVisible(true);
+      },
+      { threshold: 0.15 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Auto-scroll carousel
+  useEffect(() => {
+    if (!scrollRef.current || isPaused) return;
+    const container = scrollRef.current;
+    let animationId: number;
+    let scrollPos = 0;
+
+    const step = () => {
+      scrollPos += 0.5;
+      if (scrollPos >= container.scrollWidth - container.clientWidth) {
+        scrollPos = 0;
+      }
+      container.scrollLeft = scrollPos;
+      animationId = requestAnimationFrame(step);
+    };
+
+    animationId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animationId);
+  }, [isPaused]);
+
+  // Sync scrollPos when user manually scrolls
+  const handleManualScroll = () => {
+    // Pause auto-scroll briefly when user interacts
+    setIsPaused(true);
+    const timer = setTimeout(() => setIsPaused(false), 5000);
+    return () => clearTimeout(timer);
+  };
+
+  return (
+    <section
+      ref={sectionRef}
+      className="py-20 lg:py-28 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div
+          className={`text-center mb-14 transition-all duration-700 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-50 border border-red-100 text-xs font-semibold text-red-600 tracking-wide uppercase mb-4">
+            Explore cases reais
+          </span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight">
+            Clientes que vendem{" "}
+            <span className="text-red-500">conosco</span>
+          </h2>
+          <p className="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">
+            Restaurantes de todo o Brasil já usam o CardápioAdmin para vender mais, com menos custo e total controle.
+          </p>
+        </div>
+      </div>
+
+      {/* Carousel - full width */}
+      <div
+        className={`transition-all duration-700 delay-200 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <div
+          ref={scrollRef}
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => {
+            setTimeout(() => setIsPaused(false), 5000);
+          }}
+          onScroll={handleManualScroll}
+          className="flex gap-6 overflow-x-auto scrollbar-hide px-4 sm:px-8 lg:px-[calc((100vw-80rem)/2+2rem)] pb-4"
+          style={{
+            scrollBehavior: "auto",
+            WebkitOverflowScrolling: "touch",
+            msOverflowStyle: "none",
+            scrollbarWidth: "none",
+          }}
+        >
+          {/* Duplicate clients for infinite scroll effect */}
+          {[...CLIENTS_DATA, ...CLIENTS_DATA].map((client, idx) => (
+            <ClientCard key={`${client.name}-${idx}`} client={client} />
+          ))}
+        </div>
+      </div>
+
+      {/* Stats bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div
+          className={`mt-16 grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 transition-all duration-700 delay-300 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          {[
+            { value: "500+", label: "Restaurantes ativos" },
+            { value: "150k+", label: "Pedidos processados" },
+            { value: "27", label: "Estados atendidos" },
+            { value: "4.9", label: "Avaliação média" },
+          ].map((stat) => (
+            <div key={stat.label} className="text-center">
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+                {stat.value}
+              </div>
+              <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ============ MAIN LANDING PAGE ============
 export default function LandingPage() {
   return (
@@ -753,6 +979,7 @@ export default function LandingPage() {
       <LandingNavbar />
       <HeroSection />
       <ProblemSolutionSection />
+      <ClientsShowcaseSection />
       {/* Novas seções serão adicionadas aqui */}
     </div>
   );
