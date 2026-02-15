@@ -1283,14 +1283,14 @@ export default function Pedidos() {
                         className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-200"
                       >
                         {/* Header colorido com ícone - estilo original */}
-                        <div className={cn("px-4 py-3 flex items-center justify-between rounded-t-xl", config.bgColor)} style={{height: '60px'}}>
+                        <div className={cn("px-3 py-2 flex items-center justify-between rounded-t-xl", config.bgColor)} style={{height: '48px'}}>
                           <div className="flex items-center gap-3">
-                            <div className={cn("p-2 rounded-full bg-card/90 shadow-sm", config.color)}>
-                              <config.icon className="h-4 w-4" />
+                            <div className={cn("p-1.5 rounded-full bg-card/90 shadow-sm", config.color)}>
+                              <config.icon className="h-3.5 w-3.5" />
                             </div>
                             <div className="flex flex-col">
                               <div className="flex items-center gap-2">
-                                <span className={cn("font-bold text-base", config.color)}>
+                                <span className={cn("font-bold text-sm", config.color)}>
                                   {order.orderNumber?.startsWith('#') ? order.orderNumber : `#${order.orderNumber}`}
                                 </span>
                                 {/* Badge iFood */}
@@ -1305,8 +1305,8 @@ export default function Pedidos() {
                               </span>
                             </div>
                           </div>
-                          <div className={cn("flex items-center gap-1.5 text-sm font-medium", config.color)}>
-                            <Clock className="h-4 w-4" />
+                          <div className={cn("flex items-center gap-1 text-xs font-medium", config.color)}>
+                            <Clock className="h-3.5 w-3.5" />
                             {(() => {
                               const diffMs = Date.now() - new Date(order.createdAt).getTime();
                               const diffMins = Math.floor(diffMs / 60000);
@@ -1319,7 +1319,7 @@ export default function Pedidos() {
                         </div>
 
                         {/* Content */}
-                        <div className="p-4" style={{height: '101px'}}>
+                        <div className="px-3 py-2">
                           {/* Linha compacta com todas as informações */}
                           <div className="flex items-center justify-between gap-2 flex-wrap">
                             <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -1351,13 +1351,13 @@ export default function Pedidos() {
                           </div>
 
                           {/* Actions - Botões completos */}
-                          <div className="flex gap-2 mt-3">
+                          <div className="flex gap-1.5 mt-2">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button
                                   variant="outline"
                                   size="icon"
-                                  className="h-9 w-9 rounded-lg border-border/50 hover:bg-accent text-muted-foreground hover:text-foreground"
+                                  className="h-8 w-8 rounded-lg border-border/50 hover:bg-accent text-muted-foreground hover:text-foreground"
                                 >
                                   <Printer className="h-4 w-4" />
                                 </Button>
@@ -1416,7 +1416,7 @@ export default function Pedidos() {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="flex-1 h-9 rounded-lg border-border/50 hover:bg-accent text-sm"
+                              className="flex-1 h-8 rounded-lg border-border/50 hover:bg-accent text-xs"
                               onClick={() => setSelectedOrder(order.id)}
                             >
                               Ver detalhes
@@ -1424,7 +1424,7 @@ export default function Pedidos() {
                             {nextAction && (
                               <Button
                                 size="sm"
-                                className="flex-1 h-9 rounded-lg shadow-sm text-sm hover:opacity-90"
+                                className="flex-1 h-8 rounded-lg shadow-sm text-xs hover:opacity-90"
                                 style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
                                 onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
                                 disabled={loadingOrderId !== null}
@@ -1440,7 +1440,7 @@ export default function Pedidos() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-9 w-9 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20"
+                                className="h-8 w-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20"
                                 onClick={() => {
                                   setOrderToCancel(order.id);
                                   setCancelDialogOpen(true);
