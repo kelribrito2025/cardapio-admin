@@ -6549,3 +6549,6 @@
 
 ## Fix: Menu Pedidos navegar + expandir dropdown
 - [x] Clicar em Pedidos deve navegar para /pedidos E expandir o dropdown com Agendados simultaneamente
+
+## Ajuste largura botões Agendar/Próximo no resumo do pedido
+- [x] Botão Agendar deve ocupar 15% da largura (só ícone) e Próximo 85% (flex-1) no modal de resumo do pedido público

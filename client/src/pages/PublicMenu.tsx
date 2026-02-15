@@ -4073,11 +4073,11 @@ export default function PublicMenu() {
                         setIsScheduling(true);
                         setCheckoutStep(3); // Vai para o step de agendamento
                       }}
-                      className="flex items-center justify-center gap-1.5 py-3.5 px-4 bg-white border-2 border-red-500 text-red-500 hover:bg-red-50 font-semibold rounded-xl transition-colors"
-                      style={{ width: '38%' }}
+                      className="flex items-center justify-center gap-1 py-3.5 px-2 bg-white border-2 border-red-500 text-red-500 hover:bg-red-50 font-semibold rounded-xl transition-colors"
+                      style={{ width: '15%', minWidth: '48px' }}
+                      title="Agendar pedido"
                     >
-                      <CalendarClock className="h-4 w-4" />
-                      Agendar
+                      <CalendarClock className="h-5 w-5 flex-shrink-0" />
                     </button>
                   )}
                   <button
