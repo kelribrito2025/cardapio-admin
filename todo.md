@@ -6647,3 +6647,19 @@
 
 ## Remover Mockup Mobile da Hero
 - [x] Remover o mockup mobile (celular) da Hero Section da landing page
+
+## Landing Page - Seção FAQ
+- [x] Accordion com perguntas frequentes (período grátis, cancelamento, taxas, suporte, etc.)
+- [x] Animação de abertura/fechamento suave
+- [x] Responsividade completa
+
+## Landing Page - Seção CTA Final
+- [x] Headline impactante de encerramento
+- [x] Botão de conversão destacado
+- [x] Background com gradiente ou textura diferenciada
+
+## Landing Page - Footer
+- [x] Links úteis organizados em colunas (Produto, Empresa, Suporte)
+- [x] Redes sociais (Instagram, WhatsApp, etc.)
+- [x] Informações legais e copyright
+- [x] Responsividade completa

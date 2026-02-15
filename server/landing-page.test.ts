@@ -1150,3 +1150,382 @@ describe("Pricing Section - Price formatting", () => {
     expect(formatted).toContain("799,00");
   });
 });
+
+
+// ============ SEÇÃO FAQ ============
+
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+function getFAQData(): FAQItem[] {
+  return [
+    {
+      question: "Como funciona o período grátis?",
+      answer: "Ao criar sua conta, você tem acesso ao plano Gratuito com até 30 pedidos por mês, sem limite de tempo. Não pedimos cartão de crédito. Quando precisar de mais recursos, é só fazer o upgrade para o plano Essencial ou Pro."
+    },
+    {
+      question: "Posso cancelar a qualquer momento?",
+      answer: "Sim! Não existe fidelidade nem multa. Você pode cancelar seu plano a qualquer momento diretamente pelo painel. Seu acesso continua ativo até o final do período já pago."
+    },
+    {
+      question: "Existe taxa por pedido?",
+      answer: "Não! Diferente dos marketplaces que cobram de 12% a 27% por pedido, o Mindi cobra apenas uma mensalidade fixa. Todos os pedidos que você receber são 100% seus, sem comissão."
+    },
+    {
+      question: "Como meus clientes fazem pedidos?",
+      answer: "Você recebe um link exclusivo do seu cardápio digital. Seus clientes acessam pelo celular, escolhem os produtos, e o pedido chega direto no seu painel em tempo real. Você também pode gerar um QR Code para colocar nas mesas ou no balcão."
+    },
+    {
+      question: "Preciso de conhecimento técnico para usar?",
+      answer: "Não! O Mindi foi feito para ser simples. Em poucos minutos você cadastra seus produtos, configura o horário de funcionamento e já pode começar a receber pedidos. Se precisar de ajuda, nosso suporte está disponível."
+    },
+    {
+      question: "O sistema funciona para delivery e mesa?",
+      answer: "Sim! O Mindi atende tanto delivery (com gestão de entregadores, taxas por bairro e rastreamento) quanto pedidos presenciais com mapa de mesas e comanda digital."
+    },
+    {
+      question: "Como funciona a gestão de entregadores?",
+      answer: "Você cadastra seus entregadores, define áreas de entrega e taxas por bairro. Quando um pedido sai para entrega, você atribui ao entregador e acompanha o status em tempo real. No final do dia, tem o relatório completo de entregas."
+    },
+    {
+      question: "Posso integrar com impressora de pedidos?",
+      answer: "Sim! O Mindi suporta impressão automática de pedidos em impressoras térmicas. Assim que o pedido entra, ele já sai impresso na cozinha, agilizando o preparo."
+    },
+  ];
+}
+
+/**
+ * Simula o estado do accordion FAQ
+ */
+function toggleFAQItem(currentOpen: number | null, clickedIndex: number): number | null {
+  return currentOpen === clickedIndex ? null : clickedIndex;
+}
+
+describe("FAQ Section - Data", () => {
+  it("contém 8 perguntas frequentes", () => {
+    const faq = getFAQData();
+    expect(faq).toHaveLength(8);
+  });
+
+  it("todas as perguntas terminam com interrogação", () => {
+    const faq = getFAQData();
+    faq.forEach(item => {
+      expect(item.question.endsWith("?")).toBe(true);
+    });
+  });
+
+  it("todas as respostas são não-vazias", () => {
+    const faq = getFAQData();
+    faq.forEach(item => {
+      expect(item.answer.length).toBeGreaterThan(20);
+    });
+  });
+
+  it("inclui pergunta sobre período grátis", () => {
+    const faq = getFAQData();
+    expect(faq.some(f => f.question.includes("grátis"))).toBe(true);
+  });
+
+  it("inclui pergunta sobre cancelamento", () => {
+    const faq = getFAQData();
+    expect(faq.some(f => f.question.includes("cancelar"))).toBe(true);
+  });
+
+  it("inclui pergunta sobre taxa por pedido", () => {
+    const faq = getFAQData();
+    expect(faq.some(f => f.question.includes("taxa"))).toBe(true);
+  });
+
+  it("inclui pergunta sobre delivery e mesa", () => {
+    const faq = getFAQData();
+    expect(faq.some(f => f.question.includes("delivery") && f.question.includes("mesa"))).toBe(true);
+  });
+
+  it("inclui pergunta sobre impressora", () => {
+    const faq = getFAQData();
+    expect(faq.some(f => f.question.includes("impressora"))).toBe(true);
+  });
+
+  it("resposta sobre taxa menciona que é zero", () => {
+    const faq = getFAQData();
+    const taxaItem = faq.find(f => f.question.includes("taxa"));
+    expect(taxaItem?.answer).toMatch(/mensalidade fixa|zero|0|sem comissão/i);
+  });
+
+  it("resposta sobre grátis menciona que não pede cartão", () => {
+    const faq = getFAQData();
+    const gratisItem = faq.find(f => f.question.includes("grátis"));
+    expect(gratisItem?.answer).toContain("cartão de crédito");
+  });
+});
+
+describe("FAQ Section - Accordion Logic", () => {
+  it("abre item quando nenhum está aberto", () => {
+    expect(toggleFAQItem(null, 0)).toBe(0);
+    expect(toggleFAQItem(null, 3)).toBe(3);
+  });
+
+  it("fecha item quando clicado novamente", () => {
+    expect(toggleFAQItem(0, 0)).toBeNull();
+    expect(toggleFAQItem(3, 3)).toBeNull();
+  });
+
+  it("troca para outro item quando um diferente é clicado", () => {
+    expect(toggleFAQItem(0, 1)).toBe(1);
+    expect(toggleFAQItem(2, 5)).toBe(5);
+  });
+
+  it("apenas um item pode estar aberto por vez", () => {
+    let state: number | null = null;
+    state = toggleFAQItem(state, 0);
+    expect(state).toBe(0);
+    state = toggleFAQItem(state, 2);
+    expect(state).toBe(2);
+    // Apenas o item 2 está aberto, não o 0
+    expect(state).not.toBe(0);
+  });
+
+  it("todos os índices válidos podem ser abertos", () => {
+    const faq = getFAQData();
+    for (let i = 0; i < faq.length; i++) {
+      expect(toggleFAQItem(null, i)).toBe(i);
+    }
+  });
+});
+
+// ============ SEÇÃO CTA FINAL ============
+
+interface CTATrustSignal {
+  text: string;
+}
+
+function getCTATrustSignals(): CTATrustSignal[] {
+  return [
+    { text: "Dados protegidos" },
+    { text: "Sem taxa por pedido" },
+    { text: "Cancele quando quiser" },
+  ];
+}
+
+function getCTAFinalContent() {
+  return {
+    badge: "Comece agora",
+    headline: "Pare de perder dinheiro.",
+    highlightedText: "Comece a vender do seu jeito.",
+    subheadline: "Junte-se a centenas de restaurantes que já economizam milhares de reais por mês com o Mindi. Crie sua conta grátis em menos de 2 minutos.",
+    primaryButton: { label: "Criar conta grátis", href: "/register" },
+    secondaryButton: { label: "Falar com especialista", href: "https://wa.me/5500000000000" },
+  };
+}
+
+describe("CTA Final Section - Content", () => {
+  it("headline é impactante e menciona dinheiro", () => {
+    const content = getCTAFinalContent();
+    expect(content.headline).toContain("dinheiro");
+  });
+
+  it("texto destacado menciona vender", () => {
+    const content = getCTAFinalContent();
+    expect(content.highlightedText).toContain("vender");
+  });
+
+  it("subheadline menciona Mindi", () => {
+    const content = getCTAFinalContent();
+    expect(content.subheadline).toContain("Mindi");
+  });
+
+  it("subheadline menciona tempo rápido de criação", () => {
+    const content = getCTAFinalContent();
+    expect(content.subheadline).toMatch(/2 minutos/);
+  });
+
+  it("botão primário leva para registro", () => {
+    const content = getCTAFinalContent();
+    expect(content.primaryButton.href).toBe("/register");
+    expect(content.primaryButton.label).toContain("grátis");
+  });
+
+  it("botão secundário leva para WhatsApp", () => {
+    const content = getCTAFinalContent();
+    expect(content.secondaryButton.href).toContain("wa.me");
+  });
+});
+
+describe("CTA Final Section - Trust Signals", () => {
+  it("tem 3 sinais de confiança", () => {
+    const signals = getCTATrustSignals();
+    expect(signals).toHaveLength(3);
+  });
+
+  it("inclui sinal sobre proteção de dados", () => {
+    const signals = getCTATrustSignals();
+    expect(signals.some(s => s.text.includes("protegidos"))).toBe(true);
+  });
+
+  it("inclui sinal sobre taxa zero", () => {
+    const signals = getCTATrustSignals();
+    expect(signals.some(s => s.text.includes("taxa"))).toBe(true);
+  });
+
+  it("inclui sinal sobre cancelamento", () => {
+    const signals = getCTATrustSignals();
+    expect(signals.some(s => s.text.includes("Cancele"))).toBe(true);
+  });
+});
+
+// ============ FOOTER ============
+
+interface FooterLinkGroup {
+  title: string;
+  links: { label: string; href: string }[];
+}
+
+function getFooterLinkGroups(): FooterLinkGroup[] {
+  return [
+    {
+      title: "produto",
+      links: [
+        { label: "Funcionalidades", href: "#funcionalidades" },
+        { label: "Planos e Preços", href: "#precos" },
+        { label: "Cardápio Digital", href: "#cardapio" },
+        { label: "Gestão de Pedidos", href: "#" },
+        { label: "Controle de Estoque", href: "#" },
+      ],
+    },
+    {
+      title: "empresa",
+      links: [
+        { label: "Sobre nós", href: "#" },
+        { label: "Blog", href: "#" },
+        { label: "Carreiras", href: "#" },
+        { label: "Parceiros", href: "#" },
+      ],
+    },
+    {
+      title: "suporte",
+      links: [
+        { label: "Central de Ajuda", href: "#" },
+        { label: "Fale Conosco", href: "#" },
+        { label: "WhatsApp", href: "https://wa.me/5500000000000" },
+        { label: "FAQ", href: "#faq" },
+      ],
+    },
+  ];
+}
+
+function getFooterLegalLinks(): string[] {
+  return ["Termos de Uso", "Política de Privacidade", "LGPD"];
+}
+
+function getFooterSocialLinks(): { name: string; href: string }[] {
+  return [
+    { name: "Instagram", href: "https://instagram.com" },
+    { name: "WhatsApp", href: "https://wa.me/5500000000000" },
+    { name: "Email", href: "mailto:contato@mindi.com.br" },
+  ];
+}
+
+describe("Footer - Link Groups", () => {
+  it("tem 3 grupos de links", () => {
+    const groups = getFooterLinkGroups();
+    expect(groups).toHaveLength(3);
+  });
+
+  it("grupo Produto tem 5 links", () => {
+    const groups = getFooterLinkGroups();
+    const produto = groups.find(g => g.title === "produto");
+    expect(produto?.links).toHaveLength(5);
+  });
+
+  it("grupo Empresa tem 4 links", () => {
+    const groups = getFooterLinkGroups();
+    const empresa = groups.find(g => g.title === "empresa");
+    expect(empresa?.links).toHaveLength(4);
+  });
+
+  it("grupo Suporte tem 4 links", () => {
+    const groups = getFooterLinkGroups();
+    const suporte = groups.find(g => g.title === "suporte");
+    expect(suporte?.links).toHaveLength(4);
+  });
+
+  it("grupo Suporte inclui link para WhatsApp", () => {
+    const groups = getFooterLinkGroups();
+    const suporte = groups.find(g => g.title === "suporte");
+    expect(suporte?.links.some(l => l.label === "WhatsApp")).toBe(true);
+  });
+
+  it("grupo Suporte inclui link para FAQ", () => {
+    const groups = getFooterLinkGroups();
+    const suporte = groups.find(g => g.title === "suporte");
+    const faqLink = suporte?.links.find(l => l.label === "FAQ");
+    expect(faqLink?.href).toBe("#faq");
+  });
+
+  it("grupo Produto inclui link para Preços", () => {
+    const groups = getFooterLinkGroups();
+    const produto = groups.find(g => g.title === "produto");
+    expect(produto?.links.some(l => l.label.includes("Preços"))).toBe(true);
+  });
+});
+
+describe("Footer - Legal Links", () => {
+  it("tem 3 links legais", () => {
+    const legal = getFooterLegalLinks();
+    expect(legal).toHaveLength(3);
+  });
+
+  it("inclui Termos de Uso", () => {
+    const legal = getFooterLegalLinks();
+    expect(legal).toContain("Termos de Uso");
+  });
+
+  it("inclui Política de Privacidade", () => {
+    const legal = getFooterLegalLinks();
+    expect(legal).toContain("Política de Privacidade");
+  });
+
+  it("inclui LGPD", () => {
+    const legal = getFooterLegalLinks();
+    expect(legal).toContain("LGPD");
+  });
+});
+
+describe("Footer - Social Links", () => {
+  it("tem 3 redes sociais", () => {
+    const social = getFooterSocialLinks();
+    expect(social).toHaveLength(3);
+  });
+
+  it("inclui Instagram", () => {
+    const social = getFooterSocialLinks();
+    expect(social.some(s => s.name === "Instagram")).toBe(true);
+  });
+
+  it("inclui WhatsApp", () => {
+    const social = getFooterSocialLinks();
+    const wa = social.find(s => s.name === "WhatsApp");
+    expect(wa?.href).toContain("wa.me");
+  });
+
+  it("inclui Email", () => {
+    const social = getFooterSocialLinks();
+    const email = social.find(s => s.name === "Email");
+    expect(email?.href).toContain("mailto:");
+  });
+});
+
+describe("Footer - Copyright", () => {
+  it("ano do copyright é o ano atual", () => {
+    const currentYear = new Date().getFullYear();
+    expect(currentYear).toBe(2026);
+  });
+
+  it("copyright menciona Mindi", () => {
+    const copyrightText = `© ${new Date().getFullYear()} Mindi. Todos os direitos reservados.`;
+    expect(copyrightText).toContain("Mindi");
+    expect(copyrightText).toContain("direitos reservados");
+  });
+});

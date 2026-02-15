@@ -28,7 +28,16 @@ import {
   QrCode,
   Palette,
   Check,
-  Crown
+  Crown,
+  ChevronUp,
+  MessageCircle,
+  Mail,
+  MapPin,
+  Instagram,
+  Phone,
+  Shield,
+  Rocket,
+  HelpCircle
 } from "lucide-react";
 
 // CDN URLs dos mockups do dashboard
@@ -1422,6 +1431,338 @@ function PricingSection() {
   );
 }
 
+// ============ FAQ SECTION ============
+const FAQ_DATA = [
+  {
+    question: "Como funciona o período grátis?",
+    answer: "Ao criar sua conta, você tem acesso ao plano Gratuito com até 30 pedidos por mês, sem limite de tempo. Não pedimos cartão de crédito. Quando precisar de mais recursos, é só fazer o upgrade para o plano Essencial ou Pro."
+  },
+  {
+    question: "Posso cancelar a qualquer momento?",
+    answer: "Sim! Não existe fidelidade nem multa. Você pode cancelar seu plano a qualquer momento diretamente pelo painel. Seu acesso continua ativo até o final do período já pago."
+  },
+  {
+    question: "Existe taxa por pedido?",
+    answer: "Não! Diferente dos marketplaces que cobram de 12% a 27% por pedido, o Mindi cobra apenas uma mensalidade fixa. Todos os pedidos que você receber são 100% seus, sem comissão."
+  },
+  {
+    question: "Como meus clientes fazem pedidos?",
+    answer: "Você recebe um link exclusivo do seu cardápio digital. Seus clientes acessam pelo celular, escolhem os produtos, e o pedido chega direto no seu painel em tempo real. Você também pode gerar um QR Code para colocar nas mesas ou no balcão."
+  },
+  {
+    question: "Preciso de conhecimento técnico para usar?",
+    answer: "Não! O Mindi foi feito para ser simples. Em poucos minutos você cadastra seus produtos, configura o horário de funcionamento e já pode começar a receber pedidos. Se precisar de ajuda, nosso suporte está disponível."
+  },
+  {
+    question: "O sistema funciona para delivery e mesa?",
+    answer: "Sim! O Mindi atende tanto delivery (com gestão de entregadores, taxas por bairro e rastreamento) quanto pedidos presenciais com mapa de mesas e comanda digital."
+  },
+  {
+    question: "Como funciona a gestão de entregadores?",
+    answer: "Você cadastra seus entregadores, define áreas de entrega e taxas por bairro. Quando um pedido sai para entrega, você atribui ao entregador e acompanha o status em tempo real. No final do dia, tem o relatório completo de entregas."
+  },
+  {
+    question: "Posso integrar com impressora de pedidos?",
+    answer: "Sim! O Mindi suporta impressão automática de pedidos em impressoras térmicas. Assim que o pedido entra, ele já sai impresso na cozinha, agilizando o preparo."
+  },
+];
+
+function FAQSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
+      { threshold: 0.05 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section ref={sectionRef} id="faq" className="py-20 sm:py-28 bg-gray-50">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        {/* Header */}
+        <div className={`text-center mb-14 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+          <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-1.5 mb-5 shadow-sm">
+            <HelpCircle className="w-4 h-4 text-red-500" />
+            <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Perguntas Frequentes</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">
+            Tire suas <span className="text-red-500">dúvidas</span>
+          </h2>
+          <p className="text-gray-500 text-base sm:text-lg max-w-xl mx-auto">
+            Tudo o que você precisa saber antes de começar a usar o Mindi.
+          </p>
+        </div>
+
+        {/* Accordion */}
+        <div className="space-y-3">
+          {FAQ_DATA.map((faq, index) => {
+            const isOpen = openIndex === index;
+            return (
+              <div
+                key={index}
+                className={`transition-all duration-500 ${
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                } bg-white rounded-xl border ${
+                  isOpen ? "border-red-200 shadow-md shadow-red-500/5" : "border-gray-200 shadow-sm"
+                }`}
+                style={{ transitionDelay: isVisible ? `${200 + index * 80}ms` : "0ms" }}
+              >
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                  className="w-full flex items-center justify-between px-5 sm:px-6 py-4 sm:py-5 text-left"
+                >
+                  <span className={`text-sm sm:text-base font-semibold pr-4 transition-colors ${
+                    isOpen ? "text-red-600" : "text-gray-800"
+                  }`}>
+                    {faq.question}
+                  </span>
+                  <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    isOpen ? "bg-red-50 rotate-0" : "bg-gray-100 rotate-180"
+                  }`}>
+                    <ChevronUp className={`w-4 h-4 transition-colors ${isOpen ? "text-red-500" : "text-gray-400"}`} />
+                  </div>
+                </button>
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    isOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <div className="px-5 sm:px-6 pb-5 pt-0">
+                    <div className="h-px bg-gray-100 mb-4" />
+                    <p className="text-sm sm:text-base text-gray-500 leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Bottom CTA */}
+        <div className={`text-center mt-10 transition-all duration-700 delay-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+          <p className="text-sm text-gray-400">
+            Ainda tem dúvidas?{" "}
+            <a href="https://wa.me/5500000000000" target="_blank" rel="noopener noreferrer" className="text-red-500 font-medium hover:underline">
+              Fale com nosso suporte
+            </a>
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ============ CTA FINAL SECTION ============
+function CTAFinalSection() {
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
+      { threshold: 0.05 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="py-20 sm:py-28 relative overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" />
+      <div className="absolute inset-0 opacity-10" style={{
+        backgroundImage: "radial-gradient(circle at 20% 50%, rgba(239,68,68,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(239,68,68,0.2) 0%, transparent 50%)"
+      }} />
+      {/* Subtle grid */}
+      <div className="absolute inset-0 opacity-5" style={{
+        backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+        backgroundSize: "40px 40px"
+      }} />
+
+      <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
+        <div className={`transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
+            <Rocket className="w-4 h-4 text-red-400" />
+            <span className="text-xs font-semibold text-white/80 uppercase tracking-wider">Comece agora</span>
+          </div>
+        </div>
+
+        <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-5 leading-tight transition-all duration-700 delay-150 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}>
+          Pare de perder dinheiro.<br />
+          <span className="text-red-400">Comece a vender do seu jeito.</span>
+        </h2>
+
+        <p className={`text-base sm:text-lg text-gray-300 mb-10 max-w-xl mx-auto leading-relaxed transition-all duration-700 delay-300 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}>
+          Junte-se a centenas de restaurantes que já economizam milhares de reais por mês com o Mindi. Crie sua conta grátis em menos de 2 minutos.
+        </p>
+
+        <div className={`flex flex-col sm:flex-row items-center justify-center gap-4 mb-10 transition-all duration-700 delay-500 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}>
+          <Link
+            href="/register"
+            className="group inline-flex items-center gap-2.5 bg-red-500 hover:bg-red-600 text-white font-bold px-8 py-4 rounded-xl text-base shadow-lg shadow-red-500/30 hover:shadow-red-500/40 transition-all duration-300 hover:-translate-y-0.5"
+          >
+            Criar conta grátis
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </Link>
+          <a
+            href="https://wa.me/5500000000000"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2.5 bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white font-semibold px-8 py-4 rounded-xl text-base border border-white/20 hover:border-white/30 transition-all duration-300"
+          >
+            <MessageCircle className="w-5 h-5" />
+            Falar com especialista
+          </a>
+        </div>
+
+        {/* Trust signals */}
+        <div className={`flex flex-wrap items-center justify-center gap-6 sm:gap-8 transition-all duration-700 delay-700 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}>
+          {[
+            { icon: Shield, text: "Dados protegidos" },
+            { icon: Zap, text: "Sem taxa por pedido" },
+            { icon: Clock, text: "Cancele quando quiser" },
+          ].map((item) => (
+            <div key={item.text} className="flex items-center gap-2">
+              <item.icon className="w-4 h-4 text-red-400" />
+              <span className="text-sm text-gray-400">{item.text}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ============ FOOTER ============
+function LandingFooter() {
+  const currentYear = new Date().getFullYear();
+
+  const footerLinks = {
+    produto: [
+      { label: "Funcionalidades", href: "#funcionalidades" },
+      { label: "Planos e Preços", href: "#precos" },
+      { label: "Cardápio Digital", href: "#cardapio" },
+      { label: "Gestão de Pedidos", href: "#" },
+      { label: "Controle de Estoque", href: "#" },
+    ],
+    empresa: [
+      { label: "Sobre nós", href: "#" },
+      { label: "Blog", href: "#" },
+      { label: "Carreiras", href: "#" },
+      { label: "Parceiros", href: "#" },
+    ],
+    suporte: [
+      { label: "Central de Ajuda", href: "#" },
+      { label: "Fale Conosco", href: "#" },
+      { label: "WhatsApp", href: "https://wa.me/5500000000000" },
+      { label: "FAQ", href: "#faq" },
+    ],
+  };
+
+  return (
+    <footer className="bg-gray-900 text-gray-400 pt-16 pb-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        {/* Top section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+          {/* Brand */}
+          <div className="sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">M</span>
+              </div>
+              <span className="text-xl font-bold text-white">Mindi</span>
+            </div>
+            <p className="text-sm leading-relaxed mb-5 max-w-xs">
+              Sistema completo de gestão para restaurantes. Cardápio digital, pedidos, entregas e muito mais.
+            </p>
+            {/* Social links */}
+            <div className="flex items-center gap-3">
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-lg bg-gray-800 hover:bg-red-500/20 hover:text-red-400 flex items-center justify-center transition-all duration-300"
+              >
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a
+                href="https://wa.me/5500000000000"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-lg bg-gray-800 hover:bg-green-500/20 hover:text-green-400 flex items-center justify-center transition-all duration-300"
+              >
+                <Phone className="w-4 h-4" />
+              </a>
+              <a
+                href="mailto:contato@mindi.com.br"
+                className="w-9 h-9 rounded-lg bg-gray-800 hover:bg-blue-500/20 hover:text-blue-400 flex items-center justify-center transition-all duration-300"
+              >
+                <Mail className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+
+          {/* Links columns */}
+          {Object.entries(footerLinks).map(([title, links]) => (
+            <div key={title}>
+              <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+                {title}
+              </h4>
+              <ul className="space-y-2.5">
+                {links.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="text-sm hover:text-white transition-colors duration-200"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Divider */}
+        <div className="h-px bg-gray-800 mb-8" />
+
+        {/* Bottom section */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-gray-500">
+            &copy; {currentYear} Mindi. Todos os direitos reservados.
+          </p>
+          <div className="flex items-center gap-6">
+            <a href="#" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
+              Termos de Uso
+            </a>
+            <a href="#" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
+              Política de Privacidade
+            </a>
+            <a href="#" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
+              LGPD
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 // ============ MAIN LANDING PAGE ============
 export default function LandingPage() {
   return (
@@ -1432,7 +1773,9 @@ export default function LandingPage() {
       <ClientsShowcaseSection />
       <CatalogShowcaseSection />
       <PricingSection />
-      {/* Novas seções serão adicionadas aqui */}
+      <FAQSection />
+      <CTAFinalSection />
+      <LandingFooter />
     </div>
   );
 }
