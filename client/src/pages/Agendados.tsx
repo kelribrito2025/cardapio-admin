@@ -34,6 +34,9 @@ import {
   CreditCard,
   Banknote,
   MessageCircle,
+  Loader2,
+  Printer,
+  Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -77,14 +80,25 @@ const formatCurrency = (value: string | number) => {
 
 type OrderStatus = "new" | "preparing" | "ready" | "out_for_delivery" | "completed" | "cancelled" | "scheduled";
 
-const statusConfig: Record<string, { label: string; variant: "success" | "warning" | "error" | "info" | "default" }> = {
-  new: { label: "Novo", variant: "info" },
-  scheduled: { label: "Agendado", variant: "warning" },
-  preparing: { label: "Preparando", variant: "warning" },
-  ready: { label: "Pronto", variant: "success" },
-  out_for_delivery: { label: "Em entrega", variant: "info" },
-  completed: { label: "Finalizado", variant: "default" },
-  cancelled: { label: "Cancelado", variant: "error" },
+const scheduledStatusConfig: Record<string, {
+  label: string;
+  icon: typeof Clock;
+  color: string;
+  bgColor: string;
+  badgeBg: string;
+  badgeText: string;
+}> = {
+  scheduled: { label: "Agendado", icon: CalendarClock, color: "text-amber-600", bgColor: "bg-amber-50 dark:bg-amber-950/30", badgeBg: "#d97706", badgeText: "#ffffff" },
+  accepted: { label: "Aceito", icon: CheckCircle, color: "text-emerald-600", bgColor: "bg-emerald-50 dark:bg-emerald-950/30", badgeBg: "#059669", badgeText: "#ffffff" },
+  in_queue: { label: "Na fila", icon: ArrowRightCircle, color: "text-blue-600", bgColor: "bg-blue-50 dark:bg-blue-950/30", badgeBg: "#3b82f6", badgeText: "#ffffff" },
+  cancelled: { label: "Cancelado", icon: XCircle, color: "text-red-600", bgColor: "bg-red-50 dark:bg-red-950/30", badgeBg: "#dc2626", badgeText: "#ffffff" },
+};
+
+const getScheduledOrderConfig = (order: any) => {
+  if (order.status === "cancelled") return scheduledStatusConfig.cancelled;
+  if (order.status === "scheduled" && order.movedToQueue) return scheduledStatusConfig.accepted;
+  if (order.status !== "scheduled") return scheduledStatusConfig.in_queue;
+  return scheduledStatusConfig.scheduled;
 };
 
 export default function Agendados() {
@@ -434,24 +448,109 @@ export default function Agendados() {
                 </p>
               </div>
             ) : (
-              <div className="divide-y divide-border/40">
-                {filteredOrders.map((order: any) => (
-                  <div key={order.id} className="px-5 py-4 hover:bg-muted/30 transition-colors">
-                    {/* Row 1: Status badge + action icons */}
-                    <div className="flex items-center justify-between mb-2.5">
-                      {getStatusBadge(order)}
-                      <div className="flex items-center gap-0.5">
-                        {/* Ver detalhes button */}
-                        <button
-                          onClick={() => setSelectedOrderId(order.id)}
-                          className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground/60 hover:text-foreground"
-                          title="Ver detalhes"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                        </button>
-                        {order.status === "scheduled" && (
-                          <>
-                            <button
+              <div className="space-y-3 p-4">
+                {filteredOrders.map((order: any) => {
+                  const config = getScheduledOrderConfig(order);
+                  const PaymentIcon = paymentMethodLabels[order.paymentMethod]?.icon || CreditCard;
+                  const scheduledTime = order.scheduledAt ? formatTime(order.scheduledAt) : "--:--";
+                  const scheduledDate = order.scheduledAt
+                    ? new Date(order.scheduledAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
+                    : "--/--";
+
+                  return (
+                    <div
+                      key={order.id}
+                      className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-200"
+                      style={{ height: '136px' }}
+                    >
+                      {/* Header colorido — mesmo estilo dos cards de Pedidos */}
+                      <div className={cn("px-3 py-2 flex items-center justify-between rounded-t-xl", config.bgColor)} style={{ height: '48px' }}>
+                        <div className="flex items-center gap-3">
+                          <div className={cn("p-1.5 rounded-full bg-card/90 shadow-sm", config.color)}>
+                            <config.icon className="h-3.5 w-3.5" />
+                          </div>
+                          <div className="flex flex-col">
+                            <div className="flex items-center gap-2">
+                              <span className={cn("font-bold text-sm", config.color)}>
+                                {order.orderNumber?.startsWith('#') ? order.orderNumber : `#${order.orderNumber || order.id}`}
+                              </span>
+                            </div>
+                            <span
+                              className={cn("py-0.5 font-bold uppercase tracking-wide", order.deliveryType === "delivery" && "animate-pulse")}
+                              style={{ borderRadius: '5px', fontSize: '8px', height: '16px', paddingRight: '5px', paddingLeft: '5px', color: config.badgeText, backgroundColor: config.badgeBg }}
+                            >
+                              {order.deliveryType === "delivery" ? "Entrega" : order.deliveryType === "dine_in" ? "Consumo" : "Retirada"}
+                            </span>
+                          </div>
+                        </div>
+                        <div className={cn("flex items-center gap-1 text-xs font-medium", config.color)}>
+                          <CalendarDays className="h-3.5 w-3.5" />
+                          {scheduledDate} {scheduledTime}
+                        </div>
+                      </div>
+
+                      {/* Content — mesmo layout dos cards de Pedidos */}
+                      <div className="px-3" style={{ height: '83px', paddingTop: '9px', paddingBottom: '9px' }}>
+                        {/* Linha compacta: nome + pagamento + valor */}
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            {order.customerName && (
+                              <span className="font-semibold text-sm truncate max-w-[100px] sm:max-w-[150px]">
+                                {order.customerName}
+                              </span>
+                            )}
+                            {order.customerName && (
+                              <span className="text-muted-foreground/50">&bull;</span>
+                            )}
+                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <PaymentIcon className="h-3.5 w-3.5" />
+                              {paymentMethodLabels[order.paymentMethod]?.label}
+                            </span>
+                          </div>
+                          <span className="text-base font-bold text-primary whitespace-nowrap">
+                            {formatCurrency(order.total)}
+                          </span>
+                        </div>
+
+                        {/* Actions — mesmo layout dos cards de Pedidos */}
+                        <div className="flex gap-1.5 mt-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 rounded-lg border-border/50 hover:bg-accent text-muted-foreground hover:text-foreground"
+                            onClick={() => setSelectedOrderId(order.id)}
+                            title="Ver detalhes"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 h-8 rounded-lg border-border/50 hover:bg-accent text-xs"
+                            onClick={() => setSelectedOrderId(order.id)}
+                          >
+                            Ver detalhes
+                          </Button>
+                          {order.status === "scheduled" && !order.movedToQueue && (
+                            <Button
+                              size="sm"
+                              className="flex-1 h-8 rounded-lg shadow-sm text-xs hover:opacity-90"
+                              style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
+                              onClick={() => acceptOrder.mutate({ orderId: order.id })}
+                              disabled={acceptOrder.isPending}
+                            >
+                              {acceptOrder.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                "Aceitar"
+                              )}
+                            </Button>
+                          )}
+                          {order.status === "scheduled" && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 rounded-lg bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
                               onClick={() => {
                                 setRescheduleOrderId(order.id);
                                 if (order.scheduledAt) {
@@ -460,93 +559,30 @@ export default function Agendados() {
                                   setRescheduleTime(d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }));
                                 }
                               }}
-                              className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground/60 hover:text-foreground"
                               title="Reagendar"
                             >
-                              <Pencil className="h-3.5 w-3.5" />
-                            </button>
-                            <button
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {order.status !== "completed" && order.status !== "cancelled" && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20"
                               onClick={() => {
                                 if (confirm("Tem certeza que deseja cancelar este pedido agendado?")) {
                                   cancelOrder.mutate({ orderId: order.id, reason: "Cancelado pelo restaurante" });
                                 }
                               }}
-                              className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors text-red-400/60 hover:text-red-600"
-                              title="Cancelar"
                             >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </>
-                        )}
+                              <XCircle className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
-
-                    {/* Row 2: Customer name */}
-                    <h4 className="text-sm font-semibold text-foreground mb-1">
-                      {order.customerName || "Cliente"}
-                    </h4>
-
-                    {/* Row 3: Items description */}
-                    <p className="text-xs text-muted-foreground/70 mb-2 line-clamp-2 leading-relaxed">
-                      {order.items && order.items.length > 0
-                        ? order.items.map((item: any) => `${item.quantity}x ${item.productName}`).join(", ")
-                        : "Sem itens"}
-                    </p>
-
-                    {/* Row 4: Phone */}
-                    {order.customerPhone && (
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground/70 mb-2">
-                        <Phone className="h-3 w-3" />
-                        <span>Whats App: {order.customerPhone}</span>
-                      </div>
-                    )}
-
-                    {/* Row 5: Date + Time */}
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground/60">
-                      <div className="flex items-center gap-1.5">
-                        <CalendarDays className="h-3 w-3" />
-                        <span>
-                          {order.scheduledAt
-                            ? new Date(order.scheduledAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })
-                            : "--/--/----"}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="h-3 w-3" />
-                        <span>{order.scheduledAt ? formatTime(order.scheduledAt) : "--:--"}</span>
-                      </div>
-                    </div>
-
-                    {/* Bottom row: Value + Accept button + Ver detalhes */}
-                    <div className="mt-3 flex items-center justify-between">
-                      <span className="text-sm font-bold text-foreground">
-                        R$ {(Number(order.total) / 100).toFixed(2).replace(".", ",")}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 text-xs rounded-lg gap-1"
-                          onClick={() => setSelectedOrderId(order.id)}
-                        >
-                          <Eye className="h-3 w-3" />
-                          Detalhes
-                        </Button>
-                        {order.status === "scheduled" && !order.movedToQueue && (
-                          <Button
-                            size="sm"
-                            className="h-7 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white"
-                            onClick={() => acceptOrder.mutate({ orderId: order.id })}
-                            disabled={acceptOrder.isPending}
-                          >
-                            <Check className="h-3 w-3 mr-1" />
-                            Aceitar
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -577,9 +613,8 @@ export default function Agendados() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <StatusBadge variant={statusConfig[orderDetails.status]?.variant || "default"}>
-                    {statusConfig[orderDetails.status]?.label || orderDetails.status}
-                  </StatusBadge>
+                  <StatusBadge variant={orderDetails.status === "cancelled" ? "error" : orderDetails.status === "scheduled" ? "warning" : orderDetails.status === "new" ? "info" : "default"}>
+                    {getScheduledOrderConfig(orderDetails).label}                  </StatusBadge>
                 </div>
               </div>
 

@@ -6560,3 +6560,9 @@
 - [x] Adicionar botão "Ver detalhes" nos cards de pedidos agendados
 - [x] Reutilizar a mesma sidebar de detalhes da página de Pedidos (Sheet com mesmo estilo)
 - [x] Incluir informações de agendamento (data/hora agendado) na sidebar com secção azul destacada
+
+## Redesign Cards de Agendados para Padrão de Pedidos
+- [x] Cabeçalho do card: número do pedido + badge modalidade (Entrega/Retirada) + horário agendado
+- [x] Linha central: nome do cliente + método pagamento + valor em vermelho
+- [x] Rodapé: botão ver detalhes + ações (aceitar/reagendar/cancelar)
+- [x] Seguir mesmo estilo visual dos cards de Pedidos (header colorido, content compacto, actions)
