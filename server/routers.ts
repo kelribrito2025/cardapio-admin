@@ -149,6 +149,12 @@ export const appRouter = router({
       return db.getEstablishmentByUserId(ctx.user.id);
     }),
     
+    getOpenStatus: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getEstablishmentOpenStatus(input.establishmentId);
+      }),
+    
     create: protectedProcedure
       .input(z.object({
         name: z.string().min(1),

@@ -257,236 +257,28 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     }
   }, [location]);
 
-  // Get business hours to calculate if store is currently open
-  const { data: businessHoursData } = trpc.establishment.getBusinessHours.useQuery(
+  // Get server-computed open status (single source of truth)
+  const { data: openStatusData, refetch: refetchOpenStatus } = trpc.establishment.getOpenStatus.useQuery(
     { establishmentId: establishment?.id || 0 },
-    { enabled: !!establishment?.id }
+    { enabled: !!establishment?.id, refetchInterval: 60000 } // Refresh every 60 seconds
   );
 
-  // Calculate if store is currently open based on business hours
-  const isCurrentlyOpen = () => {
-    // Se não temos dados de horários, considerar fechado
-    // Não usamos mais o campo isOpen do banco
-    if (!businessHoursData || businessHoursData.length === 0) {
-      return false;
-    }
-    
-    // Usar timezone configurado do estabelecimento
-    const tz = establishment?.timezone || 'America/Sao_Paulo';
-    const now = new Date();
-    const localDate = new Date(now.toLocaleString('en-US', { timeZone: tz }));
-    const currentDay = localDate.getDay();
-    const currentTime = localDate.getHours() * 60 + localDate.getMinutes();
-    
-    // Buscar horário do dia atual
-    const todayHours = businessHoursData.find((h: { dayOfWeek: number; isActive: boolean; openTime: string | null; closeTime: string | null }) => h.dayOfWeek === currentDay);
-    const yesterdayDay = currentDay === 0 ? 6 : currentDay - 1;
-    const yesterdayHours = businessHoursData.find((h: { dayOfWeek: number; isActive: boolean; openTime: string | null; closeTime: string | null }) => h.dayOfWeek === yesterdayDay);
-    
-    // Função auxiliar para verificar se o horário atravessa meia-noite
-    const crossesMidnight = (openTime: string, closeTime: string) => {
-      const [openH] = openTime.split(':').map(Number);
-      const [closeH] = closeTime.split(':').map(Number);
-      return closeH < openH || (closeH === openH && closeTime < openTime);
-    };
-    
-    // Verificar horário de hoje
-    if (todayHours?.isActive && todayHours.openTime && todayHours.closeTime) {
-      const [openHour, openMin] = todayHours.openTime.split(':').map(Number);
-      const [closeHour, closeMin] = todayHours.closeTime.split(':').map(Number);
-      const openTimeMinutes = openHour * 60 + openMin;
-      const closeTimeMinutes = closeHour * 60 + closeMin;
-      
-      if (crossesMidnight(todayHours.openTime, todayHours.closeTime)) {
-        // Horário atravessa meia-noite (ex: 18:00 - 02:00)
-        // Está aberto se: hora atual >= abertura (ex: 18:00 até 23:59)
-        if (currentTime >= openTimeMinutes) {
-          return true;
-        }
-      } else {
-        // Horário normal no mesmo dia (ex: 08:00 - 22:00)
-        if (currentTime >= openTimeMinutes && currentTime < closeTimeMinutes) {
-          return true;
-        }
-      }
-    }
-    
-    // Verificar horário de ontem que atravessa meia-noite
-    // Ex: Se ontem abriu 18:00-02:00, e agora são 01:00, ainda está aberto
-    if (yesterdayHours?.isActive && yesterdayHours.openTime && yesterdayHours.closeTime) {
-      if (crossesMidnight(yesterdayHours.openTime, yesterdayHours.closeTime)) {
-        const [closeHour, closeMin] = yesterdayHours.closeTime.split(':').map(Number);
-        const closeTimeMinutes = closeHour * 60 + closeMin;
-        // Está aberto se: hora atual < fechamento (ex: 00:00 até 02:00)
-        if (currentTime < closeTimeMinutes) {
-          return true;
-        }
-      }
-    }
-    
-    return false;
-  };
-
-  // Calcula o próximo horário de abertura
-  const getNextOpeningTime = (): { dayName: string; time: string; isToday: boolean; isTomorrow: boolean } | null => {
-    if (!businessHoursData || businessHoursData.length === 0) return null;
-    
-    const dayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-    const tz2 = establishment?.timezone || 'America/Sao_Paulo';
-    const now = new Date();
-    const localDate2 = new Date(now.toLocaleString('en-US', { timeZone: tz2 }));
-    const currentDay = localDate2.getDay();
-    const currentTime = localDate2.getHours() * 60 + localDate2.getMinutes();
-    
-    // Procurar nos próximos 7 dias
-    for (let i = 0; i < 7; i++) {
-      const checkDay = (currentDay + i) % 7;
-      const dayHours = businessHoursData.find((h: { dayOfWeek: number; isActive: boolean; openTime: string | null; closeTime: string | null }) => h.dayOfWeek === checkDay);
-      
-      if (dayHours?.isActive && dayHours.openTime) {
-        const [openHour, openMin] = dayHours.openTime.split(':').map(Number);
-        const openTimeMinutes = openHour * 60 + openMin;
-        
-        // Se for hoje, verificar se o horário de abertura ainda não passou
-        if (i === 0) {
-          if (openTimeMinutes > currentTime) {
-            return {
-              dayName: dayNames[checkDay],
-              time: dayHours.openTime,
-              isToday: true,
-              isTomorrow: false
-            };
-          }
-          // Se já passou o horário de abertura hoje, verificar se ainda está dentro do horário
-          if (dayHours.closeTime) {
-            const [closeHour, closeMin] = dayHours.closeTime.split(':').map(Number);
-            const closeTimeMinutes = closeHour * 60 + closeMin;
-            if (currentTime < closeTimeMinutes) {
-              // Ainda está aberto, não precisa retornar próximo horário
-              continue;
-            }
-          }
-        } else {
-          return {
-            dayName: dayNames[checkDay],
-            time: dayHours.openTime,
-            isToday: false,
-            isTomorrow: i === 1
-          };
-        }
-      }
-    }
-    
-    return null;
-  };
-
-  // Verifica se deve reabrir automaticamente (fechamento manual expirou)
-  const shouldAutoReopen = (): boolean => {
-    if (!establishment?.manuallyClosed || !establishment?.manuallyClosedAt) return false;
-    if (!businessHoursData || businessHoursData.length === 0) return false;
-    
-    const tz3 = establishment?.timezone || 'America/Sao_Paulo';
-    const now = new Date();
-    const localDate3 = new Date(now.toLocaleString('en-US', { timeZone: tz3 }));
-    const currentDay = localDate3.getDay();
-    const currentTime = localDate3.getHours() * 60 + localDate3.getMinutes();
-    const closedAt = new Date(establishment.manuallyClosedAt);
-    
-    // Encontrar o horário de hoje
-    const todayHours = businessHoursData.find((h: { dayOfWeek: number; isActive: boolean; openTime: string | null; closeTime: string | null }) => h.dayOfWeek === currentDay);
-    
-    if (!todayHours?.isActive || !todayHours.openTime) return false;
-    
-    const [openHour, openMin] = todayHours.openTime.split(':').map(Number);
-    const openTimeMinutes = openHour * 60 + openMin;
-    
-    // Se o fechamento foi em um dia anterior e hoje tem horário de abertura que já passou
-    const closedDate = new Date(closedAt);
-    closedDate.setHours(0, 0, 0, 0);
-    const today = new Date(localDate3);
-    today.setHours(0, 0, 0, 0);
-    
-    if (closedDate.getTime() < today.getTime() && currentTime >= openTimeMinutes) {
-      return true;
-    }
-    
-    // Se o fechamento foi antes do horário de abertura de hoje e agora já passou o horário
-    const closedTimeMinutes = closedAt.getHours() * 60 + closedAt.getMinutes();
-    if (closedAt.toDateString() === localDate3.toDateString() && closedTimeMinutes < openTimeMinutes && currentTime >= openTimeMinutes) {
-      return true;
-    }
-    
-    return false;
-  };
-
-  // Valor calculado de se está aberto:
-  // Lógica:
-  // 1. Se manuallyClosed E não deve reabrir automaticamente → Fechado
-  // 2. Se manuallyClosed E deve reabrir automaticamente → Aberto (se dentro do horário)
-  // 3. Se manuallyOpened → Aberto (abertura manual fora do horário)
-  // 4. Caso contrário → Segue horário configurado
-  const isWithinBusinessHours = isCurrentlyOpen();
-  const autoReopen = shouldAutoReopen();
-  const nextOpening = getNextOpeningTime();
+  // Use server-computed values as the single source of truth
+  const calculatedIsOpen = openStatusData?.isOpen ?? false;
+  const isForcedClosed = openStatusData?.manuallyClosed ?? false;
+  const isForcedOpen = !isForcedClosed && calculatedIsOpen && establishment?.manuallyOpened === true;
   
-  // Verifica se a abertura manual deve ser automaticamente desativada
-  // (quando o horário comercial termina após a abertura manual)
-  const shouldAutoCloseManualOpen = (): boolean => {
-    if (!establishment?.manuallyOpened || !establishment?.manuallyOpenedAt) return false;
-    // Se agora está dentro do horário comercial, a abertura manual não é mais necessária
-    // O horário comercial "assumiu" - quando o horário comercial terminar, fecha normalmente
-    // Então: se manuallyOpened E dentro do horário → limpar flag (será feito no próximo ciclo)
-    // Se manuallyOpened E fora do horário → verificar se já passou um ciclo de abertura
-    if (isWithinBusinessHours) {
-      // Está dentro do horário - a abertura manual pode ser mantida, mas quando
-      // o horário fechar, vai fechar normalmente
-      return false;
-    }
-    // Fora do horário - verificar se desde a abertura manual já houve um período de horário comercial
-    // Se a abertura manual foi antes do último fechamento do horário comercial, deve fechar
-    return false; // Manter aberto até o admin fechar manualmente ou o horário comercial assumir
-  };
-  
-  // Determinar status final
-  let calculatedIsOpen = false;
-  let isForcedClosed = false;
-  let isForcedOpen = false;
+  // Build status message from server data
   let statusMessage = '';
-  
-  if (establishment?.manuallyClosed && !autoReopen) {
-    // Fechado manualmente e não deve reabrir ainda
-    calculatedIsOpen = false;
-    isForcedClosed = true;
-    if (nextOpening) {
-      if (nextOpening.isToday) {
-        statusMessage = `Abriremos hoje às ${nextOpening.time}`;
-      } else if (nextOpening.isTomorrow) {
-        statusMessage = `Abriremos amanhã às ${nextOpening.time}`;
-      } else {
-        statusMessage = `Abriremos ${nextOpening.dayName} às ${nextOpening.time}`;
-      }
-    }
-  } else if (establishment?.manuallyClosed && autoReopen) {
-    // Deve reabrir automaticamente
-    calculatedIsOpen = isWithinBusinessHours;
-    isForcedClosed = false;
-  } else if (establishment?.manuallyOpened && !isWithinBusinessHours) {
-    // Aberto manualmente fora do horário comercial
-    calculatedIsOpen = true;
-    isForcedOpen = true;
-  } else {
-    // Segue horário configurado
-    // Se manuallyOpened mas dentro do horário, o horário comercial assume
-    calculatedIsOpen = isWithinBusinessHours;
-    isForcedClosed = false;
-    if (!isWithinBusinessHours && nextOpening) {
-      if (nextOpening.isToday) {
-        statusMessage = `Abriremos hoje às ${nextOpening.time}`;
-      } else if (nextOpening.isTomorrow) {
-        statusMessage = `Abriremos amanhã às ${nextOpening.time}`;
-      } else {
-        statusMessage = `Abriremos ${nextOpening.dayName} às ${nextOpening.time}`;
-      }
+  if (!calculatedIsOpen && openStatusData?.nextOpeningTime) {
+    const dayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+    const next = openStatusData.nextOpeningTime;
+    if (next.isToday) {
+      statusMessage = `Abriremos hoje às ${next.openTime}`;
+    } else if (next.isTomorrow) {
+      statusMessage = `Abriremos amanhã às ${next.openTime}`;
+    } else {
+      statusMessage = `Abriremos ${dayNames[next.dayOfWeek]} às ${next.openTime}`;
     }
   }
 
@@ -494,6 +286,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const toggleOpenMutation = trpc.establishment.setManualClose.useMutation({
     onSuccess: () => {
       refetchEstablishment();
+      refetchOpenStatus();
       // Usar calculatedIsOpen para determinar a mensagem correta
       toast.success(calculatedIsOpen ? "Loja fechada manualmente" : "Loja aberta");
     },
