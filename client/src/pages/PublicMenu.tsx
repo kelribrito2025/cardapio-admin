@@ -2915,30 +2915,37 @@ export default function PublicMenu() {
                             return (
                               <div
                                 key={item.id}
-                                className={`flex items-center justify-between px-4 py-3 transition-colors ${
+                                onClick={(e) => {
+                                  // Não disparar toggle se clicou nos botões de +/- quantidade
+                                  if ((e.target as HTMLElement).closest('[data-qty-controls]')) return;
+                                  handleToggle();
+                                }}
+                                className={`flex items-center justify-between px-4 py-3 transition-colors cursor-pointer ${
                                   isSelected ? 'bg-red-50' : 'hover:bg-gray-50'
                                 }`}
                               >
-                                <label className="flex items-center gap-3 cursor-pointer flex-1">
-                                  <input
-                                    type={isRadio ? 'radio' : 'checkbox'}
-                                    name={`group-${group.id}`}
-                                    checked={isSelected}
-                                    onChange={handleToggle}
-                                    className="w-4 h-4 text-red-500 border-gray-300 focus:ring-red-500"
-                                  />
+                                <div className="flex items-center gap-3 flex-1">
+                                  <div className={`w-5 h-5 rounded-${isRadio ? 'full' : 'md'} border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                                    isSelected ? 'border-red-500 bg-red-500' : 'border-gray-300 bg-white'
+                                  }`}>
+                                    {isSelected && (
+                                      <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                                        <path d="M2.5 6L5 8.5L9.5 3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                      </svg>
+                                    )}
+                                  </div>
                                   <span className="text-sm text-gray-900">{item.name}</span>
                                   {(item as any).badgeText && (
                                     <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold bg-red-500 text-white animate-pulse leading-none" style={{width: '69px', height: '19px', borderRadius: '8px'}}>
                                       {(item as any).badgeText}
                                     </span>
                                   )}
-                                </label>
+                                </div>
                                 
                                 <div className="flex items-center gap-3">
                                   {/* Controles de quantidade - aparecem quando selecionado */}
                                   {isSelected && !isRadio && (
-                                    <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1">
+                                    <div data-qty-controls className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1">
                                       <button
                                         type="button"
                                         onClick={handleDecrement}
