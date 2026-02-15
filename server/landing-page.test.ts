@@ -257,3 +257,288 @@ describe("Landing Page - Conteúdo Estratégico", () => {
     expect(allText).toMatch(/iFood|delivery|entregadores|WhatsApp/i);
   });
 });
+
+
+// ============ SEÇÃO 2: O PROBLEMA + A VIRADA ============
+
+interface PainCard {
+  title: string;
+  desc: string;
+}
+
+interface SolutionItem {
+  text: string;
+}
+
+interface ComparisonCard {
+  title: string;
+  items: string[];
+  type: "negative" | "positive";
+}
+
+/**
+ * Retorna os pain cards da seção 2
+ */
+function getPainCards(): PainCard[] {
+  return [
+    { title: "Taxas abusivas", desc: "Até 27% por pedido vai direto pro marketplace" },
+    { title: "Repasses atrasados", desc: "Seu dinheiro preso por dias ou semanas" },
+    { title: "Clientes que não são seus", desc: "Você não tem acesso aos dados dos seus clientes" },
+  ];
+}
+
+/**
+ * Retorna os itens de solução da seção virada
+ */
+function getSolutionItems(): SolutionItem[] {
+  return [
+    { text: "Seu próprio link de vendas" },
+    { text: "Zero comissão por pedido" },
+    { text: "Controle total de entregadores" },
+    { text: "Relatórios financeiros em tempo real" },
+    { text: "Estoque sincronizado automaticamente" },
+    { text: "Base de clientes 100% sua" },
+  ];
+}
+
+/**
+ * Retorna os cards de comparação
+ */
+function getComparisonCards(): ComparisonCard[] {
+  return [
+    {
+      title: "Usando Marketplace",
+      items: [
+        "Taxa de 15% a 27% por pedido",
+        "Repasses demoram até 30 dias",
+        "Sem acesso aos dados dos clientes",
+        "Concorrência direta na mesma plataforma",
+      ],
+      type: "negative",
+    },
+    {
+      title: "Com CardápioAdmin",
+      items: [
+        "R$ 0 de taxa por pedido",
+        "Receba na hora via Pix",
+        "Base de clientes 100% sua",
+        "Sua marca, seu link, seu controle",
+      ],
+      type: "positive",
+    },
+  ];
+}
+
+/**
+ * Calcula a perda mensal com base no faturamento e taxa
+ */
+function calculateMonthlyLoss(revenue: number, feePercent: number): number {
+  return (revenue * feePercent) / 100;
+}
+
+/**
+ * Calcula a perda anual
+ */
+function calculateYearlyLoss(revenue: number, feePercent: number): number {
+  return calculateMonthlyLoss(revenue, feePercent) * 12;
+}
+
+/**
+ * Revenue steps disponíveis no simulador
+ */
+function getRevenueSteps(): number[] {
+  return [5000, 10000, 15000, 20000, 30000, 40000, 50000, 75000, 100000];
+}
+
+/**
+ * Navega para o próximo step de faturamento
+ */
+function navigateRevenue(current: number, direction: "increase" | "decrease"): number {
+  const steps = getRevenueSteps();
+  const currentIndex = steps.indexOf(current);
+  if (direction === "increase" && currentIndex < steps.length - 1) {
+    return steps[currentIndex + 1];
+  }
+  if (direction === "decrease" && currentIndex > 0) {
+    return steps[currentIndex - 1];
+  }
+  return current;
+}
+
+/**
+ * Formata valor em moeda brasileira
+ */
+function formatCurrency(value: number): string {
+  return value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+}
+
+// ============ TESTES SEÇÃO 2 ============
+
+describe("Seção 2 - Pain Cards", () => {
+  it("tem 3 pain cards", () => {
+    expect(getPainCards()).toHaveLength(3);
+  });
+
+  it("aborda taxas abusivas", () => {
+    const cards = getPainCards();
+    expect(cards.some(c => c.title.includes("Taxas"))).toBe(true);
+  });
+
+  it("aborda repasses atrasados", () => {
+    const cards = getPainCards();
+    expect(cards.some(c => c.title.includes("Repasses"))).toBe(true);
+  });
+
+  it("aborda falta de controle sobre clientes", () => {
+    const cards = getPainCards();
+    expect(cards.some(c => c.title.includes("Clientes"))).toBe(true);
+  });
+
+  it("cada card tem título e descrição", () => {
+    getPainCards().forEach(card => {
+      expect(card.title.length).toBeGreaterThan(0);
+      expect(card.desc.length).toBeGreaterThan(0);
+    });
+  });
+});
+
+describe("Seção 2 - Simulador de Perdas", () => {
+  it("calcula perda mensal corretamente para R$ 20.000 a 15%", () => {
+    expect(calculateMonthlyLoss(20000, 15)).toBe(3000);
+  });
+
+  it("calcula perda anual corretamente", () => {
+    expect(calculateYearlyLoss(20000, 15)).toBe(36000);
+  });
+
+  it("calcula perda para diferentes faturamentos", () => {
+    expect(calculateMonthlyLoss(5000, 15)).toBe(750);
+    expect(calculateMonthlyLoss(50000, 15)).toBe(7500);
+    expect(calculateMonthlyLoss(100000, 15)).toBe(15000);
+  });
+
+  it("perda anual é 12x a mensal", () => {
+    const monthly = calculateMonthlyLoss(30000, 15);
+    const yearly = calculateYearlyLoss(30000, 15);
+    expect(yearly).toBe(monthly * 12);
+  });
+
+  it("tem 9 steps de faturamento", () => {
+    expect(getRevenueSteps()).toHaveLength(9);
+  });
+
+  it("steps começam em 5.000 e terminam em 100.000", () => {
+    const steps = getRevenueSteps();
+    expect(steps[0]).toBe(5000);
+    expect(steps[steps.length - 1]).toBe(100000);
+  });
+
+  it("steps estão em ordem crescente", () => {
+    const steps = getRevenueSteps();
+    for (let i = 1; i < steps.length; i++) {
+      expect(steps[i]).toBeGreaterThan(steps[i - 1]);
+    }
+  });
+
+  it("navega para o próximo step corretamente", () => {
+    expect(navigateRevenue(20000, "increase")).toBe(30000);
+    expect(navigateRevenue(20000, "decrease")).toBe(15000);
+  });
+
+  it("não navega além do primeiro step", () => {
+    expect(navigateRevenue(5000, "decrease")).toBe(5000);
+  });
+
+  it("não navega além do último step", () => {
+    expect(navigateRevenue(100000, "increase")).toBe(100000);
+  });
+
+  it("formata moeda corretamente", () => {
+    const formatted = formatCurrency(3000);
+    expect(formatted).toContain("3.000");
+    expect(formatted).toContain("R$");
+  });
+
+  it("CardápioAdmin mostra R$ 0 de taxa", () => {
+    expect(calculateMonthlyLoss(20000, 0)).toBe(0);
+    expect(calculateYearlyLoss(100000, 0)).toBe(0);
+  });
+});
+
+describe("Seção 2 - Itens de Solução (Virada)", () => {
+  it("tem 6 itens de solução", () => {
+    expect(getSolutionItems()).toHaveLength(6);
+  });
+
+  it("inclui link próprio de vendas", () => {
+    expect(getSolutionItems().some(s => s.text.includes("link de vendas"))).toBe(true);
+  });
+
+  it("inclui zero comissão", () => {
+    expect(getSolutionItems().some(s => s.text.includes("Zero comissão"))).toBe(true);
+  });
+
+  it("inclui controle de entregadores", () => {
+    expect(getSolutionItems().some(s => s.text.includes("entregadores"))).toBe(true);
+  });
+
+  it("inclui relatórios financeiros", () => {
+    expect(getSolutionItems().some(s => s.text.includes("Relatórios"))).toBe(true);
+  });
+
+  it("inclui estoque sincronizado", () => {
+    expect(getSolutionItems().some(s => s.text.includes("Estoque"))).toBe(true);
+  });
+
+  it("inclui base de clientes", () => {
+    expect(getSolutionItems().some(s => s.text.includes("clientes"))).toBe(true);
+  });
+});
+
+describe("Seção 2 - Cards de Comparação", () => {
+  it("tem 2 cards de comparação", () => {
+    expect(getComparisonCards()).toHaveLength(2);
+  });
+
+  it("primeiro card é negativo (marketplace)", () => {
+    const cards = getComparisonCards();
+    expect(cards[0].type).toBe("negative");
+    expect(cards[0].title).toContain("Marketplace");
+  });
+
+  it("segundo card é positivo (CardápioAdmin)", () => {
+    const cards = getComparisonCards();
+    expect(cards[1].type).toBe("positive");
+    expect(cards[1].title).toContain("CardápioAdmin");
+  });
+
+  it("marketplace tem 4 pontos negativos", () => {
+    const marketplace = getComparisonCards()[0];
+    expect(marketplace.items).toHaveLength(4);
+  });
+
+  it("CardápioAdmin tem 4 pontos positivos", () => {
+    const admin = getComparisonCards()[1];
+    expect(admin.items).toHaveLength(4);
+  });
+
+  it("marketplace menciona taxa alta", () => {
+    const marketplace = getComparisonCards()[0];
+    expect(marketplace.items.some(i => i.includes("15%") || i.includes("27%"))).toBe(true);
+  });
+
+  it("CardápioAdmin menciona R$ 0 de taxa", () => {
+    const admin = getComparisonCards()[1];
+    expect(admin.items.some(i => i.includes("R$ 0"))).toBe(true);
+  });
+
+  it("CardápioAdmin menciona Pix", () => {
+    const admin = getComparisonCards()[1];
+    expect(admin.items.some(i => i.includes("Pix"))).toBe(true);
+  });
+});

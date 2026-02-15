@@ -12,7 +12,16 @@ import {
   BarChart3,
   ShoppingBag,
   Truck,
-  Package
+  Package,
+  XCircle,
+  TrendingDown,
+  DollarSign,
+  Link2,
+  Users,
+  PieChart,
+  PackageCheck,
+  Minus,
+  Plus
 } from "lucide-react";
 
 // CDN URLs dos mockups do dashboard
@@ -413,12 +422,337 @@ function PainPointsStrip() {
   );
 }
 
+// ============ SEÇÃO 2: O PROBLEMA + A VIRADA ============
+function ProblemSolutionSection() {
+  const [monthlyRevenue, setMonthlyRevenue] = useState(20000);
+  const [marketplaceFee] = useState(15);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.15 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const monthlyLoss = (monthlyRevenue * marketplaceFee) / 100;
+  const yearlyLoss = monthlyLoss * 12;
+
+  const revenueSteps = [5000, 10000, 15000, 20000, 30000, 40000, 50000, 75000, 100000];
+
+  const handleDecrease = () => {
+    const currentIndex = revenueSteps.indexOf(monthlyRevenue);
+    if (currentIndex > 0) setMonthlyRevenue(revenueSteps[currentIndex - 1]);
+  };
+
+  const handleIncrease = () => {
+    const currentIndex = revenueSteps.indexOf(monthlyRevenue);
+    if (currentIndex < revenueSteps.length - 1) setMonthlyRevenue(revenueSteps[currentIndex + 1]);
+  };
+
+  const formatCurrency = (value: number) =>
+    value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+  const painCards = [
+    { icon: DollarSign, title: "Taxas abusivas", desc: "Até 27% por pedido vai direto pro marketplace" },
+    { icon: TrendingDown, title: "Repasses atrasados", desc: "Seu dinheiro preso por dias ou semanas" },
+    { icon: Users, title: "Clientes que não são seus", desc: "Você não tem acesso aos dados dos seus clientes" },
+  ];
+
+  const solutionItems = [
+    { icon: Link2, text: "Seu próprio link de vendas" },
+    { icon: DollarSign, text: "Zero comissão por pedido" },
+    { icon: Truck, text: "Controle total de entregadores" },
+    { icon: PieChart, text: "Relatórios financeiros em tempo real" },
+    { icon: PackageCheck, text: "Estoque sincronizado automaticamente" },
+    { icon: Users, text: "Base de clientes 100% sua" },
+  ];
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative py-20 lg:py-28 overflow-hidden"
+      style={{
+        background: "linear-gradient(180deg, #fafafa 0%, #ffffff 40%, #fef2f2 100%)",
+      }}
+    >
+      {/* Subtle texture */}
+      <div
+        className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(0,0,0,0.3) 1px, transparent 0)`,
+          backgroundSize: "32px 32px",
+        }}
+      />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* ---- BLOCO 1: A DOR ---- */}
+        <div className={`text-center max-w-3xl mx-auto mb-16 transition-all duration-700 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-50 border border-red-100 mb-6">
+            <TrendingDown className="w-3.5 h-3.5 text-red-500" />
+            <span className="text-xs font-semibold text-red-600 tracking-wide uppercase">A verdade que ninguém conta</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-5">
+            Você está <span className="text-red-500">pagando para vender</span>{" "}
+            o que é seu?
+          </h2>
+          <p className="text-lg text-gray-500 leading-relaxed">
+            Marketplaces cobram taxas altas, atrasam repasses e não te dão controle real 
+            sobre seus clientes. Cada pedido que entra, uma fatia do <strong className="text-gray-700">seu lucro</strong> vai embora.
+          </p>
+        </div>
+
+        {/* Pain cards */}
+        <div className={`grid grid-cols-1 md:grid-cols-3 gap-5 mb-16 transition-all duration-700 delay-100 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}>
+          {painCards.map((card, i) => (
+            <div
+              key={i}
+              className="group relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+            >
+              <div className="absolute top-4 right-4">
+                <XCircle className="w-5 h-5 text-red-300" />
+              </div>
+              <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center mb-4">
+                <card.icon className="w-6 h-6 text-red-500" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">{card.title}</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">{card.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* ---- SIMULAÇÃO DE PERDAS ---- */}
+        <div className={`relative max-w-4xl mx-auto mb-20 transition-all duration-700 delay-200 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}>
+          <div className="bg-gray-900 rounded-3xl p-8 sm:p-10 lg:p-12 overflow-hidden relative">
+            {/* Background glow */}
+            <div className="absolute top-0 right-0 w-80 h-80 bg-red-500/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-60 h-60 bg-red-500/5 rounded-full blur-3xl" />
+
+            <div className="relative">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                  Quanto você <span className="text-red-400">perde</span> por mês?
+                </h3>
+                <p className="text-gray-400 text-sm">Simule o impacto das taxas de marketplace no seu faturamento</p>
+              </div>
+
+              {/* Revenue selector */}
+              <div className="flex flex-col items-center gap-6 mb-10">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={handleDecrease}
+                    disabled={monthlyRevenue === revenueSteps[0]}
+                    className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                  >
+                    <Minus className="w-4 h-4 text-white" />
+                  </button>
+                  <div className="text-center min-w-[200px]">
+                    <p className="text-xs text-gray-400 font-medium mb-1">Faturamento mensal</p>
+                    <p className="text-3xl sm:text-4xl font-bold text-white">{formatCurrency(monthlyRevenue)}</p>
+                  </div>
+                  <button
+                    onClick={handleIncrease}
+                    disabled={monthlyRevenue === revenueSteps[revenueSteps.length - 1]}
+                    className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                  >
+                    <Plus className="w-4 h-4 text-white" />
+                  </button>
+                </div>
+
+                {/* Revenue steps */}
+                <div className="flex gap-2 flex-wrap justify-center">
+                  {revenueSteps.map((step) => (
+                    <button
+                      key={step}
+                      onClick={() => setMonthlyRevenue(step)}
+                      className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all duration-200 ${
+                        monthlyRevenue === step
+                          ? "bg-red-500 text-white shadow-lg shadow-red-500/30"
+                          : "bg-white/10 text-gray-400 hover:bg-white/20 hover:text-white"
+                      }`}
+                    >
+                      {step >= 1000 ? `${step / 1000}k` : step}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Results */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10 text-center">
+                  <p className="text-xs text-gray-400 font-medium mb-2 uppercase tracking-wider">Taxa marketplace ({marketplaceFee}%)</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-red-400">
+                    -{formatCurrency(monthlyLoss)}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">por mês</p>
+                </div>
+                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10 text-center">
+                  <p className="text-xs text-gray-400 font-medium mb-2 uppercase tracking-wider">Prejuízo anual</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-red-400">
+                    -{formatCurrency(yearlyLoss)}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">jogados fora</p>
+                </div>
+                <div className="bg-gradient-to-br from-green-500/20 to-green-600/10 backdrop-blur-sm rounded-2xl p-5 border border-green-500/20 text-center">
+                  <p className="text-xs text-green-300 font-medium mb-2 uppercase tracking-wider">Com CardápioAdmin</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-green-400">
+                    {formatCurrency(0)}
+                  </p>
+                  <p className="text-xs text-green-300/70 mt-1">zero taxa por pedido</p>
+                </div>
+              </div>
+
+              <p className="text-center mt-6 text-sm text-gray-400">
+                Isso significa <strong className="text-white">{formatCurrency(yearlyLoss)}</strong> de volta 
+                no seu bolso por ano.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ---- BLOCO 2: A VIRADA ---- */}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Left - Content */}
+          <div className={`transition-all duration-700 delay-300 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-50 border border-green-100 mb-6">
+              <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
+              <span className="text-xs font-semibold text-green-600 tracking-wide uppercase">A solução</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-5">
+              Com o <span className="text-red-500">CardápioAdmin</span> você assume o controle.
+            </h2>
+            <p className="text-lg text-gray-500 leading-relaxed mb-8">
+              Tudo o que você precisa para vender direto, sem intermediários, 
+              com tecnologia que simplifica sua operação.
+            </p>
+
+            <div className="space-y-4 mb-8">
+              {solutionItems.map((item, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-3.5 group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-green-50 group-hover:bg-green-100 flex items-center justify-center flex-shrink-0 transition-colors">
+                    <item.icon className="w-5 h-5 text-green-600" />
+                  </div>
+                  <span className="text-base text-gray-700 font-medium">{item.text}</span>
+                </div>
+              ))}
+            </div>
+
+            <Link
+              href="/criar-conta"
+              className="group inline-flex items-center gap-2 text-base font-semibold text-white bg-red-500 hover:bg-red-600 px-7 py-3.5 rounded-xl transition-all duration-300 shadow-xl shadow-red-500/25 hover:shadow-red-500/40 hover:-translate-y-0.5"
+            >
+              Começar agora — é grátis
+              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+          </div>
+
+          {/* Right - Visual comparison */}
+          <div className={`transition-all duration-700 delay-500 ${
+            isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
+          }`}>
+            <div className="space-y-5">
+              {/* Marketplace card (bad) */}
+              <div className="bg-white rounded-2xl p-6 border border-red-100 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-red-400" />
+                <div className="flex items-start gap-4 ml-2">
+                  <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+                    <XCircle className="w-6 h-6 text-red-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Usando Marketplace</h4>
+                    <ul className="space-y-2">
+                      <li className="flex items-center gap-2 text-sm text-gray-500">
+                        <XCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                        Taxa de 15% a 27% por pedido
+                      </li>
+                      <li className="flex items-center gap-2 text-sm text-gray-500">
+                        <XCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                        Repasses demoram até 30 dias
+                      </li>
+                      <li className="flex items-center gap-2 text-sm text-gray-500">
+                        <XCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                        Sem acesso aos dados dos clientes
+                      </li>
+                      <li className="flex items-center gap-2 text-sm text-gray-500">
+                        <XCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                        Concorrência direta na mesma plataforma
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Arrow transition */}
+              <div className="flex justify-center">
+                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                  <ArrowRight className="w-5 h-5 text-gray-400 rotate-90" />
+                </div>
+              </div>
+
+              {/* CardápioAdmin card (good) */}
+              <div className="bg-white rounded-2xl p-6 border border-green-100 shadow-md relative overflow-hidden ring-1 ring-green-200/50">
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-green-500" />
+                <div className="flex items-start gap-4 ml-2">
+                  <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle2 className="w-6 h-6 text-green-500" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Com CardápioAdmin</h4>
+                    <ul className="space-y-2">
+                      <li className="flex items-center gap-2 text-sm text-gray-700">
+                        <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <strong>R$ 0</strong> de taxa por pedido
+                      </li>
+                      <li className="flex items-center gap-2 text-sm text-gray-700">
+                        <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        Receba na hora via Pix
+                      </li>
+                      <li className="flex items-center gap-2 text-sm text-gray-700">
+                        <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        Base de clientes 100% sua
+                      </li>
+                      <li className="flex items-center gap-2 text-sm text-gray-700">
+                        <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        Sua marca, seu link, seu controle
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ============ MAIN LANDING PAGE ============
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white">
       <LandingNavbar />
       <HeroSection />
+      <ProblemSolutionSection />
       {/* Novas seções serão adicionadas aqui */}
     </div>
   );

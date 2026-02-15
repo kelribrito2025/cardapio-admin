@@ -6601,3 +6601,12 @@
 - [x] Fundo claro com grid sutil
 - [x] Responsividade completa (mobile: coluna única, mockup abaixo)
 - [x] Navbar da landing com links: Home, Funcionalidades, Preços, FAQ, Login, Criar conta
+
+## Landing Page - Seção 2: O Problema + A Virada
+- [x] Bloco Dor: título emocional "Você está pagando para vender o que é seu?"
+- [x] Simulação de perdas: slider/calculadora mostrando quanto perde no marketplace
+- [x] Bloco Virada: "Com o CardápioAdmin você assume o controle" com lista visual de benefícios
+- [x] Layout duas colunas (texto emocional + visual comparativo)
+- [x] Cards comparativos: Marketplace (❌) vs CardápioAdmin (✅)
+- [x] Micro-animações: entrada suave, contadores animados
+- [x] Responsividade completa (mobile: coluna única)
