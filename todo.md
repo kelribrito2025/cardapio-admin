@@ -6515,3 +6515,12 @@
 - [x] Sistema de Agendamento: Integração WhatsApp para pedidos agendados
 - [x] Sistema de Agendamento: Testes unitários (50 testes passando)
 - [x] Sistema de Agendamento: Job automático para mover pedidos agendados para fila (intervalo 60s)
+
+## Redesign Visual da Página Agendados (Alinhar com Dashboard)
+- [x] Cards superiores: remover sombras, reutilizar mesmo componente visual da Dashboard (border-radius, borda, padding, tipografia, ícones)
+- [x] Cabeçalho: mesmo tamanho de título, font-weight, espaçamento e subtítulo da Dashboard
+- [x] Filtros: reutilizar mesmo componente segmentado da Dashboard (background, cor ativa, arredondamento, transição, padding)
+- [x] Calendário: redesenhar estilo SaaS moderno (células maiores, hover suave, dia selecionado com bg primária, indicadores discretos, sem sombra)
+- [x] Painel direita (lista do dia): sem sombra, mesmo estilo de card, padding e tipografia da Dashboard
+- [x] Badges de status padronizados (Agendado=cinza, Aguardando=laranja, Aceito=verde, Na fila=azul)
+- [x] Consistência global: mesmo espaçamento, tipografia, hover, botões e identidade visual
