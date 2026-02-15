@@ -4632,10 +4632,8 @@ setOnlinePaymentUrl(null);
                       : changeAmountError
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         : isSendingOrder 
-                          ? (paymentMethod === 'card_online' ? 'bg-red-400 cursor-not-allowed' : 'bg-green-400 cursor-not-allowed')
-                          : paymentMethod === 'card_online'
-                            ? 'bg-red-500 hover:bg-red-600'
-                            : 'bg-green-500 hover:bg-green-600'
+                          ? 'bg-red-400 cursor-not-allowed'
+                          : 'bg-red-500 hover:bg-red-600'
                   } ${isOpen && !changeAmountError ? 'text-white' : ''}`}
                 >
                   {!isOpen ? (
