@@ -1,9 +1,13 @@
 import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { AdminLayout } from "@/components/AdminLayout";
-import { StatCard, PageHeader, SectionCard, EmptyState } from "@/components/shared";
+import { StatCard, PageHeader, SectionCard, StatusBadge } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Sheet,
+  SheetContent,
+} from "@/components/ui/sheet";
 import {
   CalendarClock,
   ChevronLeft,
@@ -19,10 +23,17 @@ import {
   CalendarDays,
   ListChecks,
   ArrowRightCircle,
+  ArrowLeft,
   Pencil,
   Trash2,
   Calendar,
-  LayoutDashboard,
+  Eye,
+  CheckCircle,
+  ChefHat,
+  XCircle,
+  CreditCard,
+  Banknote,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -49,6 +60,33 @@ const periodOptions = [
   { value: "month" as const, label: "Este mês" },
 ];
 
+const paymentMethodLabels: Record<string, { label: string; icon: typeof CreditCard }> = {
+  cash: { label: "Dinheiro", icon: Banknote },
+  card: { label: "Cartão", icon: CreditCard },
+  pix: { label: "Pix", icon: CreditCard },
+  boleto: { label: "Boleto", icon: CreditCard },
+  card_online: { label: "Cartão Online", icon: CreditCard },
+};
+
+const formatCurrency = (value: string | number) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(Number(value));
+};
+
+type OrderStatus = "new" | "preparing" | "ready" | "out_for_delivery" | "completed" | "cancelled" | "scheduled";
+
+const statusConfig: Record<string, { label: string; variant: "success" | "warning" | "error" | "info" | "default" }> = {
+  new: { label: "Novo", variant: "info" },
+  scheduled: { label: "Agendado", variant: "warning" },
+  preparing: { label: "Preparando", variant: "warning" },
+  ready: { label: "Pronto", variant: "success" },
+  out_for_delivery: { label: "Em entrega", variant: "info" },
+  completed: { label: "Finalizado", variant: "default" },
+  cancelled: { label: "Cancelado", variant: "error" },
+};
+
 export default function Agendados() {
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const today = new Date();
@@ -60,6 +98,7 @@ export default function Agendados() {
   const [rescheduleOrderId, setRescheduleOrderId] = useState<number | null>(null);
   const [rescheduleDate, setRescheduleDate] = useState("");
   const [rescheduleTime, setRescheduleTime] = useState("");
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
 
   const { data: establishment } = trpc.establishment.get.useQuery();
 
@@ -70,6 +109,12 @@ export default function Agendados() {
   const { data: scheduledOrders, isLoading, refetch } = trpc.scheduling.getByRange.useQuery(
     { startDate: startOfMonth, endDate: endOfMonth },
     { enabled: !!establishment?.id }
+  );
+
+  // Fetch order details when an order is selected for the sidebar
+  const { data: orderDetails } = trpc.orders.get.useQuery(
+    { id: selectedOrderId! },
+    { enabled: !!selectedOrderId }
   );
 
   const acceptOrder = trpc.scheduling.accept.useMutation({
@@ -125,7 +170,6 @@ export default function Agendados() {
   }, [currentMonth, currentYear]);
 
   const numWeeks = useMemo(() => {
-    // Only show 5 rows if the 6th row is entirely next month
     const totalDays = calendarDays.length;
     if (totalDays <= 35) return 5;
     const sixthRow = calendarDays.slice(35, 42);
@@ -207,24 +251,6 @@ export default function Agendados() {
     return `${month} ${String(d.getDate()).padStart(2, "0")} ${dayName}`;
   }, [selectedDateObj]);
 
-  const deliveryTypeLabel = (type: string) => {
-    switch (type) {
-      case "delivery": return "Entrega";
-      case "pickup": return "Retirada";
-      case "dine_in": return "Local";
-      default: return type;
-    }
-  };
-
-  const deliveryTypeIcon = (type: string) => {
-    switch (type) {
-      case "delivery": return <Truck className="h-3.5 w-3.5" />;
-      case "pickup": return <Store className="h-3.5 w-3.5" />;
-      case "dine_in": return <UtensilsCrossed className="h-3.5 w-3.5" />;
-      default: return <Package className="h-3.5 w-3.5" />;
-    }
-  };
-
   const getStatusBadge = (order: any) => {
     if (order.status === "cancelled") {
       return <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400">Cancelado</span>;
@@ -267,7 +293,7 @@ export default function Agendados() {
         </div>
       </div>
 
-      {/* KPI Cards — same StatCard as Dashboard */}
+      {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
         <StatCard title="Total Agendados" value={stats.total} icon={CalendarDays} loading={isLoading} variant="blue" />
         <StatCard title="Aguardando" value={stats.pending} icon={Clock} loading={isLoading} variant="amber" />
@@ -275,7 +301,7 @@ export default function Agendados() {
         <StatCard title="Na Fila" value={stats.moved} icon={ArrowRightCircle} loading={isLoading} variant="primary" />
       </div>
 
-      {/* Main Content: Calendar + Orders — two SectionCards side by side */}
+      {/* Main Content: Calendar + Orders */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
         {/* LEFT: Calendar SectionCard */}
         <SectionCard noPadding className="overflow-hidden">
@@ -313,7 +339,7 @@ export default function Agendados() {
             ))}
           </div>
 
-          {/* Calendar Grid — clean table cells */}
+          {/* Calendar Grid */}
           <div>
             {Array.from({ length: numWeeks }).map((_, weekIdx) => (
               <div
@@ -339,7 +365,7 @@ export default function Agendados() {
                         isSelected && "bg-primary/[0.04]"
                       )}
                     >
-                      {/* Day number — top left */}
+                      {/* Day number */}
                       <div className="mb-1.5">
                         <span
                           className={cn(
@@ -354,7 +380,7 @@ export default function Agendados() {
                         </span>
                       </div>
 
-                      {/* Order labels inside cell — pill/chip style like reference */}
+                      {/* Order labels — pill/chip style */}
                       <div className="space-y-1 mt-0.5">
                         {dayOrders.slice(0, 3).map((o, i) => (
                           <div
@@ -414,38 +440,48 @@ export default function Agendados() {
                     {/* Row 1: Status badge + action icons */}
                     <div className="flex items-center justify-between mb-2.5">
                       {getStatusBadge(order)}
-                      {order.status === "scheduled" && (
-                        <div className="flex items-center gap-0.5">
-                          <button
-                            onClick={() => {
-                              setRescheduleOrderId(order.id);
-                              if (order.scheduledAt) {
-                                const d = new Date(order.scheduledAt);
-                                setRescheduleDate(d.toISOString().split("T")[0]);
-                                setRescheduleTime(d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }));
-                              }
-                            }}
-                            className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground/60 hover:text-foreground"
-                            title="Reagendar"
-                          >
-                            <Pencil className="h-3.5 w-3.5" />
-                          </button>
-                          <button
-                            onClick={() => {
-                              if (confirm("Tem certeza que deseja cancelar este pedido agendado?")) {
-                                cancelOrder.mutate({ orderId: order.id, reason: "Cancelado pelo restaurante" });
-                              }
-                            }}
-                            className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors text-red-400/60 hover:text-red-600"
-                            title="Cancelar"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-0.5">
+                        {/* Ver detalhes button */}
+                        <button
+                          onClick={() => setSelectedOrderId(order.id)}
+                          className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground/60 hover:text-foreground"
+                          title="Ver detalhes"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                        </button>
+                        {order.status === "scheduled" && (
+                          <>
+                            <button
+                              onClick={() => {
+                                setRescheduleOrderId(order.id);
+                                if (order.scheduledAt) {
+                                  const d = new Date(order.scheduledAt);
+                                  setRescheduleDate(d.toISOString().split("T")[0]);
+                                  setRescheduleTime(d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }));
+                                }
+                              }}
+                              className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground/60 hover:text-foreground"
+                              title="Reagendar"
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (confirm("Tem certeza que deseja cancelar este pedido agendado?")) {
+                                  cancelOrder.mutate({ orderId: order.id, reason: "Cancelado pelo restaurante" });
+                                }
+                              }}
+                              className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors text-red-400/60 hover:text-red-600"
+                              title="Cancelar"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Row 2: Customer name (title) */}
+                    {/* Row 2: Customer name */}
                     <h4 className="text-sm font-semibold text-foreground mb-1">
                       {order.customerName || "Cliente"}
                     </h4>
@@ -457,7 +493,7 @@ export default function Agendados() {
                         : "Sem itens"}
                     </p>
 
-                    {/* Row 4: Phone (WhatsApp style like reference) */}
+                    {/* Row 4: Phone */}
                     {order.customerPhone && (
                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground/70 mb-2">
                         <Phone className="h-3 w-3" />
@@ -465,7 +501,7 @@ export default function Agendados() {
                       </div>
                     )}
 
-                    {/* Row 5: Date + Time (like reference: calendar icon + date, clock icon + time) */}
+                    {/* Row 5: Date + Time */}
                     <div className="flex items-center gap-4 text-xs text-muted-foreground/60">
                       <div className="flex items-center gap-1.5">
                         <CalendarDays className="h-3 w-3" />
@@ -481,23 +517,34 @@ export default function Agendados() {
                       </div>
                     </div>
 
-                    {/* Accept button for scheduled orders */}
-                    {order.status === "scheduled" && !order.movedToQueue && (
-                      <div className="mt-3 flex items-center justify-between">
-                        <span className="text-sm font-bold text-foreground">
-                          R$ {(Number(order.total) / 100).toFixed(2).replace(".", ",")}
-                        </span>
+                    {/* Bottom row: Value + Accept button + Ver detalhes */}
+                    <div className="mt-3 flex items-center justify-between">
+                      <span className="text-sm font-bold text-foreground">
+                        R$ {(Number(order.total) / 100).toFixed(2).replace(".", ",")}
+                      </span>
+                      <div className="flex items-center gap-2">
                         <Button
+                          variant="outline"
                           size="sm"
-                          className="h-7 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white"
-                          onClick={() => acceptOrder.mutate({ orderId: order.id })}
-                          disabled={acceptOrder.isPending}
+                          className="h-7 text-xs rounded-lg gap-1"
+                          onClick={() => setSelectedOrderId(order.id)}
                         >
-                          <Check className="h-3 w-3 mr-1" />
-                          Aceitar
+                          <Eye className="h-3 w-3" />
+                          Detalhes
                         </Button>
+                        {order.status === "scheduled" && !order.movedToQueue && (
+                          <Button
+                            size="sm"
+                            className="h-7 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white"
+                            onClick={() => acceptOrder.mutate({ orderId: order.id })}
+                            disabled={acceptOrder.isPending}
+                          >
+                            <Check className="h-3 w-3 mr-1" />
+                            Aceitar
+                          </Button>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -505,6 +552,290 @@ export default function Agendados() {
           </div>
         </SectionCard>
       </div>
+
+      {/* ========== ORDER DETAILS SIDEBAR (same style as Pedidos page) ========== */}
+      <Sheet open={!!selectedOrderId} onOpenChange={() => setSelectedOrderId(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-md p-0 overflow-hidden flex flex-col" hideCloseButton>
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon" onClick={() => setSelectedOrderId(null)} className="h-8 w-8">
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <span className="font-semibold text-lg">Detalhes do Pedido</span>
+            </div>
+          </div>
+
+          {orderDetails ? (
+            <div className="overflow-y-auto flex-1">
+              {/* Order ID and Status */}
+              <div className="px-6 py-4 bg-muted/20 flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold">Pedido {orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`}</h2>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(orderDetails.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <StatusBadge variant={statusConfig[orderDetails.status]?.variant || "default"}>
+                    {statusConfig[orderDetails.status]?.label || orderDetails.status}
+                  </StatusBadge>
+                </div>
+              </div>
+
+              {/* Scheduling Info — highlighted section */}
+              {(orderDetails as any).isScheduled && (orderDetails as any).scheduledAt && (
+                <div className="px-6 py-4">
+                  <div className="border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/30 rounded-xl p-4">
+                    <h4 className="font-semibold text-base mb-3 flex items-center gap-2">
+                      <CalendarClock className="h-4 w-4 text-blue-600" />
+                      Agendamento
+                    </h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Data Agendada:</span>
+                        <span className="font-medium">
+                          {new Date((orderDetails as any).scheduledAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Horário:</span>
+                        <span className="font-medium">
+                          {new Date((orderDetails as any).scheduledAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                        </span>
+                      </div>
+                      {(orderDetails as any).movedToQueue !== undefined && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Movido para fila:</span>
+                          <span className="font-medium">
+                            {(orderDetails as any).movedToQueue ? "Sim" : "Não"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Customer Info */}
+              <div className="px-6 py-4">
+                <div className="border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/30 rounded-xl p-4">
+                  <h4 className="font-semibold text-base mb-3">Cliente</h4>
+                  <div className="flex items-center justify-between gap-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+                        {orderDetails.customerName?.charAt(0) || "C"}
+                      </span>
+                      <span className="font-medium truncate">{orderDetails.customerName || "Cliente"}</span>
+                    </div>
+                    {orderDetails.customerPhone && (
+                      <span className="text-muted-foreground shrink-0">{orderDetails.customerPhone}</span>
+                    )}
+                  </div>
+                  {orderDetails.customerPhone && (
+                    <div className="flex gap-2 mt-3">
+                      <Button variant="outline" size="sm" className="flex-1 h-8 text-xs gap-1.5" onClick={() => window.open(`tel:${orderDetails.customerPhone}`)}>
+                        <Phone className="h-3.5 w-3.5" />
+                        Ligar
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="flex-1 h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
+                        onClick={() => {
+                          let phone = orderDetails.customerPhone?.replace(/\D/g, '');
+                          if (phone && !phone.startsWith('55')) {
+                            phone = '55' + phone;
+                          }
+                          const orderNumber = orderDetails.orderNumber?.startsWith('#') ? orderDetails.orderNumber : `#${orderDetails.orderNumber}`;
+                          const itemsText = orderDetails.items?.map((item: any) => {
+                            let itemLine = `${item.quantity}x ${item.productName}`;
+                            if (item.complements && item.complements.length > 0) {
+                              const compText = item.complements.map((c: any) => `  + ${c.name}`).join('\n');
+                              itemLine += '\n' + compText;
+                            }
+                            return itemLine;
+                          }).join('\n') || '';
+                          const totalFormatted = `R$ ${Number(orderDetails.total).toFixed(2).replace('.', ',')}`;
+                          const message = `Olá ${orderDetails.customerName || ''}! Sobre seu pedido ${orderNumber}:\n\n*Itens:*\n${itemsText}\n\n*Total:* ${totalFormatted}`;
+                          window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+                        }}
+                      >
+                        <MessageCircle className="h-3.5 w-3.5" />
+                        WhatsApp
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Order Items */}
+              <div className="px-6 py-4">
+                <div className="border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/30 rounded-xl p-4">
+                  <h4 className="font-semibold text-base mb-4">Itens do Pedido</h4>
+                  <div className="space-y-3">
+                    {orderDetails.items?.map((item: any, index: number) => (
+                      <div key={index} className="border-b border-border/30 pb-3 last:border-0 last:pb-0">
+                        <div className="flex justify-between">
+                          <span className="font-medium text-sm">{item.productName}</span>
+                          <span className="font-semibold text-sm">{formatCurrency(item.totalPrice)}</span>
+                        </div>
+                        {/* Complements */}
+                        {item.complements && item.complements.length > 0 && (
+                          <div className="mt-1.5 space-y-0.5">
+                            {item.complements.map((complement: any, compIndex: number) => {
+                              const qty = complement.quantity || 1;
+                              const totalPrice = Number(complement.price || 0) * qty;
+                              return (
+                                <div key={compIndex} className="flex justify-between text-xs text-muted-foreground">
+                                  <span className="text-foreground/70">+ {qty > 1 ? `${qty}x ` : ''}{complement.name}</span>
+                                  {totalPrice > 0 && (
+                                    <span className="text-foreground/70">+ {formatCurrency(totalPrice)}</span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                        {(item.notes || Number(item.unitPrice) > 0) && (
+                          <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                            <span>{item.notes || ""}</span>
+                            {Number(item.unitPrice) > 0 && (
+                              <span>{formatCurrency(item.unitPrice)} x {item.quantity}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Price Details */}
+                  <div className="mt-4 pt-3 border-t border-border/50 space-y-1.5">
+                    <h5 className="font-medium text-sm mb-2">Detalhes do Preço</h5>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Subtotal:</span>
+                      <span className="font-medium">{formatCurrency(orderDetails.subtotal)}</span>
+                    </div>
+                    {Number(orderDetails.deliveryFee) > 0 && orderDetails.deliveryType !== 'dine_in' && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Taxa de Entrega:</span>
+                        <span className="font-medium">{formatCurrency(orderDetails.deliveryFee)}</span>
+                      </div>
+                    )}
+                    {orderDetails.couponCode && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Cupom Aplicado:</span>
+                        <span className="font-medium text-emerald-600">{orderDetails.couponCode}</span>
+                      </div>
+                    )}
+                    {Number(orderDetails.discount) > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Desconto:</span>
+                        <span className="font-medium text-red-500">-{formatCurrency(orderDetails.discount)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between pt-2 border-t border-border/50">
+                      <span className="font-bold text-primary">Total:</span>
+                      <span className="font-bold text-primary">{formatCurrency(orderDetails.total)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Delivery & Payment Info */}
+              <div className="px-6 py-4">
+                <div className="border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/30 rounded-xl p-4">
+                  <h4 className="font-semibold text-base mb-3">{orderDetails.deliveryType === 'dine_in' ? 'Consumo e Pagamento' : 'Entrega e Pagamento'}</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Tipo:</span>
+                      <span className="font-medium">{orderDetails.deliveryType === "delivery" ? "Entrega" : orderDetails.deliveryType === "dine_in" ? "Consumo no local" : "Retirada"}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Método:</span>
+                      <span className="font-medium">{paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</span>
+                    </div>
+                    {orderDetails.paymentMethod === 'cash' && (orderDetails as any).changeAmount && Number((orderDetails as any).changeAmount) > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Troco para:</span>
+                        <span className="font-medium">{formatCurrency((orderDetails as any).changeAmount)}</span>
+                      </div>
+                    )}
+                    {orderDetails.customerAddress && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Endereço:</span>
+                        <span className="font-medium text-right max-w-[180px]">{orderDetails.customerAddress}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Progress Timeline */}
+              <div className="px-6 py-4">
+                <div className="flex items-center justify-between px-4">
+                  {/* Confirmed */}
+                  <div className="flex flex-col items-center">
+                    <div className={cn(
+                      "h-8 w-8 rounded-full flex items-center justify-center",
+                      orderDetails.status !== "cancelled" ? "bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400" : "bg-muted text-muted-foreground"
+                    )}>
+                      <CheckCircle className="h-4 w-4" />
+                    </div>
+                    <span className="text-[10px] mt-1 text-muted-foreground">Confirmado</span>
+                  </div>
+                  <div className="flex-1 h-px bg-border/50 mx-2" />
+                  {/* Preparing */}
+                  <div className="flex flex-col items-center">
+                    <div className={cn(
+                      "h-8 w-8 rounded-full flex items-center justify-center",
+                      ["preparing", "ready", "completed"].includes(orderDetails.status) ? "bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400" : "bg-muted text-muted-foreground"
+                    )}>
+                      <ChefHat className="h-4 w-4" />
+                    </div>
+                    <span className="text-[10px] mt-1 text-muted-foreground">Preparo</span>
+                  </div>
+                  <div className="flex-1 h-px bg-border/50 mx-2" />
+                  {/* Ready */}
+                  <div className="flex flex-col items-center">
+                    <div className={cn(
+                      "h-8 w-8 rounded-full flex items-center justify-center",
+                      ["ready", "completed"].includes(orderDetails.status) ? "bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400" : "bg-muted text-muted-foreground"
+                    )}>
+                      <Package className="h-4 w-4" />
+                    </div>
+                    <span className="text-[10px] mt-1 text-muted-foreground">Pronto</span>
+                  </div>
+                  <div className="flex-1 h-px bg-border/50 mx-2" />
+                  {/* Completed */}
+                  <div className="flex flex-col items-center">
+                    <div className={cn(
+                      "h-8 w-8 rounded-full flex items-center justify-center",
+                      orderDetails.status === "completed" ? "bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400" : "bg-muted text-muted-foreground"
+                    )}>
+                      <CheckCircle className="h-4 w-4" />
+                    </div>
+                    <span className="text-[10px] mt-1 text-muted-foreground">Concluído</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Notes */}
+              {orderDetails.notes && (
+                <div className="px-6 py-4">
+                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200/50 dark:border-amber-800/50 rounded-xl p-4">
+                    <h4 className="font-semibold text-sm text-amber-800 dark:text-amber-400 mb-2">Observações</h4>
+                    <p className="text-sm text-amber-700 dark:text-amber-300">{orderDetails.notes}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
 
       {/* Reschedule Dialog */}
       <Dialog open={rescheduleOrderId !== null} onOpenChange={(open) => !open && setRescheduleOrderId(null)}>

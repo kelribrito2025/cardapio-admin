@@ -6555,3 +6555,8 @@
 
 ## Cor do botão Enviar Pedido no modal de confirmação
 - [x] Alterar botão de enviar pedido de verde para vermelho no modal de confirmação do menu público
+
+## Botão Ver Detalhes nos cards de Pedidos Agendados
+- [x] Adicionar botão "Ver detalhes" nos cards de pedidos agendados
+- [x] Reutilizar a mesma sidebar de detalhes da página de Pedidos (Sheet com mesmo estilo)
+- [x] Incluir informações de agendamento (data/hora agendado) na sidebar com secção azul destacada
