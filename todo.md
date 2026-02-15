@@ -6524,3 +6524,11 @@
 - [x] Painel direita (lista do dia): sem sombra, mesmo estilo de card, padding e tipografia da Dashboard
 - [x] Badges de status padronizados (Agendado=cinza, Aguardando=laranja, Aceito=verde, Na fila=azul)
 - [x] Consistência global: mesmo espaçamento, tipografia, hover, botões e identidade visual
+
+## Redesign Calendário e Painel Lateral (Modelo de Referência)
+- [x] Calendário: layout tabela com células grandes, bordas finas, número no canto superior esquerdo
+- [x] Calendário: mostrar nomes de pedidos/horários dentro das células (não apenas dots)
+- [x] Calendário: dia selecionado com círculo azul sólido no número (hoje=primary, selecionado=highlight)
+- [x] Calendário: dias de outros meses em cinza claro
+- [x] Painel direita: cards de pedidos detalhados com status badge, descrição, data/hora, ações (editar/excluir)
+- [x] Painel direita: cabeçalho com data formatada (ex: "Fev 15 Dom")
