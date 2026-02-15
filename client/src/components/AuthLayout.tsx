@@ -1,6 +1,9 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState, useRef } from "react";
 import { Utensils, Smartphone, BarChart3, Clock } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
+
+const BG_OPTIMIZED = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/RGXZrAZifRctLVFg.jpg";
+const BG_PLACEHOLDER = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/NGESLtTMlNimKDep.jpg";
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -9,6 +12,8 @@ interface AuthLayoutProps {
 
 export function AuthLayout({ children, backgroundImage }: AuthLayoutProps) {
   const { forceTheme } = useTheme();
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
     forceTheme('light');
@@ -17,15 +22,55 @@ export function AuthLayout({ children, backgroundImage }: AuthLayoutProps) {
     };
   }, [forceTheme]);
 
+  // Preload the optimized background image
+  useEffect(() => {
+    const src = backgroundImage || BG_OPTIMIZED;
+    const img = new Image();
+    img.src = src;
+    imgRef.current = img;
+
+    if (img.complete) {
+      setImageLoaded(true);
+    } else {
+      img.onload = () => setImageLoaded(true);
+      img.onerror = () => setImageLoaded(true); // fallback to gradient
+    }
+
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, [backgroundImage]);
+
+  const finalSrc = backgroundImage || BG_OPTIMIZED;
+
   return (
     <div className="min-h-screen flex">
       {/* Left side - Background with promotional content */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative overflow-hidden">
-        {/* Background image */}
+        {/* Fallback gradient - always visible immediately */}
+        <div className="absolute inset-0 bg-gradient-to-br from-red-700 via-red-800 to-red-900" />
+
+        {/* Tiny placeholder with blur - loads instantly (~700 bytes) */}
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${backgroundImage || 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/izKjqeVrEuGPpySX.jpg'})` }}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-300"
+          style={{ 
+            backgroundImage: `url(${BG_PLACEHOLDER})`,
+            filter: 'blur(20px)',
+            transform: 'scale(1.1)', // prevent blur edges from showing
+            opacity: imageLoaded ? 0 : 1,
+          }}
         />
+
+        {/* Full quality image - fades in when loaded */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-700 ease-out"
+          style={{ 
+            backgroundImage: `url(${finalSrc})`,
+            opacity: imageLoaded ? 1 : 0,
+          }}
+        />
+
         {/* Red overlay with 60% opacity (40% transparency) */}
         <div className="absolute inset-0 bg-gradient-to-br from-red-600/60 via-red-700/60 to-red-900/60" />
         {/* Decorative circles */}

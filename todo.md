@@ -6632,3 +6632,6 @@
 - [x] Alterar todas as referências de "CardápioAdmin" para "Mindi" na landing page
 - [x] Alterar "Cardápio Admin" para "Mindi" na landing page
 - [x] Alterar "CardápioAdmin" para "Mindi" na navbar da landing
+
+## Fix: Imagem de Background nas Páginas de Login/Registro
+- [x] Resolver carregamento lento da imagem de background nas páginas de login e criação de conta
