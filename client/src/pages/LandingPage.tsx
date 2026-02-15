@@ -37,7 +37,8 @@ import {
   Phone,
   Shield,
   Rocket,
-  HelpCircle
+  HelpCircle,
+  Play
 } from "lucide-react";
 
 // CDN URLs dos mockups do dashboard
@@ -248,8 +249,8 @@ function HeroSection() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12 lg:py-0">
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[calc(100vh-5rem)]">
           
-          {/* LEFT COLUMN - Content (60%) */}
-          <div className="lg:col-span-7 flex flex-col justify-center">
+          {/* LEFT COLUMN - Content (54%) */}
+          <div className="lg:col-span-6 flex flex-col justify-center">
             {/* Badge */}
             <div
               className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-50 border border-red-100 w-fit mb-6 transition-all duration-700 ${
@@ -351,12 +352,13 @@ function HeroSection() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN - Mockups (40%) */}
-          <div className="lg:col-span-5 relative flex items-center justify-center lg:justify-end">
+          {/* RIGHT COLUMN - Mockups (46%) */}
+          <div className="lg:col-span-6 relative flex items-center justify-center lg:justify-end">
             <div
               className={`relative w-full max-w-lg lg:max-w-none transition-all duration-1000 delay-300 ${
                 isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
               }`}
+              style={{ transform: isVisible ? "scale(1.10) translateX(0)" : "scale(1.10) translateX(3rem)", transformOrigin: "center center" }}
             >
               {/* Desktop Mockup */}
               <div
@@ -1652,111 +1654,130 @@ function LandingFooter() {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
-    produto: [
-      { label: "Funcionalidades", href: "#funcionalidades" },
-      { label: "Planos e Preços", href: "#precos" },
-      { label: "Cardápio Digital", href: "#cardapio" },
-      { label: "Gestão de Pedidos", href: "#" },
-      { label: "Controle de Estoque", href: "#" },
-    ],
-    empresa: [
-      { label: "Sobre nós", href: "#" },
+    "LINKS ÚTEIS": [
+      { label: "Início", href: "#" },
+      { label: "Planos", href: "#precos" },
+      { label: "Como funciona", href: "#como-funciona" },
+      { label: "Recursos", href: "#funcionalidades" },
       { label: "Blog", href: "#" },
-      { label: "Carreiras", href: "#" },
-      { label: "Parceiros", href: "#" },
+      { label: "Entrar", href: "/login" },
     ],
-    suporte: [
-      { label: "Central de Ajuda", href: "#" },
-      { label: "Fale Conosco", href: "#" },
-      { label: "WhatsApp", href: "https://wa.me/5500000000000" },
-      { label: "FAQ", href: "#faq" },
+    "SEGMENTOS": [
+      { label: "Pizzarias", href: "#" },
+      { label: "Hamburguerias", href: "#" },
+      { label: "Restaurantes", href: "#" },
+      { label: "Cafeterias", href: "#" },
+    ],
+    "LEGAL": [
+      { label: "Termos de uso", href: "#" },
+      { label: "Política de privacidade", href: "#" },
     ],
   };
 
   return (
-    <footer className="bg-gray-900 text-gray-400 pt-16 pb-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Top section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
-          {/* Brand */}
-          <div className="sm:col-span-2 lg:col-span-1">
+    <footer className="bg-gray-100 text-gray-500 pt-16 pb-0">
+      <div className="max-w-6xl mx-auto px-6 sm:px-8">
+        {/* Top section: Brand + Link columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 mb-14">
+          {/* Brand column */}
+          <div className="lg:col-span-4">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">M</span>
               </div>
-              <span className="text-xl font-bold text-white">Mindi</span>
+              <span className="text-2xl font-extrabold text-red-500">Mindi</span>
             </div>
-            <p className="text-sm leading-relaxed mb-5 max-w-xs">
-              Sistema completo de gestão para restaurantes. Cardápio digital, pedidos, entregas e muito mais.
+            <p className="text-sm leading-relaxed text-gray-400 mb-6 max-w-xs">
+              Plataforma completa de delivery para restaurantes. Crie seu próprio sistema de pedidos online gratuitamente.
             </p>
-            {/* Social links */}
+            {/* Social icons */}
             <div className="flex items-center gap-3">
               <a
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg bg-gray-800 hover:bg-red-500/20 hover:text-red-400 flex items-center justify-center transition-all duration-300"
+                className="w-10 h-10 rounded-full bg-gray-800 hover:bg-gray-700 text-white flex items-center justify-center transition-all duration-300"
+                aria-label="Instagram"
               >
-                <Instagram className="w-4 h-4" />
+                <Instagram className="w-4.5 h-4.5" />
               </a>
               <a
-                href="https://wa.me/5500000000000"
+                href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg bg-gray-800 hover:bg-green-500/20 hover:text-green-400 flex items-center justify-center transition-all duration-300"
+                className="w-10 h-10 rounded-full bg-gray-800 hover:bg-gray-700 text-white flex items-center justify-center transition-all duration-300"
+                aria-label="Facebook"
               >
-                <Phone className="w-4 h-4" />
+                <Globe className="w-4.5 h-4.5" />
               </a>
               <a
-                href="mailto:contato@mindi.com.br"
-                className="w-9 h-9 rounded-lg bg-gray-800 hover:bg-blue-500/20 hover:text-blue-400 flex items-center justify-center transition-all duration-300"
+                href="https://youtube.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-gray-800 hover:bg-gray-700 text-white flex items-center justify-center transition-all duration-300"
+                aria-label="YouTube"
               >
-                <Mail className="w-4 h-4" />
+                <Play className="w-4.5 h-4.5" />
               </a>
             </div>
           </div>
 
           {/* Links columns */}
-          {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title}>
-              <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-                {title}
-              </h4>
-              <ul className="space-y-2.5">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-sm hover:text-white transition-colors duration-200"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+          <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-8">
+            {Object.entries(footerLinks).map(([title, links]) => (
+              <div key={title}>
+                <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-5">
+                  {title}
+                </h4>
+                <ul className="space-y-3">
+                  {links.map((link) => (
+                    <li key={link.label}>
+                      <a
+                        href={link.href}
+                        className="text-sm text-gray-400 hover:text-gray-700 transition-colors duration-200"
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Contact section */}
+        <div className="mb-12">
+          <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-5">
+            CONTATO
+          </h4>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <Mail className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <span className="text-sm text-gray-400">contato@mindi.com.br</span>
             </div>
-          ))}
+            <div className="flex items-start gap-3">
+              <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-gray-400">
+                <p>São Paulo - SP</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-gray-800 mb-8" />
+        <div className="h-px bg-gray-300" />
 
-        {/* Bottom section */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gray-500">
+        {/* Bottom bar */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 py-5">
+          <div className="flex items-center gap-2 text-xs text-gray-400">
+            <span className="font-semibold text-gray-500">Mindi Tecnologia LTDA</span>
+            <span className="hidden sm:inline">·</span>
+            <span>CNPJ: 00.000.000/0001-00</span>
+          </div>
+          <p className="text-xs text-gray-400">
             &copy; {currentYear} Mindi. Todos os direitos reservados.
           </p>
-          <div className="flex items-center gap-6">
-            <a href="#" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
-              Termos de Uso
-            </a>
-            <a href="#" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
-              Política de Privacidade
-            </a>
-            <a href="#" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
-              LGPD
-            </a>
-          </div>
         </div>
       </div>
     </footer>

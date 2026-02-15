@@ -1385,111 +1385,109 @@ interface FooterLinkGroup {
 function getFooterLinkGroups(): FooterLinkGroup[] {
   return [
     {
-      title: "produto",
+      title: "LINKS ÚTEIS",
       links: [
-        { label: "Funcionalidades", href: "#funcionalidades" },
-        { label: "Planos e Preços", href: "#precos" },
-        { label: "Cardápio Digital", href: "#cardapio" },
-        { label: "Gestão de Pedidos", href: "#" },
-        { label: "Controle de Estoque", href: "#" },
-      ],
-    },
-    {
-      title: "empresa",
-      links: [
-        { label: "Sobre nós", href: "#" },
+        { label: "Início", href: "#" },
+        { label: "Planos", href: "#precos" },
+        { label: "Como funciona", href: "#como-funciona" },
+        { label: "Recursos", href: "#funcionalidades" },
         { label: "Blog", href: "#" },
-        { label: "Carreiras", href: "#" },
-        { label: "Parceiros", href: "#" },
+        { label: "Entrar", href: "/login" },
       ],
     },
     {
-      title: "suporte",
+      title: "SEGMENTOS",
       links: [
-        { label: "Central de Ajuda", href: "#" },
-        { label: "Fale Conosco", href: "#" },
-        { label: "WhatsApp", href: "https://wa.me/5500000000000" },
-        { label: "FAQ", href: "#faq" },
+        { label: "Pizzarias", href: "#" },
+        { label: "Hamburguerias", href: "#" },
+        { label: "Restaurantes", href: "#" },
+        { label: "Cafeterias", href: "#" },
+      ],
+    },
+    {
+      title: "LEGAL",
+      links: [
+        { label: "Termos de uso", href: "#" },
+        { label: "Política de privacidade", href: "#" },
       ],
     },
   ];
-}
-
-function getFooterLegalLinks(): string[] {
-  return ["Termos de Uso", "Política de Privacidade", "LGPD"];
 }
 
 function getFooterSocialLinks(): { name: string; href: string }[] {
   return [
     { name: "Instagram", href: "https://instagram.com" },
-    { name: "WhatsApp", href: "https://wa.me/5500000000000" },
-    { name: "Email", href: "mailto:contato@mindi.com.br" },
+    { name: "Facebook", href: "https://facebook.com" },
+    { name: "YouTube", href: "https://youtube.com" },
   ];
 }
 
-describe("Footer - Link Groups", () => {
+function getFooterContactInfo() {
+  return {
+    email: "contato@mindi.com.br",
+    location: "São Paulo - SP",
+    company: "Mindi Tecnologia LTDA",
+    cnpj: "00.000.000/0001-00",
+  };
+}
+
+describe("Footer - Link Groups (Menuz style)", () => {
   it("tem 3 grupos de links", () => {
     const groups = getFooterLinkGroups();
     expect(groups).toHaveLength(3);
   });
 
-  it("grupo Produto tem 5 links", () => {
+  it("grupo Links Úteis tem 6 links", () => {
     const groups = getFooterLinkGroups();
-    const produto = groups.find(g => g.title === "produto");
-    expect(produto?.links).toHaveLength(5);
+    const linksUteis = groups.find(g => g.title === "LINKS ÚTEIS");
+    expect(linksUteis?.links).toHaveLength(6);
   });
 
-  it("grupo Empresa tem 4 links", () => {
+  it("grupo Segmentos tem 4 links", () => {
     const groups = getFooterLinkGroups();
-    const empresa = groups.find(g => g.title === "empresa");
-    expect(empresa?.links).toHaveLength(4);
+    const segmentos = groups.find(g => g.title === "SEGMENTOS");
+    expect(segmentos?.links).toHaveLength(4);
   });
 
-  it("grupo Suporte tem 4 links", () => {
+  it("grupo Legal tem 2 links", () => {
     const groups = getFooterLinkGroups();
-    const suporte = groups.find(g => g.title === "suporte");
-    expect(suporte?.links).toHaveLength(4);
+    const legal = groups.find(g => g.title === "LEGAL");
+    expect(legal?.links).toHaveLength(2);
   });
 
-  it("grupo Suporte inclui link para WhatsApp", () => {
+  it("grupo Links Úteis inclui link para Entrar", () => {
     const groups = getFooterLinkGroups();
-    const suporte = groups.find(g => g.title === "suporte");
-    expect(suporte?.links.some(l => l.label === "WhatsApp")).toBe(true);
+    const linksUteis = groups.find(g => g.title === "LINKS ÚTEIS");
+    const entrar = linksUteis?.links.find(l => l.label === "Entrar");
+    expect(entrar?.href).toBe("/login");
   });
 
-  it("grupo Suporte inclui link para FAQ", () => {
+  it("grupo Links Úteis inclui link para Planos", () => {
     const groups = getFooterLinkGroups();
-    const suporte = groups.find(g => g.title === "suporte");
-    const faqLink = suporte?.links.find(l => l.label === "FAQ");
-    expect(faqLink?.href).toBe("#faq");
+    const linksUteis = groups.find(g => g.title === "LINKS ÚTEIS");
+    expect(linksUteis?.links.some(l => l.label === "Planos")).toBe(true);
   });
 
-  it("grupo Produto inclui link para Preços", () => {
+  it("grupo Legal inclui Termos de uso", () => {
     const groups = getFooterLinkGroups();
-    const produto = groups.find(g => g.title === "produto");
-    expect(produto?.links.some(l => l.label.includes("Preços"))).toBe(true);
-  });
-});
-
-describe("Footer - Legal Links", () => {
-  it("tem 3 links legais", () => {
-    const legal = getFooterLegalLinks();
-    expect(legal).toHaveLength(3);
+    const legal = groups.find(g => g.title === "LEGAL");
+    expect(legal?.links.some(l => l.label.includes("Termos"))).toBe(true);
   });
 
-  it("inclui Termos de Uso", () => {
-    const legal = getFooterLegalLinks();
-    expect(legal).toContain("Termos de Uso");
+  it("grupo Legal inclui Política de privacidade", () => {
+    const groups = getFooterLinkGroups();
+    const legal = groups.find(g => g.title === "LEGAL");
+    expect(legal?.links.some(l => l.label.includes("privacidade"))).toBe(true);
   });
 
-  it("inclui Política de Privacidade", () => {
-    const legal = getFooterLegalLinks();
-    expect(legal).toContain("Política de Privacidade");
-  });
-
-  it("inclui LGPD", () => {
-    const legal = getFooterLegalLinks();
-    expect(legal).toContain("LGPD");
+  it("grupo Segmentos inclui tipos de estabelecimento", () => {
+    const groups = getFooterLinkGroups();
+    const segmentos = groups.find(g => g.title === "SEGMENTOS");
+    const labels = segmentos?.links.map(l => l.label) || [];
+    expect(labels).toContain("Pizzarias");
+    expect(labels).toContain("Hamburguerias");
+    expect(labels).toContain("Restaurantes");
+    expect(labels).toContain("Cafeterias");
   });
 });
 
@@ -1504,16 +1502,37 @@ describe("Footer - Social Links", () => {
     expect(social.some(s => s.name === "Instagram")).toBe(true);
   });
 
-  it("inclui WhatsApp", () => {
+  it("inclui Facebook", () => {
     const social = getFooterSocialLinks();
-    const wa = social.find(s => s.name === "WhatsApp");
-    expect(wa?.href).toContain("wa.me");
+    expect(social.some(s => s.name === "Facebook")).toBe(true);
   });
 
-  it("inclui Email", () => {
+  it("inclui YouTube", () => {
     const social = getFooterSocialLinks();
-    const email = social.find(s => s.name === "Email");
-    expect(email?.href).toContain("mailto:");
+    expect(social.some(s => s.name === "YouTube")).toBe(true);
+  });
+});
+
+describe("Footer - Contact Info", () => {
+  it("tem email de contato", () => {
+    const contact = getFooterContactInfo();
+    expect(contact.email).toContain("@mindi.com.br");
+  });
+
+  it("tem localização", () => {
+    const contact = getFooterContactInfo();
+    expect(contact.location).toBeTruthy();
+  });
+
+  it("tem nome da empresa", () => {
+    const contact = getFooterContactInfo();
+    expect(contact.company).toContain("Mindi");
+    expect(contact.company).toContain("LTDA");
+  });
+
+  it("tem CNPJ", () => {
+    const contact = getFooterContactInfo();
+    expect(contact.cnpj).toMatch(/\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/);
   });
 });
 

@@ -6663,3 +6663,15 @@
 - [x] Redes sociais (Instagram, WhatsApp, etc.)
 - [x] Informações legais e copyright
 - [x] Responsividade completa
+
+## Redesign Footer da Landing Page (estilo Menuz)
+- [ ] Fundo claro (cinza muito claro) em vez de escuro
+- [ ] Logo Mindi + descrição à esquerda com ícones sociais arredondados
+- [ ] Colunas de links: Links Úteis, Segmentos, Legal
+- [ ] Seção de Contato separada abaixo com email e endereço
+- [ ] Barra inferior com nome da empresa, CNPJ e copyright
+- [ ] Responsividade completa
+
+## Aumentar Mockup Dashboard na Hero Section
+- [x] Aumentar tamanho do container do mockup do dashboard na Hero em 15%
+- [x] Reduzir scale do mockup de 1.15 para 1.10 (diminuir 5%)
