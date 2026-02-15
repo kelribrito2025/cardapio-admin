@@ -475,14 +475,17 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     );
 
                     if (sidebarCollapsed) {
-                      // Quando colapsado, mostrar como tooltip com filhos
+                      // Quando colapsado, clicar no menu pai expande a sidebar e abre o submenu
                       return (
                         <div key={item.href}>
                           <Tooltip delayDuration={0}>
                             <TooltipTrigger asChild>
                               <div
                                 className={parentClassName}
-                                onClick={() => setExpandedMenus(prev => ({ ...prev, [item.href]: !prev[item.href] }))}
+                                onClick={() => {
+                                  setSidebarCollapsed(false);
+                                  setExpandedMenus(prev => ({ ...prev, [item.href]: true }));
+                                }}
                               >
                                 <div className="relative">
                                   <item.icon className="h-4 w-4 flex-shrink-0 mx-auto" />
@@ -496,13 +499,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                             </TooltipTrigger>
                             <TooltipContent side="right" className="font-medium">
                               <p>{item.label}</p>
-                              <div className="mt-1 space-y-1">
-                                {item.children.map((child: any) => (
-                                  <Link key={child.href} href={child.href} onClick={() => handleNavClick(child.href)} className="block text-xs hover:text-primary py-0.5">
-                                    {child.label}
-                                  </Link>
-                                ))}
-                              </div>
                             </TooltipContent>
                           </Tooltip>
                         </div>
