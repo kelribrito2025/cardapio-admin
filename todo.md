@@ -6546,3 +6546,6 @@
 
 ## Navegação: Agendados como submenu de Pedidos
 - [x] Mover Agendados para dentro do menu Pedidos como submenu (igual ao padrão do menu "Menu" com submenus)
+
+## Fix: Menu Pedidos navegar + expandir dropdown
+- [x] Clicar em Pedidos deve navegar para /pedidos E expandir o dropdown com Agendados simultaneamente

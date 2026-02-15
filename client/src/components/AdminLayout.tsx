@@ -136,9 +136,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       }
       // Fallback: auto-expandir se estamos numa rota filha
       const path = window.location.pathname;
-      if (path === '/catalogo' || path.startsWith('/catalogo/') || path === '/avaliacoes') {
-        return { '/menu-parent': true };
+      const initial: Record<string, boolean> = {};
+      if (path === '/catalogo' || path.startsWith('/catalogo/') || path === '/avaliacoes' || path === '/complementos') {
+        initial['/menu-parent'] = true;
       }
+      if (path === '/pedidos' || path.startsWith('/pedidos/') || path === '/agendados') {
+        initial['/pedidos'] = true;
+      }
+      if (Object.keys(initial).length > 0) return initial;
     }
     return {};
   });
@@ -252,10 +257,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   // Auto-expandir submenu Menu quando navegar para rotas filhas (apenas se não estiver já expandido)
   useEffect(() => {
-    if (location === '/catalogo' || location.startsWith('/catalogo/') || location === '/avaliacoes') {
+    if (location === '/catalogo' || location.startsWith('/catalogo/') || location === '/avaliacoes' || location === '/complementos') {
       setExpandedMenus(prev => {
-        if (prev['/menu-parent']) return prev; // Já está expandido, não alterar
+        if (prev['/menu-parent']) return prev;
         return { ...prev, '/menu-parent': true };
+      });
+    }
+    if (location === '/pedidos' || location.startsWith('/pedidos/') || location === '/agendados') {
+      setExpandedMenus(prev => {
+        if (prev['/pedidos']) return prev;
+        return { ...prev, '/pedidos': true };
       });
     }
   }, [location]);
@@ -514,7 +525,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                         <div
                           className={cn(parentClassName, "select-none")}
                           style={{borderRadius: '12px', paddingLeft: '37px', marginRight: '43px', marginLeft: '-27px'}}
-                          onClick={() => setExpandedMenus(prev => ({ ...prev, [item.href]: !prev[item.href] }))}
+                          onClick={() => {
+                            // For items that have a navigable href (not just a parent placeholder), navigate to it
+                            if (item.href && !item.href.endsWith('-parent')) {
+                              navigate(item.href);
+                            }
+                            // Always toggle the submenu
+                            setExpandedMenus(prev => ({ ...prev, [item.href]: !prev[item.href] }));
+                          }}
                         >
                           <item.icon className="h-4 w-4 flex-shrink-0" />
                           <span className="text-sm flex items-center gap-2 flex-1">
