@@ -6496,3 +6496,4 @@
 - [x] Bug: Toggle "Aberto agora" no admin mostra "Aberto" mas banco de dados tem manuallyClosed=true - corrigido: admin agora usa computedIsOpen do servidor como fonte de verdade
 - [x] Quando sidebar minimizada e usuário clicar em "Menu" (com submenu), a barra deve expandir em vez de mostrar tooltip/popover
 - [x] Sidebar auto-expand: quando minimizada, expandir suavemente ao hover e recolher ao sair do mouse, com animação suave
+- [x] Alterar sidebar hover auto-expand de overlay para push (empurrar conteúdo da página)

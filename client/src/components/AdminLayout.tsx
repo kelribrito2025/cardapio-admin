@@ -366,8 +366,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   // Sidebar width based on collapsed state
-  // Main content always uses the collapsed/expanded width (hover doesn't push content)
-  const mainPadding = sidebarCollapsed ? "lg:pl-[63px]" : "lg:pl-[263px]";
+  // Main content pushes when sidebar expands (including hover)
+  const mainPadding = isVisuallyExpanded ? "lg:pl-[263px]" : "lg:pl-[63px]";
   // Sidebar visual width: expanded on hover (overlay) or normal
   const sidebarWidth = isVisuallyExpanded ? "w-[263px]" : "w-[63px]";
 
@@ -388,7 +388,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           sidebarWidth,
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
           "lg:translate-x-0",
-          hoverExpanded && sidebarCollapsed && "shadow-2xl"
+          hoverExpanded && sidebarCollapsed && "shadow-lg"
         )}
         style={{
           background: 'var(--card)'
