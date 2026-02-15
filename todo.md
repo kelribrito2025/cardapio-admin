@@ -6506,3 +6506,4 @@
 - [x] Bug: Itens dentro de categoria pausada não aparecem visualmente como pausados (devem ter opacidade reduzida e ícone de pausa)
 - [x] Bug: Cards na coluna 'Pronto' do Kanban aparecem com cor laranja em vez de verde
 - [x] Reduzir altura dos cards de pedido no Kanban para ficarem mais compactos
+- [x] Adicionar efeito pulsante no badge "ENTREGA" dos cards de pedido no Kanban

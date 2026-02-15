@@ -1300,7 +1300,7 @@ export default function Pedidos() {
                                   </span>
                                 )}
                               </div>
-                              <span className="py-0.5 font-bold uppercase tracking-wide" style={{borderRadius: '5px', fontSize: '8px', height: '16px', paddingRight: '5px', paddingLeft: '5px', color: config.badgeText, backgroundColor: config.badgeBg}}>
+                              <span className={cn("py-0.5 font-bold uppercase tracking-wide", order.deliveryType === "delivery" && "animate-pulse")} style={{borderRadius: '5px', fontSize: '8px', height: '16px', paddingRight: '5px', paddingLeft: '5px', color: config.badgeText, backgroundColor: config.badgeBg}}>
                                 {order.deliveryType === "delivery" ? "Entrega" : order.deliveryType === "dine_in" ? "Consumo" : "Retirada"}
                               </span>
                             </div>
