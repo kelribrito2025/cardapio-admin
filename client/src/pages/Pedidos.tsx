@@ -1280,7 +1280,7 @@ export default function Pedidos() {
                     return (
                       <div
                         key={order.id}
-                        className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-200"
+                        className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-200" style={{height: '136px'}}
                       >
                         {/* Header colorido com ícone - estilo original */}
                         <div className={cn("px-3 py-2 flex items-center justify-between rounded-t-xl", config.bgColor)} style={{height: '48px'}}>
@@ -1319,7 +1319,7 @@ export default function Pedidos() {
                         </div>
 
                         {/* Content */}
-                        <div className="px-3 py-2">
+                        <div className="px-3" style={{height: '83px', paddingTop: '9px', paddingBottom: '9px'}}>
                           {/* Linha compacta com todas as informações */}
                           <div className="flex items-center justify-between gap-2 flex-wrap">
                             <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -1461,7 +1461,7 @@ export default function Pedidos() {
                       "border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-default select-none min-h-[140px]",
                       column.placeholderBorder,
                       column.placeholderBg
-                    )}
+                    )} style={{height: '135px'}}
                   >
                     {column.id === "new" ? (
                       // Coluna Novos: ícone de loading animado
