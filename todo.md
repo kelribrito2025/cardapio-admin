@@ -6566,3 +6566,8 @@
 - [x] Linha central: nome do cliente + método pagamento + valor em vermelho
 - [x] Rodapé: botão ver detalhes + ações (aceitar/reagendar/cancelar)
 - [x] Seguir mesmo estilo visual dos cards de Pedidos (header colorido, content compacto, actions)
+
+## Botão Imprimir nos Cards de Pedidos Agendados
+- [x] Adicionar botão de imprimir nos cards de pedidos agendados (substituiu ícone de olho por impressora)
+- [x] Reutilizar mesma funcionalidade de impressão da página de Pedidos (normal + múltiplas impressoras)
+- [x] Incluir dropdown com opções de impressão e favorito (estrela amber)

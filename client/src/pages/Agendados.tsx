@@ -49,6 +49,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 
 const DAYS_HEADER = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
 const MONTHS_PT = [
@@ -145,6 +152,73 @@ export default function Agendados() {
     onSuccess: () => { toast.success("Pedido reagendado com sucesso!"); setRescheduleOrderId(null); refetch(); },
     onError: (err: any) => toast.error(err.message),
   });
+
+  // Printer settings query
+  const { data: printerSettings } = trpc.printer.getSettings.useQuery(
+    { establishmentId: establishment?.id ?? 0 },
+    { enabled: !!establishment?.id && establishment.id > 0 }
+  );
+
+  const updatePrintMethodMutation = trpc.printer.saveSettings.useMutation({
+    onSuccess: () => {
+      toast.success("Método de impressão favorito atualizado!");
+    },
+    onError: () => {
+      toast.error("Erro ao atualizar método de impressão");
+    },
+  });
+
+  const handleToggleFavoritePrintMethod = (method: 'normal' | 'android') => {
+    if (!establishment?.id) return;
+    updatePrintMethodMutation.mutate({
+      establishmentId: establishment.id,
+      defaultPrintMethod: method,
+    });
+  };
+
+  const handlePrintOrderDirect = async (orderId: number) => {
+    try {
+      const receiptUrl = `${window.location.origin}/api/print/receipt/${orderId}`;
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.right = '0';
+      iframe.style.bottom = '0';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = 'none';
+      iframe.src = receiptUrl;
+      document.body.appendChild(iframe);
+      iframe.onload = () => {
+        try {
+          iframe.contentWindow?.print();
+        } catch {
+          window.open(receiptUrl, '_blank');
+        }
+        setTimeout(() => document.body.removeChild(iframe), 60000);
+      };
+    } catch {
+      toast.error("Erro ao imprimir pedido");
+    }
+  };
+
+  const handlePrintMultiPrinter = async (orderId: number) => {
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    if (!isAndroid) {
+      toast.info("Para impressão em múltiplas impressoras, use um dispositivo Android com o app Multi Printer Network Print Service.");
+      return;
+    }
+    try {
+      const response = await fetch(`${window.location.origin}/api/print/multiprinter-sectors/${orderId}`);
+      const data = await response.json();
+      if (data.success && data.deepLink) {
+        window.location.href = data.deepLink;
+      } else {
+        toast.error("Erro ao gerar link de impressão");
+      }
+    } catch {
+      toast.error("Erro ao conectar com o serviço de impressão");
+    }
+  };
 
   // Calendar computation
   const calendarDays = useMemo(() => {
@@ -514,15 +588,48 @@ export default function Agendados() {
 
                         {/* Actions — mesmo layout dos cards de Pedidos */}
                         <div className="flex gap-1.5 mt-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 rounded-lg border-border/50 hover:bg-accent text-muted-foreground hover:text-foreground"
-                            onClick={() => setSelectedOrderId(order.id)}
-                            title="Ver detalhes"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 rounded-lg border-border/50 hover:bg-accent text-muted-foreground hover:text-foreground"
+                                title="Imprimir"
+                              >
+                                <Printer className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="w-64">
+                              <DropdownMenuLabel>Imprimir</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <div className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" onClick={() => handlePrintOrderDirect(order.id)}>
+                                <div className="flex items-center">
+                                  <Printer className="h-4 w-4 mr-2" />
+                                  <span className="text-sm">Impressão Normal</span>
+                                </div>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleToggleFavoritePrintMethod('normal'); }}
+                                  className="p-1 hover:bg-accent-foreground/10 rounded"
+                                  title="Definir como impressão padrão"
+                                >
+                                  <Star className={cn("h-4 w-4 transition-colors", printerSettings?.defaultPrintMethod === 'normal' ? "fill-amber-500 text-amber-500" : "text-amber-500")} />
+                                </button>
+                              </div>
+                              <div className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" onClick={() => handlePrintMultiPrinter(order.id)}>
+                                <div className="flex items-center">
+                                  <Printer className="h-4 w-4 mr-2" />
+                                  <span className="text-sm">Múltiplas Impressoras (Android)</span>
+                                </div>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleToggleFavoritePrintMethod('android'); }}
+                                  className="p-1 hover:bg-accent-foreground/10 rounded"
+                                  title="Definir como impressão padrão"
+                                >
+                                  <Star className={cn("h-4 w-4 transition-colors", printerSettings?.defaultPrintMethod === 'android' ? "fill-amber-500 text-amber-500" : "text-amber-500")} />
+                                </button>
+                              </div>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                           <Button
                             variant="outline"
                             size="sm"
