@@ -2809,12 +2809,12 @@ export default function PublicMenu() {
                                     if (currentIndex < productComplements.length - 1) {
                                       const nextGroup = productComplements[currentIndex + 1];
                                       setTimeout(() => {
-                                        document.getElementById(`complement-group-${nextGroup.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        document.getElementById(`complement-group-${nextGroup.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                       }, 200);
                                     } else {
                                       // Último grupo: scroll para observações
                                       setTimeout(() => {
-                                        document.querySelector('[data-observation-field]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        document.querySelector('[data-observation-field]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                       }, 200);
                                     }
                                   }
@@ -2867,11 +2867,11 @@ export default function PublicMenu() {
                                     if (currentIndex < productComplements.length - 1) {
                                       const nextGroup = productComplements[currentIndex + 1];
                                       setTimeout(() => {
-                                        document.getElementById(`complement-group-${nextGroup.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        document.getElementById(`complement-group-${nextGroup.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                       }, 200);
                                     } else {
                                       setTimeout(() => {
-                                        document.querySelector('[data-observation-field]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        document.querySelector('[data-observation-field]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                       }, 200);
                                     }
                                   }
@@ -2896,11 +2896,11 @@ export default function PublicMenu() {
                                         if (currentIndex < productComplements.length - 1) {
                                           const nextGroup = productComplements[currentIndex + 1];
                                           setTimeout(() => {
-                                            document.getElementById(`complement-group-${nextGroup.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                            document.getElementById(`complement-group-${nextGroup.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                           }, 200);
                                         } else {
                                           setTimeout(() => {
-                                            document.querySelector('[data-observation-field]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                            document.querySelector('[data-observation-field]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                           }, 200);
                                         }
                                       }

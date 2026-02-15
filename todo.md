@@ -6498,3 +6498,4 @@
 
 ## Auto-scroll Complementos no Menu Público
 - [x] Auto-scroll suave para próximo grupo de complementos quando cliente atingir quantidade máxima no menu público
+- [x] Bug: Auto-scroll dos complementos mostra parte do grupo anterior após completar seleção - próximo grupo deve ficar no topo da área visível
