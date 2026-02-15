@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Link } from "wouter";
 import { 
   CheckCircle2, 
@@ -145,15 +145,66 @@ function LandingNavbar() {
 }
 
 // ============ HERO SECTION ============
+const TYPEWRITER_WORDS = [
+  "pedidos",
+  "entregas",
+  "estoque",
+  "cardápio",
+  "finanças",
+];
+
 function HeroSection() {
   const heroRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [displayText, setDisplayText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showCursor, setShowCursor] = useState(true);
 
   useEffect(() => {
     // Trigger animations after mount
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Blinking cursor
+  useEffect(() => {
+    const cursorInterval = setInterval(() => {
+      setShowCursor((prev) => !prev);
+    }, 530);
+    return () => clearInterval(cursorInterval);
+  }, []);
+
+  // Typewriter effect
+  useEffect(() => {
+    const currentWord = TYPEWRITER_WORDS[currentWordIndex];
+    let timeout: ReturnType<typeof setTimeout>;
+
+    if (!isDeleting) {
+      // Typing
+      if (displayText.length < currentWord.length) {
+        timeout = setTimeout(() => {
+          setDisplayText(currentWord.slice(0, displayText.length + 1));
+        }, 100 + Math.random() * 50); // slight randomness for natural feel
+      } else {
+        // Pause before deleting
+        timeout = setTimeout(() => setIsDeleting(true), 2000);
+      }
+    } else {
+      // Deleting
+      if (displayText.length > 0) {
+        timeout = setTimeout(() => {
+          setDisplayText(currentWord.slice(0, displayText.length - 1));
+        }, 60);
+      } else {
+        // Move to next word
+        setIsDeleting(false);
+        setCurrentWordIndex((prev) => (prev + 1) % TYPEWRITER_WORDS.length);
+      }
+    }
+
+    return () => clearTimeout(timeout);
+  }, [displayText, isDeleting, currentWordIndex]);
 
   return (
     <section
@@ -200,15 +251,22 @@ function HeroSection() {
               </span>
             </div>
 
-            {/* Headline */}
+            {/* Headline with typewriter effect */}
             <h1
               className={`text-4xl sm:text-5xl lg:text-[3.5rem] xl:text-6xl font-bold text-gray-900 leading-[1.1] tracking-tight mb-6 transition-all duration-700 delay-100 ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
               }`}
             >
-              Controle pedidos, entregas e estoque{" "}
+              Controle{" "}
               <span className="relative inline-block">
-                <span className="relative z-10 text-red-500">em um só lugar.</span>
+                <span className="relative z-10 text-red-500">
+                  {displayText}
+                  <span
+                    className={`inline-block w-[3px] h-[0.85em] bg-red-500 ml-0.5 align-middle rounded-sm transition-opacity duration-100 ${
+                      showCursor ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                </span>
                 <svg
                   className="absolute -bottom-1 left-0 w-full"
                   viewBox="0 0 300 12"
@@ -224,6 +282,8 @@ function HeroSection() {
                   />
                 </svg>
               </span>
+              <br className="hidden sm:block" />
+              em um só lugar.
             </h1>
 
             {/* Subheadline */}

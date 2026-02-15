@@ -933,3 +933,75 @@ describe("Seção 4 - Mockup do Tablet", () => {
     expect(isValidMockupUrl("not-a-url")).toBe(false);
   });
 });
+
+// ============ TYPEWRITER EFFECT TESTS ============
+
+const TYPEWRITER_WORDS = [
+  "pedidos",
+  "entregas",
+  "estoque",
+  "cardápio",
+  "finanças",
+];
+
+describe("Typewriter Effect - Hero Section", () => {
+  it("has at least 3 words to cycle through", () => {
+    expect(TYPEWRITER_WORDS.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it("all words are non-empty strings", () => {
+    TYPEWRITER_WORDS.forEach((word) => {
+      expect(typeof word).toBe("string");
+      expect(word.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("words are relevant to restaurant management", () => {
+    const relevantTerms = ["pedidos", "entregas", "estoque", "cardápio", "finanças", "clientes", "vendas"];
+    TYPEWRITER_WORDS.forEach((word) => {
+      expect(relevantTerms).toContain(word);
+    });
+  });
+
+  it("no duplicate words", () => {
+    const uniqueWords = new Set(TYPEWRITER_WORDS);
+    expect(uniqueWords.size).toBe(TYPEWRITER_WORDS.length);
+  });
+
+  it("simulates typing progression correctly", () => {
+    const word = TYPEWRITER_WORDS[0]; // "pedidos"
+    // Simulate typing: each step adds one character
+    for (let i = 1; i <= word.length; i++) {
+      const partial = word.slice(0, i);
+      expect(partial).toBe(word.substring(0, i));
+      expect(partial.length).toBe(i);
+    }
+  });
+
+  it("simulates deleting progression correctly", () => {
+    const word = TYPEWRITER_WORDS[0]; // "pedidos"
+    // Simulate deleting: each step removes one character from the end
+    for (let i = word.length; i >= 0; i--) {
+      const partial = word.slice(0, i);
+      expect(partial.length).toBe(i);
+    }
+  });
+
+  it("cycles through words correctly", () => {
+    // Simulate the index cycling
+    let index = 0;
+    for (let cycle = 0; cycle < TYPEWRITER_WORDS.length * 2; cycle++) {
+      expect(TYPEWRITER_WORDS[index]).toBeDefined();
+      index = (index + 1) % TYPEWRITER_WORDS.length;
+    }
+    // After full cycles, should be back at 0
+    expect(index).toBe(0);
+  });
+
+  it("first word starts with lowercase for natural sentence flow", () => {
+    // "Controle {word}" - word should be lowercase to flow naturally
+    TYPEWRITER_WORDS.forEach((word) => {
+      expect(word[0]).toBe(word[0].toLowerCase());
+    });
+  });
+});

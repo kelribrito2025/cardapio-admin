@@ -6635,3 +6635,6 @@
 
 ## Fix: Imagem de Background nas Páginas de Login/Registro
 - [x] Resolver carregamento lento da imagem de background nas páginas de login e criação de conta
+
+## Efeito Typewriter na Hero Section
+- [x] Adicionar efeito de digitação animado no título principal da Hero Section da landing page
