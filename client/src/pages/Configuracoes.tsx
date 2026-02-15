@@ -80,6 +80,7 @@ import { WhatsAppTab } from "@/components/WhatsAppTab";
 import { PrintTestTab } from "@/components/PrintTestTab";
 import { IntegrationsTab } from "@/components/IntegrationsTab";
 import { SettingsSidebar, SettingsSection } from "@/components/SettingsSidebar";
+import { SchedulingSettings } from "@/components/SchedulingSettings";
 import { AccountSecuritySection } from "@/components/AccountSecuritySection";
 import { OnlinePaymentTab } from "@/components/OnlinePaymentTab";
 import { SUPPORTED_TIMEZONES } from "../../../shared/const";
@@ -109,7 +110,7 @@ export default function Configuracoes() {
     // Suporte a deep linking via query param ?section=whatsapp
     const params = new URLSearchParams(window.location.search);
     const section = params.get('section');
-    const validSections: SettingsSection[] = ['estabelecimento', 'atendimento', 'whatsapp', 'whatsapp-notificacoes', 'whatsapp-templates', 'impressora', 'pagamento-online', 'integracoes', 'conta-seguranca'];
+    const validSections: SettingsSection[] = ['estabelecimento', 'atendimento', 'agendamento', 'whatsapp', 'whatsapp-notificacoes', 'whatsapp-templates', 'impressora', 'pagamento-online', 'integracoes', 'conta-seguranca'];
     if (section && validSections.includes(section as SettingsSection)) {
       // Redirecionar 'whatsapp' para 'whatsapp-notificacoes' (submenu padrão)
       if (section === 'whatsapp') return 'whatsapp-notificacoes';
@@ -2259,6 +2260,11 @@ export default function Configuracoes() {
             </div>
           </SectionCard>
             </div>
+          )}
+
+          {/* Agendamento */}
+          {activeSection === "agendamento" && (
+            <SchedulingSettings />
           )}
 
           {/* WhatsApp - Notificações */}

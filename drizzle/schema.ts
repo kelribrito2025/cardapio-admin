@@ -104,6 +104,12 @@ export const establishments = mysqlTable("establishments", {
   ownerDisplayName: varchar("ownerDisplayName", { length: 11 }),
   reviewsEnabled: boolean("reviewsEnabled").default(true).notNull(),
   fakeReviewCount: int("fakeReviewCount").default(355),
+  // Agendamento de pedidos
+  schedulingEnabled: boolean("schedulingEnabled").default(false).notNull(), // Habilitar agendamento
+  schedulingMinAdvance: int("schedulingMinAdvance").default(60).notNull(), // Antecedência mínima em minutos (ex: 60 = 1h)
+  schedulingMaxDays: int("schedulingMaxDays").default(7).notNull(), // Antecedência máxima em dias (ex: 7 dias)
+  schedulingInterval: int("schedulingInterval").default(30).notNull(), // Intervalo entre horários em minutos (15, 30, 60)
+  schedulingMoveMinutes: int("schedulingMoveMinutes").default(30).notNull(), // Minutos antes para mover para fila normal
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -197,7 +203,7 @@ export const orders = mysqlTable("orders", {
   customerName: varchar("customerName", { length: 255 }),
   customerPhone: varchar("customerPhone", { length: 30 }),
   customerAddress: text("customerAddress"),
-  status: mysqlEnum("status", ["pending_confirmation", "new", "preparing", "ready", "out_for_delivery", "completed", "cancelled"]).default("pending_confirmation").notNull(),
+  status: mysqlEnum("status", ["pending_confirmation", "new", "preparing", "ready", "out_for_delivery", "completed", "cancelled", "scheduled"]).default("pending_confirmation").notNull(),
   deliveryType: mysqlEnum("deliveryType", ["delivery", "pickup", "dine_in"]).default("delivery").notNull(),
   paymentMethod: mysqlEnum("paymentMethod", ["cash", "card", "pix", "boleto", "card_online"]).default("cash").notNull(),
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
@@ -216,6 +222,11 @@ export const orders = mysqlTable("orders", {
   externalData: json("externalData").$type<Record<string, unknown>>(), // Dados completos do pedido externo
   // Controle de notificação ao entregador (evitar duplicatas)
   deliveryNotified: boolean("deliveryNotified").default(false).notNull(),
+  // Agendamento de pedidos
+  isScheduled: boolean("isScheduled").default(false).notNull(), // Se é um pedido agendado
+  scheduledAt: timestamp("scheduledAt"), // Data/hora agendada para o pedido
+  movedToQueue: boolean("movedToQueue").default(false).notNull(), // Se já foi movido para a fila principal
+  movedToQueueAt: timestamp("movedToQueueAt"), // Quando foi movido para a fila
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   completedAt: timestamp("completedAt"),

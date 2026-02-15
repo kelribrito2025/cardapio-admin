@@ -3,7 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, Rocket } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, Rocket, CalendarClock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -171,6 +171,10 @@ export default function PublicMenu() {
   const [showTrackingModal, setShowTrackingModal] = useState(false);
   const [showMobileBag, setShowMobileBag] = useState(false);
   const [bagAutoOpenEnabled, setBagAutoOpenEnabled] = useState(true); // Controla se a sacola deve abrir automaticamente
+  // Estados de agendamento
+  const [isScheduling, setIsScheduling] = useState(false); // Se o fluxo é de agendamento
+  const [scheduledDate, setScheduledDate] = useState<string>(""); // Data selecionada YYYY-MM-DD
+  const [scheduledTime, setScheduledTime] = useState<string>(""); // Hora selecionada HH:MM
   const [orderStatus, setOrderStatus] = useState<"sent" | "accepted" | "delivering" | "delivered" | "cancelled">("sent");
   const [cancellationReasonDisplay, setCancellationReasonDisplay] = useState<string | null>(null);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
@@ -234,6 +238,18 @@ export default function PublicMenu() {
   const { data: businessHoursData } = trpc.publicMenu.getBusinessHours.useQuery(
     { establishmentId: data?.establishment?.id || 0 },
     { enabled: !!data?.establishment?.id }
+  );
+
+  // Query para buscar configurações de agendamento
+  const { data: schedulingConfig } = trpc.scheduling.getPublicConfig.useQuery(
+    { slug: slug || "" },
+    { enabled: !!slug }
+  );
+
+  // Query para buscar horários de funcionamento (para agendamento)
+  const { data: schedulingBusinessHours } = trpc.scheduling.getPublicBusinessHours.useQuery(
+    { slug: slug || "" },
+    { enabled: !!slug && !!schedulingConfig?.schedulingEnabled }
   );
 
   // Query para buscar complementos do produto selecionado
@@ -3250,14 +3266,16 @@ export default function PublicMenu() {
                     <h2 className="text-lg font-bold text-white">
                       {checkoutStep === 1 && 'Entrega e Pagamento'}
                       {checkoutStep === 2 && 'Resumo do Pedido'}
-                      {checkoutStep === 3 && 'Seus Dados'}
-                      {checkoutStep === 4 && 'Confirmação'}
+                      {isScheduling && checkoutStep === 3 && 'Agendamento'}
+                      {(!isScheduling && checkoutStep === 3 || isScheduling && checkoutStep === 4) && 'Seus Dados'}
+                      {(!isScheduling && checkoutStep === 4 || isScheduling && checkoutStep === 5) && 'Confirmação'}
                     </h2>
                     <p className="text-sm text-white/80">
                       {checkoutStep === 1 && 'Escolha como receber'}
                       {checkoutStep === 2 && 'Confira seus itens'}
-                      {checkoutStep === 3 && 'Preencha suas informações'}
-                      {checkoutStep === 4 && 'Envie seu pedido'}
+                      {isScheduling && checkoutStep === 3 && 'Escolha data e horário'}
+                      {(!isScheduling && checkoutStep === 3 || isScheduling && checkoutStep === 4) && 'Preencha suas informações'}
+                      {(!isScheduling && checkoutStep === 4 || isScheduling && checkoutStep === 5) && 'Envie seu pedido'}
                     </p>
                   </div>
                 </div>
@@ -3281,40 +3299,47 @@ export default function PublicMenu() {
             </div>
             
             {/* Indicador de Progresso */}
-            <div className="flex-shrink-0 bg-white px-6 py-3 border-b border-gray-100">
-              <div className="flex items-center justify-between mb-2">
-                {[1, 2, 3, 4].map((step) => (
-                  <div key={step} className="flex items-center">
-                    <button
-                      onClick={() => step < checkoutStep && setCheckoutStep(step)}
-                      disabled={step >= checkoutStep}
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
-                        checkoutStep >= step 
-                          ? 'bg-red-500 text-white' 
-                          : 'bg-gray-200 text-gray-500'
-                      } ${step < checkoutStep ? 'cursor-pointer hover:ring-2 hover:ring-red-300' : ''}`}
-                    >
-                      {checkoutStep > step ? (
-                        <CheckCircle className="h-5 w-5" />
-                      ) : (
-                        step
-                      )}
-                    </button>
-                    {step < 4 && (
-                      <div className={`w-12 sm:w-16 h-1 mx-1 rounded transition-all ${
-                        checkoutStep > step ? 'bg-red-500' : 'bg-gray-200'
-                      }`} />
-                    )}
+            {(() => {
+              const totalSteps = isScheduling ? 5 : 4;
+              const stepLabels = isScheduling
+                ? ['Entrega', 'Resumo', 'Agendar', 'Dados', 'Enviar']
+                : ['Entrega', 'Resumo', 'Dados', 'Enviar'];
+              return (
+                <div className="flex-shrink-0 bg-white px-6 py-3 border-b border-gray-100">
+                  <div className="flex items-center justify-between mb-2">
+                    {Array.from({ length: totalSteps }, (_, i) => i + 1).map((step) => (
+                      <div key={step} className="flex items-center">
+                        <button
+                          onClick={() => step < checkoutStep && setCheckoutStep(step)}
+                          disabled={step >= checkoutStep}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+                            checkoutStep >= step 
+                              ? 'bg-red-500 text-white' 
+                              : 'bg-gray-200 text-gray-500'
+                          } ${step < checkoutStep ? 'cursor-pointer hover:ring-2 hover:ring-red-300' : ''}`}
+                        >
+                          {checkoutStep > step ? (
+                            <CheckCircle className="h-5 w-5" />
+                          ) : (
+                            step
+                          )}
+                        </button>
+                        {step < totalSteps && (
+                          <div className={`${isScheduling ? 'w-8 sm:w-10' : 'w-12 sm:w-16'} h-1 mx-1 rounded transition-all ${
+                            checkoutStep > step ? 'bg-red-500' : 'bg-gray-200'
+                          }`} />
+                        )}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              <div className="flex justify-between text-[10px] sm:text-xs text-gray-500">
-                <span className={checkoutStep >= 1 ? 'text-red-500 font-medium' : ''}>Entrega</span>
-                <span className={checkoutStep >= 2 ? 'text-red-500 font-medium' : ''}>Resumo</span>
-                <span className={checkoutStep >= 3 ? 'text-red-500 font-medium' : ''}>Dados</span>
-                <span className={checkoutStep >= 4 ? 'text-red-500 font-medium' : ''}>Enviar</span>
-              </div>
-            </div>
+                  <div className="flex justify-between text-[10px] sm:text-xs text-gray-500">
+                    {stepLabels.map((label, i) => (
+                      <span key={label} className={checkoutStep >= i + 1 ? 'text-red-500 font-medium' : ''}>{label}</span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Modal 1 - Entrega e Pagamento */}
             {checkoutStep === 1 && (
@@ -4041,18 +4066,215 @@ export default function PublicMenu() {
 
               {/* Footer */}
               <div className="flex-shrink-0 border-t px-6 py-4">
-                <button
-                  onClick={() => setCheckoutStep(3)}
-                  className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
-                >
-                  Próximo
-                </button>
+                <div className="flex gap-2">
+                  {schedulingConfig?.schedulingEnabled && (
+                    <button
+                      onClick={() => {
+                        setIsScheduling(true);
+                        setCheckoutStep(3); // Vai para o step de agendamento
+                      }}
+                      className="flex items-center justify-center gap-1.5 py-3.5 px-4 bg-white border-2 border-red-500 text-red-500 hover:bg-red-50 font-semibold rounded-xl transition-colors"
+                      style={{ width: '38%' }}
+                    >
+                      <CalendarClock className="h-4 w-4" />
+                      Agendar
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      setIsScheduling(false);
+                      setScheduledDate("");
+                      setScheduledTime("");
+                      setCheckoutStep(3); // Vai para Dados (step 3 sem agendamento)
+                    }}
+                    className="flex-1 py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
+                  >
+                    Próximo
+                  </button>
+                </div>
               </div>
             </div>
           )}
 
-            {/* Modal 3 - Identificação do Cliente */}
-            {checkoutStep === 3 && (
+            {/* Modal 3 - Agendamento (só aparece quando isScheduling) */}
+            {isScheduling && checkoutStep === 3 && (
+              <div className="flex flex-col flex-1 overflow-hidden">
+                {/* Body */}
+                <div className="flex-1 overflow-y-auto overscroll-contain p-6 space-y-6">
+                  {/* Seletor de Data */}
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                      <CalendarClock className="h-5 w-5 text-red-500" />
+                      Escolha a data
+                    </h3>
+                    <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+                      {(() => {
+                        const days: { date: string; dayName: string; dayNum: string; monthName: string }[] = [];
+                        const maxDays = schedulingConfig?.schedulingMaxDays || 7;
+                        const minAdvanceMin = schedulingConfig?.schedulingMinAdvance || 60;
+                        const now = new Date();
+                        const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+                        const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+                        
+                        for (let i = 0; i <= maxDays; i++) {
+                          const d = new Date(now);
+                          d.setDate(d.getDate() + i);
+                          const dayOfWeek = d.getDay(); // 0=Dom, 6=Sab
+                          
+                          // Verificar se o dia tem horário de funcionamento
+                          const bh = schedulingBusinessHours?.find((h: any) => h.dayOfWeek === dayOfWeek);
+                          if (!bh || !bh.isActive) continue;
+                          
+                          // Para hoje, verificar se ainda há horários disponíveis
+                          if (i === 0) {
+                            const closeTime = bh.closeTime?.split(':').map(Number) || [22, 0];
+                            const closeDate = new Date(now);
+                            closeDate.setHours(closeTime[0], closeTime[1], 0, 0);
+                            const minTime = new Date(now.getTime() + minAdvanceMin * 60000);
+                            if (minTime >= closeDate) continue; // Hoje já não tem horário
+                          }
+                          
+                          const yyyy = d.getFullYear();
+                          const mm = String(d.getMonth() + 1).padStart(2, '0');
+                          const dd = String(d.getDate()).padStart(2, '0');
+                          days.push({
+                            date: `${yyyy}-${mm}-${dd}`,
+                            dayName: i === 0 ? 'Hoje' : i === 1 ? 'Amanhã' : weekDays[dayOfWeek],
+                            dayNum: String(d.getDate()),
+                            monthName: months[d.getMonth()],
+                          });
+                        }
+                        
+                        if (days.length === 0) {
+                          return <p className="text-sm text-gray-500">Nenhum dia disponível para agendamento.</p>;
+                        }
+                        
+                        return days.map((day) => (
+                          <button
+                            key={day.date}
+                            onClick={() => { setScheduledDate(day.date); setScheduledTime(""); }}
+                            className={`flex-shrink-0 flex flex-col items-center justify-center w-[72px] h-[80px] rounded-xl border-2 transition-all ${
+                              scheduledDate === day.date
+                                ? 'border-red-500 bg-red-50 text-red-600'
+                                : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                            }`}
+                          >
+                            <span className="text-[10px] font-medium uppercase">{day.dayName}</span>
+                            <span className="text-xl font-bold">{day.dayNum}</span>
+                            <span className="text-[10px] text-gray-400">{day.monthName}</span>
+                          </button>
+                        ));
+                      })()}
+                    </div>
+                  </div>
+
+                  {/* Seletor de Horário */}
+                  {scheduledDate && (
+                    <div>
+                      <h3 className="text-base font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <Clock className="h-5 w-5 text-red-500" />
+                        Escolha o horário
+                      </h3>
+                      <div className="grid grid-cols-4 gap-2">
+                        {(() => {
+                          const now = new Date();
+                          const interval = schedulingConfig?.schedulingInterval || 30;
+                          const minAdvanceMin = schedulingConfig?.schedulingMinAdvance || 60;
+                          const selectedDayOfWeek = new Date(scheduledDate + 'T12:00:00').getDay();
+                          const bh = schedulingBusinessHours?.find((h: any) => h.dayOfWeek === selectedDayOfWeek);
+                          
+                          if (!bh || !bh.isActive || !bh.openTime || !bh.closeTime) {
+                            return <p className="text-sm text-gray-500 col-span-4">Sem horários disponíveis.</p>;
+                          }
+                          
+                          const [openH, openM] = bh.openTime.split(':').map(Number);
+                          const [closeH, closeM] = bh.closeTime.split(':').map(Number);
+                          const slots: string[] = [];
+                          let h = openH, m = openM;
+                          
+                          while (h < closeH || (h === closeH && m <= closeM)) {
+                            const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                            
+                            // Para hoje, não permitir horários passados + antecedência mínima
+                            const isToday = scheduledDate === `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                            if (isToday) {
+                              const slotTime = new Date(now);
+                              slotTime.setHours(h, m, 0, 0);
+                              const minTime = new Date(now.getTime() + minAdvanceMin * 60000);
+                              if (slotTime < minTime) {
+                                m += interval;
+                                if (m >= 60) { h += Math.floor(m / 60); m = m % 60; }
+                                continue;
+                              }
+                            }
+                            
+                            slots.push(timeStr);
+                            m += interval;
+                            if (m >= 60) { h += Math.floor(m / 60); m = m % 60; }
+                          }
+                          
+                          if (slots.length === 0) {
+                            return <p className="text-sm text-gray-500 col-span-4">Nenhum horário disponível para esta data.</p>;
+                          }
+                          
+                          return slots.map((slot) => (
+                            <button
+                              key={slot}
+                              onClick={() => setScheduledTime(slot)}
+                              className={`py-2.5 px-3 rounded-xl border-2 text-sm font-semibold transition-all ${
+                                scheduledTime === slot
+                                  ? 'border-red-500 bg-red-50 text-red-600'
+                                  : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                              }`}
+                            >
+                              {slot}
+                            </button>
+                          ));
+                        })()}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Resumo do agendamento selecionado */}
+                  {scheduledDate && scheduledTime && (
+                    <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                          <CalendarClock className="h-5 w-5 text-red-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-red-700">Pedido agendado para:</p>
+                          <p className="text-base font-bold text-red-600">
+                            {(() => {
+                              const [y, mo, d] = scheduledDate.split('-');
+                              return `${d}/${mo} às ${scheduledTime}`;
+                            })()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div className="flex-shrink-0 border-t px-6 py-4">
+                  <button
+                    onClick={() => setCheckoutStep(4)}
+                    disabled={!scheduledDate || !scheduledTime}
+                    className={`w-full py-3.5 font-semibold rounded-xl transition-colors ${
+                      scheduledDate && scheduledTime
+                        ? 'bg-red-500 hover:bg-red-600 text-white'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                  >
+                    Próximo
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Modal 3/4 - Identificação do Cliente */}
+            {((!isScheduling && checkoutStep === 3) || (isScheduling && checkoutStep === 4)) && (
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
@@ -4118,7 +4340,7 @@ export default function PublicMenu() {
                     setOnlinePaymentUrl(null);
                     setCreatedOrderNumber(null);
                     setIsSendingOrder(false);
-                    setCheckoutStep(4);
+                    setCheckoutStep(isScheduling ? 5 : 4);
                   }}
                   disabled={!customerInfo.name || customerInfo.phone.replace(/\D/g, "").length < 11}
                   className={`w-full py-3.5 font-semibold rounded-xl transition-colors ${
@@ -4133,8 +4355,8 @@ export default function PublicMenu() {
             </div>
           )}
 
-            {/* Modal 4 - Confirmação Final */}
-            {checkoutStep === 4 && (
+            {/* Modal 4/5 - Confirmação Final */}
+            {((!isScheduling && checkoutStep === 4) || (isScheduling && checkoutStep === 5)) && (
               <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Body */}
@@ -4246,17 +4468,29 @@ setOnlinePaymentUrl(null);
                       <CheckCircle className="h-12 w-12 text-green-500" />
                     </div>
                     <h3 className="text-2xl font-bold text-green-600 mb-2">
-                      {onlinePaymentStatus === 'confirmed' ? 'Pagamento confirmado!' : 'Pedido enviado com sucesso!'}
-                    </h3>
-                    {(createdOrderNumber || selectedOrderId) && (
-                      <p className="text-xl font-semibold text-gray-800 mb-4">
-                        Número do pedido: <span className="text-primary">{createdOrderNumber || selectedOrderId}</span>
-                      </p>
-                    )}
-                    <p className="text-gray-600">
-                      {onlinePaymentStatus === 'confirmed' 
-                        ? 'Seu pedido foi enviado ao restaurante e está sendo processado.'
-                        : 'Seu pedido foi recebido e está sendo processado.'}
+                       {isScheduling 
+                         ? 'Pedido agendado com sucesso!'
+                         : onlinePaymentStatus === 'confirmed' ? 'Pagamento confirmado!' : 'Pedido enviado com sucesso!'}
+                     </h3>
+                     {(createdOrderNumber || selectedOrderId) && (
+                       <p className="text-xl font-semibold text-gray-800 mb-4">
+                         Número do pedido: <span className="text-primary">{createdOrderNumber || selectedOrderId}</span>
+                       </p>
+                     )}
+                     {isScheduling && scheduledDate && scheduledTime && (
+                       <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-3 inline-flex items-center gap-2">
+                         <CalendarClock className="h-5 w-5 text-red-500" />
+                         <span className="text-sm font-semibold text-red-700">
+                           Agendado para {scheduledDate.split('-').reverse().slice(0, 2).join('/')} às {scheduledTime}
+                         </span>
+                       </div>
+                     )}
+                     <p className="text-gray-600">
+                       {isScheduling
+                         ? 'Seu pedido foi agendado e será preparado no horário escolhido.'
+                         : onlinePaymentStatus === 'confirmed' 
+                           ? 'Seu pedido foi enviado ao restaurante e está sendo processado.'
+                           : 'Seu pedido foi recebido e está sendo processado.'}
                     </p>
                   </div>
                 )}
@@ -4367,23 +4601,27 @@ setOnlinePaymentUrl(null);
                     } else {
                       // Pedido normal (dinheiro, cartão na entrega, pix)
                       createOrderMutation.mutate({
-                        establishmentId: establishment.id,
-                        customerName: customerInfo.name,
-                        customerPhone: customerInfo.phone,
-                        customerAddress: fullAddress || undefined,
-                        deliveryType,
-                        paymentMethod,
-                        subtotal: subtotal.toFixed(2),
-                        deliveryFee: deliveryFeeValue.toFixed(2),
-                        discount: discount.toFixed(2),
-                        total: total.toFixed(2),
-                        notes: orderObservation || undefined,
-                        changeAmount: paymentMethod === 'cash' && changeAmount ? changeAmount.replace(/\./g, '').replace(',', '.') : undefined,
-                        couponCode: appliedCoupon?.code || undefined,
-                        couponId: appliedCoupon?.id || undefined,
-                        loyaltyCardId: appliedCoupon?.loyaltyCardId || undefined,
-                        items: orderItems,
-                      });
+                         establishmentId: establishment.id,
+                         customerName: customerInfo.name,
+                         customerPhone: customerInfo.phone,
+                         customerAddress: fullAddress || undefined,
+                         deliveryType,
+                         paymentMethod,
+                         subtotal: subtotal.toFixed(2),
+                         deliveryFee: deliveryFeeValue.toFixed(2),
+                         discount: discount.toFixed(2),
+                         total: total.toFixed(2),
+                         notes: orderObservation || undefined,
+                         changeAmount: paymentMethod === 'cash' && changeAmount ? changeAmount.replace(/\./g, '').replace(',', '.') : undefined,
+                         couponCode: appliedCoupon?.code || undefined,
+                         couponId: appliedCoupon?.id || undefined,
+                         loyaltyCardId: appliedCoupon?.loyaltyCardId || undefined,
+                         items: orderItems,
+                         ...(isScheduling && scheduledDate && scheduledTime ? {
+                           isScheduled: true,
+                           scheduledAt: `${scheduledDate}T${scheduledTime}:00`,
+                         } : {}),
+                       });
                     }
                     }
                   }}

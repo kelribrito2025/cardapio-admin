@@ -12,12 +12,14 @@ import {
   CreditCard,
   Bell,
   FileText,
+  CalendarClock,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export type SettingsSection = 
   | "estabelecimento" 
   | "atendimento" 
+  | "agendamento"
   | "whatsapp" 
   | "whatsapp-notificacoes"
   | "whatsapp-templates"
@@ -43,6 +45,7 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   { id: "estabelecimento", label: "Estabelecimento", icon: Store },
   { id: "atendimento", label: "Atendimento", icon: Clock },
+  { id: "agendamento", label: "Agendamento", icon: CalendarClock },
   { 
     id: "whatsapp", 
     label: "WhatsApp", 

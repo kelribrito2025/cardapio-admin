@@ -29,6 +29,7 @@ import Ajuda from "./pages/Ajuda";
 import MesasComandas from "./pages/MesasComandas";
 import Avaliacoes from "./pages/Avaliacoes";
 import Entregadores from "./pages/Entregadores";
+import Agendados from "./pages/Agendados";
 import EntregadorDetalhes from "./pages/EntregadorDetalhes";
 import { GlobalPDVHandle } from "./components/GlobalPDVHandle";
 
@@ -61,6 +62,7 @@ function AdminRoutes() {
         <Route path="/catalogo/editar/:id" component={ProductForm} />
         <Route path="/complementos" component={Complementos} />
         <Route path="/pedidos" component={Pedidos} />
+        <Route path="/agendados" component={Agendados} />
         <Route path="/estoque" component={Estoque} />
         <Route path="/configuracoes" component={Configuracoes} />
         <Route path="/planos" component={Planos} />

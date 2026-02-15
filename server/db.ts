@@ -2781,8 +2781,8 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
   const orderNumber = await getNextDailyOrderNumber(data.establishmentId);
   console.log('[DB:createPublicOrder] Order number gerado:', orderNumber);
   
-  // Definir status inicial baseado na configuração de confirmação
-  const initialStatus = requiresConfirmation ? 'pending_confirmation' : 'new';
+  // Definir status inicial baseado na configuração de confirmação e agendamento
+   const initialStatus = data.isScheduled ? 'scheduled' : (requiresConfirmation ? 'pending_confirmation' : 'new');
   console.log('[DB:createPublicOrder] Status inicial:', initialStatus);
   
   try {
@@ -3025,8 +3025,15 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
       if (whatsappConfig && whatsappConfig.status === 'connected' && whatsappConfig.instanceToken && data.customerPhone) {
         const establishment = await getEstablishmentById(data.establishmentId);
         
+        // Preparar info de agendamento para incluir na mensagem
+        const schedulingInfo = data.isScheduled && data.scheduledAt ? {
+          isScheduled: true,
+          scheduledDate: new Date(data.scheduledAt).toLocaleDateString('pt-BR'),
+          scheduledTime: new Date(data.scheduledAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        } : undefined;
+        
         // Verificar se deve usar confirmação via botões
-        if ((whatsappConfig as any).requireOrderConfirmation) {
+        if ((whatsappConfig as any).requireOrderConfirmation && !data.isScheduled) {
           // Enviar mensagem com botões de confirmação
           const { sendOrderConfirmationRequest } = await import('./_core/uazapi');
           
@@ -3081,6 +3088,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
               })),
               orderTotal: data.total,
               paymentMethod: data.paymentMethod,
+              schedulingInfo,
             }
           );
           
@@ -7785,4 +7793,212 @@ export async function isOrderDeliveryNotified(orderId: number): Promise<boolean>
     .where(eq(orders.id, orderId))
     .limit(1);
   return result?.deliveryNotified === true;
+}
+
+
+// ============ SCHEDULING (AGENDAMENTO) FUNCTIONS ============
+
+/**
+ * Busca configurações de agendamento de um estabelecimento
+ */
+export async function getSchedulingConfig(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const [result] = await db.select({
+    schedulingEnabled: establishments.schedulingEnabled,
+    schedulingMinAdvance: establishments.schedulingMinAdvance,
+    schedulingMaxDays: establishments.schedulingMaxDays,
+    schedulingInterval: establishments.schedulingInterval,
+    schedulingMoveMinutes: establishments.schedulingMoveMinutes,
+  }).from(establishments).where(eq(establishments.id, establishmentId)).limit(1);
+  return result || null;
+}
+
+/**
+ * Atualiza configurações de agendamento
+ */
+export async function updateSchedulingConfig(establishmentId: number, data: {
+  schedulingEnabled?: boolean;
+  schedulingMinAdvance?: number;
+  schedulingMaxDays?: number;
+  schedulingInterval?: number;
+  schedulingMoveMinutes?: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(establishments).set(data).where(eq(establishments.id, establishmentId));
+}
+
+/**
+ * Busca pedidos agendados de um estabelecimento para uma data específica (YYYY-MM-DD)
+ */
+export async function getScheduledOrdersByDate(establishmentId: number, date: string) {
+  const db = await getDb();
+  if (!db) return [];
+  const startOfDay = new Date(`${date}T00:00:00`);
+  const endOfDay = new Date(`${date}T23:59:59`);
+  return db.select()
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      eq(orders.isScheduled, true),
+      gte(orders.scheduledAt, startOfDay),
+      lte(orders.scheduledAt, endOfDay),
+    ))
+    .orderBy(asc(orders.scheduledAt));
+}
+
+/**
+ * Busca pedidos agendados de um estabelecimento para um range de datas
+ */
+export async function getScheduledOrdersByRange(establishmentId: number, startDate: string, endDate: string) {
+  const db = await getDb();
+  if (!db) return [];
+  const start = new Date(`${startDate}T00:00:00`);
+  const end = new Date(`${endDate}T23:59:59`);
+  return db.select()
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      eq(orders.isScheduled, true),
+      gte(orders.scheduledAt, start),
+      lte(orders.scheduledAt, end),
+    ))
+    .orderBy(asc(orders.scheduledAt));
+}
+
+/**
+ * Busca pedidos agendados que precisam ser movidos para a fila principal.
+ * Retorna pedidos cujo scheduledAt - moveMinutes <= agora E que ainda não foram movidos.
+ */
+export async function getScheduledOrdersToMove() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Buscar todos os estabelecimentos com agendamento habilitado
+  const estabs = await db.select({
+    id: establishments.id,
+    schedulingMoveMinutes: establishments.schedulingMoveMinutes,
+    timezone: establishments.timezone,
+  }).from(establishments).where(eq(establishments.schedulingEnabled, true));
+  
+  const ordersToMove: Array<{ order: Order; establishmentId: number }> = [];
+  
+  for (const estab of estabs) {
+    const tz = estab.timezone || 'America/Sao_Paulo';
+    const now = getLocalDate(tz);
+    const moveMinutes = estab.schedulingMoveMinutes || 30;
+    
+    // Buscar pedidos agendados que ainda não foram movidos
+    const scheduled = await db.select()
+      .from(orders)
+      .where(and(
+        eq(orders.establishmentId, estab.id),
+        eq(orders.isScheduled, true),
+        eq(orders.movedToQueue, false),
+        eq(orders.status, 'scheduled'),
+        isNotNull(orders.scheduledAt),
+      ));
+    
+    for (const order of scheduled) {
+      if (!order.scheduledAt) continue;
+      const scheduledTime = new Date(order.scheduledAt);
+      const moveTime = new Date(scheduledTime.getTime() - moveMinutes * 60 * 1000);
+      
+      if (now >= moveTime) {
+        ordersToMove.push({ order, establishmentId: estab.id });
+      }
+    }
+  }
+  
+  return ordersToMove;
+}
+
+/**
+ * Move um pedido agendado para a fila principal (status: pending)
+ */
+export async function moveScheduledOrderToQueue(orderId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(orders).set({
+    status: 'new',
+    movedToQueue: true,
+    movedToQueueAt: new Date(),
+  }).where(eq(orders.id, orderId));
+  
+  // Buscar o pedido atualizado para notificar via SSE
+  const [order] = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1);
+  if (order) {
+    // Buscar itens do pedido
+    const items = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+    notifyNewOrder(order.establishmentId, { ...order, items });
+  }
+  
+  return order;
+}
+
+/**
+ * Reagendar um pedido para nova data/hora
+ */
+export async function rescheduleOrder(orderId: number, newScheduledAt: Date) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(orders).set({
+    scheduledAt: newScheduledAt,
+    movedToQueue: false,
+    movedToQueueAt: null,
+  }).where(eq(orders.id, orderId));
+}
+
+/**
+ * Aceitar pedido agendado antecipadamente (mover para fila)
+ */
+export async function acceptScheduledOrder(orderId: number) {
+  return moveScheduledOrderToQueue(orderId);
+}
+
+/**
+ * Cancelar pedido agendado
+ */
+export async function cancelScheduledOrder(orderId: number, reason?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(orders).set({
+    status: 'cancelled',
+    cancellationReason: reason || 'Pedido agendado cancelado',
+  }).where(eq(orders.id, orderId));
+}
+
+/**
+ * Contar pedidos agendados por mês para um estabelecimento
+ * Retorna um mapa { 'YYYY-MM-DD': count }
+ */
+export async function getScheduledOrderCountsByMonth(establishmentId: number, year: number, month: number) {
+  const db = await getDb();
+  if (!db) return {};
+  
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0, 23, 59, 59);
+  
+  const scheduled = await db.select({
+    scheduledAt: orders.scheduledAt,
+  }).from(orders).where(and(
+    eq(orders.establishmentId, establishmentId),
+    eq(orders.isScheduled, true),
+    gte(orders.scheduledAt, startDate),
+    lte(orders.scheduledAt, endDate),
+    ne(orders.status, 'cancelled'),
+  ));
+  
+  const counts: Record<string, number> = {};
+  for (const o of scheduled) {
+    if (!o.scheduledAt) continue;
+    const d = new Date(o.scheduledAt);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    counts[key] = (counts[key] || 0) + 1;
+  }
+  return counts;
 }

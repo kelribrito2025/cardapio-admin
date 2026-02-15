@@ -617,6 +617,20 @@
       "when": 1771107393888,
       "tag": "0087_secret_exiles",
       "breakpoints": true
+    },
+    {
+      "idx": 88,
+      "version": "5",
+      "when": 1771161939732,
+      "tag": "0088_thin_zaran",
+      "breakpoints": true
+    },
+    {
+      "idx": 89,
+      "version": "5",
+      "when": 1771162075212,
+      "tag": "0089_magenta_absorbing_man",
+      "breakpoints": true
     }
   ]
 }

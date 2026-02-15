@@ -6507,3 +6507,11 @@
 - [x] Bug: Cards na coluna 'Pronto' do Kanban aparecem com cor laranja em vez de verde
 - [x] Reduzir altura dos cards de pedido no Kanban para ficarem mais compactos
 - [x] Adicionar efeito pulsante no badge "ENTREGA" dos cards de pedido no Kanban
+- [x] Sistema de Agendamento: Schema DB (scheduledAt, isScheduled, movedToQueue nos pedidos + configurações de agendamento)
+- [x] Sistema de Agendamento: Helpers DB e procedures tRPC (CRUD agendados, configurações, job automático)
+- [x] Sistema de Agendamento: Menu público - botão "Agendar" no resumo + step de agendamento (data/hora)
+- [x] Sistema de Agendamento: Painel admin - página "Agendados" com calendário mensal + lista de pedidos
+- [x] Sistema de Agendamento: Configurações do restaurante - seção Agendamento (toggle, antecedência, intervalo, etc.)
+- [x] Sistema de Agendamento: Integração WhatsApp para pedidos agendados
+- [x] Sistema de Agendamento: Testes unitários (50 testes passando)
+- [x] Sistema de Agendamento: Job automático para mover pedidos agendados para fila (intervalo 60s)

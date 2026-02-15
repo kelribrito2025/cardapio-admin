@@ -12,6 +12,7 @@ import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMu
 import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrdersByIds, getOrderById, getOrderItems, getOrderItemsWithPrinter, getEstablishmentById, getPrinterSettings, getActivePrinters, getTabById, getTabItems, getTableById } from "../db";
 import { sdk } from "./sdk";
 import { startScheduledCampaignJob } from "../scheduledCampaignJob";
+import { startScheduledOrdersJob } from "../scheduledOrdersJob";
 
 // Função para gerar HTML do recibo otimizado para impressora térmica
 // OTIMIZADO para melhor legibilidade em impressoras ESC POS 58mm/80mm
@@ -2585,6 +2586,9 @@ async function startServer() {
     
     // Iniciar job de processamento de campanhas agendadas
     startScheduledCampaignJob();
+    
+    // Iniciar job de processamento de pedidos agendados (move para fila automaticamente)
+    startScheduledOrdersJob();
   });
 }
 

@@ -429,7 +429,12 @@ export function generateStatusMessage(
   }> | null,
   orderTotal?: string | null,
   timezone?: string,
-  paymentMethod?: string | null
+  paymentMethod?: string | null,
+  schedulingInfo?: {
+    isScheduled: boolean;
+    scheduledDate: string;
+    scheduledTime: string;
+  }
 ): string {
   // Default templates
   const defaultTemplates: Record<string, string> = {
@@ -528,11 +533,19 @@ export function generateStatusMessage(
     }
   }
   
+  // Adicionar info de agendamento se for pedido agendado
+  let schedulingText = '';
+  if (schedulingInfo?.isScheduled) {
+    schedulingText = `\n\n📅 *Pedido Agendado*\n📆 Data: ${schedulingInfo.scheduledDate}\n⏰ Horário: ${schedulingInfo.scheduledTime}`;
+  }
+  
   return messageTemplate
     .replace(/{{customerName}}/g, customerName)
     .replace(/{{orderNumber}}/g, orderNumber)
     .replace(/{{establishmentName}}/g, establishmentName)
-    .replace(/{{itensPedido}}/g, itensPedidoText);
+    .replace(/{{itensPedido}}/g, itensPedidoText)
+    .replace(/{{agendamento}}/g, schedulingText)
+    + (schedulingInfo?.isScheduled && !messageTemplate.includes('{{agendamento}}') ? schedulingText : '');
 }
 
 /**
@@ -560,6 +573,11 @@ export async function sendOrderStatusNotification(
     orderTotal?: string | null;
     timezone?: string;
     paymentMethod?: string | null;
+    schedulingInfo?: {
+      isScheduled: boolean;
+      scheduledDate: string;
+      scheduledTime: string;
+    };
   }
 ): Promise<SendTextResponse> {
   const message = generateStatusMessage(
@@ -573,7 +591,8 @@ export async function sendOrderStatusNotification(
     data.orderItems,
     data.orderTotal,
     data.timezone,
-    data.paymentMethod
+    data.paymentMethod,
+    data.schedulingInfo
   );
   
   return sendTextMessage(instanceToken, phone, message);

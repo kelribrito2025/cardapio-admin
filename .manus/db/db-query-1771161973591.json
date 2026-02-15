@@ -1,0 +1,50 @@
+{
+  "query": "SHOW COLUMNS FROM establishments LIKE 'scheduling%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SHOW COLUMNS FROM establishments LIKE 'scheduling%';",
+  "rows": [
+    {
+      "Field": "schedulingEnabled",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "schedulingMinAdvance",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "60",
+      "Extra": ""
+    },
+    {
+      "Field": "schedulingMaxDays",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "7",
+      "Extra": ""
+    },
+    {
+      "Field": "schedulingInterval",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "30",
+      "Extra": ""
+    },
+    {
+      "Field": "schedulingMoveMinutes",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "30",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nschedulingEnabled\ttinyint(1)\tNO\t\t0\t\nschedulingMinAdvance\tint(11)\tNO\t\t60\t\nschedulingMaxDays\tint(11)\tNO\t\t7\t\nschedulingInterval\tint(11)\tNO\t\t30\t\nschedulingMoveMinutes\tint(11)\tNO\t\t30\t\n",
+  "stderr": "",
+  "execution_time_ms": 90
+}
