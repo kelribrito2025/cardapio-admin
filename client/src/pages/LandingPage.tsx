@@ -419,8 +419,6 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white">
       <LandingNavbar />
       <HeroSection />
-      <PainPointsStrip />
-      
       {/* Novas seções serão adicionadas aqui */}
     </div>
   );
