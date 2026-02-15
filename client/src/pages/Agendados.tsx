@@ -534,13 +534,13 @@ export default function Agendados() {
                   return (
                     <div
                       key={order.id}
-                      className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-200"
+                      className="bg-card rounded-xl border border-border/50 overflow-hidden transition-all duration-200"
                       style={{ height: '136px' }}
                     >
                       {/* Header colorido — mesmo estilo dos cards de Pedidos */}
                       <div className={cn("px-3 py-2 flex items-center justify-between rounded-t-xl", config.bgColor)} style={{ height: '48px' }}>
                         <div className="flex items-center gap-3">
-                          <div className={cn("p-1.5 rounded-full bg-card/90 shadow-sm", config.color)}>
+                          <div className={cn("p-1.5 rounded-full bg-card/90", config.color)}>
                             <config.icon className="h-3.5 w-3.5" />
                           </div>
                           <div className="flex flex-col">
@@ -641,7 +641,7 @@ export default function Agendados() {
                           {order.status === "scheduled" && !order.movedToQueue && (
                             <Button
                               size="sm"
-                              className="flex-1 h-8 rounded-lg shadow-sm text-xs hover:opacity-90"
+                              className="flex-1 h-8 rounded-lg text-xs hover:opacity-90"
                               style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
                               onClick={() => acceptOrder.mutate({ orderId: order.id })}
                               disabled={acceptOrder.isPending}

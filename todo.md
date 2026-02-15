@@ -6579,3 +6579,6 @@
 - [x] Badge no recibo por sector: mostrar "AGENDADO"
 - [x] Adicionar card/secção de agendamento (data e hora) abaixo do card de retirada no recibo HTML
 - [x] Adicionar card/secção de agendamento (data e hora) no recibo por sector
+
+## Remover sombra dos cards de pedidos agendados
+- [x] Remover shadow dos cards de pedidos na página Agendados
