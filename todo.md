@@ -6582,3 +6582,7 @@
 
 ## Remover sombra dos cards de pedidos agendados
 - [x] Remover shadow dos cards de pedidos na página Agendados
+
+## Badge no Submenu Agendados e Notificação de Pedido Agendado
+- [x] Adicionar badge com contagem de pedidos agendados pendentes no submenu "Agendados" na sidebar
+- [x] Na notificação de novo pedido agendado, botão deve dizer "Ver pedido agendado" e navegar para /agendados

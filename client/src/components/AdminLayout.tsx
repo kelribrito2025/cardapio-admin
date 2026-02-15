@@ -185,19 +185,35 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   useEffect(() => {
     const handleNewOrderNotification = (event: Event) => {
       const customEvent = event as CustomEvent;
-      console.log("[AdminLayout] Evento de novo pedido recebido:", customEvent.detail);
+      const orderData = customEvent.detail;
+      console.log("[AdminLayout] Evento de novo pedido recebido:", orderData);
       
-      // Mostrar toast de notificação global
-      toast.success("Novo pedido recebido!", {
-        description: "Um novo pedido acabou de chegar.",
-        duration: 5000,
-        action: {
-          label: "Ver pedidos",
-          onClick: () => {
-            navigate("/pedidos");
+      const isScheduled = orderData?.isScheduled === true;
+      
+      // Mostrar toast de notificação global - diferenciado para pedidos agendados
+      if (isScheduled) {
+        toast.success("Novo pedido agendado!", {
+          description: `Um pedido agendado acabou de chegar.${orderData?.scheduledAt ? ` Agendado para ${new Date(orderData.scheduledAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}` : ''}`,
+          duration: 8000,
+          action: {
+            label: "Ver pedido agendado",
+            onClick: () => {
+              navigate("/agendados");
+            },
           },
-        },
-      });
+        });
+      } else {
+        toast.success("Novo pedido recebido!", {
+          description: "Um novo pedido acabou de chegar.",
+          duration: 5000,
+          action: {
+            label: "Ver pedidos",
+            onClick: () => {
+              navigate("/pedidos");
+            },
+          },
+        });
+      }
     };
     
     // Registrar listener
@@ -254,6 +270,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { enabled: !!establishment?.id, refetchOnWindowFocus: true }
   );
   const outOfStockCount = outOfStockData?.count || 0;
+
+  // Get scheduled orders pending count for badge
+  const { data: scheduledPendingData } = trpc.scheduling.pendingCount.useQuery(
+    undefined,
+    { enabled: !!establishment?.id, refetchInterval: 30000, refetchOnWindowFocus: true }
+  );
+  const scheduledPendingCount = scheduledPendingData?.count || 0;
 
   // Auto-expandir submenu Menu quando navegar para rotas filhas (apenas se não estiver já expandido)
   useEffect(() => {
@@ -478,7 +501,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       location === child.href || (child.href !== '/' && location.startsWith(child.href))
                     );
                     // Total badge count from children
-                    const totalBadge = (typeof unreadReviewCount === 'number' ? unreadReviewCount : 0);
+                    const childReviewBadge = item.href === '/menu-parent' && reviewsEnabled && typeof unreadReviewCount === 'number' ? unreadReviewCount : 0;
+                    const childScheduledBadge = item.href === '/pedidos' ? scheduledPendingCount : 0;
+                    const totalBadge = childReviewBadge + childScheduledBadge;
 
                     const parentClassName = cn(
                       "flex items-center gap-2.5 py-2.5 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative cursor-pointer",
@@ -560,7 +585,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                               return true;
                             }).map((child: any) => {
                               const childActive = location === child.href || (child.href !== '/' && location.startsWith(child.href));
-                              const childBadge = child.badgeKey === 'reviews' && reviewsEnabled && typeof unreadReviewCount === 'number' && unreadReviewCount > 0 ? unreadReviewCount : 0;
+                              const childBadge = child.badgeKey === 'reviews' && reviewsEnabled && typeof unreadReviewCount === 'number' && unreadReviewCount > 0 ? unreadReviewCount 
+                                : child.href === '/agendados' && scheduledPendingCount > 0 ? scheduledPendingCount 
+                                : 0;
                               return (
                                 <Link
                                   key={child.href}

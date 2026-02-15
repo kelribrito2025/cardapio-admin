@@ -5098,6 +5098,15 @@ export const appRouter = router({
         return db.getScheduledOrdersByRange(establishment.id, input.startDate, input.endDate);
       }),
 
+    // Contagem de pedidos agendados pendentes (para badge na sidebar)
+    pendingCount: protectedProcedure
+      .query(async ({ ctx }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) return { count: 0 };
+        const count = await db.getScheduledPendingCount(establishment.id);
+        return { count };
+      }),
+
     // Contagem de pedidos por mês (para calendário)
     getMonthCounts: protectedProcedure
       .input(z.object({ year: z.number(), month: z.number() }))

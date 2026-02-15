@@ -7973,6 +7973,24 @@ export async function cancelScheduledOrder(orderId: number, reason?: string) {
 }
 
 /**
+ * Contar pedidos agendados pendentes (não movidos para fila) de um estabelecimento
+ */
+export async function getScheduledPendingCount(establishmentId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  
+  const result = await db.select({ id: orders.id })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      eq(orders.isScheduled, true),
+      eq(orders.status, 'scheduled'),
+      eq(orders.movedToQueue, false),
+    ));
+  return result.length;
+}
+
+/**
  * Contar pedidos agendados por mês para um estabelecimento
  * Retorna um mapa { 'YYYY-MM-DD': count }
  */

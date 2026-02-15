@@ -577,8 +577,9 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     // Importar toast se necessário
     try {
       // Disparar evento customizado para toast (será capturado pelo componente de toast)
+      const orderObj = order as any;
       const toastEvent = new CustomEvent('new-order-notification', {
-        detail: { order, timestamp, isIfood: isIfoodOrder }
+        detail: { order, timestamp, isIfood: isIfoodOrder, isScheduled: orderObj?.isScheduled === true, scheduledAt: orderObj?.scheduledAt }
       });
       window.dispatchEvent(toastEvent);
       console.log(`[NewOrders] [${timestamp}] Evento de toast disparado`);
