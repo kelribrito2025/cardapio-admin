@@ -760,8 +760,20 @@ export function generatePlainTextReceipt(
   receipt += center(`*** PEDIDO ${order.orderNumber} ***`) + '\n';
   receipt += center(formatDate(order.createdAt)) + '\n';
   receipt += '\n';
-  receipt += center(`[ ${deliveryTypeText[order.deliveryType] || 'PEDIDO'} ]`) + '\n';
+  const isScheduled = (order as any).isScheduled || (order as any).scheduledAt;
+  const badgeText = isScheduled ? 'AGENDADO' : (deliveryTypeText[order.deliveryType] || 'PEDIDO');
+  receipt += center(`[ ${badgeText} ]`) + '\n';
   receipt += doubleDivider + '\n';
+
+  // Seção de agendamento
+  if (isScheduled && (order as any).scheduledAt) {
+    const scheduledDate = new Date((order as any).scheduledAt);
+    const schedDateStr = scheduledDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const schedTimeStr = scheduledDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    receipt += 'AGENDADO PARA\n';
+    receipt += `Data: ${schedDateStr}  Horario: ${schedTimeStr}\n`;
+    receipt += divider + '\n';
+  }
 
   // Pedidos de mesa: não exibir dados do cliente, endereço e pagamento
   const isTableOrder = order.deliveryType === 'dine_in' && order.customerName?.startsWith('Mesa');

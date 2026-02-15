@@ -55,7 +55,8 @@ function generateReceiptHTML(
     return phone;
   };
   
-  const deliveryTypeText = order.deliveryType === 'delivery' ? 'ENTREGA' : order.deliveryType === 'dine_in' ? (order.customerName?.startsWith('Mesa') ? order.customerName.toUpperCase() : 'CONSUMO') : 'RETIRADA';
+  const isScheduled = order.isScheduled || order.scheduledAt;
+  const deliveryTypeText = isScheduled ? 'AGENDADO' : (order.deliveryType === 'delivery' ? 'ENTREGA' : order.deliveryType === 'dine_in' ? (order.customerName?.startsWith('Mesa') ? order.customerName.toUpperCase() : 'CONSUMO') : 'RETIRADA');
   const paymentMethodText: Record<string, string> = {
     'cash': 'Dinheiro',
     'credit': 'Cartao Credito',
@@ -516,6 +517,20 @@ function generateReceiptHTML(
         <div class="section-content"><strong>Retirada:</strong> Cliente irá retirar no estabelecimento</div>
       </div>`;
     }
+    
+    // Seção de agendamento (se pedido agendado)
+    if (isScheduled && order.scheduledAt) {
+      const scheduledDate = new Date(order.scheduledAt);
+      const schedDateStr = scheduledDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const schedTimeStr = scheduledDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      sections += `
+      <div class="section-box" style="border: 2px solid #000; background: #f9f9f4;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: ${headerFontWeight}; display: inline-flex; align-items: center;">📅 Agendado</span>
+          <span style="font-weight: ${headerFontWeight};">${schedDateStr} às ${schedTimeStr}</span>
+        </div>
+      </div>`;
+    }
      // Se\u00e7\u00e3o de pagamento
     const isCardOnline = order.paymentMethod === 'card_online';
     if (isCardOnline) {
@@ -620,7 +635,8 @@ function generateSectorReceiptHTML(
     });
   };
   
-  const deliveryTypeText = order.deliveryType === 'delivery' ? 'ENTREGA' : order.deliveryType === 'dine_in' ? (order.customerName?.startsWith('Mesa') ? order.customerName.toUpperCase() : 'CONSUMO') : 'RETIRADA';
+  const isScheduled = order.isScheduled || order.scheduledAt;
+  const deliveryTypeText = isScheduled ? 'AGENDADO' : (order.deliveryType === 'delivery' ? 'ENTREGA' : order.deliveryType === 'dine_in' ? (order.customerName?.startsWith('Mesa') ? order.customerName.toUpperCase() : 'CONSUMO') : 'RETIRADA');
   
   // Formatar telefone no formato (88) 9 9929-0000
   const formatPhone = (phone: string | null | undefined): string => {
@@ -798,6 +814,21 @@ function generateSectorReceiptHTML(
     <div class="customer-name">${order.customerName || 'Cliente'}${order.customerPhone ? ' - ' + formatPhone(order.customerPhone) : ''}</div>
     ${order.deliveryType === 'delivery' && order.customerAddress ? `<div style="font-size: ${smallFontSize}; margin-top: 4px;">${order.customerAddress}</div>` : ''}
   </div>`;
+  })()}
+  
+  ${(() => {
+    if (isScheduled && order.scheduledAt) {
+      const scheduledDate = new Date(order.scheduledAt);
+      const schedDateStr = scheduledDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const schedTimeStr = scheduledDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      return `<div style="margin-top: 12px; padding: 8px; border: 2px solid #000; border-radius: 8px; background: #f9f9f4;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: ${headerFontWeight};">\uD83D\uDCC5 Agendado</span>
+          <span style="font-weight: ${headerFontWeight};">${schedDateStr} \u00e0s ${schedTimeStr}</span>
+        </div>
+      </div>`;
+    }
+    return '';
   })()}
   
   ${order.notes && !(order.deliveryType === 'dine_in' && order.customerName?.startsWith('Mesa')) ? `

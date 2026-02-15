@@ -148,9 +148,11 @@ export function generateEscPosReceipt(order: OrderData): string {
   
   // Tipo de entrega
   receipt += COMMANDS.FONT_DOUBLE;
-  const deliveryTypeText = order.deliveryType === 'delivery' ? 'DELIVERY' :
-                           order.deliveryType === 'pickup' ? 'RETIRADA' :
-                           `MESA ${order.tableNumber || ''}`;
+  const isScheduled = (order as any).isScheduled || (order as any).scheduledAt;
+  const deliveryTypeText = isScheduled ? 'AGENDADO' : (
+    order.deliveryType === 'delivery' ? 'DELIVERY' :
+    order.deliveryType === 'pickup' ? 'RETIRADA' :
+    `MESA ${order.tableNumber || ''}`);
   receipt += `*** ${deliveryTypeText} ***\n`;
   receipt += COMMANDS.FONT_NORMAL;
   receipt += '\n';
@@ -161,6 +163,20 @@ export function generateEscPosReceipt(order: OrderData): string {
   const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   receipt += `${dateStr} - ${timeStr}\n`;
   receipt += '\n';
+  
+  // Seção de agendamento
+  if (isScheduled && (order as any).scheduledAt) {
+    const scheduledDate = new Date((order as any).scheduledAt);
+    const sDateStr = `${scheduledDate.getDate().toString().padStart(2, '0')}/${(scheduledDate.getMonth() + 1).toString().padStart(2, '0')}/${scheduledDate.getFullYear()}`;
+    const sTimeStr = `${scheduledDate.getHours().toString().padStart(2, '0')}:${scheduledDate.getMinutes().toString().padStart(2, '0')}`;
+    receipt += COMMANDS.FONT_DOUBLE_HEIGHT;
+    receipt += COMMANDS.BOLD_ON;
+    receipt += 'AGENDADO PARA\n';
+    receipt += COMMANDS.BOLD_OFF;
+    receipt += COMMANDS.FONT_NORMAL;
+    receipt += `Data: ${sDateStr}  Horario: ${sTimeStr}\n`;
+    receipt += '\n';
+  }
   
   // Divisor
   receipt += COMMANDS.ALIGN_LEFT;

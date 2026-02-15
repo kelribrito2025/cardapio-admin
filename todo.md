@@ -6571,3 +6571,11 @@
 - [x] Adicionar botão de imprimir nos cards de pedidos agendados (substituiu ícone de olho por impressora)
 - [x] Reutilizar mesma funcionalidade de impressão da página de Pedidos (normal + múltiplas impressoras)
 - [x] Incluir dropdown com opções de impressão e favorito (estrela amber)
+
+## Badge "Agendado" e Card de Agendamento no Recibo e Cards
+- [x] Badge no recibo HTML: mostrar "AGENDADO" em vez de "RETIRADA/ENTREGA" quando pedido for agendado
+- [x] Badge no recibo texto puro (ESC/POS): mostrar "AGENDADO" + secção com data/hora
+- [x] Badge no recibo ESC/POS printer: mostrar "AGENDADO" + secção com data/hora
+- [x] Badge no recibo por sector: mostrar "AGENDADO"
+- [x] Adicionar card/secção de agendamento (data e hora) abaixo do card de retirada no recibo HTML
+- [x] Adicionar card/secção de agendamento (data e hora) no recibo por sector
