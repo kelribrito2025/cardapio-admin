@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { AdminLayout } from "@/components/AdminLayout";
-import { StatCard, PageHeader, StatusBadge } from "@/components/shared";
+import { StatCard, PageHeader, SectionCard, EmptyState } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -15,7 +15,6 @@ import {
   Store,
   UtensilsCrossed,
   Check,
-  X,
   RefreshCw,
   CalendarDays,
   ListChecks,
@@ -23,6 +22,7 @@ import {
   Pencil,
   Trash2,
   Calendar,
+  LayoutDashboard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -36,16 +36,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const DAYS_PT = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
-const DAYS_PT_SHORT = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const DAYS_HEADER = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
 const MONTHS_PT = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
 ];
-const MONTHS_PT_SHORT = [
-  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
-  "Jul", "Ago", "Set", "Out", "Nov", "Dez"
-];
+const DAYS_FULL = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
 
 const periodOptions = [
   { value: "today" as const, label: "Hoje" },
@@ -91,7 +87,7 @@ export default function Agendados() {
     onError: (err: any) => toast.error(err.message),
   });
 
-  // Calendar data
+  // Calendar computation
   const calendarDays = useMemo(() => {
     const firstDay = new Date(currentYear, currentMonth, 1);
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
@@ -128,7 +124,18 @@ export default function Agendados() {
     return days;
   }, [currentMonth, currentYear]);
 
-  // Orders grouped by day for calendar display
+  const numWeeks = useMemo(() => {
+    // Only show 5 rows if the 6th row is entirely next month
+    const totalDays = calendarDays.length;
+    if (totalDays <= 35) return 5;
+    const sixthRow = calendarDays.slice(35, 42);
+    const allNextMonth = sixthRow.every(d => !d.isCurrentMonth);
+    return allNextMonth ? 5 : 6;
+  }, [calendarDays]);
+
+  const visibleDays = calendarDays.slice(0, numWeeks * 7);
+
+  // Orders grouped by day
   const ordersByDay = useMemo(() => {
     const map: Record<string, { customerName: string; time: string }[]> = {};
     if (!scheduledOrders) return map;
@@ -141,18 +148,6 @@ export default function Agendados() {
           customerName: (order as any).customerName || "Pedido",
           time: t.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
         });
-      }
-    }
-    return map;
-  }, [scheduledOrders]);
-
-  const ordersPerDay = useMemo(() => {
-    const map: Record<string, number> = {};
-    if (!scheduledOrders) return map;
-    for (const order of scheduledOrders) {
-      if (order.scheduledAt) {
-        const dateStr = new Date(order.scheduledAt).toISOString().split("T")[0];
-        map[dateStr] = (map[dateStr] || 0) + 1;
       }
     }
     return map;
@@ -207,8 +202,9 @@ export default function Agendados() {
 
   const selectedDateFormatted = useMemo(() => {
     const d = selectedDateObj;
-    const dayName = DAYS_PT_SHORT[d.getDay()];
-    return `${MONTHS_PT_SHORT[d.getMonth()]} ${String(d.getDate()).padStart(2, "0")} ${dayName}`;
+    const dayName = DAYS_FULL[d.getDay()];
+    const month = MONTHS_PT[d.getMonth()];
+    return `${month} ${String(d.getDate()).padStart(2, "0")} ${dayName}`;
   }, [selectedDateObj]);
 
   const deliveryTypeLabel = (type: string) => {
@@ -229,25 +225,22 @@ export default function Agendados() {
     }
   };
 
-  const getStatusInfo = (order: any) => {
-    if (order.status === "scheduled" && !order.movedToQueue) {
-      return { label: "Agendado", color: "text-amber-600 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-500/10 dark:border-amber-500/30" };
+  const getStatusBadge = (order: any) => {
+    if (order.status === "cancelled") {
+      return <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400">Cancelado</span>;
     }
     if (order.status === "scheduled" && order.movedToQueue) {
-      return { label: "Aceito", color: "text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/30" };
+      return <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">Aceito</span>;
     }
-    if (order.status === "cancelled") {
-      return { label: "Cancelado", color: "text-red-600 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-500/10 dark:border-red-500/30" };
+    if (order.status === "scheduled") {
+      return <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400">Agendado</span>;
     }
-    return { label: "Na fila", color: "text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-500/10 dark:border-blue-500/30" };
+    return <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">Na fila</span>;
   };
-
-  // Number of weeks to show
-  const numWeeks = Math.ceil(calendarDays.length / 7);
 
   return (
     <AdminLayout>
-      {/* Header */}
+      {/* Header — same pattern as Dashboard */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <PageHeader
           title="Agendados"
@@ -274,7 +267,7 @@ export default function Agendados() {
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards — same StatCard as Dashboard */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
         <StatCard title="Total Agendados" value={stats.total} icon={CalendarDays} loading={isLoading} variant="blue" />
         <StatCard title="Aguardando" value={stats.pending} icon={Clock} loading={isLoading} variant="amber" />
@@ -282,223 +275,238 @@ export default function Agendados() {
         <StatCard title="Na Fila" value={stats.moved} icon={ArrowRightCircle} loading={isLoading} variant="primary" />
       </div>
 
-      {/* Main Content: Calendar + Orders */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-0 bg-card rounded-xl border border-border/50 overflow-hidden">
-        {/* Calendar — Table style like reference */}
-        <div className="border-r border-border/50">
-          {/* Calendar Header */}
-          <div className="flex items-center justify-between px-5 py-3 border-b border-border/50">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => navigateMonth(-1)}
-                className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <h2 className="text-base font-semibold min-w-[160px] text-center">
-                {MONTHS_PT[currentMonth]} {currentYear}
-              </h2>
-              <button
-                onClick={() => navigateMonth(1)}
-                className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
+      {/* Main Content: Calendar + Orders — two SectionCards side by side */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
+        {/* LEFT: Calendar SectionCard */}
+        <SectionCard noPadding className="overflow-hidden">
+          {/* Month Navigation Header */}
+          <div className="flex items-center justify-between px-6 py-3 border-b border-border/50">
+            <button
+              onClick={() => navigateMonth(-1)}
+              className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <h2 className="text-base font-semibold">
+              {MONTHS_PT[currentMonth]} {currentYear}
+            </h2>
+            <button
+              onClick={() => navigateMonth(1)}
+              className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
           </div>
 
-          {/* Day of Week Headers */}
-          <div className="grid grid-cols-7 border-b border-border/50">
-            {DAYS_PT.map((day) => (
-              <div key={day} className="text-center text-[11px] font-semibold text-muted-foreground py-2.5 tracking-wider border-r border-border/50 last:border-r-0">
+          {/* Day of Week Header Row */}
+          <div className="grid grid-cols-7 border-b border-border/40">
+            {DAYS_HEADER.map((day, i) => (
+              <div
+                key={day}
+                className={cn(
+                  "text-center text-[11px] font-medium text-muted-foreground/70 py-2.5 tracking-wider",
+                  i < 6 && "border-r border-border/30"
+                )}
+              >
                 {day}
               </div>
             ))}
           </div>
 
-          {/* Calendar Grid — Table cells */}
-          {Array.from({ length: numWeeks }).map((_, weekIdx) => (
-            <div key={weekIdx} className={cn("grid grid-cols-7", weekIdx < numWeeks - 1 && "border-b border-border/50")}>
-              {calendarDays.slice(weekIdx * 7, weekIdx * 7 + 7).map((day, dayIdx) => {
-                const dayOrders = ordersByDay[day.date] || [];
-                const isSelected = day.date === selectedDate;
+          {/* Calendar Grid — clean table cells */}
+          <div>
+            {Array.from({ length: numWeeks }).map((_, weekIdx) => (
+              <div
+                key={weekIdx}
+                className={cn(
+                  "grid grid-cols-7",
+                  weekIdx < numWeeks - 1 && "border-b border-border/30"
+                )}
+              >
+                {visibleDays.slice(weekIdx * 7, weekIdx * 7 + 7).map((day, dayIdx) => {
+                  const dayOrders = ordersByDay[day.date] || [];
+                  const isSelected = day.date === selectedDate;
 
-                return (
-                  <button
-                    key={dayIdx}
-                    onClick={() => setSelectedDate(day.date)}
-                    className={cn(
-                      "relative text-left p-2 min-h-[90px] border-r border-border/50 last:border-r-0 transition-colors duration-150",
-                      !day.isCurrentMonth && "bg-muted/30",
-                      day.isCurrentMonth && "hover:bg-accent/30",
-                      isSelected && "bg-primary/5"
-                    )}
-                  >
-                    {/* Day number */}
-                    <div className="flex items-start justify-start mb-1">
-                      <span
-                        className={cn(
-                          "inline-flex items-center justify-center w-7 h-7 rounded-full text-sm font-medium",
-                          !day.isCurrentMonth && "text-muted-foreground/40",
-                          day.isCurrentMonth && "text-foreground",
-                          day.isToday && "bg-primary text-primary-foreground font-bold",
-                          isSelected && !day.isToday && "bg-primary/15 text-primary font-bold"
-                        )}
-                      >
-                        {day.day}
-                      </span>
-                    </div>
-
-                    {/* Order labels inside cell */}
-                    <div className="space-y-0.5">
-                      {dayOrders.slice(0, 3).map((o, i) => (
-                        <div
-                          key={i}
-                          className="text-[10px] leading-tight text-primary font-medium truncate"
-                        >
-                          {o.customerName.length > 12 ? o.customerName.slice(0, 12) + "..." : o.customerName}
-                        </div>
-                      ))}
-                      {dayOrders.length > 3 && (
-                        <div className="text-[10px] text-muted-foreground font-medium">
-                          +{dayOrders.length - 3} mais
-                        </div>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-
-        {/* Right Panel — Orders for selected date */}
-        <div className="flex flex-col">
-          {/* Panel Header */}
-          <div className="px-5 py-3 border-b border-border/50">
-            <h3 className="text-base font-semibold">{selectedDateFormatted}</h3>
-          </div>
-
-          {/* Orders List */}
-          <div className="flex-1 overflow-y-auto">
-            {isLoading ? (
-              <div className="p-4 space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-28 w-full rounded-xl" />
-                ))}
-              </div>
-            ) : filteredOrders.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full py-16 px-6">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                  <Calendar className="h-7 w-7 text-muted-foreground/50" />
-                </div>
-                <p className="text-sm font-medium text-muted-foreground">Nenhum pedido agendado</p>
-                <p className="text-xs text-muted-foreground/60 mt-1">Selecione um dia com pedidos no calendário</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-border/50">
-                {filteredOrders.map((order: any) => {
-                  const statusInfo = getStatusInfo(order);
                   return (
-                    <div key={order.id} className="px-5 py-4 hover:bg-accent/30 transition-colors">
-                      {/* Status + Actions row */}
-                      <div className="flex items-center justify-between mb-2">
-                        <span className={cn("text-[11px] font-semibold px-2 py-0.5 rounded border", statusInfo.color)}>
-                          {statusInfo.label}
+                    <button
+                      key={dayIdx}
+                      onClick={() => setSelectedDate(day.date)}
+                      className={cn(
+                        "relative text-left p-2.5 min-h-[100px] transition-colors duration-150 group",
+                        dayIdx < 6 && "border-r border-border/30",
+                        !day.isCurrentMonth && "bg-muted/20",
+                        day.isCurrentMonth && !isSelected && "hover:bg-muted/40",
+                        isSelected && "bg-primary/[0.04]"
+                      )}
+                    >
+                      {/* Day number — top left */}
+                      <div className="mb-1.5">
+                        <span
+                          className={cn(
+                            "inline-flex items-center justify-center w-7 h-7 rounded-full text-[13px]",
+                            !day.isCurrentMonth && "text-muted-foreground/30 font-normal",
+                            day.isCurrentMonth && !day.isToday && !isSelected && "text-foreground/80 font-medium",
+                            day.isToday && "bg-primary text-primary-foreground font-semibold",
+                            isSelected && !day.isToday && "bg-primary/10 text-primary font-semibold ring-1 ring-primary/30"
+                          )}
+                        >
+                          {day.day}
                         </span>
-                        {order.status === "scheduled" && (
-                          <div className="flex items-center gap-1">
-                            <button
-                              onClick={() => {
-                                setRescheduleOrderId(order.id);
-                                if (order.scheduledAt) {
-                                  const d = new Date(order.scheduledAt);
-                                  setRescheduleDate(d.toISOString().split("T")[0]);
-                                  setRescheduleTime(d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }));
-                                }
-                              }}
-                              className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-                              title="Reagendar"
-                            >
-                              <Pencil className="h-3.5 w-3.5" />
-                            </button>
-                            <button
-                              onClick={() => {
-                                if (confirm("Tem certeza que deseja cancelar este pedido agendado?")) {
-                                  cancelOrder.mutate({ orderId: order.id, reason: "Cancelado pelo restaurante" });
-                                }
-                              }}
-                              className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors text-muted-foreground hover:text-red-600"
-                              title="Cancelar"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
+                      </div>
+
+                      {/* Order labels inside cell — green/primary text like reference */}
+                      <div className="space-y-0.5">
+                        {dayOrders.slice(0, 3).map((o, i) => (
+                          <div
+                            key={i}
+                            className={cn(
+                              "text-[10px] leading-tight font-medium truncate max-w-full",
+                              isSelected ? "text-primary" : "text-emerald-600 dark:text-emerald-400"
+                            )}
+                          >
+                            {o.customerName.length > 14 ? o.customerName.slice(0, 14) + "..." : o.customerName}
+                          </div>
+                        ))}
+                        {dayOrders.length > 3 && (
+                          <div className="text-[10px] text-muted-foreground/60 font-medium">
+                            +{dayOrders.length - 3} mais
                           </div>
                         )}
                       </div>
-
-                      {/* Order title */}
-                      <h4 className="text-sm font-semibold mb-1">{order.customerName || "Cliente"}</h4>
-
-                      {/* Items description */}
-                      <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
-                        {order.items && order.items.length > 0
-                          ? order.items.map((item: any) => `${item.quantity}x ${item.productName}`).join(", ")
-                          : "Sem itens"}
-                      </p>
-
-                      {/* Phone */}
-                      {order.customerPhone && (
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
-                          <Phone className="h-3 w-3" />
-                          {order.customerPhone}
-                        </div>
-                      )}
-
-                      {/* Meta: delivery type, date, time */}
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          {deliveryTypeIcon(order.deliveryType)}
-                          <span>{deliveryTypeLabel(order.deliveryType)}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <CalendarDays className="h-3 w-3" />
-                          <span>
-                            {order.scheduledAt
-                              ? new Date(order.scheduledAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })
-                              : "--/--/----"}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          <span>{order.scheduledAt ? formatTime(order.scheduledAt) : "--:--"}</span>
-                        </div>
-                      </div>
-
-                      {/* Value + Accept button */}
-                      <div className="flex items-center justify-between mt-3">
-                        <span className="text-sm font-bold">
-                          R$ {(Number(order.total) / 100).toFixed(2).replace(".", ",")}
-                        </span>
-                        {order.status === "scheduled" && !order.movedToQueue && (
-                          <Button
-                            size="sm"
-                            className="h-7 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white"
-                            onClick={() => acceptOrder.mutate({ orderId: order.id })}
-                            disabled={acceptOrder.isPending}
-                          >
-                            <Check className="h-3 w-3 mr-1" />
-                            Aceitar
-                          </Button>
-                        )}
-                      </div>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
+            ))}
+          </div>
+        </SectionCard>
+
+        {/* RIGHT: Orders Panel SectionCard */}
+        <SectionCard
+          title={selectedDateFormatted}
+          noPadding
+          className="h-fit lg:sticky lg:top-4"
+        >
+          {/* Orders List */}
+          <div className="max-h-[calc(100vh-320px)] overflow-y-auto">
+            {isLoading ? (
+              <div className="p-5 space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton className="h-4 w-20 rounded" />
+                    <Skeleton className="h-5 w-40 rounded" />
+                    <Skeleton className="h-3 w-full rounded" />
+                    <Skeleton className="h-3 w-32 rounded" />
+                  </div>
+                ))}
+              </div>
+            ) : filteredOrders.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 px-6">
+                <div className="p-4 bg-muted/50 rounded-2xl mb-5">
+                  <Calendar className="h-10 w-10 text-muted-foreground/40" />
+                </div>
+                <p className="text-sm font-medium text-muted-foreground/70">Nenhum pedido agendado</p>
+                <p className="text-xs text-muted-foreground/50 mt-1 text-center">
+                  Selecione um dia com pedidos no calendário
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y divide-border/40">
+                {filteredOrders.map((order: any) => (
+                  <div key={order.id} className="px-5 py-4 hover:bg-muted/30 transition-colors">
+                    {/* Row 1: Status badge + action icons */}
+                    <div className="flex items-center justify-between mb-2.5">
+                      {getStatusBadge(order)}
+                      {order.status === "scheduled" && (
+                        <div className="flex items-center gap-0.5">
+                          <button
+                            onClick={() => {
+                              setRescheduleOrderId(order.id);
+                              if (order.scheduledAt) {
+                                const d = new Date(order.scheduledAt);
+                                setRescheduleDate(d.toISOString().split("T")[0]);
+                                setRescheduleTime(d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }));
+                              }
+                            }}
+                            className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground/60 hover:text-foreground"
+                            title="Reagendar"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (confirm("Tem certeza que deseja cancelar este pedido agendado?")) {
+                                cancelOrder.mutate({ orderId: order.id, reason: "Cancelado pelo restaurante" });
+                              }
+                            }}
+                            className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors text-red-400/60 hover:text-red-600"
+                            title="Cancelar"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Row 2: Customer name (title) */}
+                    <h4 className="text-sm font-semibold text-foreground mb-1">
+                      {order.customerName || "Cliente"}
+                    </h4>
+
+                    {/* Row 3: Items description */}
+                    <p className="text-xs text-muted-foreground/70 mb-2 line-clamp-2 leading-relaxed">
+                      {order.items && order.items.length > 0
+                        ? order.items.map((item: any) => `${item.quantity}x ${item.productName}`).join(", ")
+                        : "Sem itens"}
+                    </p>
+
+                    {/* Row 4: Phone (WhatsApp style like reference) */}
+                    {order.customerPhone && (
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground/70 mb-2">
+                        <Phone className="h-3 w-3" />
+                        <span>Whats App: {order.customerPhone}</span>
+                      </div>
+                    )}
+
+                    {/* Row 5: Date + Time (like reference: calendar icon + date, clock icon + time) */}
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground/60">
+                      <div className="flex items-center gap-1.5">
+                        <CalendarDays className="h-3 w-3" />
+                        <span>
+                          {order.scheduledAt
+                            ? new Date(order.scheduledAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })
+                            : "--/--/----"}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="h-3 w-3" />
+                        <span>{order.scheduledAt ? formatTime(order.scheduledAt) : "--:--"}</span>
+                      </div>
+                    </div>
+
+                    {/* Accept button for scheduled orders */}
+                    {order.status === "scheduled" && !order.movedToQueue && (
+                      <div className="mt-3 flex items-center justify-between">
+                        <span className="text-sm font-bold text-foreground">
+                          R$ {(Number(order.total) / 100).toFixed(2).replace(".", ",")}
+                        </span>
+                        <Button
+                          size="sm"
+                          className="h-7 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white"
+                          onClick={() => acceptOrder.mutate({ orderId: order.id })}
+                          disabled={acceptOrder.isPending}
+                        >
+                          <Check className="h-3 w-3 mr-1" />
+                          Aceitar
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-        </div>
+        </SectionCard>
       </div>
 
       {/* Reschedule Dialog */}

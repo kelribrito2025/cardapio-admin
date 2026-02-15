@@ -6532,3 +6532,11 @@
 - [x] Calendário: dias de outros meses em cinza claro
 - [x] Painel direita: cards de pedidos detalhados com status badge, descrição, data/hora, ações (editar/excluir)
 - [x] Painel direita: cabeçalho com data formatada (ex: "Fev 15 Dom")
+
+## Refinamento Visual Calendário e Cards de Pedidos (v3)
+- [x] Calendário: usar SectionCard como wrapper para manter consistência com Dashboard
+- [x] Calendário: separar visualmente do painel direita (dois cards independentes como na referência)
+- [x] Calendário: bordas mais suaves, hover mais sutil, espaçamento interno melhor
+- [x] Painel direita: usar SectionCard como wrapper independente
+- [x] Cards de pedidos: seguir padrão visual dos cards da Dashboard (sem sombra, borda leve, padding consistente)
+- [x] Empty state: mais limpo e alinhado com o padrão do sistema
