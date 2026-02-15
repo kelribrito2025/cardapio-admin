@@ -6494,5 +6494,3 @@
 - [x] Remover card "Média por entrega" da página de detalhes do entregador
 - [x] Bug: Estabelecimento 60018 mostra "fechado" ao enviar pedido no menu público - corrigido: frontend agora usa computedIsOpen do servidor como fonte de verdade
 - [x] Bug: Toggle "Aberto agora" no admin mostra "Aberto" mas banco de dados tem manuallyClosed=true - corrigido: admin agora usa computedIsOpen do servidor como fonte de verdade
-- [x] Quando sidebar minimizada e usuário clicar em "Menu" (com submenu), a barra deve expandir em vez de mostrar tooltip/popover
-- [x] Sidebar auto-expand: quando minimizada, expandir suavemente ao hover e recolher ao sair do mouse, com animação suave

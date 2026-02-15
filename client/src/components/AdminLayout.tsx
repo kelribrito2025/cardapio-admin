@@ -37,7 +37,7 @@ import {
   BookOpen,
   Truck,
 } from "lucide-react";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -308,35 +308,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   const toggleSidebarCollapsed = () => {
     setSidebarCollapsed(!sidebarCollapsed);
-    setHoverExpanded(false);
   };
-
-  // Hover auto-expand: when sidebar is collapsed, expand on hover as overlay
-  const [hoverExpanded, setHoverExpanded] = useState(false);
-  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const handleSidebarMouseEnter = useCallback(() => {
-    if (!sidebarCollapsed) return;
-    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-    setHoverExpanded(true);
-  }, [sidebarCollapsed]);
-
-  const handleSidebarMouseLeave = useCallback(() => {
-    if (!sidebarCollapsed) return;
-    hoverTimeoutRef.current = setTimeout(() => {
-      setHoverExpanded(false);
-    }, 300);
-  }, [sidebarCollapsed]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-    };
-  }, []);
-
-  // Determine if sidebar should visually appear expanded
-  const isVisuallyExpanded = !sidebarCollapsed || hoverExpanded;
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -366,10 +338,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   // Sidebar width based on collapsed state
-  // Main content always uses the collapsed/expanded width (hover doesn't push content)
+  const sidebarWidth = sidebarCollapsed ? "w-[63px]" : "w-[263px]";
   const mainPadding = sidebarCollapsed ? "lg:pl-[63px]" : "lg:pl-[263px]";
-  // Sidebar visual width: expanded on hover (overlay) or normal
-  const sidebarWidth = isVisuallyExpanded ? "w-[263px]" : "w-[63px]";
 
   return (
     <div className="min-h-screen bg-background">
@@ -387,22 +357,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col",
           sidebarWidth,
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
-          "lg:translate-x-0",
-          hoverExpanded && sidebarCollapsed && "shadow-2xl"
+          "lg:translate-x-0"
         )}
         style={{
           background: 'var(--card)'
         }}
-        onMouseEnter={handleSidebarMouseEnter}
-        onMouseLeave={handleSidebarMouseLeave}
       >
         {/* Logo + Toggle button na mesma linha */}
         <div className={cn(
           "flex items-center h-[58px] border-b border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
-          !isVisuallyExpanded ? "justify-center px-2" : "justify-between px-4"
+          sidebarCollapsed ? "justify-center px-2" : "justify-between px-4"
         )}>
-          {/* Quando colapsado e NÃO hover, mostrar apenas o botão de expandir */}
-          {sidebarCollapsed && !hoverExpanded ? (
+          {/* Quando colapsado, mostrar apenas o botão de expandir */}
+          {sidebarCollapsed ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
@@ -413,7 +380,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right">
-                <p>Fixar barra lateral</p>
+                <p>Abrir barra lateral</p>
               </TooltipContent>
             </Tooltip>
           ) : (
@@ -450,19 +417,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <div className="flex items-center gap-1">
                 {/* Toggle button - Desktop only */}
                 <button
-                  onClick={() => {
-                    if (hoverExpanded && sidebarCollapsed) {
-                      // Se está em hover-expand, fixar a sidebar (descolapsar)
-                      setSidebarCollapsed(false);
-                      setHoverExpanded(false);
-                    } else {
-                      toggleSidebarCollapsed();
-                    }
-                  }}
+                  onClick={toggleSidebarCollapsed}
                   className="hidden lg:flex p-2 hover:bg-accent rounded-xl transition-colors text-muted-foreground hover:text-foreground"
-                  title={hoverExpanded && sidebarCollapsed ? "Fixar barra lateral" : "Minimizar menu"}
+                  title="Minimizar menu"
                 >
-                  {hoverExpanded && sidebarCollapsed ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
+                  <PanelLeftClose className="h-5 w-5" />
                 </button>
                 {/* Close button - Mobile only */}
                 <button
@@ -481,17 +440,17 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         {/* Navigation */}
         <nav className={cn(
           "flex-1 py-4 overflow-y-auto transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
-          !isVisuallyExpanded ? "px-1.5" : "px-3"
+          sidebarCollapsed ? "px-1.5" : "px-3"
         )}>
           {menuSections.map((section, sectionIndex) => (
             <div key={section.title} className={sectionIndex > 0 ? "mt-6" : ""} style={{marginBottom: '-5px'}}>
               {/* Título da seção */}
-              {isVisuallyExpanded && (
+              {!sidebarCollapsed && (
                 <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-3">
                   {section.title}
                 </h3>
               )}
-              {!isVisuallyExpanded && sectionIndex > 0 && (
+              {sidebarCollapsed && sectionIndex > 0 && (
                 <div className="border-t border-border my-3 mx-2" />
               )}
               
@@ -509,24 +468,21 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
                     const parentClassName = cn(
                       "flex items-center gap-2.5 py-2.5 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative cursor-pointer",
-                      !isVisuallyExpanded ? "px-0 justify-center rounded-lg" : "pl-3 pr-3",
+                      sidebarCollapsed ? "px-0 justify-center rounded-lg" : "pl-3 pr-3",
                       isChildActive
                         ? "text-primary"
                         : "text-muted-foreground hover:bg-accent hover:text-foreground"
                     );
 
-                    if (!isVisuallyExpanded) {
-                      // Quando colapsado, clicar no menu pai expande a sidebar e abre o submenu
+                    if (sidebarCollapsed) {
+                      // Quando colapsado, mostrar como tooltip com filhos
                       return (
                         <div key={item.href}>
                           <Tooltip delayDuration={0}>
                             <TooltipTrigger asChild>
                               <div
                                 className={parentClassName}
-                                onClick={() => {
-                                  setSidebarCollapsed(false);
-                                  setExpandedMenus(prev => ({ ...prev, [item.href]: true }));
-                                }}
+                                onClick={() => setExpandedMenus(prev => ({ ...prev, [item.href]: !prev[item.href] }))}
                               >
                                 <div className="relative">
                                   <item.icon className="h-4 w-4 flex-shrink-0 mx-auto" />
@@ -540,6 +496,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                             </TooltipTrigger>
                             <TooltipContent side="right" className="font-medium">
                               <p>{item.label}</p>
+                              <div className="mt-1 space-y-1">
+                                {item.children.map((child: any) => (
+                                  <Link key={child.href} href={child.href} onClick={() => handleNavClick(child.href)} className="block text-xs hover:text-primary py-0.5">
+                                    {child.label}
+                                  </Link>
+                                ))}
+                              </div>
                             </TooltipContent>
                           </Tooltip>
                         </div>
@@ -626,10 +589,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       <div className="relative">
                         <item.icon className={cn(
                           "h-4 w-4 flex-shrink-0", 
-                          !isVisuallyExpanded && "mx-auto",
+                          sidebarCollapsed && "mx-auto",
                           isComingSoon && "opacity-50"
                         )} />
-                        {showOrderBadge && !isVisuallyExpanded && (
+                        {showOrderBadge && sidebarCollapsed && (
                           <span className={cn(
                             "absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse",
                             isActive ? "bg-card text-primary" : "bg-red-500 text-white"
@@ -637,7 +600,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                             {newOrdersCount > 9 ? "9+" : newOrdersCount}
                           </span>
                         )}
-                        {showStockBadge && !isVisuallyExpanded && (
+                        {showStockBadge && sidebarCollapsed && (
                           <span className={cn(
                             "absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center",
                             isActive ? "bg-card text-primary" : "bg-red-500 text-white"
@@ -646,7 +609,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           </span>
                         )}
                       </div>
-                      {isVisuallyExpanded && (
+                      {!sidebarCollapsed && (
                         <span className={cn(
                           "text-sm flex items-center gap-2",
                           isComingSoon && "opacity-50"
@@ -680,7 +643,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
                   const navClassName = cn(
                     "flex items-center gap-2.5 py-2.5 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative",
-                    !isVisuallyExpanded ? "px-0 justify-center rounded-lg" : "pl-3 pr-3",
+                    sidebarCollapsed ? "px-0 justify-center rounded-lg" : "pl-3 pr-3",
                     isComingSoon 
                       ? "text-muted-foreground cursor-default"
                       : isActive
@@ -689,7 +652,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   );
 
                   if (item.disabled) {
-                    if (!isVisuallyExpanded) {
+                    if (sidebarCollapsed) {
                       return (
                         <Tooltip key={item.href} delayDuration={0}>
                           <TooltipTrigger asChild>
@@ -722,7 +685,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     );
                   }
 
-                  if (!isVisuallyExpanded) {
+                  if (sidebarCollapsed) {
                     return (
                       <Tooltip key={item.href} delayDuration={0}>
                         <TooltipTrigger asChild>
