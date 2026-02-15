@@ -6624,3 +6624,11 @@
 - [x] Conteúdo à direita: badge, título, descrição, lista de benefícios, CTA
 - [x] Animação de entrada suave ao scroll
 - [x] Responsividade completa (mobile: coluna única, tablet abaixo)
+
+## Carrossel Automático na Seção Clientes
+- [x] Adicionar efeito de marquee/carrossel infinito nos cards de restaurantes
+
+## Renomear CardápioAdmin para Mindi na Landing Page
+- [x] Alterar todas as referências de "CardápioAdmin" para "Mindi" na landing page
+- [x] Alterar "Cardápio Admin" para "Mindi" na landing page
+- [x] Alterar "CardápioAdmin" para "Mindi" na navbar da landing

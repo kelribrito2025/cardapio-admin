@@ -66,7 +66,7 @@ function LandingNavbar() {
               <ShoppingBag className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold text-gray-900">
-              Cardápio<span className="text-red-500">Admin</span>
+              Mindi
             </span>
           </div>
 
@@ -303,13 +303,13 @@ function HeroSection() {
                   </div>
                   <div className="flex-1 flex justify-center">
                     <div className="bg-white rounded-lg px-4 py-1 text-[11px] text-gray-400 font-medium border border-gray-200 w-64 text-center">
-                      app.cardapioadmin.com.br
+                      app.mindi.com.br
                     </div>
                   </div>
                 </div>
                 <img
                   src={DASHBOARD_MOCKUP}
-                  alt="Dashboard do Cardápio Admin"
+                  alt="Dashboard do Mindi"
                   className="w-full h-auto"
                   loading="eager"
                 />
@@ -421,7 +421,7 @@ function PainPointsStrip() {
           ))}
         </div>
         <p className="text-center mt-8 text-white/80 text-base font-medium">
-          O <span className="text-red-400 font-semibold">Cardápio Admin</span> resolve tudo isso — e muito mais.
+          O <span className="text-red-400 font-semibold">Mindi</span> resolve tudo isso — e muito mais.
         </p>
       </div>
     </section>
@@ -614,7 +614,7 @@ function ProblemSolutionSection() {
                   <p className="text-xs text-gray-500 mt-1">jogados fora</p>
                 </div>
                 <div className="bg-gradient-to-br from-green-500/20 to-green-600/10 backdrop-blur-sm rounded-2xl p-5 border border-green-500/20 text-center">
-                  <p className="text-xs text-green-300 font-medium mb-2 uppercase tracking-wider">Com CardápioAdmin</p>
+                  <p className="text-xs text-green-300 font-medium mb-2 uppercase tracking-wider">Com Mindi</p>
                   <p className="text-2xl sm:text-3xl font-bold text-green-400">
                     {formatCurrency(0)}
                   </p>
@@ -641,7 +641,7 @@ function ProblemSolutionSection() {
               <span className="text-xs font-semibold text-green-600 tracking-wide uppercase">A solução</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-5">
-              Com o <span className="text-red-500">CardápioAdmin</span> você assume o controle.
+              Com o <span className="text-red-500">Mindi</span> você assume o controle.
             </h2>
             <p className="text-lg text-gray-500 leading-relaxed mb-8">
               Tudo o que você precisa para vender direto, sem intermediários, 
@@ -714,7 +714,7 @@ function ProblemSolutionSection() {
                 </div>
               </div>
 
-              {/* CardápioAdmin card (good) */}
+              {/* Mindi card (good) */}
               <div className="bg-white rounded-2xl p-6 border border-green-100 shadow-md relative overflow-hidden ring-1 ring-green-200/50">
                 <div className="absolute top-0 left-0 w-1.5 h-full bg-green-500" />
                 <div className="flex items-start gap-4 ml-2">
@@ -722,7 +722,7 @@ function ProblemSolutionSection() {
                     <CheckCircle2 className="w-6 h-6 text-green-500" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-gray-900 mb-2">Com CardápioAdmin</h4>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Com Mindi</h4>
                     <ul className="space-y-2">
                       <li className="flex items-center gap-2 text-sm text-gray-700">
                         <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
@@ -812,9 +812,9 @@ function ClientCard({ client }: { client: typeof CLIENTS_DATA[0] }) {
       <div className="relative h-44 rounded-2xl overflow-hidden mb-4 shadow-md group-hover:shadow-xl transition-shadow duration-300">
         <img
           src={client.cover}
-          alt={client.name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
+           alt={client.name}
+           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+           loading="eager"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
       </div>
@@ -854,48 +854,18 @@ function ClientCard({ client }: { client: typeof CLIENTS_DATA[0] }) {
 
 function ClientsShowcaseSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) setIsVisible(true);
       },
-      { threshold: 0.15 }
+      { threshold: 0.05 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
-
-  // Auto-scroll carousel
-  useEffect(() => {
-    if (!scrollRef.current || isPaused) return;
-    const container = scrollRef.current;
-    let animationId: number;
-    let scrollPos = 0;
-
-    const step = () => {
-      scrollPos += 0.5;
-      if (scrollPos >= container.scrollWidth - container.clientWidth) {
-        scrollPos = 0;
-      }
-      container.scrollLeft = scrollPos;
-      animationId = requestAnimationFrame(step);
-    };
-
-    animationId = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animationId);
-  }, [isPaused]);
-
-  // Sync scrollPos when user manually scrolls
-  const handleManualScroll = () => {
-    // Pause auto-scroll briefly when user interacts
-    setIsPaused(true);
-    const timer = setTimeout(() => setIsPaused(false), 5000);
-    return () => clearTimeout(timer);
-  };
 
   return (
     <section
@@ -917,38 +887,33 @@ function ClientsShowcaseSection() {
             <span className="text-red-500">conosco</span>
           </h2>
           <p className="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">
-            Restaurantes de todo o Brasil já usam o CardápioAdmin para vender mais, com menos custo e total controle.
+            Restaurantes de todo o Brasil já usam o Mindi para vender mais, com menos custo e total controle.
           </p>
         </div>
       </div>
 
-      {/* Carousel - full width */}
+      {/* Marquee Carousel - infinite auto-scroll */}
       <div
         className={`transition-all duration-700 delay-200 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
-        <div
-          ref={scrollRef}
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-          onTouchStart={() => setIsPaused(true)}
-          onTouchEnd={() => {
-            setTimeout(() => setIsPaused(false), 5000);
-          }}
-          onScroll={handleManualScroll}
-          className="flex gap-6 overflow-x-auto scrollbar-hide px-4 sm:px-8 lg:px-[calc((100vw-80rem)/2+2rem)] pb-4"
-          style={{
-            scrollBehavior: "auto",
-            WebkitOverflowScrolling: "touch",
-            msOverflowStyle: "none",
-            scrollbarWidth: "none",
-          }}
-        >
-          {/* Duplicate clients for infinite scroll effect */}
-          {[...CLIENTS_DATA, ...CLIENTS_DATA].map((client, idx) => (
-            <ClientCard key={`${client.name}-${idx}`} client={client} />
-          ))}
+        <div className="relative overflow-hidden">
+          {/* Fade edges */}
+          <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-gray-50/50 to-transparent z-10 pointer-events-none" />
+          
+          {/* Marquee track */}
+          <div className="animate-marquee flex gap-6 pb-4 w-max">
+            {/* First set */}
+            {CLIENTS_DATA.map((client, idx) => (
+              <ClientCard key={`a-${client.name}-${idx}`} client={client} />
+            ))}
+            {/* Duplicate set for seamless loop */}
+            {CLIENTS_DATA.map((client, idx) => (
+              <ClientCard key={`b-${client.name}-${idx}`} client={client} />
+            ))}
+          </div>
         </div>
       </div>
 
@@ -1049,7 +1014,7 @@ function CatalogShowcaseSection() {
                 <div className="relative rounded-xl overflow-hidden bg-white">
                   <img
                     src={CATALOG_MOCKUP}
-                    alt="Cardápio digital do CardápioAdmin"
+                    alt="Cardápio digital do Mindi"
                     className="w-full h-auto"
                     loading="lazy"
                   />

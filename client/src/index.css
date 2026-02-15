@@ -560,3 +560,24 @@
     transform: translateY(-8px) rotate(-1deg);
   }
 }
+
+/* Marquee infinite scroll for clients carousel */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee-scroll 30s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
