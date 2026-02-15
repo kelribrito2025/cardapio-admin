@@ -2737,24 +2737,45 @@ export default function PublicMenu() {
                   {productComplements.map((group) => {
                     const selectedInGroup = selectedComplements.get(group.id) || new Map<number, number>();
                     const isRadio = group.maxQuantity === 1;
+                    const totalSelectedInGroup = Array.from(selectedInGroup.values()).reduce((a, b) => a + b, 0);
+                    const isGroupComplete = totalSelectedInGroup >= group.maxQuantity;
                     
                     return (
-                      <div key={group.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                      <div key={group.id} id={`complement-group-${group.id}`} className={`rounded-xl overflow-hidden transition-all duration-300 ${isGroupComplete ? 'border-2 border-green-400' : 'border border-gray-200'}`}>
                         {/* Header do Grupo */}
-                        <div className="bg-gray-50 px-4 py-3 border-b border-gray-200" style={{paddingTop: '8px', height: '58px'}}>
+                        <div className={`px-4 py-3 border-b transition-colors duration-300 ${isGroupComplete ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`} style={{paddingTop: '8px', height: '58px'}}>
                           <div className="flex items-center justify-between">
-                            <h4 className="font-semibold text-gray-900">{group.name}</h4>
-                            {group.isRequired && (
-                              <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
-                                Obrigatório
-                              </span>
-                            )}
+                            <div className="flex items-center gap-2">
+                              <h4 className={`font-semibold transition-colors duration-300 ${isGroupComplete ? 'text-green-700' : 'text-gray-900'}`}>{group.name}</h4>
+                              {isGroupComplete && (
+                                <svg className="w-4 h-4 text-green-500 animate-in fade-in zoom-in duration-300" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                                </svg>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {isGroupComplete && (
+                                <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                                  Completo
+                                </span>
+                              )}
+                              {!isGroupComplete && group.isRequired && (
+                                <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
+                                  Obrigatório
+                                </span>
+                              )}
+                            </div>
                           </div>
-                          <p className="text-xs text-gray-500 mt-0.5">
-                            {group.minQuantity > 0 ? `Mín: ${group.minQuantity}` : ''}
-                            {group.minQuantity > 0 && group.maxQuantity > 1 ? ' | ' : ''}
-                            {group.maxQuantity > 1 ? `Máx: ${group.maxQuantity}` : ''}
-                            {group.maxQuantity === 1 && group.minQuantity === 0 ? 'Escolha até 1' : ''}
+                          <p className={`text-xs mt-0.5 transition-colors duration-300 ${isGroupComplete ? 'text-green-600' : 'text-gray-500'}`}>
+                            {isGroupComplete
+                              ? `${totalSelectedInGroup}/${group.maxQuantity} selecionado${group.maxQuantity > 1 ? 's' : ''}`
+                              : <>
+                                  {group.minQuantity > 0 ? `Mín: ${group.minQuantity}` : ''}
+                                  {group.minQuantity > 0 && group.maxQuantity > 1 ? ' | ' : ''}
+                                  {group.maxQuantity > 1 ? `Máx: ${group.maxQuantity}` : ''}
+                                  {group.maxQuantity === 1 && group.minQuantity === 0 ? 'Escolha até 1' : ''}
+                                </>
+                            }
                           </p>
                         </div>
                         
@@ -2781,6 +2802,22 @@ export default function PublicMenu() {
                                   currentGroupMap.set(item.id, currentQty + 1);
                                   newMap.set(group.id, currentGroupMap);
                                   if (itemImageUrl) setSelectedComplementImage(itemImageUrl);
+                                  // Auto-scroll para próximo grupo se atingiu o máximo
+                                  const newTotal = totalInGroup + 1;
+                                  if (newTotal >= group.maxQuantity && productComplements) {
+                                    const currentIndex = productComplements.findIndex(g => g.id === group.id);
+                                    if (currentIndex < productComplements.length - 1) {
+                                      const nextGroup = productComplements[currentIndex + 1];
+                                      setTimeout(() => {
+                                        document.getElementById(`complement-group-${nextGroup.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                      }, 200);
+                                    } else {
+                                      // Último grupo: scroll para observações
+                                      setTimeout(() => {
+                                        document.querySelector('[data-observation-field]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                      }, 200);
+                                    }
+                                  }
                                 }
                                 return newMap;
                               });
@@ -2824,6 +2861,20 @@ export default function PublicMenu() {
                                   } else {
                                     setSelectedComplementImage(null);
                                   }
+                                  // Auto-scroll para próximo grupo (radio sempre atinge max=1)
+                                  if (productComplements) {
+                                    const currentIndex = productComplements.findIndex(g => g.id === group.id);
+                                    if (currentIndex < productComplements.length - 1) {
+                                      const nextGroup = productComplements[currentIndex + 1];
+                                      setTimeout(() => {
+                                        document.getElementById(`complement-group-${nextGroup.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                      }, 200);
+                                    } else {
+                                      setTimeout(() => {
+                                        document.querySelector('[data-observation-field]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                      }, 200);
+                                    }
+                                  }
                                 } else {
                                   // Checkbox: toggle
                                   if (isSelected) {
@@ -2837,6 +2888,21 @@ export default function PublicMenu() {
                                       currentGroupMap.set(item.id, 1);
                                       if (itemImageUrl) {
                                         setSelectedComplementImage(itemImageUrl);
+                                      }
+                                      // Auto-scroll para próximo grupo se atingiu o máximo
+                                      const newTotal = totalInGroup + 1;
+                                      if (newTotal >= group.maxQuantity && productComplements) {
+                                        const currentIndex = productComplements.findIndex(g => g.id === group.id);
+                                        if (currentIndex < productComplements.length - 1) {
+                                          const nextGroup = productComplements[currentIndex + 1];
+                                          setTimeout(() => {
+                                            document.getElementById(`complement-group-${nextGroup.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                          }, 200);
+                                        } else {
+                                          setTimeout(() => {
+                                            document.querySelector('[data-observation-field]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                          }, 200);
+                                        }
                                       }
                                     }
                                   }
@@ -2920,7 +2986,7 @@ export default function PublicMenu() {
               )}
 
               {/* Campo de Observação */}
-              <div>
+              <div data-observation-field>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Observações
                 </label>

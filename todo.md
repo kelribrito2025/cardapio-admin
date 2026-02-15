@@ -6495,3 +6495,6 @@
 - [x] Bug: Estabelecimento 60018 mostra "fechado" ao enviar pedido no menu público - corrigido: frontend agora usa computedIsOpen do servidor como fonte de verdade
 - [x] Bug: Toggle "Aberto agora" no admin mostra "Aberto" mas banco de dados tem manuallyClosed=true - corrigido: admin agora usa computedIsOpen do servidor como fonte de verdade
 - [x] Quando sidebar minimizada e usuário clicar em "Menu" (com submenu), a barra deve expandir em vez de mostrar tooltip/popover
+
+## Auto-scroll Complementos no Menu Público
+- [x] Auto-scroll suave para próximo grupo de complementos quando cliente atingir quantidade máxima no menu público
