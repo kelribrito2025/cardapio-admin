@@ -6501,3 +6501,6 @@
 - [x] Bug: Auto-scroll dos complementos mostra parte do grupo anterior após completar seleção - próximo grupo deve ficar no topo da área visível
 - [x] Bug: Clicar no texto do complemento não seleciona o item - só funciona clicando na área vazia do complemento
 - [x] Alterar cor do estado "Completo" dos complementos de verde para vermelho (bordas, header, badge, ícone, subtítulo)
+- [x] Bug: Botão de ativar/pausar da categoria no catálogo não reflete estado pausado quando todos os itens da categoria estão pausados
+- [x] Bug: Botão de ativar/pausar da categoria no catálogo não reflete estado pausado quando todos os itens da categoria estão pausados
+- [x] Bug: Itens dentro de categoria pausada não aparecem visualmente como pausados (devem ter opacidade reduzida e ícone de pausa)

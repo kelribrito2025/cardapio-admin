@@ -83,6 +83,7 @@ function SortableProductItem({
   onToggleComplements,
   onUpdateInline,
   establishmentId,
+  categoryIsActive = true,
 }: {
   product: any;
   isDragDisabled: boolean;
@@ -95,6 +96,7 @@ function SortableProductItem({
   onToggleComplements: (id: number) => void;
   onUpdateInline?: (id: number, data: { price?: string; stockQuantity?: number | null; hasStock?: boolean }) => void;
   establishmentId?: number;
+  categoryIsActive?: boolean;
 }) {
   const {
     attributes,
@@ -113,6 +115,9 @@ function SortableProductItem({
   };
 
   const isComplementsOpen = expandedComplementProductId === product.id;
+
+  // Status efetivo: se a categoria está pausada, todos os itens devem aparecer como pausados visualmente
+  const effectiveStatus = !categoryIsActive ? 'paused' : product.status;
 
   // Inline editable fields state
   const formatPriceBR = (cents: number) => {
@@ -170,7 +175,7 @@ function SortableProductItem({
         style={{ height: '60px' }}
         className={cn(
           "flex items-center gap-3.5 p-3.5 transition-colors",
-          product.status === "active"
+          effectiveStatus === "active"
             ? "hover:bg-muted/30 bg-card"
             : "bg-muted/40"
         )}
@@ -183,7 +188,7 @@ function SortableProductItem({
                 {...listeners}
                 className={cn(
                   "cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded-md touch-none",
-                  product.status !== "active" && "opacity-50"
+                  effectiveStatus !== "active" && "opacity-50"
                 )}
               >
                 <GripVertical className="h-5 w-5 text-muted-foreground" />
@@ -196,16 +201,17 @@ function SortableProductItem({
         <div 
           className={cn(
             "flex items-center gap-3 flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity",
-            product.status !== "active" && "opacity-50"
+            effectiveStatus !== "active" && "opacity-50"
           )}
           onClick={() => onEdit(product.id)}
         >
-          <div className={cn(
-            "hidden md:flex h-12 w-12 rounded-lg items-center justify-center overflow-hidden flex-shrink-0",
-            product.status === "active"
-              ? "bg-gradient-to-br from-red-500 to-red-600"
-              : "bg-gradient-to-br from-gray-400 to-gray-500 grayscale"
-          )}>
+          <div
+            className={cn(
+              "hidden md:flex h-12 w-12 rounded-lg items-center justify-center overflow-hidden flex-shrink-0",
+              effectiveStatus === "active"
+                ? "bg-gradient-to-br from-red-500 to-red-600"
+                : "bg-gradient-to-br from-gray-400 to-gray-500 grayscale"
+            )}>
             {product.images && product.images.length > 0 ? (
               <img
                 src={product.images[0]}
@@ -220,7 +226,7 @@ function SortableProductItem({
             <div className="flex items-center gap-1.5">
               <h4 className={cn(
                 "font-semibold text-base truncate",
-                product.status !== "active" && "text-muted-foreground"
+                effectiveStatus !== "active" && "text-muted-foreground"
               )}>{product.name}</h4>
 
               {product.hasStock && product.stockQuantity !== null && product.stockQuantity <= 0 && (
@@ -249,7 +255,7 @@ function SortableProductItem({
               isComplementsOpen
                 ? "bg-primary/10 text-primary border-primary/30"
                 : "text-muted-foreground hover:text-primary hover:bg-primary/5 hover:border-primary/20",
-              product.status !== "active" && "opacity-50"
+              effectiveStatus !== "active" && "opacity-50"
             )}
             onClick={(e) => {
               e.stopPropagation();
@@ -265,7 +271,7 @@ function SortableProductItem({
             {isComplementsOpen ? <ChevronUp className="h-3.5 w-3.5 ml-1" /> : <ChevronDown className="h-3.5 w-3.5 ml-1" />}
           </Button>
           {/* Mobile: ícone seta */}
-          <div className={cn("relative md:hidden", product.status !== "active" && "opacity-50")}>
+          <div className={cn("relative md:hidden", effectiveStatus !== "active" && "opacity-50")}>
             <Button
               variant="outline"
               size="icon"
@@ -289,7 +295,7 @@ function SortableProductItem({
             )}
           </div>
           {/* Desktop: Estoque + Preço editáveis inline */}
-          <div className={cn("hidden md:flex items-center gap-2 flex-shrink-0", product.status !== "active" && "opacity-50")}>
+          <div className={cn("hidden md:flex items-center gap-2 flex-shrink-0", effectiveStatus !== "active" && "opacity-50")}>
             <input
               ref={stockRef}
               type="text"
@@ -325,7 +331,7 @@ function SortableProductItem({
                 size="icon"
                 className={cn(
                   "h-8 w-8 rounded-lg",
-                  product.status === "active"
+                  effectiveStatus === "active"
                     ? "text-muted-foreground hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200"
                     : "text-emerald-600 bg-emerald-50 border-emerald-200 hover:text-emerald-700 hover:bg-emerald-100"
                 )}
@@ -334,16 +340,16 @@ function SortableProductItem({
                   onToggleStatus(product.id, product.status);
                 }}
               >
-                {product.status === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                {effectiveStatus === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               </Button>
             </TooltipTrigger>
-            <TooltipContent>{product.status === "active" ? "Pausar item" : "Ativar item"}</TooltipContent>
+            <TooltipContent>{effectiveStatus === "active" ? "Pausar item" : "Ativar item"}</TooltipContent>
           </Tooltip>
           {/* Menu 3 pontinhos sem estilo de botão */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                className={cn("p-1 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground", product.status !== "active" && "opacity-50")}
+                className={cn("p-1 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground", effectiveStatus !== "active" && "opacity-50")}
                 onClick={(e) => e.stopPropagation()}
               >
                 <MoreVertical className="h-4.5 w-4.5" />
@@ -466,6 +472,10 @@ function SortableCategoryItem({
     position: isDragging ? 'relative' as const : undefined,
   };
 
+  // Se todos os itens da categoria estão pausados, considerar a categoria como efetivamente pausada
+  const allItemsPaused = categoryProducts.length > 0 && categoryProducts.every((p: any) => p.status !== 'active');
+  const effectiveIsActive = category.isActive && !allItemsPaused;
+
   return (
     <div
       ref={setNodeRef}
@@ -545,7 +555,7 @@ function SortableCategoryItem({
               >
                 <h3 className={cn(
                   "font-bold text-base group-hover:text-primary transition-colors",
-                  !category.isActive && "text-muted-foreground line-through"
+                  !effectiveIsActive && "text-muted-foreground line-through"
                 )}>
                   {category.name}
                 </h3>
@@ -554,8 +564,8 @@ function SortableCategoryItem({
               <span className="text-xs text-muted-foreground font-medium">
                 {categoryProducts.length} {categoryProducts.length === 1 ? "ítem" : "ítens"}
               </span>
-              {!category.isActive && (
-                <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">Pausada</span>
+              {!effectiveIsActive && (
+                <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">{allItemsPaused && category.isActive ? 'Todos pausados' : 'Pausada'}</span>
               )}
             </>
           )}
@@ -581,7 +591,7 @@ function SortableCategoryItem({
                 size="icon"
                 className={cn(
                   "h-8 w-8 rounded-lg hidden sm:inline-flex",
-                  category.isActive
+                  effectiveIsActive
                     ? "text-muted-foreground hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200"
                     : "text-emerald-600 bg-emerald-50 border-emerald-200 hover:text-emerald-700 hover:bg-emerald-100"
                 )}
@@ -591,10 +601,10 @@ function SortableCategoryItem({
                 }}
                 disabled={toggleCategoryStatusPending}
               >
-                {category.isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                {effectiveIsActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               </Button>
             </TooltipTrigger>
-            <TooltipContent>{category.isActive ? "Pausar categoria" : "Ativar categoria"}</TooltipContent>
+            <TooltipContent>{effectiveIsActive ? "Pausar categoria" : "Ativar categoria"}</TooltipContent>
           </Tooltip>
           {/* Botão 3 pontinhos - Duplicar/Remover */}
           <DropdownMenu>
@@ -615,7 +625,7 @@ function SortableCategoryItem({
                 onClick={() => onToggleCategoryStatus(category.id, !category.isActive)}
                 disabled={toggleCategoryStatusPending}
               >
-                {category.isActive ? (
+                {effectiveIsActive ? (
                   <><Pause className="h-4 w-4 mr-2" />Pausar categoria</>
                 ) : (
                   <><Play className="h-4 w-4 mr-2" />Ativar categoria</>
@@ -1321,6 +1331,7 @@ export default function Catalogo() {
                         onToggleComplements={handleToggleComplements}
                         onUpdateInline={handleInlineUpdate}
                         establishmentId={establishmentId || undefined}
+                        categoryIsActive={category.isActive}
                       />
                     ))}
                   </div>
