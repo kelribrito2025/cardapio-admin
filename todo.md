@@ -6590,3 +6590,14 @@
 ## Ocultar submenu Agendados quando agendamento desativado
 - [x] Ocultar submenu "Agendados" da sidebar quando schedulingEnabled=false no estabelecimento
 - [x] Submenu só aparece quando o restaurante ativa o agendamento nas configurações
+
+## Landing Page - Hero Section
+- [x] Criar página de Landing Page com rota pública (não autenticada)
+- [x] Hero Section com layout duas colunas (60/40) inspirado no GranaFy
+- [x] Copy otimizada para conversão: headline, subheadline, CTAs
+- [x] Mockups desktop + mobile do dashboard com efeito flutuante
+- [x] Mini benefícios abaixo dos CTAs (sem taxa, configuração rápida, suporte)
+- [x] Micro-animações: fade-in headline, entrada lateral mockup, hover botões
+- [x] Fundo claro com grid sutil
+- [x] Responsividade completa (mobile: coluna única, mockup abaixo)
+- [x] Navbar da landing com links: Home, Funcionalidades, Preços, FAQ, Login, Criar conta

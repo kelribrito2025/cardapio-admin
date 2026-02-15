@@ -42,6 +42,9 @@ import AdminPlanos from "./pages/admin/AdminPlanos";
 import AdminTrials from "./pages/admin/AdminTrials";
 import AdminRelatorios from "./pages/admin/AdminRelatorios";
 
+// Landing Page
+import LandingPage from "./pages/LandingPage";
+
 // Auth Pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -92,6 +95,9 @@ function AdminRoutes() {
 function Router() {
   return (
     <Switch>
+      {/* Landing Page - rota pública */}
+      <Route path="/landing" component={LandingPage} />
+      
       {/* Auth routes - sem NewOrdersProvider */}
       <Route path="/login" component={Login} />
       <Route path="/criar-conta" component={Register} />
