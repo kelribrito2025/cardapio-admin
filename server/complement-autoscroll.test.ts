@@ -89,9 +89,9 @@ function getGroupVisualState(
 
   return {
     isComplete,
-    borderClass: isComplete ? 'border-2 border-green-400' : 'border border-gray-200',
-    headerBgClass: isComplete ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200',
-    titleColorClass: isComplete ? 'text-green-700' : 'text-gray-900',
+    borderClass: isComplete ? 'border-2 border-red-400' : 'border border-gray-200',
+    headerBgClass: isComplete ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200',
+    titleColorClass: isComplete ? 'text-red-600' : 'text-gray-900',
     badgeText: isComplete ? 'Completo' : (group.isRequired ? 'Obrigatório' : null),
     subtitleText: isComplete
       ? `${total}/${group.maxQuantity} selecionado${group.maxQuantity > 1 ? 's' : ''}`
@@ -279,9 +279,9 @@ describe('Complement Group - getGroupVisualState', () => {
     const selected = new Map<number, number>([[201, 1], [202, 1], [203, 1]]);
     const state = getGroupVisualState(selected, sampleGroups[1]); // Adicionais, max=3
     expect(state.isComplete).toBe(true);
-    expect(state.borderClass).toBe('border-2 border-green-400');
-    expect(state.headerBgClass).toBe('bg-green-50 border-green-200');
-    expect(state.titleColorClass).toBe('text-green-700');
+    expect(state.borderClass).toBe('border-2 border-red-400');
+    expect(state.headerBgClass).toBe('bg-red-50 border-red-200');
+    expect(state.titleColorClass).toBe('text-red-600');
     expect(state.badgeText).toBe('Completo');
     expect(state.subtitleText).toBe('3/3 selecionados');
   });

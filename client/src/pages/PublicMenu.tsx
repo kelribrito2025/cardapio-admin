@@ -2741,21 +2741,21 @@ export default function PublicMenu() {
                     const isGroupComplete = totalSelectedInGroup >= group.maxQuantity;
                     
                     return (
-                      <div key={group.id} id={`complement-group-${group.id}`} className={`rounded-xl overflow-hidden transition-all duration-300 ${isGroupComplete ? 'border-2 border-green-400' : 'border border-gray-200'}`}>
+                      <div key={group.id} id={`complement-group-${group.id}`} className={`rounded-xl overflow-hidden transition-all duration-300 ${isGroupComplete ? 'border-2 border-red-400' : 'border border-gray-200'}`}>
                         {/* Header do Grupo */}
-                        <div className={`px-4 py-3 border-b transition-colors duration-300 ${isGroupComplete ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`} style={{paddingTop: '8px', height: '58px'}}>
+                        <div className={`px-4 py-3 border-b transition-colors duration-300 ${isGroupComplete ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`} style={{paddingTop: '8px', height: '58px'}}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <h4 className={`font-semibold transition-colors duration-300 ${isGroupComplete ? 'text-green-700' : 'text-gray-900'}`}>{group.name}</h4>
+                              <h4 className={`font-semibold transition-colors duration-300 ${isGroupComplete ? 'text-red-600' : 'text-gray-900'}`}>{group.name}</h4>
                               {isGroupComplete && (
-                                <svg className="w-4 h-4 text-green-500 animate-in fade-in zoom-in duration-300" viewBox="0 0 20 20" fill="currentColor">
+                                <svg className="w-4 h-4 text-red-500 animate-in fade-in zoom-in duration-300" viewBox="0 0 20 20" fill="currentColor">
                                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                                 </svg>
                               )}
                             </div>
                             <div className="flex items-center gap-2">
                               {isGroupComplete && (
-                                <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                                <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
                                   Completo
                                 </span>
                               )}
@@ -2766,7 +2766,7 @@ export default function PublicMenu() {
                               )}
                             </div>
                           </div>
-                          <p className={`text-xs mt-0.5 transition-colors duration-300 ${isGroupComplete ? 'text-green-600' : 'text-gray-500'}`}>
+                          <p className={`text-xs mt-0.5 transition-colors duration-300 ${isGroupComplete ? 'text-red-500' : 'text-gray-500'}`}>
                             {isGroupComplete
                               ? `${totalSelectedInGroup}/${group.maxQuantity} selecionado${group.maxQuantity > 1 ? 's' : ''}`
                               : <>

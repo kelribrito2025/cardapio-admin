@@ -6500,3 +6500,4 @@
 - [x] Auto-scroll suave para próximo grupo de complementos quando cliente atingir quantidade máxima no menu público
 - [x] Bug: Auto-scroll dos complementos mostra parte do grupo anterior após completar seleção - próximo grupo deve ficar no topo da área visível
 - [x] Bug: Clicar no texto do complemento não seleciona o item - só funciona clicando na área vazia do complemento
+- [x] Alterar cor do estado "Completo" dos complementos de verde para vermelho (bordas, header, badge, ícone, subtítulo)
