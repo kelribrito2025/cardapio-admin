@@ -6543,3 +6543,6 @@
 
 ## Calendário: Estilo Pill/Chip nos Pedidos
 - [x] Cada pedido dentro da célula do calendário deve ter fundo arredondado verde claro (pill/chip) como na referência
+
+## Navegação: Agendados como submenu de Pedidos
+- [x] Mover Agendados para dentro do menu Pedidos como submenu (igual ao padrão do menu "Menu" com submenus)
