@@ -1271,7 +1271,9 @@ export default function Pedidos() {
                 ) : columnOrders.length > 0 ? (
                   // Order cards
                   columnOrders.map((order: OrderItem) => {
-                    const config = statusConfig[order.status as OrderStatus];
+                    // Na coluna "Prontos", usar sempre a cor verde da coluna (ready) em vez da cor individual do status
+                    const displayStatus = column.id === 'ready' ? 'ready' : order.status;
+                    const config = statusConfig[displayStatus as OrderStatus];
                     const nextAction = getNextAction(order.status as OrderStatus);
                     const PaymentIcon = paymentMethodLabels[order.paymentMethod]?.icon || CreditCard;
 

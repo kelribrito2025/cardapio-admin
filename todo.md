@@ -6504,3 +6504,4 @@
 - [x] Bug: Botão de ativar/pausar da categoria no catálogo não reflete estado pausado quando todos os itens da categoria estão pausados
 - [x] Bug: Botão de ativar/pausar da categoria no catálogo não reflete estado pausado quando todos os itens da categoria estão pausados
 - [x] Bug: Itens dentro de categoria pausada não aparecem visualmente como pausados (devem ter opacidade reduzida e ícone de pausa)
+- [x] Bug: Cards na coluna 'Pronto' do Kanban aparecem com cor laranja em vez de verde
