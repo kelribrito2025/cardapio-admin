@@ -6586,3 +6586,7 @@
 ## Badge no Submenu Agendados e Notificação de Pedido Agendado
 - [x] Adicionar badge com contagem de pedidos agendados pendentes no submenu "Agendados" na sidebar
 - [x] Na notificação de novo pedido agendado, botão deve dizer "Ver pedido agendado" e navegar para /agendados
+
+## Ocultar submenu Agendados quando agendamento desativado
+- [x] Ocultar submenu "Agendados" da sidebar quando schedulingEnabled=false no estabelecimento
+- [x] Submenu só aparece quando o restaurante ativa o agendamento nas configurações

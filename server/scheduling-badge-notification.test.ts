@@ -314,3 +314,162 @@ describe("Scheduling Notification - Dados do Evento CustomEvent", () => {
     expect(eventDetail.isScheduled).toBe(false);
   });
 });
+
+// ============ HELPERS DE VISIBILIDADE DO MENU ============
+
+interface NavChild {
+  href: string;
+  label: string;
+}
+
+interface NavItem {
+  href: string;
+  label: string;
+  isParent?: boolean;
+  children?: NavChild[];
+}
+
+/**
+ * Filtra filhos visíveis de um menu pai, baseado nas configurações do estabelecimento.
+ * Replica a lógica do AdminLayout para filtrar children.
+ */
+function getVisibleChildren(
+  children: NavChild[],
+  schedulingEnabled: boolean,
+  reviewsEnabled: boolean
+): NavChild[] {
+  return children.filter(child => {
+    if (child.href === '/avaliacoes' && !reviewsEnabled) return false;
+    if (child.href === '/agendados' && !schedulingEnabled) return false;
+    return true;
+  });
+}
+
+/**
+ * Determina se um menu pai deve ser renderizado como link direto (sem submenu)
+ * quando todos os filhos estão ocultos.
+ */
+function shouldRenderAsDirectLink(item: NavItem, schedulingEnabled: boolean, reviewsEnabled: boolean): boolean {
+  if (!item.isParent || !item.children) return false;
+  const visibleChildren = getVisibleChildren(item.children, schedulingEnabled, reviewsEnabled);
+  return visibleChildren.length === 0 && !!item.href && !item.href.endsWith('-parent');
+}
+
+// ============ TESTES DE VISIBILIDADE DO MENU ============
+
+describe("Scheduling Menu Visibility - Filtragem de Filhos", () => {
+  const pedidosChildren: NavChild[] = [
+    { href: '/agendados', label: 'Agendados' },
+  ];
+
+  const menuChildren: NavChild[] = [
+    { href: '/catalogo', label: 'Cardápio' },
+    { href: '/complementos', label: 'Grupos' },
+    { href: '/avaliacoes', label: 'Avaliações' },
+  ];
+
+  it("oculta Agendados quando schedulingEnabled=false", () => {
+    const visible = getVisibleChildren(pedidosChildren, false, true);
+    expect(visible).toHaveLength(0);
+    expect(visible.find(c => c.href === '/agendados')).toBeUndefined();
+  });
+
+  it("mostra Agendados quando schedulingEnabled=true", () => {
+    const visible = getVisibleChildren(pedidosChildren, true, true);
+    expect(visible).toHaveLength(1);
+    expect(visible[0].href).toBe('/agendados');
+  });
+
+  it("oculta Avaliações quando reviewsEnabled=false", () => {
+    const visible = getVisibleChildren(menuChildren, true, false);
+    expect(visible).toHaveLength(2);
+    expect(visible.find(c => c.href === '/avaliacoes')).toBeUndefined();
+  });
+
+  it("mostra Avaliações quando reviewsEnabled=true", () => {
+    const visible = getVisibleChildren(menuChildren, true, true);
+    expect(visible).toHaveLength(3);
+    expect(visible.find(c => c.href === '/avaliacoes')).toBeDefined();
+  });
+
+  it("Cardápio e Grupos sempre visíveis independente das flags", () => {
+    const visible = getVisibleChildren(menuChildren, false, false);
+    expect(visible).toHaveLength(2);
+    expect(visible[0].href).toBe('/catalogo');
+    expect(visible[1].href).toBe('/complementos');
+  });
+});
+
+describe("Scheduling Menu Visibility - Renderização como Link Direto", () => {
+  const pedidosItem: NavItem = {
+    href: '/pedidos',
+    label: 'Pedidos',
+    isParent: true,
+    children: [{ href: '/agendados', label: 'Agendados' }],
+  };
+
+  const menuItem: NavItem = {
+    href: '/menu-parent',
+    label: 'Menu',
+    isParent: true,
+    children: [
+      { href: '/catalogo', label: 'Cardápio' },
+      { href: '/complementos', label: 'Grupos' },
+      { href: '/avaliacoes', label: 'Avaliações' },
+    ],
+  };
+
+  it("Pedidos renderiza como link direto quando schedulingEnabled=false", () => {
+    expect(shouldRenderAsDirectLink(pedidosItem, false, true)).toBe(true);
+  });
+
+  it("Pedidos renderiza como submenu quando schedulingEnabled=true", () => {
+    expect(shouldRenderAsDirectLink(pedidosItem, true, true)).toBe(false);
+  });
+
+  it("Menu não renderiza como link direto (tem href '-parent')", () => {
+    // Menu tem href '/menu-parent' que termina em '-parent', então a condição
+    // !item.href.endsWith('-parent') é false, logo retorna false (não renderiza como link direto)
+    expect(shouldRenderAsDirectLink(menuItem, false, false)).toBe(false);
+  });
+
+  it("Menu com filhos visíveis não renderiza como link direto", () => {
+    expect(shouldRenderAsDirectLink(menuItem, true, true)).toBe(false);
+  });
+
+  it("Item sem isParent não é afetado", () => {
+    const regularItem: NavItem = { href: '/estoque', label: 'Estoque' };
+    expect(shouldRenderAsDirectLink(regularItem, false, false)).toBe(false);
+  });
+
+  it("Item sem children não é afetado", () => {
+    const noChildItem: NavItem = { href: '/entregadores', label: 'Entregadores', isParent: true };
+    expect(shouldRenderAsDirectLink(noChildItem, false, false)).toBe(false);
+  });
+});
+
+describe("Scheduling Menu Visibility - Query pendingCount condicional", () => {
+  /**
+   * Simula a lógica de habilitar/desabilitar a query de pendingCount
+   * baseado no schedulingEnabled do estabelecimento
+   */
+  function shouldQueryPendingCount(establishmentId: number | undefined, schedulingEnabled: boolean): boolean {
+    return !!establishmentId && schedulingEnabled;
+  }
+
+  it("habilita query quando establishment existe e scheduling ativado", () => {
+    expect(shouldQueryPendingCount(30001, true)).toBe(true);
+  });
+
+  it("desabilita query quando scheduling desativado", () => {
+    expect(shouldQueryPendingCount(30001, false)).toBe(false);
+  });
+
+  it("desabilita query quando establishment não existe", () => {
+    expect(shouldQueryPendingCount(undefined, true)).toBe(false);
+  });
+
+  it("desabilita query quando ambos inválidos", () => {
+    expect(shouldQueryPendingCount(undefined, false)).toBe(false);
+  });
+});

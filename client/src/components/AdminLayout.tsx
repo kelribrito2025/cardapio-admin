@@ -271,10 +271,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   );
   const outOfStockCount = outOfStockData?.count || 0;
 
-  // Get scheduled orders pending count for badge
+  // Check if scheduling is enabled for this establishment
+  const schedulingEnabled = establishment?.schedulingEnabled === true;
+
+  // Get scheduled orders pending count for badge (only when scheduling is enabled)
   const { data: scheduledPendingData } = trpc.scheduling.pendingCount.useQuery(
     undefined,
-    { enabled: !!establishment?.id, refetchInterval: 30000, refetchOnWindowFocus: true }
+    { enabled: !!establishment?.id && schedulingEnabled, refetchInterval: 30000, refetchOnWindowFocus: true }
   );
   const scheduledPendingCount = scheduledPendingData?.count || 0;
 
@@ -496,6 +499,54 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 {section.items.map((item: any) => {
                   // ===== PARENT MENU WITH CHILDREN =====
                   if (item.isParent && item.children) {
+                    // Filtrar filhos visíveis antes de renderizar
+                    const visibleChildren = item.children.filter((child: any) => {
+                      if (child.href === '/avaliacoes' && !reviewsEnabled) return false;
+                      if (child.href === '/agendados' && !schedulingEnabled) return false;
+                      return true;
+                    });
+
+                    // Se não há filhos visíveis e o item tem href navegável, renderizar como link direto
+                    if (visibleChildren.length === 0 && item.href && !item.href.endsWith('-parent')) {
+                      // Renderizar como item regular (sem submenu)
+                      const isActive = location === item.href || (item.href !== '/' && location.startsWith(item.href));
+                      const showOrderBadge = item.href === '/pedidos' && newOrdersCount > 0;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => handleNavClick(item.href)}
+                          className={cn(
+                            "flex items-center gap-2.5 py-2.5 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative",
+                            sidebarCollapsed ? "px-0 justify-center rounded-lg" : "pl-3 pr-3",
+                            isActive
+                              ? "bg-primary/15 text-primary"
+                              : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                          )}
+                          style={!sidebarCollapsed ? {borderRadius: '12px', paddingLeft: '37px', marginRight: '43px', marginLeft: '-27px'} : undefined}
+                        >
+                          <div className="relative">
+                            <item.icon className={cn("h-4 w-4 flex-shrink-0", sidebarCollapsed && "mx-auto")} />
+                            {showOrderBadge && sidebarCollapsed && (
+                              <span className="absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse bg-red-500 text-white">
+                                {newOrdersCount > 9 ? "9+" : newOrdersCount}
+                              </span>
+                            )}
+                          </div>
+                          {!sidebarCollapsed && (
+                            <span className="text-sm flex items-center gap-2 flex-1">
+                              {item.label}
+                              {showOrderBadge && (
+                                <span className="text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center bg-red-500 text-white">
+                                  {newOrdersCount > 99 ? "99+" : newOrdersCount}
+                                </span>
+                              )}
+                            </span>
+                          )}
+                        </Link>
+                      );
+                    }
+
                     const isExpanded = expandedMenus[item.href] || false;
                     const isChildActive = item.children.some((child: any) => 
                       location === child.href || (child.href !== '/' && location.startsWith(child.href))
@@ -582,6 +633,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                             {item.children.filter((child: any) => {
                               // Ocultar submenu Avaliações quando reviewsEnabled === false
                               if (child.href === '/avaliacoes' && !reviewsEnabled) return false;
+                              // Ocultar submenu Agendados quando agendamento não está ativado
+                              if (child.href === '/agendados' && !schedulingEnabled) return false;
                               return true;
                             }).map((child: any) => {
                               const childActive = location === child.href || (child.href !== '/' && location.startsWith(child.href));
