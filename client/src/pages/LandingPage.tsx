@@ -865,11 +865,7 @@ function CatalogShowcaseSection() {
       title: "Categorias organizadas",
       desc: "Entradas, pratos principais, sobremesas, bebidas — tudo separado e fácil de navegar."
     },
-    {
-      icon: <Smartphone className="w-5 h-5" />,
-      title: "Funciona em qualquer dispositivo",
-      desc: "Seu cardápio se adapta perfeitamente a celulares, tablets e computadores."
-    },
+
     {
       icon: <Globe className="w-5 h-5" />,
       title: "Link exclusivo do seu restaurante",
@@ -1085,11 +1081,7 @@ function LoyaltyProgramSection() {
       title: "Clientes que voltam sempre",
       desc: "Aumente a recorrência e o ticket médio com um programa que engaja de verdade."
     },
-    {
-      icon: <TrendingUp className="w-5 h-5" />,
-      title: "Relatórios de engajamento",
-      desc: "Acompanhe quantos clientes participam, quantos pontos foram resgatados e o impacto nas vendas."
-    },
+
   ];
 
   return (
