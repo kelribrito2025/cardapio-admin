@@ -5432,10 +5432,9 @@ export const appRouter = router({
     getMonthlyComparison: protectedProcedure
       .input(z.object({
         establishmentId: z.number(),
-        period: z.enum(['today', 'week', 'month']).default('month'),
       }))
       .query(async ({ input }) => {
-        return db.getMonthlyComparison(input.establishmentId, input.period);
+        return db.getMonthlyComparison(input.establishmentId);
       }),
   }),
 });

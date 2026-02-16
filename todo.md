@@ -6863,3 +6863,9 @@
 - [x] Frontend: gráfico de barras agrupadas comparando mês atual vs anterior
 - [x] Respeitar filtro de período já selecionado na página
 - [x] Layout responsivo seguindo padrão visual da dashboard
+
+## Redesign Card Comparação Mensal
+- [x] Backend: alterar getMonthlyComparison para retornar últimos 4 meses (Receitas e Despesas por mês)
+- [x] Frontend: redesenhar card no mesmo tamanho do Evolução Financeira (lg:col-span-2)
+- [x] Frontend: barras agrupadas por mês (Receitas verde, Despesas vermelho), sem blocos de resumo
+- [x] Remover os 3 blocos de resumo (Receita, Despesas, Lucro) do card
