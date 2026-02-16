@@ -2169,7 +2169,7 @@ function LandingFooter() {
   };
 
   return (
-    <footer className="bg-red-50 text-gray-500 pt-16 pb-0">
+    <footer className="bg-red-50 text-gray-600 pt-16 pb-0">
       <div className="max-w-6xl mx-auto px-6 sm:px-8">
         {/* Top section: Brand + Link columns */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 mb-14">
@@ -2181,7 +2181,7 @@ function LandingFooter() {
               </div>
               <span className="text-2xl font-extrabold text-red-500">Mindi</span>
             </div>
-            <p className="text-sm leading-relaxed text-gray-400 mb-6 max-w-xs">
+            <p className="text-sm leading-relaxed text-gray-600 mb-6 max-w-xs">
               Plataforma completa de delivery para restaurantes. Crie seu próprio sistema de pedidos online gratuitamente.
             </p>
             {/* Social icons */}
@@ -2228,7 +2228,7 @@ function LandingFooter() {
                     <li key={link.label}>
                       <a
                         href={link.href}
-                        className="text-sm text-gray-400 hover:text-gray-700 transition-colors duration-200"
+                        className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200"
                       >
                         {link.label}
                       </a>
@@ -2247,12 +2247,12 @@ function LandingFooter() {
           </h4>
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <Mail className="w-4 h-4 text-gray-400 flex-shrink-0" />
-              <span className="text-sm text-gray-400">contato@mindi.com.br</span>
+              <Mail className="w-4 h-4 text-gray-500 flex-shrink-0" />
+              <span className="text-sm text-gray-600">contato@mindi.com.br</span>
             </div>
             <div className="flex items-start gap-3">
-              <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-gray-400">
+              <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-gray-600">
                 <p>São Paulo - SP</p>
               </div>
             </div>
@@ -2264,12 +2264,12 @@ function LandingFooter() {
 
         {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 py-5">
-          <div className="flex items-center gap-2 text-xs text-gray-400">
-            <span className="font-semibold text-gray-500">Mindi Tecnologia LTDA</span>
+          <div className="flex items-center gap-2 text-xs text-gray-600">
+            <span className="font-semibold text-gray-700">Mindi Tecnologia LTDA</span>
             <span className="hidden sm:inline">·</span>
             <span>CNPJ: 00.000.000/0001-00</span>
           </div>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-600">
             &copy; {currentYear} Mindi. Todos os direitos reservados.
           </p>
         </div>
