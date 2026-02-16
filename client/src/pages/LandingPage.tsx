@@ -1864,7 +1864,7 @@ function LandingFooter() {
   };
 
   return (
-    <footer className="bg-gray-100 text-gray-500 pt-16 pb-0">
+    <footer className="bg-red-50 text-gray-500 pt-16 pb-0">
       <div className="max-w-6xl mx-auto px-6 sm:px-8">
         {/* Top section: Brand + Link columns */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 mb-14">
