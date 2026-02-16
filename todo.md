@@ -6756,3 +6756,11 @@
 - [x] Adicionar foto real do WhatsApp no mockup de celular da seção Integração WhatsApp
 - [x] Ajustar tamanho do mockup da seção "Gestão de Pedidos" para ficar igual ao da seção "Sistema completo de gestão"
 - [x] Tirar screenshot da página de pedidos com menu minimizado e usar como imagem do mockup na seção Gestão de Pedidos
+
+## Dados Mockados para conta admin@admin.com
+- [x] Adicionar dados mockados na Dashboard (pedidos, faturamento, gráficos)
+- [x] Adicionar pedidos mockados na página de Pedidos (vários status)
+- [x] Adicionar pedidos agendados mockados
+- [x] Adicionar entregadores mockados
+- [x] Adicionar avaliações mockadas
+- [x] Adicionar itens de estoque mockados
