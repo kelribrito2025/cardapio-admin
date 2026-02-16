@@ -6791,3 +6791,8 @@
 
 ## Adicionar Docerias ao Marquee de Segmentos
 - [x] Incluir "Docerias" na lista de segmentos do marquee da landing page
+
+## Reaproveitar Seção Gestão de Pedidos para Cupons + SMS
+- [x] Tirar screenshots das páginas de Campanhas SMS e Cupons via v2.mindi.com.br
+- [x] Reescrever OrdersMockupSection com carrossel de screenshots, typewriter e ícones estilo Cardápio Digital
+- [x] Remover MarketingBoostSection separada

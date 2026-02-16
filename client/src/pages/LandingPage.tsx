@@ -43,10 +43,7 @@ import {
   Bell,
   Send,
   Ticket,
-  MessageSquare,
-  Megaphone,
   Target,
-  PercentCircle,
   BadgePercent
 } from "lucide-react";
 
@@ -65,6 +62,10 @@ const LOYALTY_SLIDE_2 = "https://files.manuscdn.com/user_upload_by_module/sessio
 const LOYALTY_SLIDE_3 = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/sKWXwquYAtRCumWl.png";
 const LOYALTY_SLIDE_4 = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/UjKoclpdSxjbFGcs.png";
 const LOYALTY_SLIDES = [LOYALTY_SLIDE_1, LOYALTY_SLIDE_2, LOYALTY_SLIDE_3, LOYALTY_SLIDE_4];
+
+// Screenshots de Campanhas SMS e Cupons
+const CAMPANHAS_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/sppXEewuzkaeQIVs.png";
+const CUPONS_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/ONNOgppsFwJoOdTj.png";
 
 // Imagens da integração WhatsApp
 const WHATSAPP_SLIDE_1 = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/NPTBypEdTUYmjzws.png";
@@ -1536,224 +1537,35 @@ function WhatsAppIntegrationSection() {
   );
 }
 
-// ============ SEÇÃO: CUPONS + CAMPANHAS SMS ============
-function MarketingBoostSection() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
+// ============ SEÇÃO: CUPONS + CAMPANHAS SMS (com carrossel e typewriter) ============
+const MARKETING_ITEMS = [
+  {
+    word: "campanhas SMS",
+    image: CAMPANHAS_MOCKUP,
+    benefits: [
+      { icon: <Send className="w-5 h-5" />, title: "Disparo em massa", desc: "Envie SMS para toda sua base de clientes de uma só vez com ofertas e novidades." },
+      { icon: <Target className="w-5 h-5" />, title: "Segmentação inteligente", desc: "Segmente por frequência de compra, ticket médio ou última visita para mensagens certeiras." },
+      { icon: <TrendingUp className="w-5 h-5" />, title: "Resultados mensuráveis", desc: "Acompanhe taxa de entrega, cliques e conversões de cada campanha em tempo real." },
+    ],
+  },
+  {
+    word: "cupons de desconto",
+    image: CUPONS_MOCKUP,
+    benefits: [
+      { icon: <BadgePercent className="w-5 h-5" />, title: "Cupons personalizados", desc: "Crie cupons por valor fixo ou porcentagem. Defina validade, limite de uso e valor mínimo." },
+      { icon: <Gift className="w-5 h-5" />, title: "Primeira compra", desc: "Ofereça desconto especial para novos clientes e transforme visitantes em compradores." },
+      { icon: <Rocket className="w-5 h-5" />, title: "Frete grátis", desc: "Crie cupons de frete grátis para incentivar pedidos e aumentar o ticket médio." },
+    ],
+  },
+];
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
-      { threshold: 0.15 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  const couponFeatures = [
-    {
-      icon: <BadgePercent className="w-5 h-5" />,
-      title: "Cupons personalizados",
-      desc: "Crie cupons de desconto por valor fixo ou porcentagem. Defina validade, limite de uso e valor mínimo."
-    },
-    {
-      icon: <Target className="w-5 h-5" />,
-      title: "Primeira compra",
-      desc: "Ofereça desconto especial para novos clientes e transforme visitantes em compradores."
-    },
-    {
-      icon: <Gift className="w-5 h-5" />,
-      title: "Frete grátis",
-      desc: "Crie cupons de frete grátis para incentivar pedidos e aumentar o ticket médio."
-    },
-  ];
-
-  const smsFeatures = [
-    {
-      icon: <Send className="w-5 h-5" />,
-      title: "Disparo em massa",
-      desc: "Envie SMS para toda sua base de clientes de uma só vez com ofertas e novidades."
-    },
-    {
-      icon: <Megaphone className="w-5 h-5" />,
-      title: "Campanhas segmentadas",
-      desc: "Segmente por frequência de compra, ticket médio ou última visita para mensagens certeiras."
-    },
-    {
-      icon: <TrendingUp className="w-5 h-5" />,
-      title: "Resultados mensuráveis",
-      desc: "Acompanhe taxa de abertura, cliques e conversões de cada campanha em tempo real."
-    },
-  ];
-
-  return (
-    <section ref={sectionRef} className="py-20 lg:py-28 bg-white overflow-hidden">
-      <div className="max-w-6xl mx-auto px-6 sm:px-8">
-        {/* Header */}
-        <div className={`text-center mb-16 transition-all duration-700 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}>
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 text-orange-600 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-            <Rocket className="w-4 h-4" />
-            Bombe suas vendas
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
-            Cupons + Campanhas SMS
-          </h2>
-          <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-            A combinação perfeita para atrair novos clientes, reativar inativos e aumentar o faturamento do seu restaurante.
-          </p>
-        </div>
-
-        {/* Two columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Cupons Column */}
-          <div className={`transition-all duration-700 delay-200 ${
-            isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
-          }`}>
-            <div className="bg-gradient-to-br from-red-50 via-orange-50/50 to-white rounded-3xl border border-red-100/60 p-8 h-full">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-white shadow-lg shadow-red-500/25">
-                  <Ticket className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">Cupons de Desconto</h3>
-                  <p className="text-sm text-gray-500">Atraia e fidelize clientes</p>
-                </div>
-              </div>
-
-              <div className="space-y-5">
-                {couponFeatures.map((feature, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-white border border-red-100 flex items-center justify-center text-red-500 shadow-sm">
-                      {feature.icon}
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900 text-sm mb-0.5">{feature.title}</h4>
-                      <p className="text-sm text-gray-500 leading-relaxed">{feature.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Visual example */}
-              <div className="mt-8 bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Exemplo de cupom</span>
-                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Ativo</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-red-500 to-orange-400 flex items-center justify-center text-white">
-                    <span className="text-lg font-bold">15%</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-bold text-gray-900">BEMVINDO15</p>
-                    <p className="text-xs text-gray-500">15% off na primeira compra • Até R$ 20,00</p>
-                    <p className="text-xs text-gray-400 mt-0.5">127 usos • Válido até 30/03</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* SMS Column */}
-          <div className={`transition-all duration-700 delay-400 ${
-            isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
-          }`}>
-            <div className="bg-gradient-to-br from-blue-50 via-indigo-50/50 to-white rounded-3xl border border-blue-100/60 p-8 h-full">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/25">
-                  <MessageSquare className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">Campanhas SMS</h3>
-                  <p className="text-sm text-gray-500">Alcance direto no celular</p>
-                </div>
-              </div>
-
-              <div className="space-y-5">
-                {smsFeatures.map((feature, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-white border border-blue-100 flex items-center justify-center text-blue-500 shadow-sm">
-                      {feature.icon}
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900 text-sm mb-0.5">{feature.title}</h4>
-                      <p className="text-sm text-gray-500 leading-relaxed">{feature.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Visual example */}
-              <div className="mt-8 bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Exemplo de campanha</span>
-                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">Enviada</span>
-                </div>
-                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                  <div className="flex items-center gap-2 mb-2">
-                    <MessageSquare className="w-4 h-4 text-blue-500" />
-                    <span className="text-xs font-semibold text-gray-700">SMS Preview</span>
-                  </div>
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    🍔 <strong>Sushi Haruno:</strong> Hoje tem 20% OFF em todo o cardápio! Use o cupom <strong>SEXTA20</strong> e peça agora: mindi.com.br/sushi-haruno
-                  </p>
-                  <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-200">
-                    <div className="text-center">
-                      <p className="text-lg font-bold text-gray-900">342</p>
-                      <p className="text-[10px] text-gray-500">Enviados</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-lg font-bold text-green-600">89%</p>
-                      <p className="text-[10px] text-gray-500">Entregues</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-lg font-bold text-blue-600">47</p>
-                      <p className="text-[10px] text-gray-500">Pedidos</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-lg font-bold text-orange-600">R$ 3.290</p>
-                      <p className="text-[10px] text-gray-500">Faturado</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom CTA */}
-        <div className={`text-center mt-12 transition-all duration-700 delay-500 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}>
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-gray-50 to-orange-50/50 border border-gray-200 rounded-2xl px-6 py-4">
-            <div className="flex items-center gap-1">
-              <Ticket className="w-5 h-5 text-red-500" />
-              <span className="text-sm font-medium text-gray-700">Cupons</span>
-            </div>
-            <span className="text-2xl">+</span>
-            <div className="flex items-center gap-1">
-              <MessageSquare className="w-5 h-5 text-blue-500" />
-              <span className="text-sm font-medium text-gray-700">SMS</span>
-            </div>
-            <span className="text-2xl">=</span>
-            <div className="flex items-center gap-1">
-              <TrendingUp className="w-5 h-5 text-green-500" />
-              <span className="text-sm font-bold text-gray-900">Vendas explodindo!</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ============ SEÇÃO MOCKUP VISUAL: GESTÃO DE PEDIDOS ============
-// Implementado como componente visual estático da landing, não como página do sistema.
 function OrdersMockupSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [displayText, setDisplayText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showCursor, setShowCursor] = useState(true);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -1763,41 +1575,59 @@ function OrdersMockupSection() {
           observer.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.01, rootMargin: "200px" }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
 
-  const benefits = [
-    "Veja todos os pedidos em tempo real",
-    "Status automático: novo, preparando, saiu para entrega",
-    "Notificações sonoras para novos pedidos",
-    "Impressão automática na cozinha",
-  ];
+  // Blinking cursor
+  useEffect(() => {
+    const cursorInterval = setInterval(() => setShowCursor((prev) => !prev), 530);
+    return () => clearInterval(cursorInterval);
+  }, []);
+
+  // Typewriter effect
+  useEffect(() => {
+    const currentWord = MARKETING_ITEMS[currentIndex].word;
+    let timeout: ReturnType<typeof setTimeout>;
+    if (!isDeleting) {
+      if (displayText.length < currentWord.length) {
+        timeout = setTimeout(() => setDisplayText(currentWord.slice(0, displayText.length + 1)), 100 + Math.random() * 50);
+      } else {
+        timeout = setTimeout(() => setIsDeleting(true), 2500);
+      }
+    } else {
+      if (displayText.length > 0) {
+        timeout = setTimeout(() => setDisplayText(currentWord.slice(0, displayText.length - 1)), 60);
+      } else {
+        setIsDeleting(false);
+        setCurrentIndex((prev) => (prev + 1) % MARKETING_ITEMS.length);
+      }
+    }
+    return () => clearTimeout(timeout);
+  }, [displayText, isDeleting, currentIndex]);
+
+  const currentItem = MARKETING_ITEMS[currentIndex];
 
   return (
     <section
       ref={sectionRef}
-      id="gestao-pedidos"
+      id="marketing"
       className="py-20 lg:py-28 bg-white overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          {/* LEFT COLUMN — Mockup estático (55%) */}
+          {/* LEFT COLUMN — Mockup com carrossel (55%) */}
           <div
             className={`lg:col-span-7 relative transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
             }`}
           >
-            {/* Frame do mockup */}
             <div className="relative">
-              {/* Container do mockup com frame de browser igual ao Hero */}
               <div
                 className="relative z-10 rounded-2xl overflow-hidden shadow-2xl shadow-gray-900/10 border border-gray-200/50"
-                style={{
-                  animation: isVisible ? "hero-float 6s ease-in-out infinite" : "none",
-                }}
+                style={{ animation: isVisible ? "hero-float 6s ease-in-out infinite" : "none" }}
               >
                 {/* Browser chrome */}
                 <div className="bg-gray-100 border-b border-gray-200 px-4 py-2.5 flex items-center gap-2">
@@ -1812,16 +1642,24 @@ function OrdersMockupSection() {
                     </div>
                   </div>
                 </div>
-                <img
-                  src={PEDIDOS_MOCKUP}
-                  alt="Tela de gestão de pedidos do Mindi — mockup ilustrativo"
-                  className="w-full h-auto"
-                  loading="lazy"
-                  draggable={false}
-                />
+                {/* Carrossel de imagens com crossfade */}
+                <div className="relative">
+                  {MARKETING_ITEMS.map((item, idx) => (
+                    <img
+                      key={idx}
+                      src={item.image}
+                      alt={`Tela de ${item.word} do Mindi`}
+                      className={`w-full h-auto transition-opacity duration-700 ${
+                        idx === currentIndex ? "opacity-100" : "opacity-0 absolute inset-0"
+                      }`}
+                      loading="lazy"
+                      draggable={false}
+                    />
+                  ))}
+                </div>
               </div>
 
-              {/* Floating badge — Pedidos hoje */}
+              {/* Floating badge — Campanhas enviadas */}
               <div
                 className={`absolute -top-4 -right-3 sm:-right-6 z-20 bg-white rounded-xl shadow-lg shadow-gray-900/10 border border-gray-100 px-3 py-2.5 hidden sm:flex items-center gap-2.5 transition-all duration-700 delay-500 ${
                   isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
@@ -1829,71 +1667,75 @@ function OrdersMockupSection() {
                 style={{ animation: isVisible ? "hero-float-stat 4s ease-in-out infinite" : "none" }}
               >
                 <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                  <ShoppingBag className="w-4 h-4 text-blue-500" />
+                  <Send className="w-4 h-4 text-blue-500" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-gray-400 font-medium">Pedidos hoje</p>
-                  <p className="text-sm font-bold text-gray-900">24 pedidos</p>
+                  <p className="text-[10px] text-gray-400 font-medium">SMS enviados</p>
+                  <p className="text-sm font-bold text-gray-900">342 hoje</p>
                 </div>
               </div>
 
-              {/* Floating badge — Tempo médio */}
+              {/* Floating badge — Cupons ativos */}
               <div
                 className={`absolute bottom-12 -right-3 sm:-right-8 z-20 bg-white rounded-xl shadow-lg shadow-gray-900/10 border border-gray-100 px-3 py-2.5 hidden sm:flex items-center gap-2.5 transition-all duration-700 delay-700 ${
                   isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                 }`}
                 style={{ animation: isVisible ? "hero-float-stat-2 5s ease-in-out infinite" : "none" }}
               >
-                <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
-                  <Clock className="w-4 h-4 text-green-500" />
+                <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
+                  <Ticket className="w-4 h-4 text-orange-500" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-gray-400 font-medium">Tempo médio</p>
-                  <p className="text-sm font-bold text-gray-900">12 min</p>
+                  <p className="text-[10px] text-gray-400 font-medium">Cupons ativos</p>
+                  <p className="text-sm font-bold text-gray-900">5 cupons</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* RIGHT COLUMN — Texto + benefícios + CTA (45%) */}
+          {/* RIGHT COLUMN — Texto com typewriter + benefícios dinâmicos (45%) */}
           <div
             className={`lg:col-span-5 transition-all duration-1000 delay-200 ${
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
             }`}
           >
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-red-50 border border-red-100 rounded-full px-4 py-1.5 mb-6">
-              <Package className="w-4 h-4 text-red-500" />
-              <span className="text-sm font-medium text-red-600 uppercase tracking-wide">Gestão de Pedidos</span>
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-full px-4 py-1.5 mb-6">
+              <Rocket className="w-4 h-4 text-orange-500" />
+              <span className="text-sm font-medium text-orange-600 uppercase tracking-wide">Bombe suas vendas</span>
             </div>
 
-            {/* Título */}
+            {/* Título com typewriter */}
             <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-gray-900 leading-tight mb-5">
-              Todos os pedidos{" "}
+              Aumente vendas com{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
-                em um só painel.
+                {displayText}
+                <span className={`${showCursor ? "opacity-100" : "opacity-0"} transition-opacity duration-100 text-red-500`}>|</span>
               </span>
             </h2>
 
             {/* Descrição */}
             <p className="text-lg text-gray-600 leading-relaxed mb-8">
-              Acompanhe cada pedido do momento em que entra até a entrega. Sem confusão, sem papel, sem perder nada.
+              A combinação perfeita para atrair novos clientes, reativar inativos e aumentar o faturamento do seu restaurante.
             </p>
 
-            {/* Lista de benefícios com check verde */}
-            <div className="space-y-4 mb-10">
-              {benefits.map((benefit, i) => (
+            {/* Lista de benefícios dinâmica (estilo Cardápio Digital) */}
+            <div className="space-y-5 mb-10">
+              {currentItem.benefits.map((benefit, i) => (
                 <div
-                  key={i}
-                  className={`flex items-center gap-3 transition-all duration-500 ${
+                  key={`${currentIndex}-${i}`}
+                  className={`flex items-start gap-4 transition-all duration-500 ${
                     isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                   }`}
-                  style={{ transitionDelay: `${400 + i * 100}ms` }}
+                  style={{ transitionDelay: `${400 + i * 150}ms` }}
                 >
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
-                    <Check className="w-3.5 h-3.5 text-green-600" />
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-red-50 to-orange-50 border border-red-100 flex items-center justify-center text-red-500">
+                    {benefit.icon}
                   </div>
-                  <span className="text-gray-700 font-medium">{benefit}</span>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-0.5">{benefit.title}</h4>
+                    <p className="text-sm text-gray-500 leading-relaxed">{benefit.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -2508,7 +2350,6 @@ export default function LandingPage() {
       <CatalogShowcaseSection />
       <LoyaltyProgramSection />
       <WhatsAppIntegrationSection />
-      <MarketingBoostSection />
       <OrdersMockupSection />
       <PricingSection />
       <ClientsShowcaseSection />
