@@ -6692,3 +6692,6 @@
 - [x] Criar página estática do dashboard com dados realistas preenchidos
 - [x] Capturar screenshot da página com dados
 - [x] Upload para S3 e substituir DASHBOARD_MOCKUP na LandingPage
+
+## Fix Imagem Mockup Pedidos
+- [x] Ajustar imagem da screenshot de Pedidos para preencher corretamente o container do browser frame

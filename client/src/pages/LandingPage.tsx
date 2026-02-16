@@ -1225,27 +1225,12 @@ function OrdersMockupSection() {
               {/* Sombra decorativa */}
               <div className="absolute -inset-4 bg-gradient-to-br from-red-500/8 via-orange-500/4 to-transparent rounded-3xl blur-2xl" />
 
-              {/* Container do mockup com borda arredondada e overflow cortado */}
-              <div className="relative bg-white rounded-2xl shadow-2xl shadow-gray-900/10 border border-gray-200/60 overflow-hidden">
-                {/* Browser chrome bar */}
-                <div className="bg-gray-100 border-b border-gray-200 px-4 py-2.5 flex items-center gap-2">
-                  <div className="flex gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-red-400" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                    <div className="w-3 h-3 rounded-full bg-green-400" />
-                  </div>
-                  <div className="flex-1 flex justify-center">
-                    <div className="bg-white rounded-lg px-4 py-1 text-[11px] text-gray-400 font-medium border border-gray-200 w-64 text-center">
-                      app.mindi.com.br/pedidos
-                    </div>
-                  </div>
-                </div>
-
-                {/* Mockup screenshot — imagem estática */}
+              {/* Container do mockup — a screenshot já possui frame próprio */}
+              <div className="relative">
                 <img
                   src={PEDIDOS_MOCKUP}
                   alt="Tela de gestão de pedidos do Mindi — mockup ilustrativo"
-                  className="w-full h-auto"
+                  className="w-full h-auto rounded-2xl shadow-2xl shadow-gray-900/10"
                   loading="lazy"
                   draggable={false}
                 />
