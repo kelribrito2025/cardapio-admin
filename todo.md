@@ -6781,3 +6781,7 @@
 
 ## Redesign Seção Segmentos
 - [x] Redesenhar seção "Versátil para diversos segmentos" com estilo marquee/carrossel contínuo horizontal compacto (fundo branco, bordas suaves, emojis grandes passando em loop)
+
+## Ajuste Faixa de Segmentos
+- [ ] Aproximar faixa de segmentos dos cards de cases acima (reduzir espaçamento)
+- [ ] Faixa de segmentos deve ocupar toda a largura disponível (full-width) igual ao carrossel de cases

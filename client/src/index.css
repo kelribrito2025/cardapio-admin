@@ -585,8 +585,6 @@
   -webkit-backface-visibility: hidden;
 }
 
-.animate-marquee-segments:hover {
-  animation-play-state: paused;
-}
+
 
 

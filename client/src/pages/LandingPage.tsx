@@ -803,7 +803,7 @@ function ClientsShowcaseSection() {
   return (
     <section
       ref={sectionRef}
-      className="py-20 lg:py-28 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden"
+      className="pt-20 lg:pt-28 pb-4 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -868,48 +868,46 @@ const SEGMENTS_DATA = [
 
 function SegmentsSection() {
   return (
-    <section className="-mt-4 pb-16 lg:pb-24 bg-gray-50/50">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Compact marquee strip */}
-        <div className="relative bg-white rounded-2xl shadow-sm border border-gray-100 py-5 px-6 overflow-hidden">
-          {/* Left fade */}
-          <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-          {/* Right fade */}
-          <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+    <section className="-mt-2 pb-12 lg:pb-16 bg-gray-50/50">
+      {/* Full-width marquee strip */}
+      <div className="relative overflow-hidden py-5">
+        {/* Left fade */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-gray-50/50 to-transparent z-10 pointer-events-none" />
+        {/* Right fade */}
+        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-gray-50/50 to-transparent z-10 pointer-events-none" />
 
-          {/* Marquee track */}
-          <div className="flex animate-marquee-segments">
-            {/* First set */}
-            {[...SEGMENTS_DATA, ...SEGMENTS_DATA].map((seg, idx) => (
-              <a
-                key={`seg-${idx}`}
-                href={seg.link}
-                className="flex items-center gap-2.5 px-5 shrink-0 group cursor-pointer"
-              >
-                <span className="text-2xl sm:text-3xl group-hover:scale-110 transition-transform duration-200">{seg.emoji}</span>
-                <span className="text-gray-800 font-semibold text-sm sm:text-base whitespace-nowrap group-hover:text-red-500 transition-colors">{seg.name}</span>
-                <span className="text-gray-300 text-lg font-light mx-2">|</span>
-              </a>
-            ))}
-            {/* Duplicate for seamless loop */}
-            {[...SEGMENTS_DATA, ...SEGMENTS_DATA].map((seg, idx) => (
-              <a
-                key={`seg-dup-${idx}`}
-                href={seg.link}
-                className="flex items-center gap-2.5 px-5 shrink-0 group cursor-pointer"
-              >
-                <span className="text-2xl sm:text-3xl group-hover:scale-110 transition-transform duration-200">{seg.emoji}</span>
-                <span className="text-gray-800 font-semibold text-sm sm:text-base whitespace-nowrap group-hover:text-red-500 transition-colors">{seg.name}</span>
-                <span className="text-gray-300 text-lg font-light mx-2">|</span>
-              </a>
-            ))}
-          </div>
+        {/* Marquee track */}
+        <div className="flex animate-marquee-segments">
+          {/* First set */}
+          {[...SEGMENTS_DATA, ...SEGMENTS_DATA].map((seg, idx) => (
+            <a
+              key={`seg-${idx}`}
+              href={seg.link}
+              className="flex items-center gap-2.5 px-5 shrink-0 pointer-events-none"
+            >
+              <span className="text-2xl sm:text-3xl">{seg.emoji}</span>
+              <span className="text-gray-800 font-semibold text-sm sm:text-base whitespace-nowrap">{seg.name}</span>
+              <span className="text-gray-300 text-lg font-light mx-2">|</span>
+            </a>
+          ))}
+          {/* Duplicate for seamless loop */}
+          {[...SEGMENTS_DATA, ...SEGMENTS_DATA].map((seg, idx) => (
+            <a
+              key={`seg-dup-${idx}`}
+              href={seg.link}
+              className="flex items-center gap-2.5 px-5 shrink-0 pointer-events-none"
+            >
+              <span className="text-2xl sm:text-3xl">{seg.emoji}</span>
+              <span className="text-gray-800 font-semibold text-sm sm:text-base whitespace-nowrap">{seg.name}</span>
+              <span className="text-gray-300 text-lg font-light mx-2">|</span>
+            </a>
+          ))}
         </div>
-
-        <p className="text-center text-sm text-gray-400 mt-4">
-          Não viu seu segmento? Se você vende pelo WhatsApp, <span className="text-red-500 font-medium">nós te atendemos!</span>
-        </p>
       </div>
+
+      <p className="text-center text-sm text-gray-400 mt-2">
+        Não viu seu segmento? Se você vende pelo WhatsApp, <span className="text-red-500 font-medium">nós te atendemos!</span>
+      </p>
     </section>
   );
 }
