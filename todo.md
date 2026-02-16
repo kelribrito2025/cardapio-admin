@@ -6742,3 +6742,5 @@
 - [x] Corrigir verificação de duplicação de carimbos: usar orderId em vez de orderNumber (orderNumber se repete entre dias)
 - [x] Atualizar lógica em updateOrderStatus para verificar por orderId
 - [x] Escrever teste vitest para validar a correção
+- [x] Bug: Botão "Ver cupom ganho" não aparece quando cartão fidelidade atinge 12/12 carimbos (cliente 88999290000) - cupons antigos não existiam na tabela coupons, criado novo cupom FID-Y5JXL5
+- [x] Adicionar 4 fotos reais do programa de fidelidade no mockup de celular da seção Programa de Fidelidade da landing page

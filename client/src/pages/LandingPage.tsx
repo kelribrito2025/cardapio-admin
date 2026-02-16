@@ -51,6 +51,13 @@ const CATALOG_ADDON = "https://files.manuscdn.com/user_upload_by_module/session_
 const CATALOG_CHECKOUT = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/CoTwvNgEpkwQZjji.png";
 const CATALOG_SLIDES = [CATALOG_MOCKUP, CATALOG_DETAIL, CATALOG_ADDON, CATALOG_CHECKOUT];
 
+// Imagens reais do programa de fidelidade
+const LOYALTY_SLIDE_1 = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/frIpsGmoncHJSSvS.png";
+const LOYALTY_SLIDE_2 = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/cIcOnoXvsGurBZqK.png";
+const LOYALTY_SLIDE_3 = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/sKWXwquYAtRCumWl.png";
+const LOYALTY_SLIDE_4 = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/UjKoclpdSxjbFGcs.png";
+const LOYALTY_SLIDES = [LOYALTY_SLIDE_1, LOYALTY_SLIDE_2, LOYALTY_SLIDE_3, LOYALTY_SLIDE_4];
+
 // ============ NAVBAR ============
 function LandingNavbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -1057,7 +1064,7 @@ function LoyaltyProgramSection() {
   useEffect(() => {
     if (!isVisible) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % CATALOG_SLIDES.length);
+      setCurrentSlide((prev) => (prev + 1) % LOYALTY_SLIDES.length);
     }, 3500);
     return () => clearInterval(timer);
   }, [isVisible]);
@@ -1165,7 +1172,7 @@ function LoyaltyProgramSection() {
                 {/* Tela do celular — Carrossel */}
                 <div className="relative rounded-[2rem] overflow-hidden bg-white">
                   <div className="relative w-full">
-                    {CATALOG_SLIDES.map((src, i) => (
+                    {LOYALTY_SLIDES.map((src, i) => (
                       <img
                         key={i}
                         src={src}
@@ -1179,7 +1186,7 @@ function LoyaltyProgramSection() {
                   </div>
                   {/* Indicadores (dots) */}
                   <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-                    {CATALOG_SLIDES.map((_, i) => (
+                    {LOYALTY_SLIDES.map((_, i) => (
                       <button
                         key={i}
                         onClick={() => setCurrentSlide(i)}
