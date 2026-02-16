@@ -39,7 +39,9 @@ import {
   Play,
   Star,
   Gift,
-  TrendingUp
+  TrendingUp,
+  Bell,
+  Send
 } from "lucide-react";
 
 // CDN URLs dos mockups do dashboard
@@ -1242,6 +1244,232 @@ function LoyaltyProgramSection() {
   );
 }
 
+// ============ SEÇÃO: INTEGRAÇÃO WHATSAPP ============
+function WhatsAppIntegrationSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const benefits = [
+    {
+      icon: <Bell className="w-5 h-5" />,
+      title: "Notificações automáticas",
+      desc: "Seu cliente recebe atualizações de cada etapa do pedido direto no WhatsApp, sem precisar de atendente."
+    },
+    {
+      icon: <Zap className="w-5 h-5" />,
+      title: "Agilidade na comunicação",
+      desc: "Confirmação, preparo, saída para entrega e entrega concluída — tudo em tempo real, sem esforço."
+    },
+    {
+      icon: <Users className="w-5 h-5" />,
+      title: "Menos chamados, mais satisfação",
+      desc: "Reduza mensagens de \"cadê meu pedido?\" e melhore a experiência do cliente com transparência total."
+    },
+  ];
+
+  // WhatsApp notification cards data
+  const notifications = [
+    { emoji: "✅", title: "Pedido confirmado!", desc: "Seu pedido #P42 foi aceito", delay: 500 },
+    { emoji: "👨‍🍳", title: "Em preparo", desc: "Estamos preparando seu pedido", delay: 700 },
+    { emoji: "🛵", title: "Saiu para entrega!", desc: "Seu pedido está a caminho", delay: 900 },
+    { emoji: "📦", title: "Pedido entregue!", desc: "Obrigado pela preferência", delay: 1100 },
+  ];
+
+  return (
+    <section
+      ref={sectionRef}
+      className="py-20 lg:py-28 bg-gradient-to-b from-white to-gray-50/80 overflow-hidden"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Coluna esquerda — Phone Mockup com WhatsApp */}
+          <div
+            className={`relative transition-all duration-1000 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
+            }`}
+          >
+            {/* Moldura do Celular */}
+            <div className="relative mx-auto max-w-[320px]">
+              {/* Sombra externa */}
+              <div className="absolute -inset-6 bg-gradient-to-br from-green-500/10 via-emerald-500/5 to-transparent rounded-[3rem] blur-2xl" />
+              
+              {/* Corpo do celular */}
+              <div className="relative bg-gray-900 rounded-[2.5rem] p-3 shadow-2xl shadow-gray-900/25">
+                {/* Tela do celular — WhatsApp Chat */}
+                <div className="relative rounded-[2rem] overflow-hidden bg-[#ECE5DD]">
+                  {/* WhatsApp Header */}
+                  <div className="bg-[#075E54] px-4 py-3 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">M</span>
+                    </div>
+                    <div>
+                      <p className="text-white text-sm font-semibold">Mindi Pedidos</p>
+                      <p className="text-green-200 text-[10px]">online</p>
+                    </div>
+                  </div>
+                  
+                  {/* Chat Messages */}
+                  <div className="px-3 py-4 space-y-2.5 min-h-[380px]">
+                    {notifications.map((notif, i) => (
+                      <div
+                        key={i}
+                        className={`bg-white rounded-lg rounded-tl-none px-3 py-2 shadow-sm max-w-[85%] transition-all duration-500 ${
+                          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                        }`}
+                        style={{ transitionDelay: `${notif.delay}ms` }}
+                      >
+                        <p className="text-sm font-semibold text-gray-900">{notif.emoji} {notif.title}</p>
+                        <p className="text-xs text-gray-600 mt-0.5">{notif.desc}</p>
+                        <p className="text-[9px] text-gray-400 text-right mt-1">{`${12 + i}:${String(i * 15).padStart(2, '0')}`}</p>
+                      </div>
+                    ))}
+                    
+                    {/* Typing indicator */}
+                    <div
+                      className={`bg-white rounded-lg rounded-tl-none px-4 py-2.5 shadow-sm w-16 transition-all duration-500 ${
+                        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                      }`}
+                      style={{ transitionDelay: "1300ms" }}
+                    >
+                      <div className="flex gap-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+                        <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+                        <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Input bar */}
+                  <div className="bg-[#F0F0F0] px-3 py-2 flex items-center gap-2">
+                    <div className="flex-1 bg-white rounded-full px-3 py-1.5">
+                      <p className="text-[10px] text-gray-400">Mensagem</p>
+                    </div>
+                    <div className="w-7 h-7 rounded-full bg-[#075E54] flex items-center justify-center">
+                      <Send className="w-3.5 h-3.5 text-white" />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Barra inferior do celular (home indicator) */}
+                <div className="flex items-center justify-center mt-2 mb-0.5">
+                  <div className="w-28 h-1 rounded-full bg-gray-700" />
+                </div>
+              </div>
+
+              {/* Badge flutuante — Pedido confirmado */}
+              <div
+                className={`absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-lg shadow-gray-200/60 p-3 border border-gray-100 transition-all duration-700 delay-500 ${
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                }`}
+                style={{ animation: isVisible ? "hero-float 4s ease-in-out infinite" : "none" }}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
+                    <CheckCircle2 className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900">Pedido confirmado</p>
+                    <p className="text-[10px] text-gray-500">há 2 min</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Badge flutuante esquerda — Saiu para entrega */}
+              <div
+                className={`absolute top-1/4 -left-6 bg-white rounded-2xl shadow-lg shadow-gray-200/60 p-3 border border-gray-100 transition-all duration-700 delay-700 ${
+                  isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                }`}
+                style={{ animation: isVisible ? "hero-float-delayed 5s ease-in-out infinite" : "none" }}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <Truck className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900">Saiu p/ entrega</p>
+                    <p className="text-[10px] text-gray-500">há 5 min</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Coluna direita — Conteúdo */}
+          <div
+            className={`transition-all duration-1000 delay-200 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
+            }`}
+          >
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-green-50 border border-green-100 rounded-full px-4 py-1.5 mb-6">
+              <MessageCircle className="w-4 h-4 text-green-600" />
+              <span className="text-sm font-medium text-green-700">INTEGRAÇÃO WHATSAPP</span>
+            </div>
+
+            {/* Título */}
+            <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-gray-900 leading-tight mb-5">
+              Seu cliente informado{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-emerald-500">
+                em cada etapa do pedido.
+              </span>
+            </h2>
+
+            {/* Descrição */}
+            <p className="text-lg text-gray-600 leading-relaxed mb-8">
+              Envie atualizações automáticas pelo WhatsApp: confirmação, preparo, 
+              saída para entrega e entrega concluída — sem precisar de atendente.
+            </p>
+
+            {/* Lista de benefícios */}
+            <div className="space-y-5 mb-10">
+              {benefits.map((benefit, i) => (
+                <div
+                  key={i}
+                  className={`flex items-start gap-4 transition-all duration-500 ${
+                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                  }`}
+                  style={{ transitionDelay: `${400 + i * 150}ms` }}
+                >
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 flex items-center justify-center text-green-600">
+                    {benefit.icon}
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-0.5">{benefit.title}</h4>
+                    <p className="text-sm text-gray-500 leading-relaxed">{benefit.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <Link
+              href="/criar-conta"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-green-500/25 hover:shadow-green-500/40 hover:scale-[1.02] transition-all duration-300"
+            >
+              Ativar notificações grátis
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ============ SEÇÃO MOCKUP VISUAL: GESTÃO DE PEDIDOS ============
 // Implementado como componente visual estático da landing, não como página do sistema.
 function OrdersMockupSection() {
@@ -1982,6 +2210,7 @@ export default function LandingPage() {
       <ProblemSolutionSection />
       <CatalogShowcaseSection />
       <LoyaltyProgramSection />
+      <WhatsAppIntegrationSection />
       <OrdersMockupSection />
       <PricingSection />
       <ClientsShowcaseSection />

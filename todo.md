@@ -6749,3 +6749,5 @@
 - [x] Mover seção "Explore cases reais" para baixo da seção "Planos e Preços" na landing page
 - [x] Redesenhar seção FAQ com layout 2 colunas: título/descrição/CTA à esquerda, perguntas accordion à direita
 - [x] Ajustar background do footer para continuar com o mesmo degradê da seção "Comece agora" (CTAFinalSection)
+- [x] Testar responsividade da seção FAQ e demais seções alteradas em dispositivos móveis
+- [x] Criar nova seção "Integração com WhatsApp" na landing page: layout invertido (mockup esquerda, texto direita), conteúdo sobre notificações automáticas de status de pedidos via WhatsApp
