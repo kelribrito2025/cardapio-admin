@@ -41,7 +41,13 @@ import {
   Gift,
   TrendingUp,
   Bell,
-  Send
+  Send,
+  Ticket,
+  MessageSquare,
+  Megaphone,
+  Target,
+  PercentCircle,
+  BadgePercent
 } from "lucide-react";
 
 // CDN URLs dos mockups do dashboard
@@ -1529,6 +1535,219 @@ function WhatsAppIntegrationSection() {
   );
 }
 
+// ============ SEÇÃO: CUPONS + CAMPANHAS SMS ============
+function MarketingBoostSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
+      { threshold: 0.15 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const couponFeatures = [
+    {
+      icon: <BadgePercent className="w-5 h-5" />,
+      title: "Cupons personalizados",
+      desc: "Crie cupons de desconto por valor fixo ou porcentagem. Defina validade, limite de uso e valor mínimo."
+    },
+    {
+      icon: <Target className="w-5 h-5" />,
+      title: "Primeira compra",
+      desc: "Ofereça desconto especial para novos clientes e transforme visitantes em compradores."
+    },
+    {
+      icon: <Gift className="w-5 h-5" />,
+      title: "Frete grátis",
+      desc: "Crie cupons de frete grátis para incentivar pedidos e aumentar o ticket médio."
+    },
+  ];
+
+  const smsFeatures = [
+    {
+      icon: <Send className="w-5 h-5" />,
+      title: "Disparo em massa",
+      desc: "Envie SMS para toda sua base de clientes de uma só vez com ofertas e novidades."
+    },
+    {
+      icon: <Megaphone className="w-5 h-5" />,
+      title: "Campanhas segmentadas",
+      desc: "Segmente por frequência de compra, ticket médio ou última visita para mensagens certeiras."
+    },
+    {
+      icon: <TrendingUp className="w-5 h-5" />,
+      title: "Resultados mensuráveis",
+      desc: "Acompanhe taxa de abertura, cliques e conversões de cada campanha em tempo real."
+    },
+  ];
+
+  return (
+    <section ref={sectionRef} className="py-20 lg:py-28 bg-white overflow-hidden">
+      <div className="max-w-6xl mx-auto px-6 sm:px-8">
+        {/* Header */}
+        <div className={`text-center mb-16 transition-all duration-700 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}>
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 text-orange-600 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
+            <Rocket className="w-4 h-4" />
+            Bombe suas vendas
+          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
+            Cupons + Campanhas SMS
+          </h2>
+          <p className="text-gray-500 text-lg max-w-2xl mx-auto">
+            A combinação perfeita para atrair novos clientes, reativar inativos e aumentar o faturamento do seu restaurante.
+          </p>
+        </div>
+
+        {/* Two columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          {/* Cupons Column */}
+          <div className={`transition-all duration-700 delay-200 ${
+            isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
+          }`}>
+            <div className="bg-gradient-to-br from-red-50 via-orange-50/50 to-white rounded-3xl border border-red-100/60 p-8 h-full">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-white shadow-lg shadow-red-500/25">
+                  <Ticket className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Cupons de Desconto</h3>
+                  <p className="text-sm text-gray-500">Atraia e fidelize clientes</p>
+                </div>
+              </div>
+
+              <div className="space-y-5">
+                {couponFeatures.map((feature, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-white border border-red-100 flex items-center justify-center text-red-500 shadow-sm">
+                      {feature.icon}
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 text-sm mb-0.5">{feature.title}</h4>
+                      <p className="text-sm text-gray-500 leading-relaxed">{feature.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Visual example */}
+              <div className="mt-8 bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Exemplo de cupom</span>
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Ativo</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-red-500 to-orange-400 flex items-center justify-center text-white">
+                    <span className="text-lg font-bold">15%</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold text-gray-900">BEMVINDO15</p>
+                    <p className="text-xs text-gray-500">15% off na primeira compra • Até R$ 20,00</p>
+                    <p className="text-xs text-gray-400 mt-0.5">127 usos • Válido até 30/03</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SMS Column */}
+          <div className={`transition-all duration-700 delay-400 ${
+            isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
+          }`}>
+            <div className="bg-gradient-to-br from-blue-50 via-indigo-50/50 to-white rounded-3xl border border-blue-100/60 p-8 h-full">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/25">
+                  <MessageSquare className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Campanhas SMS</h3>
+                  <p className="text-sm text-gray-500">Alcance direto no celular</p>
+                </div>
+              </div>
+
+              <div className="space-y-5">
+                {smsFeatures.map((feature, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-white border border-blue-100 flex items-center justify-center text-blue-500 shadow-sm">
+                      {feature.icon}
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 text-sm mb-0.5">{feature.title}</h4>
+                      <p className="text-sm text-gray-500 leading-relaxed">{feature.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Visual example */}
+              <div className="mt-8 bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Exemplo de campanha</span>
+                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">Enviada</span>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <MessageSquare className="w-4 h-4 text-blue-500" />
+                    <span className="text-xs font-semibold text-gray-700">SMS Preview</span>
+                  </div>
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    🍔 <strong>Sushi Haruno:</strong> Hoje tem 20% OFF em todo o cardápio! Use o cupom <strong>SEXTA20</strong> e peça agora: mindi.com.br/sushi-haruno
+                  </p>
+                  <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-200">
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-gray-900">342</p>
+                      <p className="text-[10px] text-gray-500">Enviados</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-green-600">89%</p>
+                      <p className="text-[10px] text-gray-500">Entregues</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-blue-600">47</p>
+                      <p className="text-[10px] text-gray-500">Pedidos</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-orange-600">R$ 3.290</p>
+                      <p className="text-[10px] text-gray-500">Faturado</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom CTA */}
+        <div className={`text-center mt-12 transition-all duration-700 delay-500 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}>
+          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-gray-50 to-orange-50/50 border border-gray-200 rounded-2xl px-6 py-4">
+            <div className="flex items-center gap-1">
+              <Ticket className="w-5 h-5 text-red-500" />
+              <span className="text-sm font-medium text-gray-700">Cupons</span>
+            </div>
+            <span className="text-2xl">+</span>
+            <div className="flex items-center gap-1">
+              <MessageSquare className="w-5 h-5 text-blue-500" />
+              <span className="text-sm font-medium text-gray-700">SMS</span>
+            </div>
+            <span className="text-2xl">=</span>
+            <div className="flex items-center gap-1">
+              <TrendingUp className="w-5 h-5 text-green-500" />
+              <span className="text-sm font-bold text-gray-900">Vendas explodindo!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ============ SEÇÃO MOCKUP VISUAL: GESTÃO DE PEDIDOS ============
 // Implementado como componente visual estático da landing, não como página do sistema.
 function OrdersMockupSection() {
@@ -2288,6 +2507,7 @@ export default function LandingPage() {
       <CatalogShowcaseSection />
       <LoyaltyProgramSection />
       <WhatsAppIntegrationSection />
+      <MarketingBoostSection />
       <OrdersMockupSection />
       <PricingSection />
       <ClientsShowcaseSection />

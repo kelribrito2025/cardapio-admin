@@ -6785,3 +6785,6 @@
 ## Ajuste Faixa de Segmentos
 - [ ] Aproximar faixa de segmentos dos cards de cases acima (reduzir espaçamento)
 - [ ] Faixa de segmentos deve ocupar toda a largura disponível (full-width) igual ao carrossel de cases
+
+## Seção Cupons + Campanhas SMS na Landing Page
+- [x] Criar seção de Cupons + Campanhas SMS após seção de Integração WhatsApp
