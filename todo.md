@@ -6746,3 +6746,4 @@
 - [x] Adicionar 4 fotos reais do programa de fidelidade no mockup de celular da seção Programa de Fidelidade da landing page
 - [x] Remover texto "Relatórios de engajamento" da seção Programa de Fidelidade na landing page
 - [x] Remover texto "Funciona em qualquer dispositivo" da seção Cardápio Digital na landing page
+- [x] Mover seção "Explore cases reais" para baixo da seção "Planos e Preços" na landing page

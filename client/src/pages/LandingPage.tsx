@@ -1982,11 +1982,11 @@ export default function LandingPage() {
       <LandingNavbar />
       <HeroSection />
       <ProblemSolutionSection />
-      <ClientsShowcaseSection />
       <CatalogShowcaseSection />
       <LoyaltyProgramSection />
       <OrdersMockupSection />
       <PricingSection />
+      <ClientsShowcaseSection />
       <FAQSection />
       <CTAFinalSection />
       <LandingFooter />
