@@ -6753,3 +6753,4 @@
 - [x] Criar nova seção "Integração com WhatsApp" na landing page: layout invertido (mockup esquerda, texto direita), conteúdo sobre notificações automáticas de status de pedidos via WhatsApp
 - [x] Substituir mockup de chat simulado da seção WhatsApp pelo mesmo estilo de mockup com carrossel de imagens da seção Programa de Fidelidade
 - [x] Bug: Notificação WhatsApp "saiu para entrega" não é enviada quando não há entregador cadastrado - deve enviar independente de ter entregador ou não
+- [x] Adicionar foto real do WhatsApp no mockup de celular da seção Integração WhatsApp
