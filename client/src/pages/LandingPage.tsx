@@ -1442,26 +1442,17 @@ const FAQ_DATA = [
     question: "Posso cancelar a qualquer momento?",
     answer: "Sim! Não existe fidelidade nem multa. Você pode cancelar seu plano a qualquer momento diretamente pelo painel. Seu acesso continua ativo até o final do período já pago."
   },
-  {
-    question: "Existe taxa por pedido?",
-    answer: "Não! Diferente dos marketplaces que cobram de 12% a 27% por pedido, o Mindi cobra apenas uma mensalidade fixa. Todos os pedidos que você receber são 100% seus, sem comissão."
-  },
+
   {
     question: "Como meus clientes fazem pedidos?",
     answer: "Você recebe um link exclusivo do seu cardápio digital. Seus clientes acessam pelo celular, escolhem os produtos, e o pedido chega direto no seu painel em tempo real. Você também pode gerar um QR Code para colocar nas mesas ou no balcão."
   },
-  {
-    question: "Preciso de conhecimento técnico para usar?",
-    answer: "Não! O Mindi foi feito para ser simples. Em poucos minutos você cadastra seus produtos, configura o horário de funcionamento e já pode começar a receber pedidos. Se precisar de ajuda, nosso suporte está disponível."
-  },
+
   {
     question: "O sistema funciona para delivery e mesa?",
     answer: "Sim! O Mindi atende tanto delivery (com gestão de entregadores, taxas por bairro e rastreamento) quanto pedidos presenciais com mapa de mesas e comanda digital."
   },
-  {
-    question: "Como funciona a gestão de entregadores?",
-    answer: "Você cadastra seus entregadores, define áreas de entrega e taxas por bairro. Quando um pedido sai para entrega, você atribui ao entregador e acompanha o status em tempo real. No final do dia, tem o relatório completo de entregas."
-  },
+
   {
     question: "Posso integrar com impressora de pedidos?",
     answer: "Sim! O Mindi suporta impressão automática de pedidos em impressoras térmicas. Assim que o pedido entra, ele já sai impresso na cozinha, agilizando o preparo."

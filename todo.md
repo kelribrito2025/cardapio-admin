@@ -6733,3 +6733,5 @@
 - [x] Adicionar dados mockados no gráfico Acumulado da Semana (todos os dias) e no card Acessos ao Cardápio para Burger House Gourmet
 - [x] Redistribuir pedidos em todos os dias da semana (Seg-Dom) e preencher heatmap de Acessos com mais acessos no fim de semana
 - [x] Tirar novo screenshot do dashboard com dados mockados em largura maior e substituir na seção Sistema Completo de Gestão
+- [ ] Remover borda amarela que aparece na foto mockup do dashboard na seção Sistema Completo de Gestão
+- [x] Remover 3 perguntas do FAQ: 'Existe taxa por pedido?', 'Preciso de conhecimento técnico para usar?', 'Como funciona a gestão de entregadores?'
