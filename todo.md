@@ -6725,3 +6725,4 @@
 - [x] Remover seção calculadora de economia (Quanto você perde por mês) completamente da landing page
 - [x] Remover 'Zero comissão por pedido' e 'Estoque sincronizado automaticamente' da seção A Solução
 - [x] Redesenhar seção CTA final (Comece Agora) - remover fundo escuro, design claro alinhado com Mindi
+- [x] Redesenhar cards de comparação (Usando Marketplace vs Com Mindi) na seção A Solução - novo modelo mais moderno

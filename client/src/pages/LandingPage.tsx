@@ -609,79 +609,40 @@ function ProblemSolutionSection() {
             </Link>
           </div>
 
-          {/* Right - Visual comparison */}
+          {/* Right - Visual comparison table */}
           <div className={`transition-all duration-700 delay-500 ${
             isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
           }`}>
-            <div className="space-y-5">
-              {/* Marketplace card (bad) */}
-              <div className="bg-white rounded-2xl p-6 border border-red-100 shadow-sm relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1.5 h-full bg-red-400" />
-                <div className="flex items-start gap-4 ml-2">
-                  <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
-                    <XCircle className="w-6 h-6 text-red-400" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-bold text-gray-900 mb-2">Usando Marketplace</h4>
-                    <ul className="space-y-2">
-                      <li className="flex items-center gap-2 text-sm text-gray-500">
-                        <XCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
-                        Taxa de 15% a 27% por pedido
-                      </li>
-                      <li className="flex items-center gap-2 text-sm text-gray-500">
-                        <XCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
-                        Repasses demoram até 30 dias
-                      </li>
-                      <li className="flex items-center gap-2 text-sm text-gray-500">
-                        <XCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
-                        Sem acesso aos dados dos clientes
-                      </li>
-                      <li className="flex items-center gap-2 text-sm text-gray-500">
-                        <XCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
-                        Concorrência direta na mesma plataforma
-                      </li>
-                    </ul>
-                  </div>
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+              {/* Table header */}
+              <div className="grid grid-cols-3">
+                <div className="p-4 sm:p-5" />
+                <div className="p-4 sm:p-5 text-center bg-gray-50 border-b border-gray-100">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">Marketplace</span>
+                </div>
+                <div className="p-4 sm:p-5 text-center bg-red-500 border-b border-red-500">
+                  <span className="text-xs font-bold uppercase tracking-wider text-white">Mindi</span>
                 </div>
               </div>
-
-              {/* Arrow transition */}
-              <div className="flex justify-center">
-                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                  <ArrowRight className="w-5 h-5 text-gray-400 rotate-90" />
-                </div>
-              </div>
-
-              {/* Mindi card (good) */}
-              <div className="bg-white rounded-2xl p-6 border border-green-100 shadow-md relative overflow-hidden ring-1 ring-green-200/50">
-                <div className="absolute top-0 left-0 w-1.5 h-full bg-green-500" />
-                <div className="flex items-start gap-4 ml-2">
-                  <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle2 className="w-6 h-6 text-green-500" />
+              {/* Table rows */}
+              {[
+                { label: "Taxa por pedido", marketplace: "15% a 27%", mindi: "R$ 0" },
+                { label: "Recebimento", marketplace: "Até 30 dias", mindi: "Na hora via Pix" },
+                { label: "Dados dos clientes", marketplace: "Sem acesso", mindi: "100% seus" },
+                { label: "Sua marca", marketplace: "Escondida", mindi: "Seu link, seu controle" },
+              ].map((row, i) => (
+                <div key={i} className={`grid grid-cols-3 ${i % 2 === 0 ? "bg-white" : "bg-gray-50/50"} ${i < 3 ? "border-b border-gray-100" : ""}`}>
+                  <div className="p-4 sm:p-5 flex items-center">
+                    <span className="text-sm font-medium text-gray-700">{row.label}</span>
                   </div>
-                  <div>
-                    <h4 className="text-lg font-bold text-gray-900 mb-2">Com Mindi</h4>
-                    <ul className="space-y-2">
-                      <li className="flex items-center gap-2 text-sm text-gray-700">
-                        <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                        <strong>R$ 0</strong> de taxa por pedido
-                      </li>
-                      <li className="flex items-center gap-2 text-sm text-gray-700">
-                        <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                        Receba na hora via Pix
-                      </li>
-                      <li className="flex items-center gap-2 text-sm text-gray-700">
-                        <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                        Base de clientes 100% sua
-                      </li>
-                      <li className="flex items-center gap-2 text-sm text-gray-700">
-                        <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                        Sua marca, seu link, seu controle
-                      </li>
-                    </ul>
+                  <div className="p-4 sm:p-5 flex items-center justify-center text-center border-x border-gray-100">
+                    <span className="text-sm text-gray-400 line-through decoration-red-300">{row.marketplace}</span>
+                  </div>
+                  <div className="p-4 sm:p-5 flex items-center justify-center text-center bg-red-50/40">
+                    <span className="text-sm font-semibold text-red-600">{row.mindi}</span>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
