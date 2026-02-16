@@ -43,7 +43,7 @@ import {
 
 // CDN URLs dos mockups do dashboard
 const DASHBOARD_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/DWjiyUgKrQTrHTOQ.png";
-const PEDIDOS_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/CCbkhjOUaWvUSZhB.png";
+const PEDIDOS_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/RDuYUqKBFnalcxkk.png";
 const CATALOG_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/PaotwhovICNkDtqN.png";
 
 // ============ NAVBAR ============

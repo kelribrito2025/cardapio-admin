@@ -6683,3 +6683,7 @@
 - [x] Badge + título + descrição + lista com checks verdes + botão CTA no lado direito
 - [x] Responsivo: mockup primeiro, texto abaixo no mobile
 - [x] Sem rotas, botões clicáveis, funcionalidade real ou scroll interno
+
+## Substituir Imagem do Mockup de Pedidos na Landing
+- [x] Upload da nova screenshot da página de Pedidos para S3
+- [x] Substituir URL da imagem no mockup da seção Gestão de Pedidos
