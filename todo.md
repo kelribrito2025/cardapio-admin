@@ -6727,3 +6727,4 @@
 - [x] Redesenhar seção CTA final (Comece Agora) - remover fundo escuro, design claro alinhado com Mindi
 - [x] Redesenhar cards de comparação (Usando Marketplace vs Com Mindi) na seção A Solução - novo modelo mais moderno
 - [x] Remover segunda fileira do carrossel de clientes (Explore Cases Reais) - deixar apenas uma linha
+- [x] Adicionar efeito fade-in/fade-out suave ao hover nos cards de cases (Explore Cases Reais)
