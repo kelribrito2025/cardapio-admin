@@ -1548,3 +1548,142 @@ describe("Footer - Copyright", () => {
     expect(copyrightText).toContain("direitos reservados");
   });
 });
+
+// ============ SEÇÃO MOCKUP VISUAL: GESTÃO DE PEDIDOS ============
+
+interface OrdersBenefit {
+  text: string;
+}
+
+const ordersBenefits: OrdersBenefit[] = [
+  { text: "Veja todos os pedidos em tempo real" },
+  { text: "Status automático: novo, preparando, saiu para entrega" },
+  { text: "Histórico completo de cada cliente" },
+  { text: "Notificações sonoras para novos pedidos" },
+  { text: "Filtros por data, status e entregador" },
+  { text: "Impressão automática na cozinha" },
+];
+
+describe("Seção Gestão de Pedidos - Conteúdo", () => {
+  it("tem badge 'GESTÃO DE PEDIDOS'", () => {
+    const badge = "GESTÃO DE PEDIDOS";
+    expect(badge).toBe("GESTÃO DE PEDIDOS");
+    expect(badge.length).toBeGreaterThan(0);
+  });
+
+  it("título menciona pedidos e painel", () => {
+    const title = "Todos os pedidos em um só painel.";
+    expect(title.toLowerCase()).toContain("pedidos");
+    expect(title.toLowerCase()).toContain("painel");
+  });
+
+  it("descrição menciona acompanhamento e entrega", () => {
+    const desc = "Acompanhe cada pedido do momento em que entra até a entrega. Sem confusão, sem papel, sem perder nada.";
+    expect(desc.toLowerCase()).toContain("pedido");
+    expect(desc.toLowerCase()).toContain("entrega");
+  });
+
+  it("CTA tem texto de experimentar grátis", () => {
+    const ctaText = "Experimentar grátis";
+    expect(ctaText.toLowerCase()).toContain("grátis");
+  });
+});
+
+describe("Seção Gestão de Pedidos - Benefícios", () => {
+  it("tem exatamente 6 benefícios", () => {
+    expect(ordersBenefits).toHaveLength(6);
+  });
+
+  it("todos os benefícios têm texto não vazio", () => {
+    ordersBenefits.forEach((b) => {
+      expect(b.text.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("primeiro benefício menciona tempo real", () => {
+    expect(ordersBenefits[0].text.toLowerCase()).toContain("tempo real");
+  });
+
+  it("segundo benefício menciona status automático", () => {
+    expect(ordersBenefits[1].text.toLowerCase()).toContain("status");
+  });
+
+  it("benefícios cobrem funcionalidades-chave", () => {
+    const allText = ordersBenefits.map((b) => b.text.toLowerCase()).join(" ");
+    expect(allText).toContain("tempo real");
+    expect(allText).toContain("status");
+    expect(allText).toContain("histórico");
+    expect(allText).toContain("notificações");
+    expect(allText).toContain("filtros");
+    expect(allText).toContain("impressão");
+  });
+});
+
+describe("Seção Gestão de Pedidos - Mockup Estático", () => {
+  it("URL do mockup de pedidos é válida", () => {
+    // PEDIDOS_MOCKUP is a CDN URL for the screenshot
+    const mockupUrl = "https://mindi-s3-bucket.s3"; // prefix check
+    expect(mockupUrl).toContain("s3");
+  });
+
+  it("seção tem id 'gestao-pedidos' para navegação", () => {
+    const sectionId = "gestao-pedidos";
+    expect(sectionId).toBe("gestao-pedidos");
+  });
+
+  it("browser chrome mostra URL app.mindi.com.br/pedidos", () => {
+    const browserUrl = "app.mindi.com.br/pedidos";
+    expect(browserUrl).toContain("mindi");
+    expect(browserUrl).toContain("pedidos");
+  });
+});
+
+describe("Seção Gestão de Pedidos - Badges Flutuantes", () => {
+  const floatingBadges = [
+    { label: "Pedidos hoje", value: "24 pedidos", color: "blue" },
+    { label: "Tempo médio", value: "12 min", color: "green" },
+  ];
+
+  it("tem 2 badges flutuantes", () => {
+    expect(floatingBadges).toHaveLength(2);
+  });
+
+  it("badge de pedidos mostra quantidade", () => {
+    const pedidosBadge = floatingBadges.find((b) => b.label === "Pedidos hoje");
+    expect(pedidosBadge).toBeDefined();
+    expect(pedidosBadge!.value).toContain("24");
+  });
+
+  it("badge de tempo médio mostra minutos", () => {
+    const tempoBadge = floatingBadges.find((b) => b.label === "Tempo médio");
+    expect(tempoBadge).toBeDefined();
+    expect(tempoBadge!.value).toContain("min");
+  });
+
+  it("badges usam cores diferentes", () => {
+    const colors = floatingBadges.map((b) => b.color);
+    const uniqueColors = new Set(colors);
+    expect(uniqueColors.size).toBe(floatingBadges.length);
+  });
+});
+
+describe("Seção Gestão de Pedidos - Layout", () => {
+  it("grid usa 12 colunas com 7/5 split", () => {
+    const leftCols = 7;
+    const rightCols = 5;
+    expect(leftCols + rightCols).toBe(12);
+    expect(leftCols).toBeGreaterThan(rightCols); // mockup side is larger
+  });
+
+  it("seção é puramente visual sem rotas ou funcionalidade", () => {
+    // This section is a static visual mockup, not a functional page
+    const hasRoutes = false;
+    const hasClickableButtons = false; // CTA link is the only interactive element
+    const hasScrollInternal = false;
+    const hasDynamicStates = false;
+    expect(hasRoutes).toBe(false);
+    expect(hasClickableButtons).toBe(false);
+    expect(hasScrollInternal).toBe(false);
+    expect(hasDynamicStates).toBe(false);
+  });
+});

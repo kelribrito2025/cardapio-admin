@@ -1177,6 +1177,172 @@ function CatalogShowcaseSection() {
   );
 }
 
+// ============ SEÇÃO MOCKUP VISUAL: GESTÃO DE PEDIDOS ============
+// Implementado como componente visual estático da landing, não como página do sistema.
+function OrdersMockupSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const benefits = [
+    "Veja todos os pedidos em tempo real",
+    "Status automático: novo, preparando, saiu para entrega",
+    "Histórico completo de cada cliente",
+    "Notificações sonoras para novos pedidos",
+    "Filtros por data, status e entregador",
+    "Impressão automática na cozinha",
+  ];
+
+  return (
+    <section
+      ref={sectionRef}
+      id="gestao-pedidos"
+      className="py-20 lg:py-28 bg-white overflow-hidden"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          {/* LEFT COLUMN — Mockup estático (55%) */}
+          <div
+            className={`lg:col-span-7 relative transition-all duration-1000 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
+            }`}
+          >
+            {/* Frame do mockup */}
+            <div className="relative">
+              {/* Sombra decorativa */}
+              <div className="absolute -inset-4 bg-gradient-to-br from-red-500/8 via-orange-500/4 to-transparent rounded-3xl blur-2xl" />
+
+              {/* Container do mockup com borda arredondada e overflow cortado */}
+              <div className="relative bg-white rounded-2xl shadow-2xl shadow-gray-900/10 border border-gray-200/60 overflow-hidden">
+                {/* Browser chrome bar */}
+                <div className="bg-gray-100 border-b border-gray-200 px-4 py-2.5 flex items-center gap-2">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-400" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                    <div className="w-3 h-3 rounded-full bg-green-400" />
+                  </div>
+                  <div className="flex-1 flex justify-center">
+                    <div className="bg-white rounded-lg px-4 py-1 text-[11px] text-gray-400 font-medium border border-gray-200 w-64 text-center">
+                      app.mindi.com.br/pedidos
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mockup screenshot — imagem estática */}
+                <img
+                  src={PEDIDOS_MOCKUP}
+                  alt="Tela de gestão de pedidos do Mindi — mockup ilustrativo"
+                  className="w-full h-auto"
+                  loading="lazy"
+                  draggable={false}
+                />
+              </div>
+
+              {/* Floating badge — Pedidos hoje */}
+              <div
+                className={`absolute -top-4 -right-3 sm:-right-6 z-20 bg-white rounded-xl shadow-lg shadow-gray-900/10 border border-gray-100 px-3 py-2.5 hidden sm:flex items-center gap-2.5 transition-all duration-700 delay-500 ${
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+                }`}
+                style={{ animation: isVisible ? "hero-float-stat 4s ease-in-out infinite" : "none" }}
+              >
+                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                  <ShoppingBag className="w-4 h-4 text-blue-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium">Pedidos hoje</p>
+                  <p className="text-sm font-bold text-gray-900">24 pedidos</p>
+                </div>
+              </div>
+
+              {/* Floating badge — Tempo médio */}
+              <div
+                className={`absolute bottom-12 -right-3 sm:-right-8 z-20 bg-white rounded-xl shadow-lg shadow-gray-900/10 border border-gray-100 px-3 py-2.5 hidden sm:flex items-center gap-2.5 transition-all duration-700 delay-700 ${
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                }`}
+                style={{ animation: isVisible ? "hero-float-stat-2 5s ease-in-out infinite" : "none" }}
+              >
+                <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+                  <Clock className="w-4 h-4 text-green-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium">Tempo médio</p>
+                  <p className="text-sm font-bold text-gray-900">12 min</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN — Texto + benefícios + CTA (45%) */}
+          <div
+            className={`lg:col-span-5 transition-all duration-1000 delay-200 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
+            }`}
+          >
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-red-50 border border-red-100 rounded-full px-4 py-1.5 mb-6">
+              <Package className="w-4 h-4 text-red-500" />
+              <span className="text-sm font-medium text-red-600 uppercase tracking-wide">Gestão de Pedidos</span>
+            </div>
+
+            {/* Título */}
+            <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-gray-900 leading-tight mb-5">
+              Todos os pedidos{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
+                em um só painel.
+              </span>
+            </h2>
+
+            {/* Descrição */}
+            <p className="text-lg text-gray-600 leading-relaxed mb-8">
+              Acompanhe cada pedido do momento em que entra até a entrega. Sem confusão, sem papel, sem perder nada.
+            </p>
+
+            {/* Lista de benefícios com check verde */}
+            <div className="space-y-4 mb-10">
+              {benefits.map((benefit, i) => (
+                <div
+                  key={i}
+                  className={`flex items-center gap-3 transition-all duration-500 ${
+                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                  }`}
+                  style={{ transitionDelay: `${400 + i * 100}ms` }}
+                >
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
+                    <Check className="w-3.5 h-3.5 text-green-600" />
+                  </div>
+                  <span className="text-gray-700 font-medium">{benefit}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA Button */}
+            <Link
+              href="/criar-conta"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-red-500/25 hover:shadow-red-500/40 hover:scale-[1.02] transition-all duration-300"
+            >
+              Experimentar grátis
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ============ SEÇÃO DE PLANOS ============
 
 interface LandingPlan {
@@ -1793,6 +1959,7 @@ export default function LandingPage() {
       <ProblemSolutionSection />
       <ClientsShowcaseSection />
       <CatalogShowcaseSection />
+      <OrdersMockupSection />
       <PricingSection />
       <FAQSection />
       <CTAFinalSection />

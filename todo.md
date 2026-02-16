@@ -6675,3 +6675,11 @@
 ## Aumentar Mockup Dashboard na Hero Section
 - [x] Aumentar tamanho do container do mockup do dashboard na Hero em 15%
 - [x] Reduzir scale do mockup de 1.15 para 1.10 (diminuir 5%)
+
+## Seção Mockup Visual de Pedidos na Landing Page
+- [x] Criar seção com mockup estático visual da página de pedidos (sem funcionalidade)
+- [x] Layout 2 colunas: 55% mockup esquerda, 45% texto direita
+- [x] Mockup com borda arredondada, sombra suave, parte cortada (estilo frame)
+- [x] Badge + título + descrição + lista com checks verdes + botão CTA no lado direito
+- [x] Responsivo: mockup primeiro, texto abaixo no mobile
+- [x] Sem rotas, botões clicáveis, funcionalidade real ou scroll interno
