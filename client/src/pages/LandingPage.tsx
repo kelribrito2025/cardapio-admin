@@ -1537,35 +1537,10 @@ function WhatsAppIntegrationSection() {
   );
 }
 
-// ============ SEÇÃO: CUPONS + CAMPANHAS SMS (com carrossel e typewriter) ============
-const MARKETING_ITEMS = [
-  {
-    word: "campanhas SMS",
-    image: CAMPANHAS_MOCKUP,
-    benefits: [
-      { icon: <Send className="w-5 h-5" />, title: "Disparo em massa", desc: "Envie SMS para toda sua base de clientes de uma só vez com ofertas e novidades." },
-      { icon: <Target className="w-5 h-5" />, title: "Segmentação inteligente", desc: "Segmente por frequência de compra, ticket médio ou última visita para mensagens certeiras." },
-      { icon: <TrendingUp className="w-5 h-5" />, title: "Resultados mensuráveis", desc: "Acompanhe taxa de entrega, cliques e conversões de cada campanha em tempo real." },
-    ],
-  },
-  {
-    word: "cupons de desconto",
-    image: CUPONS_MOCKUP,
-    benefits: [
-      { icon: <BadgePercent className="w-5 h-5" />, title: "Cupons personalizados", desc: "Crie cupons por valor fixo ou porcentagem. Defina validade, limite de uso e valor mínimo." },
-      { icon: <Gift className="w-5 h-5" />, title: "Primeira compra", desc: "Ofereça desconto especial para novos clientes e transforme visitantes em compradores." },
-      { icon: <Rocket className="w-5 h-5" />, title: "Frete grátis", desc: "Crie cupons de frete grátis para incentivar pedidos e aumentar o ticket médio." },
-    ],
-  },
-];
-
-function OrdersMockupSection() {
+// ============ SEÇÃO: CAMPANHAS SMS ============
+function CampaignsSMSSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(true);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [displayText, setDisplayText] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [showCursor, setShowCursor] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -1575,40 +1550,17 @@ function OrdersMockupSection() {
           observer.disconnect();
         }
       },
-      { threshold: 0.01, rootMargin: "200px" }
+      { threshold: 0.1 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
 
-  // Blinking cursor
-  useEffect(() => {
-    const cursorInterval = setInterval(() => setShowCursor((prev) => !prev), 530);
-    return () => clearInterval(cursorInterval);
-  }, []);
-
-  // Typewriter effect
-  useEffect(() => {
-    const currentWord = MARKETING_ITEMS[currentIndex].word;
-    let timeout: ReturnType<typeof setTimeout>;
-    if (!isDeleting) {
-      if (displayText.length < currentWord.length) {
-        timeout = setTimeout(() => setDisplayText(currentWord.slice(0, displayText.length + 1)), 100 + Math.random() * 50);
-      } else {
-        timeout = setTimeout(() => setIsDeleting(true), 2500);
-      }
-    } else {
-      if (displayText.length > 0) {
-        timeout = setTimeout(() => setDisplayText(currentWord.slice(0, displayText.length - 1)), 60);
-      } else {
-        setIsDeleting(false);
-        setCurrentIndex((prev) => (prev + 1) % MARKETING_ITEMS.length);
-      }
-    }
-    return () => clearTimeout(timeout);
-  }, [displayText, isDeleting, currentIndex]);
-
-  const currentItem = MARKETING_ITEMS[currentIndex];
+  const benefits = [
+    { icon: <Send className="w-5 h-5" />, title: "Disparo em massa", desc: "Envie SMS para toda sua base de clientes de uma só vez com ofertas e novidades." },
+    { icon: <Target className="w-5 h-5" />, title: "Segmentação inteligente", desc: "Segmente por frequência de compra, ticket médio ou última visita para mensagens certeiras." },
+    { icon: <TrendingUp className="w-5 h-5" />, title: "Resultados mensuráveis", desc: "Acompanhe taxa de entrega, cliques e conversões de cada campanha em tempo real." },
+  ];
 
   return (
     <section
@@ -1617,10 +1569,10 @@ function OrdersMockupSection() {
       className="py-20 lg:py-28 bg-white overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          {/* LEFT COLUMN — Mockup com carrossel (55%) */}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Coluna esquerda — Mockup browser */}
           <div
-            className={`lg:col-span-7 relative transition-all duration-1000 ${
+            className={`relative transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
             }`}
           >
@@ -1642,24 +1594,16 @@ function OrdersMockupSection() {
                     </div>
                   </div>
                 </div>
-                {/* Carrossel de imagens com crossfade */}
-                <div className="relative">
-                  {MARKETING_ITEMS.map((item, idx) => (
-                    <img
-                      key={idx}
-                      src={item.image}
-                      alt={`Tela de ${item.word} do Mindi`}
-                      className={`w-full h-auto transition-opacity duration-700 ${
-                        idx === currentIndex ? "opacity-100" : "opacity-0 absolute inset-0"
-                      }`}
-                      loading="lazy"
-                      draggable={false}
-                    />
-                  ))}
-                </div>
+                <img
+                  src={CAMPANHAS_MOCKUP}
+                  alt="Tela de campanhas SMS do Mindi"
+                  className="w-full h-auto"
+                  loading="lazy"
+                  draggable={false}
+                />
               </div>
 
-              {/* Floating badge — Campanhas enviadas */}
+              {/* Floating badge — SMS enviados */}
               <div
                 className={`absolute -top-4 -right-3 sm:-right-6 z-20 bg-white rounded-xl shadow-lg shadow-gray-900/10 border border-gray-100 px-3 py-2.5 hidden sm:flex items-center gap-2.5 transition-all duration-700 delay-500 ${
                   isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
@@ -1675,61 +1619,60 @@ function OrdersMockupSection() {
                 </div>
               </div>
 
-              {/* Floating badge — Cupons ativos */}
+              {/* Floating badge — Taxa de abertura */}
               <div
                 className={`absolute bottom-12 -right-3 sm:-right-8 z-20 bg-white rounded-xl shadow-lg shadow-gray-900/10 border border-gray-100 px-3 py-2.5 hidden sm:flex items-center gap-2.5 transition-all duration-700 delay-700 ${
                   isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                 }`}
                 style={{ animation: isVisible ? "hero-float-stat-2 5s ease-in-out infinite" : "none" }}
               >
-                <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
-                  <Ticket className="w-4 h-4 text-orange-500" />
+                <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+                  <TrendingUp className="w-4 h-4 text-green-500" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-gray-400 font-medium">Cupons ativos</p>
-                  <p className="text-sm font-bold text-gray-900">5 cupons</p>
+                  <p className="text-[10px] text-gray-400 font-medium">Taxa de abertura</p>
+                  <p className="text-sm font-bold text-gray-900">94.2%</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* RIGHT COLUMN — Texto com typewriter + benefícios dinâmicos (45%) */}
+          {/* Coluna direita — Conteúdo */}
           <div
-            className={`lg:col-span-5 transition-all duration-1000 delay-200 ${
+            className={`transition-all duration-1000 delay-200 ${
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
             }`}
           >
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-full px-4 py-1.5 mb-6">
-              <Rocket className="w-4 h-4 text-orange-500" />
-              <span className="text-sm font-medium text-orange-600 uppercase tracking-wide">Bombe suas vendas</span>
+            <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-1.5 mb-6">
+              <Send className="w-4 h-4 text-blue-500" />
+              <span className="text-sm font-medium text-blue-600 uppercase tracking-wide">Campanhas SMS</span>
             </div>
 
-            {/* Título com typewriter */}
+            {/* Título */}
             <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-gray-900 leading-tight mb-5">
-              Aumente vendas com{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
-                {displayText}
-                <span className={`${showCursor ? "opacity-100" : "opacity-0"} transition-opacity duration-100 text-red-500`}>|</span>
+              Alcance seus clientes{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-cyan-500">
+                direto no celular.
               </span>
             </h2>
 
             {/* Descrição */}
             <p className="text-lg text-gray-600 leading-relaxed mb-8">
-              A combinação perfeita para atrair novos clientes, reativar inativos e aumentar o faturamento do seu restaurante.
+              Envie campanhas de SMS em massa para toda sua base de clientes. Promova ofertas, novidades e aumente o faturamento com mensagens que chegam na hora.
             </p>
 
-            {/* Lista de benefícios dinâmica (estilo Cardápio Digital) */}
+            {/* Lista de benefícios */}
             <div className="space-y-5 mb-10">
-              {currentItem.benefits.map((benefit, i) => (
+              {benefits.map((benefit, i) => (
                 <div
-                  key={`${currentIndex}-${i}`}
+                  key={i}
                   className={`flex items-start gap-4 transition-all duration-500 ${
                     isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                   }`}
                   style={{ transitionDelay: `${400 + i * 150}ms` }}
                 >
-                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-red-50 to-orange-50 border border-red-100 flex items-center justify-center text-red-500">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100 flex items-center justify-center text-blue-500">
                     {benefit.icon}
                   </div>
                   <div>
@@ -1740,14 +1683,174 @@ function OrdersMockupSection() {
               ))}
             </div>
 
-            {/* CTA Button */}
+            {/* CTA */}
             <Link
               href="/criar-conta"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-red-500/25 hover:shadow-red-500/40 hover:scale-[1.02] transition-all duration-300"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-[1.02] transition-all duration-300"
             >
-              Experimentar grátis
+              Criar campanha grátis
               <ArrowRight className="w-5 h-5" />
             </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ============ SEÇÃO: CUPONS DE DESCONTO (layout invertido) ============
+function CouponsSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const benefits = [
+    { icon: <BadgePercent className="w-5 h-5" />, title: "Cupons personalizados", desc: "Crie cupons por valor fixo ou porcentagem. Defina validade, limite de uso e valor mínimo." },
+    { icon: <Gift className="w-5 h-5" />, title: "Primeira compra", desc: "Ofereça desconto especial para novos clientes e transforme visitantes em compradores." },
+    { icon: <Rocket className="w-5 h-5" />, title: "Frete grátis", desc: "Crie cupons de frete grátis para incentivar pedidos e aumentar o ticket médio." },
+  ];
+
+  return (
+    <section
+      ref={sectionRef}
+      className="py-20 lg:py-28 bg-gradient-to-b from-gray-50/80 to-white overflow-hidden"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Coluna esquerda — Conteúdo (layout invertido) */}
+          <div
+            className={`transition-all duration-1000 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
+            }`}
+          >
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-full px-4 py-1.5 mb-6">
+              <BadgePercent className="w-4 h-4 text-orange-500" />
+              <span className="text-sm font-medium text-orange-600 uppercase tracking-wide">Cupons de Desconto</span>
+            </div>
+
+            {/* Título */}
+            <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-gray-900 leading-tight mb-5">
+              Atraia clientes com{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">
+                ofertas irresistíveis.
+              </span>
+            </h2>
+
+            {/* Descrição */}
+            <p className="text-lg text-gray-600 leading-relaxed mb-8">
+              Crie cupons de desconto em segundos e incentive novas compras. Controle validade, limite de uso e acompanhe os resultados em tempo real.
+            </p>
+
+            {/* Lista de benefícios */}
+            <div className="space-y-5 mb-10">
+              {benefits.map((benefit, i) => (
+                <div
+                  key={i}
+                  className={`flex items-start gap-4 transition-all duration-500 ${
+                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                  }`}
+                  style={{ transitionDelay: `${400 + i * 150}ms` }}
+                >
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100 flex items-center justify-center text-orange-500">
+                    {benefit.icon}
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-0.5">{benefit.title}</h4>
+                    <p className="text-sm text-gray-500 leading-relaxed">{benefit.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <Link
+              href="/criar-conta"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-[1.02] transition-all duration-300"
+            >
+              Criar cupons grátis
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+
+          {/* Coluna direita — Mockup browser (layout invertido) */}
+          <div
+            className={`relative transition-all duration-1000 delay-200 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
+            }`}
+          >
+            <div className="relative">
+              <div
+                className="relative z-10 rounded-2xl overflow-hidden shadow-2xl shadow-gray-900/10 border border-gray-200/50"
+                style={{ animation: isVisible ? "hero-float 6s ease-in-out infinite" : "none" }}
+              >
+                {/* Browser chrome */}
+                <div className="bg-gray-100 border-b border-gray-200 px-4 py-2.5 flex items-center gap-2">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-400" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                    <div className="w-3 h-3 rounded-full bg-green-400" />
+                  </div>
+                  <div className="flex-1 flex justify-center">
+                    <div className="bg-white rounded-lg px-4 py-1 text-[11px] text-gray-400 font-medium border border-gray-200 w-64 text-center">
+                      app.mindi.com.br
+                    </div>
+                  </div>
+                </div>
+                <img
+                  src={CUPONS_MOCKUP}
+                  alt="Tela de cupons de desconto do Mindi"
+                  className="w-full h-auto"
+                  loading="lazy"
+                  draggable={false}
+                />
+              </div>
+
+              {/* Floating badge — Cupons ativos */}
+              <div
+                className={`absolute -top-4 -left-3 sm:-left-6 z-20 bg-white rounded-xl shadow-lg shadow-gray-900/10 border border-gray-100 px-3 py-2.5 hidden sm:flex items-center gap-2.5 transition-all duration-700 delay-500 ${
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+                }`}
+                style={{ animation: isVisible ? "hero-float-stat 4s ease-in-out infinite" : "none" }}
+              >
+                <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
+                  <Ticket className="w-4 h-4 text-orange-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium">Cupons ativos</p>
+                  <p className="text-sm font-bold text-gray-900">5 cupons</p>
+                </div>
+              </div>
+
+              {/* Floating badge — Economia gerada */}
+              <div
+                className={`absolute bottom-12 -left-3 sm:-left-8 z-20 bg-white rounded-xl shadow-lg shadow-gray-900/10 border border-gray-100 px-3 py-2.5 hidden sm:flex items-center gap-2.5 transition-all duration-700 delay-700 ${
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                }`}
+                style={{ animation: isVisible ? "hero-float-stat-2 5s ease-in-out infinite" : "none" }}
+              >
+                <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+                  <TrendingUp className="w-4 h-4 text-green-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium">Vendas via cupom</p>
+                  <p className="text-sm font-bold text-gray-900">+23% este mês</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -2350,7 +2453,8 @@ export default function LandingPage() {
       <CatalogShowcaseSection />
       <LoyaltyProgramSection />
       <WhatsAppIntegrationSection />
-      <OrdersMockupSection />
+      <CampaignsSMSSection />
+      <CouponsSection />
       <PricingSection />
       <ClientsShowcaseSection />
       <SegmentsSection />

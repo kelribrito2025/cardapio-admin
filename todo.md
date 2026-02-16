@@ -6796,3 +6796,9 @@
 - [x] Tirar screenshots das páginas de Campanhas SMS e Cupons via v2.mindi.com.br
 - [x] Reescrever OrdersMockupSection com carrossel de screenshots, typewriter e ícones estilo Cardápio Digital
 - [x] Remover MarketingBoostSection separada
+
+## Dividir Seção Bombe suas Vendas em Duas Seções
+- [x] Criar seção dedicada para Campanhas SMS com mockup, benefícios e CTA
+- [x] Criar seção dedicada para Cupons de Desconto com mockup, benefícios e CTA
+- [x] Remover OrdersMockupSection combinada
+- [x] Atualizar LandingPage para usar as duas novas seções separadas
