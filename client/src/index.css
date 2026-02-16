@@ -578,6 +578,19 @@
   -webkit-backface-visibility: hidden;
 }
 
-.animate-marquee:hover {
-  animation-play-state: paused;
+@keyframes marquee-scroll-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
+
+.animate-marquee-reverse {
+  animation: marquee-scroll-reverse 35s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+

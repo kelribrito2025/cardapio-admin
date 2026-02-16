@@ -6715,3 +6715,9 @@
 - [x] Implementar carrossel automático dentro da moldura do celular com 4 imagens
 - [x] Indicadores de posição (dots) no carrossel
 - [x] Transição suave entre imagens
+
+## Segunda Linha de Cases Reais
+- [ ] Adicionar segunda linha de cards no carrossel de Explore Cases Reais
+- [ ] Efeito de scroll da esquerda para a direita (inverso da primeira linha)
+- [ ] Novos restaurantes fictícios para a segunda linha
+- [x] Remover pausa ao hover no carrossel de clientes (Explore Cases Reais) - animação deve ser contínua sem interrupções

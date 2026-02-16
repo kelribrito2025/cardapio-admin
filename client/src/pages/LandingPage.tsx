@@ -807,7 +807,7 @@ function ProblemSolutionSection() {
 
 // ============ SEÇÃO 3: CLIENTES QUE VENDEM CONOSCO ============
 
-const CLIENTS_DATA = [
+const CLIENTS_DATA_ROW1 = [
   {
     name: "Burger House",
     city: "São Paulo",
@@ -858,7 +858,58 @@ const CLIENTS_DATA = [
   },
 ];
 
-function ClientCard({ client }: { client: typeof CLIENTS_DATA[0] }) {
+const CLIENTS_DATA_ROW2 = [
+  {
+    name: "Pizza do Beco",
+    city: "Porto Alegre",
+    state: "RS",
+    cover: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/WxLMtqgzpplincEt.jpg",
+    color: "#d97706",
+    initials: "PB",
+  },
+  {
+    name: "Sabor Mineiro",
+    city: "Uberlândia",
+    state: "MG",
+    cover: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/uhXbFmhAvEyTTgoB.jpg",
+    color: "#16a34a",
+    initials: "SM",
+  },
+  {
+    name: "Taco Loco",
+    city: "Brasília",
+    state: "DF",
+    cover: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/mInTUYpVlTIFLkON.jpg",
+    color: "#e11d48",
+    initials: "TL",
+  },
+  {
+    name: "Doce Encanto",
+    city: "Salvador",
+    state: "BA",
+    cover: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/aiffbCjVDSbuQtRz.jpg",
+    color: "#9333ea",
+    initials: "DE",
+  },
+  {
+    name: "Grill Express",
+    city: "Recife",
+    state: "PE",
+    cover: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/BgcAhrPALHBfxpsd.jpeg",
+    color: "#0284c7",
+    initials: "GE",
+  },
+  {
+    name: "Cantina Bella",
+    city: "Goiânia",
+    state: "GO",
+    cover: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/LNZYzDQsQZBsCSUy.jpg",
+    color: "#c2410c",
+    initials: "CB",
+  },
+];
+
+function ClientCard({ client }: { client: typeof CLIENTS_DATA_ROW1[0] }) {
   return (
     <div className="flex-shrink-0 w-[280px] sm:w-[300px] group">
       {/* Cover Image */}
@@ -956,20 +1007,32 @@ function ClientsShowcaseSection() {
           <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-gray-50/50 to-transparent z-10 pointer-events-none" />
           
-          {/* Marquee track */}
+          {/* Marquee track - Row 1 (right to left) */}
           <div className="animate-marquee flex gap-6 pb-4 w-max">
-            {/* First set */}
-            {CLIENTS_DATA.map((client, idx) => (
+            {CLIENTS_DATA_ROW1.map((client, idx) => (
               <ClientCard key={`a-${client.name}-${idx}`} client={client} />
             ))}
-            {/* Duplicate set for seamless loop */}
-            {CLIENTS_DATA.map((client, idx) => (
+            {CLIENTS_DATA_ROW1.map((client, idx) => (
               <ClientCard key={`b-${client.name}-${idx}`} client={client} />
             ))}
           </div>
         </div>
-      </div>
 
+        {/* Row 2 - Reverse direction (left to right) */}
+        <div className="relative overflow-hidden mt-8">
+          <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-gray-50/50 to-transparent z-10 pointer-events-none" />
+          
+          <div className="animate-marquee-reverse flex gap-6 pb-4 w-max">
+            {CLIENTS_DATA_ROW2.map((client, idx) => (
+              <ClientCard key={`c-${client.name}-${idx}`} client={client} />
+            ))}
+            {CLIENTS_DATA_ROW2.map((client, idx) => (
+              <ClientCard key={`d-${client.name}-${idx}`} client={client} />
+            ))}
+          </div>
+        </div>
+      </div>
 
     </section>
   );
