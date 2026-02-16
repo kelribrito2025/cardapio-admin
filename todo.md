@@ -6721,3 +6721,5 @@
 - [ ] Efeito de scroll da esquerda para a direita (inverso da primeira linha)
 - [ ] Novos restaurantes fictícios para a segunda linha
 - [x] Remover pausa ao hover no carrossel de clientes (Explore Cases Reais) - animação deve ser contínua sem interrupções
+- [x] Redesenhar seção calculadora de economia (Quanto você perde por mês) - remover fundo escuro, layout mais limpo e claro, alinhado com estilo Mindi
+- [x] Remover seção calculadora de economia (Quanto você perde por mês) completamente da landing page

@@ -20,8 +20,6 @@ import {
   Users,
   PieChart,
   PackageCheck,
-  Minus,
-  Plus,
   Utensils,
   Smartphone,
   Globe,
@@ -483,8 +481,6 @@ function PainPointsStrip() {
 
 // ============ SEÇÃO 2: O PROBLEMA + A VIRADA ============
 function ProblemSolutionSection() {
-  const [monthlyRevenue, setMonthlyRevenue] = useState(20000);
-  const [marketplaceFee] = useState(15);
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -500,24 +496,6 @@ function ProblemSolutionSection() {
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
-
-  const monthlyLoss = (monthlyRevenue * marketplaceFee) / 100;
-  const yearlyLoss = monthlyLoss * 12;
-
-  const revenueSteps = [5000, 10000, 15000, 20000, 30000, 40000, 50000, 75000, 100000];
-
-  const handleDecrease = () => {
-    const currentIndex = revenueSteps.indexOf(monthlyRevenue);
-    if (currentIndex > 0) setMonthlyRevenue(revenueSteps[currentIndex - 1]);
-  };
-
-  const handleIncrease = () => {
-    const currentIndex = revenueSteps.indexOf(monthlyRevenue);
-    if (currentIndex < revenueSteps.length - 1) setMonthlyRevenue(revenueSteps[currentIndex + 1]);
-  };
-
-  const formatCurrency = (value: number) =>
-    value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
   const painCards = [
     { icon: DollarSign, title: "Taxas abusivas", desc: "Até 27% por pedido vai direto pro marketplace" },
@@ -590,97 +568,6 @@ function ProblemSolutionSection() {
               <p className="text-sm text-gray-500 leading-relaxed">{card.desc}</p>
             </div>
           ))}
-        </div>
-
-        {/* ---- SIMULAÇÃO DE PERDAS ---- */}
-        <div className={`relative max-w-4xl mx-auto mb-20 transition-all duration-700 delay-200 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}>
-          <div className="bg-gray-900 rounded-3xl p-8 sm:p-10 lg:p-12 overflow-hidden relative">
-            {/* Background glow */}
-            <div className="absolute top-0 right-0 w-80 h-80 bg-red-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-60 h-60 bg-red-500/5 rounded-full blur-3xl" />
-
-            <div className="relative">
-              <div className="text-center mb-8">
-                <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                  Quanto você <span className="text-red-400">perde</span> por mês?
-                </h3>
-                <p className="text-gray-400 text-sm">Simule o impacto das taxas de marketplace no seu faturamento</p>
-              </div>
-
-              {/* Revenue selector */}
-              <div className="flex flex-col items-center gap-6 mb-10">
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={handleDecrease}
-                    disabled={monthlyRevenue === revenueSteps[0]}
-                    className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
-                  >
-                    <Minus className="w-4 h-4 text-white" />
-                  </button>
-                  <div className="text-center min-w-[200px]">
-                    <p className="text-xs text-gray-400 font-medium mb-1">Faturamento mensal</p>
-                    <p className="text-3xl sm:text-4xl font-bold text-white">{formatCurrency(monthlyRevenue)}</p>
-                  </div>
-                  <button
-                    onClick={handleIncrease}
-                    disabled={monthlyRevenue === revenueSteps[revenueSteps.length - 1]}
-                    className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
-                  >
-                    <Plus className="w-4 h-4 text-white" />
-                  </button>
-                </div>
-
-                {/* Revenue steps */}
-                <div className="flex gap-2 flex-wrap justify-center">
-                  {revenueSteps.map((step) => (
-                    <button
-                      key={step}
-                      onClick={() => setMonthlyRevenue(step)}
-                      className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all duration-200 ${
-                        monthlyRevenue === step
-                          ? "bg-red-500 text-white shadow-lg shadow-red-500/30"
-                          : "bg-white/10 text-gray-400 hover:bg-white/20 hover:text-white"
-                      }`}
-                    >
-                      {step >= 1000 ? `${step / 1000}k` : step}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Results */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10 text-center">
-                  <p className="text-xs text-gray-400 font-medium mb-2 uppercase tracking-wider">Taxa marketplace ({marketplaceFee}%)</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-red-400">
-                    -{formatCurrency(monthlyLoss)}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">por mês</p>
-                </div>
-                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10 text-center">
-                  <p className="text-xs text-gray-400 font-medium mb-2 uppercase tracking-wider">Prejuízo anual</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-red-400">
-                    -{formatCurrency(yearlyLoss)}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">jogados fora</p>
-                </div>
-                <div className="bg-gradient-to-br from-green-500/20 to-green-600/10 backdrop-blur-sm rounded-2xl p-5 border border-green-500/20 text-center">
-                  <p className="text-xs text-green-300 font-medium mb-2 uppercase tracking-wider">Com Mindi</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-green-400">
-                    {formatCurrency(0)}
-                  </p>
-                  <p className="text-xs text-green-300/70 mt-1">zero taxa por pedido</p>
-                </div>
-              </div>
-
-              <p className="text-center mt-6 text-sm text-gray-400">
-                Isso significa <strong className="text-white">{formatCurrency(yearlyLoss)}</strong> de volta 
-                no seu bolso por ano.
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* ---- BLOCO 2: A VIRADA ---- */}
