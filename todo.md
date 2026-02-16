@@ -6724,3 +6724,4 @@
 - [x] Redesenhar seção calculadora de economia (Quanto você perde por mês) - remover fundo escuro, layout mais limpo e claro, alinhado com estilo Mindi
 - [x] Remover seção calculadora de economia (Quanto você perde por mês) completamente da landing page
 - [x] Remover 'Zero comissão por pedido' e 'Estoque sincronizado automaticamente' da seção A Solução
+- [x] Redesenhar seção CTA final (Comece Agora) - remover fundo escuro, design claro alinhado com Mindi

@@ -1679,34 +1679,23 @@ function CTAFinalSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-20 sm:py-28 relative overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" />
-      <div className="absolute inset-0 opacity-10" style={{
-        backgroundImage: "radial-gradient(circle at 20% 50%, rgba(239,68,68,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(239,68,68,0.2) 0%, transparent 50%)"
-      }} />
-      {/* Subtle grid */}
-      <div className="absolute inset-0 opacity-5" style={{
-        backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-        backgroundSize: "40px 40px"
-      }} />
-
+    <section ref={sectionRef} className="py-20 sm:py-28 relative overflow-hidden bg-gradient-to-b from-white to-red-50">
       <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
         <div className={`transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
-            <Rocket className="w-4 h-4 text-red-400" />
-            <span className="text-xs font-semibold text-white/80 uppercase tracking-wider">Comece agora</span>
+          <div className="inline-flex items-center gap-2 bg-red-50 border border-red-100 rounded-full px-4 py-1.5 mb-6">
+            <Rocket className="w-4 h-4 text-red-500" />
+            <span className="text-xs font-semibold text-red-600 uppercase tracking-wider">Comece agora</span>
           </div>
         </div>
 
-        <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-5 leading-tight transition-all duration-700 delay-150 ${
+        <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-5 leading-tight transition-all duration-700 delay-150 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}>
           Pare de perder dinheiro.<br />
-          <span className="text-red-400">Comece a vender do seu jeito.</span>
+          <span className="text-red-500">Comece a vender do seu jeito.</span>
         </h2>
 
-        <p className={`text-base sm:text-lg text-gray-300 mb-10 max-w-xl mx-auto leading-relaxed transition-all duration-700 delay-300 ${
+        <p className={`text-base sm:text-lg text-gray-500 mb-10 max-w-xl mx-auto leading-relaxed transition-all duration-700 delay-300 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}>
           Junte-se a centenas de restaurantes que já economizam milhares de reais por mês com o Mindi. Crie sua conta grátis em menos de 2 minutos.
@@ -1726,9 +1715,9 @@ function CTAFinalSection() {
             href="https://wa.me/5500000000000"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2.5 bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white font-semibold px-8 py-4 rounded-xl text-base border border-white/20 hover:border-white/30 transition-all duration-300"
+            className="inline-flex items-center gap-2.5 bg-white hover:bg-gray-50 text-gray-700 font-semibold px-8 py-4 rounded-xl text-base border border-gray-200 hover:border-gray-300 shadow-sm transition-all duration-300"
           >
-            <MessageCircle className="w-5 h-5" />
+            <MessageCircle className="w-5 h-5 text-gray-500" />
             Falar com especialista
           </a>
         </div>
@@ -1743,8 +1732,8 @@ function CTAFinalSection() {
             { icon: Clock, text: "Cancele quando quiser" },
           ].map((item) => (
             <div key={item.text} className="flex items-center gap-2">
-              <item.icon className="w-4 h-4 text-red-400" />
-              <span className="text-sm text-gray-400">{item.text}</span>
+              <item.icon className="w-4 h-4 text-red-500" />
+              <span className="text-sm text-gray-500">{item.text}</span>
             </div>
           ))}
         </div>
