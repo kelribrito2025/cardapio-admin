@@ -6733,7 +6733,7 @@
 - [x] Adicionar dados mockados no gráfico Acumulado da Semana (todos os dias) e no card Acessos ao Cardápio para Burger House Gourmet
 - [x] Redistribuir pedidos em todos os dias da semana (Seg-Dom) e preencher heatmap de Acessos com mais acessos no fim de semana
 - [x] Tirar novo screenshot do dashboard com dados mockados em largura maior e substituir na seção Sistema Completo de Gestão
-- [ ] Remover borda amarela que aparece na foto mockup do dashboard na seção Sistema Completo de Gestão
+- [x] Remover borda amarela que aparece na foto mockup do dashboard na seção Sistema Completo de Gestão (era do preview mode, novo screenshot tirado sem borda)
 - [x] Remover 3 perguntas do FAQ: 'Existe taxa por pedido?', 'Preciso de conhecimento técnico para usar?', 'Como funciona a gestão de entregadores?'
 - [x] Duplicar seção Cardápio Digital na landing page - nova seção Programa de Fidelidade com layout invertido (texto à esquerda, celular à direita)
 - [x] Bug: Carimbo do cartão fidelidade não é registrado após finalização do pedido (estabelecimento 30001, cliente 88999290000)
@@ -6764,3 +6764,6 @@
 - [x] Adicionar entregadores mockados
 - [x] Adicionar avaliações mockadas
 - [x] Adicionar itens de estoque mockados
+
+## Novo Screenshot do Dashboard para Landing Page
+- [x] Tirar novo screenshot do dashboard admin@admin.com sem borda do preview e atualizar na seção Sistema Completo de Gestão

@@ -45,7 +45,7 @@ import {
 } from "lucide-react";
 
 // CDN URLs dos mockups do dashboard
-const DASHBOARD_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/rHNUcUWCfQjuutdL.png";
+const DASHBOARD_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/UbTUwNukIbWfXXPO.png";
 const PEDIDOS_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/eZYBBIOzNtjHSFop.png";
 const CATALOG_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/SqoFPOevifuTwhEd.png";
 const CATALOG_DETAIL = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/JgFnWpALWmAYzNNt.png";
