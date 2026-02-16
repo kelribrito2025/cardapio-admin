@@ -1559,7 +1559,6 @@ function CampaignsSMSSection() {
   const benefits = [
     { icon: <Send className="w-5 h-5" />, title: "Disparo em massa", desc: "Envie SMS para toda sua base de clientes de uma só vez com ofertas e novidades." },
     { icon: <Target className="w-5 h-5" />, title: "Segmentação inteligente", desc: "Segmente por frequência de compra, ticket médio ou última visita para mensagens certeiras." },
-    { icon: <TrendingUp className="w-5 h-5" />, title: "Resultados mensuráveis", desc: "Acompanhe taxa de entrega, cliques e conversões de cada campanha em tempo real." },
   ];
 
   return (

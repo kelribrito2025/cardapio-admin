@@ -6805,3 +6805,6 @@
 
 ## Ajuste Seção Cupons de Desconto
 - [x] Remover benefício "Frete grátis" da seção Cupons de Desconto na landing page
+
+## Ajuste Seção Campanhas SMS
+- [x] Remover benefício "Resultados mensuráveis" da seção Campanhas SMS na landing page
