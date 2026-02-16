@@ -6802,3 +6802,6 @@
 - [x] Criar seção dedicada para Cupons de Desconto com mockup, benefícios e CTA
 - [x] Remover OrdersMockupSection combinada
 - [x] Atualizar LandingPage para usar as duas novas seções separadas
+
+## Ajuste Seção Cupons de Desconto
+- [x] Remover benefício "Frete grátis" da seção Cupons de Desconto na landing page

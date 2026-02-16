@@ -1720,7 +1720,6 @@ function CouponsSection() {
   const benefits = [
     { icon: <BadgePercent className="w-5 h-5" />, title: "Cupons personalizados", desc: "Crie cupons por valor fixo ou porcentagem. Defina validade, limite de uso e valor mínimo." },
     { icon: <Gift className="w-5 h-5" />, title: "Primeira compra", desc: "Ofereça desconto especial para novos clientes e transforme visitantes em compradores." },
-    { icon: <Rocket className="w-5 h-5" />, title: "Frete grátis", desc: "Crie cupons de frete grátis para incentivar pedidos e aumentar o ticket médio." },
   ];
 
   return (
