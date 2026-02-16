@@ -45,6 +45,10 @@ import {
 const DASHBOARD_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/DWjiyUgKrQTrHTOQ.png";
 const PEDIDOS_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/RDuYUqKBFnalcxkk.png";
 const CATALOG_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/SqoFPOevifuTwhEd.png";
+const CATALOG_DETAIL = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/JgFnWpALWmAYzNNt.png";
+const CATALOG_ADDON = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/zqiObsapogdlAHqC.png";
+const CATALOG_CHECKOUT = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/CoTwvNgEpkwQZjji.png";
+const CATALOG_SLIDES = [CATALOG_MOCKUP, CATALOG_DETAIL, CATALOG_ADDON, CATALOG_CHECKOUT];
 
 // ============ NAVBAR ============
 function LandingNavbar() {
@@ -975,6 +979,7 @@ function ClientsShowcaseSection() {
 function CatalogShowcaseSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -989,6 +994,15 @@ function CatalogShowcaseSection() {
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
+
+  // Auto-rotate carousel
+  useEffect(() => {
+    if (!isVisible) return;
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % CATALOG_SLIDES.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, [isVisible]);
 
   const benefits = [
     {
@@ -1033,14 +1047,36 @@ function CatalogShowcaseSection() {
               
               {/* Corpo do celular */}
               <div className="relative bg-gray-900 rounded-[2.5rem] p-3 shadow-2xl shadow-gray-900/25">
-                {/* Tela do celular */}
+                {/* Tela do celular — Carrossel */}
                 <div className="relative rounded-[2rem] overflow-hidden bg-white">
-                  <img
-                    src={CATALOG_MOCKUP}
-                    alt="Cardápio digital do Mindi — Sushi Haruno"
-                    className="w-full h-auto"
-                    loading="lazy"
-                  />
+                  <div className="relative w-full">
+                    {CATALOG_SLIDES.map((src, i) => (
+                      <img
+                        key={i}
+                        src={src}
+                        alt={`Cardápio digital do Mindi — tela ${i + 1}`}
+                        className={`w-full h-auto transition-opacity duration-700 ease-in-out ${
+                          i === currentSlide ? "opacity-100 relative" : "opacity-0 absolute inset-0"
+                        }`}
+                        loading="lazy"
+                      />
+                    ))}
+                  </div>
+                  {/* Indicadores (dots) */}
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                    {CATALOG_SLIDES.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentSlide(i)}
+                        className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                          i === currentSlide
+                            ? "bg-red-500 w-4"
+                            : "bg-gray-300 hover:bg-gray-400"
+                        }`}
+                        aria-label={`Slide ${i + 1}`}
+                      />
+                    ))}
+                  </div>
                 </div>
                 
                 {/* Barra inferior do celular (home indicator) */}

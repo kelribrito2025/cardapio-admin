@@ -6709,3 +6709,9 @@
 
 ## Ajuste Espessura da Moldura do Celular
 - [x] Igualar espessura da borda de cima com a de baixo na moldura do celular (seção Cardápio Digital)
+
+## Carrossel na Moldura do Celular (Seção Cardápio Digital)
+- [x] Upload das 3 novas screenshots para S3
+- [x] Implementar carrossel automático dentro da moldura do celular com 4 imagens
+- [x] Indicadores de posição (dots) no carrossel
+- [x] Transição suave entre imagens
