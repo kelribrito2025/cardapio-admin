@@ -1032,14 +1032,9 @@ function CatalogShowcaseSection() {
               <div className="absolute -inset-6 bg-gradient-to-br from-red-500/10 via-orange-500/5 to-transparent rounded-[3rem] blur-2xl" />
               
               {/* Corpo do celular */}
-              <div className="relative bg-gray-900 rounded-[2.5rem] p-2.5 shadow-2xl shadow-gray-900/25">
-                {/* Notch / Dynamic Island */}
-                <div className="flex items-center justify-center mt-1 mb-1.5">
-                  <div className="w-20 h-5 rounded-full bg-gray-900 relative z-10" />
-                </div>
-                
+              <div className="relative bg-gray-900 rounded-[2.5rem] p-3 shadow-2xl shadow-gray-900/25">
                 {/* Tela do celular */}
-                <div className="relative rounded-[1.75rem] overflow-hidden bg-white">
+                <div className="relative rounded-[2rem] overflow-hidden bg-white">
                   <img
                     src={CATALOG_MOCKUP}
                     alt="Cardápio digital do Mindi — Sushi Haruno"
@@ -1049,7 +1044,7 @@ function CatalogShowcaseSection() {
                 </div>
                 
                 {/* Barra inferior do celular (home indicator) */}
-                <div className="flex items-center justify-center mt-2 mb-1">
+                <div className="flex items-center justify-center mt-2 mb-0.5">
                   <div className="w-28 h-1 rounded-full bg-gray-700" />
                 </div>
               </div>

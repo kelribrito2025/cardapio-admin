@@ -6706,3 +6706,6 @@
 - [x] Upload da screenshot do cardápio Sushi Haruno para S3
 - [x] Criar moldura de celular (phone frame) estilizada
 - [x] Substituir imagem na seção Cardápio Digital com phone frame
+
+## Ajuste Espessura da Moldura do Celular
+- [x] Igualar espessura da borda de cima com a de baixo na moldura do celular (seção Cardápio Digital)
