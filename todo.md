@@ -6731,3 +6731,4 @@
 - [x] Adicionar dados mockados na conta do restaurante xkelrix@gmail.com (pedidos, produtos, clientes, faturamento)
 - [x] Remover 'Filtros por data, status e entregador' e 'Histórico completo de cada cliente' da seção Gestão de Pedidos
 - [x] Adicionar dados mockados no gráfico Acumulado da Semana (todos os dias) e no card Acessos ao Cardápio para Burger House Gourmet
+- [x] Redistribuir pedidos em todos os dias da semana (Seg-Dom) e preencher heatmap de Acessos com mais acessos no fim de semana
