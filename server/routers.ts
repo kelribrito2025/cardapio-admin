@@ -5347,6 +5347,87 @@ export const appRouter = router({
         const id = await db.upsertMonthlyGoal(input);
         return { id };
       }),
+
+    // Despesas Recorrentes
+    listRecurring: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.listRecurringExpenses(input.establishmentId);
+      }),
+
+    createRecurring: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        type: z.enum(["expense", "revenue"]),
+        description: z.string(),
+        categoryId: z.number(),
+        amount: z.string(),
+        paymentMethod: z.enum(["cash", "pix", "card", "transfer"]),
+        frequency: z.enum(["weekly", "monthly", "yearly"]),
+        executionDay: z.number(),
+        executionMonth: z.number().optional(),
+        generateAsPending: z.boolean(),
+        startDate: z.string(),
+        endDate: z.string().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createRecurringExpense({
+          ...input,
+          startDate: new Date(input.startDate),
+          endDate: input.endDate ? new Date(input.endDate) : null,
+          notes: input.notes ?? null,
+        });
+        return { id };
+      }),
+
+    updateRecurring: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        establishmentId: z.number(),
+        description: z.string().optional(),
+        categoryId: z.number().optional(),
+        amount: z.string().optional(),
+        paymentMethod: z.enum(["cash", "pix", "card", "transfer"]).optional(),
+        frequency: z.enum(["weekly", "monthly", "yearly"]).optional(),
+        executionDay: z.number().optional(),
+        executionMonth: z.number().nullable().optional(),
+        generateAsPending: z.boolean().optional(),
+        endDate: z.string().nullable().optional(),
+        active: z.boolean().optional(),
+        notes: z.string().nullable().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, establishmentId, endDate, ...data } = input;
+        const updateData: any = { ...data };
+        if (endDate !== undefined) {
+          updateData.endDate = endDate ? new Date(endDate) : null;
+        }
+        await db.updateRecurringExpense(id, establishmentId, updateData);
+        return { success: true };
+      }),
+
+    deleteRecurring: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        establishmentId: z.number(),
+        deleteFutureExpenses: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        if (input.deleteFutureExpenses) {
+          // Deactivate instead of deleting, so history is preserved
+          await db.deactivateRecurringExpense(input.id, input.establishmentId);
+        } else {
+          await db.deleteRecurringExpense(input.id, input.establishmentId);
+        }
+        return { success: true };
+      }),
+
+    processRecurring: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .mutation(async ({ input }) => {
+        return db.processRecurringExpenses(input.establishmentId);
+      }),
   }),
 });
 export type AppRouter = typeof appRouter;

@@ -6834,3 +6834,17 @@
 - [x] Inserir despesas mockadas variadas (últimos 30 dias, múltiplas categorias e formas de pagamento)
 - [x] Definir meta mensal de lucro
 - [x] Verificar dados na página de Finanças
+
+## Despesas Recorrentes (Extensão do Modal)
+- [x] Schema: criar tabela recurring_expenses com todos os campos
+- [x] DB helpers: CRUD de recorrências (criar, listar, atualizar, excluir, gerar lançamentos)
+- [x] tRPC procedures: recurring router (create, list, update, delete, generatePending)
+- [x] Job: geração automática de lançamentos na data programada
+- [x] Modal: toggle "Tornar lançamento recorrente" abaixo do campo Valor
+- [x] Modal: campos condicionais por frequência (Mensal/Semanal/Anual)
+- [x] Modal: animação suave accordion ao expandir/recolher campos
+- [x] Lógica: criar lançamento normal + registro recurring ao salvar com toggle ativo
+- [x] Lógica: editar recorrência não altera lançamentos já gerados
+- [x] Lógica: ao excluir recorrência, perguntar (só futuros / futuros + cancelar)
+- [x] Lógica: não permitir duplicidade no mesmo dia
+- [x] Testes vitest para procedures de recorrência

@@ -43,7 +43,8 @@ import {
   deliveries, InsertDelivery, Delivery,
   expenseCategories, InsertExpenseCategory, ExpenseCategory,
   expenses, InsertExpense, Expense,
-  monthlyGoals, InsertMonthlyGoal, MonthlyGoal
+  monthlyGoals, InsertMonthlyGoal, MonthlyGoal,
+  recurringExpenses, InsertRecurringExpense, RecurringExpense
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -8460,4 +8461,204 @@ export async function upsertMonthlyGoal(data: { establishmentId: number; month: 
     });
     return result[0].insertId;
   }
+}
+
+// --- Despesas Recorrentes ---
+
+export async function createRecurringExpense(data: {
+  establishmentId: number;
+  type: "expense" | "revenue";
+  description: string;
+  categoryId: number;
+  amount: string;
+  paymentMethod: "cash" | "pix" | "card" | "transfer";
+  frequency: "weekly" | "monthly" | "yearly";
+  executionDay: number;
+  executionMonth?: number;
+  generateAsPending: boolean;
+  startDate: Date;
+  endDate?: Date | null;
+  notes?: string | null;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(recurringExpenses).values({
+    establishmentId: data.establishmentId,
+    type: data.type,
+    description: data.description,
+    categoryId: data.categoryId,
+    amount: data.amount,
+    paymentMethod: data.paymentMethod,
+    frequency: data.frequency,
+    executionDay: data.executionDay,
+    executionMonth: data.executionMonth ?? null,
+    generateAsPending: data.generateAsPending,
+    startDate: data.startDate,
+    endDate: data.endDate ?? null,
+    notes: data.notes ?? null,
+    active: true,
+  });
+  return result[0].insertId;
+}
+
+export async function listRecurringExpenses(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db.select({
+    id: recurringExpenses.id,
+    type: recurringExpenses.type,
+    description: recurringExpenses.description,
+    categoryId: recurringExpenses.categoryId,
+    categoryName: expenseCategories.name,
+    categoryColor: expenseCategories.color,
+    amount: recurringExpenses.amount,
+    paymentMethod: recurringExpenses.paymentMethod,
+    frequency: recurringExpenses.frequency,
+    executionDay: recurringExpenses.executionDay,
+    executionMonth: recurringExpenses.executionMonth,
+    generateAsPending: recurringExpenses.generateAsPending,
+    startDate: recurringExpenses.startDate,
+    endDate: recurringExpenses.endDate,
+    active: recurringExpenses.active,
+    lastGeneratedAt: recurringExpenses.lastGeneratedAt,
+    notes: recurringExpenses.notes,
+    createdAt: recurringExpenses.createdAt,
+  })
+    .from(recurringExpenses)
+    .leftJoin(expenseCategories, eq(recurringExpenses.categoryId, expenseCategories.id))
+    .where(eq(recurringExpenses.establishmentId, establishmentId))
+    .orderBy(desc(recurringExpenses.createdAt));
+  
+  return result.map(r => ({
+    ...r,
+    amount: Number(r.amount),
+  }));
+}
+
+export async function updateRecurringExpense(id: number, establishmentId: number, data: Partial<{
+  description: string;
+  categoryId: number;
+  amount: string;
+  paymentMethod: "cash" | "pix" | "card" | "transfer";
+  frequency: "weekly" | "monthly" | "yearly";
+  executionDay: number;
+  executionMonth: number | null;
+  generateAsPending: boolean;
+  endDate: Date | null;
+  active: boolean;
+  notes: string | null;
+}>) {
+  const db = await getDb();
+  if (!db) return false;
+  
+  await db.update(recurringExpenses)
+    .set(data)
+    .where(and(
+      eq(recurringExpenses.id, id),
+      eq(recurringExpenses.establishmentId, establishmentId)
+    ));
+  return true;
+}
+
+export async function deleteRecurringExpense(id: number, establishmentId: number) {
+  const db = await getDb();
+  if (!db) return false;
+  
+  await db.delete(recurringExpenses)
+    .where(and(
+      eq(recurringExpenses.id, id),
+      eq(recurringExpenses.establishmentId, establishmentId)
+    ));
+  return true;
+}
+
+export async function deactivateRecurringExpense(id: number, establishmentId: number) {
+  const db = await getDb();
+  if (!db) return false;
+  
+  await db.update(recurringExpenses)
+    .set({ active: false })
+    .where(and(
+      eq(recurringExpenses.id, id),
+      eq(recurringExpenses.establishmentId, establishmentId)
+    ));
+  return true;
+}
+
+export async function processRecurringExpenses(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return { generated: 0 };
+  
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+  const today = localNow.getDate();
+  const currentMonth = localNow.getMonth() + 1; // 1-12
+  const currentDayOfWeek = localNow.getDay(); // 0=Sunday
+  const todayStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
+  
+  // Get all active recurring expenses for this establishment
+  const activeRecurrences = await db.select()
+    .from(recurringExpenses)
+    .where(and(
+      eq(recurringExpenses.establishmentId, establishmentId),
+      eq(recurringExpenses.active, true)
+    ));
+  
+  let generated = 0;
+  
+  for (const rec of activeRecurrences) {
+    // Check if end date has passed
+    if (rec.endDate && rec.endDate < todayStart) continue;
+    // Check if start date hasn't arrived yet
+    if (rec.startDate > todayStart) continue;
+    
+    let shouldGenerate = false;
+    
+    if (rec.frequency === "monthly" && rec.executionDay === today) {
+      shouldGenerate = true;
+    } else if (rec.frequency === "weekly" && rec.executionDay === currentDayOfWeek) {
+      shouldGenerate = true;
+    } else if (rec.frequency === "yearly" && rec.executionDay === today && rec.executionMonth === currentMonth) {
+      shouldGenerate = true;
+    }
+    
+    if (!shouldGenerate) continue;
+    
+    // Check if already generated today (prevent duplicates)
+    if (rec.lastGeneratedAt) {
+      const lastGenDate = new Date(rec.lastGeneratedAt);
+      const lastGenLocal = new Date(lastGenDate.toLocaleString("en-US", { timeZone: tz }));
+      if (
+        lastGenLocal.getFullYear() === localNow.getFullYear() &&
+        lastGenLocal.getMonth() === localNow.getMonth() &&
+        lastGenLocal.getDate() === localNow.getDate()
+      ) {
+        continue; // Already generated today
+      }
+    }
+    
+    // Generate the expense
+    const expenseDate = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate(), 12, 0, 0);
+    
+    await db.insert(expenses).values({
+      establishmentId: rec.establishmentId,
+      categoryId: rec.categoryId,
+      description: `${rec.description} (recorrente)`,
+      amount: rec.amount,
+      paymentMethod: rec.paymentMethod,
+      date: expenseDate,
+      notes: rec.notes,
+    });
+    
+    // Update lastGeneratedAt
+    await db.update(recurringExpenses)
+      .set({ lastGeneratedAt: new Date() })
+      .where(eq(recurringExpenses.id, rec.id));
+    
+    generated++;
+  }
+  
+  return { generated };
 }

@@ -13,6 +13,7 @@ import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, get
 import { sdk } from "./sdk";
 import { startScheduledCampaignJob } from "../scheduledCampaignJob";
 import { startScheduledOrdersJob } from "../scheduledOrdersJob";
+import { startRecurringExpensesJob } from "../recurringExpensesJob";
 
 // Função para gerar HTML do recibo otimizado para impressora térmica
 // OTIMIZADO para melhor legibilidade em impressoras ESC POS 58mm/80mm
@@ -2620,6 +2621,9 @@ async function startServer() {
     
     // Iniciar job de processamento de pedidos agendados (move para fila automaticamente)
     startScheduledOrdersJob();
+    
+    // Iniciar job de processamento de despesas recorrentes (gera lançamentos automáticos)
+    startRecurringExpensesJob();
   });
 }
 

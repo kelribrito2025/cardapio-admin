@@ -217,4 +217,101 @@ describe("finance", () => {
       expect(Number(goal!.targetProfit)).toBe(15000);
     });
   });
+
+  describe("recurring expenses", () => {
+    let recurringId: number;
+
+    it("creates a recurring expense", async () => {
+      const categories = await caller.finance.listCategories({
+        establishmentId: testEstablishmentId,
+      });
+      const categoryId = categories[0]?.id;
+      expect(categoryId).toBeDefined();
+
+      const result = await caller.finance.createRecurring({
+        establishmentId: testEstablishmentId,
+        type: "expense",
+        description: "Aluguel Teste Vitest",
+        categoryId: categoryId!,
+        amount: "3500.00",
+        paymentMethod: "transfer",
+        frequency: "monthly",
+        executionDay: 5,
+        generateAsPending: false,
+        startDate: new Date().toISOString(),
+      });
+      expect(result).toHaveProperty("id");
+      recurringId = result.id;
+    });
+
+    it("lists recurring expenses and finds the created one", async () => {
+      const list = await caller.finance.listRecurring({
+        establishmentId: testEstablishmentId,
+      });
+      expect(Array.isArray(list)).toBe(true);
+      const found = list.find((r: any) => r.id === recurringId);
+      expect(found).toBeDefined();
+      expect(found?.description).toBe("Aluguel Teste Vitest");
+      expect(found?.frequency).toBe("monthly");
+      expect(found?.executionDay).toBe(5);
+      expect(found?.active).toBe(true);
+    });
+
+    it("updates a recurring expense (pause)", async () => {
+      const result = await caller.finance.updateRecurring({
+        id: recurringId,
+        establishmentId: testEstablishmentId,
+        active: false,
+      });
+      expect(result).toEqual({ success: true });
+
+      // Verify it's paused
+      const list = await caller.finance.listRecurring({
+        establishmentId: testEstablishmentId,
+      });
+      const found = list.find((r: any) => r.id === recurringId);
+      expect(found?.active).toBe(false);
+    });
+
+    it("updates a recurring expense (reactivate and change amount)", async () => {
+      const result = await caller.finance.updateRecurring({
+        id: recurringId,
+        establishmentId: testEstablishmentId,
+        active: true,
+        amount: "4000.00",
+      });
+      expect(result).toEqual({ success: true });
+
+      const list = await caller.finance.listRecurring({
+        establishmentId: testEstablishmentId,
+      });
+      const found = list.find((r: any) => r.id === recurringId);
+      expect(found?.active).toBe(true);
+      expect(Number(found?.amount)).toBe(4000);
+    });
+
+    it("processes recurring expenses without error", async () => {
+      const result = await caller.finance.processRecurring({
+        establishmentId: testEstablishmentId,
+      });
+      expect(result).toHaveProperty("generated");
+      expect(typeof result.generated).toBe("number");
+    });
+
+    it("deletes a recurring expense", async () => {
+      const result = await caller.finance.deleteRecurring({
+        id: recurringId,
+        establishmentId: testEstablishmentId,
+        deleteFutureExpenses: false,
+      });
+      expect(result).toEqual({ success: true });
+
+      // Verify it's gone
+      const list = await caller.finance.listRecurring({
+        establishmentId: testEstablishmentId,
+      });
+      const found = list.find((r: any) => r.id === recurringId);
+      expect(found).toBeUndefined();
+    });
+  });
 });

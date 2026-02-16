@@ -19,6 +19,10 @@ import {
   Tag,
   Calendar,
   Filter,
+  Repeat,
+  Pause,
+  Play,
+  Clock,
 } from "lucide-react";
 import {
   BarChart,
@@ -34,9 +38,11 @@ import {
   Area,
   Legend,
 } from "recharts";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -74,6 +80,9 @@ const formatCurrency = (value: number) => {
 };
 
 // ============ EXPENSE MODAL ============
+const WEEKDAY_LABELS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+const MONTH_LABELS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
 function ExpenseModal({
   open,
   onOpenChange,
@@ -93,6 +102,15 @@ function ExpenseModal({
   const [paymentMethod, setPaymentMethod] = useState<string>("cash");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [notes, setNotes] = useState("");
+
+  // Recurring fields
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [frequency, setFrequency] = useState<string>("monthly");
+  const [executionDay, setExecutionDay] = useState<string>("1");
+  const [executionMonth, setExecutionMonth] = useState<string>("1");
+  const [generateAsPending, setGenerateAsPending] = useState(false);
+  const [endDate, setEndDate] = useState("");
+  const recurringRef = useRef<HTMLDivElement>(null);
 
   const { data: categories } = trpc.finance.listCategories.useQuery(
     { establishmentId },
@@ -119,6 +137,16 @@ function ExpenseModal({
     onError: (err) => toast.error(err.message),
   });
 
+  const createRecurringMutation = trpc.finance.createRecurring.useMutation({
+    onSuccess: () => {
+      toast.success("Despesa recorrente criada com sucesso!");
+      onSuccess();
+      onOpenChange(false);
+      resetForm();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
   useEffect(() => {
     if (editingExpense) {
       setCategoryId(String(editingExpense.categoryId));
@@ -129,6 +157,7 @@ function ExpenseModal({
         new Date(editingExpense.date).toISOString().split("T")[0]
       );
       setNotes(editingExpense.notes || "");
+      setIsRecurring(false); // Can't convert existing to recurring
     } else {
       resetForm();
     }
@@ -141,11 +170,53 @@ function ExpenseModal({
     setPaymentMethod("cash");
     setDate(new Date().toISOString().split("T")[0]);
     setNotes("");
+    setIsRecurring(false);
+    setFrequency("monthly");
+    setExecutionDay("1");
+    setExecutionMonth("1");
+    setGenerateAsPending(false);
+    setEndDate("");
   }
 
   function handleSubmit() {
     if (!categoryId || !description || !amount || !date) {
       toast.error("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    if (isRecurring && !editingExpense) {
+      // Create the current expense + recurring rule
+      createMutation.mutate(
+        {
+          establishmentId,
+          categoryId: Number(categoryId),
+          description,
+          amount: String(parseFloat(amount)),
+          paymentMethod: paymentMethod as "cash" | "pix" | "card" | "transfer",
+          date: new Date(date + "T12:00:00").toISOString(),
+          notes: notes || undefined,
+        },
+        {
+          onSuccess: () => {
+            // Also create the recurring rule
+            createRecurringMutation.mutate({
+              establishmentId,
+              type: "expense",
+              description,
+              categoryId: Number(categoryId),
+              amount: String(parseFloat(amount)),
+              paymentMethod: paymentMethod as "cash" | "pix" | "card" | "transfer",
+              frequency: frequency as "weekly" | "monthly" | "yearly",
+              executionDay: Number(executionDay),
+              executionMonth: frequency === "yearly" ? Number(executionMonth) : undefined,
+              generateAsPending,
+              startDate: new Date(date + "T12:00:00").toISOString(),
+              endDate: endDate ? new Date(endDate + "T23:59:59").toISOString() : undefined,
+              notes: notes || undefined,
+            });
+          },
+        }
+      );
       return;
     }
 
@@ -165,11 +236,11 @@ function ExpenseModal({
     }
   }
 
-  const isLoading = createMutation.isPending || updateMutation.isPending;
+  const isLoading = createMutation.isPending || updateMutation.isPending || createRecurringMutation.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {editingExpense ? "Editar despesa" : "Registrar despesa"}
@@ -258,6 +329,165 @@ function ExpenseModal({
               placeholder="Opcional"
             />
           </div>
+
+          {/* Recurring Toggle */}
+          {!editingExpense && (
+            <div className="pt-2 border-t border-border/50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Repeat className="h-4 w-4 text-muted-foreground" />
+                  <Label htmlFor="recurring-toggle" className="text-sm font-medium cursor-pointer">
+                    Tornar lançamento recorrente
+                  </Label>
+                </div>
+                <Switch
+                  id="recurring-toggle"
+                  checked={isRecurring}
+                  onCheckedChange={setIsRecurring}
+                />
+              </div>
+
+              {/* Recurring Fields - Animated Accordion */}
+              <div
+                ref={recurringRef}
+                className="overflow-hidden transition-all duration-300 ease-in-out"
+                style={{
+                  maxHeight: isRecurring ? "400px" : "0px",
+                  opacity: isRecurring ? 1 : 0,
+                  marginTop: isRecurring ? "16px" : "0px",
+                }}
+              >
+                <div className="space-y-4 p-4 rounded-xl bg-muted/30 border border-border/30">
+                  {/* Frequency */}
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+                      Frequência
+                    </label>
+                    <Select value={frequency} onValueChange={setFrequency}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="monthly">Mensal</SelectItem>
+                        <SelectItem value="weekly">Semanal</SelectItem>
+                        <SelectItem value="yearly">Anual</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Conditional: Day of Month */}
+                  {frequency === "monthly" && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+                        Dia do mês
+                      </label>
+                      <Select value={executionDay} onValueChange={setExecutionDay}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: 31 }, (_, i) => (
+                            <SelectItem key={i + 1} value={String(i + 1)}>
+                              Dia {i + 1}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {/* Conditional: Day of Week */}
+                  {frequency === "weekly" && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+                        Dia da semana
+                      </label>
+                      <Select value={executionDay} onValueChange={setExecutionDay}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {WEEKDAY_LABELS.map((label, i) => (
+                            <SelectItem key={i} value={String(i)}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {/* Conditional: Day + Month for Yearly */}
+                  {frequency === "yearly" && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+                          Dia
+                        </label>
+                        <Select value={executionDay} onValueChange={setExecutionDay}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: 31 }, (_, i) => (
+                              <SelectItem key={i + 1} value={String(i + 1)}>
+                                Dia {i + 1}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+                          Mês
+                        </label>
+                        <Select value={executionMonth} onValueChange={setExecutionMonth}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {MONTH_LABELS.map((label, i) => (
+                              <SelectItem key={i + 1} value={String(i + 1)}>
+                                {label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Generate as pending */}
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="pending-toggle" className="text-sm cursor-pointer">
+                      Gerar como pendente
+                    </Label>
+                    <Switch
+                      id="pending-toggle"
+                      checked={generateAsPending}
+                      onCheckedChange={setGenerateAsPending}
+                    />
+                  </div>
+
+                  {/* End date (optional) */}
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+                      Data final (opcional)
+                    </label>
+                    <Input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      placeholder="Sem data final"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Deixe vazio para recorrência sem fim
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button
@@ -268,7 +498,13 @@ function ExpenseModal({
             Cancelar
           </Button>
           <Button onClick={handleSubmit} disabled={isLoading}>
-            {isLoading ? "Salvando..." : editingExpense ? "Atualizar" : "Salvar despesa"}
+            {isLoading
+              ? "Salvando..."
+              : editingExpense
+              ? "Atualizar"
+              : isRecurring
+              ? "Salvar recorrente"
+              : "Salvar despesa"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -696,6 +932,16 @@ export default function Financas() {
     { enabled: !!establishmentId }
   );
 
+  // Recurring expenses
+  const recurringInput = useMemo(
+    () => ({ establishmentId: establishmentId! }),
+    [establishmentId]
+  );
+  const { data: recurringExpenses } = trpc.finance.listRecurring.useQuery(
+    recurringInput,
+    { enabled: !!establishmentId }
+  );
+
   // Delete mutation
   const deleteMutation = trpc.finance.deleteExpense.useMutation({
     onSuccess: () => {
@@ -705,11 +951,28 @@ export default function Financas() {
     onError: (err) => toast.error(err.message),
   });
 
+  const deleteRecurringMutation = trpc.finance.deleteRecurring.useMutation({
+    onSuccess: () => {
+      toast.success("Recorrência removida!");
+      utils.finance.listRecurring.invalidate();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const toggleRecurringMutation = trpc.finance.updateRecurring.useMutation({
+    onSuccess: () => {
+      toast.success("Recorrência atualizada!");
+      utils.finance.listRecurring.invalidate();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
   function invalidateAll() {
     utils.finance.summary.invalidate();
     utils.finance.chart.invalidate();
     utils.finance.listExpenses.invalidate();
     utils.finance.expensesByCategory.invalidate();
+    utils.finance.listRecurring.invalidate();
   }
 
   const goalTarget = goal ? Number(goal.targetProfit) : null;
@@ -996,6 +1259,97 @@ export default function Financas() {
           </div>
         </SectionCard>
       </div>
+
+      {/* Recurring Expenses */}
+      {recurringExpenses && recurringExpenses.length > 0 && (
+        <SectionCard
+          title="Despesas recorrentes"
+          className="mb-6"
+          description="Lançamentos gerados automaticamente"
+        >
+          <div className="space-y-3">
+            {recurringExpenses.map((rec: any) => {
+              const freqLabel =
+                rec.frequency === "monthly"
+                  ? `Mensal (dia ${rec.executionDay})`
+                  : rec.frequency === "weekly"
+                  ? `Semanal (${WEEKDAY_LABELS[rec.executionDay] || rec.executionDay})`
+                  : `Anual (dia ${rec.executionDay}/${MONTH_LABELS[(rec.executionMonth || 1) - 1]})`;
+              return (
+                <div
+                  key={rec.id}
+                  className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
+                    rec.active
+                      ? "bg-muted/30 border-border/30"
+                      : "bg-muted/10 border-border/20 opacity-60"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`p-2 rounded-lg ${
+                      rec.active ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"
+                    }`}>
+                      <Repeat className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{rec.description}</p>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <span>{freqLabel}</span>
+                        <span>·</span>
+                        <span className="font-semibold text-red-600 dark:text-red-400">
+                          {formatCurrency(Number(rec.amount))}
+                        </span>
+                        {rec.generateAsPending && (
+                          <>
+                            <span>·</span>
+                            <span className="text-amber-600">Pendente</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      title={rec.active ? "Pausar" : "Ativar"}
+                      onClick={() => {
+                        toggleRecurringMutation.mutate({
+                          id: rec.id,
+                          establishmentId: establishmentId!,
+                          active: !rec.active,
+                        });
+                      }}
+                    >
+                      {rec.active ? (
+                        <Pause className="h-3.5 w-3.5" />
+                      ) : (
+                        <Play className="h-3.5 w-3.5" />
+                      )}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      onClick={() => {
+                        if (confirm("Excluir esta recorrência? Os lançamentos já gerados serão mantidos.")) {
+                          deleteRecurringMutation.mutate({
+                            id: rec.id,
+                            establishmentId: establishmentId!,
+                            deleteFutureExpenses: false,
+                          });
+                        }
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </SectionCard>
+      )}
 
       {/* Expenses Table */}
       <SectionCard

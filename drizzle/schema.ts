@@ -919,3 +919,28 @@ export const monthlyGoals = mysqlTable("monthlyGoals", {
 
 export type MonthlyGoal = typeof monthlyGoals.$inferSelect;
 export type InsertMonthlyGoal = typeof monthlyGoals.$inferInsert;
+
+// Despesas Recorrentes
+export const recurringExpenses = mysqlTable("recurringExpenses", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  type: mysqlEnum("type", ["expense", "revenue"]).default("expense").notNull(),
+  description: varchar("description", { length: 500 }).notNull(),
+  categoryId: int("categoryId").notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  paymentMethod: mysqlEnum("paymentMethod", ["cash", "pix", "card", "transfer"]).default("cash").notNull(),
+  frequency: mysqlEnum("frequency", ["weekly", "monthly", "yearly"]).default("monthly").notNull(),
+  executionDay: int("executionDay").notNull(), // dia do mês (1-31) ou dia da semana (0-6, 0=domingo)
+  executionMonth: int("executionMonth"), // mês (1-12), apenas para frequência anual
+  generateAsPending: boolean("generateAsPending").default(false).notNull(),
+  startDate: timestamp("startDate").notNull(),
+  endDate: timestamp("endDate"), // null = sem fim
+  active: boolean("active").default(true).notNull(),
+  lastGeneratedAt: timestamp("lastGeneratedAt"), // última vez que gerou lançamento
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type RecurringExpense = typeof recurringExpenses.$inferSelect;
+export type InsertRecurringExpense = typeof recurringExpenses.$inferInsert;
