@@ -519,6 +519,7 @@ export const whatsappConfig = mysqlTable("whatsappConfig", {
   notifyOnReady: boolean("notifyOnReady").default(true).notNull(), // Notificar quando pedido está pronto
   notifyOnCompleted: boolean("notifyOnCompleted").default(true).notNull(), // Notificar quando pedido é finalizado
   notifyOnCancelled: boolean("notifyOnCancelled").default(true).notNull(), // Notificar quando pedido é cancelado
+  notifyOnOutForDelivery: boolean("notifyOnOutForDelivery").default(true).notNull(), // Notificar quando pedido saiu para entrega
   // Templates de mensagem personalizados
   templateNewOrder: text("templateNewOrder"), // Template para novo pedido
   templatePreparing: text("templatePreparing"), // Template para preparando
@@ -526,6 +527,7 @@ export const whatsappConfig = mysqlTable("whatsappConfig", {
   templateReadyPickup: text("templateReadyPickup"), // Template para pronto (retirada/consumo no local)
   templateCompleted: text("templateCompleted"), // Template para finalizado
   templateCancelled: text("templateCancelled"), // Template para cancelado
+  templateOutForDelivery: text("templateOutForDelivery"), // Template para saiu para entrega
   // Reserva de mesa
   notifyOnReservation: boolean("notifyOnReservation").default(true).notNull(), // Enviar confirmação de reserva por WhatsApp
   templateReservation: text("templateReservation"), // Template para reserva de mesa

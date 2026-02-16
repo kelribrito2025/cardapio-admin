@@ -441,6 +441,7 @@ export function generateStatusMessage(
     new: `Olá {{customerName}}! 🎉 {{greeting}}!\n\nSeu pedido {{orderNumber}} foi recebido com sucesso!\n\nAguarde, em breve começaremos a preparar.\n\n{{establishmentName}}`,
     preparing: `Olá {{customerName}}! 👨‍🍳\n\nSeu pedido {{orderNumber}} está sendo preparado!\n\nEm breve estará pronto.\n\n{{establishmentName}}`,
     ready: `Olá {{customerName}}! ✅\n\nSeu pedido {{orderNumber}} está pronto!\n\nVocê já pode retirar ou aguardar a entrega.\n\n{{establishmentName}}`,
+    out_for_delivery: `Olá {{customerName}}! 🛵\n\nSeu pedido {{orderNumber}} saiu para entrega!\n\nEm breve chegará até você. Aguarde! 😊\n\n{{establishmentName}}`,
     completed: `Seu pedido {{orderNumber}} foi finalizado!\n\n❤️ Obrigado pela preferência!\n\n*{{establishmentName}}*`,
     cancelled: `Olá {{customerName}}! ❌\n\nInfelizmente seu pedido {{orderNumber}} foi cancelado.\n\nMotivo: {{cancellationReason}}\n\n{{establishmentName}}`,
   };

@@ -1880,6 +1880,7 @@ export const appRouter = router({
               const shouldNotify = 
                 (input.status === 'preparing' && config.notifyOnPreparing) ||
                 (input.status === 'ready' && config.notifyOnReady) ||
+                (input.status === 'out_for_delivery' && (config.notifyOnOutForDelivery !== false)) ||
                 (input.status === 'completed' && config.notifyOnCompleted) ||
                 (input.status === 'cancelled' && config.notifyOnCancelled);
               
@@ -1902,6 +1903,7 @@ export const appRouter = router({
                                   ? (config.templateReadyPickup || config.templateReady) 
                                   : config.templateReady
                               ) :
+                              input.status === 'out_for_delivery' ? (config.templateOutForDelivery || null) :
                               input.status === 'completed' ? config.templateCompleted :
                               input.status === 'cancelled' ? config.templateCancelled : null,
                     deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
@@ -2035,9 +2037,49 @@ export const appRouter = router({
         // If no specific driver provided, check logic
         if (!driverId) {
           if (activeDrivers.length === 0) {
-            // No active drivers: just mark as ready, don't assign
-            await db.updateOrderStatus(input.orderId, 'ready');
-            return { action: 'marked_ready', driverId: null, whatsappSent: false };
+            // No active drivers: mark as out_for_delivery and send WhatsApp notification to customer
+            await db.updateOrderStatus(input.orderId, 'out_for_delivery');
+            
+            // Send WhatsApp notification to customer about out_for_delivery
+            let customerNotified = false;
+            try {
+              if (order.customerPhone) {
+                const config = await db.getWhatsappConfig(establishment.id);
+                if (config && config.status === 'connected' && config.instanceToken && (config.notifyOnOutForDelivery !== false)) {
+                  const { sendOrderStatusNotification } = await import('./_core/uazapi');
+                  const est = await db.getEstablishmentById(order.establishmentId);
+                  const orderItems = await db.getOrderItems(order.id);
+                  await sendOrderStatusNotification(
+                    config.instanceToken,
+                    order.customerPhone,
+                    'out_for_delivery',
+                    {
+                      customerName: order.customerName || 'Cliente',
+                      orderNumber: order.orderNumber,
+                      establishmentName: est?.name || 'Restaurante',
+                      template: config.templateOutForDelivery || null,
+                      deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
+                      cancellationReason: null,
+                      orderItems: orderItems.map(item => ({
+                        productName: item.productName,
+                        quantity: item.quantity ?? 1,
+                        unitPrice: item.unitPrice,
+                        totalPrice: item.totalPrice,
+                        complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
+                        notes: item.notes,
+                      })),
+                      orderTotal: order.total,
+                      paymentMethod: order.paymentMethod,
+                    }
+                  );
+                  customerNotified = true;
+                }
+              }
+            } catch (error) {
+              console.error('[WhatsApp] Erro ao notificar cliente sobre saiu para entrega:', error);
+            }
+            
+            return { action: 'marked_ready', driverId: null, whatsappSent: customerNotified };
           } else if (activeDrivers.length === 1) {
             // Only 1 active driver: auto-assign
             driverId = activeDrivers[0].id;
