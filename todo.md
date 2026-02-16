@@ -6747,3 +6747,4 @@
 - [x] Remover texto "Relatórios de engajamento" da seção Programa de Fidelidade na landing page
 - [x] Remover texto "Funciona em qualquer dispositivo" da seção Cardápio Digital na landing page
 - [x] Mover seção "Explore cases reais" para baixo da seção "Planos e Preços" na landing page
+- [x] Redesenhar seção FAQ com layout 2 colunas: título/descrição/CTA à esquerda, perguntas accordion à direita

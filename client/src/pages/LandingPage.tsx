@@ -1687,75 +1687,73 @@ function FAQSection() {
 
   return (
     <section ref={sectionRef} id="faq" className="py-20 sm:py-28 bg-gray-50">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6">
-        {/* Header */}
-        <div className={`text-center mb-14 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-1.5 mb-5 shadow-sm">
-            <HelpCircle className="w-4 h-4 text-red-500" />
-            <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Perguntas Frequentes</span>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-[1fr_1.4fr] gap-12 lg:gap-16 items-start">
+          {/* Coluna esquerda — Título, descrição e CTA */}
+          <div className={`transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-x-8"} lg:sticky lg:top-28`}>
+            <p className="text-sm font-medium text-gray-400 mb-3">Ficou com dúvidas?</p>
+            <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-gray-900 leading-tight mb-5">
+              Perguntas <span className="text-red-500">frequentes</span>
+            </h2>
+            <p className="text-gray-500 text-base sm:text-lg leading-relaxed mb-8">
+              Tudo o que você precisa saber antes de começar a usar o Mindi. Se não encontrar sua resposta, fale com a gente.
+            </p>
+            <a
+              href="https://wa.me/5500000000000"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold px-7 py-3.5 rounded-xl shadow-lg shadow-red-500/25 hover:shadow-red-500/40 hover:scale-[1.02] transition-all duration-300"
+            >
+              Fale com um consultor
+              <ArrowRight className="w-5 h-5" />
+            </a>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">
-            Tire suas <span className="text-red-500">dúvidas</span>
-          </h2>
-          <p className="text-gray-500 text-base sm:text-lg max-w-xl mx-auto">
-            Tudo o que você precisa saber antes de começar a usar o Mindi.
-          </p>
-        </div>
 
-        {/* Accordion */}
-        <div className="space-y-3">
-          {FAQ_DATA.map((faq, index) => {
-            const isOpen = openIndex === index;
-            return (
-              <div
-                key={index}
-                className={`transition-all duration-500 ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-                } bg-white rounded-xl border ${
-                  isOpen ? "border-red-200 shadow-md shadow-red-500/5" : "border-gray-200 shadow-sm"
-                }`}
-                style={{ transitionDelay: isVisible ? `${200 + index * 80}ms` : "0ms" }}
-              >
-                <button
-                  onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className="w-full flex items-center justify-between px-5 sm:px-6 py-4 sm:py-5 text-left"
-                >
-                  <span className={`text-sm sm:text-base font-semibold pr-4 transition-colors ${
-                    isOpen ? "text-red-600" : "text-gray-800"
-                  }`}>
-                    {faq.question}
-                  </span>
-                  <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    isOpen ? "bg-red-50 rotate-0" : "bg-gray-100 rotate-180"
-                  }`}>
-                    <ChevronUp className={`w-4 h-4 transition-colors ${isOpen ? "text-red-500" : "text-gray-400"}`} />
-                  </div>
-                </button>
+          {/* Coluna direita — Accordion */}
+          <div className="space-y-3">
+            {FAQ_DATA.map((faq, index) => {
+              const isOpen = openIndex === index;
+              return (
                 <div
-                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    isOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
+                  key={index}
+                  className={`transition-all duration-500 ${
+                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                  } bg-white rounded-xl border ${
+                    isOpen ? "border-red-200 shadow-md shadow-red-500/5" : "border-gray-200 shadow-sm"
                   }`}
+                  style={{ transitionDelay: isVisible ? `${200 + index * 80}ms` : "0ms" }}
                 >
-                  <div className="px-5 sm:px-6 pb-5 pt-0">
-                    <div className="h-px bg-gray-100 mb-4" />
-                    <p className="text-sm sm:text-base text-gray-500 leading-relaxed">
-                      {faq.answer}
-                    </p>
+                  <button
+                    onClick={() => setOpenIndex(isOpen ? null : index)}
+                    className="w-full flex items-center justify-between px-5 sm:px-6 py-4 sm:py-5 text-left"
+                  >
+                    <span className={`text-sm sm:text-base font-semibold pr-4 transition-colors ${
+                      isOpen ? "text-red-600" : "text-gray-800"
+                    }`}>
+                      {faq.question}
+                    </span>
+                    <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      isOpen ? "bg-red-50 rotate-0" : "bg-gray-100 rotate-180"
+                    }`}>
+                      <ChevronUp className={`w-4 h-4 transition-colors ${isOpen ? "text-red-500" : "text-gray-400"}`} />
+                    </div>
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                      isOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <div className="px-5 sm:px-6 pb-5 pt-0">
+                      <div className="h-px bg-gray-100 mb-4" />
+                      <p className="text-sm sm:text-base text-gray-500 leading-relaxed">
+                        {faq.answer}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Bottom CTA */}
-        <div className={`text-center mt-10 transition-all duration-700 delay-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <p className="text-sm text-gray-400">
-            Ainda tem dúvidas?{" "}
-            <a href="https://wa.me/5500000000000" target="_blank" rel="noopener noreferrer" className="text-red-500 font-medium hover:underline">
-              Fale com nosso suporte
-            </a>
-          </p>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
