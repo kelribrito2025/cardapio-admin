@@ -6848,3 +6848,6 @@
 - [x] Lógica: ao excluir recorrência, perguntar (só futuros / futuros + cancelar)
 - [x] Lógica: não permitir duplicidade no mesmo dia
 - [x] Testes vitest para procedures de recorrência
+
+## Ajuste Gráfico Evolução Financeira
+- [x] Alterar cor das barras de despesas no gráfico para vermelho

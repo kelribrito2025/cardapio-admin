@@ -1165,7 +1165,7 @@ export default function Financas() {
                 <Bar
                   dataKey="expenses"
                   name="Despesas"
-                  fill="#f59e0b"
+                  fill="#ef4444"
                   radius={[4, 4, 0, 0]}
                   barSize={24}
                   opacity={0.85}
