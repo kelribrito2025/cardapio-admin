@@ -740,7 +740,7 @@ const CLIENTS_DATA_ROW1 = [
 
 function ClientCard({ client }: { client: typeof CLIENTS_DATA_ROW1[0] }) {
   return (
-    <div className="flex-shrink-0 w-[280px] sm:w-[300px] group transition-all duration-500 ease-out hover:opacity-100 opacity-80 hover:-translate-y-1">
+    <div className="flex-shrink-0 w-[280px] sm:w-[300px] group transition-all duration-500 ease-out">
       {/* Cover Image */}
       <div className="relative h-44 rounded-2xl overflow-hidden mb-4 shadow-md group-hover:shadow-xl transition-all duration-500">
         <img
@@ -749,7 +749,7 @@ function ClientCard({ client }: { client: typeof CLIENTS_DATA_ROW1[0] }) {
            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
            loading="eager"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent transition-opacity duration-500 group-hover:from-black/10" />
+        
       </div>
 
       {/* Info */}
