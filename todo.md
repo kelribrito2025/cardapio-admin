@@ -6788,3 +6788,6 @@
 
 ## Seção Cupons + Campanhas SMS na Landing Page
 - [x] Criar seção de Cupons + Campanhas SMS após seção de Integração WhatsApp
+
+## Adicionar Docerias ao Marquee de Segmentos
+- [x] Incluir "Docerias" na lista de segmentos do marquee da landing page

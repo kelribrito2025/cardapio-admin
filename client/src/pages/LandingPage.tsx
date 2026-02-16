@@ -870,6 +870,7 @@ const SEGMENTS_DATA = [
   { emoji: "🍺", name: "Bar e adega", link: "#" },
   { emoji: "☕", name: "Cafeteria", link: "#" },
   { emoji: "🍣", name: "Japonesa", link: "#" },
+  { emoji: "🍰", name: "Doceria", link: "#" },
 ];
 
 function SegmentsSection() {
