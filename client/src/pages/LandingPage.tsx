@@ -61,8 +61,10 @@ const LOYALTY_SLIDE_4 = "https://files.manuscdn.com/user_upload_by_module/sessio
 const LOYALTY_SLIDES = [LOYALTY_SLIDE_1, LOYALTY_SLIDE_2, LOYALTY_SLIDE_3, LOYALTY_SLIDE_4];
 
 // Imagens da integração WhatsApp
-const WHATSAPP_SLIDE_1 = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/LwflQmJBzdzKfckb.png";
-const WHATSAPP_SLIDES = [WHATSAPP_SLIDE_1];
+const WHATSAPP_SLIDE_1 = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/NPTBypEdTUYmjzws.png";
+const WHATSAPP_SLIDE_2 = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/AHwBsLfNlSqBdYXU.png";
+const WHATSAPP_SLIDE_3 = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/frkfNNUIzkDfEZZC.png";
+const WHATSAPP_SLIDES = [WHATSAPP_SLIDE_1, WHATSAPP_SLIDE_2, WHATSAPP_SLIDE_3];
 
 // ============ NAVBAR ============
 function LandingNavbar() {

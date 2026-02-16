@@ -6775,3 +6775,6 @@
 
 ## Seção Versátil para Diversos Segmentos
 - [x] Adicionar seção "Versátil para diversos segmentos" abaixo de "Explore Cases Reais" com identidade visual Mindi
+
+## Fotos Reais WhatsApp no Carrossel
+- [x] Adicionar 3 fotos reais do WhatsApp como slides no mockup de celular da seção Integração WhatsApp
