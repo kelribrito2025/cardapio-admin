@@ -6687,3 +6687,8 @@
 ## Substituir Imagem do Mockup de Pedidos na Landing
 - [x] Upload da nova screenshot da página de Pedidos para S3
 - [x] Substituir URL da imagem no mockup da seção Gestão de Pedidos
+
+## Substituir Screenshot do Dashboard na Hero por Versão com Dados
+- [x] Criar página estática do dashboard com dados realistas preenchidos
+- [x] Capturar screenshot da página com dados
+- [x] Upload para S3 e substituir DASHBOARD_MOCKUP na LandingPage
