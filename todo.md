@@ -6698,3 +6698,6 @@
 
 ## Remover container decorativo atrás da imagem de Pedidos
 - [x] Remover sombra/gradiente decorativo atrás do mockup de pedidos
+
+## Remover estatísticas da seção Explore Cases Reais
+- [x] Remover barra de números (500+, 150k+, 27, 4.9) da seção de clientes

@@ -966,28 +966,7 @@ function ClientsShowcaseSection() {
         </div>
       </div>
 
-      {/* Stats bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          className={`mt-16 grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 transition-all duration-700 delay-300 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          {[
-            { value: "500+", label: "Restaurantes ativos" },
-            { value: "150k+", label: "Pedidos processados" },
-            { value: "27", label: "Estados atendidos" },
-            { value: "4.9", label: "Avaliação média" },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
-                {stat.value}
-              </div>
-              <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
+
     </section>
   );
 }
