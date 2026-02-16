@@ -1061,7 +1061,7 @@ export default function Financas() {
           value={formatCurrency(summary?.expensesTotal ?? 0)}
           icon={TrendingDown}
           loading={summaryLoading}
-          variant="amber"
+          variant="red"
           trend={
             summary && summary.expensesChange !== undefined
               ? {
@@ -1082,9 +1082,7 @@ export default function Financas() {
           value={formatCurrency(summary?.profit ?? 0)}
           icon={TrendingUp}
           loading={summaryLoading}
-          variant={
-            (summary?.profit ?? 0) >= 0 ? "emerald" : "amber"
-          }
+          variant="blue"
           trend={
             summary && summary.profitChange !== undefined
               ? {
@@ -1105,7 +1103,7 @@ export default function Financas() {
           value={formatCurrency(summary?.avgTicket ?? 0)}
           icon={Receipt}
           loading={summaryLoading}
-          variant="blue"
+          variant="amber"
           trend={
             summary && summary.avgTicketChange !== undefined
               ? {

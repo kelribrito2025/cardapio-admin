@@ -15,7 +15,7 @@ interface StatCardProps {
   };
   loading?: boolean;
   className?: string;
-  variant?: "blue" | "amber" | "emerald" | "gray" | "primary";
+  variant?: "blue" | "amber" | "emerald" | "gray" | "primary" | "red";
   iconAction?: {
     label: string;
     onClick: () => void;
@@ -52,6 +52,12 @@ const statCardVariants = {
     iconBg: "bg-primary/10",
     iconColor: "text-primary",
     dotColor: "bg-primary",
+  },
+  red: {
+    borderColor: "border-t-red-500",
+    iconBg: "bg-red-100 dark:bg-red-500/15",
+    iconColor: "text-red-600 dark:text-red-400",
+    dotColor: "bg-red-500",
   },
 };
 

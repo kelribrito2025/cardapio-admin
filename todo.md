@@ -6851,3 +6851,8 @@
 
 ## Ajuste Gráfico Evolução Financeira
 - [x] Alterar cor das barras de despesas no gráfico para vermelho
+
+## Ajuste Cores Cards KPI Finanças
+- [x] Card Despesas: alterar cor para vermelho
+- [x] Card Lucro Líquido: alterar cor para azul
+- [x] Card Ticket Médio: alterar cor para dourado (igual card itens em falta da Dashboard)
