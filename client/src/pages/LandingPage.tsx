@@ -1222,15 +1222,12 @@ function OrdersMockupSection() {
           >
             {/* Frame do mockup */}
             <div className="relative">
-              {/* Sombra decorativa */}
-              <div className="absolute -inset-4 bg-gradient-to-br from-red-500/8 via-orange-500/4 to-transparent rounded-3xl blur-2xl" />
-
               {/* Container do mockup — a screenshot já possui frame próprio */}
               <div className="relative">
                 <img
                   src={PEDIDOS_MOCKUP}
                   alt="Tela de gestão de pedidos do Mindi — mockup ilustrativo"
-                  className="w-full h-auto rounded-2xl shadow-2xl shadow-gray-900/10"
+                  className="w-full h-auto"
                   loading="lazy"
                   draggable={false}
                 />

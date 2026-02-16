@@ -6695,3 +6695,6 @@
 
 ## Fix Imagem Mockup Pedidos
 - [x] Ajustar imagem da screenshot de Pedidos para preencher corretamente o container do browser frame
+
+## Remover container decorativo atrás da imagem de Pedidos
+- [x] Remover sombra/gradiente decorativo atrás do mockup de pedidos
