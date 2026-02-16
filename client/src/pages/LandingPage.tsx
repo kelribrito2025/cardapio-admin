@@ -44,7 +44,7 @@ import {
 // CDN URLs dos mockups do dashboard
 const DASHBOARD_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/DWjiyUgKrQTrHTOQ.png";
 const PEDIDOS_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/RDuYUqKBFnalcxkk.png";
-const CATALOG_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/PaotwhovICNkDtqN.png";
+const CATALOG_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/SqoFPOevifuTwhEd.png";
 
 // ============ NAVBAR ============
 function LandingNavbar() {
@@ -1020,39 +1020,37 @@ function CatalogShowcaseSection() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Coluna esquerda — Tablet Mockup */}
+          {/* Coluna esquerda — Phone Mockup */}
           <div
             className={`relative transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
             }`}
           >
-            {/* Moldura do Tablet */}
-            <div className="relative mx-auto max-w-[540px]">
+            {/* Moldura do Celular */}
+            <div className="relative mx-auto max-w-[320px]">
               {/* Sombra externa */}
-              <div className="absolute -inset-4 bg-gradient-to-br from-red-500/10 via-orange-500/5 to-transparent rounded-[2.5rem] blur-2xl" />
+              <div className="absolute -inset-6 bg-gradient-to-br from-red-500/10 via-orange-500/5 to-transparent rounded-[3rem] blur-2xl" />
               
-              {/* Corpo do tablet */}
-              <div className="relative bg-gray-900 rounded-[2rem] p-3 shadow-2xl shadow-gray-900/20">
-                {/* Barra superior do tablet */}
-                <div className="flex items-center justify-center mb-2">
-                  <div className="w-2 h-2 rounded-full bg-gray-700" />
+              {/* Corpo do celular */}
+              <div className="relative bg-gray-900 rounded-[2.5rem] p-2.5 shadow-2xl shadow-gray-900/25">
+                {/* Notch / Dynamic Island */}
+                <div className="flex items-center justify-center mt-1 mb-1.5">
+                  <div className="w-20 h-5 rounded-full bg-gray-900 relative z-10" />
                 </div>
                 
-                {/* Tela do tablet */}
-                <div className="relative rounded-xl overflow-hidden bg-white">
+                {/* Tela do celular */}
+                <div className="relative rounded-[1.75rem] overflow-hidden bg-white">
                   <img
                     src={CATALOG_MOCKUP}
-                    alt="Cardápio digital do Mindi"
+                    alt="Cardápio digital do Mindi — Sushi Haruno"
                     className="w-full h-auto"
                     loading="lazy"
                   />
-                  {/* Overlay sutil no topo */}
-                  <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white/40 to-transparent" />
                 </div>
                 
-                {/* Barra inferior do tablet (home button) */}
-                <div className="flex items-center justify-center mt-2">
-                  <div className="w-10 h-1 rounded-full bg-gray-700" />
+                {/* Barra inferior do celular (home indicator) */}
+                <div className="flex items-center justify-center mt-2 mb-1">
+                  <div className="w-28 h-1 rounded-full bg-gray-700" />
                 </div>
               </div>
 

@@ -6701,3 +6701,8 @@
 
 ## Remover estatísticas da seção Explore Cases Reais
 - [x] Remover barra de números (500+, 150k+, 27, 4.9) da seção de clientes
+
+## Substituir Mockup da Seção Cardápio Digital
+- [x] Upload da screenshot do cardápio Sushi Haruno para S3
+- [x] Criar moldura de celular (phone frame) estilizada
+- [x] Substituir imagem na seção Cardápio Digital com phone frame
