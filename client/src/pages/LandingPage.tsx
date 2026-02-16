@@ -1496,8 +1496,26 @@ function OrdersMockupSection() {
           >
             {/* Frame do mockup */}
             <div className="relative">
-              {/* Container do mockup — a screenshot já possui frame próprio */}
-              <div className="relative">
+              {/* Container do mockup com frame de browser igual ao Hero */}
+              <div
+                className="relative z-10 rounded-2xl overflow-hidden shadow-2xl shadow-gray-900/10 border border-gray-200/50"
+                style={{
+                  animation: isVisible ? "hero-float 6s ease-in-out infinite" : "none",
+                }}
+              >
+                {/* Browser chrome */}
+                <div className="bg-gray-100 border-b border-gray-200 px-4 py-2.5 flex items-center gap-2">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-400" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                    <div className="w-3 h-3 rounded-full bg-green-400" />
+                  </div>
+                  <div className="flex-1 flex justify-center">
+                    <div className="bg-white rounded-lg px-4 py-1 text-[11px] text-gray-400 font-medium border border-gray-200 w-64 text-center">
+                      app.mindi.com.br
+                    </div>
+                  </div>
+                </div>
                 <img
                   src={PEDIDOS_MOCKUP}
                   alt="Tela de gestão de pedidos do Mindi — mockup ilustrativo"

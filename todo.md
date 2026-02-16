@@ -6754,3 +6754,4 @@
 - [x] Substituir mockup de chat simulado da seção WhatsApp pelo mesmo estilo de mockup com carrossel de imagens da seção Programa de Fidelidade
 - [x] Bug: Notificação WhatsApp "saiu para entrega" não é enviada quando não há entregador cadastrado - deve enviar independente de ter entregador ou não
 - [x] Adicionar foto real do WhatsApp no mockup de celular da seção Integração WhatsApp
+- [x] Ajustar tamanho do mockup da seção "Gestão de Pedidos" para ficar igual ao da seção "Sistema completo de gestão"
