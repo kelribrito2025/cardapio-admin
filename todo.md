@@ -6751,3 +6751,4 @@
 - [x] Ajustar background do footer para continuar com o mesmo degradê da seção "Comece agora" (CTAFinalSection)
 - [x] Testar responsividade da seção FAQ e demais seções alteradas em dispositivos móveis
 - [x] Criar nova seção "Integração com WhatsApp" na landing page: layout invertido (mockup esquerda, texto direita), conteúdo sobre notificações automáticas de status de pedidos via WhatsApp
+- [x] Substituir mockup de chat simulado da seção WhatsApp pelo mesmo estilo de mockup com carrossel de imagens da seção Programa de Fidelidade

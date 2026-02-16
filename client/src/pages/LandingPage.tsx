@@ -60,6 +60,9 @@ const LOYALTY_SLIDE_3 = "https://files.manuscdn.com/user_upload_by_module/sessio
 const LOYALTY_SLIDE_4 = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/UjKoclpdSxjbFGcs.png";
 const LOYALTY_SLIDES = [LOYALTY_SLIDE_1, LOYALTY_SLIDE_2, LOYALTY_SLIDE_3, LOYALTY_SLIDE_4];
 
+// Imagens da integração WhatsApp (placeholder: reutiliza imagens de fidelidade até ter screenshots reais)
+const WHATSAPP_SLIDES = [LOYALTY_SLIDE_1, LOYALTY_SLIDE_2, LOYALTY_SLIDE_3, LOYALTY_SLIDE_4];
+
 // ============ NAVBAR ============
 function LandingNavbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -1248,6 +1251,7 @@ function LoyaltyProgramSection() {
 function WhatsAppIntegrationSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [currentWaSlide, setCurrentWaSlide] = useState(0);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -1262,6 +1266,15 @@ function WhatsAppIntegrationSection() {
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
+
+  // Auto-rotate carousel
+  useEffect(() => {
+    if (!isVisible) return;
+    const timer = setInterval(() => {
+      setCurrentWaSlide((prev) => (prev + 1) % WHATSAPP_SLIDES.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, [isVisible]);
 
   const benefits = [
     {
@@ -1281,14 +1294,6 @@ function WhatsAppIntegrationSection() {
     },
   ];
 
-  // WhatsApp notification cards data
-  const notifications = [
-    { emoji: "✅", title: "Pedido confirmado!", desc: "Seu pedido #P42 foi aceito", delay: 500 },
-    { emoji: "👨‍🍳", title: "Em preparo", desc: "Estamos preparando seu pedido", delay: 700 },
-    { emoji: "🛵", title: "Saiu para entrega!", desc: "Seu pedido está a caminho", delay: 900 },
-    { emoji: "📦", title: "Pedido entregue!", desc: "Obrigado pela preferência", delay: 1100 },
-  ];
-
   return (
     <section
       ref={sectionRef}
@@ -1296,7 +1301,7 @@ function WhatsAppIntegrationSection() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Coluna esquerda — Phone Mockup com WhatsApp */}
+          {/* Coluna esquerda — Phone Mockup com carrossel */}
           <div
             className={`relative transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
@@ -1309,58 +1314,35 @@ function WhatsAppIntegrationSection() {
               
               {/* Corpo do celular */}
               <div className="relative bg-gray-900 rounded-[2.5rem] p-3 shadow-2xl shadow-gray-900/25">
-                {/* Tela do celular — WhatsApp Chat */}
-                <div className="relative rounded-[2rem] overflow-hidden bg-[#ECE5DD]">
-                  {/* WhatsApp Header */}
-                  <div className="bg-[#075E54] px-4 py-3 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">M</span>
-                    </div>
-                    <div>
-                      <p className="text-white text-sm font-semibold">Mindi Pedidos</p>
-                      <p className="text-green-200 text-[10px]">online</p>
-                    </div>
-                  </div>
-                  
-                  {/* Chat Messages */}
-                  <div className="px-3 py-4 space-y-2.5 min-h-[380px]">
-                    {notifications.map((notif, i) => (
-                      <div
+                {/* Tela do celular — Carrossel */}
+                <div className="relative rounded-[2rem] overflow-hidden bg-white">
+                  <div className="relative w-full">
+                    {WHATSAPP_SLIDES.map((src, i) => (
+                      <img
                         key={i}
-                        className={`bg-white rounded-lg rounded-tl-none px-3 py-2 shadow-sm max-w-[85%] transition-all duration-500 ${
-                          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                        src={src}
+                        alt={`Integração WhatsApp Mindi — tela ${i + 1}`}
+                        className={`w-full h-auto transition-opacity duration-700 ease-in-out ${
+                          i === currentWaSlide ? "opacity-100 relative" : "opacity-0 absolute inset-0"
                         }`}
-                        style={{ transitionDelay: `${notif.delay}ms` }}
-                      >
-                        <p className="text-sm font-semibold text-gray-900">{notif.emoji} {notif.title}</p>
-                        <p className="text-xs text-gray-600 mt-0.5">{notif.desc}</p>
-                        <p className="text-[9px] text-gray-400 text-right mt-1">{`${12 + i}:${String(i * 15).padStart(2, '0')}`}</p>
-                      </div>
+                        loading="lazy"
+                      />
                     ))}
-                    
-                    {/* Typing indicator */}
-                    <div
-                      className={`bg-white rounded-lg rounded-tl-none px-4 py-2.5 shadow-sm w-16 transition-all duration-500 ${
-                        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                      }`}
-                      style={{ transitionDelay: "1300ms" }}
-                    >
-                      <div className="flex gap-1">
-                        <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "0ms" }} />
-                        <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "150ms" }} />
-                        <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "300ms" }} />
-                      </div>
-                    </div>
                   </div>
-                  
-                  {/* Input bar */}
-                  <div className="bg-[#F0F0F0] px-3 py-2 flex items-center gap-2">
-                    <div className="flex-1 bg-white rounded-full px-3 py-1.5">
-                      <p className="text-[10px] text-gray-400">Mensagem</p>
-                    </div>
-                    <div className="w-7 h-7 rounded-full bg-[#075E54] flex items-center justify-center">
-                      <Send className="w-3.5 h-3.5 text-white" />
-                    </div>
+                  {/* Indicadores (dots) */}
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                    {WHATSAPP_SLIDES.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentWaSlide(i)}
+                        className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                          i === currentWaSlide
+                            ? "bg-green-500 w-4"
+                            : "bg-gray-300 hover:bg-gray-400"
+                        }`}
+                        aria-label={`Slide ${i + 1}`}
+                      />
+                    ))}
                   </div>
                 </div>
                 
