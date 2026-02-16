@@ -1,0 +1,17 @@
+{
+  "query": "SELECT u.id as userId, u.name, u.email, e.id as estId, e.name as estName FROM users u LEFT JOIN establishments e ON e.userId = u.id WHERE u.email = 'xkelrix@gmail.com';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT u.id as userId, u.name, u.email, e.id as estId, e.name as estName FROM users u LEFT JOIN establishments e ON e.userId = u.id WHERE u.email = 'xkelrix@gmail.com';",
+  "rows": [
+    {
+      "userId": "1",
+      "name": "Kelri Brito",
+      "email": "xkelrix@gmail.com",
+      "estId": "NULL",
+      "estName": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "userId\tname\temail\testId\testName\n1\tKelri Brito\txkelrix@gmail.com\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 66
+}
