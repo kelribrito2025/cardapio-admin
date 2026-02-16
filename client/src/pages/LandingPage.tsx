@@ -175,12 +175,18 @@ function LandingNavbar() {
 }
 
 // ============ HERO SECTION ============
-const TYPEWRITER_WORDS = [
-  "pedidos",
-  "entregas",
-  "estoque",
-  "cardápio",
-  "finanças",
+// Hero mockup screenshots for each typewriter word
+const HERO_ESTOQUE_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/yrSJqYNpTciTuJho.png";
+const HERO_PEDIDOS_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/UHsRhgBVZcMbcVIb.png";
+const HERO_CARDAPIO_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/dZxIOVbtuHmMaITC.png";
+const HERO_ENTREGADORES_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/yWbJGHMCBVxlUcjA.png";
+
+const TYPEWRITER_ITEMS = [
+  { word: "pedidos", image: HERO_PEDIDOS_MOCKUP },
+  { word: "entregas", image: HERO_ENTREGADORES_MOCKUP },
+  { word: "estoque", image: HERO_ESTOQUE_MOCKUP },
+  { word: "cardápio", image: HERO_CARDAPIO_MOCKUP },
+  { word: "finanças", image: DASHBOARD_MOCKUP },
 ];
 
 function HeroSection() {
@@ -207,7 +213,7 @@ function HeroSection() {
 
   // Typewriter effect
   useEffect(() => {
-    const currentWord = TYPEWRITER_WORDS[currentWordIndex];
+    const currentWord = TYPEWRITER_ITEMS[currentWordIndex].word;
     let timeout: ReturnType<typeof setTimeout>;
 
     if (!isDeleting) {
@@ -229,12 +235,15 @@ function HeroSection() {
       } else {
         // Move to next word
         setIsDeleting(false);
-        setCurrentWordIndex((prev) => (prev + 1) % TYPEWRITER_WORDS.length);
+        setCurrentWordIndex((prev) => (prev + 1) % TYPEWRITER_ITEMS.length);
       }
     }
 
     return () => clearTimeout(timeout);
   }, [displayText, isDeleting, currentWordIndex]);
+
+  // Current mockup image based on the active word
+  const currentMockupImage = TYPEWRITER_ITEMS[currentWordIndex].image;
 
   return (
     <section
@@ -398,12 +407,18 @@ function HeroSection() {
                     </div>
                   </div>
                 </div>
-                <img
-                  src={DASHBOARD_MOCKUP}
-                  alt="Dashboard do Mindi"
-                  className="w-full h-auto"
-                  loading="eager"
-                />
+                <div className="relative w-full" style={{ aspectRatio: '1600/870' }}>
+                  {TYPEWRITER_ITEMS.map((item, idx) => (
+                    <img
+                      key={item.word}
+                      src={item.image}
+                      alt={`Tela de ${item.word} do Mindi`}
+                      className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+                      style={{ opacity: idx === currentWordIndex ? 1 : 0 }}
+                      loading={idx === 0 ? "eager" : "lazy"}
+                    />
+                  ))}
+                </div>
               </div>
 
 

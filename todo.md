@@ -6767,3 +6767,8 @@
 
 ## Novo Screenshot do Dashboard para Landing Page
 - [x] Tirar novo screenshot do dashboard admin@admin.com sem borda do preview e atualizar na seção Sistema Completo de Gestão
+
+## Alternância de Imagens na Seção Sistema Completo de Gestão
+- [x] Tirar screenshots das páginas (estoque, pedidos, dashboard, cardápio) sem barra de preview
+- [x] Upload dos screenshots para S3
+- [x] Implementar alternância de imagem do mockup sincronizada com o efeito de digitação do texto
