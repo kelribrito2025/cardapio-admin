@@ -6778,3 +6778,6 @@
 
 ## Fotos Reais WhatsApp no Carrossel
 - [x] Adicionar 3 fotos reais do WhatsApp como slides no mockup de celular da seção Integração WhatsApp
+
+## Redesign Seção Segmentos
+- [x] Redesenhar seção "Versátil para diversos segmentos" com estilo marquee/carrossel contínuo horizontal compacto (fundo branco, bordas suaves, emojis grandes passando em loop)

@@ -867,68 +867,48 @@ const SEGMENTS_DATA = [
 ];
 
 function SegmentsSection() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true);
-      },
-      { threshold: 0.1 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <section ref={sectionRef} className="-mt-8 pb-20 lg:pb-28 bg-gray-50/50">
+    <section className="-mt-4 pb-16 lg:pb-24 bg-gray-50/50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          className={`relative rounded-3xl overflow-hidden transition-all duration-700 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          {/* Gradient background - Mindi identity (red/coral) */}
-          <div className="bg-gradient-to-r from-red-500 via-red-500 to-rose-500 p-6 sm:p-8 lg:p-10">
-            <div className="flex flex-col lg:flex-row items-center gap-8">
-              {/* Left text */}
-              <div className="lg:w-[280px] flex-shrink-0 text-center lg:text-left">
-                <h3 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
-                  Versátil para<br />diversos segmentos
-                </h3>
-                <p className="mt-3 text-sm text-red-100 leading-relaxed">
-                  Não viu seu segmento? Se você vende pelo WhatsApp, nós te atendemos!
-                </p>
-              </div>
+        {/* Compact marquee strip */}
+        <div className="relative bg-white rounded-2xl shadow-sm border border-gray-100 py-5 px-6 overflow-hidden">
+          {/* Left fade */}
+          <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          {/* Right fade */}
+          <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
 
-              {/* Segment cards */}
-              <div className="flex-1 grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
-                {SEGMENTS_DATA.map((seg, idx) => (
-                  <div
-                    key={seg.name}
-                    className={`group flex flex-col items-center gap-2 p-3 sm:p-4 rounded-2xl bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-300 cursor-pointer hover:-translate-y-1 ${
-                      isVisible
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-4"
-                    }`}
-                    style={{ transitionDelay: `${200 + idx * 80}ms` }}
-                  >
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-white shadow-lg flex items-center justify-center text-2xl sm:text-3xl group-hover:scale-110 transition-transform duration-300">
-                      {seg.emoji}
-                    </div>
-                    <span className="text-white font-semibold text-xs sm:text-sm text-center leading-tight">
-                      {seg.name}
-                    </span>
-                    <span className="text-red-200 text-[10px] sm:text-xs font-medium group-hover:text-white transition-colors">
-                      Ver exemplo
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+          {/* Marquee track */}
+          <div className="flex animate-marquee-segments">
+            {/* First set */}
+            {[...SEGMENTS_DATA, ...SEGMENTS_DATA].map((seg, idx) => (
+              <a
+                key={`seg-${idx}`}
+                href={seg.link}
+                className="flex items-center gap-2.5 px-5 shrink-0 group cursor-pointer"
+              >
+                <span className="text-2xl sm:text-3xl group-hover:scale-110 transition-transform duration-200">{seg.emoji}</span>
+                <span className="text-gray-800 font-semibold text-sm sm:text-base whitespace-nowrap group-hover:text-red-500 transition-colors">{seg.name}</span>
+                <span className="text-gray-300 text-lg font-light mx-2">|</span>
+              </a>
+            ))}
+            {/* Duplicate for seamless loop */}
+            {[...SEGMENTS_DATA, ...SEGMENTS_DATA].map((seg, idx) => (
+              <a
+                key={`seg-dup-${idx}`}
+                href={seg.link}
+                className="flex items-center gap-2.5 px-5 shrink-0 group cursor-pointer"
+              >
+                <span className="text-2xl sm:text-3xl group-hover:scale-110 transition-transform duration-200">{seg.emoji}</span>
+                <span className="text-gray-800 font-semibold text-sm sm:text-base whitespace-nowrap group-hover:text-red-500 transition-colors">{seg.name}</span>
+                <span className="text-gray-300 text-lg font-light mx-2">|</span>
+              </a>
+            ))}
           </div>
         </div>
+
+        <p className="text-center text-sm text-gray-400 mt-4">
+          Não viu seu segmento? Se você vende pelo WhatsApp, <span className="text-red-500 font-medium">nós te atendemos!</span>
+        </p>
       </div>
     </section>
   );

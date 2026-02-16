@@ -578,4 +578,15 @@
   -webkit-backface-visibility: hidden;
 }
 
+.animate-marquee-segments {
+  animation: marquee-scroll 25s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.animate-marquee-segments:hover {
+  animation-play-state: paused;
+}
+
 
