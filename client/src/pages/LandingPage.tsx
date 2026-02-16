@@ -505,10 +505,8 @@ function ProblemSolutionSection() {
 
   const solutionItems = [
     { icon: Link2, text: "Seu próprio link de vendas" },
-    { icon: DollarSign, text: "Zero comissão por pedido" },
     { icon: Truck, text: "Controle total de entregadores" },
     { icon: PieChart, text: "Relatórios financeiros em tempo real" },
-    { icon: PackageCheck, text: "Estoque sincronizado automaticamente" },
     { icon: Users, text: "Base de clientes 100% sua" },
   ];
 
