@@ -6808,3 +6808,22 @@
 
 ## Ajuste Seção Campanhas SMS
 - [x] Remover benefício "Resultados mensuráveis" da seção Campanhas SMS na landing page
+
+## Página Finanças (Admin)
+- [x] Schema: tabela de despesas (expenses) com data, categoria, descrição, valor, forma de pagamento, observação
+- [x] Schema: tabela de categorias de despesa (expense_categories) com categorias padrão
+- [x] Schema: tabela de metas mensais de lucro (monthly_goals)
+- [x] DB helpers: CRUD de despesas, listar categorias, calcular receita dos pedidos, resumo financeiro
+- [x] tRPC procedures: finance router com todas as operações
+- [x] Frontend: Header com título + botão "Novo lançamento"
+- [x] Frontend: Cards resumo (Receita, Despesas, Lucro líquido, Ticket médio) com filtros de período
+- [x] Frontend: Gráfico combinado (barras despesas + linha receita + linha lucro)
+- [x] Frontend: Tabela de gastos com editar/excluir
+- [x] Frontend: Modal "Registrar gasto" com todos os campos
+- [x] Frontend: Sistema de categorias com opção de adicionar nova
+- [x] Frontend: Indicador de saúde financeira (termômetro visual)
+- [x] Frontend: Meta mensal de lucro
+- [x] Frontend: Alerta se despesas > receita
+- [x] Navegação: Adicionar "Finanças" no sidebar
+- [x] Rota: Registrar /financas no App.tsx
+- [x] Testes: vitest para procedures de finanças

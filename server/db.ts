@@ -40,7 +40,10 @@ import {
   comboGroups, InsertComboGroup, ComboGroup,
   comboGroupItems, InsertComboGroupItem, ComboGroupItem,
   drivers, InsertDriver, Driver,
-  deliveries, InsertDelivery, Delivery
+  deliveries, InsertDelivery, Delivery,
+  expenseCategories, InsertExpenseCategory, ExpenseCategory,
+  expenses, InsertExpense, Expense,
+  monthlyGoals, InsertMonthlyGoal, MonthlyGoal
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -8019,4 +8022,442 @@ export async function getScheduledOrderCountsByMonth(establishmentId: number, ye
     counts[key] = (counts[key] || 0) + 1;
   }
   return counts;
+}
+
+
+// ============ FINANÇAS ============
+
+// --- Categorias de Despesa ---
+
+const DEFAULT_EXPENSE_CATEGORIES = [
+  { name: "Fornecedor", color: "#3b82f6" },
+  { name: "Funcionários", color: "#8b5cf6" },
+  { name: "Aluguel", color: "#f59e0b" },
+  { name: "Energia", color: "#eab308" },
+  { name: "Água", color: "#06b6d4" },
+  { name: "Marketing", color: "#ec4899" },
+  { name: "Impostos", color: "#ef4444" },
+  { name: "Outros", color: "#6b7280" },
+];
+
+export async function ensureDefaultExpenseCategories(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return;
+  
+  const existing = await db.select().from(expenseCategories)
+    .where(eq(expenseCategories.establishmentId, establishmentId));
+  
+  if (existing.length === 0) {
+    for (let i = 0; i < DEFAULT_EXPENSE_CATEGORIES.length; i++) {
+      const cat = DEFAULT_EXPENSE_CATEGORIES[i];
+      await db.insert(expenseCategories).values({
+        establishmentId,
+        name: cat.name,
+        color: cat.color,
+        isDefault: true,
+        sortOrder: i,
+      });
+    }
+  }
+}
+
+export async function getExpenseCategories(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  await ensureDefaultExpenseCategories(establishmentId);
+  
+  return db.select().from(expenseCategories)
+    .where(eq(expenseCategories.establishmentId, establishmentId))
+    .orderBy(asc(expenseCategories.sortOrder));
+}
+
+export async function createExpenseCategory(data: { establishmentId: number; name: string; color?: string }) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(expenseCategories).values({
+    establishmentId: data.establishmentId,
+    name: data.name,
+    color: data.color || "#6b7280",
+    isDefault: false,
+    sortOrder: 99,
+  });
+  return result[0].insertId;
+}
+
+export async function updateExpenseCategory(id: number, data: { name?: string; color?: string }) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(expenseCategories).set(data).where(eq(expenseCategories.id, id));
+}
+
+export async function deleteExpenseCategory(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  // Check if there are expenses using this category
+  const usedCount = await db.select({ count: sql<number>`count(*)` })
+    .from(expenses)
+    .where(eq(expenses.categoryId, id));
+  if ((usedCount[0]?.count ?? 0) > 0) {
+    throw new Error("Não é possível excluir uma categoria que possui despesas vinculadas.");
+  }
+  await db.delete(expenseCategories).where(eq(expenseCategories.id, id));
+}
+
+// --- Despesas ---
+
+export async function getExpenses(establishmentId: number, filters?: {
+  startDate?: string;
+  endDate?: string;
+  categoryId?: number;
+  paymentMethod?: string;
+  search?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  const db = await getDb();
+  if (!db) return { items: [], total: 0 };
+  
+  const conditions: any[] = [eq(expenses.establishmentId, establishmentId)];
+  
+  const tz = await getEstablishmentTimezone(establishmentId);
+  
+  if (filters?.startDate) {
+    conditions.push(sql`CONVERT_TZ(${expenses.date}, '+00:00', ${tz}) >= ${filters.startDate}`);
+  }
+  if (filters?.endDate) {
+    conditions.push(sql`CONVERT_TZ(${expenses.date}, '+00:00', ${tz}) <= ${filters.endDate} `);
+  }
+  if (filters?.categoryId) {
+    conditions.push(eq(expenses.categoryId, filters.categoryId));
+  }
+  if (filters?.paymentMethod) {
+    conditions.push(eq(expenses.paymentMethod, filters.paymentMethod as any));
+  }
+  if (filters?.search) {
+    conditions.push(sql`${expenses.description} LIKE ${`%${filters.search}%`}`);
+  }
+  
+  const whereClause = and(...conditions);
+  
+  const [items, countResult] = await Promise.all([
+    db.select({
+      id: expenses.id,
+      categoryId: expenses.categoryId,
+      description: expenses.description,
+      amount: expenses.amount,
+      paymentMethod: expenses.paymentMethod,
+      date: expenses.date,
+      notes: expenses.notes,
+      createdAt: expenses.createdAt,
+      categoryName: expenseCategories.name,
+      categoryColor: expenseCategories.color,
+    })
+      .from(expenses)
+      .leftJoin(expenseCategories, eq(expenses.categoryId, expenseCategories.id))
+      .where(whereClause)
+      .orderBy(desc(expenses.date))
+      .limit(filters?.limit ?? 50)
+      .offset(filters?.offset ?? 0),
+    db.select({ count: sql<number>`count(*)` })
+      .from(expenses)
+      .where(whereClause),
+  ]);
+  
+  return { items, total: countResult[0]?.count ?? 0 };
+}
+
+export async function createExpense(data: {
+  establishmentId: number;
+  categoryId: number;
+  description: string;
+  amount: string;
+  paymentMethod: "cash" | "pix" | "card" | "transfer";
+  date: Date;
+  notes?: string;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(expenses).values({
+    establishmentId: data.establishmentId,
+    categoryId: data.categoryId,
+    description: data.description,
+    amount: data.amount,
+    paymentMethod: data.paymentMethod,
+    date: data.date,
+    notes: data.notes || null,
+  });
+  return result[0].insertId;
+}
+
+export async function updateExpense(id: number, data: {
+  categoryId?: number;
+  description?: string;
+  amount?: string;
+  paymentMethod?: "cash" | "pix" | "card" | "transfer";
+  date?: Date;
+  notes?: string;
+}) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(expenses).set(data).where(eq(expenses.id, id));
+}
+
+export async function deleteExpense(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(expenses).where(eq(expenses.id, id));
+}
+
+// --- Resumo Financeiro ---
+
+export async function getFinanceSummary(establishmentId: number, period: 'today' | 'week' | 'month' | 'custom' = 'today', customStart?: string, customEnd?: string) {
+  const db = await getDb();
+  if (!db) return { revenue: 0, expensesTotal: 0, profit: 0, avgTicket: 0, ordersCount: 0, revenueChange: 0, expensesChange: 0, profitChange: 0, avgTicketChange: 0 };
+  
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+  
+  let periodStart: Date;
+  let prevPeriodStart: Date;
+  let prevPeriodEnd: Date;
+  
+  if (period === 'custom' && customStart && customEnd) {
+    periodStart = new Date(customStart);
+    const daysDiff = Math.ceil((new Date(customEnd).getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24));
+    prevPeriodEnd = new Date(periodStart);
+    prevPeriodStart = new Date(periodStart);
+    prevPeriodStart.setDate(prevPeriodStart.getDate() - daysDiff);
+  } else if (period === 'today') {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
+    prevPeriodStart = new Date(periodStart);
+    prevPeriodStart.setDate(prevPeriodStart.getDate() - 1);
+    prevPeriodEnd = new Date(periodStart);
+  } else if (period === 'week') {
+    const currentDay = localNow.getDay();
+    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysFromMonday);
+    prevPeriodStart = new Date(periodStart);
+    prevPeriodStart.setDate(prevPeriodStart.getDate() - 7);
+    prevPeriodEnd = new Date(periodStart);
+  } else {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), 1);
+    prevPeriodStart = new Date(localNow.getFullYear(), localNow.getMonth() - 1, 1);
+    prevPeriodEnd = new Date(periodStart);
+  }
+  
+  const periodStartStr = fmtLocalDateTime(periodStart);
+  const prevPeriodStartStr = fmtLocalDateTime(prevPeriodStart);
+  const prevPeriodEndStr = fmtLocalDateTime(prevPeriodEnd);
+  const nowStr = period === 'custom' && customEnd ? `${customEnd} 23:59:59` : undefined;
+  
+  // Receita atual (pedidos completed)
+  const revenueResult = await db.select({
+    total: sql<number>`COALESCE(SUM(total), 0)`,
+    count: sql<number>`count(*)`
+  })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${periodStartStr}`,
+      ...(nowStr ? [sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) <= ${nowStr}`] : []),
+      eq(orders.status, "completed")
+    ));
+  
+  // Receita anterior
+  const prevRevenueResult = await db.select({
+    total: sql<number>`COALESCE(SUM(total), 0)`,
+    count: sql<number>`count(*)`
+  })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${prevPeriodStartStr}`,
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) < ${prevPeriodEndStr}`,
+      eq(orders.status, "completed")
+    ));
+  
+  // Despesas atuais
+  const expensesResult = await db.select({
+    total: sql<number>`COALESCE(SUM(amount), 0)`
+  })
+    .from(expenses)
+    .where(and(
+      eq(expenses.establishmentId, establishmentId),
+      sql`CONVERT_TZ(${expenses.date}, '+00:00', ${tz}) >= ${periodStartStr}`,
+      ...(nowStr ? [sql`CONVERT_TZ(${expenses.date}, '+00:00', ${tz}) <= ${nowStr}`] : [])
+    ));
+  
+  // Despesas anteriores
+  const prevExpensesResult = await db.select({
+    total: sql<number>`COALESCE(SUM(amount), 0)`
+  })
+    .from(expenses)
+    .where(and(
+      eq(expenses.establishmentId, establishmentId),
+      sql`CONVERT_TZ(${expenses.date}, '+00:00', ${tz}) >= ${prevPeriodStartStr}`,
+      sql`CONVERT_TZ(${expenses.date}, '+00:00', ${tz}) < ${prevPeriodEndStr}`
+    ));
+  
+  const revenue = Number(revenueResult[0]?.total ?? 0);
+  const ordersCount = revenueResult[0]?.count ?? 0;
+  const expensesTotal = Number(expensesResult[0]?.total ?? 0);
+  const profit = revenue - expensesTotal;
+  const avgTicket = ordersCount > 0 ? revenue / ordersCount : 0;
+  
+  const prevRevenue = Number(prevRevenueResult[0]?.total ?? 0);
+  const prevExpensesTotal = Number(prevExpensesResult[0]?.total ?? 0);
+  const prevProfit = prevRevenue - prevExpensesTotal;
+  const prevOrdersCount = prevRevenueResult[0]?.count ?? 0;
+  const prevAvgTicket = prevOrdersCount > 0 ? prevRevenue / prevOrdersCount : 0;
+  
+  const calcChange = (current: number, previous: number) => {
+    if (previous === 0) return current > 0 ? 100 : 0;
+    return Math.round(((current - previous) / previous) * 100);
+  };
+  
+  return {
+    revenue,
+    expensesTotal,
+    profit,
+    avgTicket,
+    ordersCount,
+    revenueChange: calcChange(revenue, prevRevenue),
+    expensesChange: calcChange(expensesTotal, prevExpensesTotal),
+    profitChange: calcChange(profit, prevProfit),
+    avgTicketChange: calcChange(avgTicket, prevAvgTicket),
+  };
+}
+
+// --- Gráfico de Evolução Financeira ---
+
+export async function getFinanceChart(establishmentId: number, period: 'week' | 'month' = 'week') {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+  
+  let days: number;
+  let periodStart: Date;
+  
+  if (period === 'week') {
+    days = 7;
+    const currentDay = localNow.getDay();
+    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysFromMonday);
+  } else {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), 1);
+    days = localNow.getDate();
+  }
+  
+  const periodStartStr = fmtLocalDateTime(periodStart);
+  
+  // Revenue by day (raw SQL to avoid only_full_group_by)
+  const revenueByDay: { date: string; total: number }[] = await db.execute(
+    sql`SELECT DATE(CONVERT_TZ(createdAt, '+00:00', ${tz})) as \`date\`, COALESCE(SUM(total), 0) as total FROM orders WHERE establishmentId = ${establishmentId} AND CONVERT_TZ(createdAt, '+00:00', ${tz}) >= ${periodStartStr} AND status = 'completed' GROUP BY \`date\``
+  ).then((rows: any) => (Array.isArray(rows) && Array.isArray(rows[0]) ? rows[0] : rows).map((r: any) => ({ date: String(r.date), total: Number(r.total) })));
+  
+  // Expenses by day (raw SQL to avoid only_full_group_by)
+  const expensesByDay: { date: string; total: number }[] = await db.execute(
+    sql`SELECT DATE(CONVERT_TZ(date, '+00:00', ${tz})) as \`date\`, COALESCE(SUM(amount), 0) as total FROM expenses WHERE establishmentId = ${establishmentId} AND CONVERT_TZ(date, '+00:00', ${tz}) >= ${periodStartStr} GROUP BY \`date\``
+  ).then((rows: any) => (Array.isArray(rows) && Array.isArray(rows[0]) ? rows[0] : rows).map((r: any) => ({ date: String(r.date), total: Number(r.total) })));
+  
+  // Build chart data
+  const revenueMap = new Map(revenueByDay.map(r => [r.date, Number(r.total)]));
+  const expensesMap = new Map(expensesByDay.map(e => [e.date, Number(e.total)]));
+  
+  const result = [];
+  for (let i = 0; i < days; i++) {
+    const d = new Date(periodStart);
+    d.setDate(d.getDate() + i);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const rev = revenueMap.get(key) ?? 0;
+    const exp = expensesMap.get(key) ?? 0;
+    result.push({
+      date: key,
+      label: d.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit" }),
+      revenue: rev,
+      expenses: exp,
+      profit: rev - exp,
+    });
+  }
+  
+  return result;
+}
+
+// --- Despesas por Categoria (para gráfico de pizza) ---
+
+export async function getExpensesByCategory(establishmentId: number, period: 'today' | 'week' | 'month' = 'month') {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+  
+  let periodStart: Date;
+  
+  if (period === 'today') {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
+  } else if (period === 'week') {
+    const currentDay = localNow.getDay();
+    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysFromMonday);
+  } else {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), 1);
+  }
+  
+  const periodStartStr = fmtLocalDateTime(periodStart);
+  
+  const rawResult: any[] = await db.execute(
+    sql`SELECT e.categoryId, ec.name as categoryName, ec.color as categoryColor, COALESCE(SUM(e.amount), 0) as total, count(*) as \`count\` FROM expenses e LEFT JOIN expenseCategories ec ON e.categoryId = ec.id WHERE e.establishmentId = ${establishmentId} AND CONVERT_TZ(e.date, '+00:00', ${tz}) >= ${periodStartStr} GROUP BY e.categoryId, ec.name, ec.color`
+  ).then((rows: any) => Array.isArray(rows) && Array.isArray(rows[0]) ? rows[0] : rows);
+  
+  return rawResult.map((r: any) => ({
+    categoryId: r.categoryId,
+    categoryName: r.categoryName,
+    categoryColor: r.categoryColor,
+    total: Number(r.total),
+    count: Number(r.count),
+  }));
+}
+
+// --- Meta Mensal ---
+
+export async function getMonthlyGoal(establishmentId: number, month: number, year: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(monthlyGoals)
+    .where(and(
+      eq(monthlyGoals.establishmentId, establishmentId),
+      eq(monthlyGoals.month, month),
+      eq(monthlyGoals.year, year)
+    ));
+  
+  return result[0] || null;
+}
+
+export async function upsertMonthlyGoal(data: { establishmentId: number; month: number; year: number; targetProfit: string }) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const existing = await getMonthlyGoal(data.establishmentId, data.month, data.year);
+  
+  if (existing) {
+    await db.update(monthlyGoals)
+      .set({ targetProfit: data.targetProfit })
+      .where(eq(monthlyGoals.id, existing.id));
+    return existing.id;
+  } else {
+    const result = await db.insert(monthlyGoals).values({
+      establishmentId: data.establishmentId,
+      month: data.month,
+      year: data.year,
+      targetProfit: data.targetProfit,
+    });
+    return result[0].insertId;
+  }
 }

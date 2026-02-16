@@ -1,0 +1,1316 @@
+import { AdminLayout } from "@/components/AdminLayout";
+import { StatCard, PageHeader, SectionCard, EmptyState } from "@/components/shared";
+import { trpc } from "@/lib/trpc";
+import {
+  DollarSign,
+  TrendingDown,
+  TrendingUp,
+  Wallet,
+  Plus,
+  Search,
+  Edit2,
+  Trash2,
+  Receipt,
+  Target,
+  AlertTriangle,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Tag,
+  Calendar,
+  Filter,
+} from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  ComposedChart,
+  Area,
+  Legend,
+} from "recharts";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+
+const periodOptions = [
+  { value: "today" as const, label: "Hoje" },
+  { value: "week" as const, label: "7 dias" },
+  { value: "month" as const, label: "Este mês" },
+];
+
+const paymentMethodLabels: Record<string, string> = {
+  cash: "Dinheiro",
+  pix: "PIX",
+  card: "Cartão",
+  transfer: "Transferência",
+};
+
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(value);
+};
+
+// ============ EXPENSE MODAL ============
+function ExpenseModal({
+  open,
+  onOpenChange,
+  establishmentId,
+  editingExpense,
+  onSuccess,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  establishmentId: number;
+  editingExpense?: any;
+  onSuccess: () => void;
+}) {
+  const [categoryId, setCategoryId] = useState<string>("");
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<string>("cash");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [notes, setNotes] = useState("");
+
+  const { data: categories } = trpc.finance.listCategories.useQuery(
+    { establishmentId },
+    { enabled: !!establishmentId }
+  );
+
+  const createMutation = trpc.finance.createExpense.useMutation({
+    onSuccess: () => {
+      toast.success("Despesa registrada com sucesso!");
+      onSuccess();
+      onOpenChange(false);
+      resetForm();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const updateMutation = trpc.finance.updateExpense.useMutation({
+    onSuccess: () => {
+      toast.success("Despesa atualizada com sucesso!");
+      onSuccess();
+      onOpenChange(false);
+      resetForm();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  useEffect(() => {
+    if (editingExpense) {
+      setCategoryId(String(editingExpense.categoryId));
+      setDescription(editingExpense.description);
+      setAmount(String(Number(editingExpense.amount)));
+      setPaymentMethod(editingExpense.paymentMethod);
+      setDate(
+        new Date(editingExpense.date).toISOString().split("T")[0]
+      );
+      setNotes(editingExpense.notes || "");
+    } else {
+      resetForm();
+    }
+  }, [editingExpense, open]);
+
+  function resetForm() {
+    setCategoryId("");
+    setDescription("");
+    setAmount("");
+    setPaymentMethod("cash");
+    setDate(new Date().toISOString().split("T")[0]);
+    setNotes("");
+  }
+
+  function handleSubmit() {
+    if (!categoryId || !description || !amount || !date) {
+      toast.error("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    const data = {
+      categoryId: Number(categoryId),
+      description,
+      amount: String(parseFloat(amount)),
+      paymentMethod: paymentMethod as "cash" | "pix" | "card" | "transfer",
+      date: new Date(date + "T12:00:00").toISOString(),
+      notes: notes || undefined,
+    };
+
+    if (editingExpense) {
+      updateMutation.mutate({ id: editingExpense.id, ...data });
+    } else {
+      createMutation.mutate({ establishmentId, ...data });
+    }
+  }
+
+  const isLoading = createMutation.isPending || updateMutation.isPending;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>
+            {editingExpense ? "Editar despesa" : "Registrar despesa"}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-2">
+          <div>
+            <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+              Data *
+            </label>
+            <Input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+              Categoria *
+            </label>
+            <Select value={categoryId} onValueChange={setCategoryId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione a categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories?.map((cat) => (
+                  <SelectItem key={cat.id} value={String(cat.id)}>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full shrink-0"
+                        style={{ backgroundColor: cat.color || "#6b7280" }}
+                      />
+                      {cat.name}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+              Descrição *
+            </label>
+            <Input
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Ex: Compra de ingredientes"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+              Valor (R$) *
+            </label>
+            <Input
+              type="number"
+              step="0.01"
+              min="0"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0,00"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+              Forma de pagamento
+            </label>
+            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cash">Dinheiro</SelectItem>
+                <SelectItem value="pix">PIX</SelectItem>
+                <SelectItem value="card">Cartão</SelectItem>
+                <SelectItem value="transfer">Transferência</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+              Observação
+            </label>
+            <Input
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Opcional"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isLoading}
+          >
+            Cancelar
+          </Button>
+          <Button onClick={handleSubmit} disabled={isLoading}>
+            {isLoading ? "Salvando..." : editingExpense ? "Atualizar" : "Salvar despesa"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ============ CATEGORY MANAGER MODAL ============
+function CategoryManagerModal({
+  open,
+  onOpenChange,
+  establishmentId,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  establishmentId: number;
+}) {
+  const [newCatName, setNewCatName] = useState("");
+  const [newCatColor, setNewCatColor] = useState("#6b7280");
+
+  const utils = trpc.useUtils();
+  const { data: categories } = trpc.finance.listCategories.useQuery(
+    { establishmentId },
+    { enabled: !!establishmentId }
+  );
+
+  const createMutation = trpc.finance.createCategory.useMutation({
+    onSuccess: () => {
+      toast.success("Categoria criada!");
+      utils.finance.listCategories.invalidate();
+      setNewCatName("");
+      setNewCatColor("#6b7280");
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const deleteMutation = trpc.finance.deleteCategory.useMutation({
+    onSuccess: () => {
+      toast.success("Categoria excluída!");
+      utils.finance.listCategories.invalidate();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[450px]">
+        <DialogHeader>
+          <DialogTitle>Gerenciar categorias</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-2">
+          <div className="flex gap-2">
+            <Input
+              value={newCatName}
+              onChange={(e) => setNewCatName(e.target.value)}
+              placeholder="Nova categoria..."
+              className="flex-1"
+            />
+            <input
+              type="color"
+              value={newCatColor}
+              onChange={(e) => setNewCatColor(e.target.value)}
+              className="w-10 h-10 rounded-lg border border-border cursor-pointer"
+            />
+            <Button
+              size="icon"
+              onClick={() => {
+                if (!newCatName.trim()) return;
+                createMutation.mutate({
+                  establishmentId,
+                  name: newCatName.trim(),
+                  color: newCatColor,
+                });
+              }}
+              disabled={createMutation.isPending}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="space-y-2 max-h-[300px] overflow-y-auto">
+            {categories?.map((cat) => (
+              <div
+                key={cat.id}
+                className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className="w-3 h-3 rounded-full shrink-0"
+                    style={{ backgroundColor: cat.color || "#6b7280" }}
+                  />
+                  <span className="text-sm font-medium">{cat.name}</span>
+                  {cat.isDefault && (
+                    <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                      padrão
+                    </span>
+                  )}
+                </div>
+                {!cat.isDefault && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                    onClick={() => deleteMutation.mutate({ id: cat.id })}
+                    disabled={deleteMutation.isPending}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ============ GOAL MODAL ============
+function GoalModal({
+  open,
+  onOpenChange,
+  establishmentId,
+  currentGoal,
+  month,
+  year,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  establishmentId: number;
+  currentGoal: number | null;
+  month: number;
+  year: number;
+}) {
+  const [targetProfit, setTargetProfit] = useState(
+    currentGoal ? String(currentGoal) : ""
+  );
+
+  useEffect(() => {
+    setTargetProfit(currentGoal ? String(currentGoal) : "");
+  }, [currentGoal, open]);
+
+  const utils = trpc.useUtils();
+  const mutation = trpc.finance.setGoal.useMutation({
+    onSuccess: () => {
+      toast.success("Meta atualizada!");
+      utils.finance.getGoal.invalidate();
+      onOpenChange(false);
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[400px]">
+        <DialogHeader>
+          <DialogTitle>Meta mensal de lucro</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-2">
+          <p className="text-sm text-muted-foreground">
+            Defina sua meta de lucro líquido para{" "}
+            {new Date(year, month - 1).toLocaleDateString("pt-BR", {
+              month: "long",
+              year: "numeric",
+            })}
+            .
+          </p>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+              Meta de lucro (R$)
+            </label>
+            <Input
+              type="number"
+              step="0.01"
+              min="0"
+              value={targetProfit}
+              onChange={(e) => setTargetProfit(e.target.value)}
+              placeholder="Ex: 10000"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={() => {
+              if (!targetProfit) return;
+              mutation.mutate({
+                establishmentId,
+                month,
+                year,
+                targetProfit,
+              });
+            }}
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? "Salvando..." : "Salvar meta"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ============ FINANCIAL HEALTH INDICATOR ============
+function FinancialHealthIndicator({
+  profit,
+  revenue,
+  expensesTotal,
+  goalTarget,
+  goalProgress,
+}: {
+  profit: number;
+  revenue: number;
+  expensesTotal: number;
+  goalTarget: number | null;
+  goalProgress: number | null;
+}) {
+  const isNegative = profit < 0;
+  const isWarning = expensesTotal > revenue && revenue > 0;
+  const healthPercent = revenue > 0 ? Math.min(100, Math.max(0, ((revenue - expensesTotal) / revenue) * 100)) : 0;
+
+  let healthColor = "bg-emerald-500";
+  let healthLabel = "Saudável";
+  let healthTextColor = "text-emerald-600";
+
+  if (isNegative) {
+    healthColor = "bg-red-500";
+    healthLabel = "Prejuízo";
+    healthTextColor = "text-red-600";
+  } else if (healthPercent < 20) {
+    healthColor = "bg-amber-500";
+    healthLabel = "Atenção";
+    healthTextColor = "text-amber-600";
+  } else if (healthPercent < 40) {
+    healthColor = "bg-yellow-500";
+    healthLabel = "Regular";
+    healthTextColor = "text-yellow-600";
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Health Thermometer */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-muted-foreground">
+            Saúde financeira
+          </span>
+          <span className={`text-sm font-semibold ${healthTextColor}`}>
+            {healthLabel}
+          </span>
+        </div>
+        <div className="h-3 bg-muted rounded-full overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${healthColor}`}
+            style={{ width: `${Math.max(3, healthPercent)}%` }}
+          />
+        </div>
+        <div className="flex justify-between mt-1">
+          <span className="text-[11px] text-muted-foreground">Prejuízo</span>
+          <span className="text-[11px] text-muted-foreground">Lucro máximo</span>
+        </div>
+      </div>
+
+      {/* Warning Alert */}
+      {isWarning && (
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20">
+          <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
+          <span className="text-xs text-red-700 dark:text-red-400 font-medium">
+            Despesas excedem a receita neste período
+          </span>
+        </div>
+      )}
+
+      {/* Monthly Goal Progress */}
+      {goalTarget && goalProgress !== null && (
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-muted-foreground">
+              Meta mensal
+            </span>
+            <span className="text-sm font-semibold">
+              {Math.min(100, Math.round(goalProgress))}%
+            </span>
+          </div>
+          <div className="h-3 bg-muted rounded-full overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${
+                goalProgress >= 100
+                  ? "bg-emerald-500"
+                  : goalProgress >= 70
+                  ? "bg-blue-500"
+                  : "bg-amber-500"
+              }`}
+              style={{ width: `${Math.min(100, Math.max(3, goalProgress))}%` }}
+            />
+          </div>
+          <div className="flex justify-between mt-1">
+            <span className="text-[11px] text-muted-foreground">
+              {formatCurrency(profit)} de {formatCurrency(goalTarget)}
+            </span>
+            {goalProgress >= 100 && (
+              <span className="text-[11px] text-emerald-600 font-semibold">
+                Meta atingida!
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============ CUSTOM CHART TOOLTIP ============
+function ChartTooltipContent({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-card border border-border/50 rounded-xl shadow-lg p-3 min-w-[160px]">
+      <p className="text-xs text-muted-foreground font-medium mb-2">{label}</p>
+      {payload.map((entry: any, i: number) => (
+        <div key={i} className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-1.5">
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="text-xs text-muted-foreground">{entry.name}</span>
+          </div>
+          <span className="text-xs font-semibold">{formatCurrency(entry.value)}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ============ MAIN PAGE ============
+export default function Financas() {
+  const { data: establishment } = trpc.establishment.get.useQuery();
+  const [establishmentId, setEstablishmentId] = useState<number | null>(null);
+  const [period, setPeriod] = useState<"today" | "week" | "month">("today");
+  const [expenseModalOpen, setExpenseModalOpen] = useState(false);
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+  const [goalModalOpen, setGoalModalOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [page, setPage] = useState(0);
+  const ITEMS_PER_PAGE = 15;
+
+  useEffect(() => {
+    if (establishment) setEstablishmentId(establishment.id);
+  }, [establishment]);
+
+  const utils = trpc.useUtils();
+
+  // Current month/year for goal
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+
+  // Memoize inputs
+  const summaryInput = useMemo(
+    () => ({ establishmentId: establishmentId!, period }),
+    [establishmentId, period]
+  );
+
+  const chartPeriod = period === "today" ? "week" : period;
+  const chartInput = useMemo(
+    () => ({ establishmentId: establishmentId!, period: chartPeriod as "week" | "month" }),
+    [establishmentId, chartPeriod]
+  );
+
+  const expensesInput = useMemo(
+    () => ({
+      establishmentId: establishmentId!,
+      search: searchTerm || undefined,
+      categoryId: filterCategory !== "all" ? Number(filterCategory) : undefined,
+      limit: ITEMS_PER_PAGE,
+      offset: page * ITEMS_PER_PAGE,
+    }),
+    [establishmentId, searchTerm, filterCategory, page]
+  );
+
+  const goalInput = useMemo(
+    () => ({
+      establishmentId: establishmentId!,
+      month: currentMonth,
+      year: currentYear,
+    }),
+    [establishmentId, currentMonth, currentYear]
+  );
+
+  const expensesByCatInput = useMemo(
+    () => ({ establishmentId: establishmentId!, period }),
+    [establishmentId, period]
+  );
+
+  // Queries
+  const { data: summary, isLoading: summaryLoading } =
+    trpc.finance.summary.useQuery(summaryInput, {
+      enabled: !!establishmentId,
+    });
+
+  const { data: chartData, isLoading: chartLoading } =
+    trpc.finance.chart.useQuery(chartInput, {
+      enabled: !!establishmentId,
+    });
+
+  const { data: expensesData, isLoading: expensesLoading } =
+    trpc.finance.listExpenses.useQuery(expensesInput, {
+      enabled: !!establishmentId,
+    });
+
+  const { data: categories } = trpc.finance.listCategories.useQuery(
+    { establishmentId: establishmentId! },
+    { enabled: !!establishmentId }
+  );
+
+  const { data: goal } = trpc.finance.getGoal.useQuery(goalInput, {
+    enabled: !!establishmentId,
+  });
+
+  const { data: expensesByCategory } = trpc.finance.expensesByCategory.useQuery(
+    expensesByCatInput,
+    { enabled: !!establishmentId }
+  );
+
+  // Delete mutation
+  const deleteMutation = trpc.finance.deleteExpense.useMutation({
+    onSuccess: () => {
+      toast.success("Despesa excluída!");
+      invalidateAll();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  function invalidateAll() {
+    utils.finance.summary.invalidate();
+    utils.finance.chart.invalidate();
+    utils.finance.listExpenses.invalidate();
+    utils.finance.expensesByCategory.invalidate();
+  }
+
+  const goalTarget = goal ? Number(goal.targetProfit) : null;
+  const goalProgress =
+    goalTarget && summary ? (summary.profit / goalTarget) * 100 : null;
+
+  const totalPages = expensesData
+    ? Math.ceil(expensesData.total / ITEMS_PER_PAGE)
+    : 0;
+
+  return (
+    <AdminLayout>
+      {/* Header */}
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <PageHeader
+          title="Finanças"
+          description="Controle completo das receitas e despesas do restaurante."
+          icon={<Wallet className="h-6 w-6 text-emerald-600" />}
+        />
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 bg-muted rounded-xl p-1">
+            {periodOptions.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setPeriod(opt.value)}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  period === opt.value
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          <Button
+            onClick={() => {
+              setEditingExpense(null);
+              setExpenseModalOpen(true);
+            }}
+            className="gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">Novo lançamento</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+        <StatCard
+          title={
+            period === "today"
+              ? "Receita Hoje"
+              : period === "week"
+              ? "Receita 7 dias"
+              : "Receita do Mês"
+          }
+          value={formatCurrency(summary?.revenue ?? 0)}
+          icon={DollarSign}
+          loading={summaryLoading}
+          variant="emerald"
+          trend={
+            summary && summary.revenueChange !== undefined
+              ? {
+                  value: summary.revenueChange,
+                  isPositive: summary.revenueChange >= 0,
+                  label:
+                    period === "today"
+                      ? "vs ontem"
+                      : period === "week"
+                      ? "vs semana anterior"
+                      : "vs mês anterior",
+                }
+              : undefined
+          }
+        />
+        <StatCard
+          title={
+            period === "today"
+              ? "Despesas Hoje"
+              : period === "week"
+              ? "Despesas 7 dias"
+              : "Despesas do Mês"
+          }
+          value={formatCurrency(summary?.expensesTotal ?? 0)}
+          icon={TrendingDown}
+          loading={summaryLoading}
+          variant="amber"
+          trend={
+            summary && summary.expensesChange !== undefined
+              ? {
+                  value: summary.expensesChange,
+                  isPositive: summary.expensesChange <= 0,
+                  label:
+                    period === "today"
+                      ? "vs ontem"
+                      : period === "week"
+                      ? "vs semana anterior"
+                      : "vs mês anterior",
+                }
+              : undefined
+          }
+        />
+        <StatCard
+          title="Lucro Líquido"
+          value={formatCurrency(summary?.profit ?? 0)}
+          icon={TrendingUp}
+          loading={summaryLoading}
+          variant={
+            (summary?.profit ?? 0) >= 0 ? "emerald" : "amber"
+          }
+          trend={
+            summary && summary.profitChange !== undefined
+              ? {
+                  value: summary.profitChange,
+                  isPositive: summary.profitChange >= 0,
+                  label:
+                    period === "today"
+                      ? "vs ontem"
+                      : period === "week"
+                      ? "vs semana anterior"
+                      : "vs mês anterior",
+                }
+              : undefined
+          }
+        />
+        <StatCard
+          title="Ticket Médio"
+          value={formatCurrency(summary?.avgTicket ?? 0)}
+          icon={Receipt}
+          loading={summaryLoading}
+          variant="blue"
+          trend={
+            summary && summary.avgTicketChange !== undefined
+              ? {
+                  value: summary.avgTicketChange,
+                  isPositive: summary.avgTicketChange >= 0,
+                  label:
+                    period === "today"
+                      ? "vs ontem"
+                      : period === "week"
+                      ? "vs semana anterior"
+                      : "vs mês anterior",
+                }
+              : undefined
+          }
+        />
+      </div>
+
+      {/* Chart + Health Indicator */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <SectionCard
+          title="Evolução financeira"
+          className="lg:col-span-2"
+          description={
+            chartPeriod === "week" ? "Últimos 7 dias" : "Este mês"
+          }
+        >
+          {chartLoading ? (
+            <div className="h-[300px] flex items-center justify-center">
+              <div className="skeleton h-full w-full rounded-lg" />
+            </div>
+          ) : chartData && chartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <ComposedChart data={chartData}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  opacity={0.5}
+                />
+                <XAxis
+                  dataKey="label"
+                  tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) =>
+                    v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
+                  }
+                />
+                <RechartsTooltip content={<ChartTooltipContent />} />
+                <Legend
+                  wrapperStyle={{ fontSize: "12px", paddingTop: "8px" }}
+                />
+                <Bar
+                  dataKey="expenses"
+                  name="Despesas"
+                  fill="#f59e0b"
+                  radius={[4, 4, 0, 0]}
+                  barSize={24}
+                  opacity={0.85}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  name="Receita"
+                  stroke="#10b981"
+                  strokeWidth={2.5}
+                  dot={{ r: 4, fill: "#10b981" }}
+                  activeDot={{ r: 6 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="profit"
+                  name="Lucro"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  dot={{ r: 3, fill: "#3b82f6" }}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[300px] flex items-center justify-center text-muted-foreground text-sm">
+              Sem dados para o período selecionado
+            </div>
+          )}
+        </SectionCard>
+
+        <SectionCard title="Indicadores">
+          <FinancialHealthIndicator
+            profit={summary?.profit ?? 0}
+            revenue={summary?.revenue ?? 0}
+            expensesTotal={summary?.expensesTotal ?? 0}
+            goalTarget={goalTarget}
+            goalProgress={goalProgress}
+          />
+
+          {/* Expenses by category mini-list */}
+          {expensesByCategory && expensesByCategory.length > 0 && (
+            <div className="mt-6">
+              <h4 className="text-sm font-medium text-muted-foreground mb-3">
+                Despesas por categoria
+              </h4>
+              <div className="space-y-2">
+                {expensesByCategory.map((cat) => (
+                  <div
+                    key={cat.categoryId}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full shrink-0"
+                        style={{
+                          backgroundColor: cat.categoryColor || "#6b7280",
+                        }}
+                      />
+                      <span className="text-sm">{cat.categoryName}</span>
+                    </div>
+                    <span className="text-sm font-semibold">
+                      {formatCurrency(cat.total)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div className="mt-6 space-y-2">
+            <Button
+              variant="outline"
+              className="w-full justify-start gap-2"
+              onClick={() => setGoalModalOpen(true)}
+            >
+              <Target className="h-4 w-4" />
+              {goalTarget
+                ? `Meta: ${formatCurrency(goalTarget)}`
+                : "Definir meta mensal"}
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full justify-start gap-2"
+              onClick={() => setCategoryModalOpen(true)}
+            >
+              <Tag className="h-4 w-4" />
+              Gerenciar categorias
+            </Button>
+          </div>
+        </SectionCard>
+      </div>
+
+      {/* Expenses Table */}
+      <SectionCard
+        title="Gastos registrados"
+        actions={
+          <Button
+            size="sm"
+            onClick={() => {
+              setEditingExpense(null);
+              setExpenseModalOpen(true);
+            }}
+            className="gap-1.5"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Novo gasto
+          </Button>
+        }
+      >
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar despesas..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(0);
+              }}
+              className="pl-9"
+            />
+          </div>
+          <Select
+            value={filterCategory}
+            onValueChange={(v) => {
+              setFilterCategory(v);
+              setPage(0);
+            }}
+          >
+            <SelectTrigger className="w-full sm:w-[200px]">
+              <SelectValue placeholder="Todas categorias" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas categorias</SelectItem>
+              {categories?.map((cat) => (
+                <SelectItem key={cat.id} value={String(cat.id)}>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: cat.color || "#6b7280" }}
+                    />
+                    {cat.name}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Table */}
+        {expensesLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex gap-4">
+                <div className="skeleton h-5 flex-[0.8] rounded" />
+                <div className="skeleton h-5 flex-1 rounded" />
+                <div className="skeleton h-5 flex-[1.5] rounded" />
+                <div className="skeleton h-5 flex-[0.7] rounded" />
+                <div className="skeleton h-5 flex-[0.8] rounded" />
+                <div className="skeleton h-5 flex-[0.5] rounded" />
+              </div>
+            ))}
+          </div>
+        ) : expensesData && expensesData.items.length > 0 ? (
+          <>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border/50">
+                    <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">
+                      Data
+                    </th>
+                    <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">
+                      Categoria
+                    </th>
+                    <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">
+                      Descrição
+                    </th>
+                    <th className="text-right text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">
+                      Valor
+                    </th>
+                    <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">
+                      Pagamento
+                    </th>
+                    <th className="text-right text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">
+                      Ações
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {expensesData.items.map((expense) => (
+                    <tr
+                      key={expense.id}
+                      className="border-b border-border/30 hover:bg-muted/30 transition-colors"
+                    >
+                      <td className="py-3 px-2 text-sm">
+                        {new Date(expense.date).toLocaleDateString("pt-BR")}
+                      </td>
+                      <td className="py-3 px-2">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="w-2 h-2 rounded-full shrink-0"
+                            style={{
+                              backgroundColor:
+                                expense.categoryColor || "#6b7280",
+                            }}
+                          />
+                          <span className="text-sm">
+                            {expense.categoryName}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-2 text-sm max-w-[200px] truncate">
+                        {expense.description}
+                      </td>
+                      <td className="py-3 px-2 text-sm font-semibold text-right text-red-600 dark:text-red-400">
+                        -{formatCurrency(Number(expense.amount))}
+                      </td>
+                      <td className="py-3 px-2 text-sm text-muted-foreground">
+                        {paymentMethodLabels[expense.paymentMethod] ||
+                          expense.paymentMethod}
+                      </td>
+                      <td className="py-3 px-2 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => {
+                              setEditingExpense(expense);
+                              setExpenseModalOpen(true);
+                            }}
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                            onClick={() => {
+                              if (
+                                confirm(
+                                  "Tem certeza que deseja excluir esta despesa?"
+                                )
+                              ) {
+                                deleteMutation.mutate({ id: expense.id });
+                              }
+                            }}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden space-y-3">
+              {expensesData.items.map((expense) => (
+                <div
+                  key={expense.id}
+                  className="p-4 rounded-xl bg-muted/30 border border-border/30"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="font-medium text-sm">
+                        {expense.description}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span
+                          className="w-2 h-2 rounded-full"
+                          style={{
+                            backgroundColor:
+                              expense.categoryColor || "#6b7280",
+                          }}
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          {expense.categoryName}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold text-red-600 dark:text-red-400">
+                      -{formatCurrency(Number(expense.amount))}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <span>
+                        {new Date(expense.date).toLocaleDateString("pt-BR")}
+                      </span>
+                      <span>
+                        {paymentMethodLabels[expense.paymentMethod] ||
+                          expense.paymentMethod}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => {
+                          setEditingExpense(expense);
+                          setExpenseModalOpen(true);
+                        }}
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                        onClick={() => {
+                          if (
+                            confirm("Excluir esta despesa?")
+                          ) {
+                            deleteMutation.mutate({ id: expense.id });
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/30">
+                <span className="text-sm text-muted-foreground">
+                  {expensesData.total} despesa
+                  {expensesData.total !== 1 ? "s" : ""}
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    disabled={page === 0}
+                    onClick={() => setPage((p) => p - 1)}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-sm">
+                    {page + 1} / {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    disabled={page >= totalPages - 1}
+                    onClick={() => setPage((p) => p + 1)}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <EmptyState
+            icon={Receipt}
+            title="Nenhuma despesa registrada"
+            description="Registre seus gastos para acompanhar a saúde financeira do restaurante."
+            action={{
+              label: "Registrar despesa",
+              onClick: () => {
+                setEditingExpense(null);
+                setExpenseModalOpen(true);
+              },
+            }}
+          />
+        )}
+      </SectionCard>
+
+      {/* Modals */}
+      {establishmentId && (
+        <>
+          <ExpenseModal
+            open={expenseModalOpen}
+            onOpenChange={setExpenseModalOpen}
+            establishmentId={establishmentId}
+            editingExpense={editingExpense}
+            onSuccess={invalidateAll}
+          />
+          <CategoryManagerModal
+            open={categoryModalOpen}
+            onOpenChange={setCategoryModalOpen}
+            establishmentId={establishmentId}
+          />
+          <GoalModal
+            open={goalModalOpen}
+            onOpenChange={setGoalModalOpen}
+            establishmentId={establishmentId}
+            currentGoal={goalTarget}
+            month={currentMonth}
+            year={currentYear}
+          />
+        </>
+      )}
+    </AdminLayout>
+  );
+}

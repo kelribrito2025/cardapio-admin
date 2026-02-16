@@ -30,6 +30,7 @@ import MesasComandas from "./pages/MesasComandas";
 import Avaliacoes from "./pages/Avaliacoes";
 import Entregadores from "./pages/Entregadores";
 import Agendados from "./pages/Agendados";
+import Financas from "./pages/Financas";
 import EntregadorDetalhes from "./pages/EntregadorDetalhes";
 import { GlobalPDVHandle } from "./components/GlobalPDVHandle";
 
@@ -78,6 +79,7 @@ function AdminRoutes() {
         <Route path="/pdv" component={PDV} />
         <Route path="/mesas" component={MesasComandas} />
         <Route path="/avaliacoes" component={Avaliacoes} />
+        <Route path="/financas" component={Financas} />
         <Route path="/entregadores" component={Entregadores} />
         <Route path="/entregadores/:id" component={EntregadorDetalhes} />
         <Route path="/conta-seguranca" component={AccountSecurity} />

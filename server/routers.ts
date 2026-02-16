@@ -5188,5 +5188,165 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+
+  // ============ FINANÇAS ============
+  finance: router({
+    // Categorias de despesa
+    listCategories: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getExpenseCategories(input.establishmentId);
+      }),
+    
+    createCategory: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        name: z.string().min(1),
+        color: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createExpenseCategory(input);
+        return { id };
+      }),
+    
+    updateCategory: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().min(1).optional(),
+        color: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await db.updateExpenseCategory(id, data);
+        return { success: true };
+      }),
+    
+    deleteCategory: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        try {
+          await db.deleteExpenseCategory(input.id);
+          return { success: true };
+        } catch (e: any) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: e.message });
+        }
+      }),
+    
+    // Despesas
+    listExpenses: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+        categoryId: z.number().optional(),
+        paymentMethod: z.string().optional(),
+        search: z.string().optional(),
+        limit: z.number().optional(),
+        offset: z.number().optional(),
+      }))
+      .query(async ({ input }) => {
+        const { establishmentId, ...filters } = input;
+        return db.getExpenses(establishmentId, filters);
+      }),
+    
+    createExpense: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        categoryId: z.number(),
+        description: z.string().min(1),
+        amount: z.string(),
+        paymentMethod: z.enum(["cash", "pix", "card", "transfer"]),
+        date: z.string(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createExpense({
+          ...input,
+          date: new Date(input.date),
+        });
+        return { id };
+      }),
+    
+    updateExpense: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        categoryId: z.number().optional(),
+        description: z.string().min(1).optional(),
+        amount: z.string().optional(),
+        paymentMethod: z.enum(["cash", "pix", "card", "transfer"]).optional(),
+        date: z.string().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, date, ...data } = input;
+        await db.updateExpense(id, {
+          ...data,
+          ...(date ? { date: new Date(date) } : {}),
+        });
+        return { success: true };
+      }),
+    
+    deleteExpense: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteExpense(input.id);
+        return { success: true };
+      }),
+    
+    // Resumo financeiro
+    summary: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        period: z.enum(['today', 'week', 'month', 'custom']).optional(),
+        customStart: z.string().optional(),
+        customEnd: z.string().optional(),
+      }))
+      .query(async ({ input }) => {
+        return db.getFinanceSummary(input.establishmentId, input.period ?? 'today', input.customStart, input.customEnd);
+      }),
+    
+    // Gráfico de evolução
+    chart: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        period: z.enum(['week', 'month']).optional(),
+      }))
+      .query(async ({ input }) => {
+        return db.getFinanceChart(input.establishmentId, input.period ?? 'week');
+      }),
+    
+    // Despesas por categoria
+    expensesByCategory: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        period: z.enum(['today', 'week', 'month']).optional(),
+      }))
+      .query(async ({ input }) => {
+        return db.getExpensesByCategory(input.establishmentId, input.period ?? 'month');
+      }),
+    
+    // Meta mensal
+    getGoal: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        month: z.number(),
+        year: z.number(),
+      }))
+      .query(async ({ input }) => {
+        return db.getMonthlyGoal(input.establishmentId, input.month, input.year);
+      }),
+    
+    setGoal: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        month: z.number(),
+        year: z.number(),
+        targetProfit: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.upsertMonthlyGoal(input);
+        return { id };
+      }),
+  }),
 });
 export type AppRouter = typeof appRouter;

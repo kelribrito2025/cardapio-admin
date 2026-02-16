@@ -870,3 +870,52 @@ export const deliveries = mysqlTable("deliveries", {
 
 export type Delivery = typeof deliveries.$inferSelect;
 export type InsertDelivery = typeof deliveries.$inferInsert;
+
+
+// ============ FINANÇAS ============
+
+// Categorias de despesa
+export const expenseCategories = mysqlTable("expenseCategories", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  color: varchar("color", { length: 20 }).default("#6b7280"), // Cor para gráficos
+  isDefault: boolean("isDefault").default(false).notNull(), // Categorias padrão do sistema
+  sortOrder: int("sortOrder").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ExpenseCategory = typeof expenseCategories.$inferSelect;
+export type InsertExpenseCategory = typeof expenseCategories.$inferInsert;
+
+// Despesas (gastos)
+export const expenses = mysqlTable("expenses", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  categoryId: int("categoryId").notNull(),
+  description: varchar("description", { length: 500 }).notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  paymentMethod: mysqlEnum("paymentMethod", ["cash", "pix", "card", "transfer"]).default("cash").notNull(),
+  date: timestamp("date").notNull(), // Data do gasto
+  notes: text("notes"), // Observação opcional
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Expense = typeof expenses.$inferSelect;
+export type InsertExpense = typeof expenses.$inferInsert;
+
+// Metas mensais de lucro
+export const monthlyGoals = mysqlTable("monthlyGoals", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  month: int("month").notNull(), // 1-12
+  year: int("year").notNull(),
+  targetProfit: decimal("targetProfit", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MonthlyGoal = typeof monthlyGoals.$inferSelect;
+export type InsertMonthlyGoal = typeof monthlyGoals.$inferInsert;
