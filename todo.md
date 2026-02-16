@@ -6736,3 +6736,9 @@
 - [ ] Remover borda amarela que aparece na foto mockup do dashboard na seção Sistema Completo de Gestão
 - [x] Remover 3 perguntas do FAQ: 'Existe taxa por pedido?', 'Preciso de conhecimento técnico para usar?', 'Como funciona a gestão de entregadores?'
 - [x] Duplicar seção Cardápio Digital na landing page - nova seção Programa de Fidelidade com layout invertido (texto à esquerda, celular à direita)
+- [x] Bug: Carimbo do cartão fidelidade não é registrado após finalização do pedido (estabelecimento 30001, cliente 88999290000)
+
+## Bug Fix: Programa de Fidelidade - Carimbos não registrados
+- [x] Corrigir verificação de duplicação de carimbos: usar orderId em vez de orderNumber (orderNumber se repete entre dias)
+- [x] Atualizar lógica em updateOrderStatus para verificar por orderId
+- [x] Escrever teste vitest para validar a correção

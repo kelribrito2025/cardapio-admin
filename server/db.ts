@@ -1713,11 +1713,11 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
               console.log(`[Fidelidade] Cartão criado automaticamente para ${customerPhoneNormalized}. Senha temporária: ${tempPassword}`);
             }
             
-            // Verificar se já existe carimbo para este pedido
+            // Verificar se já existe carimbo para este pedido (usar orderId pois orderNumber pode se repetir entre dias)
             const existingStamp = await db.select().from(loyaltyStamps)
               .where(and(
                 eq(loyaltyStamps.loyaltyCardId, cardId),
-                eq(loyaltyStamps.orderNumber, order.orderNumber || '')
+                eq(loyaltyStamps.orderId, id)
               ))
               .limit(1);
             
