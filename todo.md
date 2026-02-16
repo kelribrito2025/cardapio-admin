@@ -6827,3 +6827,10 @@
 - [x] Navegação: Adicionar "Finanças" no sidebar
 - [x] Rota: Registrar /financas no App.tsx
 - [x] Testes: vitest para procedures de finanças
+
+## Dados Mockados Finanças (admin@admin.com)
+- [x] Identificar establishmentId da conta admin@admin.com
+- [x] Garantir categorias de despesa padrão criadas
+- [x] Inserir despesas mockadas variadas (últimos 30 dias, múltiplas categorias e formas de pagamento)
+- [x] Definir meta mensal de lucro
+- [x] Verificar dados na página de Finanças
