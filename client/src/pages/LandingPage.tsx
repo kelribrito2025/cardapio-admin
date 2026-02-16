@@ -851,6 +851,87 @@ function ClientsShowcaseSection() {
   );
 }
 
+// ============ SEÇÃO 3B: VERSÁTIL PARA DIVERSOS SEGMENTOS ============
+
+const SEGMENTS_DATA = [
+  { emoji: "🥗", name: "Restaurante", link: "#" },
+  { emoji: "🍔", name: "Hamburgueria", link: "#" },
+  { emoji: "🍕", name: "Pizzaria", link: "#" },
+  { emoji: "🍇", name: "Açaiteria", link: "#" },
+  { emoji: "🍦", name: "Sorveteria", link: "#" },
+  { emoji: "🍺", name: "Bar e adega", link: "#" },
+  { emoji: "☕", name: "Cafeteria", link: "#" },
+  { emoji: "🍣", name: "Japonesa", link: "#" },
+];
+
+function SegmentsSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setIsVisible(true);
+      },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="-mt-8 pb-20 lg:pb-28 bg-gray-50/50">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div
+          className={`relative rounded-3xl overflow-hidden transition-all duration-700 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          {/* Gradient background - Mindi identity (red/coral) */}
+          <div className="bg-gradient-to-r from-red-500 via-red-500 to-rose-500 p-6 sm:p-8 lg:p-10">
+            <div className="flex flex-col lg:flex-row items-center gap-8">
+              {/* Left text */}
+              <div className="lg:w-[280px] flex-shrink-0 text-center lg:text-left">
+                <h3 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
+                  Versátil para<br />diversos segmentos
+                </h3>
+                <p className="mt-3 text-sm text-red-100 leading-relaxed">
+                  Não viu seu segmento? Se você vende pelo WhatsApp, nós te atendemos!
+                </p>
+              </div>
+
+              {/* Segment cards */}
+              <div className="flex-1 grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
+                {SEGMENTS_DATA.map((seg, idx) => (
+                  <div
+                    key={seg.name}
+                    className={`group flex flex-col items-center gap-2 p-3 sm:p-4 rounded-2xl bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-300 cursor-pointer hover:-translate-y-1 ${
+                      isVisible
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-4"
+                    }`}
+                    style={{ transitionDelay: `${200 + idx * 80}ms` }}
+                  >
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-white shadow-lg flex items-center justify-center text-2xl sm:text-3xl group-hover:scale-110 transition-transform duration-300">
+                      {seg.emoji}
+                    </div>
+                    <span className="text-white font-semibold text-xs sm:text-sm text-center leading-tight">
+                      {seg.name}
+                    </span>
+                    <span className="text-red-200 text-[10px] sm:text-xs font-medium group-hover:text-white transition-colors">
+                      Ver exemplo
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ============ SEÇÃO 4: CARDÁPIO DIGITAL (TABLET MOCKUP) ============
 function CatalogShowcaseSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -2230,6 +2311,7 @@ export default function LandingPage() {
       <OrdersMockupSection />
       <PricingSection />
       <ClientsShowcaseSection />
+      <SegmentsSection />
       <FAQSection />
       <CTAFinalSection />
       <LandingFooter />

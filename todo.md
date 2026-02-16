@@ -6772,3 +6772,6 @@
 - [x] Tirar screenshots das páginas (estoque, pedidos, dashboard, cardápio) sem barra de preview
 - [x] Upload dos screenshots para S3
 - [x] Implementar alternância de imagem do mockup sincronizada com o efeito de digitação do texto
+
+## Seção Versátil para Diversos Segmentos
+- [x] Adicionar seção "Versátil para diversos segmentos" abaixo de "Explore Cases Reais" com identidade visual Mindi
