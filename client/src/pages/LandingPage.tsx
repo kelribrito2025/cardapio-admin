@@ -36,7 +36,10 @@ import {
   Shield,
   Rocket,
   HelpCircle,
-  Play
+  Play,
+  Star,
+  Gift,
+  TrendingUp
 } from "lucide-react";
 
 // CDN URLs dos mockups do dashboard
@@ -1030,6 +1033,216 @@ function CatalogShowcaseSection() {
   );
 }
 
+// ============ SEÇÃO 4B: PROGRAMA DE FIDELIDADE (LAYOUT INVERTIDO) ============
+function LoyaltyProgramSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Auto-rotate carousel
+  useEffect(() => {
+    if (!isVisible) return;
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % CATALOG_SLIDES.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, [isVisible]);
+
+  const benefits = [
+    {
+      icon: <Star className="w-5 h-5" />,
+      title: "Pontos a cada pedido",
+      desc: "Seus clientes acumulam pontos automaticamente a cada compra e trocam por recompensas."
+    },
+    {
+      icon: <Gift className="w-5 h-5" />,
+      title: "Recompensas personalizadas",
+      desc: "Crie prêmios exclusivos: descontos, itens grátis ou combos especiais para fidelizar."
+    },
+    {
+      icon: <Users className="w-5 h-5" />,
+      title: "Clientes que voltam sempre",
+      desc: "Aumente a recorrência e o ticket médio com um programa que engaja de verdade."
+    },
+    {
+      icon: <TrendingUp className="w-5 h-5" />,
+      title: "Relatórios de engajamento",
+      desc: "Acompanhe quantos clientes participam, quantos pontos foram resgatados e o impacto nas vendas."
+    },
+  ];
+
+  return (
+    <section
+      ref={sectionRef}
+      className="py-20 lg:py-28 bg-gradient-to-b from-gray-50/80 to-white overflow-hidden"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Coluna esquerda — Conteúdo (INVERTIDO) */}
+          <div
+            className={`transition-all duration-1000 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
+            }`}
+          >
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-red-50 border border-red-100 rounded-full px-4 py-1.5 mb-6">
+              <Star className="w-4 h-4 text-red-500" />
+              <span className="text-sm font-medium text-red-600">PROGRAMA DE FIDELIDADE</span>
+            </div>
+
+            {/* Título */}
+            <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-gray-900 leading-tight mb-5">
+              Fidelize seus clientes{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
+                e venda mais todos os dias.
+              </span>
+            </h2>
+
+            {/* Descrição */}
+            <p className="text-lg text-gray-600 leading-relaxed mb-8">
+              Crie seu programa de fidelidade em minutos. Seus clientes acumulam pontos, 
+              resgatam recompensas e voltam sempre — tudo integrado ao seu cardápio digital.
+            </p>
+
+            {/* Lista de benefícios */}
+            <div className="space-y-5 mb-10">
+              {benefits.map((benefit, i) => (
+                <div
+                  key={i}
+                  className={`flex items-start gap-4 transition-all duration-500 ${
+                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                  }`}
+                  style={{ transitionDelay: `${400 + i * 150}ms` }}
+                >
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-red-50 to-orange-50 border border-red-100 flex items-center justify-center text-red-500">
+                    {benefit.icon}
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-0.5">{benefit.title}</h4>
+                    <p className="text-sm text-gray-500 leading-relaxed">{benefit.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <Link
+              href="/criar-conta"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-red-500/25 hover:shadow-red-500/40 hover:scale-[1.02] transition-all duration-300"
+            >
+              Começar programa grátis
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+
+          {/* Coluna direita — Phone Mockup (INVERTIDO) */}
+          <div
+            className={`relative transition-all duration-1000 delay-200 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
+            }`}
+          >
+            {/* Moldura do Celular */}
+            <div className="relative mx-auto max-w-[320px]">
+              {/* Sombra externa */}
+              <div className="absolute -inset-6 bg-gradient-to-br from-red-500/10 via-orange-500/5 to-transparent rounded-[3rem] blur-2xl" />
+              
+              {/* Corpo do celular */}
+              <div className="relative bg-gray-900 rounded-[2.5rem] p-3 shadow-2xl shadow-gray-900/25">
+                {/* Tela do celular — Carrossel */}
+                <div className="relative rounded-[2rem] overflow-hidden bg-white">
+                  <div className="relative w-full">
+                    {CATALOG_SLIDES.map((src, i) => (
+                      <img
+                        key={i}
+                        src={src}
+                        alt={`Programa de fidelidade Mindi — tela ${i + 1}`}
+                        className={`w-full h-auto transition-opacity duration-700 ease-in-out ${
+                          i === currentSlide ? "opacity-100 relative" : "opacity-0 absolute inset-0"
+                        }`}
+                        loading="lazy"
+                      />
+                    ))}
+                  </div>
+                  {/* Indicadores (dots) */}
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                    {CATALOG_SLIDES.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentSlide(i)}
+                        className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                          i === currentSlide
+                            ? "bg-red-500 w-4"
+                            : "bg-gray-300 hover:bg-gray-400"
+                        }`}
+                        aria-label={`Slide ${i + 1}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Barra inferior do celular (home indicator) */}
+                <div className="flex items-center justify-center mt-2 mb-0.5">
+                  <div className="w-28 h-1 rounded-full bg-gray-700" />
+                </div>
+              </div>
+
+              {/* Badge flutuante */}
+              <div
+                className={`absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-lg shadow-gray-200/60 p-3 border border-gray-100 transition-all duration-700 delay-500 ${
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                }`}
+                style={{ animation: isVisible ? "hero-float 4s ease-in-out infinite" : "none" }}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center">
+                    <Star className="w-4 h-4 text-yellow-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900">1.250 pontos</p>
+                    <p className="text-[10px] text-gray-500">acumulados</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Badge flutuante direita */}
+              <div
+                className={`absolute top-1/4 -right-6 bg-white rounded-2xl shadow-lg shadow-gray-200/60 p-3 border border-gray-100 transition-all duration-700 delay-700 ${
+                  isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+                }`}
+                style={{ animation: isVisible ? "hero-float-delayed 5s ease-in-out infinite" : "none" }}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
+                    <Gift className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900">Resgate</p>
+                    <p className="text-[10px] text-gray-500">disponível!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ============ SEÇÃO MOCKUP VISUAL: GESTÃO DE PEDIDOS ============
 // Implementado como componente visual estático da landing, não como página do sistema.
 function OrdersMockupSection() {
@@ -1772,6 +1985,7 @@ export default function LandingPage() {
       <ProblemSolutionSection />
       <ClientsShowcaseSection />
       <CatalogShowcaseSection />
+      <LoyaltyProgramSection />
       <OrdersMockupSection />
       <PricingSection />
       <FAQSection />
