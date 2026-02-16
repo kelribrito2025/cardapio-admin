@@ -6766,7 +6766,7 @@
 - [x] Adicionar itens de estoque mockados
 
 ## Novo Screenshot do Dashboard para Landing Page
-- [x] Tirar novo screenshot do dashboard admin@admin.com sem borda do preview e atualizar na seção Sistema Completo de Gestão
+- [x] Tirar novo screenshot do dashboard admin@admin.com sem borda do preview e atualizar na seção Sistema Completo de Gestão (v2.mindi.com.br)
 
 ## Alternância de Imagens na Seção Sistema Completo de Gestão
 - [x] Tirar screenshots das páginas (estoque, pedidos, dashboard, cardápio) sem barra de preview

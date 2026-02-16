@@ -176,17 +176,17 @@ function LandingNavbar() {
 
 // ============ HERO SECTION ============
 // Hero mockup screenshots for each typewriter word
-const HERO_ESTOQUE_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/yrSJqYNpTciTuJho.png";
-const HERO_PEDIDOS_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/UHsRhgBVZcMbcVIb.png";
-const HERO_CARDAPIO_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/dZxIOVbtuHmMaITC.png";
-const HERO_ENTREGADORES_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/yWbJGHMCBVxlUcjA.png";
+const HERO_ESTOQUE_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/jtCjpgmlNTFQdeGB.png";
+const HERO_PEDIDOS_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/WbMlAXJDcALlSlfv.png";
+const HERO_CARDAPIO_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/MzBeiVpklOdewTuq.png";
+const HERO_ENTREGADORES_MOCKUP = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/dPQCLqIyuZCwaumP.png";
 
 const TYPEWRITER_ITEMS = [
   { word: "pedidos", image: HERO_PEDIDOS_MOCKUP },
   { word: "entregas", image: HERO_ENTREGADORES_MOCKUP },
   { word: "estoque", image: HERO_ESTOQUE_MOCKUP },
   { word: "cardápio", image: HERO_CARDAPIO_MOCKUP },
-  { word: "finanças", image: DASHBOARD_MOCKUP },
+  { word: "finanças", image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/tTaMSqKufWyJgHbx.png" },
 ];
 
 function HeroSection() {
