@@ -8662,3 +8662,128 @@ export async function processRecurringExpenses(establishmentId: number) {
   
   return { generated };
 }
+
+// --- Comparação Mensal ---
+
+export async function getMonthlyComparison(establishmentId: number, period: 'today' | 'week' | 'month' = 'month') {
+  const db = await getDb();
+  if (!db) return { current: { revenue: 0, expenses: 0, profit: 0 }, previous: { revenue: 0, expenses: 0, profit: 0 }, chart: [] };
+  
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+  
+  // Current period and equivalent previous period
+  let currentStart: Date;
+  let currentEnd: Date;
+  let prevStart: Date;
+  let prevEnd: Date;
+  let currentLabel: string;
+  let prevLabel: string;
+  
+  if (period === 'today') {
+    // Today vs yesterday
+    currentStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
+    currentEnd = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate(), 23, 59, 59);
+    prevStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - 1);
+    prevEnd = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - 1, 23, 59, 59);
+    currentLabel = 'Hoje';
+    prevLabel = 'Ontem';
+  } else if (period === 'week') {
+    // This week vs last week
+    const currentDay = localNow.getDay();
+    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+    currentStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysFromMonday);
+    currentEnd = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate(), 23, 59, 59);
+    prevStart = new Date(currentStart);
+    prevStart.setDate(prevStart.getDate() - 7);
+    prevEnd = new Date(currentEnd);
+    prevEnd.setDate(prevEnd.getDate() - 7);
+    currentLabel = 'Esta semana';
+    prevLabel = 'Semana anterior';
+  } else {
+    // This month vs last month (same day range)
+    currentStart = new Date(localNow.getFullYear(), localNow.getMonth(), 1);
+    currentEnd = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate(), 23, 59, 59);
+    // Previous month, same day range (1 to current day)
+    prevStart = new Date(localNow.getFullYear(), localNow.getMonth() - 1, 1);
+    prevEnd = new Date(localNow.getFullYear(), localNow.getMonth() - 1, localNow.getDate(), 23, 59, 59);
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    currentLabel = `${months[localNow.getMonth()]} ${localNow.getFullYear()}`;
+    prevLabel = `${months[prevStart.getMonth()]} ${prevStart.getFullYear()}`;
+  }
+  
+  const currentStartStr = fmtLocalDateTime(currentStart);
+  const currentEndStr = fmtLocalDateTime(currentEnd);
+  const prevStartStr = fmtLocalDateTime(prevStart);
+  const prevEndStr = fmtLocalDateTime(prevEnd);
+  
+  // Current revenue
+  const curRevenueResult = await db.select({
+    total: sql<number>`COALESCE(SUM(total), 0)`
+  }).from(orders).where(and(
+    eq(orders.establishmentId, establishmentId),
+    sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${currentStartStr}`,
+    sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) <= ${currentEndStr}`,
+    eq(orders.status, "completed")
+  ));
+  
+  // Previous revenue
+  const prevRevenueResult = await db.select({
+    total: sql<number>`COALESCE(SUM(total), 0)`
+  }).from(orders).where(and(
+    eq(orders.establishmentId, establishmentId),
+    sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${prevStartStr}`,
+    sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) <= ${prevEndStr}`,
+    eq(orders.status, "completed")
+  ));
+  
+  // Current expenses
+  const curExpensesResult = await db.select({
+    total: sql<number>`COALESCE(SUM(amount), 0)`
+  }).from(expenses).where(and(
+    eq(expenses.establishmentId, establishmentId),
+    sql`CONVERT_TZ(${expenses.date}, '+00:00', ${tz}) >= ${currentStartStr}`,
+    sql`CONVERT_TZ(${expenses.date}, '+00:00', ${tz}) <= ${currentEndStr}`
+  ));
+  
+  // Previous expenses
+  const prevExpensesResult = await db.select({
+    total: sql<number>`COALESCE(SUM(amount), 0)`
+  }).from(expenses).where(and(
+    eq(expenses.establishmentId, establishmentId),
+    sql`CONVERT_TZ(${expenses.date}, '+00:00', ${tz}) >= ${prevStartStr}`,
+    sql`CONVERT_TZ(${expenses.date}, '+00:00', ${tz}) <= ${prevEndStr}`
+  ));
+  
+  const curRevenue = Number(curRevenueResult[0]?.total ?? 0);
+  const curExpenses = Number(curExpensesResult[0]?.total ?? 0);
+  const curProfit = curRevenue - curExpenses;
+  
+  const prevRevenue = Number(prevRevenueResult[0]?.total ?? 0);
+  const prevExpenses = Number(prevExpensesResult[0]?.total ?? 0);
+  const prevProfit = prevRevenue - prevExpenses;
+  
+  // Chart data for grouped bar chart
+  const chart = [
+    {
+      label: currentLabel,
+      revenue: curRevenue,
+      expenses: curExpenses,
+      profit: curProfit,
+    },
+    {
+      label: prevLabel,
+      revenue: prevRevenue,
+      expenses: prevExpenses,
+      profit: prevProfit,
+    },
+  ];
+  
+  return {
+    current: { revenue: curRevenue, expenses: curExpenses, profit: curProfit },
+    previous: { revenue: prevRevenue, expenses: prevExpenses, profit: prevProfit },
+    currentLabel,
+    prevLabel,
+    chart,
+  };
+}

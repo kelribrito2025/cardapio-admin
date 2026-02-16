@@ -932,6 +932,16 @@ export default function Financas() {
     { enabled: !!establishmentId }
   );
 
+  // Monthly comparison
+  const comparisonInput = useMemo(
+    () => ({ establishmentId: establishmentId!, period }),
+    [establishmentId, period]
+  );
+  const { data: comparison, isLoading: comparisonLoading } =
+    trpc.finance.getMonthlyComparison.useQuery(comparisonInput, {
+      enabled: !!establishmentId,
+    });
+
   // Recurring expenses
   const recurringInput = useMemo(
     () => ({ establishmentId: establishmentId! }),
@@ -973,6 +983,7 @@ export default function Financas() {
     utils.finance.listExpenses.invalidate();
     utils.finance.expensesByCategory.invalidate();
     utils.finance.listRecurring.invalidate();
+    utils.finance.getMonthlyComparison.invalidate();
   }
 
   const goalTarget = goal ? Number(goal.targetProfit) : null;
@@ -1257,6 +1268,156 @@ export default function Financas() {
           </div>
         </SectionCard>
       </div>
+
+      {/* Comparação Mensal */}
+      <SectionCard
+        title="Comparação Mensal"
+        className="mb-6"
+        description={
+          comparison
+            ? `${comparison.currentLabel} vs ${comparison.prevLabel}`
+            : "Comparando períodos"
+        }
+      >
+        {comparisonLoading ? (
+          <div className="h-[350px] flex items-center justify-center">
+            <div className="skeleton h-full w-full rounded-lg" />
+          </div>
+        ) : comparison ? (
+          <>
+            {/* Summary blocks */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+              {/* Receita */}
+              <div className="bg-emerald-50 dark:bg-emerald-500/10 rounded-xl p-4 border border-emerald-200/50 dark:border-emerald-500/20">
+                <p className="text-xs font-medium text-muted-foreground mb-1">Receita</p>
+                <p className="text-xl font-bold text-foreground">{formatCurrency(comparison.current.revenue)}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {comparison.prevLabel}: {formatCurrency(comparison.previous.revenue)}
+                </p>
+                {(() => {
+                  const prev = comparison.previous.revenue;
+                  const curr = comparison.current.revenue;
+                  const change = prev === 0 ? (curr > 0 ? 100 : 0) : Math.round(((curr - prev) / prev) * 100);
+                  const isPositive = change >= 0;
+                  return (
+                    <div className={`flex items-center gap-1 mt-1.5 text-xs font-semibold ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
+                      <TrendingUp className={`h-3.5 w-3.5 ${!isPositive ? 'rotate-180' : ''}`} />
+                      {isPositive ? '+' : ''}{change}%
+                    </div>
+                  );
+                })()}
+              </div>
+              {/* Despesas */}
+              <div className="bg-red-50 dark:bg-red-500/10 rounded-xl p-4 border border-red-200/50 dark:border-red-500/20">
+                <p className="text-xs font-medium text-muted-foreground mb-1">Despesas</p>
+                <p className="text-xl font-bold text-foreground">{formatCurrency(comparison.current.expenses)}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {comparison.prevLabel}: {formatCurrency(comparison.previous.expenses)}
+                </p>
+                {(() => {
+                  const prev = comparison.previous.expenses;
+                  const curr = comparison.current.expenses;
+                  const change = prev === 0 ? (curr > 0 ? 100 : 0) : Math.round(((curr - prev) / prev) * 100);
+                  const isPositive = change <= 0; // For expenses, less is better
+                  return (
+                    <div className={`flex items-center gap-1 mt-1.5 text-xs font-semibold ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
+                      <TrendingUp className={`h-3.5 w-3.5 ${!isPositive ? '' : 'rotate-180'}`} />
+                      {change > 0 ? '+' : ''}{change}%
+                    </div>
+                  );
+                })()}
+              </div>
+              {/* Lucro */}
+              <div className="bg-blue-50 dark:bg-blue-500/10 rounded-xl p-4 border border-blue-200/50 dark:border-blue-500/20">
+                <p className="text-xs font-medium text-muted-foreground mb-1">Lucro</p>
+                <p className={`text-xl font-bold ${comparison.current.profit >= 0 ? 'text-foreground' : 'text-red-500'}`}>{formatCurrency(comparison.current.profit)}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {comparison.prevLabel}: {formatCurrency(comparison.previous.profit)}
+                </p>
+                {(() => {
+                  const prev = comparison.previous.profit;
+                  const curr = comparison.current.profit;
+                  const change = prev === 0 ? (curr > 0 ? 100 : curr < 0 ? -100 : 0) : Math.round(((curr - prev) / Math.abs(prev)) * 100);
+                  const isPositive = change >= 0;
+                  return (
+                    <div className={`flex items-center gap-1 mt-1.5 text-xs font-semibold ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
+                      <TrendingUp className={`h-3.5 w-3.5 ${!isPositive ? 'rotate-180' : ''}`} />
+                      {isPositive ? '+' : ''}{change}%
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+
+            {/* Grouped bar chart */}
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart
+                data={[
+                  {
+                    label: 'Receita',
+                    current: comparison.current.revenue,
+                    previous: comparison.previous.revenue,
+                  },
+                  {
+                    label: 'Despesas',
+                    current: comparison.current.expenses,
+                    previous: comparison.previous.expenses,
+                  },
+                  {
+                    label: 'Lucro',
+                    current: comparison.current.profit,
+                    previous: comparison.previous.profit,
+                  },
+                ]}
+                barGap={4}
+                barCategoryGap="25%"
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  opacity={0.5}
+                />
+                <XAxis
+                  dataKey="label"
+                  tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) =>
+                    v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
+                  }
+                />
+                <RechartsTooltip content={<ChartTooltipContent />} />
+                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
+                <Bar
+                  dataKey="current"
+                  name={comparison.currentLabel}
+                  fill="#10b981"
+                  radius={[4, 4, 0, 0]}
+                  barSize={32}
+                  opacity={0.9}
+                />
+                <Bar
+                  dataKey="previous"
+                  name={comparison.prevLabel}
+                  fill="#d1d5db"
+                  radius={[4, 4, 0, 0]}
+                  barSize={32}
+                  opacity={0.7}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </>
+        ) : (
+          <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">
+            Sem dados para comparação
+          </div>
+        )}
+      </SectionCard>
 
       {/* Recurring Expenses */}
       {recurringExpenses && recurringExpenses.length > 0 && (

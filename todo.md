@@ -6856,3 +6856,10 @@
 - [x] Card Despesas: alterar cor para vermelho
 - [x] Card Lucro Líquido: alterar cor para azul
 - [x] Card Ticket Médio: alterar cor para dourado (igual card itens em falta da Dashboard)
+
+## Card Comparação Mensal (Finanças)
+- [x] Backend: criar procedure getMonthlyComparison (receita, despesas, lucro do período atual vs anterior)
+- [x] Frontend: card com 3 blocos resumo (Receita, Despesas, Lucro) com valor atual, anterior e variação %
+- [x] Frontend: gráfico de barras agrupadas comparando mês atual vs anterior
+- [x] Respeitar filtro de período já selecionado na página
+- [x] Layout responsivo seguindo padrão visual da dashboard

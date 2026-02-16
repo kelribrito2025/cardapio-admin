@@ -5428,6 +5428,15 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         return db.processRecurringExpenses(input.establishmentId);
       }),
+
+    getMonthlyComparison: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        period: z.enum(['today', 'week', 'month']).default('month'),
+      }))
+      .query(async ({ input }) => {
+        return db.getMonthlyComparison(input.establishmentId, input.period);
+      }),
   }),
 });
 export type AppRouter = typeof appRouter;
