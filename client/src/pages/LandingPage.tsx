@@ -1053,9 +1053,7 @@ function OrdersMockupSection() {
   const benefits = [
     "Veja todos os pedidos em tempo real",
     "Status automático: novo, preparando, saiu para entrega",
-    "Histórico completo de cada cliente",
     "Notificações sonoras para novos pedidos",
-    "Filtros por data, status e entregador",
     "Impressão automática na cozinha",
   ];
 
