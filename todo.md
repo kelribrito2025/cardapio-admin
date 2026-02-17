@@ -6987,3 +6987,8 @@
 - [x] Garantir align-items: stretch via grid outer container
 - [x] Cards usam flex flex-col flex-1
 - [x] Sem hacks de margin, solução puramente estrutural com flex
+
+## Fix esticamento desproporcional dos cards ao trocar período
+- [x] Remover flex-1 dos cards Evolução Financeira e Comparação Mensal para que não estiquem além do conteúdo natural
+- [x] Usar h-[300px] fixo nos containers de gráfico para garantir tamanho consistente sem esticamento
+- [x] Garantir que ao trocar de "Este mês" para "7 dias" ou "Hoje", os cards não mantenham a altura expandida (items-start no grid)
