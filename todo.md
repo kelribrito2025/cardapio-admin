@@ -7066,3 +7066,7 @@
 - [x] Badges de urgência: "Próximo" (< 3 dias), "Hoje", "Atrasado" (já passou)
 - [x] Estado vazio: "Nenhum lançamento recorrente programado."
 - [x] Testes para o novo endpoint
+
+## Ajustes de layout na seção Finanças
+- [x] Adicionar espaçamento entre card "Lançamentos futuros" e card "Gastos registrados"
+- [x] Mover abas (Gastos / Receitas / Recorrentes) para fora do card, acima dele

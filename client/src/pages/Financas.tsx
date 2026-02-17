@@ -1834,8 +1834,8 @@ export default function Financas() {
       })()}
 
       {/* Unified Tabbed Section: Gastos / Receitas / Recorrentes */}
-      <div className="bg-card rounded-xl border border-border/50 p-5">
-        {/* Header with tabs */}
+      <div className="mt-6">
+        {/* Header with tabs - OUTSIDE the card */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
             <div className={`h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
@@ -1854,13 +1854,13 @@ export default function Financas() {
             <div className="min-w-0">
               <h3 className="text-base font-semibold text-foreground">
                 {listTab === "gastos" ? "Gastos registrados" :
-                 listTab === "receitas" ? "Receitas diárias" :
+                 listTab === "receitas" ? "Receitas di\u00e1rias" :
                  "Despesas recorrentes"}
               </h3>
               <p className="text-xs text-muted-foreground">
                 {listTab === "gastos" ? `${expensesData?.total ?? 0} despesas` :
                  listTab === "receitas" ? `${dailyRevenueData?.total ?? 0} dias com receita` :
-                 `${recurringExpenses?.length ?? 0} lançamentos recorrentes`}
+                 `${recurringExpenses?.length ?? 0} lan\u00e7amentos recorrentes`}
               </p>
             </div>
           </div>
@@ -1901,6 +1901,8 @@ export default function Financas() {
           </div>
         </div>
 
+        {/* Card container for tab content */}
+        <div className="bg-card rounded-xl border border-border/50 p-5">
         {/* === GASTOS TAB === */}
         {listTab === "gastos" && (
           <>
@@ -2388,7 +2390,8 @@ export default function Financas() {
             )}
           </>
         )}
-      </div>
+        </div>{/* end card container */}
+      </div>{/* end tabbed section wrapper */}
 
       {/* Modals */}
       {establishmentId && (
