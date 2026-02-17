@@ -5348,6 +5348,22 @@ export const appRouter = router({
         return { id };
       }),
 
+    // Receitas diárias (faturamento consolidado por dia)
+    listDailyRevenue: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+        search: z.string().optional(),
+        source: z.string().optional(),
+        limit: z.number().optional(),
+        offset: z.number().optional(),
+      }))
+      .query(async ({ input }) => {
+        const { establishmentId, ...filters } = input;
+        return db.getDailyRevenue(establishmentId, filters);
+      }),
+
     // Despesas Recorrentes
     listRecurring: protectedProcedure
       .input(z.object({ establishmentId: z.number() }))

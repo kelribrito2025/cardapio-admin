@@ -9072,3 +9072,70 @@ export async function getPaymentMethodDailyBreakdown(
 
   return { pix: pixDaily, card: cardDaily, cash: cashDaily, labels };
 }
+
+
+// --- Receitas Diárias (faturamento consolidado por dia) ---
+export async function getDailyRevenue(establishmentId: number, filters?: {
+  startDate?: string;
+  endDate?: string;
+  search?: string;
+  source?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  const db = await getDb();
+  if (!db) return { items: [], total: 0 };
+  
+  const tz = await getEstablishmentTimezone(establishmentId);
+  
+  let conditions = `WHERE o.establishmentId = ${establishmentId} AND o.status = 'completed'`;
+  
+  if (filters?.startDate) {
+    conditions += ` AND DATE(CONVERT_TZ(o.createdAt, '+00:00', '${tz}')) >= '${filters.startDate}'`;
+  }
+  if (filters?.endDate) {
+    conditions += ` AND DATE(CONVERT_TZ(o.createdAt, '+00:00', '${tz}')) <= '${filters.endDate}'`;
+  }
+  if (filters?.source && filters.source !== 'all') {
+    conditions += ` AND o.source = '${filters.source}'`;
+  }
+  
+  // Get daily revenue grouped by date
+  const query = `
+    SELECT 
+      DATE(CONVERT_TZ(o.createdAt, '+00:00', '${tz}')) as date,
+      COUNT(*) as orderCount,
+      COALESCE(SUM(o.total), 0) as total,
+      GROUP_CONCAT(DISTINCT o.source) as sources,
+      GROUP_CONCAT(DISTINCT o.paymentMethod) as paymentMethods
+    FROM orders o
+    ${conditions}
+    GROUP BY DATE(CONVERT_TZ(o.createdAt, '+00:00', '${tz}'))
+    ORDER BY date DESC
+    LIMIT ${filters?.limit ?? 50}
+    OFFSET ${filters?.offset ?? 0}
+  `;
+  
+  const countQuery = `
+    SELECT COUNT(DISTINCT DATE(CONVERT_TZ(o.createdAt, '+00:00', '${tz}'))) as total
+    FROM orders o
+    ${conditions}
+  `;
+  
+  const [rows, countRows] = await Promise.all([
+    db.execute(sql.raw(query)),
+    db.execute(sql.raw(countQuery)),
+  ]);
+  
+  const items = (Array.isArray(rows) && Array.isArray(rows[0]) ? rows[0] : rows).map((r: any) => ({
+    date: String(r.date),
+    orderCount: Number(r.orderCount),
+    total: Number(r.total),
+    sources: String(r.sources || ''),
+    paymentMethods: String(r.paymentMethods || ''),
+  }));
+  
+  const total = Number((Array.isArray(countRows) && Array.isArray(countRows[0]) ? countRows[0] : countRows)[0]?.total ?? 0);
+  
+  return { items, total };
+}

@@ -74,6 +74,7 @@ const paymentMethodLabels: Record<string, string> = {
   cash: "Dinheiro",
   pix: "PIX",
   card: "Cartão",
+  card_online: "Cartão Online",
   transfer: "Transferência",
 };
 
@@ -909,6 +910,9 @@ export default function Financas() {
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [page, setPage] = useState(0);
   const ITEMS_PER_PAGE = 15;
+  const [listTab, setListTab] = useState<"gastos" | "receitas" | "recorrentes">("gastos");
+  const [revenueSearchTerm, setRevenueSearchTerm] = useState("");
+  const [revenuePage, setRevenuePage] = useState(0);
 
   useEffect(() => {
     if (establishment) setEstablishmentId(establishment.id);
@@ -1038,6 +1042,20 @@ export default function Financas() {
     { enabled: !!establishmentId }
   );
 
+  // Daily revenue query
+  const dailyRevenueInput = useMemo(
+    () => ({
+      establishmentId: establishmentId!,
+      limit: ITEMS_PER_PAGE,
+      offset: revenuePage * ITEMS_PER_PAGE,
+    }),
+    [establishmentId, revenuePage]
+  );
+  const { data: dailyRevenueData, isLoading: dailyRevenueLoading } =
+    trpc.finance.listDailyRevenue.useQuery(dailyRevenueInput, {
+      enabled: !!establishmentId && listTab === "receitas",
+    });
+
   // Delete mutation
   const deleteMutation = trpc.finance.deleteExpense.useMutation({
     onSuccess: () => {
@@ -1079,6 +1097,18 @@ export default function Financas() {
   const totalPages = expensesData
     ? Math.ceil(expensesData.total / ITEMS_PER_PAGE)
     : 0;
+
+  const revenueTotalPages = dailyRevenueData
+    ? Math.ceil(dailyRevenueData.total / ITEMS_PER_PAGE)
+    : 0;
+
+  const sourceLabels: Record<string, string> = {
+    internal: "Menu público",
+    pdv: "PDV",
+    ifood: "iFood",
+    rappi: "Rappi",
+    ubereats: "Uber Eats",
+  };
 
   return (
     <AdminLayout>
@@ -1681,130 +1711,77 @@ export default function Financas() {
 
 
 
-      {/* Recurring Expenses */}
-      {recurringExpenses && recurringExpenses.length > 0 && (
-        <div className="bg-card rounded-xl border border-border/50 p-5 mb-6">
-          {/* Header com ícone - mesmo estilo */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
-                <Repeat className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="text-base font-semibold text-foreground">Despesas recorrentes</h3>
-                <p className="text-xs text-muted-foreground">Lançamentos gerados automaticamente</p>
-              </div>
-            </div>
-          </div>
-          <div className="space-y-3">
-            {recurringExpenses.map((rec: any) => {
-              const freqLabel =
-                rec.frequency === "monthly"
-                  ? `Mensal (dia ${rec.executionDay})`
-                  : rec.frequency === "weekly"
-                  ? `Semanal (${WEEKDAY_LABELS[rec.executionDay] || rec.executionDay})`
-                  : `Anual (dia ${rec.executionDay}/${MONTH_LABELS[(rec.executionMonth || 1) - 1]})`;
-              return (
-                <div
-                  key={rec.id}
-                  className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
-                    rec.active
-                      ? "bg-muted/30 border-border/30"
-                      : "bg-muted/10 border-border/20 opacity-60"
-                  }`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className={`p-2 rounded-lg ${
-                      rec.active ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"
-                    }`}>
-                      <Repeat className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{rec.description}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span>{freqLabel}</span>
-                        <span>·</span>
-                        <span className="font-semibold text-red-600 dark:text-red-400">
-                          {formatCurrency(Number(rec.amount))}
-                        </span>
-                        {rec.generateAsPending && (
-                          <>
-                            <span>·</span>
-                            <span className="text-amber-600">Pendente</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      title={rec.active ? "Pausar" : "Ativar"}
-                      onClick={() => {
-                        toggleRecurringMutation.mutate({
-                          id: rec.id,
-                          establishmentId: establishmentId!,
-                          active: !rec.active,
-                        });
-                      }}
-                    >
-                      {rec.active ? (
-                        <Pause className="h-3.5 w-3.5" />
-                      ) : (
-                        <Play className="h-3.5 w-3.5" />
-                      )}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                      onClick={() => {
-                        if (confirm("Excluir esta recorrência? Os lançamentos já gerados serão mantidos.")) {
-                          deleteRecurringMutation.mutate({
-                            id: rec.id,
-                            establishmentId: establishmentId!,
-                            deleteFutureExpenses: false,
-                          });
-                        }
-                      }}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Expenses Table */}
+      {/* Unified Tabbed Section: Gastos / Receitas / Recorrentes */}
       <div className="bg-card rounded-xl border border-border/50 p-5">
-        {/* Header com ícone - mesmo estilo */}
-        <div className="flex items-center justify-between mb-4">
+        {/* Header with tabs */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-red-100 dark:bg-red-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
-              <Receipt className="h-5 w-5 text-red-600 dark:text-red-400" />
+            <div className={`h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+              listTab === "gastos" ? "bg-red-100 dark:bg-red-500/15" :
+              listTab === "receitas" ? "bg-emerald-100 dark:bg-emerald-500/15" :
+              "bg-purple-100 dark:bg-purple-500/15"
+            }`} style={{borderRadius: '12px'}}>
+              {listTab === "gastos" ? (
+                <Receipt className="h-5 w-5 text-red-600 dark:text-red-400" />
+              ) : listTab === "receitas" ? (
+                <DollarSign className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+              ) : (
+                <Repeat className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              )}
             </div>
             <div className="min-w-0">
-              <h3 className="text-base font-semibold text-foreground">Gastos registrados</h3>
-              <p className="text-xs text-muted-foreground">{expensesData?.total ?? 0} despesas</p>
+              <h3 className="text-base font-semibold text-foreground">
+                {listTab === "gastos" ? "Gastos registrados" :
+                 listTab === "receitas" ? "Receitas diárias" :
+                 "Despesas recorrentes"}
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                {listTab === "gastos" ? `${expensesData?.total ?? 0} despesas` :
+                 listTab === "receitas" ? `${dailyRevenueData?.total ?? 0} dias com receita` :
+                 `${recurringExpenses?.length ?? 0} lançamentos recorrentes`}
+              </p>
             </div>
           </div>
-          <Button
-            size="sm"
-            onClick={() => {
-              setEditingExpense(null);
-              setExpenseModalOpen(true);
-            }}
-            className="gap-1.5"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            Novo gasto
-          </Button>
+          <div className="flex items-center gap-3">
+            {/* Tab selector - same style as period selector */}
+            <div className="flex items-center gap-1 bg-muted rounded-xl p-1">
+              {(["gastos", "receitas", "recorrentes"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => {
+                    setListTab(tab);
+                    setPage(0);
+                    setRevenuePage(0);
+                  }}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    listTab === tab
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {tab === "gastos" ? "Gastos" : tab === "receitas" ? "Receitas" : "Recorrentes"}
+                </button>
+              ))}
+            </div>
+            {listTab === "gastos" && (
+              <Button
+                size="sm"
+                onClick={() => {
+                  setEditingExpense(null);
+                  setExpenseModalOpen(true);
+                }}
+                className="gap-1.5"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Novo gasto
+              </Button>
+            )}
+          </div>
         </div>
+
+        {/* === GASTOS TAB === */}
+        {listTab === "gastos" && (
+          <>
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3 mb-4">
           <div className="relative flex-1">
@@ -2074,6 +2051,220 @@ export default function Financas() {
               },
             }}
           />
+        )}
+          </>
+        )}
+
+        {/* === RECEITAS TAB === */}
+        {listTab === "receitas" && (
+          <>
+            {dailyRevenueLoading ? (
+              <div className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex gap-4">
+                    <div className="skeleton h-5 flex-1 rounded" />
+                    <div className="skeleton h-5 flex-[0.7] rounded" />
+                    <div className="skeleton h-5 flex-1 rounded" />
+                    <div className="skeleton h-5 flex-[0.8] rounded" />
+                  </div>
+                ))}
+              </div>
+            ) : dailyRevenueData && dailyRevenueData.items.length > 0 ? (
+              <>
+                {/* Desktop table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border/50">
+                        <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">Data</th>
+                        <th className="text-right text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">Pedidos</th>
+                        <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">Canais</th>
+                        <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">Pagamentos</th>
+                        <th className="text-right text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dailyRevenueData.items.map((rev) => (
+                        <tr key={rev.date} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-2 text-sm">
+                            {new Date(rev.date + 'T12:00:00').toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" })}
+                          </td>
+                          <td className="py-3 px-2 text-sm text-right">{rev.orderCount}</td>
+                          <td className="py-3 px-2 text-sm">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              {rev.sources.split(',').map((s) => (
+                                <span key={s} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted">
+                                  {sourceLabels[s.trim()] || s.trim()}
+                                </span>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="py-3 px-2 text-sm text-muted-foreground">
+                            {rev.paymentMethods.split(',').map(m => paymentMethodLabels[m.trim()] || m.trim()).join(', ')}
+                          </td>
+                          <td className="py-3 px-2 text-sm font-semibold text-right text-emerald-600 dark:text-emerald-400">
+                            +{formatCurrency(rev.total)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile cards */}
+                <div className="md:hidden space-y-3">
+                  {dailyRevenueData.items.map((rev) => (
+                    <div key={rev.date} className="p-4 rounded-xl bg-muted/30 border border-border/30">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <p className="font-medium text-sm">
+                            {new Date(rev.date + 'T12:00:00').toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit" })}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{rev.orderCount} pedidos</p>
+                        </div>
+                        <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                          +{formatCurrency(rev.total)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {rev.sources.split(',').map((s) => (
+                          <span key={s} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted">
+                            {sourceLabels[s.trim()] || s.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {revenueTotalPages > 1 && (
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/30">
+                    <span className="text-sm text-muted-foreground">
+                      {dailyRevenueData.total} dia{dailyRevenueData.total !== 1 ? "s" : ""}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="icon" className="h-8 w-8" disabled={revenuePage === 0} onClick={() => setRevenuePage((p) => p - 1)}>
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <span className="text-sm">{revenuePage + 1} / {revenueTotalPages}</span>
+                      <Button variant="outline" size="icon" className="h-8 w-8" disabled={revenuePage >= revenueTotalPages - 1} onClick={() => setRevenuePage((p) => p + 1)}>
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <EmptyState
+                icon={DollarSign}
+                title="Nenhuma receita registrada"
+                description="As receitas são geradas automaticamente a partir dos pedidos finalizados."
+              />
+            )}
+          </>
+        )}
+
+        {/* === RECORRENTES TAB === */}
+        {listTab === "recorrentes" && (
+          <>
+            {recurringExpenses && recurringExpenses.length > 0 ? (
+              <div className="space-y-3">
+                {recurringExpenses.map((rec: any) => {
+                  const freqLabel =
+                    rec.frequency === "monthly"
+                      ? `Mensal (dia ${rec.executionDay})`
+                      : rec.frequency === "weekly"
+                      ? `Semanal (${WEEKDAY_LABELS[rec.executionDay] || rec.executionDay})`
+                      : `Anual (dia ${rec.executionDay}/${MONTH_LABELS[(rec.executionMonth || 1) - 1]})`;
+                  return (
+                    <div
+                      key={rec.id}
+                      className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
+                        rec.active
+                          ? "bg-muted/30 border-border/30"
+                          : "bg-muted/10 border-border/20 opacity-60"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`p-2 rounded-lg ${
+                          rec.active ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"
+                        }`}>
+                          <Repeat className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium truncate">{rec.description}</p>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span>{freqLabel}</span>
+                            <span>·</span>
+                            <span className="font-semibold text-red-600 dark:text-red-400">
+                              {formatCurrency(Number(rec.amount))}
+                            </span>
+                            {rec.generateAsPending && (
+                              <>
+                                <span>·</span>
+                                <span className="text-amber-600">Pendente</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          title={rec.active ? "Pausar" : "Ativar"}
+                          onClick={() => {
+                            toggleRecurringMutation.mutate({
+                              id: rec.id,
+                              establishmentId: establishmentId!,
+                              active: !rec.active,
+                            });
+                          }}
+                        >
+                          {rec.active ? (
+                            <Pause className="h-3.5 w-3.5" />
+                          ) : (
+                            <Play className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                          onClick={() => {
+                            if (confirm("Excluir esta recorrência? Os lançamentos já gerados serão mantidos.")) {
+                              deleteRecurringMutation.mutate({
+                                id: rec.id,
+                                establishmentId: establishmentId!,
+                                deleteFutureExpenses: false,
+                              });
+                            }
+                          }}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <EmptyState
+                icon={Repeat}
+                title="Nenhuma despesa recorrente"
+                description="Crie despesas recorrentes para automatizar lançamentos periódicos."
+                action={{
+                  label: "Criar recorrência",
+                  onClick: () => {
+                    setEditingExpense(null);
+                    setExpenseModalOpen(true);
+                  },
+                }}
+              />
+            )}
+          </>
         )}
       </div>
 

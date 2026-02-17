@@ -7046,3 +7046,10 @@
 - [x] Diagnosticar: Recharts ResponsiveContainer mantém altura anterior quando grid encolhe
 - [x] Forçar remount dos gráficos ao trocar período (key baseada no período)
 - [x] Testar: Este mês → 7 dias → Hoje - cards devem encolher ao voltar para período menor
+
+## Seletor de abas na seção Gastos registrados (Gastos / Receitas / Recorrentes)
+- [x] Adicionar botões de aba estilo período (Gastos / Receitas / Recorrentes) na seção Gastos registrados
+- [x] Filtrar tabela por tipo: Gastos mostra despesas, Receitas mostra receita diária consolidada dos pedidos, Recorrentes mostra lançamentos recorrentes
+- [x] Backend: criar endpoint para listar receitas diárias (faturamento por dia dos pedidos finalizados)
+- [x] Atualizar título e contagem conforme aba selecionada
+- [x] Manter mesmo estilo visual dos botões de seleção de período
