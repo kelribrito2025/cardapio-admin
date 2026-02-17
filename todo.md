@@ -6882,3 +6882,8 @@
 
 ## Bug: Espaço em branco abaixo do gráfico Evolução Financeira
 - [x] Remover espaço em branco extra abaixo do gráfico no card de Evolução Financeira
+
+## Progresso da Meta no Botão
+- [x] Remover seção separada "Meta mensal" com barra de progresso do card Indicadores
+- [x] Integrar progresso da meta diretamente no botão "Meta" com preenchimento gradual
+- [x] Degradê de cores: vermelho (<10%), laranja (<30%), amarelo (<70%), verde (>=70-100%)

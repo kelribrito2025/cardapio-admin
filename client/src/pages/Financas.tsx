@@ -780,41 +780,7 @@ function FinancialHealthIndicator({
         </div>
       )}
 
-      {/* Monthly Goal Progress */}
-      {goalTarget && goalProgress !== null && (
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-muted-foreground">
-              Meta mensal
-            </span>
-            <span className="text-sm font-semibold">
-              {Math.min(100, Math.round(goalProgress))}%
-            </span>
-          </div>
-          <div className="h-3 bg-muted rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${
-                goalProgress >= 100
-                  ? "bg-emerald-500"
-                  : goalProgress >= 70
-                  ? "bg-blue-500"
-                  : "bg-amber-500"
-              }`}
-              style={{ width: `${Math.min(100, Math.max(3, goalProgress))}%` }}
-            />
-          </div>
-          <div className="flex justify-between mt-1">
-            <span className="text-[11px] text-muted-foreground">
-              {formatCurrency(profit)} de {formatCurrency(goalTarget)}
-            </span>
-            {goalProgress >= 100 && (
-              <span className="text-[11px] text-emerald-600 font-semibold">
-                Meta atingida!
-              </span>
-            )}
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }
@@ -1356,16 +1322,49 @@ export default function Financas() {
 
           {/* Action buttons */}
           <div className="mt-6 space-y-2">
-            <Button
-              variant="outline"
-              className="w-full justify-start gap-2"
+            {/* Meta button with integrated progress fill */}
+            <div
+              className="relative w-full h-10 rounded-md border border-border overflow-hidden cursor-pointer transition-all hover:border-foreground/30"
               onClick={() => setGoalModalOpen(true)}
             >
-              <Target className="h-4 w-4" />
-              {goalTarget
-                ? `Meta: ${formatCurrency(goalTarget)}`
-                : "Definir meta mensal"}
-            </Button>
+              {/* Progress fill background */}
+              {goalTarget && goalProgress !== null && (
+                <div
+                  className="absolute inset-y-0 left-0 transition-all duration-700 ease-out"
+                  style={{
+                    width: `${Math.min(100, Math.max(0, goalProgress))}%`,
+                    background: goalProgress >= 70
+                      ? 'linear-gradient(90deg, #22c55e, #16a34a)'
+                      : goalProgress >= 30
+                      ? 'linear-gradient(90deg, #f59e0b, #eab308)'
+                      : goalProgress >= 10
+                      ? 'linear-gradient(90deg, #f97316, #f59e0b)'
+                      : 'linear-gradient(90deg, #ef4444, #f97316)',
+                    opacity: 0.2,
+                  }}
+                />
+              )}
+              {/* Button content */}
+              <div className="relative flex items-center gap-2 h-full px-3 z-10">
+                <Target className={`h-4 w-4 shrink-0 ${
+                  goalTarget && goalProgress !== null
+                    ? goalProgress >= 70 ? 'text-emerald-600' : goalProgress >= 30 ? 'text-amber-600' : goalProgress >= 10 ? 'text-orange-600' : 'text-red-600'
+                    : 'text-muted-foreground'
+                }`} />
+                <span className="text-sm font-medium">
+                  {goalTarget
+                    ? `Meta: ${formatCurrency(goalTarget)}`
+                    : "Definir meta mensal"}
+                </span>
+                {goalTarget && goalProgress !== null && (
+                  <span className={`ml-auto text-xs font-bold ${
+                    goalProgress >= 70 ? 'text-emerald-600' : goalProgress >= 30 ? 'text-amber-600' : goalProgress >= 10 ? 'text-orange-600' : 'text-red-600'
+                  }`}>
+                    {goalProgress >= 100 ? '✓ Atingida!' : `${Math.round(Math.max(0, goalProgress))}%`}
+                  </span>
+                )}
+              </div>
+            </div>
             <Button
               variant="outline"
               className="w-full justify-start gap-2"
