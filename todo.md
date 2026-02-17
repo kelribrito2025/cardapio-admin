@@ -6896,3 +6896,11 @@
 - [x] Aplicar mesmo estilo do card Evolução Financeira no card Comparação Mensal (ícone header, legend dots)
 - [x] Aplicar mesmo estilo no card Despesas recorrentes (ícone header roxo)
 - [x] Aplicar mesmo estilo no card Gastos registrados (ícone header vermelho)
+
+## Card Faturamento por canal
+- [x] Analisar schema de pedidos para identificar campo de canal (PDV, Menu público, Mesas)
+- [x] Criar endpoint tRPC para faturamento por canal com filtro de período
+- [x] Criar card UI com donut chart + lista detalhada (mesmo padrão visual dos outros cards)
+- [x] Respeitar filtro global da página (Hoje / 7 dias / Este mês)
+- [x] Estado vazio: "Sem faturamento registrado neste período"
+- [x] Escrever testes vitest para o endpoint

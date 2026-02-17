@@ -314,4 +314,83 @@ describe("finance", () => {
       expect(found).toBeUndefined();
     });
   });
+
+  describe("revenueByChannel", () => {
+    it("returns channel data with expected structure for today", async () => {
+      const result = await caller.finance.revenueByChannel({
+        establishmentId: testEstablishmentId,
+        period: "today",
+      });
+      expect(result).toHaveProperty("channels");
+      expect(result).toHaveProperty("total");
+      expect(Array.isArray(result.channels)).toBe(true);
+      expect(result.channels.length).toBe(3);
+      expect(typeof result.total).toBe("number");
+
+      // Check channel structure
+      const pdv = result.channels.find((c: any) => c.id === "pdv");
+      const menu = result.channels.find((c: any) => c.id === "menu");
+      const mesas = result.channels.find((c: any) => c.id === "mesas");
+      expect(pdv).toBeDefined();
+      expect(menu).toBeDefined();
+      expect(mesas).toBeDefined();
+
+      // Check each channel has required fields
+      for (const ch of result.channels) {
+        expect(ch).toHaveProperty("id");
+        expect(ch).toHaveProperty("name");
+        expect(ch).toHaveProperty("color");
+        expect(ch).toHaveProperty("total");
+        expect(ch).toHaveProperty("count");
+        expect(ch).toHaveProperty("percent");
+        expect(typeof ch.total).toBe("number");
+        expect(typeof ch.count).toBe("number");
+        expect(typeof ch.percent).toBe("number");
+      }
+    });
+
+    it("returns channel data for week period", async () => {
+      const result = await caller.finance.revenueByChannel({
+        establishmentId: testEstablishmentId,
+        period: "week",
+      });
+      expect(result.channels.length).toBe(3);
+      expect(typeof result.total).toBe("number");
+    });
+
+    it("returns channel data for month period", async () => {
+      const result = await caller.finance.revenueByChannel({
+        establishmentId: testEstablishmentId,
+        period: "month",
+      });
+      expect(result.channels.length).toBe(3);
+      expect(typeof result.total).toBe("number");
+    });
+
+    it("percentages sum to 100 or all zero when no data", async () => {
+      const result = await caller.finance.revenueByChannel({
+        establishmentId: testEstablishmentId,
+        period: "today",
+      });
+      const totalPercent = result.channels.reduce((sum: number, ch: any) => sum + ch.percent, 0);
+      if (result.total > 0) {
+        // Allow rounding tolerance (97-103)
+        expect(totalPercent).toBeGreaterThanOrEqual(97);
+        expect(totalPercent).toBeLessThanOrEqual(103);
+      } else {
+        expect(totalPercent).toBe(0);
+      }
+    });
+
+    it("channel names match expected values", async () => {
+      const result = await caller.finance.revenueByChannel({
+        establishmentId: testEstablishmentId,
+        period: "today",
+      });
+      const names = result.channels.map((c: any) => c.name);
+      expect(names).toContain("PDV");
+      expect(names).toContain("Menu p\u00fablico");
+      expect(names).toContain("Mesas");
+    });
+  });
 });

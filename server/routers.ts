@@ -5436,6 +5436,17 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.getMonthlyComparison(input.establishmentId);
       }),
+
+    revenueByChannel: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        period: z.enum(['today', 'week', 'month', 'custom']).optional(),
+        customStart: z.string().optional(),
+        customEnd: z.string().optional(),
+      }))
+      .query(async ({ input }) => {
+        return db.getRevenueByChannel(input.establishmentId, input.period ?? 'today', input.customStart, input.customEnd);
+      }),
   }),
 });
 export type AppRouter = typeof appRouter;

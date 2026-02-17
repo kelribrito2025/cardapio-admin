@@ -8712,3 +8712,108 @@ export async function getMonthlyComparison(establishmentId: number) {
   
   return { months };
 }
+
+// --- Faturamento por Canal ---
+
+export async function getRevenueByChannel(
+  establishmentId: number,
+  period: 'today' | 'week' | 'month' | 'custom' = 'today',
+  customStart?: string,
+  customEnd?: string
+) {
+  const db = await getDb();
+  if (!db) return { channels: [], total: 0 };
+
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+
+  let periodStart: Date;
+
+  if (period === 'custom' && customStart && customEnd) {
+    periodStart = new Date(customStart);
+  } else if (period === 'today') {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
+  } else if (period === 'week') {
+    const currentDay = localNow.getDay();
+    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysFromMonday);
+  } else {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), 1);
+  }
+
+  const periodStartStr = fmtLocalDateTime(periodStart);
+  const nowStr = period === 'custom' && customEnd ? `${customEnd} 23:59:59` : undefined;
+
+  // Query revenue grouped by source and deliveryType
+  const result = await db.select({
+    source: orders.source,
+    deliveryType: orders.deliveryType,
+    total: sql<number>`COALESCE(SUM(${orders.total}), 0)`,
+    count: sql<number>`COUNT(*)`,
+  })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${periodStartStr}`,
+      ...(nowStr ? [sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) <= ${nowStr}`] : []),
+      eq(orders.status, "completed")
+    ))
+    .groupBy(orders.source, orders.deliveryType);
+
+  // Map to channels: PDV, Menu público, Mesas
+  // source=pdv → PDV
+  // deliveryType=dine_in → Mesas (when source is not pdv)
+  // everything else (internal delivery/pickup) → Menu público
+  const channelMap: Record<string, { total: number; count: number }> = {
+    pdv: { total: 0, count: 0 },
+    menu: { total: 0, count: 0 },
+    mesas: { total: 0, count: 0 },
+  };
+
+  for (const row of result) {
+    const total = Number(row.total);
+    const count = Number(row.count);
+
+    if (row.source === 'pdv') {
+      channelMap.pdv.total += total;
+      channelMap.pdv.count += count;
+    } else if (row.deliveryType === 'dine_in') {
+      channelMap.mesas.total += total;
+      channelMap.mesas.count += count;
+    } else {
+      channelMap.menu.total += total;
+      channelMap.menu.count += count;
+    }
+  }
+
+  const grandTotal = channelMap.pdv.total + channelMap.menu.total + channelMap.mesas.total;
+
+  const channels = [
+    {
+      id: 'pdv',
+      name: 'PDV',
+      color: '#3b82f6', // blue
+      total: channelMap.pdv.total,
+      count: channelMap.pdv.count,
+      percent: grandTotal > 0 ? Math.round((channelMap.pdv.total / grandTotal) * 100) : 0,
+    },
+    {
+      id: 'menu',
+      name: 'Menu público',
+      color: '#22c55e', // green
+      total: channelMap.menu.total,
+      count: channelMap.menu.count,
+      percent: grandTotal > 0 ? Math.round((channelMap.menu.total / grandTotal) * 100) : 0,
+    },
+    {
+      id: 'mesas',
+      name: 'Mesas',
+      color: '#f97316', // orange
+      total: channelMap.mesas.total,
+      count: channelMap.mesas.count,
+      percent: grandTotal > 0 ? Math.round((channelMap.mesas.total / grandTotal) * 100) : 0,
+    },
+  ];
+
+  return { channels, total: grandTotal };
+}
