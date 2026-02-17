@@ -7097,3 +7097,6 @@
 ## Fix: Reverter StatCard da Dashboard
 - [x] Reverter StatCard compartilhado ao formato original (% ao lado do valor)
 - [x] Aplicar indicador % ao lado do título apenas nos StatCards da página de Finanças
+
+## Mobile: Botão Período de Avaliação
+- [x] Ocultar texto "X dias" no mobile, mostrar apenas ícone de relógio

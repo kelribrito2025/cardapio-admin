@@ -884,9 +884,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       style={{ borderRadius: '10px' }}
                     >
                       <Clock className="h-3.5 w-3.5 shrink-0" />
-                      {/* Mobile: apenas dias restantes | Desktop: texto completo */}
+                      {/* Mobile: apenas ícone | Desktop: texto completo */}
                       <span className="hidden md:inline">Avaliação gratuita: {trialInfo.daysRemaining} {trialInfo.daysRemaining === 1 ? 'dia' : 'dias'}</span>
-                      <span className="md:hidden">{trialInfo.daysRemaining} {trialInfo.daysRemaining === 1 ? 'dia' : 'dias'}</span>
                     </button>
                   </PopoverTrigger>
                   <PopoverContent className="w-72 p-4" align="end">
