@@ -1421,79 +1421,68 @@ export default function Financas() {
               <div className="skeleton h-full w-full rounded-lg" />
             </div>
           ) : channelData && channelData.total > 0 ? (
-            <div>
-              {/* Total */}
-              <div className="text-center mb-4">
-                <span className="text-2xl font-bold text-foreground">{formatCurrency(channelData.total)}</span>
-                <p className="text-xs text-muted-foreground mt-0.5">Total no período</p>
-              </div>
+            <div className="space-y-4">
+              {/* Horizontal bars - one per channel */}
+              {channelData.channels.map((ch) => {
+                const channelColors: Record<string, string> = {
+                  pdv: 'bg-blue-500',
+                  menu: 'bg-emerald-500',
+                  mesas: 'bg-amber-500',
+                };
+                const barColor = channelColors[ch.id] || 'bg-gray-500';
+                const variation = (ch as any).variation as number | null;
+                const prevTotal = (ch as any).prevTotal as number | undefined;
 
-              {/* Vertical bar chart */}
-              <div className="flex items-end justify-center gap-5 mb-5" style={{ height: 120 }}>
-                {channelData.channels.map((ch) => {
-                  const maxVal = Math.max(...channelData.channels.map(c => c.total));
-                  const barHeight = maxVal > 0 ? Math.max((ch.total / maxVal) * 100, 6) : 6;
-                  const gradients: Record<string, string[]> = {
-                    pdv: ['#3b82f6', '#60a5fa', '#93c5fd'],
-                    menu: ['#10b981', '#34d399', '#6ee7b7'],
-                    mesas: ['#f59e0b', '#fbbf24', '#fcd34d'],
-                  };
-                  const [from, , to] = gradients[ch.id] || ['#6b7280', '#9ca3af', '#d1d5db'];
-                  const gradientId = `bar-gradient-${ch.id}`;
-
-                  return (
-                    <div key={ch.id} className="flex flex-col items-center gap-2">
-                      <span className="text-xs font-bold text-foreground">{ch.percent}%</span>
-                      <div className="relative" style={{ width: 40, height: 100 }}>
-                        <svg width="40" height="100" className="overflow-visible">
-                          <defs>
-                            <linearGradient id={gradientId} x1="0" y1="1" x2="0" y2="0">
-                              <stop offset="0%" stopColor={from} />
-                              <stop offset="100%" stopColor={to} />
-                            </linearGradient>
-                          </defs>
-                          <rect
-                            x="4"
-                            y={100 - barHeight}
-                            width="32"
-                            height={barHeight}
-                            rx="8"
-                            ry="8"
-                            fill={`url(#${gradientId})`}
-                            className="transition-all duration-700 ease-out"
-                            style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
-                          />
-                        </svg>
+                return (
+                  <div key={ch.id} className="group relative">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-foreground">{ch.name}</span>
+                        <span className="text-xs text-muted-foreground">({ch.count} pedidos)</span>
                       </div>
-                      <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">{ch.name}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-foreground">{formatCurrency(ch.total)}</span>
+                        <span className="text-xs font-semibold" style={{ color: ch.color }}>{ch.percent}%</span>
+                      </div>
                     </div>
-                  );
-                })}
-              </div>
-
-              {/* Channel detail list */}
-              <div className="space-y-2.5 pt-3 border-t border-border/40">
-                {channelData.channels.map((ch) => (
-                  <div
-                    key={ch.id}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span
-                        className="w-1.5 h-5 rounded-full shrink-0"
-                        style={{ backgroundColor: ch.color }}
+                    <div className="h-3 bg-muted rounded-full overflow-hidden cursor-pointer">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${barColor}`}
+                        style={{ width: `${Math.max(3, ch.percent)}%` }}
                       />
-                      <div>
-                        <span className="text-sm font-medium">{ch.name}</span>
-                        <span className="text-xs text-muted-foreground ml-1.5">({ch.count} pedidos)</span>
-                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold">{formatCurrency(ch.total)}</span>
+                    {/* Tooltip on hover */}
+                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none">
+                      <div className="bg-foreground text-background rounded-lg px-3 py-2 shadow-lg text-xs whitespace-nowrap">
+                        <div className="font-semibold mb-1">{ch.name}</div>
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <span>Valor:</span>
+                          <span className="font-semibold">{formatCurrency(ch.total)}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <span>Pedidos:</span>
+                          <span className="font-semibold">{ch.count}</span>
+                        </div>
+                        {variation !== null && variation !== undefined && (
+                          <div className="flex items-center gap-1.5">
+                            <span>vs anterior:</span>
+                            <span className={`font-semibold ${variation > 0 ? 'text-emerald-400' : variation < 0 ? 'text-red-400' : ''}`}>
+                              {variation > 0 ? '↑' : variation < 0 ? '↓' : '↔'} {Math.abs(variation)}%
+                            </span>
+                          </div>
+                        )}
+                        {prevTotal !== undefined && (
+                          <div className="flex items-center gap-1.5 text-[10px] opacity-70 mt-0.5">
+                            <span>Período anterior:</span>
+                            <span>{formatCurrency(prevTotal)}</span>
+                          </div>
+                        )}
+                        <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-foreground" />
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
           ) : (
             <div className="h-[160px] flex items-center justify-center text-muted-foreground text-sm">

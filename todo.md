@@ -6926,3 +6926,11 @@
 ## Redesign Faturamento por canal - Barras verticais
 - [x] Substituir meia lua por mini barras verticais arredondadas com gradiente sutil
 - [x] 3 barras (PDV, Menu público, Mesas) com alturas proporcionais ao faturamento
+
+## Redesign Faturamento por canal - Barras horizontais
+- [ ] Substituir barras verticais por 3 barras horizontais empilhadas (uma por canal)
+- [ ] Estilo igual à barra de Saúde Financeira do card Indicadores
+
+## Tooltip interativo nas barras de Faturamento por canal
+- [x] Adicionar dados de período anterior no endpoint revenueByChannel (variação %)
+- [x] Implementar tooltip ao hover nas barras com valor exato, pedidos e variação

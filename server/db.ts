@@ -8786,32 +8786,102 @@ export async function getRevenueByChannel(
     }
   }
 
+  // --- Previous period comparison ---
+  let prevStart: Date;
+  let prevEnd: Date;
+  const periodDuration = localNow.getTime() - periodStart.getTime();
+
+  if (period === 'custom' && customStart && customEnd) {
+    const csDate = new Date(customStart);
+    const ceDate = new Date(customEnd);
+    const dur = ceDate.getTime() - csDate.getTime();
+    prevEnd = new Date(csDate.getTime() - 1);
+    prevStart = new Date(prevEnd.getTime() - dur);
+  } else {
+    prevEnd = new Date(periodStart.getTime() - 1);
+    prevStart = new Date(periodStart.getTime() - periodDuration);
+  }
+
+  const prevStartStr = fmtLocalDateTime(prevStart);
+  const prevEndStr = fmtLocalDateTime(prevEnd);
+
+  const prevResult = await db.select({
+    source: orders.source,
+    deliveryType: orders.deliveryType,
+    total: sql<number>`COALESCE(SUM(${orders.total}), 0)`,
+    count: sql<number>`COUNT(*)`,
+  })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${prevStartStr}`,
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) <= ${prevEndStr}`,
+      eq(orders.status, "completed")
+    ))
+    .groupBy(orders.source, orders.deliveryType);
+
+  const prevMap: Record<string, { total: number; count: number }> = {
+    pdv: { total: 0, count: 0 },
+    menu: { total: 0, count: 0 },
+    mesas: { total: 0, count: 0 },
+  };
+
+  for (const row of prevResult) {
+    const total = Number(row.total);
+    const count = Number(row.count);
+    if (row.source === 'pdv') {
+      prevMap.pdv.total += total;
+      prevMap.pdv.count += count;
+    } else if (row.deliveryType === 'dine_in') {
+      prevMap.mesas.total += total;
+      prevMap.mesas.count += count;
+    } else {
+      prevMap.menu.total += total;
+      prevMap.menu.count += count;
+    }
+  }
+
+  function calcVariation(current: number, previous: number): number | null {
+    if (previous === 0 && current === 0) return 0;
+    if (previous === 0) return 100;
+    return Math.round(((current - previous) / previous) * 100);
+  }
+
   const grandTotal = channelMap.pdv.total + channelMap.menu.total + channelMap.mesas.total;
 
   const channels = [
     {
       id: 'pdv',
       name: 'PDV',
-      color: '#3b82f6', // blue
+      color: '#3b82f6',
       total: channelMap.pdv.total,
       count: channelMap.pdv.count,
       percent: grandTotal > 0 ? Math.round((channelMap.pdv.total / grandTotal) * 100) : 0,
+      prevTotal: prevMap.pdv.total,
+      prevCount: prevMap.pdv.count,
+      variation: calcVariation(channelMap.pdv.total, prevMap.pdv.total),
     },
     {
       id: 'menu',
       name: 'Menu público',
-      color: '#22c55e', // green
+      color: '#22c55e',
       total: channelMap.menu.total,
       count: channelMap.menu.count,
       percent: grandTotal > 0 ? Math.round((channelMap.menu.total / grandTotal) * 100) : 0,
+      prevTotal: prevMap.menu.total,
+      prevCount: prevMap.menu.count,
+      variation: calcVariation(channelMap.menu.total, prevMap.menu.total),
     },
     {
       id: 'mesas',
       name: 'Mesas',
-      color: '#f97316', // orange
+      color: '#f97316',
       total: channelMap.mesas.total,
       count: channelMap.mesas.count,
       percent: grandTotal > 0 ? Math.round((channelMap.mesas.total / grandTotal) * 100) : 0,
+      prevTotal: prevMap.mesas.total,
+      prevCount: prevMap.mesas.count,
+      variation: calcVariation(channelMap.mesas.total, prevMap.mesas.total),
     },
   ];
 
