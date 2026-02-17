@@ -7117,3 +7117,6 @@
 ## Entregadores: Badge Pago e integração Finanças
 - [x] Mostrar badge "Pago" com visual adequado quando entrega já foi paga (similar ao Pagar mas com status concluído)
 - [x] Registrar pagamento de taxa de entrega como gasto na lista de gastos registrados em Finanças
+
+## Landing: Aumentar mockups em 5%
+- [x] Aumentar tamanho dos mockups em 5% nas seções: Sistema completo de gestão, Campanhas SMS, Cupons de Desconto

@@ -394,7 +394,7 @@ function HeroSection() {
               className={`relative w-full max-w-lg lg:max-w-none transition-all duration-1000 delay-300 ${
                 isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
               }`}
-              style={{ transform: isVisible ? "scale(1.10) translateX(0)" : "scale(1.10) translateX(3rem)", transformOrigin: "center center" }}
+              style={{ transform: isVisible ? "scale(1.155) translateX(0)" : "scale(1.155) translateX(3rem)", transformOrigin: "center center" }}
             >
               {/* Desktop Mockup */}
               <div
@@ -1574,7 +1574,7 @@ function CampaignsSMSSection() {
             className={`relative w-full max-w-lg lg:max-w-none transition-all duration-1000 ${
               isVisible ? "opacity-100" : "opacity-0"
             }`}
-            style={{ transform: isVisible ? "scale(1.10) translateX(0)" : "scale(1.10) translateX(-3rem)", transformOrigin: "center center" }}
+            style={{ transform: isVisible ? "scale(1.155) translateX(0)" : "scale(1.155) translateX(-3rem)", transformOrigin: "center center" }}
           >
             <div className="relative">
               <div
@@ -1790,7 +1790,7 @@ function CouponsSection() {
             className={`relative w-full max-w-lg lg:max-w-none transition-all duration-1000 delay-200 ${
               isVisible ? "opacity-100" : "opacity-0"
             }`}
-            style={{ transform: isVisible ? "scale(1.10) translateX(0)" : "scale(1.10) translateX(3rem)", transformOrigin: "center center" }}
+            style={{ transform: isVisible ? "scale(1.155) translateX(0)" : "scale(1.155) translateX(3rem)", transformOrigin: "center center" }}
           >
             <div className="relative">
               <div
