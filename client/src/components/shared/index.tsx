@@ -13,6 +13,7 @@ interface StatCardProps {
     isPositive: boolean;
     label?: string;
   };
+  trendPosition?: "value" | "title";
   loading?: boolean;
   className?: string;
   variant?: "blue" | "amber" | "emerald" | "gray" | "primary" | "red";
@@ -118,7 +119,7 @@ function TrendBadge({ trend }: { trend: { value: number; isPositive: boolean; la
   );
 }
 
-export function StatCard({ title, value, tooltip, icon: Icon, trend, loading, className, variant = "primary", iconAction }: StatCardProps) {
+export function StatCard({ title, value, tooltip, icon: Icon, trend, trendPosition = "value", loading, className, variant = "primary", iconAction }: StatCardProps) {
   const colors = statCardVariants[variant];
   const [animate, setAnimate] = useState(false);
   const [showInfoTooltip, setShowInfoTooltip] = useState(false);
@@ -182,7 +183,7 @@ export function StatCard({ title, value, tooltip, icon: Icon, trend, loading, cl
                 )}
               </div>
             )}
-            {trend && <TrendBadge trend={trend} />}
+            {trend && trendPosition === "title" && <TrendBadge trend={trend} />}
           </div>
           <div
             className={cn(
@@ -192,6 +193,7 @@ export function StatCard({ title, value, tooltip, icon: Icon, trend, loading, cl
           >
             <span className={cn("w-2 h-2 rounded-full", colors.dotColor)} />
             <span className="text-2xl font-bold tracking-tight">{value}</span>
+            {trend && trendPosition === "value" && <TrendBadge trend={trend} />}
           </div>
 
         </div>

@@ -7093,3 +7093,7 @@
 ## StatCards - Mover indicador % para ao lado do título
 - [x] Mover indicador de porcentagem (↓100%, ↑100%) para ao lado do título (ex: "RECEITA HOJE ↓100%")
 - [x] Remover indicador de % de ao lado do valor
+
+## Fix: Reverter StatCard da Dashboard
+- [x] Reverter StatCard compartilhado ao formato original (% ao lado do valor)
+- [x] Aplicar indicador % ao lado do título apenas nos StatCards da página de Finanças

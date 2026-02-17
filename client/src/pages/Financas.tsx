@@ -1179,6 +1179,7 @@ export default function Financas() {
           icon={DollarSign}
           loading={summaryLoading}
           variant="emerald"
+          trendPosition="title"
           trend={
             summary && summary.revenueChange !== undefined
               ? {
@@ -1206,6 +1207,7 @@ export default function Financas() {
           icon={TrendingDown}
           loading={summaryLoading}
           variant="red"
+          trendPosition="title"
           trend={
             summary && summary.expensesChange !== undefined
               ? {
@@ -1227,6 +1229,7 @@ export default function Financas() {
           icon={TrendingUp}
           loading={summaryLoading}
           variant="blue"
+          trendPosition="title"
           trend={
             summary && summary.profitChange !== undefined
               ? {
@@ -1248,6 +1251,7 @@ export default function Financas() {
           icon={Receipt}
           loading={summaryLoading}
           variant="amber"
+          trendPosition="title"
           trend={
             summary && summary.avgTicketChange !== undefined
               ? {
