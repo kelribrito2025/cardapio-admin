@@ -6962,3 +6962,6 @@
 
 ## Fix altura das colunas no grid de Finanças
 - [x] Fazer as duas colunas do grid terem a mesma altura (esticar cards da esquerda para alinhar com Formas de Pagamento)
+
+## Fix SQL error paymentMethodDaily
+- [x] Corrigir erro CONVERT_TZ na query getPaymentMethodDailyBreakdown (TiDB não suporta timezone strings)

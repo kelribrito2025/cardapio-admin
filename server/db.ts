@@ -9027,21 +9027,11 @@ export async function getPaymentMethodDailyBreakdown(
   const periodStartStr = fmtLocalDateTime(periodStart);
   const nowStr = period === 'custom' && customEnd ? `${customEnd} 23:59:59` : undefined;
 
-  // Group by date and payment method
-  const result = await db.select({
-    day: sql<string>`DATE(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}))`,
-    paymentMethod: orders.paymentMethod,
-    total: sql<number>`COALESCE(SUM(${orders.total}), 0)`,
-  })
-    .from(orders)
-    .where(and(
-      eq(orders.establishmentId, establishmentId),
-      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${periodStartStr}`,
-      ...(nowStr ? [sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) <= ${nowStr}`] : []),
-      eq(orders.status, "completed")
-    ))
-    .groupBy(sql`DATE(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}))`, orders.paymentMethod)
-    .orderBy(sql`DATE(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}))`);
+  // Group by date and payment method (using raw SQL to avoid parameter issues with CONVERT_TZ)
+  const endCondition = nowStr ? `AND CONVERT_TZ(createdAt, '+00:00', '${tz}') <= '${nowStr}'` : '';
+  const result: any[] = await db.execute(
+    sql`SELECT DATE(CONVERT_TZ(createdAt, '+00:00', ${tz})) as day, paymentMethod, COALESCE(SUM(total), 0) as total FROM orders WHERE establishmentId = ${establishmentId} AND CONVERT_TZ(createdAt, '+00:00', ${tz}) >= ${periodStartStr} ${sql.raw(endCondition)} AND status = 'completed' GROUP BY day, paymentMethod ORDER BY day`
+  );
 
   // Build date range
   const dates: string[] = [];
