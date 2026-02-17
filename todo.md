@@ -6890,3 +6890,9 @@
 
 ## Ajuste visual KPI
 - [x] Encurtar título "Lucro Líquido" para "L. Líquido" no card KPI
+
+## Unificar estilo dos cards na página Finanças
+- [x] Aplicar mesmo estilo do card Evolução Financeira no card Indicadores (ícone header, tipografia)
+- [x] Aplicar mesmo estilo do card Evolução Financeira no card Comparação Mensal (ícone header, legend dots)
+- [x] Aplicar mesmo estilo no card Despesas recorrentes (ícone header roxo)
+- [x] Aplicar mesmo estilo no card Gastos registrados (ícone header vermelho)

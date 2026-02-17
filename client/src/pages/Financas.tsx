@@ -24,6 +24,8 @@ import {
   Pause,
   Play,
   Clock,
+  Activity,
+  BarChart3,
 } from "lucide-react";
 import {
   BarChart,
@@ -1281,7 +1283,20 @@ export default function Financas() {
           )}
         </div>
 
-        <SectionCard title="Indicadores">
+        <div className="bg-card rounded-xl border border-border/50 p-5 self-start">
+          {/* Header com ícone - mesmo estilo do Evolução Financeira */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                <Activity className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-base font-semibold text-foreground">Indicadores</h3>
+                <p className="text-xs text-muted-foreground">Saúde e metas do período</p>
+              </div>
+            </div>
+          </div>
+
           <FinancialHealthIndicator
             profit={summary?.profit ?? 0}
             revenue={summary?.revenue ?? 0}
@@ -1374,14 +1389,35 @@ export default function Financas() {
               Gerenciar categorias
             </Button>
           </div>
-        </SectionCard>
+        </div>
       </div>
 
       {/* Comparação Mensal */}
-      <SectionCard
-        title="Comparação Mensal"
-        className="mb-6"
-      >
+      <div className="bg-card rounded-xl border border-border/50 p-5 mb-6">
+        {/* Header com ícone - mesmo estilo do Evolução Financeira */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+              <BarChart3 className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-base font-semibold text-foreground">Comparação Mensal</h3>
+              <p className="text-xs text-muted-foreground">Últimos 4 meses</p>
+            </div>
+          </div>
+          {/* Legend tags */}
+          <div className="flex items-center gap-3 text-xs">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+              <span className="text-muted-foreground">Receitas</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
+              <span className="text-muted-foreground">Despesas</span>
+            </div>
+          </div>
+        </div>
+
         {comparisonLoading ? (
           <div className="h-[300px] flex items-center justify-center">
             <div className="skeleton h-full w-full rounded-lg" />
@@ -1414,12 +1450,6 @@ export default function Financas() {
                 }}
               />
               <RechartsTooltip content={<ChartTooltipContent />} />
-              <Legend
-                wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }}
-                formatter={(value: string) => (
-                  <span style={{ color: 'var(--color-foreground)' }}>{value}</span>
-                )}
-              />
               <Bar
                 dataKey="receitas"
                 name="Receitas"
@@ -1441,15 +1471,23 @@ export default function Financas() {
             Sem dados para comparação
           </div>
         )}
-      </SectionCard>
+      </div>
 
       {/* Recurring Expenses */}
       {recurringExpenses && recurringExpenses.length > 0 && (
-        <SectionCard
-          title="Despesas recorrentes"
-          className="mb-6"
-          description="Lançamentos gerados automaticamente"
-        >
+        <div className="bg-card rounded-xl border border-border/50 p-5 mb-6">
+          {/* Header com ícone - mesmo estilo */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                <Repeat className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-base font-semibold text-foreground">Despesas recorrentes</h3>
+                <p className="text-xs text-muted-foreground">Lançamentos gerados automaticamente</p>
+              </div>
+            </div>
+          </div>
           <div className="space-y-3">
             {recurringExpenses.map((rec: any) => {
               const freqLabel =
@@ -1531,13 +1569,22 @@ export default function Financas() {
               );
             })}
           </div>
-        </SectionCard>
+        </div>
       )}
 
       {/* Expenses Table */}
-      <SectionCard
-        title="Gastos registrados"
-        actions={
+      <div className="bg-card rounded-xl border border-border/50 p-5">
+        {/* Header com ícone - mesmo estilo */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-red-100 dark:bg-red-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+              <Receipt className="h-5 w-5 text-red-600 dark:text-red-400" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-base font-semibold text-foreground">Gastos registrados</h3>
+              <p className="text-xs text-muted-foreground">{expensesData?.total ?? 0} despesas</p>
+            </div>
+          </div>
           <Button
             size="sm"
             onClick={() => {
@@ -1549,8 +1596,7 @@ export default function Financas() {
             <Plus className="h-3.5 w-3.5" />
             Novo gasto
           </Button>
-        }
-      >
+        </div>
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3 mb-4">
           <div className="relative flex-1">
@@ -1821,7 +1867,7 @@ export default function Financas() {
             }}
           />
         )}
-      </SectionCard>
+      </div>
 
       {/* Modals */}
       {establishmentId && (
