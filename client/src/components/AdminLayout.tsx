@@ -883,7 +883,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       )}
                       style={{ borderRadius: '10px' }}
                     >
-                      <Clock className="h-3.5 w-3.5 shrink-0" />
+                      <Clock className={cn("h-3.5 w-3.5 shrink-0", trialInfo.daysRemaining <= 3 && "text-red-600 dark:text-red-400 animate-pulse")} />
                       {/* Mobile: apenas ícone | Desktop: texto completo */}
                       <span className="hidden md:inline">Avaliação gratuita: {trialInfo.daysRemaining} {trialInfo.daysRemaining === 1 ? 'dia' : 'dias'}</span>
                     </button>

@@ -7100,3 +7100,7 @@
 
 ## Mobile: Botão Período de Avaliação
 - [x] Ocultar texto "X dias" no mobile, mostrar apenas ícone de relógio
+
+## Trial: Urgência visual nos últimos 3 dias
+- [x] Mudar cor do ícone para vermelho quando faltar 3 dias ou menos
+- [x] Adicionar animação pulse no ícone quando faltar 3 dias ou menos
