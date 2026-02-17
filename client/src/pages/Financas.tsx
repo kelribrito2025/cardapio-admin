@@ -1,5 +1,6 @@
 import { AdminLayout } from "@/components/AdminLayout";
 import { StatCard, PageHeader, SectionCard, EmptyState } from "@/components/shared";
+import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
 import {
   DollarSign,
@@ -840,6 +841,91 @@ function ChartTooltipContent({ active, payload, label }: any) {
   );
 }
 
+// ============ EVOLUTION BAR CHART (estilo WeeklyRevenueCard) ============
+function EvolutionBarChart({ data }: { data: { label: string; revenue: number; expenses: number; profit: number }[] }) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+
+  const maxValue = useMemo(() => {
+    const allValues = data.flatMap(d => [d.revenue, d.expenses, Math.abs(d.profit)]);
+    return Math.max(...allValues, 1);
+  }, [data]);
+
+  return (
+    <div className="flex-1 flex flex-col justify-end">
+      <div className="flex items-end justify-between gap-1 sm:gap-1.5 h-40">
+        {data.map((item, index) => {
+          const revenueH = (item.revenue / maxValue) * 100;
+          const expenseH = (item.expenses / maxValue) * 100;
+          const profitH = (Math.abs(item.profit) / maxValue) * 100;
+
+          return (
+            <div
+              key={item.label}
+              className="flex-1 flex flex-col items-center gap-1.5 relative group"
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              {/* Bars container */}
+              <div className="relative w-full h-32 flex items-end justify-center gap-[2px]">
+                {/* Revenue bar */}
+                <div
+                  className="flex-1 rounded-t-md bg-emerald-500 transition-all duration-300"
+                  style={{ height: `${Math.max(revenueH, 3)}%` }}
+                />
+                {/* Expenses bar */}
+                <div
+                  className="flex-1 rounded-t-md bg-red-400 transition-all duration-300"
+                  style={{ height: `${Math.max(expenseH, 3)}%` }}
+                />
+                {/* Profit bar */}
+                <div
+                  className={cn(
+                    "flex-1 rounded-t-md transition-all duration-300",
+                    item.profit >= 0 ? "bg-blue-500" : "bg-blue-300"
+                  )}
+                  style={{ height: `${Math.max(profitH, 3)}%` }}
+                />
+              </div>
+
+              {/* Label */}
+              <span className="text-[10px] font-medium text-muted-foreground truncate w-full text-center">
+                {item.label}
+              </span>
+
+              {/* Tooltip */}
+              {hoveredIndex === index && (
+                <div className="absolute -top-20 left-1/2 -translate-x-1/2 z-10 bg-gray-900 dark:bg-gray-800 text-white px-2.5 py-2 rounded-md shadow-lg text-xs whitespace-nowrap">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <span>Receita:</span>
+                    <span className="font-semibold">{formatCurrency(item.revenue)}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                    <span>Despesas:</span>
+                    <span className="font-semibold">{formatCurrency(item.expenses)}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                    <span>Lucro:</span>
+                    <span className={cn("font-semibold", item.profit >= 0 ? "text-emerald-400" : "text-red-400")}>
+                      {formatCurrency(item.profit)}
+                    </span>
+                  </div>
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-gray-900 dark:bg-gray-800 rotate-45" />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ============ MAIN PAGE ============
 export default function Financas() {
   const { data: establishment } = trpc.establishment.get.useQuery();
@@ -1134,77 +1220,55 @@ export default function Financas() {
 
       {/* Chart + Health Indicator */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <SectionCard
-          title="Evolução financeira"
-          className="lg:col-span-2"
-          description={
-            chartPeriod === "week" ? "Últimos 7 dias" : "Este mês"
-          }
-        >
+        {/* Evolução Financeira - estilo WeeklyRevenueCard */}
+        <div className="bg-card rounded-xl border border-border/50 p-5 lg:col-span-2 flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-base font-semibold text-foreground">Evolução financeira</h3>
+                <p className="text-xs text-muted-foreground">
+                  {chartPeriod === 'week' ? 'Últimos 7 dias' : 'Este mês'}
+                </p>
+              </div>
+            </div>
+            {/* Legend */}
+            <div className="flex items-center gap-3 text-xs">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                <span className="text-muted-foreground">Receita</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                <span className="text-muted-foreground">Despesas</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                <span className="text-muted-foreground">Lucro</span>
+              </div>
+            </div>
+          </div>
+
           {chartLoading ? (
-            <div className="h-[300px] flex items-center justify-center">
-              <div className="skeleton h-full w-full rounded-lg" />
+            <div className="flex-1 flex items-end justify-between gap-1.5 h-40">
+              {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
+                  <div className="skeleton w-full rounded-md" style={{ height: `${30 + Math.random() * 70}%` }} />
+                  <div className="skeleton h-3 w-6 rounded" />
+                </div>
+              ))}
             </div>
           ) : chartData && chartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <ComposedChart data={chartData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="var(--color-border)"
-                  opacity={0.5}
-                />
-                <XAxis
-                  dataKey="label"
-                  tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}
-                  axisLine={false}
-                  tickLine={false}
-                  tickFormatter={(v) =>
-                    v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
-                  }
-                />
-                <RechartsTooltip content={<ChartTooltipContent />} />
-                <Legend
-                  wrapperStyle={{ fontSize: "12px", paddingTop: "8px" }}
-                />
-                <Bar
-                  dataKey="expenses"
-                  name="Despesas"
-                  fill="#ef4444"
-                  radius={[4, 4, 0, 0]}
-                  barSize={24}
-                  opacity={0.85}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="revenue"
-                  name="Receita"
-                  stroke="#10b981"
-                  strokeWidth={2.5}
-                  dot={{ r: 4, fill: "#10b981" }}
-                  activeDot={{ r: 6 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="profit"
-                  name="Lucro"
-                  stroke="#3b82f6"
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                  dot={{ r: 3, fill: "#3b82f6" }}
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
+            <EvolutionBarChart data={chartData} />
           ) : (
-            <div className="h-[300px] flex items-center justify-center text-muted-foreground text-sm">
+            <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm h-40">
               Sem dados para o período selecionado
             </div>
           )}
-        </SectionCard>
+        </div>
 
         <SectionCard title="Indicadores">
           <FinancialHealthIndicator

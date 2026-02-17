@@ -1,0 +1,58 @@
+{
+  "query": "SELECT e.categoryId, ec.name as categoryName, CAST(SUM(e.amount) AS DECIMAL(10,2)) as total, count(*) as cnt FROM expenses e LEFT JOIN expenseCategories ec ON e.categoryId = ec.id WHERE e.establishmentId = 30001 AND e.date >= '2026-02-01' GROUP BY e.categoryId, ec.name ORDER BY total DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT e.categoryId, ec.name as categoryName, CAST(SUM(e.amount) AS DECIMAL(10,2)) as total, count(*) as cnt FROM expenses e LEFT JOIN expenseCategories ec ON e.categoryId = ec.id WHERE e.establishmentId = 30001 AND e.date >= '2026-02-01' GROUP BY e.categoryId, ec.name ORDER BY total DESC LIMIT 20;",
+  "rows": [
+    {
+      "categoryId": "11",
+      "categoryName": "Funcionários",
+      "total": "11530.00",
+      "cnt": "7"
+    },
+    {
+      "categoryId": "10",
+      "categoryName": "Fornecedor",
+      "total": "8190.50",
+      "cnt": "11"
+    },
+    {
+      "categoryId": "12",
+      "categoryName": "Aluguel",
+      "total": "3950.00",
+      "cnt": "2"
+    },
+    {
+      "categoryId": "17",
+      "categoryName": "Outros",
+      "total": "815.00",
+      "cnt": "4"
+    },
+    {
+      "categoryId": "15",
+      "categoryName": "Marketing",
+      "total": "465.00",
+      "cnt": "3"
+    },
+    {
+      "categoryId": "13",
+      "categoryName": "Energia",
+      "total": "420.00",
+      "cnt": "2"
+    },
+    {
+      "categoryId": "16",
+      "categoryName": "Impostos",
+      "total": "380.00",
+      "cnt": "1"
+    },
+    {
+      "categoryId": "14",
+      "categoryName": "Água",
+      "total": "85.00",
+      "cnt": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "categoryId\tcategoryName\ttotal\tcnt\n11\tFuncionários\t11530.00\t7\n10\tFornecedor\t8190.50\t11\n12\tAluguel\t3950.00\t2\n17\tOutros\t815.00\t4\n15\tMarketing\t465.00\t3\n13\tEnergia\t420.00\t2\n16\tImpostos\t380.00\t1\n14\tÁgua\t85.00\t1\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

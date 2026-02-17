@@ -6869,3 +6869,9 @@
 - [x] Frontend: redesenhar card no mesmo tamanho do Evolução Financeira (lg:col-span-2)
 - [x] Frontend: barras agrupadas por mês (Receitas verde, Despesas vermelho), sem blocos de resumo
 - [x] Remover os 3 blocos de resumo (Receita, Despesas, Lucro) do card
+
+## Bug: Despesas por Categoria mostrando apenas Fornecedor
+- [ ] Investigar e corrigir query getExpensesByCategory para mostrar todas as categorias com despesas
+
+## Ajuste Visual Card Evolução Financeira
+- [x] Atualizar card Evolução Financeira para seguir exatamente o visual do card Acumulado da semana da Dashboard
