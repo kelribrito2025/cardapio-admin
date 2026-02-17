@@ -1417,38 +1417,95 @@ export default function Financas() {
           </div>
 
           {channelLoading ? (
-            <div className="h-[120px] flex items-center justify-center">
+            <div className="h-[200px] flex items-center justify-center">
               <div className="skeleton h-full w-full rounded-lg" />
             </div>
           ) : channelData && channelData.total > 0 ? (
-            <div className="space-y-2">
-              {/* Total */}
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-muted-foreground">Total do período</span>
-                <span className="text-sm font-bold text-foreground">{formatCurrency(channelData.total)}</span>
-              </div>
-              {/* Channel list - mesmo estilo do Despesas por categoria */}
-              {channelData.channels.map((ch) => (
-                <div
-                  key={ch.id}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: ch.color }}
-                    />
-                    <span className="text-sm">{ch.name}</span>
-                    <span className="text-xs text-muted-foreground">({ch.count})</span>
+            <div>
+              {/* Semi-circle gauge chart */}
+              <div className="flex justify-center mb-2">
+                <div className="relative" style={{ width: 200, height: 110 }}>
+                  <svg viewBox="0 0 200 110" className="w-full h-full">
+                    {(() => {
+                      const channels = channelData.channels.filter(c => c.total > 0);
+                      const total = channelData.total;
+                      const cx = 100;
+                      const cy = 100;
+                      const outerR = 90;
+                      const innerR = 55;
+                      let cumAngle = Math.PI; // start from left (180°)
+                      const gap = 0.03; // small gap between segments
+
+                      return channels.map((ch, idx) => {
+                        const pct = ch.total / total;
+                        const sweep = pct * Math.PI - (channels.length > 1 ? gap : 0);
+                        const startAngle = cumAngle + (idx > 0 ? gap / 2 : 0);
+                        const endAngle = startAngle + sweep;
+                        cumAngle = startAngle + sweep + (channels.length > 1 ? gap / 2 : 0);
+
+                        const x1Outer = cx + outerR * Math.cos(startAngle);
+                        const y1Outer = cy + outerR * Math.sin(startAngle);
+                        const x2Outer = cx + outerR * Math.cos(endAngle);
+                        const y2Outer = cy + outerR * Math.sin(endAngle);
+                        const x1Inner = cx + innerR * Math.cos(endAngle);
+                        const y1Inner = cy + innerR * Math.sin(endAngle);
+                        const x2Inner = cx + innerR * Math.cos(startAngle);
+                        const y2Inner = cy + innerR * Math.sin(startAngle);
+
+                        const largeArc = sweep > Math.PI ? 1 : 0;
+
+                        const d = [
+                          `M ${x1Outer} ${y1Outer}`,
+                          `A ${outerR} ${outerR} 0 ${largeArc} 1 ${x2Outer} ${y2Outer}`,
+                          `L ${x1Inner} ${y1Inner}`,
+                          `A ${innerR} ${innerR} 0 ${largeArc} 0 ${x2Inner} ${y2Inner}`,
+                          'Z',
+                        ].join(' ');
+
+                        return (
+                          <path
+                            key={ch.id}
+                            d={d}
+                            fill={ch.color}
+                            className="transition-all duration-700"
+                          />
+                        );
+                      });
+                    })()}
+                  </svg>
+                  {/* Center total */}
+                  <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: 0 }}>
+                    <div className="text-center">
+                      <span className="text-lg font-bold text-foreground">{formatCurrency(channelData.total)}</span>
+                    </div>
                   </div>
-                  <span className="text-sm font-semibold">
-                    {formatCurrency(ch.total)}
-                  </span>
                 </div>
-              ))}
+              </div>
+
+              {/* Channel list */}
+              <div className="space-y-3 mt-4">
+                {channelData.channels.map((ch) => (
+                  <div
+                    key={ch.id}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className="w-1 h-6 rounded-full shrink-0"
+                        style={{ backgroundColor: ch.color }}
+                      />
+                      <span className="text-sm font-medium">{ch.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold">{formatCurrency(ch.total)}</span>
+                      <span className="text-sm font-bold" style={{ color: ch.color }}>{ch.percent}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
-            <div className="h-[100px] flex items-center justify-center text-muted-foreground text-sm">
+            <div className="h-[160px] flex items-center justify-center text-muted-foreground text-sm">
               Sem faturamento registrado neste período
             </div>
           )}

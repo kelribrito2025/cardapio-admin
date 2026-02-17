@@ -6912,3 +6912,7 @@
 
 ## Fix barras de progresso Faturamento por canal
 - [x] Igualar estilo das barras de progresso do card Faturamento por canal ao card Indicadores
+
+## Redesign Faturamento por canal - estilo meia lua
+- [x] Implementar gráfico semi-circle (meia lua) com segmentos por canal
+- [x] Lista abaixo com barra vertical colorida + nome + valor + percentual
