@@ -6934,3 +6934,6 @@
 ## Tooltip interativo nas barras de Faturamento por canal
 - [x] Adicionar dados de período anterior no endpoint revenueByChannel (variação %)
 - [x] Implementar tooltip ao hover nas barras com valor exato, pedidos e variação
+
+## Fix tamanho mockups landing page
+- [x] Igualar tamanho dos mockups das seções Campanhas SMS e Cupons de Desconto ao mockup da seção Sistema completo de gestão

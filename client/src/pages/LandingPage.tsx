@@ -1571,9 +1571,10 @@ function CampaignsSMSSection() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Coluna esquerda — Mockup browser */}
           <div
-            className={`relative transition-all duration-1000 ${
-              isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
+            className={`relative w-full max-w-lg lg:max-w-none transition-all duration-1000 ${
+              isVisible ? "opacity-100" : "opacity-0"
             }`}
+            style={{ transform: isVisible ? "scale(1.10) translateX(0)" : "scale(1.10) translateX(-3rem)", transformOrigin: "center center" }}
           >
             <div className="relative">
               <div
@@ -1786,9 +1787,10 @@ function CouponsSection() {
 
           {/* Coluna direita — Mockup browser (layout invertido) */}
           <div
-            className={`relative transition-all duration-1000 delay-200 ${
-              isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
+            className={`relative w-full max-w-lg lg:max-w-none transition-all duration-1000 delay-200 ${
+              isVisible ? "opacity-100" : "opacity-0"
             }`}
+            style={{ transform: isVisible ? "scale(1.10) translateX(0)" : "scale(1.10) translateX(3rem)", transformOrigin: "center center" }}
           >
             <div className="relative">
               <div
