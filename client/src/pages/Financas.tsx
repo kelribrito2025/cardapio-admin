@@ -1220,9 +1220,9 @@ export default function Financas() {
 
       {/* Chart + Health Indicator */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Evolução Financeira - estilo WeeklyRevenueCard */}
+        {/* Evolução Financeira */}
         <div className="bg-card rounded-xl border border-border/50 p-5 lg:col-span-2 flex flex-col">
-          {/* Header */}
+          {/* Header com ícone + tags de legenda */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -1235,7 +1235,7 @@ export default function Financas() {
                 </p>
               </div>
             </div>
-            {/* Legend */}
+            {/* Legend tags */}
             <div className="flex items-center gap-3 text-xs">
               <div className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
@@ -1252,19 +1252,64 @@ export default function Financas() {
             </div>
           </div>
 
+          {/* Gráfico recharts */}
           {chartLoading ? (
-            <div className="flex-1 flex items-end justify-between gap-1.5 h-40">
-              {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
-                  <div className="skeleton w-full rounded-md" style={{ height: `${30 + Math.random() * 70}%` }} />
-                  <div className="skeleton h-3 w-6 rounded" />
-                </div>
-              ))}
+            <div className="h-[300px] flex items-center justify-center">
+              <div className="skeleton h-full w-full rounded-lg" />
             </div>
           ) : chartData && chartData.length > 0 ? (
-            <EvolutionBarChart data={chartData} />
+            <ResponsiveContainer width="100%" height={300}>
+              <ComposedChart data={chartData}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  opacity={0.5}
+                />
+                <XAxis
+                  dataKey="label"
+                  tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) =>
+                    v >= 1000 ? `R$ ${(v / 1000).toFixed(0)}k` : `R$ ${v}`
+                  }
+                />
+                <RechartsTooltip content={<ChartTooltipContent />} />
+                <Bar
+                  dataKey="expenses"
+                  name="Despesas"
+                  fill="#ef4444"
+                  radius={[4, 4, 0, 0]}
+                  barSize={24}
+                  opacity={0.85}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  name="Receita"
+                  stroke="#10b981"
+                  strokeWidth={2.5}
+                  dot={{ r: 4, fill: "#10b981" }}
+                  activeDot={{ r: 6 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="profit"
+                  name="Lucro"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  dot={{ r: 3, fill: "#3b82f6" }}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm h-40">
+            <div className="h-[300px] flex items-center justify-center text-muted-foreground text-sm">
               Sem dados para o período selecionado
             </div>
           )}

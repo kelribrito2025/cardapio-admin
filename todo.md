@@ -6875,3 +6875,7 @@
 
 ## Ajuste Visual Card Evolução Financeira
 - [x] Atualizar card Evolução Financeira para seguir exatamente o visual do card Acumulado da semana da Dashboard
+
+## Ajuste Visual Evolução Financeira (v2)
+- [x] Manter ícone header e tags de legenda (dots coloridos)
+- [x] Reverter gráfico para recharts ComposedChart (barras + linhas) estilo anterior
