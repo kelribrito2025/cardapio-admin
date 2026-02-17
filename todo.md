@@ -6965,3 +6965,9 @@
 
 ## Fix SQL error paymentMethodDaily
 - [x] Corrigir erro CONVERT_TZ na query getPaymentMethodDailyBreakdown (TiDB não suporta timezone strings)
+
+## Fix espaçamento cards Faturamento e Formas de Pagamento
+- [x] Igualar padding/espaçamento dos cards Faturamento por canal e Formas de Pagamento ao card Indicadores
+
+## Distribuir altura igualmente entre Evolução Financeira e Comparação Mensal
+- [x] Fazer os cards Evolução Financeira e Comparação Mensal dividirem o espaço igualmente na coluna esquerda (ambos com flex-1) em vez de Comparação Mensal crescer desproporcionalmente
