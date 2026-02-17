@@ -6887,3 +6887,6 @@
 - [x] Remover seção separada "Meta mensal" com barra de progresso do card Indicadores
 - [x] Integrar progresso da meta diretamente no botão "Meta" com preenchimento gradual
 - [x] Degradê de cores: vermelho (<10%), laranja (<30%), amarelo (<70%), verde (>=70-100%)
+
+## Ajuste visual KPI
+- [x] Encurtar título "Lucro Líquido" para "L. Líquido" no card KPI

@@ -1141,7 +1141,7 @@ export default function Financas() {
           }
         />
         <StatCard
-          title="Lucro Líquido"
+          title="L. Líquido"
           value={formatCurrency(summary?.profit ?? 0)}
           icon={TrendingUp}
           loading={summaryLoading}
