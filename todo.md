@@ -7010,3 +7010,11 @@
 - [x] flex-1 em ambos os cards (Evolução Financeira e Comparação Mensal) para dividir altura igualmente
 - [x] flex-1 min-h-[250px] nos containers de gráfico para crescerem com o card
 - [x] Testado: Este mês → 7 dias → Hoje - cards se ajustam corretamente em todas as transições
+
+## Reestruturar grid Finanças - align-items:start + height:auto
+- [x] Grid principal: align-items: start (não stretch)
+- [x] Remover flex-1 dos cards Evolução Financeira e Comparação Mensal
+- [x] Remover min-height dos containers de gráfico (usando h-[300px] fixo)
+- [x] Cards com height: auto, crescendo apenas com conteúdo
+- [x] Cada coluna: flex flex-col gap-6, ajustando-se ao conteúdo
+- [x] Testar em todos os períodos: Hoje, 7 dias, Este mês
