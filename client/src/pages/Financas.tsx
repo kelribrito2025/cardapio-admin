@@ -1219,10 +1219,10 @@ export default function Financas() {
       </div>
 
       {/* Chart + Health Indicator */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6" style={{ alignItems: 'start' }}>
-        {/* Left column: Evolução Financeira + Comparação Mensal */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
-        <div className="bg-card rounded-xl border border-border/50 p-5">
+      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px', marginBottom: '24px' }}>
+        {/* Coluna esquerda */}
+        <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '24px' }}>
+        <div className="bg-card rounded-xl border border-border/50 p-5" style={{ flex: 1, display: 'flex', flexDirection: 'column' as const }}>
           {/* Header com ícone + tags de legenda */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -1254,7 +1254,7 @@ export default function Financas() {
           </div>
 
           {/* Gráfico recharts */}
-          <div style={{ height: 300 }}>
+          <div style={{ flex: 1, minHeight: 250 }}>
           {chartLoading ? (
             <div className="h-full flex items-center justify-center">
               <div className="skeleton h-full w-full rounded-lg" />
@@ -1319,7 +1319,7 @@ export default function Financas() {
         </div>
 
         {/* Comparação Mensal */}
-        <div className="bg-card rounded-xl border border-border/50 p-5">
+        <div className="bg-card rounded-xl border border-border/50 p-5" style={{ flex: 1, display: 'flex', flexDirection: 'column' as const }}>
           {/* Header com ícone */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -1344,7 +1344,7 @@ export default function Financas() {
             </div>
           </div>
 
-          <div style={{ height: 300 }}>
+          <div style={{ flex: 1, minHeight: 250 }}>
           {comparisonLoading ? (
             <div className="h-full flex items-center justify-center">
               <div className="skeleton h-full w-full rounded-lg" />
@@ -1400,10 +1400,11 @@ export default function Financas() {
           )}
           </div>
         </div>
-        </div>{/* end left column wrapper */}
+        </div>{/* end coluna esquerda */}
 
-        {/* Right column: Indicadores + Faturamento por canal */}
-        <div className="flex flex-col gap-6">
+        {/* Coluna direita */}
+        <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '24px' }}>
+        {/* Indicadores */}
         <div className="bg-card rounded-xl border border-border/50 p-5">
           {/* Header com ícone - mesmo estilo do Evolução Financeira */}
           <div className="flex items-center justify-between mb-4">
@@ -1674,7 +1675,8 @@ export default function Financas() {
             </div>
           )}
         </div>
-        </div>{/* end right column wrapper */}
+        </div>{/* end coluna direita */}
+
       </div>
 
 

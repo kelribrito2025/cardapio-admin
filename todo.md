@@ -7018,3 +7018,26 @@
 - [x] Cards com height: auto, crescendo apenas com conteúdo
 - [x] Cada coluna: flex flex-col gap-6, ajustando-se ao conteúdo
 - [x] Testar em todos os períodos: Hoje, 7 dias, Este mês
+
+## Reestruturar grid Finanças - Remover wrappers de coluna
+- [ ] Remover div wrapper "coluna esquerda" e "coluna direita"
+- [ ] Colocar todos os 5 cards (Evolução, Indicadores, Comparação, Faturamento, Formas) diretamente no grid
+- [ ] Grid: display:grid, grid-template-columns: repeat(2, minmax(0, 1fr)), gap:24px, align-items:start
+- [ ] Sem flex-1, sem height fixa, sem min-height forçado
+- [ ] Cada card independente, grid decide organização por linha
+- [ ] Testar em todos os períodos: Hoje, 7 dias, Este mês
+
+## Reestruturar grid Finanças - estrutura definitiva com 2 colunas fixas
+- [x] Grid principal: grid-template-columns: 1.5fr 1fr, gap: 24px, align-items: start
+- [x] Coluna esquerda (wrapper): flex flex-col gap-6 com Evolução Financeira + Comparação Mensal
+- [x] Coluna direita (wrapper): flex flex-col gap-6 com Indicadores + Faturamento por canal + Formas de Pagamento
+- [x] Sem flex-1 nos cards
+- [x] Sem height fixa nos cards
+- [x] Cada coluna cresce independente da outra
+
+## Fix: Cards esquerda devem acompanhar altura da coluna direita dinamicamente
+- [x] Grid com stretch (não start) para colunas terem mesma altura
+- [x] flex-1 nos cards Evolução Financeira e Comparação Mensal para dividir espaço igualmente
+- [x] flex-1 nos containers de gráfico para crescerem com o card
+- [x] Ao trocar período (Hoje/7 dias/Este mês), cards da esquerda se adaptam à nova altura da direita
+- [x] Testar: Este mês (direita alta) → 7 dias (direita baixa) → Hoje - altura se adapta em tempo real
