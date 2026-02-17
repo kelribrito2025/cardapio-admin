@@ -6956,3 +6956,6 @@
 
 ## Restyle Formas de Pagamento
 - [x] Substituir sparklines por barras horizontais com tooltip (mesmo estilo do Faturamento por canal)
+
+## Mover Comparação Mensal para coluna esquerda
+- [x] Mover card Comparação Mensal para dentro do grid, abaixo de Evolução Financeira (coluna esquerda)

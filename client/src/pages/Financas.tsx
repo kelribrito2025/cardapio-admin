@@ -1220,8 +1220,9 @@ export default function Financas() {
 
       {/* Chart + Health Indicator */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Evolução Financeira */}
-        <div className="bg-card rounded-xl border border-border/50 p-5 lg:col-span-2 self-start">
+        {/* Left column: Evolução Financeira + Comparação Mensal */}
+        <div className="lg:col-span-2 space-y-6 self-start">
+        <div className="bg-card rounded-xl border border-border/50 p-5">
           {/* Header com ícone + tags de legenda */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -1314,6 +1315,88 @@ export default function Financas() {
             </div>
           )}
         </div>
+
+        {/* Comparação Mensal */}
+        <div className="bg-card rounded-xl border border-border/50 p-5">
+          {/* Header com ícone */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                <BarChart3 className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-base font-semibold text-foreground">Comparação Mensal</h3>
+                <p className="text-xs text-muted-foreground">Últimos 4 meses</p>
+              </div>
+            </div>
+            {/* Legend tags */}
+            <div className="flex items-center gap-3 text-xs">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                <span className="text-muted-foreground">Receitas</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                <span className="text-muted-foreground">Despesas</span>
+              </div>
+            </div>
+          </div>
+
+          {comparisonLoading ? (
+            <div className="h-[280px] flex items-center justify-center">
+              <div className="skeleton h-full w-full rounded-lg" />
+            </div>
+          ) : comparison && comparison.months?.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart
+                data={comparison.months}
+                barGap={4}
+                barCategoryGap="25%"
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  opacity={0.5}
+                />
+                <XAxis
+                  dataKey="label"
+                  tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v: number) => {
+                    if (Math.abs(v) >= 1000) return `R$ ${(v / 1000).toFixed(0)}.000`;
+                    return `R$ ${v}`;
+                  }}
+                />
+                <RechartsTooltip content={<ChartTooltipContent />} />
+                <Bar
+                  dataKey="receitas"
+                  name="Receitas"
+                  fill="#86efac"
+                  radius={[4, 4, 0, 0]}
+                  barSize={32}
+                />
+                <Bar
+                  dataKey="despesas"
+                  name="Despesas"
+                  fill="#fca5a5"
+                  radius={[4, 4, 0, 0]}
+                  barSize={32}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">
+              Sem dados para comparação
+            </div>
+          )}
+        </div>
+        </div>{/* end left column wrapper */}
 
         {/* Right column: Indicadores + Faturamento por canal */}
         <div className="space-y-6 self-start">
@@ -1590,86 +1673,7 @@ export default function Financas() {
         </div>{/* end right column wrapper */}
       </div>
 
-      {/* Comparação Mensal */}
-      <div className="bg-card rounded-xl border border-border/50 p-5 mb-6">
-        {/* Header com ícone - mesmo estilo do Evolução Financeira */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
-              <BarChart3 className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-            </div>
-            <div className="min-w-0">
-              <h3 className="text-base font-semibold text-foreground">Comparação Mensal</h3>
-              <p className="text-xs text-muted-foreground">Últimos 4 meses</p>
-            </div>
-          </div>
-          {/* Legend tags */}
-          <div className="flex items-center gap-3 text-xs">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-              <span className="text-muted-foreground">Receitas</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
-              <span className="text-muted-foreground">Despesas</span>
-            </div>
-          </div>
-        </div>
 
-        {comparisonLoading ? (
-          <div className="h-[300px] flex items-center justify-center">
-            <div className="skeleton h-full w-full rounded-lg" />
-          </div>
-        ) : comparison && comparison.months?.length > 0 ? (
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart
-              data={comparison.months}
-              barGap={4}
-              barCategoryGap="25%"
-            >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="var(--color-border)"
-                opacity={0.5}
-              />
-              <XAxis
-                dataKey="label"
-                tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
-                axisLine={false}
-                tickLine={false}
-                tickFormatter={(v: number) => {
-                  if (Math.abs(v) >= 1000) return `R$ ${(v / 1000).toFixed(0)}.000`;
-                  return `R$ ${v}`;
-                }}
-              />
-              <RechartsTooltip content={<ChartTooltipContent />} />
-              <Bar
-                dataKey="receitas"
-                name="Receitas"
-                fill="#86efac"
-                radius={[4, 4, 0, 0]}
-                barSize={40}
-              />
-              <Bar
-                dataKey="despesas"
-                name="Despesas"
-                fill="#fca5a5"
-                radius={[4, 4, 0, 0]}
-                barSize={40}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        ) : (
-          <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">
-            Sem dados para comparação
-          </div>
-        )}
-      </div>
 
       {/* Recurring Expenses */}
       {recurringExpenses && recurringExpenses.length > 0 && (
