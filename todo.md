@@ -7041,3 +7041,8 @@
 - [x] flex-1 nos containers de gráfico para crescerem com o card
 - [x] Ao trocar período (Hoje/7 dias/Este mês), cards da esquerda se adaptam à nova altura da direita
 - [x] Testar: Este mês (direita alta) → 7 dias (direita baixa) → Hoje - altura se adapta em tempo real
+
+## Bug: ResponsiveContainer não recalcula altura ao trocar período
+- [x] Diagnosticar: Recharts ResponsiveContainer mantém altura anterior quando grid encolhe
+- [x] Forçar remount dos gráficos ao trocar período (key baseada no período)
+- [x] Testar: Este mês → 7 dias → Hoje - cards devem encolher ao voltar para período menor

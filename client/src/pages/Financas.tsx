@@ -1219,7 +1219,7 @@ export default function Financas() {
       </div>
 
       {/* Chart + Health Indicator */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px', marginBottom: '24px' }}>
+      <div key={period} style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px', marginBottom: '24px' }}>
         {/* Coluna esquerda */}
         <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '24px' }}>
         <div className="bg-card rounded-xl border border-border/50 p-5" style={{ flex: 1, display: 'flex', flexDirection: 'column' as const }}>
