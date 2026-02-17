@@ -1134,7 +1134,7 @@ export default function Financas() {
         <PageHeader
           title="Finanças"
           description="Controle completo das receitas e despesas do restaurante."
-          icon={<BadgeDollarSign className="h-6 w-6 text-emerald-600" />}
+          icon={<BadgeDollarSign className="h-6 w-6 text-blue-600" />}
         />
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 bg-muted rounded-xl p-1">

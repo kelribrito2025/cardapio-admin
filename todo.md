@@ -7110,3 +7110,6 @@
 
 ## Header Finanças: Trocar ícone
 - [x] Substituir ícone do header da página de Finanças para BadgeDollarSign
+
+## Header Finanças: Cor do ícone
+- [x] Trocar cor do ícone de emerald para azul
