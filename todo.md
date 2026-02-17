@@ -7079,3 +7079,8 @@
 - [x] Usar fundo colorido no padrão do sistema (bg com cor da categoria + baixa opacidade)
 - [x] Trocar bg-muted/50 por bg-card para consistência visual
 - [x] Adicionar hover effect (shadow-md + translate-y) igual aos StatCards
+
+## Mini cards Lançamentos futuros - Borda lateral colorida
+- [x] Remover ícones Lucide dos mini cards
+- [x] Adicionar borda colorida na lateral esquerda (vermelha para despesas, verde para receitas)
+- [x] Ajustar layout sem ícone (texto direto)
