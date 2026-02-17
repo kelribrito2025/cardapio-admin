@@ -6980,3 +6980,10 @@
 
 ## Padronizar lista de Estoque
 - [x] Padronizar a lista da página de Estoque para seguir o mesmo modelo visual das páginas de Entregadores e Avaliações (wrapper bg-card rounded-xl, tabela nativa HTML, DropdownMenu, layout mobile responsivo, TableSkeleton, EmptyState)
+
+## Reestruturar grid Evolução Financeira + Comparação Mensal
+- [x] Usar flex-col com flex-1 para que ambos os cards dividam a altura igualmente (empilhados verticalmente)
+- [x] Remover alturas fixas e usar flex-grow (flex-1 min-h-[250px]) no gráfico
+- [x] Garantir align-items: stretch via grid outer container
+- [x] Cards usam flex flex-col flex-1
+- [x] Sem hacks de margin, solução puramente estrutural com flex
