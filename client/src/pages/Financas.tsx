@@ -1836,7 +1836,7 @@ export default function Financas() {
       {/* Unified Tabbed Section: Gastos / Receitas / Recorrentes */}
       <div className="mt-6">
         {/* Header with tabs - OUTSIDE the card */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 px-5">
           <div className="flex items-center gap-3">
             <div className={`h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
               listTab === "gastos" ? "bg-red-100 dark:bg-red-500/15" :

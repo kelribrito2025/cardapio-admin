@@ -7070,3 +7070,6 @@
 ## Ajustes de layout na seção Finanças
 - [x] Adicionar espaçamento entre card "Lançamentos futuros" e card "Gastos registrados"
 - [x] Mover abas (Gastos / Receitas / Recorrentes) para fora do card, acima dele
+
+## Alinhamento do header Gastos registrados
+- [x] Alinhar header "Gastos registrados" com header "Lançamentos futuros" (mesmo padding horizontal)
