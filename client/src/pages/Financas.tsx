@@ -1042,6 +1042,12 @@ export default function Financas() {
     { enabled: !!establishmentId }
   );
 
+  // Upcoming recurring expenses query
+  const { data: upcomingRecurring } = trpc.finance.upcomingRecurring.useQuery(
+    recurringInput,
+    { enabled: !!establishmentId }
+  );
+
   // Daily revenue query
   const dailyRevenueInput = useMemo(
     () => ({
@@ -1709,7 +1715,123 @@ export default function Financas() {
 
       </div>
 
-
+      {/* Lançamentos futuros - Timeline horizontal */}
+      {(() => {
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        const currentMonthName = MONTH_LABELS[currentMonth];
+        
+        // Filter occurrences for current month to calculate committed amount
+        const monthOccurrences = (upcomingRecurring ?? []).filter(item => {
+          const d = new Date(item.dueDate + 'T12:00:00');
+          return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+        });
+        const committedTotal = monthOccurrences.reduce((sum, item) => sum + item.amount, 0);
+        
+        // Get badge for each item
+        const getBadge = (dueDate: string) => {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const due = new Date(dueDate + 'T12:00:00');
+          due.setHours(0, 0, 0, 0);
+          const diffDays = Math.floor((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+          
+          if (diffDays < 0) return { text: "Atrasado", color: "bg-red-500 text-white" };
+          if (diffDays === 0) return { text: "Hoje", color: "bg-orange-500 text-white" };
+          if (diffDays <= 3) return { text: "Próximo", color: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400" };
+          return null;
+        };
+        
+        const formatDate = (dateStr: string) => {
+          const d = new Date(dateStr + 'T12:00:00');
+          return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        };
+        
+        // Category icon mapping
+        const getCategoryIcon = (categoryName: string | null) => {
+          const name = (categoryName ?? '').toLowerCase();
+          if (name.includes('aluguel')) return '🏠';
+          if (name.includes('energia') || name.includes('luz')) return '⚡';
+          if (name.includes('água')) return '💧';
+          if (name.includes('internet') || name.includes('telefone')) return '🌐';
+          if (name.includes('marketing') || name.includes('publicidade')) return '📣';
+          if (name.includes('funcionário') || name.includes('salário')) return '👤';
+          if (name.includes('imposto') || name.includes('taxa')) return '📊';
+          if (name.includes('fornecedor')) return '📦';
+          if (name.includes('seguro')) return '🛡️';
+          if (name.includes('manutenção')) return '🔧';
+          return '📅';
+        };
+        
+        return (
+          <div className="bg-card rounded-xl border border-border/50 p-5">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center flex-shrink-0">
+                <Calendar className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-foreground">Lançamentos futuros</h3>
+                <p className="text-xs text-muted-foreground">
+                  Quantia comprometida em {currentMonthName}: {formatCurrency(committedTotal)}
+                </p>
+              </div>
+            </div>
+            
+            {/* Timeline horizontal */}
+            {(!upcomingRecurring || upcomingRecurring.length === 0) ? (
+              <div className="h-[100px] flex items-center justify-center text-muted-foreground text-sm">
+                Nenhum lançamento recorrente programado.
+              </div>
+            ) : (
+              <div className="relative">
+                <div 
+                  className="flex items-center gap-3 overflow-x-auto pb-3 scrollbar-thin"
+                  style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(200 200 200) transparent' }}
+                >
+                  {upcomingRecurring.slice(0, 12).map((item, index) => {
+                    const badge = getBadge(item.dueDate);
+                    return (
+                      <div key={`${item.recurringId}-${item.dueDate}`} className="flex items-center gap-3 flex-shrink-0">
+                        {/* Mini card */}
+                        <div className="relative bg-muted/50 border border-border/50 rounded-xl p-3 min-w-[150px] hover:border-border transition-colors">
+                          {/* Badge */}
+                          {badge && (
+                            <span className={`absolute -top-2 right-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${badge.color}`}>
+                              {badge.text}
+                            </span>
+                          )}
+                          <div className="flex items-start gap-2.5">
+                            <div className="h-8 w-8 rounded-lg flex items-center justify-center text-base flex-shrink-0" style={{ backgroundColor: item.categoryColor ? `${item.categoryColor}20` : 'rgb(254 226 226)' }}>
+                              {getCategoryIcon(item.categoryName)}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-medium text-foreground truncate max-w-[100px]">{item.description}</p>
+                              <p className="text-sm font-bold text-red-600 dark:text-red-400 mt-0.5">
+                                {item.type === 'revenue' ? (
+                                  <span className="text-emerald-600 dark:text-emerald-400">{formatCurrency(item.amount)}</span>
+                                ) : (
+                                  formatCurrency(item.amount)
+                                )}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">{formatDate(item.dueDate)}</p>
+                            </div>
+                          </div>
+                        </div>
+                        {/* Arrow separator */}
+                        {index < Math.min((upcomingRecurring?.length ?? 0), 12) - 1 && (
+                          <ChevronRight className="h-4 w-4 text-muted-foreground/50 flex-shrink-0" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Unified Tabbed Section: Gastos / Receitas / Recorrentes */}
       <div className="bg-card rounded-xl border border-border/50 p-5">

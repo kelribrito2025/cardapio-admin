@@ -9139,3 +9139,169 @@ export async function getDailyRevenue(establishmentId: number, filters?: {
   
   return { items, total };
 }
+
+export async function getUpcomingRecurringExpenses(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Get all active recurring expenses
+  const result = await db.select({
+    id: recurringExpenses.id,
+    type: recurringExpenses.type,
+    description: recurringExpenses.description,
+    categoryId: recurringExpenses.categoryId,
+    categoryName: expenseCategories.name,
+    categoryColor: expenseCategories.color,
+    amount: recurringExpenses.amount,
+    frequency: recurringExpenses.frequency,
+    executionDay: recurringExpenses.executionDay,
+    executionMonth: recurringExpenses.executionMonth,
+    startDate: recurringExpenses.startDate,
+    endDate: recurringExpenses.endDate,
+    active: recurringExpenses.active,
+  })
+    .from(recurringExpenses)
+    .leftJoin(expenseCategories, eq(recurringExpenses.categoryId, expenseCategories.id))
+    .where(
+      and(
+        eq(recurringExpenses.establishmentId, establishmentId),
+        eq(recurringExpenses.active, true),
+      )
+    );
+  
+  // Generate next occurrences for each recurring expense
+  const now = new Date();
+  const occurrences: Array<{
+    recurringId: number;
+    description: string;
+    categoryName: string | null;
+    categoryColor: string | null;
+    amount: number;
+    frequency: string;
+    dueDate: string; // ISO date string YYYY-MM-DD
+    type: string;
+  }> = [];
+  
+  for (const item of result) {
+    const amount = Number(item.amount);
+    const nextDates = generateNextOccurrences(item, now, 6);
+    
+    for (const date of nextDates) {
+      occurrences.push({
+        recurringId: item.id,
+        description: item.description,
+        categoryName: item.categoryName,
+        categoryColor: item.categoryColor,
+        amount,
+        frequency: item.frequency,
+        dueDate: date,
+        type: item.type,
+      });
+    }
+  }
+  
+  // Sort by date ascending (closest first)
+  occurrences.sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+  
+  return occurrences;
+}
+
+function generateNextOccurrences(
+  item: {
+    frequency: string;
+    executionDay: number;
+    executionMonth: number | null;
+    startDate: Date;
+    endDate: Date | null;
+  },
+  fromDate: Date,
+  count: number
+): string[] {
+  const dates: string[] = [];
+  const startDate = new Date(item.startDate);
+  const endDate = item.endDate ? new Date(item.endDate) : null;
+  
+  if (item.frequency === "monthly") {
+    // Generate monthly occurrences
+    let year = fromDate.getFullYear();
+    let month = fromDate.getMonth(); // 0-indexed
+    
+    // Start from current month - check if this month's date has passed
+    for (let i = 0; i < count + 12 && dates.length < count; i++) {
+      const day = Math.min(item.executionDay, daysInMonth(year, month));
+      const candidate = new Date(year, month, day);
+      const candidateStr = formatDateISO(candidate);
+      
+      // Only include if >= start date and not past end date
+      if (candidate >= startDate && (!endDate || candidate <= endDate)) {
+        // Include dates from today - 30 days (to show recent "atrasado" ones too)
+        const thirtyDaysAgo = new Date(fromDate);
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        if (candidate >= thirtyDaysAgo) {
+          dates.push(candidateStr);
+        }
+      }
+      
+      // Next month
+      month++;
+      if (month > 11) {
+        month = 0;
+        year++;
+      }
+    }
+  } else if (item.frequency === "weekly") {
+    // Generate weekly occurrences
+    const targetDay = item.executionDay; // 0=Sunday, 6=Saturday
+    let current = new Date(fromDate);
+    // Go back to find the most recent target day
+    current.setDate(current.getDate() - 7);
+    
+    for (let i = 0; i < count + 10 && dates.length < count; i++) {
+      const diff = (targetDay - current.getDay() + 7) % 7;
+      const candidate = new Date(current);
+      candidate.setDate(candidate.getDate() + (diff === 0 ? 0 : diff));
+      
+      if (candidate >= startDate && (!endDate || candidate <= endDate)) {
+        const thirtyDaysAgo = new Date(fromDate);
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 7);
+        if (candidate >= thirtyDaysAgo) {
+          dates.push(formatDateISO(candidate));
+        }
+      }
+      
+      current.setDate(current.getDate() + 7);
+    }
+  } else if (item.frequency === "yearly") {
+    // Generate yearly occurrences
+    const targetMonth = (item.executionMonth ?? 1) - 1; // Convert to 0-indexed
+    let year = fromDate.getFullYear() - 1;
+    
+    for (let i = 0; i < count + 5 && dates.length < count; i++) {
+      const day = Math.min(item.executionDay, daysInMonth(year, targetMonth));
+      const candidate = new Date(year, targetMonth, day);
+      
+      if (candidate >= startDate && (!endDate || candidate <= endDate)) {
+        const oneYearAgo = new Date(fromDate);
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        if (candidate >= oneYearAgo) {
+          dates.push(formatDateISO(candidate));
+        }
+      }
+      
+      year++;
+    }
+  }
+  
+  return dates;
+}
+
+function daysInMonth(year: number, month: number): number {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function formatDateISO(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}

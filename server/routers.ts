@@ -5364,6 +5364,13 @@ export const appRouter = router({
         return db.getDailyRevenue(establishmentId, filters);
       }),
 
+    // Lançamentos futuros (próximas ocorrências de recorrentes)
+    upcomingRecurring: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getUpcomingRecurringExpenses(input.establishmentId);
+      }),
+
     // Despesas Recorrentes
     listRecurring: protectedProcedure
       .input(z.object({ establishmentId: z.number() }))

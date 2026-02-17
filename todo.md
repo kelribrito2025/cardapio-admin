@@ -7053,3 +7053,16 @@
 - [x] Backend: criar endpoint para listar receitas diárias (faturamento por dia dos pedidos finalizados)
 - [x] Atualizar título e contagem conforme aba selecionada
 - [x] Manter mesmo estilo visual dos botões de seleção de período
+
+## Card "Lançamentos futuros" - Timeline horizontal de despesas recorrentes
+- [x] Backend: criar endpoint para gerar próximas ocorrências de lançamentos recorrentes
+- [x] Calcular próximas datas de vencimento baseado na frequência (semanal/mensal/anual)
+- [x] Ordenar por data mais próxima, mostrar pelo menos 6 lançamentos
+- [x] Somar valor comprometido no mês selecionado
+- [x] UI: Card com título "Lançamentos futuros" e subtítulo dinâmico com total do mês
+- [x] UI: Mini cards horizontais com ícone, nome, valor e data de vencimento
+- [x] UI: Setas entre cada mini card indicando sequência
+- [x] UI: Scroll horizontal suave com scrollbar discreta
+- [x] Badges de urgência: "Próximo" (< 3 dias), "Hoje", "Atrasado" (já passou)
+- [x] Estado vazio: "Nenhum lançamento recorrente programado."
+- [x] Testes para o novo endpoint
