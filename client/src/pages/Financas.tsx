@@ -1038,43 +1038,6 @@ export default function Financas() {
     { enabled: !!establishmentId }
   );
 
-  // Dynamically match left column height to right column using ResizeObserver
-  const rightColRef = useRef<HTMLDivElement>(null);
-  const [rightColHeight, setRightColHeight] = useState<number | null>(null);
-
-  // Observe right column height changes continuously
-  useEffect(() => {
-    const rightCol = rightColRef.current;
-    if (!rightCol) return;
-
-    const observer = new ResizeObserver(() => {
-      // Use requestAnimationFrame for accurate post-layout measurement
-      requestAnimationFrame(() => {
-        if (rightColRef.current) {
-          const h = rightColRef.current.offsetHeight;
-          setRightColHeight(prev => {
-            if (prev === null || Math.abs(prev - h) > 2) return h;
-            return prev;
-          });
-        }
-      });
-    });
-    observer.observe(rightCol);
-    return () => observer.disconnect();
-  }, []);
-
-  // Calculate explicit chart heights based on right column height
-  // Each left card has: ~76px header (icon + title + legend) + chart area
-  // Left column has: 2 cards + 24px gap between them
-  const CARD_HEADER_HEIGHT = 76; // header with icon, title, legend + mb-4
-  const CARD_PADDING = 40; // p-5 = 20px * 2
-  const COLUMN_GAP = 24;
-  const MIN_CHART_HEIGHT = 250;
-  
-  const calculatedChartHeight = rightColHeight 
-    ? Math.max(MIN_CHART_HEIGHT, (rightColHeight - COLUMN_GAP - (CARD_HEADER_HEIGHT + CARD_PADDING) * 2) / 2)
-    : MIN_CHART_HEIGHT;
-
   // Delete mutation
   const deleteMutation = trpc.finance.deleteExpense.useMutation({
     onSuccess: () => {
@@ -1256,10 +1219,10 @@ export default function Financas() {
       </div>
 
       {/* Chart + Health Indicator */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px', marginBottom: '24px', alignItems: 'start' }}>
+      <div key={period} style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px', marginBottom: '24px' }}>
         {/* Coluna esquerda */}
         <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '24px' }}>
-        <div className="bg-card rounded-xl border border-border/50 p-5">
+        <div className="bg-card rounded-xl border border-border/50 p-5" style={{ flex: 1, display: 'flex', flexDirection: 'column' as const }}>
           {/* Header com ícone + tags de legenda */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -1291,7 +1254,7 @@ export default function Financas() {
           </div>
 
           {/* Gráfico recharts */}
-          <div style={{ height: calculatedChartHeight }}>
+          <div style={{ flex: 1, minHeight: 250 }}>
           {chartLoading ? (
             <div className="h-full flex items-center justify-center">
               <div className="skeleton h-full w-full rounded-lg" />
@@ -1356,7 +1319,7 @@ export default function Financas() {
         </div>
 
         {/* Comparação Mensal */}
-        <div className="bg-card rounded-xl border border-border/50 p-5">
+        <div className="bg-card rounded-xl border border-border/50 p-5" style={{ flex: 1, display: 'flex', flexDirection: 'column' as const }}>
           {/* Header com ícone */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -1381,7 +1344,7 @@ export default function Financas() {
             </div>
           </div>
 
-          <div style={{ height: calculatedChartHeight }}>
+          <div style={{ flex: 1, minHeight: 250 }}>
           {comparisonLoading ? (
             <div className="h-full flex items-center justify-center">
               <div className="skeleton h-full w-full rounded-lg" />
@@ -1440,7 +1403,7 @@ export default function Financas() {
         </div>{/* end coluna esquerda */}
 
         {/* Coluna direita */}
-        <div ref={rightColRef} style={{ display: 'flex', flexDirection: 'column' as const, gap: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '24px' }}>
         {/* Indicadores */}
         <div className="bg-card rounded-xl border border-border/50 p-5">
           {/* Header com ícone - mesmo estilo do Evolução Financeira */}
