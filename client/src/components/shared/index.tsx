@@ -161,7 +161,7 @@ export function StatCard({ title, value, tooltip, icon: Icon, trend, loading, cl
     >
       <div className="px-5 py-5 flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
               {title}
             </p>
@@ -182,6 +182,7 @@ export function StatCard({ title, value, tooltip, icon: Icon, trend, loading, cl
                 )}
               </div>
             )}
+            {trend && <TrendBadge trend={trend} />}
           </div>
           <div
             className={cn(
@@ -191,7 +192,6 @@ export function StatCard({ title, value, tooltip, icon: Icon, trend, loading, cl
           >
             <span className={cn("w-2 h-2 rounded-full", colors.dotColor)} />
             <span className="text-2xl font-bold tracking-tight">{value}</span>
-            {trend && <TrendBadge trend={trend} />}
           </div>
 
         </div>

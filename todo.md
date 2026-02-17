@@ -7089,3 +7089,7 @@
 - [x] Alterar aba Recorrentes para usar formato de tabela (DATA, CATEGORIA, DESCRIÇÃO, VALOR, PAGAMENTO, AÇÕES)
 - [x] Manter mesma estrutura visual da aba Gastos (header, linhas, cores, espaçamentos)
 - [x] Adaptar dados recorrentes para colunas (frequência como info adicional)
+
+## StatCards - Mover indicador % para ao lado do título
+- [x] Mover indicador de porcentagem (↓100%, ↑100%) para ao lado do título (ex: "RECEITA HOJE ↓100%")
+- [x] Remover indicador de % de ao lado do valor
