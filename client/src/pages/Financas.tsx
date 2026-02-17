@@ -1038,6 +1038,20 @@ export default function Financas() {
     { enabled: !!establishmentId }
   );
 
+  // Force ResponsiveContainer to recalculate when data loads
+  // This fixes the bug where on first page load + period switch,
+  // ResponsiveContainer measures height before right column data finishes loading
+  const allGridDataLoaded = !chartLoading && !comparisonLoading && !channelLoading && !paymentMethodLoading;
+  useEffect(() => {
+    if (allGridDataLoaded) {
+      // Small delay to let the DOM update with new data before triggering resize
+      const timer = setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [allGridDataLoaded, period]);
+
   // Delete mutation
   const deleteMutation = trpc.finance.deleteExpense.useMutation({
     onSuccess: () => {

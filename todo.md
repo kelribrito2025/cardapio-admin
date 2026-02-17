@@ -7046,3 +7046,7 @@
 - [x] Diagnosticar: Recharts ResponsiveContainer mantém altura anterior quando grid encolhe
 - [x] Forçar remount dos gráficos ao trocar período (key baseada no período)
 - [x] Testar: Este mês → 7 dias → Hoje - cards devem encolher ao voltar para período menor
+
+## Bug: Primeiro carregamento após refresh + troca de período não alinha cards
+- [x] Disparar window resize após dados carregarem para forçar ResponsiveContainer recalcular
+- [x] Testar: F5 → 7 dias deve alinhar corretamente na primeira tentativa
