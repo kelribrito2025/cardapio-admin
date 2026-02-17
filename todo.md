@@ -6904,3 +6904,8 @@
 - [x] Respeitar filtro global da página (Hoje / 7 dias / Este mês)
 - [x] Estado vazio: "Sem faturamento registrado neste período"
 - [x] Escrever testes vitest para o endpoint
+
+## Redesign card Faturamento por canal
+- [x] Remover donut chart do card
+- [x] Mover card para dentro do grid, mesma coluna do Indicadores (abaixo dele)
+- [x] Manter apenas lista de canais com barras de progresso

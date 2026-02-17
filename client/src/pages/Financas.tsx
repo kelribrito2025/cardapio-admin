@@ -1293,7 +1293,9 @@ export default function Financas() {
           )}
         </div>
 
-        <div className="bg-card rounded-xl border border-border/50 p-5 self-start">
+        {/* Right column: Indicadores + Faturamento por canal */}
+        <div className="space-y-6 self-start">
+        <div className="bg-card rounded-xl border border-border/50 p-5">
           {/* Header com ícone - mesmo estilo do Evolução Financeira */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -1400,90 +1402,39 @@ export default function Financas() {
             </Button>
           </div>
         </div>
-      </div>
 
-      {/* Faturamento por canal */}
-      <div className="bg-card rounded-xl border border-border/50 p-5 mb-6">
-        {/* Header com ícone */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
+        {/* Faturamento por canal - mesma coluna do Indicadores */}
+        <div className="bg-card rounded-xl border border-border/50 p-5 self-start">
+          {/* Header com ícone */}
+          <div className="flex items-center gap-3 mb-4">
             <div className="h-10 w-10 rounded-xl bg-indigo-100 dark:bg-indigo-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
               <DollarSign className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
             </div>
             <div className="min-w-0">
               <h3 className="text-base font-semibold text-foreground">Faturamento por canal</h3>
-              <p className="text-xs text-muted-foreground">Origem das receitas no período selecionado</p>
+              <p className="text-xs text-muted-foreground">Origem das receitas no período</p>
             </div>
           </div>
-          {/* Legend dots */}
-          <div className="flex items-center gap-3 text-xs">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full" style={{backgroundColor: '#3b82f6'}} />
-              <span className="text-muted-foreground">PDV</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full" style={{backgroundColor: '#22c55e'}} />
-              <span className="text-muted-foreground">Menu</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full" style={{backgroundColor: '#f97316'}} />
-              <span className="text-muted-foreground">Mesas</span>
-            </div>
-          </div>
-        </div>
 
-        {channelLoading ? (
-          <div className="h-[200px] flex items-center justify-center">
-            <div className="skeleton h-full w-full rounded-lg" />
-          </div>
-        ) : channelData && channelData.total > 0 ? (
-          <div className="flex items-center gap-6">
-            {/* Mini Donut Chart */}
-            <div className="relative flex-shrink-0" style={{width: 140, height: 140}}>
-              <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                {(() => {
-                  const channels = channelData.channels.filter(c => c.total > 0);
-                  const total = channelData.total;
-                  let cumulative = 0;
-                  const radius = 38;
-                  const circumference = 2 * Math.PI * radius;
-                  return channels.map((ch, idx) => {
-                    const pct = ch.total / total;
-                    const offset = cumulative * circumference;
-                    cumulative += pct;
-                    return (
-                      <circle
-                        key={ch.id}
-                        cx="50"
-                        cy="50"
-                        r={radius}
-                        fill="none"
-                        stroke={ch.color}
-                        strokeWidth="12"
-                        strokeDasharray={`${pct * circumference} ${circumference}`}
-                        strokeDashoffset={-offset}
-                        className="transition-all duration-700"
-                      />
-                    );
-                  });
-                })()}
-              </svg>
-              {/* Center text */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-lg font-bold text-foreground">{formatCurrency(channelData.total)}</span>
-                <span className="text-[10px] text-muted-foreground">Total</span>
+          {channelLoading ? (
+            <div className="h-[120px] flex items-center justify-center">
+              <div className="skeleton h-full w-full rounded-lg" />
+            </div>
+          ) : channelData && channelData.total > 0 ? (
+            <div className="space-y-3">
+              {/* Total */}
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs text-muted-foreground">Total do período</span>
+                <span className="text-sm font-bold text-foreground">{formatCurrency(channelData.total)}</span>
               </div>
-            </div>
-
-            {/* Channel list */}
-            <div className="flex-1 space-y-3">
+              {/* Channel list */}
               {channelData.channels.map((ch) => (
                 <div key={ch.id} className="space-y-1">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{backgroundColor: ch.color}} />
                       <span className="text-sm font-medium">{ch.name}</span>
-                      <span className="text-xs text-muted-foreground">({ch.count} pedidos)</span>
+                      <span className="text-xs text-muted-foreground">({ch.count})</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold">{formatCurrency(ch.total)}</span>
@@ -1493,7 +1444,6 @@ export default function Financas() {
                       }}>{ch.percent}%</span>
                     </div>
                   </div>
-                  {/* Progress bar */}
                   <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-700"
@@ -1506,12 +1456,13 @@ export default function Financas() {
                 </div>
               ))}
             </div>
-          </div>
-        ) : (
-          <div className="h-[160px] flex items-center justify-center text-muted-foreground text-sm">
-            Sem faturamento registrado neste período
-          </div>
-        )}
+          ) : (
+            <div className="h-[100px] flex items-center justify-center text-muted-foreground text-sm">
+              Sem faturamento registrado neste período
+            </div>
+          )}
+        </div>
+        </div>{/* end right column wrapper */}
       </div>
 
       {/* Comparação Mensal */}
