@@ -389,8 +389,81 @@ describe("finance", () => {
       });
       const names = result.channels.map((c: any) => c.name);
       expect(names).toContain("PDV");
-      expect(names).toContain("Menu p\u00fablico");
+      expect(names).toContain("Menu público");
       expect(names).toContain("Mesas");
+    });
+  });
+
+  describe("revenueByPaymentMethod", () => {
+    it("returns payment method data with expected structure for today", async () => {
+      const result = await caller.finance.revenueByPaymentMethod({
+        establishmentId: testEstablishmentId,
+        period: "today",
+      });
+      expect(result).toHaveProperty("methods");
+      expect(result).toHaveProperty("total");
+      expect(Array.isArray(result.methods)).toBe(true);
+      expect(result.methods.length).toBe(3);
+      expect(typeof result.total).toBe("number");
+
+      const pix = result.methods.find((m: any) => m.id === "pix");
+      const card = result.methods.find((m: any) => m.id === "card");
+      const cash = result.methods.find((m: any) => m.id === "cash");
+      expect(pix).toBeDefined();
+      expect(card).toBeDefined();
+      expect(cash).toBeDefined();
+
+      for (const m of result.methods) {
+        expect(m).toHaveProperty("id");
+        expect(m).toHaveProperty("name");
+        expect(m).toHaveProperty("color");
+        expect(m).toHaveProperty("total");
+        expect(m).toHaveProperty("count");
+        expect(m).toHaveProperty("percent");
+      }
+    });
+
+    it("returns payment method data for week period", async () => {
+      const result = await caller.finance.revenueByPaymentMethod({
+        establishmentId: testEstablishmentId,
+        period: "week",
+      });
+      expect(result.methods.length).toBe(3);
+      expect(typeof result.total).toBe("number");
+    });
+
+    it("returns payment method data for month period", async () => {
+      const result = await caller.finance.revenueByPaymentMethod({
+        establishmentId: testEstablishmentId,
+        period: "month",
+      });
+      expect(result.methods.length).toBe(3);
+      expect(typeof result.total).toBe("number");
+    });
+
+    it("percentages sum to 100 or all zero when no data", async () => {
+      const result = await caller.finance.revenueByPaymentMethod({
+        establishmentId: testEstablishmentId,
+        period: "today",
+      });
+      const totalPercent = result.methods.reduce((sum: number, m: any) => sum + m.percent, 0);
+      if (result.total > 0) {
+        expect(totalPercent).toBeGreaterThanOrEqual(97);
+        expect(totalPercent).toBeLessThanOrEqual(103);
+      } else {
+        expect(totalPercent).toBe(0);
+      }
+    });
+
+    it("method names match expected values", async () => {
+      const result = await caller.finance.revenueByPaymentMethod({
+        establishmentId: testEstablishmentId,
+        period: "today",
+      });
+      const names = result.methods.map((m: any) => m.name);
+      expect(names).toContain("Pix");
+      expect(names).toContain("Cartão");
+      expect(names).toContain("Dinheiro");
     });
   });
 });

@@ -6937,3 +6937,12 @@
 
 ## Fix tamanho mockups landing page
 - [x] Igualar tamanho dos mockups das seções Campanhas SMS e Cupons de Desconto ao mockup da seção Sistema completo de gestão
+
+## Card Formas de Pagamento
+- [x] Analisar schema de pedidos para campo de forma de pagamento
+- [x] Criar endpoint tRPC para faturamento por forma de pagamento com filtro de período
+- [x] Criar componente Activity Rings (anéis concêntricos estilo Apple Watch)
+- [x] Criar card UI com Activity Rings + lista detalhada (Pix, Cartão, Dinheiro)
+- [x] Respeitar filtro global da página (Hoje / 7 dias / Este mês)
+- [x] Estado vazio: "Nenhuma venda registrada neste período"
+- [x] Escrever testes vitest para o endpoint

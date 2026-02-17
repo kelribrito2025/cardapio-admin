@@ -26,6 +26,7 @@ import {
   Clock,
   Activity,
   BarChart3,
+  CreditCard,
 } from "lucide-react";
 import {
   BarChart,
@@ -996,6 +997,16 @@ export default function Financas() {
       enabled: !!establishmentId,
     });
 
+  // Revenue by payment method
+  const paymentMethodInput = useMemo(
+    () => ({ establishmentId: establishmentId!, period }),
+    [establishmentId, period]
+  );
+  const { data: paymentMethodData, isLoading: paymentMethodLoading } =
+    trpc.finance.revenueByPaymentMethod.useQuery(paymentMethodInput, {
+      enabled: !!establishmentId,
+    });
+
   // Monthly comparison
   const comparisonInput = useMemo(
     () => ({ establishmentId: establishmentId! }),
@@ -1487,6 +1498,104 @@ export default function Financas() {
           ) : (
             <div className="h-[160px] flex items-center justify-center text-muted-foreground text-sm">
               Sem faturamento registrado neste período
+            </div>
+          )}
+        </div>
+        {/* Formas de Pagamento - Activity Rings */}
+        <div className="bg-card rounded-xl border border-border/50 p-5 self-start">
+          {/* Header com ícone */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+              <CreditCard className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-base font-semibold text-foreground">Formas de Pagamento</h3>
+              <p className="text-xs text-muted-foreground">Distribuição por método de pagamento</p>
+            </div>
+          </div>
+
+          {paymentMethodLoading ? (
+            <div className="h-[240px] flex items-center justify-center">
+              <div className="skeleton h-full w-full rounded-lg" />
+            </div>
+          ) : paymentMethodData && paymentMethodData.total > 0 ? (
+            <div className="flex flex-col items-center gap-4">
+              {/* Activity Rings SVG */}
+              <div className="relative w-[180px] h-[180px]">
+                <svg viewBox="0 0 180 180" className="w-full h-full" style={{ transform: 'rotate(-90deg)' }}>
+                  {/* Background rings */}
+                  {[60, 48, 36].map((r, i) => (
+                    <circle
+                      key={`bg-${i}`}
+                      cx="90" cy="90" r={r}
+                      fill="none"
+                      stroke="currentColor"
+                      className="text-muted/30"
+                      strokeWidth="10"
+                      strokeLinecap="round"
+                    />
+                  ))}
+                  {/* Pix ring (outer) */}
+                  <circle
+                    cx="90" cy="90" r={60}
+                    fill="none"
+                    stroke="#8b5cf6"
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                    strokeDasharray={`${(paymentMethodData.methods[0]?.percent || 0) / 100 * 2 * Math.PI * 60} ${2 * Math.PI * 60}`}
+                    className="transition-all duration-1000 ease-out"
+                    style={{ filter: 'drop-shadow(0 0 3px rgba(139,92,246,0.4))' }}
+                  />
+                  {/* Cartão ring (middle) */}
+                  <circle
+                    cx="90" cy="90" r={48}
+                    fill="none"
+                    stroke="#3b82f6"
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                    strokeDasharray={`${(paymentMethodData.methods[1]?.percent || 0) / 100 * 2 * Math.PI * 48} ${2 * Math.PI * 48}`}
+                    className="transition-all duration-1000 ease-out"
+                    style={{ filter: 'drop-shadow(0 0 3px rgba(59,130,246,0.4))' }}
+                  />
+                  {/* Dinheiro ring (inner) */}
+                  <circle
+                    cx="90" cy="90" r={36}
+                    fill="none"
+                    stroke="#22c55e"
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                    strokeDasharray={`${(paymentMethodData.methods[2]?.percent || 0) / 100 * 2 * Math.PI * 36} ${2 * Math.PI * 36}`}
+                    className="transition-all duration-1000 ease-out"
+                    style={{ filter: 'drop-shadow(0 0 3px rgba(34,197,94,0.4))' }}
+                  />
+                </svg>
+                {/* Center total */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-lg font-bold text-foreground">{formatCurrency(paymentMethodData.total)}</span>
+                  <span className="text-[10px] text-muted-foreground">Total</span>
+                </div>
+              </div>
+
+              {/* Legend list */}
+              <div className="w-full space-y-2.5">
+                {paymentMethodData.methods.map((m) => (
+                  <div key={m.id} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: m.color }} />
+                      <span className="text-sm font-medium text-foreground">{m.name}</span>
+                      <span className="text-xs text-muted-foreground">({m.count} pedidos)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-foreground">{formatCurrency(m.total)}</span>
+                      <span className="text-xs font-semibold" style={{ color: m.color }}>{m.percent}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">
+              Nenhuma venda registrada neste período
             </div>
           )}
         </div>

@@ -8887,3 +8887,108 @@ export async function getRevenueByChannel(
 
   return { channels, total: grandTotal };
 }
+
+
+// --- Faturamento por Forma de Pagamento ---
+
+export async function getRevenueByPaymentMethod(
+  establishmentId: number,
+  period: 'today' | 'week' | 'month' | 'custom' = 'today',
+  customStart?: string,
+  customEnd?: string
+) {
+  const db = await getDb();
+  if (!db) return { methods: [], total: 0 };
+
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+
+  let periodStart: Date;
+
+  if (period === 'custom' && customStart && customEnd) {
+    periodStart = new Date(customStart);
+  } else if (period === 'today') {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
+  } else if (period === 'week') {
+    const currentDay = localNow.getDay();
+    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysFromMonday);
+  } else {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), 1);
+  }
+
+  const periodStartStr = fmtLocalDateTime(periodStart);
+  const nowStr = period === 'custom' && customEnd ? `${customEnd} 23:59:59` : undefined;
+
+  const result = await db.select({
+    paymentMethod: orders.paymentMethod,
+    total: sql<number>`COALESCE(SUM(${orders.total}), 0)`,
+    count: sql<number>`COUNT(*)`,
+  })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${periodStartStr}`,
+      ...(nowStr ? [sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) <= ${nowStr}`] : []),
+      eq(orders.status, "completed")
+    ))
+    .groupBy(orders.paymentMethod);
+
+  // Map payment methods: pix, card (card + card_online), cash, boleto
+  const methodMap: Record<string, { total: number; count: number }> = {
+    pix: { total: 0, count: 0 },
+    card: { total: 0, count: 0 },
+    cash: { total: 0, count: 0 },
+  };
+
+  for (const row of result) {
+    const total = Number(row.total);
+    const count = Number(row.count);
+
+    if (row.paymentMethod === 'pix') {
+      methodMap.pix.total += total;
+      methodMap.pix.count += count;
+    } else if (row.paymentMethod === 'card' || row.paymentMethod === 'card_online') {
+      methodMap.card.total += total;
+      methodMap.card.count += count;
+    } else if (row.paymentMethod === 'cash') {
+      methodMap.cash.total += total;
+      methodMap.cash.count += count;
+    } else {
+      // boleto or unknown → group into cash
+      methodMap.cash.total += total;
+      methodMap.cash.count += count;
+    }
+  }
+
+  const grandTotal = methodMap.pix.total + methodMap.card.total + methodMap.cash.total;
+
+  const methods = [
+    {
+      id: 'pix',
+      name: 'Pix',
+      color: '#8b5cf6',
+      total: methodMap.pix.total,
+      count: methodMap.pix.count,
+      percent: grandTotal > 0 ? Math.round((methodMap.pix.total / grandTotal) * 100) : 0,
+    },
+    {
+      id: 'card',
+      name: 'Cartão',
+      color: '#3b82f6',
+      total: methodMap.card.total,
+      count: methodMap.card.count,
+      percent: grandTotal > 0 ? Math.round((methodMap.card.total / grandTotal) * 100) : 0,
+    },
+    {
+      id: 'cash',
+      name: 'Dinheiro',
+      color: '#22c55e',
+      total: methodMap.cash.total,
+      count: methodMap.cash.count,
+      percent: grandTotal > 0 ? Math.round((methodMap.cash.total / grandTotal) * 100) : 0,
+    },
+  ];
+
+  return { methods, total: grandTotal };
+}
