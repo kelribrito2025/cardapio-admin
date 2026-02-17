@@ -6909,3 +6909,6 @@
 - [x] Remover donut chart do card
 - [x] Mover card para dentro do grid, mesma coluna do Indicadores (abaixo dele)
 - [x] Manter apenas lista de canais com barras de progresso
+
+## Fix barras de progresso Faturamento por canal
+- [x] Igualar estilo das barras de progresso do card Faturamento por canal ao card Indicadores

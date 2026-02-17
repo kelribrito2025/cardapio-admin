@@ -1421,38 +1421,29 @@ export default function Financas() {
               <div className="skeleton h-full w-full rounded-lg" />
             </div>
           ) : channelData && channelData.total > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {/* Total */}
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs text-muted-foreground">Total do período</span>
                 <span className="text-sm font-bold text-foreground">{formatCurrency(channelData.total)}</span>
               </div>
-              {/* Channel list */}
+              {/* Channel list - mesmo estilo do Despesas por categoria */}
               {channelData.channels.map((ch) => (
-                <div key={ch.id} className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{backgroundColor: ch.color}} />
-                      <span className="text-sm font-medium">{ch.name}</span>
-                      <span className="text-xs text-muted-foreground">({ch.count})</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold">{formatCurrency(ch.total)}</span>
-                      <span className="text-xs font-semibold px-1.5 py-0.5 rounded-md" style={{
-                        backgroundColor: `${ch.color}15`,
-                        color: ch.color,
-                      }}>{ch.percent}%</span>
-                    </div>
-                  </div>
-                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-700"
-                      style={{
-                        width: `${ch.percent}%`,
-                        backgroundColor: ch.color,
-                      }}
+                <div
+                  key={ch.id}
+                  className="flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shrink-0"
+                      style={{ backgroundColor: ch.color }}
                     />
+                    <span className="text-sm">{ch.name}</span>
+                    <span className="text-xs text-muted-foreground">({ch.count})</span>
                   </div>
+                  <span className="text-sm font-semibold">
+                    {formatCurrency(ch.total)}
+                  </span>
                 </div>
               ))}
             </div>
