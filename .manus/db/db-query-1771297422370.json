@@ -1,0 +1,148 @@
+{
+  "query": "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() ORDER BY TABLE_NAME;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() ORDER BY TABLE_NAME;",
+  "rows": [
+    {
+      "TABLE_NAME": "__drizzle_migrations"
+    },
+    {
+      "TABLE_NAME": "businessHours"
+    },
+    {
+      "TABLE_NAME": "categories"
+    },
+    {
+      "TABLE_NAME": "comboGroupItems"
+    },
+    {
+      "TABLE_NAME": "comboGroups"
+    },
+    {
+      "TABLE_NAME": "complementGroups"
+    },
+    {
+      "TABLE_NAME": "complementItems"
+    },
+    {
+      "TABLE_NAME": "coupons"
+    },
+    {
+      "TABLE_NAME": "deliveries"
+    },
+    {
+      "TABLE_NAME": "drivers"
+    },
+    {
+      "TABLE_NAME": "establishments"
+    },
+    {
+      "TABLE_NAME": "expenseCategories"
+    },
+    {
+      "TABLE_NAME": "expenses"
+    },
+    {
+      "TABLE_NAME": "ifoodConfig"
+    },
+    {
+      "TABLE_NAME": "loyaltyCards"
+    },
+    {
+      "TABLE_NAME": "loyaltyStamps"
+    },
+    {
+      "TABLE_NAME": "menu_sessions"
+    },
+    {
+      "TABLE_NAME": "menu_views_daily"
+    },
+    {
+      "TABLE_NAME": "menu_views_hourly"
+    },
+    {
+      "TABLE_NAME": "monthlyGoals"
+    },
+    {
+      "TABLE_NAME": "neighborhoodFees"
+    },
+    {
+      "TABLE_NAME": "orderItems"
+    },
+    {
+      "TABLE_NAME": "orders"
+    },
+    {
+      "TABLE_NAME": "pdv_customers"
+    },
+    {
+      "TABLE_NAME": "pending_online_orders"
+    },
+    {
+      "TABLE_NAME": "printQueue"
+    },
+    {
+      "TABLE_NAME": "printerSectors"
+    },
+    {
+      "TABLE_NAME": "printerSettings"
+    },
+    {
+      "TABLE_NAME": "printers"
+    },
+    {
+      "TABLE_NAME": "products"
+    },
+    {
+      "TABLE_NAME": "pushSubscriptions"
+    },
+    {
+      "TABLE_NAME": "recurringExpenses"
+    },
+    {
+      "TABLE_NAME": "reviews"
+    },
+    {
+      "TABLE_NAME": "scheduled_campaigns"
+    },
+    {
+      "TABLE_NAME": "sms_balance"
+    },
+    {
+      "TABLE_NAME": "sms_transactions"
+    },
+    {
+      "TABLE_NAME": "stockCategories"
+    },
+    {
+      "TABLE_NAME": "stockItems"
+    },
+    {
+      "TABLE_NAME": "stockMovements"
+    },
+    {
+      "TABLE_NAME": "tabItems"
+    },
+    {
+      "TABLE_NAME": "tableSpaces"
+    },
+    {
+      "TABLE_NAME": "table_spaces"
+    },
+    {
+      "TABLE_NAME": "tables"
+    },
+    {
+      "TABLE_NAME": "tabs"
+    },
+    {
+      "TABLE_NAME": "users"
+    },
+    {
+      "TABLE_NAME": "whatsappConfig"
+    }
+  ],
+  "messages": [],
+  "stdout": "TABLE_NAME\n__drizzle_migrations\nbusinessHours\ncategories\ncomboGroupItems\ncomboGroups\ncomplementGroups\ncomplementItems\ncoupons\ndeliveries\ndrivers\nestablishments\nexpenseCategories\nexpenses\nifoodConfig\nloyaltyCards\nloyaltyStamps\nmenu_sessions\nmenu_views_daily\nmenu_views_hourly\nmonthlyGoals\nneighborhoodFees\norderItems\norders\npdv_customers\npending_online_orders\nprintQueue\nprinterSectors\nprinterSettings\nprinters\nproducts\npushSubscriptions\nrecurringExpenses\nreviews\nscheduled_campaigns\nsms_balance\nsms_transactions\nstockCategories\nstockItems\nstockMovements\ntabItems\ntableSpaces\ntable_spaces\ntables\ntabs\nusers\nwhatsappConfig\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

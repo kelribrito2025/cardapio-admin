@@ -1422,68 +1422,57 @@ export default function Financas() {
             </div>
           ) : channelData && channelData.total > 0 ? (
             <div>
-              {/* Semi-circle gauge chart */}
-              <div className="flex justify-center mb-2">
-                <div className="relative" style={{ width: 200, height: 110 }}>
-                  <svg viewBox="0 0 200 110" className="w-full h-full">
-                    {(() => {
-                      const channels = channelData.channels.filter(c => c.total > 0);
-                      const total = channelData.total;
-                      const cx = 100;
-                      const cy = 100;
-                      const outerR = 90;
-                      const innerR = 55;
-                      let cumAngle = Math.PI; // start from left (180°)
-                      const gap = 0.03; // small gap between segments
-
-                      return channels.map((ch, idx) => {
-                        const pct = ch.total / total;
-                        const sweep = pct * Math.PI - (channels.length > 1 ? gap : 0);
-                        const startAngle = cumAngle + (idx > 0 ? gap / 2 : 0);
-                        const endAngle = startAngle + sweep;
-                        cumAngle = startAngle + sweep + (channels.length > 1 ? gap / 2 : 0);
-
-                        const x1Outer = cx + outerR * Math.cos(startAngle);
-                        const y1Outer = cy + outerR * Math.sin(startAngle);
-                        const x2Outer = cx + outerR * Math.cos(endAngle);
-                        const y2Outer = cy + outerR * Math.sin(endAngle);
-                        const x1Inner = cx + innerR * Math.cos(endAngle);
-                        const y1Inner = cy + innerR * Math.sin(endAngle);
-                        const x2Inner = cx + innerR * Math.cos(startAngle);
-                        const y2Inner = cy + innerR * Math.sin(startAngle);
-
-                        const largeArc = sweep > Math.PI ? 1 : 0;
-
-                        const d = [
-                          `M ${x1Outer} ${y1Outer}`,
-                          `A ${outerR} ${outerR} 0 ${largeArc} 1 ${x2Outer} ${y2Outer}`,
-                          `L ${x1Inner} ${y1Inner}`,
-                          `A ${innerR} ${innerR} 0 ${largeArc} 0 ${x2Inner} ${y2Inner}`,
-                          'Z',
-                        ].join(' ');
-
-                        return (
-                          <path
-                            key={ch.id}
-                            d={d}
-                            fill={ch.color}
-                            className="transition-all duration-700"
-                          />
-                        );
-                      });
-                    })()}
-                  </svg>
-                  {/* Center total */}
-                  <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: 0 }}>
-                    <div className="text-center">
-                      <span className="text-lg font-bold text-foreground">{formatCurrency(channelData.total)}</span>
-                    </div>
-                  </div>
-                </div>
+              {/* Total */}
+              <div className="text-center mb-4">
+                <span className="text-2xl font-bold text-foreground">{formatCurrency(channelData.total)}</span>
+                <p className="text-xs text-muted-foreground mt-0.5">Total no período</p>
               </div>
 
-              {/* Channel list */}
-              <div className="space-y-3 mt-4">
+              {/* Vertical bar chart */}
+              <div className="flex items-end justify-center gap-5 mb-5" style={{ height: 120 }}>
+                {channelData.channels.map((ch) => {
+                  const maxVal = Math.max(...channelData.channels.map(c => c.total));
+                  const barHeight = maxVal > 0 ? Math.max((ch.total / maxVal) * 100, 6) : 6;
+                  const gradients: Record<string, string[]> = {
+                    pdv: ['#3b82f6', '#60a5fa', '#93c5fd'],
+                    menu: ['#10b981', '#34d399', '#6ee7b7'],
+                    mesas: ['#f59e0b', '#fbbf24', '#fcd34d'],
+                  };
+                  const [from, , to] = gradients[ch.id] || ['#6b7280', '#9ca3af', '#d1d5db'];
+                  const gradientId = `bar-gradient-${ch.id}`;
+
+                  return (
+                    <div key={ch.id} className="flex flex-col items-center gap-2">
+                      <span className="text-xs font-bold text-foreground">{ch.percent}%</span>
+                      <div className="relative" style={{ width: 40, height: 100 }}>
+                        <svg width="40" height="100" className="overflow-visible">
+                          <defs>
+                            <linearGradient id={gradientId} x1="0" y1="1" x2="0" y2="0">
+                              <stop offset="0%" stopColor={from} />
+                              <stop offset="100%" stopColor={to} />
+                            </linearGradient>
+                          </defs>
+                          <rect
+                            x="4"
+                            y={100 - barHeight}
+                            width="32"
+                            height={barHeight}
+                            rx="8"
+                            ry="8"
+                            fill={`url(#${gradientId})`}
+                            className="transition-all duration-700 ease-out"
+                            style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
+                          />
+                        </svg>
+                      </div>
+                      <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">{ch.name}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Channel detail list */}
+              <div className="space-y-2.5 pt-3 border-t border-border/40">
                 {channelData.channels.map((ch) => (
                   <div
                     key={ch.id}
@@ -1491,14 +1480,16 @@ export default function Financas() {
                   >
                     <div className="flex items-center gap-2.5">
                       <span
-                        className="w-1 h-6 rounded-full shrink-0"
+                        className="w-1.5 h-5 rounded-full shrink-0"
                         style={{ backgroundColor: ch.color }}
                       />
-                      <span className="text-sm font-medium">{ch.name}</span>
+                      <div>
+                        <span className="text-sm font-medium">{ch.name}</span>
+                        <span className="text-xs text-muted-foreground ml-1.5">({ch.count} pedidos)</span>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-semibold">{formatCurrency(ch.total)}</span>
-                      <span className="text-sm font-bold" style={{ color: ch.color }}>{ch.percent}%</span>
                     </div>
                   </div>
                 ))}

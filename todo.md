@@ -6916,3 +6916,13 @@
 ## Redesign Faturamento por canal - estilo meia lua
 - [x] Implementar gráfico semi-circle (meia lua) com segmentos por canal
 - [x] Lista abaixo com barra vertical colorida + nome + valor + percentual
+
+## Dados mockados para admin@admin.com
+- [ ] Identificar estabelecimento e IDs da conta admin
+- [ ] Inserir pedidos mockados (PDV, Menu público, Mesas) com datas variadas
+- [ ] Inserir despesas mockadas com categorias variadas
+- [ ] Verificar dados na página de Finanças
+
+## Redesign Faturamento por canal - Barras verticais
+- [x] Substituir meia lua por mini barras verticais arredondadas com gradiente sutil
+- [x] 3 barras (PDV, Menu público, Mesas) com alturas proporcionais ao faturamento

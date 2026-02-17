@@ -1,0 +1,24 @@
+{
+  "query": "SELECT u.id as userId, u.email, e.id as estId, e.name as estName, e.timezone FROM users u LEFT JOIN establishments e ON e.userId = u.id WHERE u.email = 'admin@admin.com';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT u.id as userId, u.email, e.id as estId, e.name as estName, e.timezone FROM users u LEFT JOIN establishments e ON e.userId = u.id WHERE u.email = 'admin@admin.com';",
+  "rows": [
+    {
+      "userId": "180577",
+      "email": "admin@admin.com",
+      "estId": "30001",
+      "estName": "Sushi Haruno",
+      "timezone": "America/Sao_Paulo"
+    },
+    {
+      "userId": "846615",
+      "email": "admin@admin.com",
+      "estId": "NULL",
+      "estName": "NULL",
+      "timezone": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "userId\temail\testId\testName\ttimezone\n180577\tadmin@admin.com\t30001\tSushi Haruno\tAmerica/Sao_Paulo\n846615\tadmin@admin.com\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}
