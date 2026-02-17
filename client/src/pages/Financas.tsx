@@ -2301,87 +2301,228 @@ export default function Financas() {
         {listTab === "recorrentes" && (
           <>
             {recurringExpenses && recurringExpenses.length > 0 ? (
-              <div className="space-y-3">
-                {recurringExpenses.map((rec: any) => {
-                  const freqLabel =
-                    rec.frequency === "monthly"
-                      ? `Mensal (dia ${rec.executionDay})`
-                      : rec.frequency === "weekly"
-                      ? `Semanal (${WEEKDAY_LABELS[rec.executionDay] || rec.executionDay})`
-                      : `Anual (dia ${rec.executionDay}/${MONTH_LABELS[(rec.executionMonth || 1) - 1]})`;
-                  return (
-                    <div
-                      key={rec.id}
-                      className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
-                        rec.active
-                          ? "bg-muted/30 border-border/30"
-                          : "bg-muted/10 border-border/20 opacity-60"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className={`p-2 rounded-lg ${
-                          rec.active ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"
-                        }`}>
-                          <Repeat className="h-4 w-4" />
+              <>
+                {/* Desktop table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border/50">
+                        <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">
+                          Frequência
+                        </th>
+                        <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">
+                          Categoria
+                        </th>
+                        <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">
+                          Descrição
+                        </th>
+                        <th className="text-right text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">
+                          Valor
+                        </th>
+                        <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">
+                          Pagamento
+                        </th>
+                        <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">
+                          Status
+                        </th>
+                        <th className="text-right text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-2">
+                          Ações
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recurringExpenses.map((rec: any) => {
+                        const freqLabel =
+                          rec.frequency === "monthly"
+                            ? `Mensal (dia ${rec.executionDay})`
+                            : rec.frequency === "weekly"
+                            ? `Semanal (${WEEKDAY_LABELS[rec.executionDay] || rec.executionDay})`
+                            : `Anual (dia ${rec.executionDay}/${MONTH_LABELS[(rec.executionMonth || 1) - 1]})`;
+                        return (
+                          <tr
+                            key={rec.id}
+                            className={`border-b border-border/30 hover:bg-muted/30 transition-colors ${
+                              !rec.active ? "opacity-50" : ""
+                            }`}
+                          >
+                            <td className="py-3 px-2 text-sm">
+                              {freqLabel}
+                            </td>
+                            <td className="py-3 px-2">
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className="w-2 h-2 rounded-full shrink-0"
+                                  style={{
+                                    backgroundColor: rec.categoryColor || "#6b7280",
+                                  }}
+                                />
+                                <span className="text-sm">
+                                  {rec.categoryName}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="py-3 px-2 text-sm max-w-[200px] truncate">
+                              {rec.description}
+                            </td>
+                            <td className={`py-3 px-2 text-sm font-semibold text-right ${
+                              rec.type === 'revenue'
+                                ? 'text-emerald-600 dark:text-emerald-400'
+                                : 'text-red-600 dark:text-red-400'
+                            }`}>
+                              {rec.type === 'revenue' ? '+' : '-'}{formatCurrency(Number(rec.amount))}
+                            </td>
+                            <td className="py-3 px-2 text-sm text-muted-foreground">
+                              {paymentMethodLabels[rec.paymentMethod] || rec.paymentMethod}
+                            </td>
+                            <td className="py-3 px-2">
+                              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                                rec.active
+                                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400'
+                                  : 'bg-muted text-muted-foreground'
+                              }`}>
+                                {rec.active ? 'Ativo' : 'Pausado'}
+                              </span>
+                            </td>
+                            <td className="py-3 px-2 text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  title={rec.active ? "Pausar" : "Ativar"}
+                                  onClick={() => {
+                                    toggleRecurringMutation.mutate({
+                                      id: rec.id,
+                                      establishmentId: establishmentId!,
+                                      active: !rec.active,
+                                    });
+                                  }}
+                                >
+                                  {rec.active ? (
+                                    <Pause className="h-3.5 w-3.5" />
+                                  ) : (
+                                    <Play className="h-3.5 w-3.5" />
+                                  )}
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                  onClick={() => {
+                                    if (confirm("Excluir esta recorrência? Os lançamentos já gerados serão mantidos.")) {
+                                      deleteRecurringMutation.mutate({
+                                        id: rec.id,
+                                        establishmentId: establishmentId!,
+                                        deleteFutureExpenses: false,
+                                      });
+                                    }
+                                  }}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile cards */}
+                <div className="md:hidden space-y-3">
+                  {recurringExpenses.map((rec: any) => {
+                    const freqLabel =
+                      rec.frequency === "monthly"
+                        ? `Mensal (dia ${rec.executionDay})`
+                        : rec.frequency === "weekly"
+                        ? `Semanal (${WEEKDAY_LABELS[rec.executionDay] || rec.executionDay})`
+                        : `Anual (dia ${rec.executionDay}/${MONTH_LABELS[(rec.executionMonth || 1) - 1]})`;
+                    return (
+                      <div
+                        key={rec.id}
+                        className={`p-4 rounded-xl bg-muted/30 border border-border/30 ${
+                          !rec.active ? "opacity-50" : ""
+                        }`}
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <p className="font-medium text-sm">{rec.description}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span
+                                className="w-2 h-2 rounded-full"
+                                style={{ backgroundColor: rec.categoryColor || "#6b7280" }}
+                              />
+                              <span className="text-xs text-muted-foreground">
+                                {rec.categoryName}
+                              </span>
+                            </div>
+                          </div>
+                          <span className={`text-sm font-semibold ${
+                            rec.type === 'revenue'
+                              ? 'text-emerald-600 dark:text-emerald-400'
+                              : 'text-red-600 dark:text-red-400'
+                          }`}>
+                            {rec.type === 'revenue' ? '+' : '-'}{formatCurrency(Number(rec.amount))}
+                          </span>
                         </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium truncate">{rec.description}</p>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
                             <span>{freqLabel}</span>
                             <span>·</span>
-                            <span className="font-semibold text-red-600 dark:text-red-400">
-                              {formatCurrency(Number(rec.amount))}
+                            <span>{paymentMethodLabels[rec.paymentMethod] || rec.paymentMethod}</span>
+                            <span>·</span>
+                            <span className={`font-medium px-1.5 py-0.5 rounded-full text-[10px] ${
+                              rec.active
+                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400'
+                                : 'bg-muted text-muted-foreground'
+                            }`}>
+                              {rec.active ? 'Ativo' : 'Pausado'}
                             </span>
-                            {rec.generateAsPending && (
-                              <>
-                                <span>·</span>
-                                <span className="text-amber-600">Pendente</span>
-                              </>
-                            )}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7"
+                              title={rec.active ? "Pausar" : "Ativar"}
+                              onClick={() => {
+                                toggleRecurringMutation.mutate({
+                                  id: rec.id,
+                                  establishmentId: establishmentId!,
+                                  active: !rec.active,
+                                });
+                              }}
+                            >
+                              {rec.active ? (
+                                <Pause className="h-3 w-3" />
+                              ) : (
+                                <Play className="h-3 w-3" />
+                              )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                              onClick={() => {
+                                if (confirm("Excluir esta recorrência? Os lançamentos já gerados serão mantidos.")) {
+                                  deleteRecurringMutation.mutate({
+                                    id: rec.id,
+                                    establishmentId: establishmentId!,
+                                    deleteFutureExpenses: false,
+                                  });
+                                }
+                              }}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          title={rec.active ? "Pausar" : "Ativar"}
-                          onClick={() => {
-                            toggleRecurringMutation.mutate({
-                              id: rec.id,
-                              establishmentId: establishmentId!,
-                              active: !rec.active,
-                            });
-                          }}
-                        >
-                          {rec.active ? (
-                            <Pause className="h-3.5 w-3.5" />
-                          ) : (
-                            <Play className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                          onClick={() => {
-                            if (confirm("Excluir esta recorrência? Os lançamentos já gerados serão mantidos.")) {
-                              deleteRecurringMutation.mutate({
-                                id: rec.id,
-                                establishmentId: establishmentId!,
-                                deleteFutureExpenses: false,
-                              });
-                            }
-                          }}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              </>
             ) : (
               <EmptyState
                 icon={Repeat}

@@ -7084,3 +7084,8 @@
 - [x] Remover ícones Lucide dos mini cards
 - [x] Adicionar borda colorida na lateral esquerda (vermelha para despesas, verde para receitas)
 - [x] Ajustar layout sem ícone (texto direto)
+
+## Lista de Recorrentes - Formato tabela igual Gastos
+- [x] Alterar aba Recorrentes para usar formato de tabela (DATA, CATEGORIA, DESCRIÇÃO, VALOR, PAGAMENTO, AÇÕES)
+- [x] Manter mesma estrutura visual da aba Gastos (header, linhas, cores, espaçamentos)
+- [x] Adaptar dados recorrentes para colunas (frequência como info adicional)
