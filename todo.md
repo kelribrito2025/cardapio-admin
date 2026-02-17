@@ -6959,3 +6959,6 @@
 
 ## Mover Comparação Mensal para coluna esquerda
 - [x] Mover card Comparação Mensal para dentro do grid, abaixo de Evolução Financeira (coluna esquerda)
+
+## Fix altura das colunas no grid de Finanças
+- [x] Fazer as duas colunas do grid terem a mesma altura (esticar cards da esquerda para alinhar com Formas de Pagamento)
