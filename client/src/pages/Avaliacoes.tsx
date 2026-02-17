@@ -2,21 +2,18 @@ import { useState, useEffect, useMemo } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Star, MessageSquare, Users, Clock, TrendingUp, Send, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Filter, Hash, Calendar, Phone, X, Pencil, CheckCircle2 } from "lucide-react";
-import { StatCard } from "@/components/shared";
-import { Card, CardContent } from "@/components/ui/card";
+import { Star, MessageSquare, Users, Clock, TrendingUp, Send, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Filter, Hash, Calendar, Phone, X, Pencil, CheckCircle2, MoreHorizontal, Eye } from "lucide-react";
+import { StatCard, PageHeader, TableSkeleton, EmptyState } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -396,14 +393,11 @@ export default function Avaliacoes() {
   return (
     <AdminLayout>
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Star className="text-amber-500" size={28} />
-          Avaliações
-        </h1>
-        <p className="text-muted-foreground mt-1">Gerencie e responda as avaliações dos seus clientes</p>
-      </div>
+      <PageHeader
+        title="Avaliações"
+        description="Gerencie e responda as avaliações dos seus clientes"
+        icon={<Star className="h-6 w-6 text-amber-500" />}
+      />
 
       {/* Métricas */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
@@ -469,88 +463,174 @@ export default function Avaliacoes() {
         </p>
       </div>
 
-      {/* Tabela de avaliações */}
-      {isLoading ? (
-        <Card className="shadow-none">
-          <CardContent className="p-0">
-            <div className="animate-pulse">
-              <div className="h-10 bg-muted/30 border-b" />
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="h-14 border-b flex items-center gap-4 px-4">
-                  <div className="h-4 bg-muted rounded w-16" />
-                  <div className="h-4 bg-muted rounded w-24" />
-                  <div className="h-4 bg-muted rounded w-12" />
-                  <div className="h-4 bg-muted rounded w-40" />
-                  <div className="h-4 bg-muted rounded w-24" />
-                  <div className="h-6 bg-muted rounded-full w-28" />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      ) : reviewsList && reviewsList.length > 0 ? (
-        <>
-          <Card className="shadow-none" style={{paddingTop: '0px', paddingBottom: '0px'}}>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/30">
-                    <TableHead className="text-xs font-semibold text-muted-foreground">Pedido</TableHead>
-                    <TableHead className="text-xs font-semibold text-muted-foreground">Data da avaliação</TableHead>
-                    <TableHead className="text-xs font-semibold text-muted-foreground">Nota</TableHead>
-                    <TableHead className="text-xs font-semibold text-muted-foreground">Comentário</TableHead>
-                    <TableHead className="text-xs font-semibold text-muted-foreground">Avaliação</TableHead>
-                    <TableHead className="text-xs font-semibold text-muted-foreground">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+      {/* Lista de avaliações */}
+      <div className="mt-6">
+        {isLoading ? (
+          <TableSkeleton rows={5} columns={6} />
+        ) : !reviewsList || reviewsList.length === 0 ? (
+          <EmptyState
+            icon={Star}
+            title="Nenhuma avaliação encontrada"
+            description={
+              filter === "pending" ? "Todas as avaliações foram respondidas!" :
+              filter === "responded" ? "Nenhuma avaliação respondida ainda." :
+              "As avaliações dos clientes aparecerão aqui."
+            }
+          />
+        ) : (
+          <>
+          <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border/50 bg-muted/30">
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Cliente</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Pedido</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Data</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Nota</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Comentário</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
+                    <th className="text-right p-4 text-sm font-medium text-muted-foreground">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {reviewsList.map((review: any) => {
                     const createdDate = new Date(review.createdAt);
+                    const customerInitial = (review.customerName || "C").charAt(0).toUpperCase();
+                    const hasResponse = !!review.responseText;
                     return (
-                      <TableRow
+                      <tr
                         key={review.id}
                         className={cn(
-                          "cursor-pointer transition-colors",
+                          "border-b border-border/30 hover:bg-muted/20 transition-colors cursor-pointer",
                           selectedReview?.id === review.id && "bg-muted/50",
                           !review.isRead && "font-medium"
                         )}
+                        onClick={() => handleSelectReview(review)}
                       >
-                        <TableCell className="text-sm text-red-600 font-medium">
-                          {review.orderNumber || review.orderId || "—"}
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {createdDate.toLocaleDateString("pt-BR")}
-                        </TableCell>
-                        <TableCell>
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className={cn(
+                              "h-10 w-10 rounded-full flex items-center justify-center text-white font-semibold text-sm",
+                              review.rating >= 4 ? "bg-emerald-500" : review.rating >= 3 ? "bg-amber-500" : "bg-red-500"
+                            )}>
+                              {customerInitial}
+                            </div>
+                            <div>
+                              <p className="font-medium">{review.customerName || "Cliente"}</p>
+                              {review.customerPhone && (
+                                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <Phone className="h-3 w-3" />
+                                  {review.customerPhone}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <span className="text-sm text-red-600 font-medium">
+                            {review.orderNumber || review.orderId || "—"}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <span className="text-sm text-muted-foreground">
+                            {createdDate.toLocaleDateString("pt-BR")}
+                          </span>
+                        </td>
+                        <td className="p-4">
                           <StarRatingCompact rating={review.rating} />
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground max-w-[200px]">
-                          <span className="line-clamp-2">
+                        </td>
+                        <td className="p-4 max-w-[200px]">
+                          <span className="text-sm text-muted-foreground line-clamp-2">
                             {review.comment || "—"}
                           </span>
-                        </TableCell>
-                        <TableCell>
-                          <button
-                            className="text-sm text-red-600 hover:text-red-700 hover:underline font-medium cursor-pointer"
-                            onClick={() => handleSelectReview(review)}
-                          >
-                            Mostrar detalhes
-                          </button>
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td className="p-4">
                           {getStatusBadge(review)}
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                        <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleSelectReview(review)}>
+                                <Eye className="h-4 w-4 mr-2" />
+                                Ver detalhes
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </tr>
                     );
                   })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y divide-border/30">
+              {reviewsList.map((review: any) => {
+                const createdDate = new Date(review.createdAt);
+                const customerInitial = (review.customerName || "C").charAt(0).toUpperCase();
+                return (
+                  <div
+                    key={review.id}
+                    className="p-4 hover:bg-muted/20 transition-colors"
+                    onClick={() => handleSelectReview(review)}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          "h-10 w-10 rounded-full flex items-center justify-center text-white font-semibold text-sm",
+                          review.rating >= 4 ? "bg-emerald-500" : review.rating >= 3 ? "bg-amber-500" : "bg-red-500"
+                        )}>
+                          {customerInitial}
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{review.customerName || "Cliente"}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Pedido {review.orderNumber || review.orderId || "—"} · {createdDate.toLocaleDateString("pt-BR")}
+                          </p>
+                        </div>
+                      </div>
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleSelectReview(review)}>
+                              <Eye className="h-4 w-4 mr-2" />
+                              Ver detalhes
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <StarRatingCompact rating={review.rating} />
+                      {getStatusBadge(review)}
+                      {review.comment && (
+                        <span className="text-xs text-muted-foreground ml-auto line-clamp-1 max-w-[150px]">
+                          {review.comment}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Paginação */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between bg-muted/30 rounded-lg px-4 py-2.5 mt-2">
+            <div className="flex items-center justify-between bg-muted/30 rounded-lg px-4 py-2.5 mt-4">
               <p className="text-sm text-muted-foreground">
                 Página {page + 1} de {totalPages} · Total: {totalCount} avaliações
               </p>
@@ -622,20 +702,9 @@ export default function Avaliacoes() {
               </div>
             </div>
           )}
-        </>
-      ) : (
-        <Card className="shadow-none">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Star size={48} className="text-muted-foreground/30 mb-3" />
-            <p className="text-muted-foreground font-medium">Nenhuma avaliação encontrada</p>
-            <p className="text-sm text-muted-foreground/70 mt-1">
-              {filter === "pending" ? "Todas as avaliações foram respondidas!" : 
-               filter === "responded" ? "Nenhuma avaliação respondida ainda." :
-               "As avaliações dos clientes aparecerão aqui."}
-            </p>
-          </CardContent>
-        </Card>
-      )}
+          </>
+        )}
+      </div>
     </div>
 
     {/* Sidebar de detalhes da avaliação */}

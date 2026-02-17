@@ -6974,3 +6974,9 @@
 
 ## Fix alinhamento grid Finanças entre períodos
 - [x] Corrigir grid para que Comparação Mensal e Formas de Pagamento se alinhem na parte inferior independentemente do período selecionado (evitar esticamento excessivo quando coluna direita tem menos conteúdo)
+
+## Padronizar lista de Avaliações com lista de Entregadores
+- [ ] Atualizar o visual da lista de avaliações para seguir o mesmo padrão visual da lista de entregadores (manter consistência entre páginas)
+
+## Padronizar lista de Estoque
+- [x] Padronizar a lista da página de Estoque para seguir o mesmo modelo visual das páginas de Entregadores e Avaliações (wrapper bg-card rounded-xl, tabela nativa HTML, DropdownMenu, layout mobile responsivo, TableSkeleton, EmptyState)

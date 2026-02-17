@@ -3,17 +3,8 @@ import { trpc } from "@/lib/trpc";
 import { AdminLayout } from "@/components/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { PageHeader, TableSkeleton, EmptyState } from "@/components/shared";
 import {
   Select,
   SelectContent,
@@ -37,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
   Search,
@@ -47,7 +38,7 @@ import {
   AlertCircle,
   CheckCircle,
   XCircle,
-  MoreVertical,
+  MoreHorizontal,
   History,
   Edit,
   Trash2,
@@ -356,20 +347,17 @@ export default function Estoque() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold">Estoque</h1>
-            <p className="text-base text-muted-foreground">Gerencie o estoque de ingredientes e produtos</p>
-          </div>
-          <div className="flex gap-2">
+        <PageHeader
+          title="Estoque"
+          description="Gerencie o estoque de ingredientes e produtos"
+          icon={<Package className="h-6 w-6 text-blue-500" />}
+          actions={
             <Button variant="outline" onClick={() => setIsNewCategoryDialogOpen(true)} className="h-9 px-3.5 text-sm rounded-lg">
               <Plus className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Categoria</span>
             </Button>
-
-          </div>
-        </div>
+          }
+        />
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -491,103 +479,187 @@ export default function Estoque() {
           </div>
         </div>
 
-        {/* Stock Items Table */}
-        <Card className="overflow-hidden rounded-xl shadow-none" style={{paddingTop: '0px', paddingBottom: '0px'}}>
-          {isLoadingItems ? (
-            <div className="p-4 space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <Skeleton className="h-4 w-4 rounded" />
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton className="h-5 w-14 rounded-full" />
-                  <Skeleton className="h-4 w-16" />
-                  <Skeleton className="h-4 w-16" />
-                  <Skeleton className="h-4 w-20" />
-                </div>
-              ))}
-            </div>
-          ) : stockItems && stockItems.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50/50">
-                  <TableHead className="w-10">
-                    <Checkbox />
-                  </TableHead>
-                  <TableHead className="font-medium">Item</TableHead>
-                  <TableHead className="font-medium">Estoque atual</TableHead>
-                  <TableHead className="font-medium">Status</TableHead>
-                  <TableHead className="font-medium">Última atualização</TableHead>
-                  <TableHead className="font-medium w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {stockItems.map((item) => {
-                  const status = item.status as StockStatus;
-                  const config = statusConfig[status];
-                  const currentQty = Number(item.currentQuantity);
-                  const minQty = Number(item.minQuantity);
-                  const maxQty = item.maxQuantity ? Number(item.maxQuantity) : undefined;
-                  const costPerUnit = item.costPerUnit ? Number(item.costPerUnit) : 0;
-                  const totalValue = costPerUnit * currentQty;
-                  const unitLabel = unitLabels[item.unit] || item.unit;
-                  
-                  // Format relative time
-                  const updatedAt = new Date(item.updatedAt);
-                  const now = new Date();
-                  const diffMs = now.getTime() - updatedAt.getTime();
-                  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-                  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-                  const diffWeeks = Math.floor(diffDays / 7);
-                  
-                  let timeAgo = "";
-                  if (diffHours < 1) {
-                    timeAgo = "Agora";
-                  } else if (diffHours < 24) {
-                    timeAgo = `${diffHours} hora${diffHours > 1 ? "s" : ""} atrás`;
-                  } else if (diffDays < 7) {
-                    timeAgo = `${diffDays} dia${diffDays > 1 ? "s" : ""} atrás`;
-                  } else {
-                    timeAgo = `${diffWeeks} semana${diffWeeks > 1 ? "s" : ""} atrás`;
-                  }
+        {/* Stock Items List */}
+        {isLoadingItems ? (
+          <TableSkeleton rows={5} columns={5} />
+        ) : !stockItems || stockItems.length === 0 ? (
+          <EmptyState
+            icon={Package}
+            title="Nenhum item no estoque"
+            description="Para adicionar itens ao estoque, ative o controle de estoque nos produtos do seu cardápio."
+            action={{ label: "Ir para o Cardápio", onClick: () => window.location.href = "/catalogo" }}
+          />
+        ) : (
+          <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border/50 bg-muted/30">
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Item</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Estoque atual</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Última atualização</th>
+                    <th className="text-right p-4 text-sm font-medium text-muted-foreground">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stockItems.map((item) => {
+                    const status = item.status as StockStatus;
+                    const config = statusConfig[status];
+                    const currentQty = Number(item.currentQuantity);
+                    const unitLabel = unitLabels[item.unit] || item.unit;
+                    const categoryName = getCategoryName(item.categoryId);
+                    
+                    const updatedAt = new Date(item.updatedAt);
+                    const now = new Date();
+                    const diffMs = now.getTime() - updatedAt.getTime();
+                    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                    const diffWeeks = Math.floor(diffDays / 7);
+                    
+                    let timeAgo = "";
+                    if (diffHours < 1) {
+                      timeAgo = "Agora";
+                    } else if (diffHours < 24) {
+                      timeAgo = `${diffHours} hora${diffHours > 1 ? "s" : ""} atrás`;
+                    } else if (diffDays < 7) {
+                      timeAgo = `${diffDays} dia${diffDays > 1 ? "s" : ""} atrás`;
+                    } else {
+                      timeAgo = `${diffWeeks} semana${diffWeeks > 1 ? "s" : ""} atrás`;
+                    }
 
-                  return (
-                    <TableRow 
-                      key={item.id} 
-                      className="cursor-pointer hover:bg-gray-50/50" 
-                      onClick={() => openEditDialog(item)}
-                    >
-                      <TableCell onClick={(e) => e.stopPropagation()}>
-                        <Checkbox />
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className="p-1.5 bg-blue-50 rounded">
-                            <Package className="h-3.5 w-3.5 text-blue-600" />
+                    return (
+                      <tr
+                        key={item.id}
+                        className="border-b border-border/30 hover:bg-muted/20 transition-colors cursor-pointer"
+                        onClick={() => openEditDialog(item)}
+                      >
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className={cn(
+                              "h-10 w-10 rounded-full flex items-center justify-center",
+                              status === "ok" ? "bg-green-100" :
+                              status === "low" ? "bg-yellow-100" :
+                              status === "critical" ? "bg-orange-100" : "bg-red-100"
+                            )}>
+                              <Package className={cn(
+                                "h-5 w-5",
+                                status === "ok" ? "text-green-600" :
+                                status === "low" ? "text-yellow-600" :
+                                status === "critical" ? "text-orange-600" : "text-red-600"
+                              )} />
+                            </div>
+                            <div>
+                              <p className="font-medium">{item.name}</p>
+                              <p className="text-xs text-muted-foreground">{categoryName}</p>
+                            </div>
                           </div>
-                          <span className="font-medium text-foreground">{item.name}</span>
+                        </td>
+                        <td className="p-4">
+                          <span className="font-medium text-foreground">{currentQty} {unitLabel}</span>
+                        </td>
+                        <td className="p-4">
+                          <Badge 
+                            variant="outline" 
+                            className={`${config.bgColor} ${config.color} ${config.borderColor} gap-1`}
+                          >
+                            {config.icon}
+                            {config.label}
+                          </Badge>
+                        </td>
+                        <td className="p-4">
+                          <span className="text-sm text-muted-foreground">{timeAgo}</span>
+                        </td>
+                        <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => openMovementDialog(item, "entry")}>
+                                <PackagePlus className="h-4 w-4 mr-2 text-green-600" />
+                                Entrada
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => openMovementDialog(item, "exit")}>
+                                <PackageMinus className="h-4 w-4 mr-2 text-red-600" />
+                                Saída
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => openHistoryDialog(item)}>
+                                <History className="h-4 w-4 mr-2" />
+                                Histórico
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => markOutOfStockMutation.mutate({ id: item.id })}
+                                className="text-orange-600 focus:text-orange-600"
+                              >
+                                <XCircle className="h-4 w-4 mr-2" />
+                                Marcar em falta
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  if (confirm("Tem certeza que deseja excluir este item?")) {
+                                    deleteItemMutation.mutate({ id: item.id });
+                                  }
+                                }}
+                                className="text-red-600 focus:text-red-600"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Excluir
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y divide-border/30">
+              {stockItems.map((item) => {
+                const status = item.status as StockStatus;
+                const config = statusConfig[status];
+                const currentQty = Number(item.currentQuantity);
+                const unitLabel = unitLabels[item.unit] || item.unit;
+                const categoryName = getCategoryName(item.categoryId);
+
+                return (
+                  <div
+                    key={item.id}
+                    className="p-4 hover:bg-muted/20 transition-colors"
+                    onClick={() => openEditDialog(item)}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          "h-10 w-10 rounded-full flex items-center justify-center",
+                          status === "ok" ? "bg-green-100" :
+                          status === "low" ? "bg-yellow-100" :
+                          status === "critical" ? "bg-orange-100" : "bg-red-100"
+                        )}>
+                          <Package className={cn(
+                            "h-5 w-5",
+                            status === "ok" ? "text-green-600" :
+                            status === "low" ? "text-yellow-600" :
+                            status === "critical" ? "text-orange-600" : "text-red-600"
+                          )} />
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className="font-medium text-foreground">{currentQty} {unitLabel}</span>
-                      </TableCell>
-                      <TableCell>
-                        <Badge 
-                          variant="outline" 
-                          className={`${config.bgColor} ${config.color} ${config.borderColor} gap-1`}
-                        >
-                          {config.icon}
-                          {config.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {timeAgo}
-                      </TableCell>
-                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <div>
+                          <p className="font-medium text-sm">{item.name}</p>
+                          <p className="text-xs text-muted-foreground">{categoryName}</p>
+                        </div>
+                      </div>
+                      <div onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreVertical className="h-4 w-4" />
+                              <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
@@ -624,28 +696,26 @@ export default function Estoque() {
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          ) : (
-            <CardContent className="py-12 text-center">
-              <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">Nenhum item no estoque</h3>
-              <p className="text-muted-foreground mb-4">
-                Para adicionar itens ao estoque, ative o controle de estoque nos produtos do seu cardápio.
-              </p>
-              <Link href="/catalogo">
-                <Button variant="outline">
-                  <UtensilsCrossed className="h-4 w-4 mr-2" />
-                  Ir para o Cardápio
-                </Button>
-              </Link>
-            </CardContent>
-          )}
-        </Card>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Badge 
+                        variant="outline" 
+                        className={`${config.bgColor} ${config.color} ${config.borderColor} gap-1`}
+                      >
+                        {config.icon}
+                        {config.label}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        {currentQty} {unitLabel}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* New Item Dialog */}
@@ -902,7 +972,7 @@ export default function Estoque() {
             {isLoadingMovements ? (
               <div className="space-y-3">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Skeleton key={i} className="h-16 w-full" />
+                  <div key={i} className="h-16 w-full bg-muted/50 rounded-lg animate-pulse" />
                 ))}
               </div>
             ) : itemMovements && itemMovements.length > 0 ? (
