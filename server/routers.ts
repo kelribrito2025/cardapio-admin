@@ -4955,8 +4955,36 @@ export const appRouter = router({
     // Mark delivery as paid
     markAsPaid: protectedProcedure
       .input(z.object({ deliveryId: z.number() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
+        // Get delivery details before marking as paid
+        const delivery = await db.getDeliveryById(input.deliveryId);
+        if (!delivery) throw new TRPCError({ code: 'NOT_FOUND', message: 'Entrega não encontrada' });
+        
+        // Get driver info for description
+        const driver = await db.getDriverById(delivery.driverId);
+        const driverName = driver?.name || 'Entregador';
+        
+        // Get establishment
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        
+        // Mark delivery as paid
         await db.markDeliveryAsPaid(input.deliveryId);
+        
+        // Register as expense in Finanças
+        const repasseValue = parseFloat(delivery.repasseValue || '0');
+        if (repasseValue > 0) {
+          const categoryId = await db.getOrCreateEntregadoresCategory(establishment.id);
+          await db.createExpense({
+            establishmentId: establishment.id,
+            categoryId,
+            description: `Repasse entrega - ${driverName} (Pedido #${delivery.orderId})`,
+            amount: repasseValue.toFixed(2),
+            paymentMethod: 'pix',
+            date: new Date(),
+          });
+        }
+        
         return { success: true };
       }),
 

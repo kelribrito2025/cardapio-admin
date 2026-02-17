@@ -7113,3 +7113,7 @@
 
 ## Header Finanças: Cor do ícone
 - [x] Trocar cor do ícone de emerald para azul
+
+## Entregadores: Badge Pago e integração Finanças
+- [x] Mostrar badge "Pago" com visual adequado quando entrega já foi paga (similar ao Pagar mas com status concluído)
+- [x] Registrar pagamento de taxa de entrega como gasto na lista de gastos registrados em Finanças

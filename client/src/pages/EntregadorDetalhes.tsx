@@ -196,7 +196,7 @@ export default function EntregadorDetalhes() {
                           </td>
                           <td className="p-4 text-right text-sm text-muted-foreground">{formatDate(delivery.createdAt)}</td>
                           <td className="p-4 text-right">
-                            {delivery.paymentStatus === "pending" && (
+                            {delivery.paymentStatus === "pending" ? (
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -207,6 +207,11 @@ export default function EntregadorDetalhes() {
                                 <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
                                 Pagar
                               </Button>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium bg-emerald-100 text-emerald-700 border border-emerald-300">
+                                <CheckCircle2 className="h-3.5 w-3.5" />
+                                Pago
+                              </span>
                             )}
                           </td>
                         </tr>
@@ -238,7 +243,7 @@ export default function EntregadorDetalhes() {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">{formatDate(delivery.createdAt)}</span>
-                        {delivery.paymentStatus === "pending" && (
+                        {delivery.paymentStatus === "pending" ? (
                           <Button
                             size="sm"
                             variant="outline"
@@ -249,6 +254,11 @@ export default function EntregadorDetalhes() {
                             <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
                             Pagar
                           </Button>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium bg-emerald-100 text-emerald-700 border border-emerald-300">
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            Pago
+                          </span>
                         )}
                       </div>
                     </div>

@@ -8038,6 +8038,7 @@ const DEFAULT_EXPENSE_CATEGORIES = [
   { name: "Água", color: "#06b6d4" },
   { name: "Marketing", color: "#ec4899" },
   { name: "Impostos", color: "#ef4444" },
+  { name: "Entregadores", color: "#10b981" },
   { name: "Outros", color: "#6b7280" },
 ];
 
@@ -8059,7 +8060,47 @@ export async function ensureDefaultExpenseCategories(establishmentId: number) {
         sortOrder: i,
       });
     }
+  } else {
+    // Ensure new default categories are added if missing
+    const existingNames = existing.map(e => e.name);
+    for (let i = 0; i < DEFAULT_EXPENSE_CATEGORIES.length; i++) {
+      const cat = DEFAULT_EXPENSE_CATEGORIES[i];
+      if (!existingNames.includes(cat.name)) {
+        await db.insert(expenseCategories).values({
+          establishmentId,
+          name: cat.name,
+          color: cat.color,
+          isDefault: true,
+          sortOrder: existing.length + i,
+        });
+      }
+    }
   }
+}
+
+export async function getOrCreateEntregadoresCategory(establishmentId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await ensureDefaultExpenseCategories(establishmentId);
+  
+  const [cat] = await db.select().from(expenseCategories)
+    .where(and(
+      eq(expenseCategories.establishmentId, establishmentId),
+      eq(expenseCategories.name, "Entregadores")
+    ));
+  
+  if (cat) return cat.id;
+  
+  // Fallback: create it
+  const [result] = await db.insert(expenseCategories).values({
+    establishmentId,
+    name: "Entregadores",
+    color: "#10b981",
+    isDefault: true,
+    sortOrder: 99,
+  });
+  return result.insertId;
 }
 
 export async function getExpenseCategories(establishmentId: number) {
