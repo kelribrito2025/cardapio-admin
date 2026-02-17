@@ -6992,3 +6992,21 @@
 - [x] Remover flex-1 dos cards Evolução Financeira e Comparação Mensal para que não estiquem além do conteúdo natural
 - [x] Usar h-[300px] fixo nos containers de gráfico para garantir tamanho consistente sem esticamento
 - [x] Garantir que ao trocar de "Este mês" para "7 dias" ou "Hoje", os cards não mantenham a altura expandida (items-start no grid)
+
+## Fix definitivo: cards esquerda devem preencher altura da coluna direita
+- [x] Remover items-start do grid (voltar ao stretch padrão) para colunas terem mesma altura
+- [x] Restaurar flex-1 nos cards para dividir igualmente a altura da coluna esquerda
+- [x] Usar min-h-[300px] (não h fixo) nos gráficos para garantir tamanho mínimo mas permitir crescimento
+- [x] Testar em todos os períodos: cards devem sempre preencher sem espaço vazio
+
+## Fix definitivo v2: cards com tamanho fixo e consistente
+- [x] Remover flex-1 dos cards de gráfico (Evolução Financeira e Comparação Mensal)
+- [x] Usar h-[300px] fixo nos containers de gráfico
+- [x] Usar items-start no grid para que colunas não estiquem
+- [x] Cards devem ter sempre o mesmo tamanho independente do período selecionado
+
+## Fix final: grid stretch + flex-1 nos cards + flex-1 nos gráficos
+- [x] Grid sem items-start (stretch padrão) para colunas terem mesma altura
+- [x] flex-1 em ambos os cards (Evolução Financeira e Comparação Mensal) para dividir altura igualmente
+- [x] flex-1 min-h-[250px] nos containers de gráfico para crescerem com o card
+- [x] Testado: Este mês → 7 dias → Hoje - cards se ajustam corretamente em todas as transições
