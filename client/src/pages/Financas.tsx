@@ -27,6 +27,17 @@ import {
   Activity,
   BarChart3,
   CreditCard,
+  Home,
+  Zap,
+  Droplets,
+  Globe,
+  Megaphone,
+  Users,
+  FileText,
+  Package,
+  ShieldCheck,
+  Wrench,
+  type LucideIcon,
 } from "lucide-react";
 import {
   BarChart,
@@ -1748,20 +1759,20 @@ export default function Financas() {
           return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
         };
         
-        // Category icon mapping
-        const getCategoryIcon = (categoryName: string | null) => {
+        // Category icon mapping - using Lucide icons to match system visual
+        const getCategoryLucideIcon = (categoryName: string | null): LucideIcon => {
           const name = (categoryName ?? '').toLowerCase();
-          if (name.includes('aluguel')) return '🏠';
-          if (name.includes('energia') || name.includes('luz')) return '⚡';
-          if (name.includes('água')) return '💧';
-          if (name.includes('internet') || name.includes('telefone')) return '🌐';
-          if (name.includes('marketing') || name.includes('publicidade')) return '📣';
-          if (name.includes('funcionário') || name.includes('salário')) return '👤';
-          if (name.includes('imposto') || name.includes('taxa')) return '📊';
-          if (name.includes('fornecedor')) return '📦';
-          if (name.includes('seguro')) return '🛡️';
-          if (name.includes('manutenção')) return '🔧';
-          return '📅';
+          if (name.includes('aluguel')) return Home;
+          if (name.includes('energia') || name.includes('luz')) return Zap;
+          if (name.includes('água')) return Droplets;
+          if (name.includes('internet') || name.includes('telefone')) return Globe;
+          if (name.includes('marketing') || name.includes('publicidade')) return Megaphone;
+          if (name.includes('funcionário') || name.includes('salário')) return Users;
+          if (name.includes('imposto') || name.includes('taxa')) return FileText;
+          if (name.includes('fornecedor')) return Package;
+          if (name.includes('seguro')) return ShieldCheck;
+          if (name.includes('manutenção')) return Wrench;
+          return Calendar;
         };
         
         return (
@@ -1794,25 +1805,34 @@ export default function Financas() {
                     const badge = getBadge(item.dueDate);
                     return (
                       <div key={`${item.recurringId}-${item.dueDate}`} className="flex items-center gap-3 flex-shrink-0">
-                        {/* Mini card */}
-                        <div className="relative bg-muted/50 border border-border/50 rounded-xl p-3 min-w-[150px] hover:border-border transition-colors">
+                        {/* Mini card - system visual pattern */}
+                        <div className="relative bg-card border border-border/50 rounded-xl p-3.5 min-w-[160px] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
                           {/* Badge */}
                           {badge && (
                             <span className={`absolute -top-2 right-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${badge.color}`}>
                               {badge.text}
                             </span>
                           )}
-                          <div className="flex items-start gap-2.5">
-                            <div className="h-8 w-8 rounded-lg flex items-center justify-center text-base flex-shrink-0" style={{ backgroundColor: item.categoryColor ? `${item.categoryColor}20` : 'rgb(254 226 226)' }}>
-                              {getCategoryIcon(item.categoryName)}
-                            </div>
+                          <div className="flex items-start gap-3">
+                            {(() => {
+                              const CategoryIcon = getCategoryLucideIcon(item.categoryName);
+                              const catColor = item.categoryColor || '#6b7280';
+                              return (
+                                <div
+                                  className="h-9 w-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                                  style={{ backgroundColor: `${catColor}18` }}
+                                >
+                                  <CategoryIcon className="h-4.5 w-4.5" style={{ color: catColor, width: '18px', height: '18px' }} />
+                                </div>
+                              );
+                            })()}
                             <div className="min-w-0">
-                              <p className="text-xs font-medium text-foreground truncate max-w-[100px]">{item.description}</p>
-                              <p className="text-sm font-bold text-red-600 dark:text-red-400 mt-0.5">
+                              <p className="text-xs font-medium text-foreground truncate max-w-[110px]">{item.description}</p>
+                              <p className="text-sm font-bold mt-0.5">
                                 {item.type === 'revenue' ? (
                                   <span className="text-emerald-600 dark:text-emerald-400">{formatCurrency(item.amount)}</span>
                                 ) : (
-                                  formatCurrency(item.amount)
+                                  <span className="text-red-600 dark:text-red-400">{formatCurrency(item.amount)}</span>
                                 )}
                               </p>
                               <p className="text-[10px] text-muted-foreground mt-0.5">{formatDate(item.dueDate)}</p>

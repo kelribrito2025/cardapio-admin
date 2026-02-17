@@ -7073,3 +7073,9 @@
 
 ## Alinhamento do header Gastos registrados
 - [x] Alinhar header "Gastos registrados" com header "Lançamentos futuros" (mesmo padding horizontal)
+
+## Visual dos mini cards Lançamentos futuros
+- [x] Substituir emojis por ícones Lucide (Users, Home, Zap, Droplets, Globe, etc.)
+- [x] Usar fundo colorido no padrão do sistema (bg com cor da categoria + baixa opacidade)
+- [x] Trocar bg-muted/50 por bg-card para consistência visual
+- [x] Adicionar hover effect (shadow-md + translate-y) igual aos StatCards
