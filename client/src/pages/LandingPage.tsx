@@ -398,7 +398,7 @@ function HeroSection() {
             >
               {/* Desktop Mockup */}
               <div
-                className="relative z-10 rounded-2xl overflow-hidden shadow-2xl shadow-gray-900/10 border border-gray-200/50"
+                className="relative z-10 rounded-2xl overflow-hidden shadow-2xl shadow-gray-900/10 border border-gray-200/50 cursor-pointer transition-transform duration-500 ease-out hover:scale-105"
                 style={{
                   animation: "hero-float 6s ease-in-out infinite",
                 }}
@@ -1578,7 +1578,7 @@ function CampaignsSMSSection() {
           >
             <div className="relative">
               <div
-                className="relative z-10 rounded-2xl overflow-hidden shadow-2xl shadow-gray-900/10 border border-gray-200/50"
+                className="relative z-10 rounded-2xl overflow-hidden shadow-2xl shadow-gray-900/10 border border-gray-200/50 cursor-pointer transition-transform duration-500 ease-out hover:scale-105"
                 style={{ animation: isVisible ? "hero-float 6s ease-in-out infinite" : "none" }}
               >
                 {/* Browser chrome */}
@@ -1794,7 +1794,7 @@ function CouponsSection() {
           >
             <div className="relative">
               <div
-                className="relative z-10 rounded-2xl overflow-hidden shadow-2xl shadow-gray-900/10 border border-gray-200/50"
+                className="relative z-10 rounded-2xl overflow-hidden shadow-2xl shadow-gray-900/10 border border-gray-200/50 cursor-pointer transition-transform duration-500 ease-out hover:scale-105"
                 style={{ animation: isVisible ? "hero-float 6s ease-in-out infinite" : "none" }}
               >
                 {/* Browser chrome */}

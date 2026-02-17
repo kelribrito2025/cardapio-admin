@@ -7120,3 +7120,6 @@
 
 ## Landing: Aumentar mockups em 5%
 - [x] Aumentar tamanho dos mockups em 5% nas seções: Sistema completo de gestão, Campanhas SMS, Cupons de Desconto
+
+## Landing: Efeito zoom ao hover nos mockups
+- [x] Adicionar efeito de zoom ao hover nos mockups das seções: Sistema completo de gestão, Campanhas SMS, Cupons de Desconto
