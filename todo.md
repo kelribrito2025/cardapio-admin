@@ -7050,3 +7050,4 @@
 ## Bug: Primeiro carregamento após refresh + troca de período não alinha cards
 - [x] Disparar window resize após dados carregarem para forçar ResponsiveContainer recalcular
 - [x] Testar: F5 → 7 dias deve alinhar corretamente na primeira tentativa
+- [x] Solução final: calculatedChartHeight explícito em pixels baseado no ResizeObserver da coluna direita (sem flex:1, sem key={period})
