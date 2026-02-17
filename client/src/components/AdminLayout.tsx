@@ -37,7 +37,7 @@ import {
   BookOpen,
   Truck,
   CalendarClock,
-  Wallet,
+  BadgeDollarSign,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -98,7 +98,7 @@ const menuSections = [
   {
     title: "FINANCEIRO",
     items: [
-      { icon: Wallet, label: "Finanças", href: "/financas", disabled: false },
+      { icon: BadgeDollarSign, label: "Finanças", href: "/financas", disabled: false },
     ]
   },
   {
