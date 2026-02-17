@@ -8992,3 +8992,93 @@ export async function getRevenueByPaymentMethod(
 
   return { methods, total: grandTotal };
 }
+
+// --- Daily breakdown by payment method for sparklines ---
+
+export async function getPaymentMethodDailyBreakdown(
+  establishmentId: number,
+  period: 'today' | 'week' | 'month' | 'custom' = 'today',
+  customStart?: string,
+  customEnd?: string
+) {
+  const db = await getDb();
+  if (!db) return { pix: [], card: [], cash: [], labels: [] };
+
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+
+  let periodStart: Date;
+  let periodEnd: Date = localNow;
+
+  if (period === 'custom' && customStart && customEnd) {
+    periodStart = new Date(customStart);
+    periodEnd = new Date(customEnd);
+  } else if (period === 'today') {
+    // For today, show hourly breakdown (last 12 hours)
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
+  } else if (period === 'week') {
+    const currentDay = localNow.getDay();
+    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysFromMonday);
+  } else {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), 1);
+  }
+
+  const periodStartStr = fmtLocalDateTime(periodStart);
+  const nowStr = period === 'custom' && customEnd ? `${customEnd} 23:59:59` : undefined;
+
+  // Group by date and payment method
+  const result = await db.select({
+    day: sql<string>`DATE(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}))`,
+    paymentMethod: orders.paymentMethod,
+    total: sql<number>`COALESCE(SUM(${orders.total}), 0)`,
+  })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${periodStartStr}`,
+      ...(nowStr ? [sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) <= ${nowStr}`] : []),
+      eq(orders.status, "completed")
+    ))
+    .groupBy(sql`DATE(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}))`, orders.paymentMethod)
+    .orderBy(sql`DATE(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}))`);
+
+  // Build date range
+  const dates: string[] = [];
+  const cursor = new Date(periodStart);
+  while (cursor <= periodEnd) {
+    const y = cursor.getFullYear();
+    const m = String(cursor.getMonth() + 1).padStart(2, '0');
+    const d = String(cursor.getDate()).padStart(2, '0');
+    dates.push(`${y}-${m}-${d}`);
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  // Initialize daily data
+  const pixDaily: number[] = new Array(dates.length).fill(0);
+  const cardDaily: number[] = new Array(dates.length).fill(0);
+  const cashDaily: number[] = new Array(dates.length).fill(0);
+
+  for (const row of result) {
+    const dayStr = String(row.day);
+    const idx = dates.indexOf(dayStr);
+    if (idx === -1) continue;
+    const total = Number(row.total);
+
+    if (row.paymentMethod === 'pix') {
+      pixDaily[idx] += total;
+    } else if (row.paymentMethod === 'card' || row.paymentMethod === 'card_online') {
+      cardDaily[idx] += total;
+    } else {
+      cashDaily[idx] += total;
+    }
+  }
+
+  // Short labels (day number or day name)
+  const labels = dates.map(d => {
+    const dt = new Date(d + 'T12:00:00');
+    return String(dt.getDate());
+  });
+
+  return { pix: pixDaily, card: cardDaily, cash: cashDaily, labels };
+}

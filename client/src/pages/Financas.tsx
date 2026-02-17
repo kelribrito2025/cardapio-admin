@@ -40,6 +40,7 @@ import {
   ResponsiveContainer,
   ComposedChart,
   Area,
+  AreaChart,
   Legend,
 } from "recharts";
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
@@ -1007,6 +1008,16 @@ export default function Financas() {
       enabled: !!establishmentId,
     });
 
+  // Payment method daily breakdown for sparklines
+  const paymentDailyInput = useMemo(
+    () => ({ establishmentId: establishmentId!, period }),
+    [establishmentId, period]
+  );
+  const { data: paymentDailyData } =
+    trpc.finance.paymentMethodDaily.useQuery(paymentDailyInput, {
+      enabled: !!establishmentId,
+    });
+
   // Monthly comparison
   const comparisonInput = useMemo(
     () => ({ establishmentId: establishmentId! }),
@@ -1515,86 +1526,63 @@ export default function Financas() {
           </div>
 
           {paymentMethodLoading ? (
-            <div className="h-[240px] flex items-center justify-center">
+            <div className="h-[200px] flex items-center justify-center">
               <div className="skeleton h-full w-full rounded-lg" />
             </div>
           ) : paymentMethodData && paymentMethodData.total > 0 ? (
-            <div className="flex flex-col items-center gap-4">
-              {/* Activity Rings SVG */}
-              <div className="relative w-[180px] h-[180px]">
-                <svg viewBox="0 0 180 180" className="w-full h-full" style={{ transform: 'rotate(-90deg)' }}>
-                  {/* Background rings */}
-                  {[60, 48, 36].map((r, i) => (
-                    <circle
-                      key={`bg-${i}`}
-                      cx="90" cy="90" r={r}
-                      fill="none"
-                      stroke="currentColor"
-                      className="text-muted/30"
-                      strokeWidth="10"
-                      strokeLinecap="round"
-                    />
-                  ))}
-                  {/* Pix ring (outer) */}
-                  <circle
-                    cx="90" cy="90" r={60}
-                    fill="none"
-                    stroke="#8b5cf6"
-                    strokeWidth="10"
-                    strokeLinecap="round"
-                    strokeDasharray={`${(paymentMethodData.methods[0]?.percent || 0) / 100 * 2 * Math.PI * 60} ${2 * Math.PI * 60}`}
-                    className="transition-all duration-1000 ease-out"
-                    style={{ filter: 'drop-shadow(0 0 3px rgba(139,92,246,0.4))' }}
-                  />
-                  {/* Cartão ring (middle) */}
-                  <circle
-                    cx="90" cy="90" r={48}
-                    fill="none"
-                    stroke="#3b82f6"
-                    strokeWidth="10"
-                    strokeLinecap="round"
-                    strokeDasharray={`${(paymentMethodData.methods[1]?.percent || 0) / 100 * 2 * Math.PI * 48} ${2 * Math.PI * 48}`}
-                    className="transition-all duration-1000 ease-out"
-                    style={{ filter: 'drop-shadow(0 0 3px rgba(59,130,246,0.4))' }}
-                  />
-                  {/* Dinheiro ring (inner) */}
-                  <circle
-                    cx="90" cy="90" r={36}
-                    fill="none"
-                    stroke="#22c55e"
-                    strokeWidth="10"
-                    strokeLinecap="round"
-                    strokeDasharray={`${(paymentMethodData.methods[2]?.percent || 0) / 100 * 2 * Math.PI * 36} ${2 * Math.PI * 36}`}
-                    className="transition-all duration-1000 ease-out"
-                    style={{ filter: 'drop-shadow(0 0 3px rgba(34,197,94,0.4))' }}
-                  />
-                </svg>
-                {/* Center total */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-lg font-bold text-foreground">{formatCurrency(paymentMethodData.total)}</span>
-                  <span className="text-[10px] text-muted-foreground">Total</span>
-                </div>
-              </div>
+            <div className="space-y-4">
+              {/* Horizontal bars - one per payment method */}
+              {paymentMethodData.methods.map((m) => {
+                const paymentColors: Record<string, string> = {
+                  pix: 'bg-violet-500',
+                  card: 'bg-blue-500',
+                  cash: 'bg-emerald-500',
+                };
+                const barColor = paymentColors[m.id] || 'bg-gray-500';
 
-              {/* Legend list */}
-              <div className="w-full space-y-2.5">
-                {paymentMethodData.methods.map((m) => (
-                  <div key={m.id} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: m.color }} />
-                      <span className="text-sm font-medium text-foreground">{m.name}</span>
-                      <span className="text-xs text-muted-foreground">({m.count} pedidos)</span>
+                return (
+                  <div key={m.id} className="group relative">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-foreground">{m.name}</span>
+                        <span className="text-xs text-muted-foreground">({m.count} pedidos)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-foreground">{formatCurrency(m.total)}</span>
+                        <span className="text-xs font-semibold" style={{ color: m.color }}>{m.percent}%</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-foreground">{formatCurrency(m.total)}</span>
-                      <span className="text-xs font-semibold" style={{ color: m.color }}>{m.percent}%</span>
+                    <div className="h-3 bg-muted rounded-full overflow-hidden cursor-pointer">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${barColor}`}
+                        style={{ width: `${Math.max(3, m.percent)}%` }}
+                      />
+                    </div>
+                    {/* Tooltip on hover */}
+                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none">
+                      <div className="bg-foreground text-background rounded-lg px-3 py-2 shadow-lg text-xs whitespace-nowrap">
+                        <div className="font-semibold mb-1">{m.name}</div>
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <span>Valor:</span>
+                          <span className="font-semibold">{formatCurrency(m.total)}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <span>Pedidos:</span>
+                          <span className="font-semibold">{m.count}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span>Percentual:</span>
+                          <span className="font-semibold">{m.percent}%</span>
+                        </div>
+                        <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-foreground" />
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
           ) : (
-            <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">
+            <div className="h-[160px] flex items-center justify-center text-muted-foreground text-sm">
               Nenhuma venda registrada neste período
             </div>
           )}

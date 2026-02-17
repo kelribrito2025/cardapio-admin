@@ -5458,6 +5458,17 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.getRevenueByPaymentMethod(input.establishmentId, input.period ?? 'today', input.customStart, input.customEnd);
       }),
+
+    paymentMethodDaily: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        period: z.enum(['today', 'week', 'month', 'custom']).optional(),
+        customStart: z.string().optional(),
+        customEnd: z.string().optional(),
+      }))
+      .query(async ({ input }) => {
+        return db.getPaymentMethodDailyBreakdown(input.establishmentId, input.period ?? 'today', input.customStart, input.customEnd);
+      }),
   }),
 });
 export type AppRouter = typeof appRouter;

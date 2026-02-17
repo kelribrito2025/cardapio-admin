@@ -6946,3 +6946,13 @@
 - [x] Respeitar filtro global da página (Hoje / 7 dias / Este mês)
 - [x] Estado vazio: "Nenhuma venda registrada neste período"
 - [x] Escrever testes vitest para o endpoint
+
+## Redesign Formas de Pagamento - Mini Area Charts
+- [ ] Criar endpoint backend para breakdown diário por método de pagamento
+- [ ] Substituir Activity Rings por 3 mini area charts (sparklines) lado a lado
+- [ ] Cada sparkline mostra evolução diária do método (Pix, Cartão, Dinheiro)
+- [ ] Manter valor total e percentual em cada mini card
+- [ ] Verificar visual e rodar testes
+
+## Restyle Formas de Pagamento
+- [x] Substituir sparklines por barras horizontais com tooltip (mesmo estilo do Faturamento por canal)
