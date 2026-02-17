@@ -6971,3 +6971,6 @@
 
 ## Distribuir altura igualmente entre Evolução Financeira e Comparação Mensal
 - [x] Fazer os cards Evolução Financeira e Comparação Mensal dividirem o espaço igualmente na coluna esquerda (ambos com flex-1) em vez de Comparação Mensal crescer desproporcionalmente
+
+## Fix alinhamento grid Finanças entre períodos
+- [x] Corrigir grid para que Comparação Mensal e Formas de Pagamento se alinhem na parte inferior independentemente do período selecionado (evitar esticamento excessivo quando coluna direita tem menos conteúdo)
