@@ -6879,3 +6879,6 @@
 ## Ajuste Visual Evolução Financeira (v2)
 - [x] Manter ícone header e tags de legenda (dots coloridos)
 - [x] Reverter gráfico para recharts ComposedChart (barras + linhas) estilo anterior
+
+## Bug: Espaço em branco abaixo do gráfico Evolução Financeira
+- [x] Remover espaço em branco extra abaixo do gráfico no card de Evolução Financeira

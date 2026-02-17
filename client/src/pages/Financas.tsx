@@ -1221,7 +1221,7 @@ export default function Financas() {
       {/* Chart + Health Indicator */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Evolução Financeira */}
-        <div className="bg-card rounded-xl border border-border/50 p-5 lg:col-span-2 flex flex-col">
+        <div className="bg-card rounded-xl border border-border/50 p-5 lg:col-span-2 self-start">
           {/* Header com ícone + tags de legenda */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
