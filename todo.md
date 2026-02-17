@@ -7107,3 +7107,6 @@
 
 ## Menu: Trocar ícone de Finanças
 - [x] Substituir ícone Wallet por BadgeDollarSign para Finanças
+
+## Header Finanças: Trocar ícone
+- [x] Substituir ícone do header da página de Finanças para BadgeDollarSign
