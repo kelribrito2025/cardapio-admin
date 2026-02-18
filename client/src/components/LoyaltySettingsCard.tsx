@@ -36,7 +36,7 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
   const [cashbackPercent, setCashbackPercent] = useState("5");
   const [cashbackApplyMode, setCashbackApplyMode] = useState<"all" | "categories">("all");
   const [cashbackCategoryIds, setCashbackCategoryIds] = useState<number[]>([]);
-  const [cashbackAllowPartialUse, setCashbackAllowPartialUse] = useState(true);
+  const cashbackAllowPartialUse = false; // Sempre exigir uso total
   
   // Load loyalty settings
   useEffect(() => {
@@ -55,7 +55,7 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
       setCashbackPercent(cashbackConfig.cashbackPercent || "5");
       setCashbackApplyMode(cashbackConfig.cashbackApplyMode as "all" | "categories" || "all");
       setCashbackCategoryIds(cashbackConfig.cashbackCategoryIds as number[] || []);
-      setCashbackAllowPartialUse(cashbackConfig.cashbackAllowPartialUse ?? true);
+      // cashbackAllowPartialUse sempre false (uso total)
     }
   }, [cashbackConfig]);
   
@@ -328,27 +328,10 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
               </p>
             </div>
             
-            {/* Uso parcial */}
-            <div>
-              <Label className="text-xs font-semibold text-muted-foreground">
-                Uso do saldo
-              </Label>
-              <Select 
-                value={cashbackAllowPartialUse ? "partial" : "full"} 
-                onValueChange={(v) => setCashbackAllowPartialUse(v === "partial")}
-              >
-                <SelectTrigger className="mt-1 h-9 rounded-lg border-border/50 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="partial">Permitir uso parcial</SelectItem>
-                  <SelectItem value="full">Exigir uso total</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground mt-1">
-                {cashbackAllowPartialUse 
-                  ? "Cliente pode usar qualquer valor do saldo" 
-                  : "Cliente deve usar todo o saldo ou nenhum"}
+            {/* Uso do saldo: sempre exigir uso total */}
+            <div className="rounded-lg bg-muted/50 p-3">
+              <p className="text-xs text-muted-foreground">
+                <strong>Uso do saldo:</strong> O cliente deve usar todo o saldo disponível ou nenhum.
               </p>
             </div>
           </div>

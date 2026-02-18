@@ -7222,3 +7222,4 @@
 - [x] Adicionar variáveis {{cashbackEarned}} e {{cashbackTotal}} ao editor de templates WhatsApp
 - [x] Corrigir preview das variáveis cashback no template: exibir 'Cashback ganho: R$X,XX' e 'Cashback acumulado: R$X,XX'
 - [x] Corrigir substituição das variáveis cashback no backend: incluir rótulos 'Cashback ganho:' e 'Cashback acumulado:' na mensagem WhatsApp
+- [x] Remover opção de uso parcial do cashback: manter apenas uso total do saldo (config admin, backend, frontend)

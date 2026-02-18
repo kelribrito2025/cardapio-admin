@@ -5788,7 +5788,7 @@ export const appRouter = router({
           percent: establishment?.cashbackPercent || '0',
           applyMode: establishment?.cashbackApplyMode || 'all',
           categoryIds: establishment?.cashbackCategoryIds || [],
-          allowPartialUse: establishment?.cashbackAllowPartialUse ?? true,
+          allowPartialUse: false, // Sempre exigir uso total
         };
       }),
 
@@ -5816,12 +5816,9 @@ export const appRouter = router({
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'Cashback não está ativo' });
         }
         
-        if (!establishment.cashbackAllowPartialUse && requestedAmount < currentBalance && requestedAmount < orderTotal) {
-          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Uso parcial do saldo não é permitido. Use o saldo total ou não use.' });
-        }
-        
-        // Calcular valor efetivo
-        const effectiveAmount = Math.min(requestedAmount, currentBalance, orderTotal);
+        // Sempre exigir uso total do saldo: o valor solicitado deve ser o saldo total
+        // (o frontend envia o saldo completo, e o backend aplica no máximo o valor do pedido)
+        const effectiveAmount = Math.min(currentBalance, orderTotal);
         
         return {
           valid: true,
