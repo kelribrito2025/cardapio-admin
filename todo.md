@@ -7181,3 +7181,4 @@
 - [x] Badge Pago não aparece em lançamentos avulsos marcados como pagos no carrossel
 - [x] Gráfico de Comparação Mensal deve exibir últimos 6 meses em vez de 4
 - [x] Remover fundo escuro do hover no gráfico de Comparação Mensal (manter apenas tooltip)
+- [x] Card de Indicadores: mostrar mensagem neutra (ex: "Sem movimentação") em vez de "Prejuízo" quando não há registros no período

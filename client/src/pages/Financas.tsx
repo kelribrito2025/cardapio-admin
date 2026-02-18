@@ -1031,6 +1031,7 @@ function FinancialHealthIndicator({
   goalTarget: number | null;
   goalProgress: number | null;
 }) {
+  const hasNoData = revenue === 0 && expensesTotal === 0;
   const isNegative = profit < 0;
   const isWarning = expensesTotal > revenue && revenue > 0;
   const healthPercent = revenue > 0 ? Math.min(100, Math.max(0, ((revenue - expensesTotal) / revenue) * 100)) : 0;
@@ -1039,7 +1040,11 @@ function FinancialHealthIndicator({
   let healthLabel = "Saudável";
   let healthTextColor = "text-emerald-600";
 
-  if (isNegative) {
+  if (hasNoData) {
+    healthColor = "bg-muted-foreground/30";
+    healthLabel = "Sem movimentação";
+    healthTextColor = "text-muted-foreground";
+  } else if (isNegative) {
     healthColor = "bg-red-500";
     healthLabel = "Prejuízo";
     healthTextColor = "text-red-600";
