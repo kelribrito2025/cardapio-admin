@@ -7183,3 +7183,4 @@
 - [x] Remover fundo escuro do hover no gráfico de Comparação Mensal (manter apenas tooltip)
 - [x] Card de Indicadores: mostrar mensagem neutra (ex: "Sem movimentação") em vez de "Prejuízo" quando não há registros no período
 - [x] Restaurar fundo do hover no gráfico Comparação Mensal com 60% de transparência
+- [x] Modernizar estilo do gráfico interno no card de Evolução Financeira

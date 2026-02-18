@@ -1712,52 +1712,72 @@ export default function Financas() {
             </div>
           ) : chartData && chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={chartData}>
+              <ComposedChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10b981" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.02} />
+                  </linearGradient>
+                  <linearGradient id="gradProfit" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.02} />
+                  </linearGradient>
+                  <linearGradient id="gradExpenses" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#f87171" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="#ef4444" stopOpacity={0.6} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   stroke="var(--color-border)"
-                  opacity={0.5}
+                  opacity={0.3}
+                  vertical={false}
                 />
                 <XAxis
                   dataKey="label"
-                  tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}
+                  tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
                   axisLine={false}
                   tickLine={false}
+                  dy={8}
                 />
                 <YAxis
-                  tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}
+                  tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
                   axisLine={false}
                   tickLine={false}
                   tickFormatter={(v) =>
-                    v >= 1000 ? `R$ ${(v / 1000).toFixed(0)}k` : `R$ ${v}`
+                    v >= 1000 ? `${(v / 1000).toFixed(0)}k` : `${v}`
                   }
+                  dx={-5}
                 />
-                <RechartsTooltip content={<ChartTooltipContent />} />
+                <RechartsTooltip
+                  content={<ChartTooltipContent />}
+                  cursor={{ stroke: 'var(--color-border)', strokeWidth: 1, strokeDasharray: '4 4' }}
+                />
                 <Bar
                   dataKey="expenses"
                   name="Despesas"
-                  fill="#ef4444"
-                  radius={[4, 4, 0, 0]}
-                  barSize={24}
-                  opacity={0.85}
+                  fill="url(#gradExpenses)"
+                  radius={[6, 6, 0, 0]}
+                  barSize={20}
                 />
-                <Line
-                  type="monotone"
+                <Area
+                  type="natural"
                   dataKey="revenue"
                   name="Receita"
                   stroke="#10b981"
                   strokeWidth={2.5}
-                  dot={{ r: 4, fill: "#10b981" }}
-                  activeDot={{ r: 6 }}
+                  fill="url(#gradRevenue)"
+                  dot={false}
+                  activeDot={{ r: 5, fill: "#10b981", stroke: "#fff", strokeWidth: 2 }}
                 />
                 <Line
-                  type="monotone"
+                  type="natural"
                   dataKey="profit"
                   name="Lucro"
                   stroke="#3b82f6"
                   strokeWidth={2}
-                  strokeDasharray="5 5"
-                  dot={{ r: 3, fill: "#3b82f6" }}
+                  dot={false}
+                  activeDot={{ r: 5, fill: "#3b82f6", stroke: "#fff", strokeWidth: 2 }}
                 />
               </ComposedChart>
             </ResponsiveContainer>
