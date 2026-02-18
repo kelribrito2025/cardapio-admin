@@ -355,7 +355,7 @@ function HeroSection() {
                 href="/criar-conta"
                 className="group inline-flex items-center justify-center gap-2 text-base font-semibold text-white bg-red-500 hover:bg-red-600 px-7 py-3.5 rounded-xl transition-all duration-300 shadow-xl shadow-red-500/25 hover:shadow-red-500/40 hover:-translate-y-0.5"
               >
-                Criar conta grátis
+                Teste agora!
                 <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
               <a

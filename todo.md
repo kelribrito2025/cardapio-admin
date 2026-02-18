@@ -7123,3 +7123,6 @@
 
 ## Landing: Efeito zoom ao hover nos mockups
 - [x] Adicionar efeito de zoom ao hover nos mockups das seções: Sistema completo de gestão, Campanhas SMS, Cupons de Desconto
+
+## Landing: Texto do botão hero
+- [x] Alterar texto do botão principal de "Criar conta grátis" para "Teste agora!"
