@@ -129,6 +129,8 @@ const VARIABLES = [
   { name: '{{pickupMessage}}', label: 'Msg retirada/local', description: 'Mensagem automática para retirada ou consumo no local' },
   { name: '{{cancellationReason}}', label: 'Motivo cancelamento', description: 'Razão do cancelamento' },
   { name: '{{itensPedido}}', label: 'Itens do pedido', description: 'Lista de itens do pedido' },
+  { name: '{{cashbackEarned}}', label: 'Cashback ganho', description: 'Valor de cashback ganho neste pedido' },
+  { name: '{{cashbackTotal}}', label: 'Cashback acumulado', description: 'Saldo total de cashback do cliente' },
 ];
 
 const RESERVATION_VARIABLES = [
@@ -150,6 +152,8 @@ function formatWhatsAppText(text: string): React.ReactNode {
     .replace(/\{\{pickupMessage\}\}/g, 'Você já pode vir retirar. \ud83d\ude04')
     .replace(/\{\{cancellationReason\}\}/g, 'Item indisponível')
     .replace(/\{\{itensPedido\}\}/g, '\u2022 1x Pizza Margherita\n\u2022 1x Refrigerante')
+    .replace(/\{\{cashbackEarned\}\}/g, 'R$ 2,50')
+    .replace(/\{\{cashbackTotal\}\}/g, 'R$ 15,80')
     .replace(/\{\{mesa\}\}/g, '5')
     .replace(/\{\{cliente\}\}/g, 'Maria Silva')
     .replace(/\{\{horario\}\}/g, '19:30')
