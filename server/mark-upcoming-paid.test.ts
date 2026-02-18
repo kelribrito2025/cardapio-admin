@@ -4,6 +4,7 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 vi.mock("./db", () => ({
   updateExpense: vi.fn().mockResolvedValue(undefined),
   createExpense: vi.fn().mockResolvedValue(42),
+  deleteExpense: vi.fn().mockResolvedValue(undefined),
 }));
 
 import { appRouter } from "./routers";
@@ -42,7 +43,7 @@ describe("finance.markUpcomingAsPaid", () => {
     vi.clearAllMocks();
   });
 
-  it("creates a new expense for a recurring item", async () => {
+  it("creates a new expense for a recurring item with correct notes format", async () => {
     const ctx = createAuthContext();
     const caller = appRouter.createCaller(ctx);
 
@@ -62,8 +63,10 @@ describe("finance.markUpcomingAsPaid", () => {
       success: true,
       action: "created",
       expenseId: 42,
+      originalDate: null,
     });
     expect(db.createExpense).toHaveBeenCalledOnce();
+    // Verify notes include both recorrência ID and venc: date for isPaid matching
     expect(db.createExpense).toHaveBeenCalledWith(
       expect.objectContaining({
         establishmentId: 1,
@@ -71,8 +74,12 @@ describe("finance.markUpcomingAsPaid", () => {
         description: "Aluguel ponto",
         amount: "2300.00",
         paymentMethod: "cash",
+        notes: expect.stringContaining("recorrência #10"),
       })
     );
+    // Verify the notes contain the venc: date for reliable isPaid detection
+    const callArgs = (db.createExpense as any).mock.calls[0][0];
+    expect(callArgs.notes).toContain("venc:2026-03-19");
   });
 
   it("updates the date for a one-time expense", async () => {
@@ -94,6 +101,8 @@ describe("finance.markUpcomingAsPaid", () => {
     expect(result).toEqual({
       success: true,
       action: "updated",
+      expenseId: 5,
+      originalDate: expect.any(String),
     });
     expect(db.updateExpense).toHaveBeenCalledOnce();
     expect(db.updateExpense).toHaveBeenCalledWith(5, expect.objectContaining({
@@ -116,6 +125,60 @@ describe("finance.markUpcomingAsPaid", () => {
         paymentMethod: "bitcoin" as any,
         dueDate: "2026-03-19",
         type: "expense",
+      })
+    ).rejects.toThrow();
+  });
+});
+
+describe("finance.undoMarkAsPaid", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("deletes a created expense (recurring undo)", async () => {
+    const ctx = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.finance.undoMarkAsPaid({
+      establishmentId: 1,
+      expenseId: 42,
+      action: "created",
+      originalDate: null,
+    });
+
+    expect(result.success).toBe(true);
+    expect(db.deleteExpense).toHaveBeenCalledOnce();
+    expect(db.deleteExpense).toHaveBeenCalledWith(42);
+  });
+
+  it("restores original date for a one-time expense (updated undo)", async () => {
+    const ctx = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.finance.undoMarkAsPaid({
+      establishmentId: 1,
+      expenseId: 5,
+      action: "updated",
+      originalDate: "2026-02-25",
+    });
+
+    expect(result.success).toBe(true);
+    expect(db.updateExpense).toHaveBeenCalledOnce();
+    expect(db.updateExpense).toHaveBeenCalledWith(5, expect.objectContaining({
+      date: expect.any(Date),
+    }));
+  });
+
+  it("validates action enum", async () => {
+    const ctx = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+
+    await expect(
+      caller.finance.undoMarkAsPaid({
+        establishmentId: 1,
+        expenseId: 42,
+        action: "invalid" as any,
+        originalDate: null,
       })
     ).rejects.toThrow();
   });

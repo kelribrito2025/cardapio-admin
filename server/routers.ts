@@ -5467,7 +5467,7 @@ export const appRouter = router({
           await db.updateExpense(input.recurringId, {
             date: new Date(),
           });
-          return { success: true, action: 'updated' };
+          return { success: true, action: 'updated' as const, expenseId: input.recurringId, originalDate: input.dueDate };
         } else {
           // Recurring: create a new expense entry for this occurrence
           const id = await db.createExpense({
@@ -5477,10 +5477,32 @@ export const appRouter = router({
             amount: input.amount,
             paymentMethod: input.paymentMethod,
             date: new Date(input.dueDate),
-            notes: `Pago via lançamento futuro (recorrência #${input.recurringId})`,
+            notes: `Pago via lançamento futuro (recorrência #${input.recurringId}, venc:${input.dueDate})`,
           });
-          return { success: true, action: 'created', expenseId: id };
+          return { success: true, action: 'created' as const, expenseId: id, originalDate: null };
         }
+      }),
+
+    // Desfazer marcação de pago
+    undoMarkAsPaid: protectedProcedure
+      .input(z.object({
+        expenseId: z.number(),
+        action: z.enum(['created', 'updated']),
+        originalDate: z.string().nullable(),
+      }))
+      .mutation(async ({ input }) => {
+        if (input.action === 'created') {
+          // Delete the expense that was created
+          await db.deleteExpense(input.expenseId);
+          return { success: true };
+        } else if (input.action === 'updated' && input.originalDate) {
+          // Restore the original date
+          await db.updateExpense(input.expenseId, {
+            date: new Date(input.originalDate),
+          });
+          return { success: true };
+        }
+        return { success: false };
       }),
 
     // Despesas Recorrentes

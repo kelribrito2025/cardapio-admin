@@ -1223,6 +1223,10 @@ export default function Financas() {
   const [historyRecurringId, setHistoryRecurringId] = useState<number | null>(null);
   const [customGoalModalOpen, setCustomGoalModalOpen] = useState(false);
   const [editingCustomGoal, setEditingCustomGoal] = useState<any>(null);
+  const [payConfirmOpen, setPayConfirmOpen] = useState(false);
+  const [payConfirmItem, setPayConfirmItem] = useState<any>(null);
+  const [payConfirmAmount, setPayConfirmAmount] = useState('');
+  const [payConfirmDate, setPayConfirmDate] = useState('');
 
   useEffect(() => {
     if (establishment) setEstablishmentId(establishment.id);
@@ -1399,14 +1403,36 @@ export default function Financas() {
     { enabled: !!establishmentId }
   );
 
+  // Undo mark as paid mutation
+  const undoMarkAsPaidMutation = trpc.finance.undoMarkAsPaid.useMutation({
+    onSuccess: () => {
+      toast.success("Pagamento desfeito!");
+      invalidateAll();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
   // Mark upcoming as paid mutation
   const markAsPaidMutation = trpc.finance.markUpcomingAsPaid.useMutation({
     onSuccess: (result) => {
-      if (result.action === 'updated') {
-        toast.success("Lançamento marcado como pago!");
-      } else {
-        toast.success("Despesa registrada como paga!");
-      }
+      setPayConfirmOpen(false);
+      setPayConfirmItem(null);
+      const message = result.action === 'updated' ? "Lan\u00e7amento marcado como pago!" : "Despesa registrada como paga!";
+      toast.success(message, {
+        action: {
+          label: "Desfazer",
+          onClick: () => {
+            if (result.expenseId) {
+              undoMarkAsPaidMutation.mutate({
+                expenseId: result.expenseId,
+                action: result.action,
+                originalDate: result.originalDate ?? null,
+              });
+            }
+          },
+        },
+        duration: 8000,
+      });
       invalidateAll();
     },
     onError: (err) => toast.error(err.message),
@@ -2250,8 +2276,10 @@ export default function Financas() {
                       <div key={`${item.recurringId}-${item.dueDate}`} className="flex items-center gap-3 flex-shrink-0">
                         {/* Mini card - left colored border */}
                         <div
-                          className={`relative bg-card border border-border/50 rounded-xl p-3.5 min-w-[150px] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 border-l-[3px] cursor-pointer ${
-                            item.type === 'revenue' ? 'border-l-emerald-500' : 'border-l-red-500'
+                          className={`relative border rounded-xl p-3.5 min-w-[150px] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 border-l-[3px] cursor-pointer ${
+                            item.isPaid
+                              ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30 border-l-emerald-500'
+                              : `bg-card border-border/50 ${item.type === 'revenue' ? 'border-l-emerald-500' : 'border-l-red-500'}`
                           }`}
                           style={{width: '165px'}}
                           onClick={() => {
@@ -2271,11 +2299,15 @@ export default function Financas() {
                           }}
                         >
                           {/* Badge */}
-                          {badge && (
+                          {item.isPaid ? (
+                            <span className="absolute -top-2 right-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-500 text-white">
+                              Pago
+                            </span>
+                          ) : badge ? (
                             <span className={`absolute -top-2 right-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${badge.color}`}>
                               {badge.text}
                             </span>
-                          )}
+                          ) : null}
                           <div className="min-w-0">
                             <p className="text-xs font-medium text-foreground truncate max-w-[120px]" title={item.description}>{item.description}</p>
                             <p className="text-sm font-bold mt-1">
@@ -2287,31 +2319,27 @@ export default function Financas() {
                             </p>
                             <div className="flex items-center justify-between mt-0.5">
                               <p className="text-[10px] text-muted-foreground">{formatDate(item.dueDate)}</p>
-                              <button
-                                className="text-muted-foreground/50 hover:text-emerald-500 transition-colors p-0.5 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-500/10"
-                                title="Marcar como pago"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (markAsPaidMutation.isPending) return;
-                                  if (!item.categoryId) {
-                                    toast.error("Categoria n\u00e3o encontrada para este lan\u00e7amento.");
-                                    return;
-                                  }
-                                  markAsPaidMutation.mutate({
-                                    establishmentId: establishmentId!,
-                                    recurringId: item.recurringId,
-                                    frequency: item.frequency,
-                                    description: item.description,
-                                    categoryId: item.categoryId,
-                                    amount: item.amount.toFixed(2),
-                                    paymentMethod: (item.paymentMethod as "cash" | "pix" | "card" | "transfer") || "cash",
-                                    dueDate: item.dueDate,
-                                    type: item.type,
-                                  });
-                                }}
-                              >
-                                <CheckCircle2 className={`h-3.5 w-3.5 ${markAsPaidMutation.isPending ? 'animate-spin' : ''}`} />
-                              </button>
+                              {!item.isPaid ? (
+                                <button
+                                  className="text-muted-foreground/50 hover:text-emerald-500 transition-colors p-0.5 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-500/10"
+                                  title="Marcar como pago"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (!item.categoryId) {
+                                      toast.error("Categoria n\u00e3o encontrada para este lan\u00e7amento.");
+                                      return;
+                                    }
+                                    setPayConfirmItem(item);
+                                    setPayConfirmAmount(item.amount.toFixed(2));
+                                    setPayConfirmDate(item.dueDate);
+                                    setPayConfirmOpen(true);
+                                  }}
+                                >
+                                  <CheckCircle2 className="h-3.5 w-3.5" />
+                                </button>
+                              ) : (
+                                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                              )}
                             </div>
                           </div>
                         </div>
@@ -3207,6 +3235,78 @@ export default function Financas() {
             isCreating={createCustomGoalMutation.isPending}
             isUpdating={updateCustomGoalMutation.isPending}
           />
+
+          {/* Diálogo de confirmação antes de marcar como pago */}
+          <Dialog open={payConfirmOpen} onOpenChange={(v) => { setPayConfirmOpen(v); if (!v) setPayConfirmItem(null); }}>
+            <DialogContent className="sm:max-w-[400px]">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                  Confirmar pagamento
+                </DialogTitle>
+              </DialogHeader>
+              {payConfirmItem && (
+                <div className="space-y-4 py-2">
+                  <div className="bg-muted/50 rounded-lg p-3">
+                    <p className="text-sm font-medium">{payConfirmItem.description}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {payConfirmItem.categoryName || 'Sem categoria'} • {payConfirmItem.frequency === 'once' ? 'Avulso' : payConfirmItem.frequency === 'monthly' ? 'Mensal' : payConfirmItem.frequency === 'weekly' ? 'Semanal' : 'Anual'}
+                    </p>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-xs font-medium">Valor (R$)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={payConfirmAmount}
+                        onChange={(e) => setPayConfirmAmount(e.target.value)}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs font-medium">Data do pagamento</Label>
+                      <Input
+                        type="date"
+                        value={payConfirmDate}
+                        onChange={(e) => setPayConfirmDate(e.target.value)}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+              <DialogFooter className="gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => { setPayConfirmOpen(false); setPayConfirmItem(null); }}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  disabled={markAsPaidMutation.isPending || !payConfirmAmount || !payConfirmDate}
+                  onClick={() => {
+                    if (!payConfirmItem || !payConfirmItem.categoryId) return;
+                    markAsPaidMutation.mutate({
+                      establishmentId: establishmentId!,
+                      recurringId: payConfirmItem.recurringId,
+                      frequency: payConfirmItem.frequency,
+                      description: payConfirmItem.description,
+                      categoryId: payConfirmItem.categoryId,
+                      amount: payConfirmAmount,
+                      paymentMethod: (payConfirmItem.paymentMethod as "cash" | "pix" | "card" | "transfer") || "cash",
+                      dueDate: payConfirmDate,
+                      type: payConfirmItem.type,
+                    });
+                  }}
+                >
+                  {markAsPaidMutation.isPending ? "Registrando..." : "Confirmar pagamento"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </>
       )}
     </AdminLayout>

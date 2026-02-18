@@ -9266,6 +9266,17 @@ export async function getUpcomingRecurringExpenses(establishmentId: number) {
       )
     );
   
+  // Get all existing expenses for cross-referencing paid status
+  const allExpenses = await db.select({
+    id: expenses.id,
+    description: expenses.description,
+    amount: expenses.amount,
+    date: expenses.date,
+    notes: expenses.notes,
+  })
+    .from(expenses)
+    .where(eq(expenses.establishmentId, establishmentId));
+  
   // Generate next occurrences for each recurring expense
   const now = new Date();
   const occurrences: Array<{
@@ -9279,6 +9290,8 @@ export async function getUpcomingRecurringExpenses(establishmentId: number) {
     paymentMethod: string;
     dueDate: string; // ISO date string YYYY-MM-DD
     type: string;
+    isPaid: boolean;
+    paidExpenseId: number | null;
   }> = [];
   
   for (const item of result) {
@@ -9286,6 +9299,19 @@ export async function getUpcomingRecurringExpenses(establishmentId: number) {
     const nextDates = generateNextOccurrences(item, now, 6);
     
     for (const date of nextDates) {
+      // Check if this occurrence was already paid
+      const paidExpense = allExpenses.find(exp => {
+        const expNotes = exp.notes || '';
+        // Match by notes reference to recurring ID and dueDate stored in notes
+        if (!expNotes.includes(`recorrência #${item.id}`)) return false;
+        // Check if the dueDate is stored in the notes
+        if (expNotes.includes(`venc:${date}`)) return true;
+        // Fallback: compare dates with 1-day tolerance for timezone issues
+        const expDate = new Date(exp.date);
+        const occDate = new Date(date);
+        const diffMs = Math.abs(expDate.getTime() - occDate.getTime());
+        return diffMs < 2 * 24 * 60 * 60 * 1000; // within 2 days
+      });
       occurrences.push({
         recurringId: item.id,
         description: item.description,
@@ -9297,6 +9323,8 @@ export async function getUpcomingRecurringExpenses(establishmentId: number) {
         paymentMethod: item.paymentMethod,
         dueDate: date,
         type: item.type,
+        isPaid: !!paidExpense,
+        paidExpenseId: paidExpense?.id ?? null,
       });
     }
   }
@@ -9336,6 +9364,8 @@ export async function getUpcomingRecurringExpenses(establishmentId: number) {
       paymentMethod: exp.paymentMethod || 'cash',
       dueDate: formatDateISO(expDate),
       type: 'expense',
+      isPaid: false,
+      paidExpenseId: null,
     });
   }
   

@@ -7171,3 +7171,6 @@
 - [x] Botões Nova meta e Gerenciar categorias lado a lado no card de Indicadores
 - [x] Barra de rolagem horizontal do card Lançamentos Futuros só aparece ao hover
 - [x] Marcar lançamento futuro (recorrente ou avulso) como pago diretamente do card
+- [x] Indicador visual de "já pago" nos cards de Lançamentos Futuros (fundo verde claro ou badge Pago)
+- [x] Desfazer pagamento via botão no toast de sucesso
+- [x] Diálogo de confirmação antes de marcar como pago (com opção de ajustar valor/data)

@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, description, date, notes FROM expenses WHERE notes LIKE '%recorr%' ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, description, date, notes FROM expenses WHERE notes LIKE '%recorr%' ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "60005",
+      "description": "Aluguel ponto",
+      "date": "2026-02-18 13:28:07",
+      "notes": "Pago via lançamento futuro (recorrência #60001)"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tdescription\tdate\tnotes\n60005\tAluguel ponto\t2026-02-18 13:28:07\tPago via lançamento futuro (recorrência #60001)\n",
+  "stderr": "",
+  "execution_time_ms": 118
+}
