@@ -7310,7 +7310,7 @@ function ProductCard({
               <span className={`font-semibold text-sm ${isUnavailable ? 'text-gray-400' : 'text-red-500'}`}>{formatPrice(product.price)}</span>
             )}
             {cashbackPercent && cashbackPercent > 0 && Number(product.price) > 0 && !isUnavailable && (
-              <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full">
+              <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">
                 +{cashbackPercent}% cashback
               </span>
             )}
