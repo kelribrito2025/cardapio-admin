@@ -7126,3 +7126,6 @@
 
 ## Landing: Texto do botão hero
 - [x] Alterar texto do botão principal de "Criar conta grátis" para "Teste agora!"
+
+## Landing: Texto CTA seção Sistema completo
+- [x] Alterar texto do CTA de "Começar agora — é grátis" para "Teste grátis por 15 dias"
