@@ -865,6 +865,16 @@ export async function getLowStockProducts(establishmentId: number, threshold: nu
 }
 
 // ============ COMPLEMENT FUNCTIONS ============
+export async function getComplementItemById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const [item] = await db.select().from(complementItems)
+    .where(eq(complementItems.id, id))
+    .limit(1);
+  return item || null;
+}
+
 export async function getComplementGroupById(id: number) {
   const db = await getDb();
   if (!db) return null;
@@ -1216,6 +1226,9 @@ export async function getAllComplementGroupsByEstablishment(establishmentId: num
     .orderBy(asc(complementItems.sortOrder));
   
   // Assign items to their unique groups (deduplicate by name)
+  // Also track all items by name for price sync
+  const itemsByName = new Map<string, typeof allItems>();
+  
   for (const item of allItems) {
     // Find which unique group this item belongs to
     const group = allGroups.find(g => g.id === item.groupId);
@@ -1224,6 +1237,13 @@ export async function getAllComplementGroupsByEstablishment(establishmentId: num
     const key = group.name.toLowerCase().trim();
     const uniqueGroup = uniqueGroups.get(key);
     if (!uniqueGroup) continue;
+    
+    // Track all items by name for price sync
+    const itemKey = item.name.toLowerCase().trim();
+    if (!itemsByName.has(itemKey)) {
+      itemsByName.set(itemKey, []);
+    }
+    itemsByName.get(itemKey)!.push(item);
     
     // Check if we already have an item with this name
     const existingItem = uniqueGroup.items.find(
@@ -1238,6 +1258,55 @@ export async function getAllComplementGroupsByEstablishment(establishmentId: num
       uniqueGroup.complementCount++;
     } else {
       existingItem.usageCount = (existingItem.usageCount || 1) + 1;
+    }
+  }
+  
+  // Auto-sync: detect and fix divergent complement item prices
+  const itemEntries = Array.from(itemsByName.entries());
+  for (const [itemKey, itemsForKey] of itemEntries) {
+    if (itemsForKey.length <= 1) continue;
+    
+    const prices = itemsForKey.map(i => i.price);
+    const uniquePrices = new Set(prices);
+    
+    if (uniquePrices.size > 1) {
+      // Find the most common price (mode)
+      const priceFreq: Record<string, number> = {};
+      for (const p of prices) {
+        priceFreq[p] = (priceFreq[p] || 0) + 1;
+      }
+      let canonicalPrice = prices[0];
+      let bestCount = 0;
+      for (const p of Object.keys(priceFreq)) {
+        if (priceFreq[p] > bestCount) {
+          canonicalPrice = p;
+          bestCount = priceFreq[p];
+        }
+      }
+      
+      // Fix divergent items in DB (fire-and-forget)
+      const divergentIds = itemsForKey
+        .filter(i => i.price !== canonicalPrice)
+        .map(i => i.id);
+      
+      if (divergentIds.length > 0) {
+        console.log(`[Sync] Fixing ${divergentIds.length} divergent prices for "${itemsForKey[0].name}": canonical=${canonicalPrice}, divergent prices: ${Array.from(uniquePrices).join(', ')}`);
+        
+        db.update(complementItems)
+          .set({ price: canonicalPrice })
+          .where(inArray(complementItems.id, divergentIds))
+          .then(() => console.log(`[Sync] Fixed ${divergentIds.length} divergent prices for "${itemsForKey[0].name}"`))
+          .catch((err: unknown) => console.error(`[Sync] Error fixing divergent prices:`, err));
+        
+        // Also update the uniqueGroup items with canonical price
+        for (const [, ug] of Array.from(uniqueGroups.entries())) {
+          for (const ugItem of ug.items) {
+            if (ugItem.name.toLowerCase().trim() === itemKey) {
+              ugItem.price = canonicalPrice;
+            }
+          }
+        }
+      }
     }
   }
   

@@ -1,0 +1,171 @@
+{
+  "query": "SELECT ci.id, ci.name, ci.price, ci.groupId, cg.name as groupName \nFROM complementItems ci \nJOIN complementGroups cg ON cg.id = ci.groupId \nWHERE cg.productId = 150090 \nORDER BY cg.name, ci.name \nLIMIT 30;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT ci.id, ci.name, ci.price, ci.groupId, cg.name as groupName \nFROM complementItems ci \nJOIN complementGroups cg ON cg.id = ci.groupId \nWHERE cg.productId = 150090 \nORDER BY cg.name, ci.name \nLIMIT 30;",
+  "rows": [
+    {
+      "id": "60828",
+      "name": "+ CATUPIRY GRATIS ",
+      "price": "0.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60827",
+      "name": "+ CHEDDAR GRATIS ",
+      "price": "0.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60836",
+      "name": "Bacon",
+      "price": "550.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60842",
+      "name": "Batata palha ",
+      "price": "3.50",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60833",
+      "name": "Calabreza",
+      "price": "5.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60839",
+      "name": "Catupiry",
+      "price": "500.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60845",
+      "name": "Cebola",
+      "price": "3.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60840",
+      "name": "Cheddar",
+      "price": "500.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60829",
+      "name": "Frango desfiado",
+      "price": "5.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60830",
+      "name": "Frango em cubos ",
+      "price": "7.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60837",
+      "name": "Hambúrguer artesanal",
+      "price": "700.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60838",
+      "name": "Hambúrguer industrializado",
+      "price": "4.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60832",
+      "name": "Milho",
+      "price": "3.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60841",
+      "name": "Mussarela",
+      "price": "500.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60843",
+      "name": "Ovo",
+      "price": "300.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60831",
+      "name": "Presunto",
+      "price": "400.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60835",
+      "name": "Presunto e muçarela",
+      "price": "7.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60844",
+      "name": "Salada (Alface e tomate)",
+      "price": "3.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60834",
+      "name": "Salsicha",
+      "price": "400.00",
+      "groupId": "60117",
+      "groupName": "Adicionais"
+    },
+    {
+      "id": "60849",
+      "name": "Maionese de bacon",
+      "price": "1.00",
+      "groupId": "60118",
+      "groupName": "Molhos"
+    },
+    {
+      "id": "60847",
+      "name": "Molho de alho ",
+      "price": "0.50",
+      "groupId": "60118",
+      "groupName": "Molhos"
+    },
+    {
+      "id": "60848",
+      "name": "Molho de pimenta ",
+      "price": "50.00",
+      "groupId": "60118",
+      "groupName": "Molhos"
+    },
+    {
+      "id": "60846",
+      "name": "Molho verde",
+      "price": "0.50",
+      "groupId": "60118",
+      "groupName": "Molhos"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tprice\tgroupId\tgroupName\n60828\t+ CATUPIRY GRATIS \t0.00\t60117\tAdicionais\n60827\t+ CHEDDAR GRATIS \t0.00\t60117\tAdicionais\n60836\tBacon\t550.00\t60117\tAdicionais\n60842\tBatata palha \t3.50\t60117\tAdicionais\n60833\tCalabreza\t5.00\t60117\tAdicionais\n60839\tCatupiry\t500.00\t60117\tAdicionais\n60845\tCebola\t3.00\t60117\tAdicionais\n60840\tCheddar\t500.00\t60117\tAdicionais\n60829\tFrango desfiado\t5.00\t60117\tAdicionais\n60830\tFrango em cubos \t7.00\t60117\tAdicionais\n60837\tHambúrguer artesanal\t700.00\t60117\tAdicionais\n60838\tHambúrguer industrializado\t4.00\t60117\tAdicionais\n60832\tMilho\t3.00\t60117\tAdicionais\n60841\tMussarela\t500.00\t60117\tAdicionais\n60843\tOvo\t300.00\t60117\tAdicionais\n60831\tPresunto\t400.00\t60117\tAdicionais\n60835\tPresunto e muçarela\t7.00\t60117\tAdicionais\n60844\tSalada (Alface e tomate)\t3.00\t60117\tAdicionais\n60834\tSalsicha\t400.00\t60117\tAdicionais\n60849\tMaionese de bacon\t1.00\t60118\tMolhos\n60847\tMolho de alho \t0.50\t60118\tMolhos\n60848\tMolho de pimenta \t50.00\t60118\tMolhos\n60846\tMolho verde\t0.50\t60118\tMolhos\n",
+  "stderr": "",
+  "execution_time_ms": 83
+}

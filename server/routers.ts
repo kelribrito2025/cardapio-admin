@@ -957,6 +957,29 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
         await db.updateComplementItem(id, data);
+        
+        // If price changed, sync across all products with the same complement name
+        if (data.price) {
+          try {
+            const item = await db.getComplementItemById(id);
+            if (item) {
+              const group = await db.getComplementGroupById(item.groupId);
+              if (group) {
+                const product = await db.getProductById(group.productId);
+                if (product) {
+                  await db.updateComplementItemsByName(
+                    product.establishmentId,
+                    item.name,
+                    { price: data.price }
+                  );
+                }
+              }
+            }
+          } catch (err) {
+            console.error('[Sync] Error syncing complement price globally:', err);
+          }
+        }
+        
         return { success: true };
       }),
     

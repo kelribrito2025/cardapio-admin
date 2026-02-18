@@ -7227,3 +7227,4 @@
 - [x] Bug: menu público mostra quantidade de complementos como máximo do grupo em vez do maxQuantity configurado no admin
 - [x] Bug: dessincronização do maxQuantity entre página de Complementos (fonte da verdade) e edição individual do produto
 - [x] Bug: dados existentes dessincronizados - página de Complementos mostra 50 mas produtos individuais continuam com 18
+- [x] Bug: preços de complementos multiplicados por 100 na edição do produto (ex: R$3,00 aparece como R$300,00) e no menu público
