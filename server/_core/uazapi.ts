@@ -557,8 +557,8 @@ export function generateStatusMessage(
     const earned = parseFloat(cashbackInfo.cashbackEarned).toFixed(2).replace('.', ',');
     const total = parseFloat(cashbackInfo.cashbackTotal).toFixed(2).replace('.', ',');
     messageTemplate = messageTemplate
-      .replace(/{{cashbackEarned}}/g, `R$${earned}`)
-      .replace(/{{cashbackTotal}}/g, `R$${total}`);
+      .replace(/{{cashbackEarned}}/g, `Cashback ganho: R$${earned}`)
+      .replace(/{{cashbackTotal}}/g, `Cashback acumulado: R$${total}`);
   } else {
     // Remover variáveis de cashback se não houver dados
     messageTemplate = messageTemplate

@@ -95,7 +95,7 @@ describe('Cashback WhatsApp Notification', () => {
     });
     
     it('should replace {{cashbackEarned}} and {{cashbackTotal}} in custom template', () => {
-      const customTemplate = `Pedido {{orderNumber}} finalizado!\n\nCashback ganho: {{cashbackEarned}}\nCashback acumulado: {{cashbackTotal}}\n\n{{establishmentName}}`;
+      const customTemplate = `Pedido {{orderNumber}} finalizado!\n\n{{cashbackEarned}}\n{{cashbackTotal}}\n\n{{establishmentName}}`;
       
       const message = generateStatusMessage(
         'completed',
@@ -116,7 +116,7 @@ describe('Cashback WhatsApp Notification', () => {
       expect(message).toContain('Cashback ganho: R$2,75');
       expect(message).toContain('Cashback acumulado: R$8,25');
       // Should NOT duplicate the cashback block since template already uses the variables
-      const cashbackCount = (message.match(/Cashback ganho/g) || []).length;
+      const cashbackCount = (message.match(/Cashback ganho: R\$/g) || []).length;
       expect(cashbackCount).toBe(1);
     });
     
@@ -163,7 +163,7 @@ describe('Cashback WhatsApp Notification', () => {
     });
     
     it('should remove {{cashbackEarned}} and {{cashbackTotal}} from template when no cashback info', () => {
-      const customTemplate = `Pedido {{orderNumber}} finalizado!\n\nCashback ganho: {{cashbackEarned}}\nCashback acumulado: {{cashbackTotal}}\n\n{{establishmentName}}`;
+      const customTemplate = `Pedido {{orderNumber}} finalizado!\n\n{{cashbackEarned}}\n{{cashbackTotal}}\n\n{{establishmentName}}`;
       
       const message = generateStatusMessage(
         'completed',
