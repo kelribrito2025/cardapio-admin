@@ -3960,11 +3960,11 @@ export default function PublicMenu() {
                       {cashbackEnabled?.enabled && (
                         <button
                           onClick={() => setShowCashbackCheckoutSheet(true)}
-                          className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors flex-shrink-0"
+                          className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-red-50 hover:bg-red-100 transition-colors flex-shrink-0"
                         >
-                          <Wallet className="h-5 w-5 text-blue-600" />
-                          {useCashbackInOrder && Number(cashbackAmountToUse) > 0 && (
-                            <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
+                          <Wallet className="h-5 w-5 text-red-600" />
+                           {useCashbackInOrder && Number(cashbackAmountToUse) > 0 && (
+                             <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
                           )}
                         </button>
                       )}
@@ -6477,8 +6477,8 @@ setOnlinePaymentUrl(null);
             {/* Header */}
             <div className="sticky top-0 bg-white rounded-t-2xl border-b border-gray-100 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                  <Wallet className="h-5 w-5 text-blue-600" />
+                <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+                  <Wallet className="h-5 w-5 text-red-600" />
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900">Usar Cashback</h3>
@@ -6493,9 +6493,9 @@ setOnlinePaymentUrl(null);
             <div className="px-6 py-5">
               {isCashbackLoggedIn && cashbackBalanceQuery.data && Number(cashbackBalanceQuery.data.balance) > 0 ? (
                 <div className="space-y-4">
-                  <div className="bg-blue-50 rounded-xl p-4">
-                    <p className="text-sm text-blue-700 font-medium">Saldo dispon\u00edvel</p>
-                    <p className="text-2xl font-bold text-blue-800 mt-1">
+                  <div className="bg-red-50 rounded-xl p-4">
+                    <p className="text-sm text-red-700 font-medium">Saldo disponível</p>
+                    <p className="text-2xl font-bold text-red-800 mt-1">
                       R$ {parseFloat(cashbackBalanceQuery.data.balance).toFixed(2).replace('.', ',')}
                     </p>
                   </div>
@@ -6528,7 +6528,7 @@ setOnlinePaymentUrl(null);
                           setCashbackAmountToUse('0');
                         }
                       }}
-                      className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+                      className="w-5 h-5 text-red-600 rounded focus:ring-red-500 accent-red-600"
                     />
                   </label>
                   {useCashbackInOrder && Number(cashbackAmountToUse) > 0 && (
@@ -6539,7 +6539,7 @@ setOnlinePaymentUrl(null);
                   )}
                   <button
                     onClick={() => setShowCashbackCheckoutSheet(false)}
-                    className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors"
+                    className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
                   >
                     Confirmar
                   </button>
@@ -6549,8 +6549,8 @@ setOnlinePaymentUrl(null);
                   <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
                     <Wallet className="h-8 w-8 text-gray-400" />
                   </div>
-                  <p className="text-gray-600 font-medium">Voc\u00ea ainda n\u00e3o possui saldo de cashback.</p>
-                  <p className="text-sm text-gray-400 mt-2">Ganhe {cashbackEnabled?.percent || 0}% a cada pedido conclu\u00eddo!</p>
+                  <p className="text-gray-600 font-medium">Você ainda não possui saldo de cashback.</p>
+                  <p className="text-sm text-gray-400 mt-2">Ganhe {cashbackEnabled?.percent || 0}% a cada pedido concluído!</p>
                   <button
                     onClick={() => setShowCashbackCheckoutSheet(false)}
                     className="mt-4 w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
@@ -6560,18 +6560,18 @@ setOnlinePaymentUrl(null);
                 </div>
               ) : (
                 <div className="text-center py-6">
-                  <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
-                    <Wallet className="h-8 w-8 text-blue-500" />
+                  <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                    <Wallet className="h-8 w-8 text-red-500" />
                   </div>
                   <p className="text-gray-700 font-medium mb-2">Entre para usar seu cashback</p>
-                  <p className="text-sm text-gray-400 mb-5">Fa\u00e7a login para verificar seu saldo e aplicar desconto.</p>
+                  <p className="text-sm text-gray-400 mb-5">Faça login para verificar seu saldo e aplicar desconto.</p>
                   <button
                     onClick={() => {
                       setShowCashbackCheckoutSheet(false);
                       setShowCashbackModal(true);
                       setCashbackStep('login');
                     }}
-                    className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors"
+                    className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
                   >
                     Entrar
                   </button>

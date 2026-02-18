@@ -7210,3 +7210,5 @@
 - [x] Testes vitest para cashback
 - [x] Reduzir tamanho do container de cashback no modal de entrega/pagamento
 - [x] Mover cashback do modal de entrega para bottom sheet separado acionado por ícone de carteira ao lado do botão Próximo
+- [x] Corrigir texto unicode quebrado 'Saldo disponível' no bottom sheet de cashback
+- [x] Trocar cores azuis do cashback para vermelho (mesma cor do modal de entrega)
