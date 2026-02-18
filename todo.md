@@ -7141,3 +7141,8 @@
 - [x] Adicionar botão de editar na coluna AÇÕES da aba Recorrentes
 - [x] Criar modal/dialog de edição de despesa recorrente (valor, descrição, categoria, frequência, pagamento)
 - [x] Criar mutation backend para atualizar despesa recorrente (já existia)
+
+## Lançamentos futuros: Incluir despesas avulsas com data futura
+- [x] Analisar como o card de Lançamentos futuros busca dados atualmente
+- [x] Ajustar para incluir despesas avulsas registradas com data futura no card
+- [x] Total comprometido já inclui tanto recorrentes quanto avulsas futuras (calculado no frontend)

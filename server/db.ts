@@ -1,4 +1,4 @@
-import { eq, desc, asc, and, like, notLike, sql, gte, lte, lt, or, ne, inArray, isNotNull, getTableColumns } from "drizzle-orm";
+import { eq, desc, asc, and, like, notLike, sql, gte, lte, lt, gt, or, ne, inArray, isNotNull, getTableColumns } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate, notifyPrintOrder } from "./_core/sse";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
@@ -9239,6 +9239,41 @@ export async function getUpcomingRecurringExpenses(establishmentId: number) {
         type: item.type,
       });
     }
+  }
+  
+  // Also include one-time expenses with future dates
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const futureExpensesResult = await db.select({
+    id: expenses.id,
+    description: expenses.description,
+    categoryId: expenses.categoryId,
+    categoryName: expenseCategories.name,
+    categoryColor: expenseCategories.color,
+    amount: expenses.amount,
+    date: expenses.date,
+  })
+    .from(expenses)
+    .leftJoin(expenseCategories, eq(expenses.categoryId, expenseCategories.id))
+    .where(
+      and(
+        eq(expenses.establishmentId, establishmentId),
+        gt(expenses.date, today),
+      )
+    );
+  
+  for (const exp of futureExpensesResult) {
+    const expDate = new Date(exp.date);
+    occurrences.push({
+      recurringId: exp.id,
+      description: exp.description,
+      categoryName: exp.categoryName,
+      categoryColor: exp.categoryColor,
+      amount: Number(exp.amount),
+      frequency: 'once',
+      dueDate: formatDateISO(expDate),
+      type: 'expense',
+    });
   }
   
   // Sort by date ascending (closest first)
