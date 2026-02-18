@@ -39,7 +39,7 @@ import {
   CalendarClock,
   BadgeDollarSign,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -357,6 +357,31 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
+  // Ref para preservar scroll da sidebar
+  const sidebarNavRef = useRef<HTMLElement>(null);
+  const sidebarScrollPos = useRef<number>(0);
+
+  // Salvar posição do scroll antes da navegação
+  useEffect(() => {
+    const nav = sidebarNavRef.current;
+    if (!nav) return;
+    const handleScroll = () => {
+      sidebarScrollPos.current = nav.scrollTop;
+    };
+    nav.addEventListener('scroll', handleScroll);
+    return () => nav.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Restaurar posição do scroll após navegação
+  useEffect(() => {
+    const nav = sidebarNavRef.current;
+    if (nav && sidebarScrollPos.current > 0) {
+      requestAnimationFrame(() => {
+        nav.scrollTop = sidebarScrollPos.current;
+      });
+    }
+  }, [location]);
+
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
@@ -380,6 +405,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   const handleNavClick = (href: string) => {
+    // Salvar posição do scroll antes de navegar
+    if (sidebarNavRef.current) {
+      sidebarScrollPos.current = sidebarNavRef.current.scrollTop;
+    }
     // Fechar sidebar mobile
     setSidebarOpen(false);
   };
@@ -485,7 +514,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
 
         {/* Navigation */}
-        <nav className={cn(
+        <nav ref={sidebarNavRef} className={cn(
           "flex-1 py-4 overflow-y-auto transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
           sidebarCollapsed ? "px-1.5" : "px-3"
         )}>
@@ -527,7 +556,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                             "flex items-center gap-2.5 py-2.5 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative",
                             sidebarCollapsed ? "px-0 justify-center rounded-lg" : "pl-3 pr-3",
                             isActive
-                              ? "bg-primary/15 text-primary"
+                              ? "bg-primary/15 text-primary rounded-r-xl -ml-3 pl-6 border-r-4 border-primary"
                               : "text-muted-foreground hover:bg-accent hover:text-foreground"
                           )}
                           style={!sidebarCollapsed ? {borderRadius: '12px', paddingLeft: '37px', marginRight: '43px', marginLeft: '-27px'} : undefined}
@@ -558,6 +587,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     const isChildActive = item.children.some((child: any) => 
                       location === child.href || (child.href !== '/' && location.startsWith(child.href))
                     );
+                    // Verificar se o próprio item pai está ativo (ex: /pedidos)
+                    const isDirectActive = item.href && !item.href.endsWith('-parent') && (
+                      location === item.href || (item.href !== '/' && location.startsWith(item.href) && !isChildActive)
+                    );
                     // Total badge count from children
                     const childReviewBadge = item.href === '/menu-parent' && reviewsEnabled && typeof unreadReviewCount === 'number' ? unreadReviewCount : 0;
                     const childScheduledBadge = item.href === '/pedidos' ? scheduledPendingCount : 0;
@@ -566,9 +599,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     const parentClassName = cn(
                       "flex items-center gap-2.5 py-2.5 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative cursor-pointer",
                       sidebarCollapsed ? "px-0 justify-center rounded-lg" : "pl-3 pr-3",
-                      isChildActive
-                        ? "text-primary"
-                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                      isDirectActive
+                        ? "bg-primary/15 text-primary border-r-4 border-primary"
+                        : isChildActive
+                          ? "text-primary"
+                          : "text-muted-foreground hover:bg-accent hover:text-foreground"
                     );
 
                     if (sidebarCollapsed) {
@@ -657,7 +692,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                                     "flex items-center gap-2.5 py-2 text-sm font-medium transition-all duration-200 relative",
                                     "pl-3 pr-3",
                                     childActive
-                                      ? "bg-primary/10 text-primary border-l-4 border-primary"
+                                      ? "bg-primary/10 text-primary border-r-4 border-primary"
                                       : "text-muted-foreground hover:bg-accent hover:text-foreground"
                                   )}
                                   style={{borderRadius: '8px', paddingLeft: '12px', marginRight: '8px'}}

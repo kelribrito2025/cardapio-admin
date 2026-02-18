@@ -7231,3 +7231,7 @@
 - [x] Filtro interativo nos cards de status do estoque (OK, Baixo, Crítico, Em Falta) com toggle e sincronização com select
 - [x] Criar nova variável de template WhatsApp para exibir apenas Total + Forma de pagamento
 - [x] Adicionar barra lateral vermelha nos submenus do menu 'Menu' igual ao WhatsApp
+- [x] Bug: template configurado de 'Novo Pedido' não está sendo usado na notificação WhatsApp - sistema envia template padrão com itens (não era bug: print antigo do cliente)
+- [x] Bug: borda colorida nos submenus do Menu está do lado esquerdo em vez do direito
+- [x] Bug: borda não aparece no menu Pedidos quando selecionado
+- [x] Bug: scroll da sidebar volta ao topo ao clicar num menu
