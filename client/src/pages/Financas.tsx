@@ -1046,6 +1046,15 @@ function FinancialHealthIndicator({
   const isWarning = expensesTotal > revenue && revenue > 0;
   const healthPercent = revenue > 0 ? Math.min(100, Math.max(0, ((revenue - expensesTotal) / revenue) * 100)) : 0;
 
+  // Animated fill: start at 0 and grow to healthPercent
+  const [animatedPercent, setAnimatedPercent] = useState(0);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAnimatedPercent(Math.max(3, healthPercent));
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [healthPercent]);
+
   let healthColor = "bg-emerald-500";
   let healthLabel = "Saudável";
   let healthTextColor = "text-emerald-600";
@@ -1082,8 +1091,11 @@ function FinancialHealthIndicator({
         </div>
         <div className="h-3 bg-muted rounded-full overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all duration-500 ${healthColor}`}
-            style={{ width: `${Math.max(3, healthPercent)}%` }}
+            className={`h-full rounded-full ${healthColor}`}
+            style={{
+              width: `${animatedPercent}%`,
+              transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
           />
         </div>
         <div className="flex justify-between mt-1">

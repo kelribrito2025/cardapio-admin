@@ -7191,3 +7191,4 @@
 - [x] Alterar rótulo 'Lucro máximo' para 'Excelente' na barra de saúde financeira do card Indicadores
 - [x] Adicionar indicador 'Boa' no meio da barra de saúde financeira
 - [x] Adicionar cores distintas aos rótulos da barra de saúde financeira (Prejuízo=vermelho, Boa=âmbar, Excelente=verde)
+- [x] Animação suave de preenchimento na barra de saúde financeira ao carregar o card de Indicadores

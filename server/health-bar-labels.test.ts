@@ -47,4 +47,20 @@ describe("health bar labels in Indicadores card", () => {
   it("should use emerald/green color for 'Excelente' label", () => {
     expect(financasContent).toContain('text-emerald-500">Excelente<');
   });
+
+  it("should use animatedPercent state for smooth fill animation", () => {
+    expect(financasContent).toContain("animatedPercent");
+    expect(financasContent).toContain("setAnimatedPercent");
+  });
+
+  it("should apply CSS transition with cubic-bezier easing for the bar fill", () => {
+    expect(financasContent).toContain("cubic-bezier");
+    expect(financasContent).toContain("width: `${animatedPercent}%`");
+  });
+
+  it("should use a delayed useEffect to trigger the animation after mount", () => {
+    // The animation starts at 0 and fills to healthPercent after a short delay
+    expect(financasContent).toContain("setTimeout");
+    expect(financasContent).toContain("setAnimatedPercent(Math.max(3, healthPercent))");
+  });
 });
