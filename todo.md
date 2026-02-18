@@ -7136,3 +7136,8 @@
 ## Finanças: Paginação igual Avaliações
 - [x] Analisar modelo de paginação da página de Avaliações
 - [x] Aplicar mesmo modelo de paginação nas listas de Gastos e Receitas (Recorrentes não tem paginação server-side)
+
+## Finanças: Editar despesas recorrentes
+- [x] Adicionar botão de editar na coluna AÇÕES da aba Recorrentes
+- [x] Criar modal/dialog de edição de despesa recorrente (valor, descrição, categoria, frequência, pagamento)
+- [x] Criar mutation backend para atualizar despesa recorrente (já existia)

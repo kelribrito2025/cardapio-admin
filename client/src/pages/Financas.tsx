@@ -529,6 +529,183 @@ function ExpenseModal({
   );
 }
 
+// ============ RECURRING EDIT MODAL ============
+function RecurringEditModal({
+  open,
+  onOpenChange,
+  establishmentId,
+  recurring,
+  onSuccess,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  establishmentId: number;
+  recurring: any;
+  onSuccess: () => void;
+}) {
+  const [categoryId, setCategoryId] = useState<string>("");
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<string>("cash");
+  const [frequency, setFrequency] = useState<string>("monthly");
+  const [executionDay, setExecutionDay] = useState<string>("1");
+  const [executionMonth, setExecutionMonth] = useState<string>("1");
+  const [notes, setNotes] = useState("");
+
+  const { data: categories } = trpc.finance.listCategories.useQuery(
+    { establishmentId },
+    { enabled: !!establishmentId }
+  );
+
+  const updateMutation = trpc.finance.updateRecurring.useMutation({
+    onSuccess: () => {
+      toast.success("Recorrência atualizada com sucesso!");
+      onSuccess();
+      onOpenChange(false);
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  useEffect(() => {
+    if (recurring && open) {
+      setCategoryId(String(recurring.categoryId));
+      setDescription(recurring.description || "");
+      setAmount(String(Number(recurring.amount)));
+      setPaymentMethod(recurring.paymentMethod || "cash");
+      setFrequency(recurring.frequency || "monthly");
+      setExecutionDay(String(recurring.executionDay || 1));
+      setExecutionMonth(String(recurring.executionMonth || 1));
+      setNotes(recurring.notes || "");
+    }
+  }, [recurring, open]);
+
+  function handleSubmit() {
+    if (!categoryId || !description || !amount) {
+      toast.error("Preencha todos os campos obrigatórios.");
+      return;
+    }
+    updateMutation.mutate({
+      id: recurring.id,
+      establishmentId,
+      categoryId: Number(categoryId),
+      description,
+      amount,
+      paymentMethod: paymentMethod as any,
+      frequency: frequency as any,
+      executionDay: Number(executionDay),
+      executionMonth: frequency === "yearly" ? Number(executionMonth) : null,
+      notes: notes || null,
+    });
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Editar despesa recorrente</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-2">
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Categoria</Label>
+            <Select value={categoryId} onValueChange={setCategoryId}>
+              <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent>
+                {categories?.map((cat: any) => (
+                  <SelectItem key={cat.id} value={String(cat.id)}>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: cat.color }} />
+                      {cat.name}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Descrição</Label>
+            <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Ex: Aluguel do ponto" />
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Valor (R$)</Label>
+            <Input type="number" step="0.01" min="0" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0,00" />
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Forma de pagamento</Label>
+            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cash">Dinheiro</SelectItem>
+                <SelectItem value="pix">PIX</SelectItem>
+                <SelectItem value="card">Cartão</SelectItem>
+                <SelectItem value="transfer">Transferência</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Frequência</Label>
+            <Select value={frequency} onValueChange={setFrequency}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="weekly">Semanal</SelectItem>
+                <SelectItem value="monthly">Mensal</SelectItem>
+                <SelectItem value="yearly">Anual</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {frequency === "weekly" && (
+            <div>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Dia da semana</Label>
+              <Select value={executionDay} onValueChange={setExecutionDay}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {WEEKDAY_LABELS.map((label, i) => (
+                    <SelectItem key={i} value={String(i)}>{label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          {frequency === "monthly" && (
+            <div>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Dia do mês</Label>
+              <Input type="number" min="1" max="31" value={executionDay} onChange={(e) => setExecutionDay(e.target.value)} />
+            </div>
+          )}
+          {frequency === "yearly" && (
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1.5 block">Dia</Label>
+                <Input type="number" min="1" max="31" value={executionDay} onChange={(e) => setExecutionDay(e.target.value)} />
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1.5 block">Mês</Label>
+                <Select value={executionMonth} onValueChange={setExecutionMonth}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {MONTH_LABELS.map((label, i) => (
+                      <SelectItem key={i + 1} value={String(i + 1)}>{label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Observações (opcional)</Label>
+            <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notas adicionais..." />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button onClick={handleSubmit} disabled={updateMutation.isPending}>
+            {updateMutation.isPending ? "Salvando..." : "Atualizar"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 // ============ CATEGORY MANAGER MODAL ============
 function CategoryManagerModal({
   open,
@@ -917,6 +1094,8 @@ export default function Financas() {
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [goalModalOpen, setGoalModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<any>(null);
+  const [editingRecurring, setEditingRecurring] = useState<any>(null);
+  const [recurringEditModalOpen, setRecurringEditModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [page, setPage] = useState(0);
@@ -2438,6 +2617,18 @@ export default function Financas() {
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8"
+                                  title="Editar"
+                                  onClick={() => {
+                                    setEditingRecurring(rec);
+                                    setRecurringEditModalOpen(true);
+                                  }}
+                                >
+                                  <Edit2 className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
                                   title={rec.active ? "Pausar" : "Ativar"}
                                   onClick={() => {
                                     toggleRecurringMutation.mutate({
@@ -2534,6 +2725,18 @@ export default function Financas() {
                               variant="ghost"
                               size="icon"
                               className="h-7 w-7"
+                              title="Editar"
+                              onClick={() => {
+                                setEditingRecurring(rec);
+                                setRecurringEditModalOpen(true);
+                              }}
+                            >
+                              <Edit2 className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7"
                               title={rec.active ? "Pausar" : "Ativar"}
                               onClick={() => {
                                 toggleRecurringMutation.mutate({
@@ -2605,6 +2808,13 @@ export default function Financas() {
             open={categoryModalOpen}
             onOpenChange={setCategoryModalOpen}
             establishmentId={establishmentId}
+          />
+          <RecurringEditModal
+            open={recurringEditModalOpen}
+            onOpenChange={setRecurringEditModalOpen}
+            establishmentId={establishmentId!}
+            recurring={editingRecurring}
+            onSuccess={invalidateAll}
           />
           <GoalModal
             open={goalModalOpen}
