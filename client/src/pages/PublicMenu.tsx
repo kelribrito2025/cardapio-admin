@@ -3947,28 +3947,24 @@ export default function PublicMenu() {
 
               {/* Seção Usar Cashback */}
               {cashbackEnabled?.enabled && (
-                <div className="px-6 py-4 border-t border-gray-100">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Wallet className="h-4 w-4 text-blue-500" />
-                    <h3 className="font-semibold text-gray-800 text-sm">Usar Cashback</h3>
-                  </div>
+                <div className="px-6 py-2.5 border-t border-gray-100">
                   {isCashbackLoggedIn && cashbackBalanceQuery.data && Number(cashbackBalanceQuery.data.balance) > 0 ? (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between bg-blue-50 rounded-xl p-4">
-                        <div>
-                          <p className="text-sm text-blue-700 font-medium">Saldo disponível</p>
-                          <p className="text-lg font-bold text-blue-800">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between bg-blue-50 rounded-lg px-3 py-2">
+                        <div className="flex items-center gap-2">
+                          <Wallet className="h-3.5 w-3.5 text-blue-500" />
+                          <span className="text-xs text-blue-700">Cashback:</span>
+                          <span className="text-sm font-bold text-blue-800">
                             R$ {parseFloat(cashbackBalanceQuery.data.balance).toFixed(2).replace('.', ',')}
-                          </p>
+                          </span>
                         </div>
-                        <label className="flex items-center gap-2 cursor-pointer">
+                        <label className="flex items-center gap-1.5 cursor-pointer">
                           <input
                             type="checkbox"
                             checked={useCashbackInOrder}
                             onChange={(e) => {
                               setUseCashbackInOrder(e.target.checked);
                               if (e.target.checked) {
-                                // Calcular o valor a usar
                                 const balance = parseFloat(cashbackBalanceQuery.data?.balance || '0');
                                 const subtotal = cart.reduce((sum, item) => {
                                   const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price) * (c.quantity || 1), 0);
@@ -3985,22 +3981,22 @@ export default function PublicMenu() {
                                 setCashbackAmountToUse('0');
                               }
                             }}
-                            className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                           />
-                          <span className="text-sm font-medium text-blue-700">Usar saldo</span>
+                          <span className="text-xs font-medium text-blue-700">Usar</span>
                         </label>
                       </div>
                       {useCashbackInOrder && Number(cashbackAmountToUse) > 0 && (
-                        <div className="flex items-center justify-between text-sm bg-green-50 rounded-xl p-3">
+                        <div className="flex items-center justify-between text-xs bg-green-50 rounded-lg px-3 py-1.5">
                           <span className="text-green-700">Desconto cashback</span>
                           <span className="font-semibold text-green-700">- R$ {parseFloat(cashbackAmountToUse).toFixed(2).replace('.', ',')}</span>
                         </div>
                       )}
                     </div>
                   ) : isCashbackLoggedIn && cashbackBalanceQuery.data && Number(cashbackBalanceQuery.data.balance) === 0 ? (
-                    <div className="bg-gray-50 rounded-xl p-4 text-center">
-                      <p className="text-sm text-gray-500">Você ainda não possui saldo de cashback.</p>
-                      <p className="text-xs text-gray-400 mt-1">Ganhe {cashbackEnabled.percent}% a cada pedido concluído!</p>
+                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
+                      <Wallet className="h-3.5 w-3.5 text-gray-400" />
+                      <p className="text-xs text-gray-500">Sem saldo de cashback. Ganhe {cashbackEnabled.percent}% a cada pedido!</p>
                     </div>
                   ) : (
                     <button
@@ -4008,8 +4004,9 @@ export default function PublicMenu() {
                         setShowCashbackModal(true);
                         setCashbackStep('login');
                       }}
-                      className="w-full py-3 bg-blue-50 hover:bg-blue-100 text-blue-600 font-medium text-sm rounded-xl transition-colors"
+                      className="w-full flex items-center justify-center gap-2 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 font-medium text-xs rounded-lg transition-colors"
                     >
+                      <Wallet className="h-3.5 w-3.5" />
                       Entrar para usar seu cashback
                     </button>
                   )}

@@ -7208,3 +7208,4 @@
 - [x] Modal Pagamento: opção usar cashback com cálculo em tempo real
 - [x] Modal Pagamento: regras de aplicação (parcial, total, excedente)
 - [x] Testes vitest para cashback
+- [x] Reduzir tamanho do container de cashback no modal de entrega/pagamento
