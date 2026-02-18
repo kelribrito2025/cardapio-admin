@@ -1774,7 +1774,7 @@ export default function Financas() {
               </div>
               <div className="min-w-0">
                 <h3 className="text-base font-semibold text-foreground">Comparação Mensal</h3>
-                <p className="text-xs text-muted-foreground">Últimos 4 meses</p>
+                <p className="text-xs text-muted-foreground">Últimos 6 meses</p>
               </div>
             </div>
             {/* Legend tags */}

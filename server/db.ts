@@ -8771,8 +8771,8 @@ export async function getMonthlyComparison(establishmentId: number) {
   
   const months: { label: string; receitas: number; despesas: number }[] = [];
   
-  // Get last 4 months data (current month + 3 previous)
-  for (let i = 3; i >= 0; i--) {
+  // Get last 6 months data (current month + 5 previous)
+  for (let i = 5; i >= 0; i--) {
     const monthDate = new Date(localNow.getFullYear(), localNow.getMonth() - i, 1);
     const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
     const monthEnd = i === 0

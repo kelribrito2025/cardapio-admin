@@ -7179,3 +7179,4 @@
 - [x] Cards pagos devem permanecer visíveis com badge Pago no dia, e só ocultar após meia-noite (próximo dia)
 - [x] Permitir editar lançamentos avulsos ao clicar nos cards de Lançamentos Futuros
 - [x] Badge Pago não aparece em lançamentos avulsos marcados como pagos no carrossel
+- [x] Gráfico de Comparação Mensal deve exibir últimos 6 meses em vez de 4
