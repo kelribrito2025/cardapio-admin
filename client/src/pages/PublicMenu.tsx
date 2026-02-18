@@ -6475,18 +6475,18 @@ setOnlinePaymentUrl(null);
           />
           <div className="relative w-full bg-white rounded-t-2xl shadow-2xl max-h-[70vh] overflow-y-auto animate-in slide-in-from-bottom duration-300">
             {/* Header */}
-            <div className="sticky top-0 bg-white rounded-t-2xl border-b border-gray-100 px-6 py-4 flex items-center justify-between">
+            <div className="sticky top-0 bg-red-500 rounded-t-2xl px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
-                  <Wallet className="h-5 w-5 text-red-600" />
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                  <Wallet className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900">Usar Cashback</h3>
-                  <p className="text-xs text-gray-500">Aplique seu saldo neste pedido</p>
+                  <h3 className="font-bold text-white">Usar Cashback</h3>
+                  <p className="text-xs text-white/80">Aplique seu saldo neste pedido</p>
                 </div>
               </div>
-              <button onClick={() => setShowCashbackCheckoutSheet(false)} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
-                <X className="h-4 w-4 text-gray-500" />
+              <button onClick={() => setShowCashbackCheckoutSheet(false)} className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
+                <X className="h-4 w-4 text-white" />
               </button>
             </div>
             {/* Content */}

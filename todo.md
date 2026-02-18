@@ -7212,3 +7212,4 @@
 - [x] Mover cashback do modal de entrega para bottom sheet separado acionado por ícone de carteira ao lado do botão Próximo
 - [x] Corrigir texto unicode quebrado 'Saldo disponível' no bottom sheet de cashback
 - [x] Trocar cores azuis do cashback para vermelho (mesma cor do modal de entrega)
+- [x] Alterar cabeçalho do bottom sheet de cashback para mesmo padrão do 'Meus Pedidos' (fundo vermelho, texto branco)
