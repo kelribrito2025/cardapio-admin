@@ -7177,3 +7177,5 @@
 - [x] Ocultar cards pagos do carrossel de Lançamentos Futuros (não exibir após marcar como pago)
 - [x] Alterar cor do badge "Hoje" para amarelo (mesma cor do ícone do card)
 - [x] Cards pagos devem permanecer visíveis com badge Pago no dia, e só ocultar após meia-noite (próximo dia)
+- [x] Permitir editar lançamentos avulsos ao clicar nos cards de Lançamentos Futuros
+- [x] Badge Pago não aparece em lançamentos avulsos marcados como pagos no carrossel

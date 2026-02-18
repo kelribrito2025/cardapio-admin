@@ -9329,9 +9329,11 @@ export async function getUpcomingRecurringExpenses(establishmentId: number) {
     }
   }
   
-  // Also include one-time expenses with future dates
+  // Also include one-time expenses with future dates OR today's paid one-time expenses
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
   const futureExpensesResult = await db.select({
     id: expenses.id,
     description: expenses.description,
@@ -9341,18 +9343,34 @@ export async function getUpcomingRecurringExpenses(establishmentId: number) {
     amount: expenses.amount,
     paymentMethod: expenses.paymentMethod,
     date: expenses.date,
+    notes: expenses.notes,
   })
     .from(expenses)
     .leftJoin(expenseCategories, eq(expenses.categoryId, expenseCategories.id))
     .where(
       and(
         eq(expenses.establishmentId, establishmentId),
-        gt(expenses.date, today),
+        or(
+          gt(expenses.date, today),
+          // Include today's expenses that were marked as paid (have the paid marker in notes)
+          and(
+            gte(expenses.date, today),
+            lt(expenses.date, tomorrow),
+            like(expenses.notes, '%Pago via lan%amento futuro (avulso%'),
+          ),
+        ),
       )
     );
   
   for (const exp of futureExpensesResult) {
     const expDate = new Date(exp.date);
+    const isPaidOneTime = !!(exp.notes && exp.notes.includes('Pago via lan') && exp.notes.includes('amento futuro (avulso'));
+    // Extract original due date from notes if paid
+    let dueDate = formatDateISO(expDate);
+    if (isPaidOneTime && exp.notes) {
+      const vencMatch = exp.notes.match(/venc:(\d{4}-\d{2}-\d{2})/);
+      if (vencMatch) dueDate = vencMatch[1];
+    }
     occurrences.push({
       recurringId: exp.id,
       description: exp.description,
@@ -9362,10 +9380,10 @@ export async function getUpcomingRecurringExpenses(establishmentId: number) {
       amount: Number(exp.amount),
       frequency: 'once',
       paymentMethod: exp.paymentMethod || 'cash',
-      dueDate: formatDateISO(expDate),
+      dueDate,
       type: 'expense',
-      isPaid: false,
-      paidExpenseId: null,
+      isPaid: isPaidOneTime,
+      paidExpenseId: isPaidOneTime ? exp.id : null,
     });
   }
   

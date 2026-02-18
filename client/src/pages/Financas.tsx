@@ -2291,8 +2291,23 @@ export default function Financas() {
                           style={{width: '165px'}}
                           onClick={() => {
                             if (item.frequency === 'once') {
-                              // One-time expense: find in expenses and open expense edit modal
-                              toast.info("Este é um lançamento avulso, não uma recorrência.");
+                              // One-time expense: open expense edit modal
+                              const expenseToEdit = expensesData?.items?.find((e: any) => e.id === item.recurringId);
+                              if (expenseToEdit) {
+                                setEditingExpense(expenseToEdit);
+                                setExpenseModalOpen(true);
+                              } else {
+                                // Expense may not be in current list (different month), fetch and open with basic data
+                                setEditingExpense({
+                                  id: item.recurringId,
+                                  categoryId: item.categoryId,
+                                  description: item.description,
+                                  amount: String(item.amount),
+                                  paymentMethod: item.paymentMethod,
+                                  date: item.dueDate,
+                                });
+                                setExpenseModalOpen(true);
+                              }
                               return;
                             }
                             // Find the full recurring expense data

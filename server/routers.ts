@@ -5463,9 +5463,10 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         if (input.frequency === 'once') {
-          // One-time future expense: update date to today
+          // One-time future expense: update date to today and add paid marker in notes
           await db.updateExpense(input.recurringId, {
             date: new Date(),
+            notes: `Pago via lançamento futuro (avulso #${input.recurringId}, venc:${input.dueDate})`,
           });
           return { success: true, action: 'updated' as const, expenseId: input.recurringId, originalDate: input.dueDate };
         } else {
@@ -5496,9 +5497,10 @@ export const appRouter = router({
           await db.deleteExpense(input.expenseId);
           return { success: true };
         } else if (input.action === 'updated' && input.originalDate) {
-          // Restore the original date
+          // Restore the original date and clear paid notes
           await db.updateExpense(input.expenseId, {
             date: new Date(input.originalDate),
+            notes: '',
           });
           return { success: true };
         }
