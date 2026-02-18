@@ -892,7 +892,27 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
+        
+        // Atualizar o grupo individual primeiro
         await db.updateComplementGroup(id, data);
+        
+        // Se minQuantity, maxQuantity ou isRequired foram alterados,
+        // sincronizar com todos os grupos de mesmo nome no estabelecimento
+        const hasRuleChange = data.minQuantity !== undefined || data.maxQuantity !== undefined || data.isRequired !== undefined;
+        if (hasRuleChange) {
+          const group = await db.getComplementGroupById(id);
+          if (group) {
+            const product = await db.getProductById(group.productId);
+            if (product) {
+              const ruleData: { minQuantity?: number; maxQuantity?: number; isRequired?: boolean } = {};
+              if (data.minQuantity !== undefined) ruleData.minQuantity = data.minQuantity;
+              if (data.maxQuantity !== undefined) ruleData.maxQuantity = data.maxQuantity;
+              if (data.isRequired !== undefined) ruleData.isRequired = data.isRequired;
+              await db.updateComplementGroupRulesByName(product.establishmentId, group.name, ruleData);
+            }
+          }
+        }
+        
         return { success: true };
       }),
     

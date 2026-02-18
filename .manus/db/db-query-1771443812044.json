@@ -1,0 +1,55 @@
+{
+  "query": "SELECT cg.id, cg.name, cg.minQuantity, cg.maxQuantity, cg.productId, \n       (SELECT COUNT(*) FROM complementItems ci WHERE ci.groupId = cg.id) as totalItems,\n       (SELECT COUNT(*) FROM complementItems ci WHERE ci.groupId = cg.id AND ci.isActive = 1) as activeItems\nFROM complementGroups cg \nJOIN products p ON p.id = cg.productId \nWHERE p.establishmentId = 60018 AND cg.name LIKE '%Adicionais%' AND cg.maxQuantity = 50\nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.id, cg.name, cg.minQuantity, cg.maxQuantity, cg.productId, \n       (SELECT COUNT(*) FROM complementItems ci WHERE ci.groupId = cg.id) as totalItems,\n       (SELECT COUNT(*) FROM complementItems ci WHERE ci.groupId = cg.id AND ci.isActive = 1) as activeItems\nFROM complementGroups cg \nJOIN products p ON p.id = cg.productId \nWHERE p.establishmentId = 60018 AND cg.name LIKE '%Adicionais%' AND cg.maxQuantity = 50\nLIMIT 5;",
+  "rows": [
+    {
+      "id": "60012",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150022",
+      "totalItems": "19",
+      "activeItems": "18"
+    },
+    {
+      "id": "60006",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150019",
+      "totalItems": "19",
+      "activeItems": "18"
+    },
+    {
+      "id": "60004",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150018",
+      "totalItems": "19",
+      "activeItems": "18"
+    },
+    {
+      "id": "60008",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150020",
+      "totalItems": "19",
+      "activeItems": "18"
+    },
+    {
+      "id": "60010",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150021",
+      "totalItems": "19",
+      "activeItems": "18"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tminQuantity\tmaxQuantity\tproductId\ttotalItems\tactiveItems\n60012\tAdicionais \t0\t50\t150022\t19\t18\n60006\tAdicionais \t0\t50\t150019\t19\t18\n60004\tAdicionais \t0\t50\t150018\t19\t18\n60008\tAdicionais \t0\t50\t150020\t19\t18\n60010\tAdicionais \t0\t50\t150021\t19\t18\n",
+  "stderr": "",
+  "execution_time_ms": 68
+}

@@ -7224,3 +7224,5 @@
 - [x] Corrigir substituição das variáveis cashback no backend: incluir rótulos 'Cashback ganho:' e 'Cashback acumulado:' na mensagem WhatsApp
 - [x] Remover opção de uso parcial do cashback: manter apenas uso total do saldo (config admin, backend, frontend)
 - [x] Corrigir espaço em branco na mensagem WhatsApp de pedido finalizado quando cashback está desativado
+- [x] Bug: menu público mostra quantidade de complementos como máximo do grupo em vez do maxQuantity configurado no admin
+- [x] Bug: dessincronização do maxQuantity entre página de Complementos (fonte da verdade) e edição individual do produto

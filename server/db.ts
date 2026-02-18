@@ -865,6 +865,16 @@ export async function getLowStockProducts(establishmentId: number, threshold: nu
 }
 
 // ============ COMPLEMENT FUNCTIONS ============
+export async function getComplementGroupById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const [group] = await db.select().from(complementGroups)
+    .where(eq(complementGroups.id, id))
+    .limit(1);
+  return group || null;
+}
+
 export async function getComplementGroupsByProduct(productId: number) {
   const db = await getDb();
   if (!db) return [];

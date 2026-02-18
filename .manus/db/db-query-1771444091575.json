@@ -1,0 +1,25 @@
+{
+  "query": "SELECT DISTINCT cg.productId FROM complementGroups cg WHERE cg.name = 'Adicionais' AND cg.maxQuantity = 50 ORDER BY cg.productId LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT DISTINCT cg.productId FROM complementGroups cg WHERE cg.name = 'Adicionais' AND cg.maxQuantity = 50 ORDER BY cg.productId LIMIT 5;",
+  "rows": [
+    {
+      "productId": "150018"
+    },
+    {
+      "productId": "150019"
+    },
+    {
+      "productId": "150020"
+    },
+    {
+      "productId": "150021"
+    },
+    {
+      "productId": "150022"
+    }
+  ],
+  "messages": [],
+  "stdout": "productId\n150018\n150019\n150020\n150021\n150022\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

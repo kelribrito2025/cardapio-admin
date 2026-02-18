@@ -1,0 +1,40 @@
+{
+  "query": "SELECT cg.productId, cg.maxQuantity, p.name, p.status FROM complementGroups cg JOIN products p ON p.id = cg.productId WHERE cg.name = 'Adicionais' AND cg.maxQuantity = 50 ORDER BY cg.productId LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.productId, cg.maxQuantity, p.name, p.status FROM complementGroups cg JOIN products p ON p.id = cg.productId WHERE cg.name = 'Adicionais' AND cg.maxQuantity = 50 ORDER BY cg.productId LIMIT 5;",
+  "rows": [
+    {
+      "productId": "150018",
+      "maxQuantity": "50",
+      "name": "Dog Duplo",
+      "status": "active"
+    },
+    {
+      "productId": "150019",
+      "maxQuantity": "50",
+      "name": "Dog frango",
+      "status": "active"
+    },
+    {
+      "productId": "150020",
+      "maxQuantity": "50",
+      "name": "Dog bacon",
+      "status": "active"
+    },
+    {
+      "productId": "150021",
+      "maxQuantity": "50",
+      "name": "Dog Calabresa",
+      "status": "active"
+    },
+    {
+      "productId": "150022",
+      "maxQuantity": "50",
+      "name": "Big Lanche",
+      "status": "active"
+    }
+  ],
+  "messages": [],
+  "stdout": "productId\tmaxQuantity\tname\tstatus\n150018\t50\tDog Duplo\tactive\n150019\t50\tDog frango\tactive\n150020\t50\tDog bacon\tactive\n150021\t50\tDog Calabresa\tactive\n150022\t50\tBig Lanche\tactive\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

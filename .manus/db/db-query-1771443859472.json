@@ -1,0 +1,28 @@
+{
+  "query": "SELECT cg.productId, p.name as productName, cg.id as groupId, cg.maxQuantity\nFROM complementGroups cg \nJOIN products p ON p.id = cg.productId \nWHERE p.establishmentId = 60018 AND cg.name = 'Adicionais' AND cg.maxQuantity = 50\nLIMIT 3;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.productId, p.name as productName, cg.id as groupId, cg.maxQuantity\nFROM complementGroups cg \nJOIN products p ON p.id = cg.productId \nWHERE p.establishmentId = 60018 AND cg.name = 'Adicionais' AND cg.maxQuantity = 50\nLIMIT 3;",
+  "rows": [
+    {
+      "productId": "150018",
+      "productName": "Dog Duplo",
+      "groupId": "60004",
+      "maxQuantity": "50"
+    },
+    {
+      "productId": "150019",
+      "productName": "Dog frango",
+      "groupId": "60006",
+      "maxQuantity": "50"
+    },
+    {
+      "productId": "150020",
+      "productName": "Dog bacon",
+      "groupId": "60008",
+      "maxQuantity": "50"
+    }
+  ],
+  "messages": [],
+  "stdout": "productId\tproductName\tgroupId\tmaxQuantity\n150018\tDog Duplo\t60004\t50\n150019\tDog frango\t60006\t50\n150020\tDog bacon\t60008\t50\n",
+  "stderr": "",
+  "execution_time_ms": 70
+}

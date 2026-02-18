@@ -1,0 +1,28 @@
+{
+  "query": "SELECT cg.id, cg.name, cg.maxQuantity, \n       (SELECT COUNT(*) FROM complementItems ci WHERE ci.groupId = cg.id AND ci.isActive = 1) as activeItems\nFROM complementGroups cg \nJOIN products p ON p.id = cg.productId \nWHERE p.establishmentId = 60018 AND cg.name = 'Adicionais' AND cg.maxQuantity >= 50\nLIMIT 3;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.id, cg.name, cg.maxQuantity, \n       (SELECT COUNT(*) FROM complementItems ci WHERE ci.groupId = cg.id AND ci.isActive = 1) as activeItems\nFROM complementGroups cg \nJOIN products p ON p.id = cg.productId \nWHERE p.establishmentId = 60018 AND cg.name = 'Adicionais' AND cg.maxQuantity >= 50\nLIMIT 3;",
+  "rows": [
+    {
+      "id": "60008",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "activeItems": "18"
+    },
+    {
+      "id": "60006",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "activeItems": "18"
+    },
+    {
+      "id": "60004",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "activeItems": "18"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tmaxQuantity\tactiveItems\n60008\tAdicionais \t50\t18\n60006\tAdicionais \t50\t18\n60004\tAdicionais \t50\t18\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}

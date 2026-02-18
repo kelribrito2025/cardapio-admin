@@ -1,0 +1,170 @@
+{
+  "query": "SELECT cg.id, cg.name, cg.minQuantity, cg.maxQuantity, cg.productId, \n       (SELECT COUNT(*) FROM complementItems ci WHERE ci.groupId = cg.id AND ci.isActive = 1) as activeItemCount\nFROM complementGroups cg \nJOIN products p ON p.id = cg.productId \nWHERE p.establishmentId = 60018 AND cg.name LIKE '%Adicionais%'\nLIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.id, cg.name, cg.minQuantity, cg.maxQuantity, cg.productId, \n       (SELECT COUNT(*) FROM complementItems ci WHERE ci.groupId = cg.id AND ci.isActive = 1) as activeItemCount\nFROM complementGroups cg \nJOIN products p ON p.id = cg.productId \nWHERE p.establishmentId = 60018 AND cg.name LIKE '%Adicionais%'\nLIMIT 20;",
+  "rows": [
+    {
+      "id": "60010",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150021",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60018",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150025",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60008",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150020",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60016",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150024",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60024",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150028",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60036",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "19",
+      "productId": "150034",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60034",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150033",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60004",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150018",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60028",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150030",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60042",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150037",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60032",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150032",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60038",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150035",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60006",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150019",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60026",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150029",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60014",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150023",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60040",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150036",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60012",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150022",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60030",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150031",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60020",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150026",
+      "activeItemCount": "18"
+    },
+    {
+      "id": "60022",
+      "name": "Adicionais ",
+      "minQuantity": "0",
+      "maxQuantity": "50",
+      "productId": "150027",
+      "activeItemCount": "18"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tminQuantity\tmaxQuantity\tproductId\tactiveItemCount\n60010\tAdicionais \t0\t50\t150021\t18\n60018\tAdicionais \t0\t50\t150025\t18\n60008\tAdicionais \t0\t50\t150020\t18\n60016\tAdicionais \t0\t50\t150024\t18\n60024\tAdicionais \t0\t50\t150028\t18\n60036\tAdicionais \t0\t19\t150034\t18\n60034\tAdicionais \t0\t50\t150033\t18\n60004\tAdicionais \t0\t50\t150018\t18\n60028\tAdicionais \t0\t50\t150030\t18\n60042\tAdicionais \t0\t50\t150037\t18\n60032\tAdicionais \t0\t50\t150032\t18\n60038\tAdicionais \t0\t50\t150035\t18\n60006\tAdicionais \t0\t50\t150019\t18\n60026\tAdicionais \t0\t50\t150029\t18\n60014\tAdicionais \t0\t50\t150023\t18\n60040\tAdicionais \t0\t50\t150036\t18\n60012\tAdicionais \t0\t50\t150022\t18\n60030\tAdicionais \t0\t50\t150031\t18\n60020\tAdicionais \t0\t50\t150026\t18\n60022\tAdicionais \t0\t50\t150027\t18\n",
+  "stderr": "",
+  "execution_time_ms": 133
+}

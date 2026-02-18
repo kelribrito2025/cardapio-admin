@@ -1,0 +1,90 @@
+{
+  "query": "SELECT cg.id as groupId, cg.name as groupName, cg.maxQuantity, cg.productId, p.name as productName,\n       (SELECT COUNT(*) FROM complementItems ci WHERE ci.groupId = cg.id AND ci.isActive = 1) as activeItemsCount\nFROM complementGroups cg \nJOIN products p ON p.id = cg.productId \nWHERE p.establishmentId = 60018 AND cg.name = 'Adicionais'\nORDER BY cg.maxQuantity DESC\nLIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.id as groupId, cg.name as groupName, cg.maxQuantity, cg.productId, p.name as productName,\n       (SELECT COUNT(*) FROM complementItems ci WHERE ci.groupId = cg.id AND ci.isActive = 1) as activeItemsCount\nFROM complementGroups cg \nJOIN products p ON p.id = cg.productId \nWHERE p.establishmentId = 60018 AND cg.name = 'Adicionais'\nORDER BY cg.maxQuantity DESC\nLIMIT 10;",
+  "rows": [
+    {
+      "groupId": "60016",
+      "groupName": "Adicionais ",
+      "maxQuantity": "50",
+      "productId": "150024",
+      "productName": "Big frango",
+      "activeItemsCount": "18"
+    },
+    {
+      "groupId": "60004",
+      "groupName": "Adicionais ",
+      "maxQuantity": "50",
+      "productId": "150018",
+      "productName": "Dog Duplo",
+      "activeItemsCount": "18"
+    },
+    {
+      "groupId": "60006",
+      "groupName": "Adicionais ",
+      "maxQuantity": "50",
+      "productId": "150019",
+      "productName": "Dog frango",
+      "activeItemsCount": "18"
+    },
+    {
+      "groupId": "60014",
+      "groupName": "Adicionais ",
+      "maxQuantity": "50",
+      "productId": "150023",
+      "productName": "Big burguer",
+      "activeItemsCount": "18"
+    },
+    {
+      "groupId": "60012",
+      "groupName": "Adicionais ",
+      "maxQuantity": "50",
+      "productId": "150022",
+      "productName": "Big Lanche",
+      "activeItemsCount": "18"
+    },
+    {
+      "groupId": "60022",
+      "groupName": "Adicionais ",
+      "maxQuantity": "50",
+      "productId": "150027",
+      "productName": "Big Calabresa",
+      "activeItemsCount": "18"
+    },
+    {
+      "groupId": "60020",
+      "groupName": "Adicionais ",
+      "maxQuantity": "50",
+      "productId": "150026",
+      "productName": "Big bacon",
+      "activeItemsCount": "18"
+    },
+    {
+      "groupId": "60010",
+      "groupName": "Adicionais ",
+      "maxQuantity": "50",
+      "productId": "150021",
+      "productName": "Dog Calabresa",
+      "activeItemsCount": "18"
+    },
+    {
+      "groupId": "60018",
+      "groupName": "Adicionais ",
+      "maxQuantity": "50",
+      "productId": "150025",
+      "productName": "Big frango com Catupiry",
+      "activeItemsCount": "18"
+    },
+    {
+      "groupId": "60008",
+      "groupName": "Adicionais ",
+      "maxQuantity": "50",
+      "productId": "150020",
+      "productName": "Dog bacon",
+      "activeItemsCount": "18"
+    }
+  ],
+  "messages": [],
+  "stdout": "groupId\tgroupName\tmaxQuantity\tproductId\tproductName\tactiveItemsCount\n60016\tAdicionais \t50\t150024\tBig frango\t18\n60004\tAdicionais \t50\t150018\tDog Duplo\t18\n60006\tAdicionais \t50\t150019\tDog frango\t18\n60014\tAdicionais \t50\t150023\tBig burguer\t18\n60012\tAdicionais \t50\t150022\tBig Lanche\t18\n60022\tAdicionais \t50\t150027\tBig Calabresa\t18\n60020\tAdicionais \t50\t150026\tBig bacon\t18\n60010\tAdicionais \t50\t150021\tDog Calabresa\t18\n60018\tAdicionais \t50\t150025\tBig frango com Catupiry\t18\n60008\tAdicionais \t50\t150020\tDog bacon\t18\n",
+  "stderr": "",
+  "execution_time_ms": 71
+}
