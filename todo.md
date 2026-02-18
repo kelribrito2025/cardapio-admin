@@ -7187,3 +7187,4 @@
 - [x] Uniformizar cor verde nos gráficos (Comparação Mensal + Evolução Financeira) com o verde da barra Menu Público
 - [x] Uniformizar cor vermelha nos gráficos (Comparação Mensal + Evolução Financeira) com o vermelho da borda dos cards Lançamentos Futuros
 - [x] Aplicar gradiente (degradê de baixo para cima) nas barras do gráfico de Comparação Mensal igual ao de Evolução Financeira
+- [x] Substituir window.confirm por modal do sistema ao excluir gastos registrados

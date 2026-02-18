@@ -76,6 +76,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const periodOptions = [
   { value: "today" as const, label: "Hoje" },
@@ -1228,6 +1238,16 @@ export default function Financas() {
   const [historyRecurringId, setHistoryRecurringId] = useState<number | null>(null);
   const [customGoalModalOpen, setCustomGoalModalOpen] = useState(false);
   const [editingCustomGoal, setEditingCustomGoal] = useState<any>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteConfirmMessage, setDeleteConfirmMessage] = useState('');
+  const [deleteConfirmAction, setDeleteConfirmAction] = useState<(() => void) | null>(null);
+
+  const showDeleteConfirm = useCallback((message: string, action: () => void) => {
+    setDeleteConfirmMessage(message);
+    setDeleteConfirmAction(() => action);
+    setDeleteConfirmOpen(true);
+  }, []);
+
   const [payConfirmOpen, setPayConfirmOpen] = useState(false);
   const [payConfirmItem, setPayConfirmItem] = useState<any>(null);
   const [payConfirmAmount, setPayConfirmAmount] = useState('');
@@ -2027,9 +2047,9 @@ export default function Financas() {
                       className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-red-100 dark:hover:bg-red-500/20 shrink-0"
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (confirm('Remover esta meta?')) {
+                        showDeleteConfirm('Remover esta meta?', () => {
                           deleteCustomGoalMutation.mutate({ id: cGoal.id, establishmentId: establishmentId! });
-                        }
+                        });
                       }}
                     >
                       <Trash2 className="h-3 w-3 text-red-500" />
@@ -2620,13 +2640,12 @@ export default function Financas() {
                             size="icon"
                             className="h-8 w-8 text-muted-foreground hover:text-destructive"
                             onClick={() => {
-                              if (
-                                confirm(
-                                  "Tem certeza que deseja excluir esta despesa?"
-                                )
-                              ) {
-                                deleteMutation.mutate({ id: expense.id });
-                              }
+                              showDeleteConfirm(
+                                "Tem certeza que deseja excluir esta despesa?",
+                                () => {
+                                  deleteMutation.mutate({ id: expense.id });
+                                }
+                              );
                             }}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -2695,11 +2714,9 @@ export default function Financas() {
                         size="icon"
                         className="h-7 w-7 text-muted-foreground hover:text-destructive"
                         onClick={() => {
-                          if (
-                            confirm("Excluir esta despesa?")
-                          ) {
+                          showDeleteConfirm("Excluir esta despesa?", () => {
                             deleteMutation.mutate({ id: expense.id });
-                          }
+                          });
                         }}
                       >
                         <Trash2 className="h-3 w-3" />
@@ -3049,13 +3066,13 @@ export default function Financas() {
                                   size="icon"
                                   className="h-8 w-8 text-muted-foreground hover:text-destructive"
                                   onClick={() => {
-                                    if (confirm("Excluir esta recorrência? Os lançamentos já gerados serão mantidos.")) {
+                                    showDeleteConfirm("Excluir esta recorrência? Os lançamentos já gerados serão mantidos.", () => {
                                       deleteRecurringMutation.mutate({
                                         id: rec.id,
                                         establishmentId: establishmentId!,
                                         deleteFutureExpenses: false,
                                       });
-                                    }
+                                    });
                                   }}
                                 >
                                   <Trash2 className="h-3.5 w-3.5" />
@@ -3169,13 +3186,13 @@ export default function Financas() {
                               size="icon"
                               className="h-7 w-7 text-muted-foreground hover:text-destructive"
                               onClick={() => {
-                                if (confirm("Excluir esta recorrência? Os lançamentos já gerados serão mantidos.")) {
+                                showDeleteConfirm("Excluir esta recorrência? Os lançamentos já gerados serão mantidos.", () => {
                                   deleteRecurringMutation.mutate({
                                     id: rec.id,
                                     establishmentId: establishmentId!,
                                     deleteFutureExpenses: false,
                                   });
-                                }
+                                });
                               }}
                             >
                               <Trash2 className="h-3 w-3" />
@@ -3366,6 +3383,35 @@ export default function Financas() {
           </Dialog>
         </>
       )}
+      {/* Delete Confirmation Modal */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteConfirmMessage}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setDeleteConfirmOpen(false);
+              setDeleteConfirmAction(null);
+            }}>
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-500 hover:bg-red-600 text-white"
+              onClick={() => {
+                deleteConfirmAction?.();
+                setDeleteConfirmOpen(false);
+                setDeleteConfirmAction(null);
+              }}
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminLayout>
   );
 }
