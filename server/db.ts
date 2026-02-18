@@ -44,7 +44,8 @@ import {
   expenseCategories, InsertExpenseCategory, ExpenseCategory,
   expenses, InsertExpense, Expense,
   monthlyGoals, InsertMonthlyGoal, MonthlyGoal,
-  recurringExpenses, InsertRecurringExpense, RecurringExpense
+  recurringExpenses, InsertRecurringExpense, RecurringExpense,
+  recurringExpenseHistory, InsertRecurringExpenseHistoryEntry
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -8594,6 +8595,46 @@ export async function updateRecurringExpense(id: number, establishmentId: number
   const db = await getDb();
   if (!db) return false;
   
+  // Fetch current values before update to record history
+  const [current] = await db.select()
+    .from(recurringExpenses)
+    .where(and(
+      eq(recurringExpenses.id, id),
+      eq(recurringExpenses.establishmentId, establishmentId)
+    ));
+  
+  if (current) {
+    const fieldLabels: Record<string, string> = {
+      description: 'Descrição',
+      amount: 'Valor',
+      frequency: 'Frequência',
+      executionDay: 'Dia de execução',
+      executionMonth: 'Mês de execução',
+      paymentMethod: 'Forma de pagamento',
+      categoryId: 'Categoria',
+      active: 'Status',
+      notes: 'Observações',
+    };
+    
+    const trackedFields = ['description', 'amount', 'frequency', 'executionDay', 'executionMonth', 'paymentMethod', 'categoryId', 'active', 'notes'] as const;
+    
+    for (const field of trackedFields) {
+      if (data[field] !== undefined) {
+        const oldVal = String(current[field] ?? '');
+        const newVal = String(data[field] ?? '');
+        if (oldVal !== newVal) {
+          await db.insert(recurringExpenseHistory).values({
+            recurringExpenseId: id,
+            establishmentId,
+            field: fieldLabels[field] || field,
+            oldValue: oldVal,
+            newValue: newVal,
+          });
+        }
+      }
+    }
+  }
+  
   await db.update(recurringExpenses)
     .set(data)
     .where(and(
@@ -8601,6 +8642,19 @@ export async function updateRecurringExpense(id: number, establishmentId: number
       eq(recurringExpenses.establishmentId, establishmentId)
     ));
   return true;
+}
+
+export async function getRecurringExpenseHistory(recurringExpenseId: number, establishmentId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select()
+    .from(recurringExpenseHistory)
+    .where(and(
+      eq(recurringExpenseHistory.recurringExpenseId, recurringExpenseId),
+      eq(recurringExpenseHistory.establishmentId, establishmentId)
+    ))
+    .orderBy(desc(recurringExpenseHistory.changedAt));
 }
 
 export async function deleteRecurringExpense(id: number, establishmentId: number) {

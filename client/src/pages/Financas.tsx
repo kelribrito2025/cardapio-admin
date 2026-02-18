@@ -37,6 +37,7 @@ import {
   Package,
   ShieldCheck,
   Wrench,
+  History,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -1105,6 +1106,8 @@ export default function Financas() {
   const [revenuePage, setRevenuePage] = useState(0);
   const [pageInput, setPageInput] = useState("");
   const [revenuePageInput, setRevenuePageInput] = useState("");
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [historyRecurringId, setHistoryRecurringId] = useState<number | null>(null);
 
   useEffect(() => {
     if (establishment) setEstablishmentId(establishment.id);
@@ -1238,6 +1241,19 @@ export default function Financas() {
   const { data: upcomingRecurring } = trpc.finance.upcomingRecurring.useQuery(
     recurringInput,
     { enabled: !!establishmentId }
+  );
+
+  // Recurring expense history query
+  const historyInput = useMemo(
+    () => ({
+      recurringExpenseId: historyRecurringId!,
+      establishmentId: establishmentId!,
+    }),
+    [historyRecurringId, establishmentId]
+  );
+  const { data: recurringHistory } = trpc.finance.recurringHistory.useQuery(
+    historyInput,
+    { enabled: !!historyRecurringId && !!establishmentId && historyModalOpen }
   );
 
   // Daily revenue query
@@ -2614,22 +2630,34 @@ export default function Financas() {
                             <td className="py-3 px-2 text-right">
                               <div className="flex items-center justify-end gap-1">
                                 <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                  title="Editar"
-                                  onClick={() => {
-                                    setEditingRecurring(rec);
-                                    setRecurringEditModalOpen(true);
-                                  }}
-                                >
-                                  <Edit2 className="h-3.5 w-3.5" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                  title={rec.active ? "Pausar" : "Ativar"}
+                                   variant="ghost"
+                                   size="icon"
+                                   className="h-8 w-8"
+                                   title="Histórico"
+                                   onClick={() => {
+                                     setHistoryRecurringId(rec.id);
+                                     setHistoryModalOpen(true);
+                                   }}
+                                 >
+                                   <History className="h-3.5 w-3.5" />
+                                 </Button>
+                                 <Button
+                                   variant="ghost"
+                                   size="icon"
+                                   className="h-8 w-8"
+                                   title="Editar"
+                                   onClick={() => {
+                                     setEditingRecurring(rec);
+                                     setRecurringEditModalOpen(true);
+                                   }}
+                                 >
+                                   <Edit2 className="h-3.5 w-3.5" />
+                                 </Button>
+                                 <Button
+                                   variant="ghost"
+                                   size="icon"
+                                   className="h-8 w-8"
+                                   title={rec.active ? "Pausar" : "Ativar"}
                                   onClick={() => {
                                     toggleRecurringMutation.mutate({
                                       id: rec.id,
@@ -2723,21 +2751,33 @@ export default function Financas() {
                           <div className="flex items-center gap-1">
                             <Button
                               variant="ghost"
-                              size="icon"
-                              className="h-7 w-7"
-                              title="Editar"
-                              onClick={() => {
-                                setEditingRecurring(rec);
-                                setRecurringEditModalOpen(true);
-                              }}
-                            >
-                              <Edit2 className="h-3 w-3" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7"
-                              title={rec.active ? "Pausar" : "Ativar"}
+                               size="icon"
+                               className="h-7 w-7"
+                               title="Histórico"
+                               onClick={() => {
+                                 setHistoryRecurringId(rec.id);
+                                 setHistoryModalOpen(true);
+                               }}
+                             >
+                               <History className="h-3 w-3" />
+                             </Button>
+                             <Button
+                               variant="ghost"
+                               size="icon"
+                               className="h-7 w-7"
+                               title="Editar"
+                               onClick={() => {
+                                 setEditingRecurring(rec);
+                                 setRecurringEditModalOpen(true);
+                               }}
+                             >
+                               <Edit2 className="h-3 w-3" />
+                             </Button>
+                             <Button
+                               variant="ghost"
+                               size="icon"
+                               className="h-7 w-7"
+                               title={rec.active ? "Pausar" : "Ativar"}
                               onClick={() => {
                                 toggleRecurringMutation.mutate({
                                   id: rec.id,
@@ -2816,6 +2856,47 @@ export default function Financas() {
             recurring={editingRecurring}
             onSuccess={invalidateAll}
           />
+          {/* Histórico de alterações modal */}
+          <Dialog open={historyModalOpen} onOpenChange={setHistoryModalOpen}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <History className="h-5 w-5 text-muted-foreground" />
+                  Histórico de alterações
+                </DialogTitle>
+              </DialogHeader>
+              <div className="max-h-[400px] overflow-y-auto">
+                {recurringHistory && recurringHistory.length > 0 ? (
+                  <div className="space-y-3">
+                    {recurringHistory.map((entry: any) => (
+                      <div key={entry.id} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                        <div className="mt-0.5 h-2 w-2 rounded-full bg-primary flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-sm font-medium">{entry.field}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(entry.changedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <div className="mt-1 flex items-center gap-2 text-sm">
+                            <span className="text-red-500 line-through">{entry.oldValue || '(vazio)'}</span>
+                            <span className="text-muted-foreground">→</span>
+                            <span className="text-emerald-600 font-medium">{entry.newValue || '(vazio)'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <History className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">Nenhuma alteração registrada.</p>
+                    <p className="text-xs mt-1">O histórico aparecerá quando você editar esta despesa recorrente.</p>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
           <GoalModal
             open={goalModalOpen}
             onOpenChange={setGoalModalOpen}

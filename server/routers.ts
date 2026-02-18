@@ -5458,6 +5458,15 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    recurringHistory: protectedProcedure
+      .input(z.object({
+        recurringExpenseId: z.number(),
+        establishmentId: z.number(),
+      }))
+      .query(async ({ input }) => {
+        return db.getRecurringExpenseHistory(input.recurringExpenseId, input.establishmentId);
+      }),
+
     deleteRecurring: protectedProcedure
       .input(z.object({
         id: z.number(),

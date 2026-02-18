@@ -7146,3 +7146,11 @@
 - [x] Analisar como o card de Lançamentos futuros busca dados atualmente
 - [x] Ajustar para incluir despesas avulsas registradas com data futura no card
 - [x] Total comprometido já inclui tanto recorrentes quanto avulsas futuras (calculado no frontend)
+
+## Histórico de alterações em despesas recorrentes
+- [x] Criar tabela recurringExpenseHistory no schema (campo alterado, valor anterior, valor novo, data)
+- [x] Rodar migration (pnpm db:push)
+- [x] Criar funções no db.ts para inserir e listar histórico
+- [x] Integrar registro de histórico na mutation updateRecurring
+- [x] Criar procedure para listar histórico de uma despesa recorrente
+- [x] Criar UI para visualizar histórico (modal com botão History)

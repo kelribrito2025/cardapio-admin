@@ -944,3 +944,17 @@ export const recurringExpenses = mysqlTable("recurringExpenses", {
 
 export type RecurringExpense = typeof recurringExpenses.$inferSelect;
 export type InsertRecurringExpense = typeof recurringExpenses.$inferInsert;
+
+// Histórico de alterações em despesas recorrentes
+export const recurringExpenseHistory = mysqlTable("recurringExpenseHistory", {
+  id: int("id").autoincrement().primaryKey(),
+  recurringExpenseId: int("recurringExpenseId").notNull(),
+  establishmentId: int("establishmentId").notNull(),
+  field: varchar("field", { length: 100 }).notNull(), // campo alterado (amount, frequency, description, etc.)
+  oldValue: varchar("oldValue", { length: 500 }).notNull(),
+  newValue: varchar("newValue", { length: 500 }).notNull(),
+  changedAt: timestamp("changedAt").defaultNow().notNull(),
+});
+
+export type RecurringExpenseHistoryEntry = typeof recurringExpenseHistory.$inferSelect;
+export type InsertRecurringExpenseHistoryEntry = typeof recurringExpenseHistory.$inferInsert;
