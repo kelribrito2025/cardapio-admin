@@ -7188,3 +7188,5 @@
 - [x] Uniformizar cor vermelha nos gráficos (Comparação Mensal + Evolução Financeira) com o vermelho da borda dos cards Lançamentos Futuros
 - [x] Aplicar gradiente (degradê de baixo para cima) nas barras do gráfico de Comparação Mensal igual ao de Evolução Financeira
 - [x] Substituir window.confirm por modal do sistema ao excluir gastos registrados
+- [x] Alterar rótulo 'Lucro máximo' para 'Excelente' na barra de saúde financeira do card Indicadores
+- [x] Adicionar indicador 'Boa' no meio da barra de saúde financeira

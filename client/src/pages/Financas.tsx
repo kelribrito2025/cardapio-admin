@@ -1088,7 +1088,8 @@ function FinancialHealthIndicator({
         </div>
         <div className="flex justify-between mt-1">
           <span className="text-[11px] text-muted-foreground">Prejuízo</span>
-          <span className="text-[11px] text-muted-foreground">Lucro máximo</span>
+          <span className="text-[11px] text-muted-foreground">Boa</span>
+          <span className="text-[11px] text-muted-foreground">Excelente</span>
         </div>
       </div>
 
