@@ -7213,3 +7213,8 @@
 - [x] Corrigir texto unicode quebrado 'Saldo disponível' no bottom sheet de cashback
 - [x] Trocar cores azuis do cashback para vermelho (mesma cor do modal de entrega)
 - [x] Alterar cabeçalho do bottom sheet de cashback para mesmo padrão do 'Meus Pedidos' (fundo vermelho, texto branco)
+- [x] Adicionar variáveis cashbackEarned e cashbackTotal ao template de mensagem de pedido finalizado
+- [x] Lógica de envio: só incluir bloco de cashback se cashback ativo e valor > 0
+- [x] Garantir saldo atualizado antes do envio da mensagem (transação no banco)
+- [x] Formatar valores com 2 casas decimais e vírgula como separador (padrão BR)
+- [x] Testes vitest para notificação de cashback

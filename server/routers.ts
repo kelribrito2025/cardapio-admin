@@ -1914,6 +1914,28 @@ export const appRouter = router({
                 const establishment = await db.getEstablishmentById(order.establishmentId);
                 const orderItems = await db.getOrderItems(order.id);
                 
+                // Buscar info de cashback se o pedido for completed
+                let cashbackInfo: { cashbackEarned: string; cashbackTotal: string } | null = null;
+                if (input.status === 'completed' && order.customerPhone) {
+                  try {
+                    const estData = await db.getEstablishmentById(order.establishmentId);
+                    if (estData?.cashbackEnabled && estData?.rewardProgramType === 'cashback') {
+                      // Buscar a transação de crédito gerada para este pedido
+                      const cashbackTx = await db.getCashbackTransactionByOrderId(order.id);
+                      if (cashbackTx && parseFloat(cashbackTx.amount) > 0) {
+                        // Buscar saldo atualizado do cliente
+                        const balance = await db.getCashbackBalance(order.establishmentId, order.customerPhone);
+                        cashbackInfo = {
+                          cashbackEarned: cashbackTx.amount,
+                          cashbackTotal: balance?.balance || '0.00',
+                        };
+                      }
+                    }
+                  } catch (cbErr) {
+                    console.error('[WhatsApp] Erro ao buscar cashback info:', cbErr);
+                  }
+                }
+                
                 await sendOrderStatusNotification(
                   config.instanceToken,
                   order.customerPhone,
@@ -1943,6 +1965,7 @@ export const appRouter = router({
                     })),
                     orderTotal: order.total,
                     paymentMethod: order.paymentMethod,
+                    cashbackInfo,
                   }
                 );
               }

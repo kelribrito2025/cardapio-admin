@@ -434,7 +434,11 @@ export function generateStatusMessage(
     isScheduled: boolean;
     scheduledDate: string;
     scheduledTime: string;
-  }
+  },
+  cashbackInfo?: {
+    cashbackEarned: string;
+    cashbackTotal: string;
+  } | null
 ): string {
   // Default templates
   const defaultTemplates: Record<string, string> = {
@@ -540,13 +544,42 @@ export function generateStatusMessage(
     schedulingText = `\n\n📅 *Pedido Agendado*\n📆 Data: ${schedulingInfo.scheduledDate}\n⏰ Horário: ${schedulingInfo.scheduledTime}`;
   }
   
-  return messageTemplate
+  // Gerar bloco de cashback se disponível e status for completed
+  let cashbackText = '';
+  if (status === 'completed' && cashbackInfo && parseFloat(cashbackInfo.cashbackEarned) > 0) {
+    const earned = parseFloat(cashbackInfo.cashbackEarned).toFixed(2).replace('.', ',');
+    const total = parseFloat(cashbackInfo.cashbackTotal).toFixed(2).replace('.', ',');
+    cashbackText = `\n\n💰 *Cashback*\nCashback ganho: R$${earned}\nCashback acumulado: R$${total}`;
+  }
+  
+  // Substituir variáveis de cashback no template (se o template usar as variáveis)
+  if (cashbackInfo) {
+    const earned = parseFloat(cashbackInfo.cashbackEarned).toFixed(2).replace('.', ',');
+    const total = parseFloat(cashbackInfo.cashbackTotal).toFixed(2).replace('.', ',');
+    messageTemplate = messageTemplate
+      .replace(/{{cashbackEarned}}/g, `R$${earned}`)
+      .replace(/{{cashbackTotal}}/g, `R$${total}`);
+  } else {
+    // Remover variáveis de cashback se não houver dados
+    messageTemplate = messageTemplate
+      .replace(/{{cashbackEarned}}/g, '')
+      .replace(/{{cashbackTotal}}/g, '');
+  }
+  
+  let result = messageTemplate
     .replace(/{{customerName}}/g, customerName)
     .replace(/{{orderNumber}}/g, orderNumber)
     .replace(/{{establishmentName}}/g, establishmentName)
     .replace(/{{itensPedido}}/g, itensPedidoText)
     .replace(/{{agendamento}}/g, schedulingText)
     + (schedulingInfo?.isScheduled && !messageTemplate.includes('{{agendamento}}') ? schedulingText : '');
+  
+  // Append cashback block if template doesn't use {{cashbackEarned}} variable
+  if (status === 'completed' && cashbackInfo && parseFloat(cashbackInfo.cashbackEarned) > 0 && !template?.includes('{{cashbackEarned}}')) {
+    result += cashbackText;
+  }
+  
+  return result;
 }
 
 /**
@@ -579,6 +612,10 @@ export async function sendOrderStatusNotification(
       scheduledDate: string;
       scheduledTime: string;
     };
+    cashbackInfo?: {
+      cashbackEarned: string;
+      cashbackTotal: string;
+    } | null;
   }
 ): Promise<SendTextResponse> {
   const message = generateStatusMessage(
@@ -593,7 +630,8 @@ export async function sendOrderStatusNotification(
     data.orderTotal,
     data.timezone,
     data.paymentMethod,
-    data.schedulingInfo
+    data.schedulingInfo,
+    data.cashbackInfo
   );
   
   return sendTextMessage(instanceToken, phone, message);

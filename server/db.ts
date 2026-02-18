@@ -9877,3 +9877,20 @@ export async function processCashbackForCompletedOrder(orderId: number): Promise
     console.error('[Cashback] Erro ao processar cashback:', error);
   }
 }
+
+/**
+ * Busca a transação de crédito de cashback gerada para um pedido específico
+ */
+export async function getCashbackTransactionByOrderId(orderId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(cashbackTransactions)
+    .where(and(
+      eq(cashbackTransactions.orderId, orderId),
+      eq(cashbackTransactions.type, "credit")
+    ))
+    .limit(1);
+  
+  return result[0] || null;
+}
