@@ -1155,7 +1155,7 @@ function EvolutionBarChart({ data }: { data: { label: string; revenue: number; e
                 />
                 {/* Expenses bar */}
                 <div
-                  className="flex-1 rounded-t-md bg-red-400 transition-all duration-300"
+                  className="flex-1 rounded-t-md bg-red-500 transition-all duration-300"
                   style={{ height: `${Math.max(expenseH, 3)}%` }}
                 />
                 {/* Profit bar */}
@@ -1182,7 +1182,7 @@ function EvolutionBarChart({ data }: { data: { label: string; revenue: number; e
                     <span className="font-semibold">{formatCurrency(item.revenue)}</span>
                   </div>
                   <div className="flex items-center gap-1.5 mb-0.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
                     <span>Despesas:</span>
                     <span className="font-semibold">{formatCurrency(item.expenses)}</span>
                   </div>
@@ -1723,7 +1723,7 @@ export default function Financas() {
                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.02} />
                   </linearGradient>
                   <linearGradient id="gradExpenses" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#f87171" stopOpacity={0.9} />
+                    <stop offset="0%" stopColor="#ef4444" stopOpacity={0.9} />
                     <stop offset="100%" stopColor="#ef4444" stopOpacity={0.6} />
                   </linearGradient>
                 </defs>
@@ -1805,11 +1805,11 @@ export default function Financas() {
             {/* Legend tags */}
             <div className="flex items-center gap-3 text-xs">
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                 <span className="text-muted-foreground">Receitas</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
                 <span className="text-muted-foreground">Despesas</span>
               </div>
             </div>
@@ -1851,14 +1851,14 @@ export default function Financas() {
                 <Bar
                   dataKey="receitas"
                   name="Receitas"
-                  fill="#86efac"
+                  fill="#10b981"
                   radius={[4, 4, 0, 0]}
                   barSize={32}
                 />
                 <Bar
                   dataKey="despesas"
                   name="Despesas"
-                  fill="#fca5a5"
+                  fill="#ef4444"
                   radius={[4, 4, 0, 0]}
                   barSize={32}
                 />
