@@ -362,7 +362,13 @@ export default function Estoque() {
         {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {/* Total */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-blue-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+          <div
+            onClick={() => setStatusFilter(statusFilter === "all" ? "all" : "all")}
+            className={cn(
+              "bg-card rounded-xl p-5 border border-t-4 border-t-blue-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer select-none",
+              statusFilter === "all" ? "border-blue-500 ring-2 ring-blue-500/30 shadow-md" : "border-border/50"
+            )}
+          >
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Total</p>
@@ -377,7 +383,13 @@ export default function Estoque() {
             </div>
           </div>
           {/* OK */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-green-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+          <div
+            onClick={() => setStatusFilter(statusFilter === "ok" ? "all" : "ok")}
+            className={cn(
+              "bg-card rounded-xl p-5 border border-t-4 border-t-green-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer select-none",
+              statusFilter === "ok" ? "border-green-500 ring-2 ring-green-500/30 shadow-md" : "border-border/50"
+            )}
+          >
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">OK</p>
@@ -392,7 +404,13 @@ export default function Estoque() {
             </div>
           </div>
           {/* Baixo */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-yellow-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+          <div
+            onClick={() => setStatusFilter(statusFilter === "low" ? "all" : "low")}
+            className={cn(
+              "bg-card rounded-xl p-5 border border-t-4 border-t-yellow-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer select-none",
+              statusFilter === "low" ? "border-yellow-500 ring-2 ring-yellow-500/30 shadow-md" : "border-border/50"
+            )}
+          >
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Baixo</p>
@@ -407,7 +425,13 @@ export default function Estoque() {
             </div>
           </div>
           {/* Crítico */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-orange-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+          <div
+            onClick={() => setStatusFilter(statusFilter === "critical" ? "all" : "critical")}
+            className={cn(
+              "bg-card rounded-xl p-5 border border-t-4 border-t-orange-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer select-none",
+              statusFilter === "critical" ? "border-orange-500 ring-2 ring-orange-500/30 shadow-md" : "border-border/50"
+            )}
+          >
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Crítico</p>
@@ -422,7 +446,13 @@ export default function Estoque() {
             </div>
           </div>
           {/* Em falta */}
-          <div className="bg-card rounded-xl p-5 border border-border/50 border-t-4 border-t-red-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+          <div
+            onClick={() => setStatusFilter(statusFilter === "out_of_stock" ? "all" : "out_of_stock")}
+            className={cn(
+              "bg-card rounded-xl p-5 border border-t-4 border-t-red-500 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer select-none",
+              statusFilter === "out_of_stock" ? "border-red-500 ring-2 ring-red-500/30 shadow-md" : "border-border/50"
+            )}
+          >
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Em falta</p>

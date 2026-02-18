@@ -7228,3 +7228,4 @@
 - [x] Bug: dessincronização do maxQuantity entre página de Complementos (fonte da verdade) e edição individual do produto
 - [x] Bug: dados existentes dessincronizados - página de Complementos mostra 50 mas produtos individuais continuam com 18
 - [x] Bug: preços de complementos multiplicados por 100 na edição do produto (ex: R$3,00 aparece como R$300,00) e no menu público
+- [x] Filtro interativo nos cards de status do estoque (OK, Baixo, Crítico, Em Falta) com toggle e sincronização com select
