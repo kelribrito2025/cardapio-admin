@@ -566,6 +566,32 @@ export function generateStatusMessage(
       .replace(/{{cashbackTotal}}/g, '');
   }
   
+  // Gerar bloco de total + pagamento para a variável {{totalPagamento}}
+  let totalPagamentoText = '';
+  if (orderTotal) {
+    totalPagamentoText += `\ud83e\uddfe *Total: R$ ${parseFloat(orderTotal).toFixed(2).replace('.', ',')}*`;
+  }
+  if (paymentMethod) {
+    const paymentLabels2: Record<string, string> = {
+      'pix': 'PIX',
+      'credit': 'Cart\u00e3o',
+      'debit': 'Cart\u00e3o',
+      'card': 'Cart\u00e3o',
+      'credit_card': 'Cart\u00e3o',
+      'debit_card': 'Cart\u00e3o',
+      'cash': 'Dinheiro',
+      'online': 'Cart\u00e3o Online',
+      'credit_online': 'Cart\u00e3o Online',
+      'meal_voucher': 'Vale Refei\u00e7\u00e3o',
+    };
+    const paymentLabel2 = paymentLabels2[paymentMethod] || paymentMethod;
+    if (totalPagamentoText) totalPagamentoText += '\n';
+    totalPagamentoText += `\ud83d\udcb0 Pagamento via: *${paymentLabel2}*`;
+  }
+  
+  // Substituir variável {{totalPagamento}} ou remover se vazia
+  messageTemplate = messageTemplate.replace(/{{totalPagamento}}/g, totalPagamentoText);
+  
   // Limpar linhas em branco consecutivas (mais de 2 quebras de linha seguidas)
   messageTemplate = messageTemplate.replace(/\n{3,}/g, '\n\n');
   

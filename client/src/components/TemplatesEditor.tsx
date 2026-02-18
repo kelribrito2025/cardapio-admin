@@ -129,6 +129,7 @@ const VARIABLES = [
   { name: '{{pickupMessage}}', label: 'Msg retirada/local', description: 'Mensagem automática para retirada ou consumo no local' },
   { name: '{{cancellationReason}}', label: 'Motivo cancelamento', description: 'Razão do cancelamento' },
   { name: '{{itensPedido}}', label: 'Itens do pedido', description: 'Lista de itens do pedido' },
+  { name: '{{totalPagamento}}', label: 'Total + Pagamento', description: 'Exibe o total do pedido e a forma de pagamento' },
   { name: '{{cashbackEarned}}', label: 'Cashback ganho', description: 'Valor de cashback ganho neste pedido' },
   { name: '{{cashbackTotal}}', label: 'Cashback acumulado', description: 'Saldo total de cashback do cliente' },
 ];
@@ -152,6 +153,7 @@ function formatWhatsAppText(text: string): React.ReactNode {
     .replace(/\{\{pickupMessage\}\}/g, 'Você já pode vir retirar. \ud83d\ude04')
     .replace(/\{\{cancellationReason\}\}/g, 'Item indisponível')
     .replace(/\{\{itensPedido\}\}/g, '\u2022 1x Pizza Margherita\n\u2022 1x Refrigerante')
+    .replace(/\{\{totalPagamento\}\}/g, '🧾 Total: R$ 129,00\n💰 Pagamento via: PIX')
     .replace(/\{\{cashbackEarned\}\}/g, 'Cashback ganho: R$0,15')
     .replace(/\{\{cashbackTotal\}\}/g, 'Cashback acumulado: R$0,35')
     .replace(/\{\{mesa\}\}/g, '5')

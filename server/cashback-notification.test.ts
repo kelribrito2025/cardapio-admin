@@ -277,4 +277,98 @@ describe('Cashback WhatsApp Notification', () => {
       expect(dbSource).toContain('foi finalizado');
     });
   });
+
+  describe('{{totalPagamento}} variable', () => {
+    it('should replace {{totalPagamento}} with total and payment method', () => {
+      const template = 'Pedido {{orderNumber}}\n\n{{totalPagamento}}\n\n{{establishmentName}}';
+      const message = generateStatusMessage(
+        'completed',
+        '#100',
+        'Carlos',
+        'Sushi Haruno',
+        template,
+        null,
+        null,
+        [{ productName: 'Pizza', quantity: 1, unitPrice: '50.00', totalPrice: '50.00' }],
+        '129.00',
+        undefined,
+        'pix',
+        undefined,
+        null
+      );
+      
+      expect(message).toContain('Total: R$ 129,00');
+      expect(message).toContain('Pagamento via:');
+      expect(message).toContain('PIX');
+      expect(message).toContain('\ud83e\uddfe'); // receipt emoji
+      expect(message).toContain('\ud83d\udcb0'); // money bag emoji
+    });
+
+    it('should show only total when no payment method', () => {
+      const template = 'Pedido {{orderNumber}}\n\n{{totalPagamento}}';
+      const message = generateStatusMessage(
+        'completed',
+        '#101',
+        'Ana',
+        'Restaurante',
+        template,
+        null,
+        null,
+        [{ productName: 'Burger', quantity: 1, unitPrice: '30.00', totalPrice: '30.00' }],
+        '30.00',
+        undefined,
+        null, // no payment method
+        undefined,
+        null
+      );
+      
+      expect(message).toContain('Total: R$ 30,00');
+      expect(message).not.toContain('Pagamento via');
+    });
+
+    it('should be empty when no total and no payment method', () => {
+      const template = 'Pedido {{orderNumber}}\n\n{{totalPagamento}}\n\nObrigado!';
+      const message = generateStatusMessage(
+        'completed',
+        '#102',
+        'Pedro',
+        'Restaurante',
+        template,
+        null,
+        null,
+        null,
+        null, // no total
+        undefined,
+        null, // no payment method
+        undefined,
+        null
+      );
+      
+      expect(message).not.toContain('Total:');
+      expect(message).not.toContain('Pagamento via');
+      expect(message).toContain('Obrigado!');
+    });
+
+    it('should handle cash payment method', () => {
+      const template = '{{totalPagamento}}';
+      const message = generateStatusMessage(
+        'completed',
+        '#103',
+        'Lucia',
+        'Restaurante',
+        template,
+        null,
+        null,
+        [{ productName: 'Salada', quantity: 1, unitPrice: '25.00', totalPrice: '25.00' }],
+        '25.00',
+        undefined,
+        'cash',
+        undefined,
+        null
+      );
+      
+      expect(message).toContain('Total: R$ 25,00');
+      expect(message).toContain('Dinheiro');
+    });
+  });
 });
