@@ -1962,27 +1962,29 @@ export default function Financas() {
               );
             })}
 
-            {/* Add new goal button */}
-            <Button
-              variant="outline"
-              className="w-full justify-start gap-2 border-dashed"
-              onClick={() => {
-                setEditingCustomGoal(null);
-                setCustomGoalModalOpen(true);
-              }}
-            >
-              <Plus className="h-4 w-4" />
-              Nova meta
-            </Button>
+            {/* Action buttons side by side */}
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1 justify-center gap-2 border-dashed text-xs"
+                onClick={() => {
+                  setEditingCustomGoal(null);
+                  setCustomGoalModalOpen(true);
+                }}
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Nova meta
+              </Button>
 
-            <Button
-              variant="outline"
-              className="w-full justify-start gap-2"
-              onClick={() => setCategoryModalOpen(true)}
-            >
-              <Tag className="h-4 w-4" />
-              Gerenciar categorias
-            </Button>
+              <Button
+                variant="outline"
+                className="flex-1 justify-center gap-2 text-xs"
+                onClick={() => setCategoryModalOpen(true)}
+              >
+                <Tag className="h-3.5 w-3.5" />
+                Categorias
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -2260,7 +2262,7 @@ export default function Financas() {
                             </span>
                           )}
                           <div className="min-w-0">
-                            <p className="text-xs font-medium text-foreground truncate max-w-[120px]">{item.description}</p>
+                            <p className="text-xs font-medium text-foreground truncate max-w-[120px]" title={item.description}>{item.description}</p>
                             <p className="text-sm font-bold mt-1">
                               {item.type === 'revenue' ? (
                                 <span className="text-emerald-600 dark:text-emerald-400">{formatCurrency(item.amount)}</span>

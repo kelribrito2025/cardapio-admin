@@ -7167,3 +7167,5 @@
 - [x] Alterar cor do badge "Hoje" de laranja para verde (bg-emerald-500)
 - [x] Ajustar largura dos mini cards de Lançamentos Futuros de 150px para 165px
 - [x] Clique nos cards de lançamento futuro abre edição da despesa recorrente correspondente
+- [x] Tooltip nos cards truncados de Lançamentos Futuros (exibir nome completo ao hover)
+- [x] Botões Nova meta e Gerenciar categorias lado a lado no card de Indicadores
