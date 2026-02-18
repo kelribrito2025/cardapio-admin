@@ -2270,7 +2270,14 @@ export default function Financas() {
                 <div 
                   className="flex items-center gap-3 overflow-x-auto pt-3 pb-3 scrollbar-hide"
                 >
-                  {upcomingRecurring.filter(item => !item.isPaid).slice(0, 12).map((item, index) => {
+                  {upcomingRecurring.filter(item => {
+                      if (!item.isPaid) return true;
+                      // Show paid cards only on the same day they were due (hide after midnight)
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      const due = new Date(item.dueDate + 'T00:00:00');
+                      return due.getTime() >= today.getTime();
+                    }).slice(0, 12).map((item, index) => {
                     const badge = getBadge(item.dueDate);
                     return (
                       <div key={`${item.recurringId}-${item.dueDate}`} className="flex items-center gap-3 flex-shrink-0">

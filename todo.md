@@ -7176,3 +7176,4 @@
 - [x] Diálogo de confirmação antes de marcar como pago (com opção de ajustar valor/data)
 - [x] Ocultar cards pagos do carrossel de Lançamentos Futuros (não exibir após marcar como pago)
 - [x] Alterar cor do badge "Hoje" para amarelo (mesma cor do ícone do card)
+- [x] Cards pagos devem permanecer visíveis com badge Pago no dia, e só ocultar após meia-noite (próximo dia)
