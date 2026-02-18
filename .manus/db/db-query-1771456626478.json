@@ -1,0 +1,34 @@
+{
+  "query": "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_NAME = 'establishments'; SELECT id, userId, name FROM establishments ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_NAME = 'establishments'; SELECT id, userId, name FROM establishments ORDER BY id;",
+  "rows": [
+    {
+      "AUTO_INCREMENT": "1"
+    },
+    {
+      "AUTO_INCREMENT": "id\tuserId\tname"
+    },
+    {
+      "AUTO_INCREMENT": "1\t1\tBurger House Gourmet"
+    },
+    {
+      "AUTO_INCREMENT": "30001\t180577\tSushi Haruno"
+    },
+    {
+      "AUTO_INCREMENT": "60018\t550919\tBig Norte"
+    },
+    {
+      "AUTO_INCREMENT": "90001\t692831\tPalácio do Açai"
+    },
+    {
+      "AUTO_INCREMENT": "150004\t871095\tPotim Açai"
+    },
+    {
+      "AUTO_INCREMENT": "210001\t930644\tSr. Macarrão"
+    }
+  ],
+  "messages": [],
+  "stdout": "AUTO_INCREMENT\n1\nid\tuserId\tname\n1\t1\tBurger House Gourmet\n30001\t180577\tSushi Haruno\n60018\t550919\tBig Norte\n90001\t692831\tPalácio do Açai\n150004\t871095\tPotim Açai\n210001\t930644\tSr. Macarrão\n",
+  "stderr": "",
+  "execution_time_ms": 122
+}

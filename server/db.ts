@@ -276,8 +276,14 @@ export async function createEstablishment(data: InsertEstablishment) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(establishments).values(data);
-  return result[0].insertId;
+  // Gerar ID sequencial baixo (MAX(id) + 1) em vez de depender do auto_increment do TiDB
+  // que gera IDs muito altos (30001, 60018, 90001, etc.)
+  const maxIdResult = await db.select({ maxId: sql<number>`COALESCE(MAX(${establishments.id}), 0)` })
+    .from(establishments);
+  const nextId = (maxIdResult[0]?.maxId ?? 0) + 1;
+  
+  const result = await db.insert(establishments).values({ ...data, id: nextId });
+  return nextId;
 }
 
 export async function updateEstablishment(id: number, data: Partial<InsertEstablishment>) {
