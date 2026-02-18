@@ -1827,6 +1827,16 @@ export default function Financas() {
                 barGap={4}
                 barCategoryGap="25%"
               >
+                <defs>
+                  <linearGradient id="gradBarReceitas" x1="0" y1="1" x2="0" y2="0">
+                    <stop offset="0%" stopColor="#10b981" stopOpacity={0.6} />
+                    <stop offset="100%" stopColor="#10b981" stopOpacity={0.95} />
+                  </linearGradient>
+                  <linearGradient id="gradBarDespesas" x1="0" y1="1" x2="0" y2="0">
+                    <stop offset="0%" stopColor="#ef4444" stopOpacity={0.6} />
+                    <stop offset="100%" stopColor="#ef4444" stopOpacity={0.95} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   stroke="var(--color-border)"
@@ -1851,14 +1861,14 @@ export default function Financas() {
                 <Bar
                   dataKey="receitas"
                   name="Receitas"
-                  fill="#10b981"
+                  fill="url(#gradBarReceitas)"
                   radius={[4, 4, 0, 0]}
                   barSize={32}
                 />
                 <Bar
                   dataKey="despesas"
                   name="Despesas"
-                  fill="#ef4444"
+                  fill="url(#gradBarDespesas)"
                   radius={[4, 4, 0, 0]}
                   barSize={32}
                 />
