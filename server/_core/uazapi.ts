@@ -566,6 +566,9 @@ export function generateStatusMessage(
       .replace(/{{cashbackTotal}}/g, '');
   }
   
+  // Limpar linhas em branco consecutivas (mais de 2 quebras de linha seguidas)
+  messageTemplate = messageTemplate.replace(/\n{3,}/g, '\n\n');
+  
   let result = messageTemplate
     .replace(/{{customerName}}/g, customerName)
     .replace(/{{orderNumber}}/g, orderNumber)
@@ -578,6 +581,9 @@ export function generateStatusMessage(
   if (status === 'completed' && cashbackInfo && parseFloat(cashbackInfo.cashbackEarned) > 0 && !template?.includes('{{cashbackEarned}}')) {
     result += cashbackText;
   }
+  
+  // Limpar linhas em branco consecutivas no resultado final e trim
+  result = result.replace(/\n{3,}/g, '\n\n').trim();
   
   return result;
 }

@@ -184,6 +184,56 @@ describe('Cashback WhatsApp Notification', () => {
       expect(message).not.toContain('{{cashbackEarned}}');
       expect(message).not.toContain('{{cashbackTotal}}');
     });
+    
+    it('should NOT have excessive blank lines when cashback variables are removed', () => {
+      const customTemplate = `Pedido {{orderNumber}} finalizado!\n\n{{cashbackEarned}}\n{{cashbackTotal}}\n\n❤️ Obrigado pela preferência!\n\n*{{establishmentName}}*`;
+      
+      const message = generateStatusMessage(
+        'completed',
+        '#009',
+        'Sandra',
+        'Restaurante Teste',
+        customTemplate,
+        null,
+        null,
+        null,
+        null,
+        undefined,
+        null,
+        undefined,
+        null
+      );
+      
+      // Should not have 3+ consecutive newlines
+      expect(message).not.toMatch(/\n{3,}/);
+      // Should still contain the other content
+      expect(message).toContain('Pedido #009 finalizado!');
+      expect(message).toContain('Obrigado pela preferência!');
+      expect(message).toContain('Restaurante Teste');
+    });
+    
+    it('should NOT have excessive blank lines in default template when no cashback', () => {
+      const message = generateStatusMessage(
+        'completed',
+        '#010',
+        'Marcos',
+        'Restaurante Teste',
+        null,
+        null,
+        null,
+        null,
+        null,
+        undefined,
+        null,
+        undefined,
+        null
+      );
+      
+      // Should not have 3+ consecutive newlines
+      expect(message).not.toMatch(/\n{3,}/);
+      // Should be trimmed (no leading/trailing whitespace)
+      expect(message).toBe(message.trim());
+    });
   });
   
   describe('sendOrderStatusNotification interface', () => {
